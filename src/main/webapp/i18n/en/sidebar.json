@@ -1,31 +1,25 @@
 {
   "sidebar": {
-    "dashboard": {
-      "dashboard": "Dashboard",
-      "home": "Home",
-      "findpositions": "Find Positions",
-      "analytics": "Analytics"
-    },
+    "home": "Home",
     "applications": {
       "applications": "Applications",
       "myapplications": "My Applications",
       "savedpositions": "Saved Positions",
       "applicationoverview": "Overview",
-      "reviewapplications": "Review"
-    },
-    "manage": {
-      "manage": "Manage",
-      "home": "Home",
-      "mypositions": "My Positions",
-      "createposition": "Create Position",
+      "reviewapplications": "Review",
       "interviews": "Interviews"
     },
+    "positions": {
+      "title": "Positions",
+      "overview": "Overview",
+      "createposition": "Create Position"
+    },
     "researchgroup": {
-      "emailtemplates": "My Email Templates",
-      "researchgroup": "Research Group",
-      "imagelibrary": "My Images",
-      "yourgroup": "My Group",
-      "yourmembers": "My Members"
+      "title": "Research Group",
+      "emailtemplates": "Email Templates",
+      "imagelibrary": "Images",
+      "yourgroup": "Details",
+      "yourmembers": "Members"
     },
     "content": {
       "content": "Content",

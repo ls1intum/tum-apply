@@ -1,11 +1,11 @@
 {
   "researchGroup": {
     "header": "My Email Templates",
-    "memberPage": "My Members",
-    "memberHeader": "My Members",
+    "memberHeader": "Research Group - Members",
     "memberHeaderAdmin": "Research Group Members",
-    "emailTemplatesHeader": "My Email Templates",
-    "groupInfoHeader": "My Group",
+    "emailTemplatesHeader": "Research Group - Email Templates",
+    "groupInfoHeader": "Research Group - Details",
+    "imageHeader": "Research Group - Images",
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
       "organizationInfo": "To change the department and school, please contact an administrator.",

@@ -6,7 +6,9 @@
           <p-divider class="section-divider" />
         }
       } @else {
-        <span [jhiTranslate]="category.title" class="section-title"></span>
+        @if (category.title) {
+          <span [jhiTranslate]="category.title" class="section-title"></span>
+        }
       }
 
       <div class="buttons">

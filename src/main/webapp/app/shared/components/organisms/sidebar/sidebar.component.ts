@@ -98,13 +98,12 @@ export class SidebarComponent {
       ],
       PROFESSOR: [
         {
-          title: 'sidebar.manage.manage',
-          buttons: [
-            { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
-            { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
-            { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
-            { icon: 'calendar', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
-          ],
+          title: '',
+          buttons: [{ icon: 'home', text: 'sidebar.home', link: '/professor' }],
+        },
+        {
+          title: 'sidebar.positions.title',
+          buttons: [{ icon: 'jobs', text: 'sidebar.positions.overview', link: '/my-positions' }],
         },
         {
           title: 'sidebar.applications.applications',
@@ -119,10 +118,11 @@ export class SidebarComponent {
               text: 'sidebar.applications.reviewapplications',
               link: '/evaluation/application',
             },
+            { icon: 'calendar', text: 'sidebar.applications.interviews', link: '/interviews/overview' },
           ],
         },
         {
-          title: 'sidebar.researchgroup.researchgroup',
+          title: 'sidebar.researchgroup.title',
           buttons: [
             { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
             { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
