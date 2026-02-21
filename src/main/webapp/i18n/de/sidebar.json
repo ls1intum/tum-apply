@@ -1,31 +1,24 @@
 {
   "sidebar": {
-    "dashboard": {
-      "dashboard": "Dashboard",
-      "home": "Startseite",
-      "findpositions": "Positionen finden",
-      "analytics": "Analysen"
-    },
+    "home": "Startseite",
     "applications": {
       "applications": "Bewerbungen",
       "myapplications": "Meine Bewerbungen",
       "savedpositions": "Gespeicherte Positionen",
       "applicationoverview": "Übersicht",
-      "reviewapplications": "Prüfen"
-    },
-    "manage": {
-      "manage": "Verwalten",
-      "home": "Startseite",
-      "mypositions": "Meine Positionen",
-      "createposition": "Position erstellen",
+      "reviewapplications": "Prüfen",
       "interviews": "Interviews"
     },
+    "positions": {
+      "title": "Stellen",
+      "overview": "Übersicht"
+    },
     "researchgroup": {
-      "emailtemplates": "Meine E-Mail-Vorlagen",
-      "researchgroup": "Forschungsgruppe",
-      "imagelibrary": "Meine Bilder",
-      "yourgroup": "Meine Gruppe",
-      "yourmembers": "Meine Mitglieder"
+      "title": "Forschungsgruppe",
+      "emailtemplates": "E-Mail-Vorlagen",
+      "imagelibrary": "Bilder",
+      "yourgroup": "Details",
+      "yourmembers": "Mitglieder"
     },
     "content": {
       "content": "Inhalt",
