@@ -12,11 +12,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
-import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
+import { formatGradeDisplay, getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { createMenuActionSignals } from 'app/shared/util/util';
 import { ApplicationPDFRequest } from 'app/generated';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -149,6 +150,46 @@ export default class ApplicationDetailForApplicantComponent {
     return !!this.previewDetailData();
   });
 
+  bachelorGradeDisplay = computed(() => {
+    this.currentLang();
+    const applicant = this.application()?.applicant;
+    const grade = applicant?.bachelorGrade;
+    if (!grade) return '-';
+
+    const limits = { upperLimit: applicant.bachelorGradeUpperLimit, lowerLimit: applicant.bachelorGradeLowerLimit };
+    if (!limits.upperLimit || !limits.lowerLimit) return grade;
+
+    const scale =
+      '(' +
+      (this.translate.instant('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit: limits.upperLimit,
+        lowerLimit: limits.lowerLimit,
+      }) as string) +
+      ')';
+
+    return `${grade} ${scale}`;
+  });
+
+  masterGradeDisplay = computed(() => {
+    this.currentLang();
+    const applicant = this.application()?.applicant;
+    const grade = applicant?.masterGrade;
+    if (!grade) return '-';
+
+    const limits = { upperLimit: applicant.masterGradeUpperLimit, lowerLimit: applicant.masterGradeLowerLimit };
+    if (!limits.upperLimit || !limits.lowerLimit) return grade;
+
+    const scale =
+      '(' +
+      (this.translate.instant('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit: limits.upperLimit,
+        lowerLimit: limits.lowerLimit,
+      }) as string) +
+      ')';
+
+    return `${grade} ${scale}`;
+  });
+
   readonly dropDownOptions = DropDownOptions;
   private applicationService = inject(ApplicationResourceApiService);
   private route = inject(ActivatedRoute);
@@ -157,6 +198,8 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly location = inject(Location);
   private pdfExportService = inject(PdfExportResourceApiService);
   private translate = inject(TranslateService);
+
+  private currentLang = toSignal(this.translate.onLangChange);
 
   private readonly translationKey = 'entity.toast.applyFlow';
 
@@ -197,6 +240,21 @@ export default class ApplicationDetailForApplicantComponent {
   async onDownloadPDF(): Promise<void> {
     let req: ApplicationPDFRequest;
     const labels = getApplicationPDFLabels(this.translate);
+
+    // Append grade display extra as the translation needs both limits as paramenters
+    const applicant = this.application()?.applicant;
+    labels['bachelorGradeDisplay'] = formatGradeDisplay(
+      this.translate,
+      applicant?.bachelorGrade,
+      applicant?.bachelorGradeUpperLimit,
+      applicant?.bachelorGradeLowerLimit,
+    );
+    labels['masterGradeDisplay'] = formatGradeDisplay(
+      this.translate,
+      applicant?.masterGrade,
+      applicant?.masterGradeUpperLimit,
+      applicant?.masterGradeLowerLimit,
+    );
 
     const previewData = this.previewDetailData();
 

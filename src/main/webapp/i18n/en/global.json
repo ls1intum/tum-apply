@@ -191,8 +191,6 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Highest Achievable Grade",
-      "lower_passing_limit": "Lowest Passing Grade",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",
@@ -396,7 +394,8 @@
         "masterGrade": "Final Master Grade"
       },
       "helperText": {
-        "gradingScale": "Scale: {{upperLimit}} (best) to {{lowerLimit}} (pass)",
+        "scale": "Scale: ",
+        "gradingScale": "{{upperLimit}} (best) to {{lowerLimit}} (pass)",
         "changeScale": "Change Scale"
       },
       "warnText": "Unusual format, please check your entry",

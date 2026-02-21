@@ -191,8 +191,6 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Höchstmögliche Note",
-      "lower_passing_limit": "Niedrigste Note zum Bestehen",
       "grade": "Note",
       "university": "Universität",
       "motivation": "Motivation",
@@ -396,7 +394,8 @@
         "masterGrade": "Master-Abschlussnote"
       },
       "helperText": {
-        "gradingScale": "Skala: {{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)",
+        "scale": "Skala: ",
+        "gradingScale": "{{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)",
         "changeScale": "Skala ändern"
       },
       "warnText": "Ungewöhnliches Format, bitte überprüfe die Eingabe",

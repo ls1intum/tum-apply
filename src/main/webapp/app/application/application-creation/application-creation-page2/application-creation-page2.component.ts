@@ -115,10 +115,13 @@ export default class ApplicationCreationPage2Component {
     const limits = this.bachelorGradeLimits();
     if (!limits) return '';
 
-    return this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
+    const scale = this.translateService.instant('entity.applicationPage2.helperText.scale') as string;
+    const gradingScale = this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
       upperLimit: limits.upperLimit,
       lowerLimit: limits.lowerLimit,
-    });
+    }) as string;
+
+    return `${scale}${gradingScale}`;
   });
 
   helperTextMasterGrade = computed(() => {
@@ -126,10 +129,13 @@ export default class ApplicationCreationPage2Component {
     const limits = this.masterGradeLimits();
     if (!limits) return '';
 
-    return this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
+    const scale = this.translateService.instant('entity.applicationPage2.helperText.scale') as string;
+    const gradingScale = this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
       upperLimit: limits.upperLimit,
       lowerLimit: limits.lowerLimit,
-    });
+    }) as string;
+
+    return `${scale}${gradingScale}`;
   });
 
   warningTextBachelorGrade = computed(() => {
