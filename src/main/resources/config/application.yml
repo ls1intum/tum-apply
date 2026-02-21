@@ -217,7 +217,7 @@ springdoc:
 # Properties to be exposed on the /info management endpoint
 info:
   # Comma separated list of profiles that will trigger the ribbon to show
-  display-ribbon-on-profiles: 'dev,test'
+  display-ribbon-on-profiles: 'dev'
 
 # ===================================================================
 # JHipster specific properties

@@ -183,7 +183,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     } else {
       this.modelChange.emit(html);
     }
-    this.markAsTouchedManually();
+    this.isTouched.set(true);
   }
 
   onGenderDecoderClick(): void {
