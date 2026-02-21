@@ -24,6 +24,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
 import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
+import { getInitials } from 'app/shared/util/util';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -108,7 +109,7 @@ export class ApplicationDetailComponent {
 
   readonly initials = computed<string>(() => {
     const fullName = this.currentApplication()?.applicationDetailDTO.applicant?.user.name?.trim();
-    return this.calculateInitials(fullName);
+    return getInitials(fullName ?? '');
   });
 
   isAlreadyInInterview = computed(() => {
@@ -673,18 +674,5 @@ export class ApplicationDetailComponent {
         this.currentDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
-  }
-
-  private calculateInitials(fullName: string | undefined): string {
-    if (fullName === undefined || fullName === '') {
-      return '?';
-    }
-    const nameParts = fullName.split(' ').filter(p => p.length > 0);
-    if (nameParts.length === 0) {
-      return '?';
-    }
-    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
-    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
-    return firstInitial + lastInitial;
   }
 }

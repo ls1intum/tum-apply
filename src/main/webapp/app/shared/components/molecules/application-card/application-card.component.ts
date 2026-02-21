@@ -8,6 +8,7 @@ import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantF
 import { DividerModule } from 'primeng/divider';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { StarRatingComponent } from 'app/shared/components/atoms/star-rating/star-rating.component';
+import { getInitials } from 'app/shared/util/util';
 
 @Component({
   selector: 'jhi-application-card',
@@ -53,7 +54,7 @@ export class ApplicationCardComponent {
 
   readonly initials = computed<string>(() => {
     const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim();
-    return this.calculateInitials(fullName);
+    return getInitials(fullName ?? '');
   });
 
   readonly masterDegree = computed(() => {
@@ -91,19 +92,6 @@ export class ApplicationCardComponent {
     if (jobTitle.length > 40) return 'text-sm';
     return 'text-sm';
   });
-
-  private calculateInitials(fullName: string | undefined): string {
-    if (fullName === undefined || fullName === '') {
-      return '?';
-    }
-    const nameParts = fullName.split(' ').filter(p => p.length > 0);
-    if (nameParts.length === 0) {
-      return '?';
-    }
-    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
-    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
-    return firstInitial + lastInitial;
-  }
 
   private calculateMasterDegree(
     applicant: ApplicantForApplicationDetailDTO | undefined,
