@@ -8,11 +8,13 @@
       <p jhiTranslate="evaluation.noApplicationsFound">No Applications found.</p>
     } @else {
       @for (app of visibleApplications(); track i; let i = $index) {
-        @if (app) {
-          <jhi-application-card [application]="app" [disabled]="i !== middle()" />
-        } @else {
-          <jhi-application-card [application]="app" [placeholder]="true" />
-        }
+        <div class="flex">
+          @if (app) {
+            <jhi-application-card [application]="app" [disabled]="i !== middle()" />
+          } @else {
+            <jhi-application-card [application]="app" [placeholder]="true" />
+          }
+        </div>
       }
     }
   </div>

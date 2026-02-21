@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { AccountService } from 'app/core/auth/account.service';
@@ -21,6 +21,7 @@ export class RatingSection {
 
   applicationId = input<string | undefined>(undefined);
   ratings = signal<RatingOverviewDTO | undefined>(undefined);
+  ratingUpdated = output();
 
   myRating = signal<number | undefined>(undefined);
 
@@ -74,10 +75,16 @@ export class RatingSection {
     try {
       await firstValueFrom(this.ratingService.updateRating(applicationId, value));
 
-      this.serverCurrent.set(value);
-
       const refreshed = await firstValueFrom(this.ratingService.getRatings(applicationId));
       this.ratings.set(refreshed);
+
+      // Sync myRating and serverCurrent with the refreshed data
+      const mine = refreshed.currentUserRating ?? undefined;
+      this.serverCurrent.set(mine);
+      this.myRating.set(mine);
+
+      // Emit event to notify parent that rating was updated
+      this.ratingUpdated.emit();
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'Failed to save rating' });
       // revert UI to last known server value

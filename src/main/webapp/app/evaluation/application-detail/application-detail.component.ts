@@ -3,14 +3,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 import { DialogModule } from 'primeng/dialog';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
-import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
@@ -25,12 +24,13 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
 import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
+import { getInitials } from 'app/shared/util/util';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
 import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
-import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
-import { LinkList } from '../../shared/components/atoms/link-list/link-list';
+import { DescItem } from '../../shared/components/atoms/description-list/description-list';
 import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
@@ -55,12 +55,11 @@ const CAROUSEL_SIZE = 7;
     TranslateDirective,
     Section,
     SubSection,
-    DescriptionList,
-    LinkList,
     Prose,
     DocumentSection,
     CommentSection,
     RatingSection,
+    FontAwesomeModule,
     LocalizedDatePipe,
   ],
   templateUrl: './application-detail.component.html',
@@ -106,6 +105,11 @@ export class ApplicationDetailComponent {
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
+  });
+
+  readonly initials = computed<string>(() => {
+    const fullName = this.currentApplication()?.applicationDetailDTO.applicant?.user.name?.trim();
+    return getInitials(fullName ?? '');
   });
 
   isAlreadyInInterview = computed(() => {
@@ -163,7 +167,7 @@ export class ApplicationDetailComponent {
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
-    if (id) {
+    if (id !== null && id !== '') {
       void this.loadCarousel(id);
     } else {
       // Load initial batch of applications
@@ -331,7 +335,8 @@ export class ApplicationDetailComponent {
 
   async onAddToInterview(navigate: boolean): Promise<void> {
     const application = this.currentApplication();
-    if (!application?.jobId) {
+    const jobId = application?.jobId;
+    if (jobId === undefined || jobId === '' || application === undefined) {
       this.toastService.showErrorKey('evaluation.errors.noJobId');
       return;
     }
@@ -438,6 +443,43 @@ export class ApplicationDetailComponent {
         applicationState: newState,
       },
     });
+  }
+
+  async onRatingUpdated(): Promise<void> {
+    const current = this.currentApplication();
+    if (!current) {
+      return;
+    }
+
+    const id = current.applicationDetailDTO.applicationId;
+
+    try {
+      // Fetch the updated application with server-calculated average rating
+      const result = await firstValueFrom(
+        this.evaluationResourceService.getApplicationsDetailsWindow(
+          id,
+          1, // windowSize = 1 to get just this application
+          this.sortBy(),
+          this.sortDirection(),
+          this.selectedStatusFilters().length ? this.selectedStatusFilters() : undefined,
+          this.selectedJobFilters().length ? this.selectedJobFilters() : undefined,
+          this.searchQuery() || undefined,
+        ),
+      );
+
+      const updated = result.applications?.[0];
+      if (!updated) {
+        return;
+      }
+
+      // Update applications array with refreshed data
+      this.applications.update(apps => apps.map(app => (app.applicationDetailDTO.applicationId === id ? updated : app)));
+
+      // Update current application
+      this.currentApplication.set(updated);
+    } catch {
+      // Silent fail - rating is already saved, this is just a UI refresh
+    }
   }
 
   /**
