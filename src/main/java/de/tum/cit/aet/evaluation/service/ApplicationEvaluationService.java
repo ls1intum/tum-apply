@@ -17,6 +17,7 @@ import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
+import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
@@ -40,6 +41,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -460,24 +462,10 @@ public class ApplicationEvaluationService {
      * @return the average rating, or null if no ratings exist
      */
     private Double calculateAverageRating(Application application) {
-        var ratings = ratingRepository.findByApplicationApplicationId(application.getApplicationId());
-        if (ratings.isEmpty()) {
-            return null;
-        }
+        Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(application.getApplicationId());
 
-        double sum = ratings
-            .stream()
-            .map(rating -> rating.getRating())
-            .filter(Objects::nonNull)
-            .mapToInt(Integer::intValue)
-            .sum();
+        OptionalDouble avg = ratings.stream().map(Rating::getRating).filter(Objects::nonNull).mapToInt(Integer::intValue).average();
 
-        long count = ratings
-            .stream()
-            .map(rating -> rating.getRating())
-            .filter(Objects::nonNull)
-            .count();
-
-        return count > 0 ? sum / count : null;
+        return avg.isPresent() ? avg.getAsDouble() : null;
     }
 }
