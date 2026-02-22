@@ -27,7 +27,7 @@ export class InterviewProcessCardComponent {
   });
 
   totalSlots = computed<number>(() => {
-    return this.process().totalSlots ?? 0;
+    return this.process().totalSlots;
   });
 
   onCardClick(): void {

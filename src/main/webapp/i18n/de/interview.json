@@ -19,11 +19,7 @@
         "scheduled": "Geplant",
         "invited": "Eingeladen",
         "uncontacted": "Nicht kontaktiert",
-        "totalInterviews": "Interviews gesamt"
-      },
-      "metrics": {
-        "scheduled": "Geplant",
-        "invited": "Eingeladen",
+        "totalInterviews": "Interviews gesamt",
         "totalSlots": "Anzahl Slots"
       },
       "upcoming": {
