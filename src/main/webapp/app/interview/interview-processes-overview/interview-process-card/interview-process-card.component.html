@@ -26,30 +26,24 @@
 
     <!-- Warning Alert -->
     @if (processStatus() !== 'CLOSED' && process().invitedCount > totalSlots()) {
-      <jhi-info-box severity="info">
-        <p
-          class="m-0 text-sm font-medium"
-          [jhiTranslate]="totalSlots() === 0 ? 'interview.warning.zeroSlots' : 'interview.warning.notEnoughSlots'"
-          [translateValues]="{ invited: process().invitedCount, slots: totalSlots() }"
-        ></p>
-      </jhi-info-box>
+      <jhi-message
+        severity="warn"
+        [message]="
+          totalSlots() === 0
+            ? process().invitedCount === 1
+              ? 'interview.warning.zeroSlotsSingular'
+              : 'interview.warning.zeroSlots'
+            : process().invitedCount === 1
+              ? 'interview.warning.notEnoughSlotsSingular'
+              : 'interview.warning.notEnoughSlots'
+        "
+        [shouldTranslate]="true"
+        [translationParams]="{ invited: process().invitedCount, slots: totalSlots() }"
+      />
     }
 
     <!-- Metrics Row -->
     <div class="flex items-center justify-between gap-4">
-      <!-- Metric: Scheduled -->
-      <div class="flex flex-col">
-        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.metrics.scheduled"
-          >Scheduled</span
-        >
-        <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="calendar-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
-            process().scheduledCount
-          }}</span>
-        </div>
-      </div>
-
       <!-- Metric: Invited -->
       <div class="flex flex-col">
         <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.metrics.invited"
@@ -59,6 +53,19 @@
           <fa-icon icon="user-group" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
           <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().invitedCount
+          }}</span>
+        </div>
+      </div>
+
+      <!-- Metric: Scheduled -->
+      <div class="flex flex-col">
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.metrics.scheduled"
+          >Scheduled</span
+        >
+        <div class="flex items-center gap-2 mt-0.5">
+          <fa-icon icon="calendar-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+            process().scheduledCount
           }}</span>
         </div>
       </div>

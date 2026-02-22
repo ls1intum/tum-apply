@@ -35,8 +35,10 @@
       }
     },
     "warning": {
-      "notEnoughSlots": "{{invited}} invited, but only {{slots}} slots available. Please create more slots.",
-      "zeroSlots": "{{invited}} invited, but no slots are available. Please create new slots."
+      "notEnoughSlots": "{{invited}} applicants invited, but only {{slots}} slots available. Please create more slots.",
+      "notEnoughSlotsSingular": "{{invited}} applicant invited, but only {{slots}} slots available. Please create more slots.",
+      "zeroSlots": "{{invited}} applicants invited, but no slots are available. Please create new slots.",
+      "zeroSlotsSingular": "{{invited}} applicant invited, but no slots are available. Please create new slots."
     },
     "detail": {
       "error": {

@@ -35,8 +35,10 @@
       }
     },
     "warning": {
-      "notEnoughSlots": "{{invited}} Eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
-      "zeroSlots": "{{invited}} Eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
+      "notEnoughSlots": "{{invited}} Bewerber:innen eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "notEnoughSlotsSingular": "{{invited}} Bewerber:in eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "zeroSlots": "{{invited}} Bewerber:innen eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
+      "zeroSlotsSingular": "{{invited}} Bewerber:in eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
     },
     "detail": {
       "error": {

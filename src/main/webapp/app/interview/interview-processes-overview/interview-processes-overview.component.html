@@ -81,8 +81,8 @@
       <!-- List State -->
       @if (!loading() && !error() && upcomingInterviews().length > 0) {
         <div class="flex flex-col gap-3">
-          @for (interview of upcomingInterviews(); track interview.id) {
-            <jhi-upcoming-interview-card [interview]="interview" />
+          @for (interview of upcomingInterviews(); track interview.id; let i = $index) {
+            <jhi-upcoming-interview-card [interview]="interview" [index]="i" />
           }
         </div>
       }
