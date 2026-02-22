@@ -60,6 +60,12 @@ public class SchoolResource {
 
     /**
      * Get paginated schools for admin view with optional search.
+     *
+     * @param pageDTO the pagination information
+     * @param searchQuery optional search query to filter schools
+     * @param sortDTO the sorting information
+     * @param request the HTTP request
+     * @return HTTP 200 OK with paginated schools for admin view
      */
     @Admin
     @GetMapping("/admin/search")
@@ -109,6 +115,10 @@ public class SchoolResource {
 
     /**
      * Update an existing school.
+     *
+     * @param id the school ID
+     * @param dto the school update DTO
+     * @return HTTP 200 OK with the updated school (without departments)
      */
     @Admin
     @PutMapping("/update/{id}")
@@ -120,6 +130,9 @@ public class SchoolResource {
 
     /**
      * Delete a school.
+     *
+     * @param id the school ID
+     * @return HTTP 204 No Content when deletion is successful
      */
     @Admin
     @DeleteMapping("/delete/{id}")

@@ -464,7 +464,7 @@
       },
       "deleteDialog": {
         "header": "Delete School",
-        "message": "Are you sure you want to delete this school? This is only possible when no departments are linked."
+        "message": "Are you sure you want to delete this school? This action is only possible when no departments are linked."
       }
     },
     "imageLibrary": {

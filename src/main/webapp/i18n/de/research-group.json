@@ -464,7 +464,7 @@
       },
       "deleteDialog": {
         "header": "School löschen",
-        "message": "Bist du sicher, dass du diese School löschen möchtest? Das ist nur möglich, wenn keine Departments verknüpft sind."
+        "message": "Bist du sicher, dass du diese School löschen möchtest? Diese Aktion ist nur möglich, wenn keine Departments verknüpft sind."
       }
     },
     "imageLibrary": {

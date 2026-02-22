@@ -11,7 +11,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'jhi-school-edit-dialog',
-  standalone: true,
   imports: [ReactiveFormsModule, TranslateModule, ButtonComponent, StringInputComponent],
   templateUrl: './school-edit-dialog.component.html',
 })
