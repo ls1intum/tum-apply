@@ -105,7 +105,7 @@
     "@angular/language-service": "21.1.2",
     "@eslint/js": "9.39.2",
     "@tailwindcss/postcss": "4.1.18",
-    "@types/node": "24.10.9",
+    "@types/node": "24.10.12",
     "@types/quill": "2.0.14",
     "@vitest/coverage-v8": "4.0.18",
     "angular-eslint": "21.2.0",
