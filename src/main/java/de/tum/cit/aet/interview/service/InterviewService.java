@@ -512,12 +512,10 @@ public class InterviewService {
             // (initial month detection)
             slotsPage = interviewSlotRepository.findFutureSlotsByProcessId(processId, afterDateTime, pageable);
         } else if (year != null && month != null) {
-            // Existing: all slots in a specific month
             ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
             ZonedDateTime monthEnd = monthStart.plusMonths(1);
             slotsPage = interviewSlotRepository.findByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable);
         } else {
-            // Existing: all slots, no filter
             slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
         }
 
