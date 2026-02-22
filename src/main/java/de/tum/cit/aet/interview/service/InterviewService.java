@@ -444,21 +444,33 @@ public class InterviewService {
 
     /**
      * Retrieves interview slots for a given interview process with optional month
-     * filtering.
+     * and time filtering.
      * If year and month are provided, returns only slots within that month.
+     * If afterDateTime is provided, returns only slots starting at or after that
+     * time.
+     * If beforeDateTime is provided, returns only slots starting before that time.
      * Otherwise, returns all slots for the process.
      * Slots are returned ordered by start time (ascending).
      *
-     * @param processId the ID of the interview process
-     * @param year      optional year to filter by (e.g., 2025)
-     * @param month     optional month to filter by (1-12)
-     * @param pageDTO   pagination information
+     * @param processId      the ID of the interview process
+     * @param year           optional year to filter by (e.g., 2025)
+     * @param month          optional month to filter by (1-12)
+     * @param afterDateTime  optional cutoff — only slots with startDateTime >= this
+     * @param beforeDateTime optional cutoff — only slots with startDateTime < this
+     * @param pageDTO        pagination information
      * @return a page of interview slots ordered by start time
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException   if the user is not authorized to view these
      *                                 slots
      */
-    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(
+        UUID processId,
+        Integer year,
+        Integer month,
+        Instant afterDateTime,
+        Instant beforeDateTime,
+        PageDTO pageDTO
+    ) {
         // 1. Load Interview Process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
@@ -472,13 +484,40 @@ public class InterviewService {
         // 3. Convert PageDTO to Pageable
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
-        // 4. Query slots - with or without month filter
+        // 4. Query slots - branching on time and month filters
         Page<InterviewSlot> slotsPage;
-        if (year != null && month != null) {
+        if (afterDateTime != null && year != null && month != null) {
+            // Future slots for a specific month
+            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
+            ZonedDateTime monthEnd = monthStart.plusMonths(1);
+            slotsPage = interviewSlotRepository.findFutureSlotsByProcessIdAndMonth(
+                processId,
+                afterDateTime,
+                monthStart.toInstant(),
+                monthEnd.toInstant(),
+                pageable
+            );
+        } else if (beforeDateTime != null && year != null && month != null) {
+            // Past slots for a specific month
+            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
+            ZonedDateTime monthEnd = monthStart.plusMonths(1);
+            slotsPage = interviewSlotRepository.findPastSlotsByProcessIdAndMonth(
+                processId,
+                beforeDateTime,
+                monthStart.toInstant(),
+                monthEnd.toInstant(),
+                pageable
+            );
+        } else if (afterDateTime != null) {
+            // (initial month detection)
+            slotsPage = interviewSlotRepository.findFutureSlotsByProcessId(processId, afterDateTime, pageable);
+        } else if (year != null && month != null) {
+            // Existing: all slots in a specific month
             ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
             ZonedDateTime monthEnd = monthStart.plusMonths(1);
             slotsPage = interviewSlotRepository.findByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable);
         } else {
+            // Existing: all slots, no filter
             slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
         }
 

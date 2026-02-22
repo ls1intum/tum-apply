@@ -20,6 +20,7 @@ import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -144,12 +145,21 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @RequestParam(required = false) Integer year,
         @RequestParam(required = false) Integer month,
+        @RequestParam(required = false) Instant afterDateTime,
+        @RequestParam(required = false) Instant beforeDateTime,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
         log.info("REST request to get slots for process: {}, year: {}, month: {}, page: {}", processId, year, month, page);
         PageDTO pageDTO = new PageDTO(size, page);
-        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(
+            processId,
+            year,
+            month,
+            afterDateTime,
+            beforeDateTime,
+            pageDTO
+        );
         log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
     }
