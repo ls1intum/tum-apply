@@ -50,12 +50,26 @@ export class InterviewProcessesOverviewComponent {
         firstValueFrom(this.interviewService.getInterviewOverview()),
         firstValueFrom(this.interviewService.getUpcomingInterviews()),
       ]);
-      this.interviewProcesses.set(overviewData);
+      const processesWithImages = overviewData.map((process, index) => ({
+        ...process,
+        imageUrl: process.imageUrl ?? this.getExampleImageUrl(index),
+      }));
+      this.interviewProcesses.set(processesWithImages);
       this.upcomingInterviews.set(upcomingData);
     } catch {
       this.error.set(true);
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private getExampleImageUrl(index: number): string {
+    const headerImages = [
+      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
+      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
+      'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&q=80',
+      'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80',
+    ];
+    return headerImages[index % headerImages.length];
   }
 }

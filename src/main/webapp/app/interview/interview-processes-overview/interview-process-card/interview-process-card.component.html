@@ -1,40 +1,82 @@
-<div (click)="onCardClick()" class="border border-border-default rounded-lg p-4 cursor-pointer hover:bg-background-surface">
-  <!-- Job Title -->
-  <h3 class="text-base font-semibold mb-4">
-    {{ process().jobTitle }}
-  </h3>
+<article
+  (click)="onCardClick()"
+  class="flex flex-col rounded-lg border border-border-default bg-background-default overflow-hidden cursor-pointer transition-all hover:bg-background-surface"
+  [ngClass]="{ 'opacity-80': processStatus() === 'CLOSED' }"
+>
+  <!-- Header (Job Image Area) -->
+  <div
+    class="px-4 py-3 flex justify-end min-h-[6rem] relative bg-cover bg-center flex-shrink-0"
+    [ngClass]="processStatus() === 'CLOSED' ? 'bg-background-surface-alt border-b border-border-default' : 'bg-primary'"
+    [style.backgroundImage]="process().imageUrl ? 'url(' + process().imageUrl + ')' : null"
+  >
+    <div>
+      <jhi-tag
+        [text]="processStatus() === 'CLOSED' ? 'Closed' : 'Active'"
+        [color]="processStatus() === 'CLOSED' ? 'secondary' : 'success'"
+      />
+    </div>
+  </div>
 
-  <!-- Statistics Row -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
-    @for (stat of stats(); track stat.label) {
-      <div class="flex items-start gap-1.5">
-        <div class="w-0.75 h-8 rounded" [ngClass]="stat.colorClass"></div>
-        <div class="flex flex-col">
-          <span class="text-lg font-semibold">
-            {{ stat.count }}
-          </span>
-          <span class="text-xs text-text-secondary" [jhiTranslate]="stat.label">
-            {{ stat.label }}
-          </span>
+  <!-- Body Area -->
+  <div class="flex flex-col px-4 py-3 gap-3">
+    <!-- Job Title -->
+    <h3 class="text-lg font-semibold line-clamp-2 m-0 leading-tight text-text" [title]="process().jobTitle">
+      {{ process().jobTitle }}
+    </h3>
+
+    <!-- Warning Alert -->
+    @if (processStatus() !== 'CLOSED' && process().invitedCount > totalSlots()) {
+      <jhi-info-box severity="info">
+        <p
+          class="m-0 text-sm font-medium"
+          [jhiTranslate]="totalSlots() === 0 ? 'interview.warning.zeroSlots' : 'interview.warning.notEnoughSlots'"
+          [translateValues]="{ invited: process().invitedCount, slots: totalSlots() }"
+        ></p>
+      </jhi-info-box>
+    }
+
+    <!-- Metrics Row -->
+    <div class="flex items-center justify-between gap-4">
+      <!-- Metric: Scheduled -->
+      <div class="flex flex-col">
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.metrics.scheduled"
+          >Scheduled</span
+        >
+        <div class="flex items-center gap-2 mt-0.5">
+          <fa-icon icon="calendar-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+            process().scheduledCount
+          }}</span>
         </div>
       </div>
-    }
-  </div>
 
-  <!-- Multi-segment Progress Bar -->
-  <div class="h-2 bg-background-disabled rounded-md overflow-hidden flex mb-2">
-    @for (stat of stats(); track stat.label) {
-      <div class="h-full transition-all duration-300" [ngClass]="stat.colorClass" [style.width.%]="stat.widthPercent"></div>
-    }
-  </div>
+      <!-- Metric: Invited -->
+      <div class="flex flex-col">
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.metrics.invited"
+          >Invited</span
+        >
+        <div class="flex items-center gap-2 mt-0.5">
+          <fa-icon icon="user-group" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+            process().invitedCount
+          }}</span>
+        </div>
+      </div>
 
-  <!-- Total Interviews -->
-  <div class="flex justify-between items-center pt-3 border-t border-divider-default">
-    <span class="text-xs text-text-secondary leading-normal" jhiTranslate="interview.overview.stats.totalInterviews">
-      Total interviews
-    </span>
-    <span class="text-base font-semibold leading-normal">
-      {{ process().totalInterviews }}
-    </span>
+      <!-- Metric: Total Slots -->
+      <div class="flex flex-col">
+        <span
+          class="text-xs text-text-secondary uppercase tracking-wider font-semibold"
+          jhiTranslate="interview.overview.metrics.totalSlots"
+          >Total Slots</span
+        >
+        <div class="flex items-center gap-2 mt-0.5">
+          <fa-icon icon="clock" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+            totalSlots()
+          }}</span>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</article>
