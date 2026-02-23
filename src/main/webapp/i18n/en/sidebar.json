@@ -1,18 +1,14 @@
 {
   "sidebar": {
     "home": "Home",
-    "applications": {
-      "applications": "Applications",
+    "recruiting": {
+      "title": "Recruiting",
+      "positions": "Positions",
       "myapplications": "My Applications",
       "savedpositions": "Saved Positions",
-      "applicationoverview": "Overview",
+      "applicationoverview": "Applications",
       "reviewapplications": "Review",
       "interviews": "Interviews"
-    },
-    "positions": {
-      "title": "Positions",
-      "overview": "Overview",
-      "createposition": "Create Position"
     },
     "researchgroup": {
       "title": "Research Group",

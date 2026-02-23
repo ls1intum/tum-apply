@@ -1,7 +1,7 @@
 {
   "evaluation": {
-    "overviewHeader": "Bewerbungen - Übersicht",
-    "reviewHeader": "Bewerbungen - Prüfen",
+    "overviewHeader": "Stellenbesetzung - Bewerbungen",
+    "reviewHeader": "Stellenbesetzung - Prüfen",
     "searchFilterSortBar": {
       "searchText": "Bewerbungen suchen..."
     },

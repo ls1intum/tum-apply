@@ -1,17 +1,14 @@
 {
   "sidebar": {
     "home": "Startseite",
-    "applications": {
-      "applications": "Bewerbungen",
+    "recruiting": {
+      "title": "Stellenbesetzung",
+      "positions": "Stellen",
       "myapplications": "Meine Bewerbungen",
       "savedpositions": "Gespeicherte Positionen",
-      "applicationoverview": "Übersicht",
+      "applicationoverview": "Bewerbungen",
       "reviewapplications": "Prüfen",
       "interviews": "Interviews"
-    },
-    "positions": {
-      "title": "Stellen",
-      "overview": "Übersicht"
     },
     "researchgroup": {
       "title": "Forschungsgruppe",
