@@ -11,12 +11,15 @@
 
 export interface InterviewOverviewDTO { 
     completedCount: number;
+    imageUrl?: string;
     invitedCount: number;
+    isClosed?: boolean;
     jobId: string;
     jobTitle: string;
     processId: string;
     scheduledCount: number;
     totalInterviews: number;
+    totalSlots: number;
     uncontactedCount: number;
 }
 
