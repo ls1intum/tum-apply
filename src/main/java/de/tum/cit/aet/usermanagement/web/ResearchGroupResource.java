@@ -298,7 +298,7 @@ public class ResearchGroupResource {
      * @param dto the DTO containing user IDs to add
      * @return no content response
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PostMapping("/members")
     public ResponseEntity<Void> addMembersToResearchGroup(@Valid @RequestBody AddMembersToResearchGroupDTO dto) {
         log.info("POST /api/research-groups/members - adding {} members", dto.keycloakUsers().size());

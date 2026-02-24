@@ -4,21 +4,10 @@
   display: flex;
   flex-direction: column;
 
-  .functionality-bar {
-    display: flex;
-    flex-flow: row wrap;
-    gap: 1rem;
-
-    .group {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-  }
-
   .p-iconfield {
     width: 100%;
+    max-width: 18rem;
+    min-width: 12rem;
     flex: 1;
 
     .p-inputtext {
@@ -31,35 +20,8 @@
       }
 
       &:hover {
-        border-color: var(--p-primary-color);
+        border-color: var(--p-neutral-hover-color-outlined);
       }
-    }
-  }
-}
-
-@media (max-width: bp.$md) {
-  .search-filter-sort-bar {
-    .functionality-bar {
-      .filter-sort {
-        width: 100%;
-
-        .group {
-          width: 100%;
-
-          > span {
-            width: 100%;
-          }
-
-          jhi-filter-multiselect {
-            flex: 1;
-            min-width: 0;
-          }
-        }
-      }
-    }
-
-    .p-iconfield {
-      min-width: 100%;
     }
   }
 }

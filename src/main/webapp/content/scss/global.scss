@@ -85,6 +85,9 @@
   background: var(--p-background-default);
   color: var(--p-datatable-row-color);
 }
+.p-datatable .p-datatable-thead {
+  position: inherit !important;
+}
 
 .selection-col {
   width: 5rem;
@@ -584,14 +587,6 @@ jhi-menu {
   padding: 1rem;
   z-index: 2;
   pointer-events: none; // Disable pointer events for the carousel indicators
-}
-
-/* -------------------------------
- Style primeNg filter select component.
--------------------------------
- */
-.p-select-list-container {
-  max-height: 11.5rem !important;
 }
 
 /* -------------------------------
