@@ -223,14 +223,17 @@
     },
     "filters": {
       "filter": "Filter",
+      "sortingAndFilter": "Sortierung & Filter",
       "selected": "Ausgewählt",
+      "clearAll": "Alle entfernen",
       "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
       "apply": "Anwenden",
-      "recordsFound": "{{count}} {{entity}} gefunden"
+      "recordsFound": "{{count}} {{entity}} gefunden",
+      "show": "Stellen anzeigen",
+      "resetFilter": "Filter zurücksetzen"
     },
-    "filterBy": "Filtern nach:",
-    "sortBy": "Sortieren nach:",
+
     "sorting": {
       "ascending": {
         "text": "Aufsteigend (A-Z)",
