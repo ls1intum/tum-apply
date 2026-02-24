@@ -275,6 +275,7 @@
         "multipleEntities": "Professor:innen",
         "noResults": "Keine verfügbaren Professor:innen gefunden.",
         "requiredError": "Bitte wähle eine Professor:in aus.",
+        "loadMore": "Mehr laden",
         "changeButton": "Auswahl ändern"
       },
       "createButton": "Forschungsgruppe erstellen",

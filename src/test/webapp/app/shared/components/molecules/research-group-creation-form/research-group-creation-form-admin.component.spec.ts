@@ -429,7 +429,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
 
       await component.onAdminProfessorSearch('alice');
 
-      expect(getAvailableUsersForResearchGroupMock).toHaveBeenCalledWith(10, 0, 'alice');
+      expect(getAvailableUsersForResearchGroupMock).toHaveBeenCalledWith(25, 0, 'alice');
       expect(component.adminProfessorCandidates()).toEqual(candidates);
       expect(component.isLoadingAdminUsers()).toBe(false);
     });

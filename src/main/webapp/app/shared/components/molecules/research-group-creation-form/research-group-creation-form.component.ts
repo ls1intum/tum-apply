@@ -71,8 +71,12 @@ export class ResearchGroupCreationFormComponent {
 
   // Admin professor selection
   readonly MIN_ADMIN_SEARCH_LENGTH = 3;
+  readonly ADMIN_USERS_PAGE_SIZE = 25;
   adminProfessorSearchQuery = signal('');
   adminProfessorCandidates = signal<KeycloakUserDTO[]>([]);
+  adminProfessorTotalCount = signal(0);
+  adminProfessorCurrentPage = signal(0);
+  hasMoreAdminProfessorCandidates = computed(() => this.adminProfessorCandidates().length < this.adminProfessorTotalCount());
   selectedAdminProfessor = signal<SelectedAdminProfessor | null>(null);
 
   // School and Department data
@@ -223,47 +227,28 @@ export class ResearchGroupCreationFormComponent {
 
     if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
       this.adminProfessorCandidates.set([]);
+      this.adminProfessorTotalCount.set(0);
+      this.adminProfessorCurrentPage.set(0);
       this.isLoadingAdminUsers.set(false);
       return;
     }
 
-    if (this.USE_MOCK_USERS) {
-      const mockUsers = await this.loadMockUsers();
-      if (requestId !== this.latestAdminSearchRequestId) {
-        return;
-      }
-      const normalizedQuery = trimmedQuery.toLowerCase();
-      const filteredUsers = mockUsers.filter(user =>
-        `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
-      );
-      this.adminProfessorCandidates.set(filteredUsers.slice(0, 10));
-      this.isLoadingAdminUsers.set(false);
+    await this.loadAdminProfessorPage(trimmedQuery, 0, false, requestId);
+  }
+
+  async onLoadMoreAdminProfessors(): Promise<void> {
+    if (this.mode() !== 'admin' || this.isLoadingAdminUsers() || !this.hasMoreAdminProfessorCandidates()) {
       return;
     }
 
-    this.adminLoaderTimeout = window.setTimeout(() => {
-      if (requestId === this.latestAdminSearchRequestId) {
-        this.isLoadingAdminUsers.set(true);
-      }
-    }, this.ADMIN_LOADER_DELAY_MS);
-
-    try {
-      const response = await firstValueFrom(this.userService.getAvailableUsersForResearchGroup(10, 0, trimmedQuery));
-      if (requestId !== this.latestAdminSearchRequestId) {
-        return;
-      }
-      this.adminProfessorCandidates.set(response.content ?? []);
-    } catch {
-      if (requestId === this.latestAdminSearchRequestId) {
-        this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
-      }
-    } finally {
-      if (requestId === this.latestAdminSearchRequestId) {
-        clearTimeout(this.adminLoaderTimeout);
-        this.adminLoaderTimeout = null;
-        this.isLoadingAdminUsers.set(false);
-      }
+    const trimmedQuery = this.adminProfessorSearchQuery().trim();
+    if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
+      return;
     }
+
+    const requestId = ++this.latestAdminSearchRequestId;
+    const nextPage = this.adminProfessorCurrentPage() + 1;
+    await this.loadAdminProfessorPage(trimmedQuery, nextPage, true, requestId);
   }
 
   selectAdminProfessor(user: KeycloakUserDTO): void {
@@ -300,6 +285,61 @@ export class ResearchGroupCreationFormComponent {
       this.mockUsers.set([]);
       this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
       return [];
+    }
+  }
+
+  private async loadAdminProfessorPage(searchQuery: string, page: number, append: boolean, requestId: number): Promise<void> {
+    this.adminLoaderTimeout = window.setTimeout(() => {
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.isLoadingAdminUsers.set(true);
+      }
+    }, this.ADMIN_LOADER_DELAY_MS);
+
+    try {
+      if (this.USE_MOCK_USERS) {
+        const mockUsers = await this.loadMockUsers();
+        if (requestId !== this.latestAdminSearchRequestId) {
+          return;
+        }
+
+        const normalizedQuery = searchQuery.toLowerCase();
+        const filteredUsers = mockUsers.filter(user =>
+          `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
+        );
+
+        const startIndex = page * this.ADMIN_USERS_PAGE_SIZE;
+        const pageContent = filteredUsers.slice(startIndex, startIndex + this.ADMIN_USERS_PAGE_SIZE);
+        const nextCandidates = append ? [...this.adminProfessorCandidates(), ...pageContent] : pageContent;
+
+        this.adminProfessorCandidates.set(nextCandidates);
+        this.adminProfessorTotalCount.set(filteredUsers.length);
+        this.adminProfessorCurrentPage.set(page);
+        return;
+      }
+
+      const response = await firstValueFrom(
+        this.userService.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
+      );
+      if (requestId !== this.latestAdminSearchRequestId) {
+        return;
+      }
+
+      const pageContent = response.content ?? [];
+      const nextCandidates = append ? [...this.adminProfessorCandidates(), ...pageContent] : pageContent;
+
+      this.adminProfessorCandidates.set(nextCandidates);
+      this.adminProfessorTotalCount.set(response.totalElements ?? nextCandidates.length);
+      this.adminProfessorCurrentPage.set(page);
+    } catch {
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      }
+    } finally {
+      if (requestId === this.latestAdminSearchRequestId) {
+        clearTimeout(this.adminLoaderTimeout);
+        this.adminLoaderTimeout = null;
+        this.isLoadingAdminUsers.set(false);
+      }
     }
   }
 

@@ -275,6 +275,7 @@
         "multipleEntities": "Professors",
         "noResults": "No available professors found.",
         "requiredError": "Please select a professor.",
+        "loadMore": "Load more",
         "changeButton": "Change selection"
       },
       "createButton": "Create Research Group",
