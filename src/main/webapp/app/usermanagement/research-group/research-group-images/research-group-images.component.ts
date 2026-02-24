@@ -40,6 +40,7 @@ export class ResearchGroupImagesComponent {
   readonly allImages = signal<ImageDTO[]>([]);
   readonly isLoading = signal<boolean>(true);
   readonly selectedResearchGroupId = signal<string>('');
+  readonly selectedResearchGroupName = signal<string>('');
 
   readonly totalImages = computed(() => this.allImages().length);
 
@@ -56,6 +57,7 @@ export class ResearchGroupImagesComponent {
 
   constructor() {
     this.selectedResearchGroupId.set(this.route.snapshot.queryParamMap.get('researchGroupId') ?? '');
+    this.selectedResearchGroupName.set(this.route.snapshot.queryParamMap.get('researchGroupName') ?? '');
     void this.loadImages();
   }
 

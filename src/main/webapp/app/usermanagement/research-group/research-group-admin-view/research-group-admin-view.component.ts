@@ -136,7 +136,7 @@ export class ResearchGroupAdminView {
         icon: 'image',
         severity: 'primary',
         command: () => {
-          this.onManageImages(groupId);
+          this.onManageImages(groupId, group.researchGroup);
         },
       });
 
@@ -261,9 +261,9 @@ export class ResearchGroupAdminView {
     this.router.navigate(['/research-group', researchGroupId, 'members']);
   }
 
-  onManageImages(researchGroupId: string): void {
+  onManageImages(researchGroupId: string, researchGroupName?: string): void {
     this.router.navigate(['/research-group/admin-view/images'], {
-      queryParams: { researchGroupId },
+      queryParams: { researchGroupId, researchGroupName: researchGroupName ?? '' },
     });
   }
 

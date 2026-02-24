@@ -1,6 +1,11 @@
 <div class="page-container">
   <div class="page-header">
-    <h1 jhiTranslate="researchGroup.imageLibrary.title"></h1>
+    <h1>
+      {{ 'researchGroup.imageLibrary.title' | translate }}
+      @if (selectedResearchGroupName()) {
+        - {{ selectedResearchGroupName() }}
+      }
+    </h1>
   </div>
 
   <!-- Statistics Cards -->
