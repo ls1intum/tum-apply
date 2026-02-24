@@ -1,7 +1,9 @@
 package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeycloakUserService {
 
+    private final CurrentUserService currentUserService;
     private final Keycloak keycloak;
     private final String realm;
     private final UserRepository userRepository;
@@ -34,7 +37,8 @@ public class KeycloakUserService {
         @Value("${keycloak.url}") String url,
         @Value("${keycloak.realm}") String realm,
         @Value("${keycloak.admin.client-id}") String clientId,
-        @Value("${keycloak.admin.client-secret}") String clientSecret
+        @Value("${keycloak.admin.client-secret}") String clientSecret,
+        CurrentUserService currentUserService
     ) {
         this.userRepository = userRepository;
         this.realm = realm;
@@ -45,6 +49,7 @@ public class KeycloakUserService {
             .clientId(clientId)
             .clientSecret(clientSecret)
             .build();
+        this.currentUserService = currentUserService;
     }
 
     /**
@@ -56,7 +61,7 @@ public class KeycloakUserService {
      * @return a list of {@link KeycloakUserDTO} matching the search criteria
      */
     public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
-        List<KeycloakUserDTO> filtered = searchTumUsers(searchKey);
+        List<KeycloakUserDTO> filtered = searchTumUsers(searchKey, true);
         return paginate(pageDTO, filtered);
     }
 
@@ -68,7 +73,7 @@ public class KeycloakUserService {
      * @return total number of matching users
      */
     public long countUsers(String searchKey) {
-        return searchTumUsers(searchKey).size();
+        return searchTumUsers(searchKey, true).size();
     }
 
     /**
@@ -80,7 +85,7 @@ public class KeycloakUserService {
      * @return paginated list of available Keycloak users
      */
     public List<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO) {
-        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(searchTumUsers(searchKey));
+        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(searchTumUsers(searchKey, true));
         return paginate(pageDTO, availableUsers);
     }
 
@@ -92,7 +97,7 @@ public class KeycloakUserService {
      * @return total number of available users
      */
     public long countAvailableUsersForResearchGroup(String searchKey) {
-        return filterOutAssignedUsers(searchTumUsers(searchKey)).size();
+        return filterOutAssignedUsers(searchTumUsers(searchKey, true)).size();
     }
 
     /**
@@ -107,22 +112,13 @@ public class KeycloakUserService {
             return Optional.empty();
         }
 
-        return searchTumUsers(normalizedUniversityId)
+        return searchTumUsers(normalizedUniversityId, false)
             .stream()
             .filter(user -> user.universityId() != null && user.universityId().equalsIgnoreCase(normalizedUniversityId))
             .findFirst();
     }
 
-    private static boolean isLDAPUser(UserRepresentation user) {
-        Map<String, List<String>> attributes = user.getAttributes();
-        if (attributes == null) {
-            return false;
-        }
-        List<String> values = attributes.get("LDAP_ID");
-        return values != null && !values.isEmpty();
-    }
-
-    private List<KeycloakUserDTO> searchTumUsers(String searchKey) {
+    private List<KeycloakUserDTO> searchTumUsers(String searchKey, boolean excludeCurrentUser) {
         int firstResult = 0;
         int maxResults = SAFETY_MAX;
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
@@ -130,7 +126,12 @@ public class KeycloakUserService {
             return List.of();
         }
 
-        return users.stream().filter(KeycloakUserService::isLDAPUser).map(this::toKeycloakUserDTO).toList();
+        return users
+            .stream()
+            .filter(KeycloakUserService::isLDAPUser)
+            .filter(user -> !excludeCurrentUser || !isCurrentUser(user))
+            .map(this::toKeycloakUserDTO)
+            .toList();
     }
 
     private KeycloakUserDTO toKeycloakUserDTO(UserRepresentation user) {
@@ -149,7 +150,7 @@ public class KeycloakUserService {
             .stream()
             .map(KeycloakUserDTO::universityId)
             .filter(universityId -> universityId != null && !universityId.isBlank())
-            .map(universityId -> universityId.toLowerCase())
+            .map(String::toLowerCase)
             .distinct()
             .toList();
 
@@ -176,6 +177,38 @@ public class KeycloakUserService {
         }
         int end = Math.min(start + pageDTO.pageSize(), users.size());
         return users.subList(start, end);
+    }
+
+    private static boolean isLDAPUser(UserRepresentation user) {
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) {
+            return false;
+        }
+        List<String> values = attributes.get("LDAP_ID");
+        return values != null && !values.isEmpty();
+    }
+
+    private boolean isCurrentUser(UserRepresentation user) {
+        User currentUser = currentUserService.getUser();
+        if (currentUser == null) {
+            return false;
+        }
+
+        String currentUniversityId = currentUser.getUniversityId();
+        if (currentUniversityId == null || currentUniversityId.isBlank()) {
+            return false;
+        }
+
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) {
+            return false;
+        }
+        List<String> ldapIds = attributes.get("LDAP_ID");
+        if (ldapIds == null || ldapIds.isEmpty()) {
+            return false;
+        }
+
+        return currentUniversityId.equalsIgnoreCase(ldapIds.get(0));
     }
 
     /**
