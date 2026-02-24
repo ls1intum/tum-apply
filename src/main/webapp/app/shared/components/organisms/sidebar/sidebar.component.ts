@@ -45,7 +45,7 @@ export class SidebarComponent {
     return authorities
       ?.map((authority: string) =>
         authority === 'PROFESSOR' || authority === 'EMPLOYEE'
-          ? categoryConfig['PROFESSOR_EMPLOYEE']
+          ? categoryConfig.PROFESSOR_EMPLOYEE
           : categoryConfig[authority as UserShortDTO.RolesEnum],
       )
       .flat();
