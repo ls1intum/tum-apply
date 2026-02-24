@@ -491,7 +491,7 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getJobsForCurrentResearchGroup_returnsJobsForResearchGroup() {
+    void getJobsForCurrentResearchGroupReturnsJobsForResearchGroup() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead("/api/jobs/research-group", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
