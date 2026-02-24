@@ -263,7 +263,7 @@
   },
   "myPositionsPage": {
     "header": {
-      "title": "Recruiting - Positions",
+      "title": "Positions",
       "createButton": "Create Position"
     },
     "searchFilterSortBar": {

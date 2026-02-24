@@ -1,8 +1,8 @@
 {
   "sidebar": {
     "home": "Startseite",
-    "recruiting": {
-      "title": "Stellenbesetzung",
+    "recruitment": {
+      "title": "Recruiting",
       "positions": "Stellen",
       "myapplications": "Meine Bewerbungen",
       "savedpositions": "Gespeicherte Positionen",

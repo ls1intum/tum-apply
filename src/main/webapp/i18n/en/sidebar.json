@@ -1,8 +1,8 @@
 {
   "sidebar": {
     "home": "Home",
-    "recruiting": {
-      "title": "Recruiting",
+    "recruitment": {
+      "title": "Recruitment",
       "positions": "Positions",
       "myapplications": "My Applications",
       "savedpositions": "Saved Positions",

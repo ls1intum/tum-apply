@@ -1,11 +1,11 @@
 {
   "researchGroup": {
     "header": "Meine E-Mail-Vorlagen",
-    "memberHeader": "Forschungsgruppe - Mitglieder",
+    "memberHeader": "Mitglieder",
     "memberHeaderAdmin": "Mitglieder der Forschungsgruppe",
-    "emailTemplatesHeader": "Forschungsgruppe - E-Mail-Vorlagen",
-    "groupInfoHeader": "Forschungsgruppe - Details",
-    "imageHeader": "Forschungsgruppe - Bilder",
+    "emailTemplatesHeader": "E-Mail-Vorlagen",
+    "groupInfoHeader": "Details",
+    "imageHeader": "Bilder",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
       "organizationInfo": "Um das Department und die School zu ändern, wende dich bitte an eine:n Administrator:in.",

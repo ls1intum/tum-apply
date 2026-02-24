@@ -6,7 +6,11 @@
           <jhi-back-button />
           <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
         } @else {
-          <h1 jhiTranslate="researchGroup.memberHeader"></h1>
+          <h1>
+            <span jhiTranslate="sidebar.researchgroup.title"></span>
+            -
+            <span jhiTranslate="researchGroup.memberHeader"></span>
+          </h1>
         }
       </div>
     </div>

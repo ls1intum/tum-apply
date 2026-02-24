@@ -263,7 +263,7 @@
   },
   "myPositionsPage": {
     "header": {
-      "title": "Stellenbesetzung - Stellen",
+      "title": "Stellen",
       "createButton": "Stelle erstellen"
     },
     "searchFilterSortBar": {

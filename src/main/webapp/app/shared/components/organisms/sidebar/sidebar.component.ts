@@ -102,20 +102,20 @@ export class SidebarComponent {
           buttons: [{ icon: 'home', text: 'sidebar.home', link: '/professor' }],
         },
         {
-          title: 'sidebar.recruiting.title',
+          title: 'sidebar.recruitment.title',
           buttons: [
-            { icon: 'jobs', text: 'sidebar.recruiting.positions', link: '/my-positions' },
+            { icon: 'jobs', text: 'sidebar.recruitment.positions', link: '/my-positions' },
             {
               icon: 'application-overview',
-              text: 'sidebar.recruiting.applicationoverview',
+              text: 'sidebar.recruitment.applicationoverview',
               link: '/evaluation/overview',
             },
             {
               icon: 'review-applications',
-              text: 'sidebar.recruiting.reviewapplications',
+              text: 'sidebar.recruitment.reviewapplications',
               link: '/evaluation/application',
             },
-            { icon: 'calendar', text: 'sidebar.recruiting.interviews', link: '/interviews/overview' },
+            { icon: 'calendar', text: 'sidebar.recruitment.interviews', link: '/interviews/overview' },
           ],
         },
         {

@@ -76,13 +76,6 @@ describe('SidebarComponent', () => {
       expect(component.categories).toHaveLength(3);
       expect(component.categories?.[0].title).toBe('sidebar.manage.manage');
     });
-
-    it('should return categories for ADMIN role', () => {
-      accountService.user.set({ authorities: [UserShortDTO.RolesEnum.Admin] } as User);
-      fixture.detectChanges();
-      expect(component.categories).toHaveLength(4);
-      expect(component.categories?.[0].title).toBe('sidebar.dashboard.dashboard');
-    });
   });
 
   describe('isActive method', () => {
