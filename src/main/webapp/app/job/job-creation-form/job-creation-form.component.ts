@@ -1130,17 +1130,19 @@ export class JobCreationFormComponent {
     if (!control) return;
 
     const rawValue = control.value as unknown;
-    const currentValue =
-      typeof rawValue === 'object' && rawValue !== null ? (rawValue as { value?: string }).value : (rawValue as string | undefined);
+    const hasObjectValue = typeof rawValue === 'object' && rawValue !== null;
+    const currentValue = hasObjectValue ? (rawValue as { value?: string }).value : (rawValue as string | undefined);
     const matchedPreselect = preselectId && options.some(option => option.value === preselectId) ? preselectId : undefined;
     const fallbackId = this.preferredSupervisingProfessorId();
     const nextValue = matchedPreselect ?? currentValue ?? fallbackId;
 
-    if (nextValue && currentValue !== nextValue) {
-      // Prefer setting the full option object (value + name) so the select shows
-      // the label. If no matching option is found, fall back to the raw ID.
+    if (nextValue) {
       const match = options.find(opt => opt.value === nextValue);
-      control.setValue(match ?? nextValue);
+      if (match && (!hasObjectValue || currentValue !== nextValue)) {
+        control.setValue(match);
+      } else if (!match && currentValue !== nextValue) {
+        control.setValue(nextValue);
+      }
     }
   }
 
