@@ -35,10 +35,10 @@ The export is produced asynchronously and delivered via a token-based download l
 
 ---
 
-### 1.3 User-facing timings (defaults)
+### 1.3 User-facing timings
 
 - **How quickly is the request processed?**
-  - Requests are processed by `aet.data-export.cron` (default `0 0 2 * * *`).
+  - Requests are processed by `aet.data-export.cron`
   - In practice, users should expect processing by the **next scheduler run**.
   - This means it is typically handled overnight and may take up to about one scheduler interval depending on request time.
 
@@ -46,7 +46,7 @@ The export is produced asynchronously and delivered via a token-based download l
   - Once every **7 days** (cooldown from `lastRequestedAt`).
 
 - **How long is the download link valid?**
-  - `aet.data-export.expires-days` (default **7 days**).
+  - `aet.data-export.expires-days`
 
 - **When is the export deleted?**
   - The current flow enforces link expiry after 7 days.
@@ -142,7 +142,7 @@ Base path: `/api/users`
 
 `UserDataExportService#processPendingDataExports` runs on:
 
-- `aet.data-export.cron` (default: `0 0 2 * * *`)
+- `aet.data-export.cron`
 
 For each pending (`REQUESTED`) item:
 
@@ -158,7 +158,7 @@ For each pending (`REQUESTED`) item:
 ### 1.8 Cooldown and expiry behavior
 
 - **Request cooldown**: once per 7 days (derived from `lastRequestedAt`).
-- **Link expiry**: `aet.data-export.expires-days` (default: `7`).
+- **Link expiry**: `aet.data-export.expires-days`
 
 Validation checks on download:
 

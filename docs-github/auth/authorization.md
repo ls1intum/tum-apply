@@ -49,7 +49,7 @@ The following actions are explicitly restricted by annotations that **exclude EM
 - Delete email templates (`@Professor` on `DELETE /api/email-templates/{templateId}`).
 - Delete images (`@ProfessorOrAdmin` on `DELETE /api/images/{imageId}`).
 - Add/remove research group members (`@ProfessorOrAdmin` on `/api/research-groups/members`).
-- Search users available for research-group assignment (`@ProfessorOrAdmin` on `/api/users/available-for-research-group`).
+- Search users available for research-group assignment (`@ProfessorOrAdmin` on `GET /api/users/available-for-research-group`).
 - Use admin-only endpoints such as research-group moderation and admin creation flows (`@Admin`).
 
 ---
