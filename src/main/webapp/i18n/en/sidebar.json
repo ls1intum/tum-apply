@@ -1,6 +1,10 @@
 {
   "sidebar": {
     "home": "Home",
+    "dashboard": {
+      "dashboard": "Dashboard",
+      "findpositions": "Find Positions"
+    },
     "recruitment": {
       "title": "Recruitment",
       "positions": "Positions",

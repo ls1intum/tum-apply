@@ -42,7 +42,13 @@ export class SidebarComponent {
   get categories(): SidebarCategory[] | undefined {
     const categoryConfig = this.getCategoryConfig();
     const authorities = this.accountService.user()?.authorities;
-    return authorities?.map((authority: string) => categoryConfig[authority as UserShortDTO.RolesEnum]).flat();
+    return authorities
+      ?.map((authority: string) =>
+        authority === 'PROFESSOR' || authority === 'EMPLOYEE'
+          ? categoryConfig['PROFESSOR_EMPLOYEE']
+          : categoryConfig[authority as UserShortDTO.RolesEnum],
+      )
+      .flat();
   }
 
   /**
@@ -81,7 +87,7 @@ export class SidebarComponent {
         {
           title: 'sidebar.dashboard.dashboard',
           buttons: [
-            { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
+            { icon: 'home', text: 'sidebar.home', link: '/' },
             { icon: 'find-positions', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
           ],
         },
@@ -96,7 +102,7 @@ export class SidebarComponent {
           ],
         },
       ],
-      PROFESSOR: [
+      PROFESSOR_EMPLOYEE: [
         {
           title: '',
           buttons: [{ icon: 'home', text: 'sidebar.home', link: '/professor' }],
@@ -128,47 +134,10 @@ export class SidebarComponent {
           ],
         },
       ],
-      EMPLOYEE: [
-        {
-          title: 'sidebar.manage.manage',
-          buttons: [
-            { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
-            { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
-            { icon: 'calendar', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
-          ],
-        },
-        {
-          title: 'sidebar.applications.applications',
-          buttons: [
-            {
-              icon: 'application-overview',
-              text: 'sidebar.applications.applicationoverview',
-              link: '/evaluation/overview',
-            },
-            {
-              icon: 'review-applications',
-              text: 'sidebar.applications.reviewapplications',
-              link: '/evaluation/application',
-            },
-          ],
-        },
-        {
-          title: 'sidebar.researchgroup.researchgroup',
-          buttons: [
-            { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
-            { icon: 'image', text: 'sidebar.researchgroup.imagelibrary', link: '/research-group/images' },
-            { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
-            { icon: 'research-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
-          ],
-        },
-      ],
       ADMIN: [
         {
-          title: 'sidebar.dashboard.dashboard',
-          buttons: [
-            { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
-            { icon: 'chart-line', text: 'sidebar.dashboard.analytics', link: '/analytics' },
-          ],
+          title: '',
+          buttons: [{ icon: 'home', text: 'sidebar.home', link: '/' }],
         },
         {
           title: 'sidebar.content.content',
