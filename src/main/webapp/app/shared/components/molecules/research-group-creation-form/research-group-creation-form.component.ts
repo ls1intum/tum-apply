@@ -304,11 +304,7 @@ export class ResearchGroupCreationFormComponent {
   }
 
   private normalizePrefillValue(value: unknown): string {
-    if (typeof value !== 'string') {
-      return '';
-    }
-    const trimmed = value.trim();
-    return trimmed.length > 0 ? trimmed : '';
+    return typeof value === 'string' ? value.trim() : '';
   }
 
   private setControlValueIfEmpty(controlName: string, valueToSet: string): void {
