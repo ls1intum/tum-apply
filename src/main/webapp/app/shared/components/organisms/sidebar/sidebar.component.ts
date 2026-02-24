@@ -134,7 +134,6 @@ export class SidebarComponent {
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
-            { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
             { icon: 'calendar', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
           ],
         },

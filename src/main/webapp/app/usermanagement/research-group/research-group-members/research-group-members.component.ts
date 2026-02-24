@@ -62,6 +62,7 @@ export class ResearchGroupMembersComponent {
   total = signal<number>(0);
 
   researchGroupId = signal<string | undefined>(undefined);
+  researchGroupName = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -126,6 +127,10 @@ export class ResearchGroupMembersComponent {
   private readonly routeIdEffect = effect(() => {
     const id = this.routeId();
     this.researchGroupId.set(id);
+    this.researchGroupName.set(undefined);
+    if (id) {
+      void this.loadResearchGroupName(id);
+    }
     void this.loadMembers();
   });
 
@@ -200,5 +205,14 @@ export class ResearchGroupMembersComponent {
 
   private isCurrentUser(member: UserShortDTO): boolean {
     return member.userId === this.accountService.userId;
+  }
+
+  private async loadResearchGroupName(researchGroupId: string): Promise<void> {
+    try {
+      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      this.researchGroupName.set(researchGroup.name);
+    } catch {
+      this.researchGroupName.set(undefined);
+    }
   }
 }
