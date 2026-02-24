@@ -2,70 +2,70 @@ import { getGradeType, stripPercentage } from 'app/shared/util/grading-scale.uti
 
 /**
  * Converts a grade to the German grading system (1.0 - 4.0) using the modified Bavarian formula.
- * Formula: X = 1 + 3 * (Nmax - Nd) / (Nmax - Nmin)
+ * Formula: X = 1 + 3 * (upperLimit - actualGrade) / (upperLimit - lowerLimit)
  *
  * Where:
  * - X = converted German grade
- * - Nmax = upper limit (best grade in the original system)
- * - Nmin = lower limit (minimum passing grade in the original system)
- * - Nd = actual grade to convert
+ * - upperLimit = upper limit (best grade in the original system)
+ * - lowerLimit = lower limit (minimum passing grade in the original system)
+ * - actualGrade = actual grade to convert
  *
- * @param upperLimit - The best possible grade in the original grading system
- * @param lowerLimit - The minimum passing grade in the original grading system
+ * @param givenUpperLimit - The best possible grade in the original grading system
+ * @param givenLowerLimit - The minimum passing grade in the original grading system
  * @param grade - The actual grade to convert
  * @returns The converted grade in German system (1.0 - 4.0) or null if conversion fails
  */
-export function convertToGermanGrade(upperLimit: string, lowerLimit: string, grade: string): number | null {
-  if (!upperLimit.trim() || !lowerLimit.trim() || !grade.trim()) {
+export function convertToGermanGrade(givenUpperLimit: string, givenLowerLimit: string, grade: string): number | null {
+  if (!givenUpperLimit.trim() || !givenLowerLimit.trim() || !grade.trim()) {
     return null;
   }
 
   const gradeType = getGradeType(grade);
 
   // Determine the format type
-  let nMax: number;
-  let nMin: number;
-  let nd: number;
+  let upperLimit: number;
+  let lowerLimit: number;
+  let actualGrade: number;
 
   if (gradeType === 'percentage') {
     // Percentage format (e.g., 100%, 50%)
-    nMax = parseFloat(stripPercentage(upperLimit).replace(',', '.'));
-    nMin = parseFloat(stripPercentage(lowerLimit).replace(',', '.'));
-    nd = parseFloat(stripPercentage(grade).replace(',', '.'));
+    upperLimit = parseFloat(stripPercentage(givenUpperLimit).replace(',', '.'));
+    lowerLimit = parseFloat(stripPercentage(givenLowerLimit).replace(',', '.'));
+    actualGrade = parseFloat(stripPercentage(grade).replace(',', '.'));
   } else if (gradeType === 'numeric') {
     // Numeric format (e.g., 1.0, 4.0 or 100, 40)
-    nMax = parseFloat(upperLimit.replace(',', '.'));
-    nMin = parseFloat(lowerLimit.replace(',', '.'));
-    nd = parseFloat(grade.replace(',', '.'));
+    upperLimit = parseFloat(givenUpperLimit.replace(',', '.'));
+    lowerLimit = parseFloat(givenLowerLimit.replace(',', '.'));
+    actualGrade = parseFloat(grade.replace(',', '.'));
   } else if (gradeType === 'letter') {
     // Letter format (e.g., A+, A, B)
     // Convert letters to numerical values
-    const letterValues = convertLettersToNumerical(upperLimit, lowerLimit, grade);
+    const letterValues = convertLettersToNumerical(givenUpperLimit, givenLowerLimit, grade);
     if (!letterValues) {
       return null;
     }
-    nMax = letterValues.max;
-    nMin = letterValues.min;
-    nd = letterValues.current;
+    upperLimit = letterValues.max;
+    lowerLimit = letterValues.min;
+    actualGrade = letterValues.current;
   } else {
     return null;
   }
 
   // Validate parsing was successful
-  if (isNaN(nMax) || isNaN(nMin) || isNaN(nd)) {
+  if (isNaN(upperLimit) || isNaN(lowerLimit) || isNaN(actualGrade)) {
     return null;
   }
 
   // Apply the modified Bavarian formula
-  // X = 1 + 3 * (Nmax - Nd) / (Nmax - Nmin)
-  const denominator = nMax - nMin;
+  // X = 1 + 3 * (upperLimit - actualGrade) / (upperLimit - lowerLimit)
+  const denominator = upperLimit - lowerLimit;
 
   if (denominator === 0) {
     // Edge case: if max equals min, cannot convert
     return null;
   }
 
-  const germanGrade = 1 + 3 * ((nMax - nd) / denominator);
+  const germanGrade = 1 + 3 * ((upperLimit - actualGrade) / denominator);
 
   // Truncate to one decimal place and clamp the value to the valid German grade range (1.0–4.0)
   const rounded = Math.floor(germanGrade * 10) / 10;
