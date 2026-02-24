@@ -355,7 +355,7 @@ export const sharedComponentConfig = {
     root: {
       placeholderColor: '{text.secondary}',
       paddingY: '0.5rem',
-      color: '{text.secondary}',
+      color: '{text.primary}',
     },
     overlay: {
       background: '{background.default}',
