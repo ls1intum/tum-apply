@@ -129,11 +129,11 @@
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
-        "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
+        "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Stelle.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
-        "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Position zu verstehen.",
+        "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Stelle zu verstehen.",
         "templateEN": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
-        "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.</p><br><p><strong>Zulassungsvoraussetzungen</strong></p><p>TODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).</p>",
+        "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Stelle.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.</p><br><p><strong>Zulassungsvoraussetzungen</strong></p><p>TODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).</p>",
         "aiHeaderText": "TUMApply KI Assistent",
         "aiButton1": "Schreib mit TUMApply",
         "aiButton2": "Schreib neu mit TUMApply",
@@ -147,7 +147,7 @@
       }
     },
     "imageSection": {
-      "description": "Wähle ein optionales Bannerbild aus, das in deiner Jobkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe.",
+      "description": "Wähle ein optionales Bannerbild aus, das in deiner Stellenkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe.",
       "defaultImages": "Standardbilder",
       "orDivider": "oder",
       "researchGroupImages": "Gruppenbilder",
@@ -179,7 +179,7 @@
       "noImage": "Kein Bild",
       "deleteImageDialog": {
         "header": "Bild löschen",
-        "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Positionen dieses Bild nutzen, erscheinen sie danach ohne Bild."
+        "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Stellen dieses Bild nutzen, erscheinen sie danach ohne Bild."
       }
     },
     "additionalInformationSection": {
@@ -274,15 +274,15 @@
     },
     "tableColumn": {
       "supervisingProfessor": "Betreuender Professor",
-      "job": "Stelle",
+      "job": "Stellentitel",
       "status": "Status",
       "startDate": "Startdatum",
       "created": "Erstellt",
       "lastModified": "Zuletzt geändert"
     },
     "confirmDialog": {
-      "closeHeader": "Schließung der Position bestätigen",
-      "closeMessage": "Bist du sicher, dass du diese Position schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
+      "closeHeader": "Schließung der Stelle bestätigen",
+      "closeMessage": "Bist du sicher, dass du diese Stelle schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Stelle bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
       "deleteHeader": "Löschvorgang bestätigen",
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!",
       "editJobHeader": "Stellenbearbeitung bestätigen",
@@ -390,7 +390,7 @@
     },
     "invalidJobId": {
       "summary": "Ungültige Job-ID",
-      "detail": "Diese Stelle konnte nicht gefunden werden. Bitte öffne sie über „Meine Positionen“ und versuche es erneut."
+      "detail": "Diese Stelle konnte nicht gefunden werden. Bitte öffne sie über „Stellen“ und versuche es erneut."
     },
     "authRequired": {
       "summary": "Anmeldung erforderlich",

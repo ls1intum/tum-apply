@@ -8,11 +8,11 @@
         "professor": "TUMApply - Professor Portal"
       },
       "job": {
-        "detail": "TUMApply - Positionsdetails",
-        "creation": "TUMApply - Positionserstellung",
-        "edit": "TUMApply - Positiosbearbeitung",
-        "overview": "TUMApply - Positionsübersicht",
-        "myPositions": "TUMApply - Meine Positionen"
+        "detail": "TUMApply - Stellendetails",
+        "creation": "TUMApply - Stellenerstellung",
+        "edit": "TUMApply - Stellenbearbeitung",
+        "overview": "TUMApply - Stellenübersicht",
+        "myPositions": "TUMApply - Stellen"
       },
       "application": {
         "creation": "TUMApply - Bewerbungserstellung",
@@ -470,7 +470,7 @@
         "inReview": "In Prüfung"
       },
       "columns": {
-        "positionTitle": "Stellentitel",
+        "positionTitle": "Stelle",
         "researchGroup": "Forschungsgruppe",
         "status": "Status",
         "created": "Erstellt"

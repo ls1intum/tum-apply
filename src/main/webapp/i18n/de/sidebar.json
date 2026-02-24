@@ -5,7 +5,7 @@
       "title": "Recruiting",
       "positions": "Stellen",
       "myapplications": "Meine Bewerbungen",
-      "savedpositions": "Gespeicherte Positionen",
+      "savedpositions": "Gespeicherte Stellen",
       "applicationoverview": "Bewerbungen",
       "reviewapplications": "Prüfen",
       "interviews": "Interviews"
@@ -19,7 +19,7 @@
     },
     "content": {
       "content": "Inhalt",
-      "allpositions": "Alle Positionen",
+      "allpositions": "Alle Stellen",
       "researchgroups": "Forschungsgruppen",
       "departments": "Departments"
     },

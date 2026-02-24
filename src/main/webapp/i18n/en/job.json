@@ -8,7 +8,7 @@
       "steps": {
         "basicInfo": "Basic Information",
         "employmentTerms": "Employment Terms",
-        "imageSelection": "Job Banner Image",
+        "imageSelection": "Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
@@ -147,11 +147,11 @@
       }
     },
     "imageSection": {
-      "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library.",
+      "description": "Select an optional banner image that will be displayed in your position card. Choose from default images or use your research group's image library.",
       "defaultImages": "Default Images",
       "orDivider": "or",
       "researchGroupImages": "Group Images",
-      "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this job.",
+      "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this position.",
       "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
       "uploadFormats": "JPG, JPEG, PNG formats accepted",
       "uploadSuccess": {
