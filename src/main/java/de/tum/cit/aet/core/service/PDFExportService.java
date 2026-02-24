@@ -183,8 +183,12 @@ public class PDFExportService {
             )
         );
 
+        // Determine job description language and content
+        String lang = labels.getOrDefault("lang", "en");
+        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
+
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.jobDescriptionEN());
+        addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -245,8 +249,12 @@ public class PDFExportService {
             )
         );
 
+        // Determine job description based on requested language
+        String lang = labels.getOrDefault("lang", "en");
+        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
+
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.jobDescriptionEN());
+        addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));
@@ -432,4 +440,21 @@ public class PDFExportService {
 
         return String.join(", ", parts);
     }
+
+    /**
+     * Returns the job description string for the requested language. Falls back to the other language if empty.
+     * If both are empty, returns "-".
+     */
+    private String selectJobDescriptionForLang(String en, String de, String lang) {
+        if ("de".equalsIgnoreCase(lang)) {
+            if (de != null && !de.trim().isEmpty()) return de;
+            if (en != null && !en.trim().isEmpty()) return en;
+            return "-";
+        }
+        // default to English
+        if (en != null && !en.trim().isEmpty()) return en;
+        if (de != null && !de.trim().isEmpty()) return de;
+        return "-";
+    }
+
 }
