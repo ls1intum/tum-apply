@@ -436,7 +436,7 @@ describe('ResearchGroupAdminView', () => {
       component.onManageImages('rg-123');
 
       expect(router.navigate).toHaveBeenCalledWith(['/research-group/admin-view/images'], {
-        queryParams: { researchGroupId: 'rg-123' },
+        queryParams: { researchGroupId: 'rg-123', researchGroupName: '' },
       });
     });
   });
@@ -619,7 +619,7 @@ describe('ResearchGroupAdminView', () => {
       expect(manageMembersSpy).toHaveBeenCalledWith('rg-1');
 
       draftItems.find(item => item.label === 'researchGroup.imageLibrary.manageButton')?.command?.();
-      expect(manageImagesSpy).toHaveBeenCalledWith('rg-1');
+      expect(manageImagesSpy).toHaveBeenCalledWith('rg-1', 'AI Research Lab');
 
       draftItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
