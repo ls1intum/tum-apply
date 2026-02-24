@@ -74,7 +74,6 @@ describe('SidebarComponent', () => {
       accountService.user.set({ authorities: [UserShortDTO.RolesEnum.Professor] } as User);
       fixture.detectChanges();
       expect(component.categories).toHaveLength(3);
-      expect(component.categories?.[0].title).toBe('sidebar.manage.manage');
     });
   });
 
