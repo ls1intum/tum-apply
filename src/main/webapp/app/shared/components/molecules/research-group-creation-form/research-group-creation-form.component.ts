@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -134,58 +135,14 @@ export class ResearchGroupCreationFormComponent {
   private readonly schoolService = inject(SchoolResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly userService = inject(UserResourceApiService);
+  private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
   private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
-  private readonly MOCK_USERS: KeycloakUserDTO[] = [
-    {
-      id: '7a6b8f3a-09f4-4e9f-8d09-2e2d1a1d8a01',
-      firstName: 'Aniruddh',
-      lastName: 'Zaveri',
-      email: 'aniruddh.zaveri@tum.de',
-      universityId: 'ab12asd',
-      username: 'aniruddh.zaveri',
-    },
-    {
-      id: '2c9c3d14-1a5b-4a8f-9c21-4b1d9e2a3f02',
-      firstName: 'Aniruddh',
-      lastName: 'Pawar',
-      email: 'aniruddh.pawar@mytum.de',
-      universityId: 'ab12adv',
-      username: 'aniruddh.pawar',
-    },
-    {
-      id: 'e4b2f1c3-5d6e-4f1a-8b9c-3d4e5f6a7b03',
-      firstName: 'Alice',
-      lastName: 'Curie',
-      email: 'alice.curie@tum.de',
-      universityId: 'ab12agf',
-      username: 'alice.curie',
-    },
-    {
-      id: 'f5a6b7c8-9d0e-4f1a-8b2c-3d4e5f6a7b04',
-      firstName: 'Ben',
-      lastName: 'Schmidt',
-      email: 'ben.schmidt@mytum.de',
-      universityId: 'ab12gkl',
-      username: 'ben.schmidt',
-    },
-    {
-      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c05',
-      firstName: 'Carla',
-      lastName: 'Nguyen',
-      email: 'carla.nguyen@tum.de',
-      universityId: 'ab12hij',
-      username: 'carla.nguyen',
-    },
-    {
-      id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d06',
-      firstName: 'David',
-      lastName: 'Ibrahim',
-      email: 'david.ibrahim@mytum.de',
-      universityId: 'ab12klm',
-      username: 'david.ibrahim',
-    },
-  ];
+  private mockUsers = signal<KeycloakUserDTO[] | null>(null);
+  private readonly MOCK_USERS_PATH = '/content/mock/keycloak-users.json';
+  private readonly ADMIN_LOADER_DELAY_MS = 250;
+  private adminLoaderTimeout: number | null = null;
+  private latestAdminSearchRequestId = 0;
 
   constructor() {
     this.form = this.createForm();
@@ -254,31 +211,58 @@ export class ResearchGroupCreationFormComponent {
       return;
     }
 
+    const requestId = ++this.latestAdminSearchRequestId;
+
     this.adminProfessorSearchQuery.set(searchQuery);
     const trimmedQuery = searchQuery.trim();
 
+    if (this.adminLoaderTimeout !== null) {
+      clearTimeout(this.adminLoaderTimeout);
+      this.adminLoaderTimeout = null;
+    }
+
     if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
       this.adminProfessorCandidates.set([]);
+      this.isLoadingAdminUsers.set(false);
       return;
     }
 
     if (this.USE_MOCK_USERS) {
+      const mockUsers = await this.loadMockUsers();
+      if (requestId !== this.latestAdminSearchRequestId) {
+        return;
+      }
       const normalizedQuery = trimmedQuery.toLowerCase();
-      const filteredUsers = this.MOCK_USERS.filter(user =>
+      const filteredUsers = mockUsers.filter(user =>
         `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
       );
       this.adminProfessorCandidates.set(filteredUsers.slice(0, 10));
+      this.isLoadingAdminUsers.set(false);
       return;
     }
 
-    this.isLoadingAdminUsers.set(true);
+    this.adminLoaderTimeout = window.setTimeout(() => {
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.isLoadingAdminUsers.set(true);
+      }
+    }, this.ADMIN_LOADER_DELAY_MS);
+
     try {
       const response = await firstValueFrom(this.userService.getAvailableUsersForResearchGroup(10, 0, trimmedQuery));
+      if (requestId !== this.latestAdminSearchRequestId) {
+        return;
+      }
       this.adminProfessorCandidates.set(response.content ?? []);
     } catch {
-      this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      }
     } finally {
-      this.isLoadingAdminUsers.set(false);
+      if (requestId === this.latestAdminSearchRequestId) {
+        clearTimeout(this.adminLoaderTimeout);
+        this.adminLoaderTimeout = null;
+        this.isLoadingAdminUsers.set(false);
+      }
     }
   }
 
@@ -300,6 +284,23 @@ export class ResearchGroupCreationFormComponent {
       return false;
     }
     return selected.id === user.id;
+  }
+
+  private async loadMockUsers(): Promise<KeycloakUserDTO[]> {
+    const cachedUsers = this.mockUsers();
+    if (cachedUsers !== null) {
+      return cachedUsers;
+    }
+
+    try {
+      const users = await firstValueFrom(this.http.get<KeycloakUserDTO[]>(this.MOCK_USERS_PATH));
+      this.mockUsers.set(users);
+      return users;
+    } catch {
+      this.mockUsers.set([]);
+      this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      return [];
+    }
   }
 
   private createForm(): FormGroup {
@@ -361,6 +362,12 @@ export class ResearchGroupCreationFormComponent {
         else if (error.status === 404 && errorMessage.includes('not found')) {
           const errorKey =
             this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
+          this.toastService.showErrorKey(errorKey);
+        }
+        // Check if the error is about professor already being assigned to another research group
+        else if (error.status === 400 && errorMessage.toLowerCase().includes('already a member of research group')) {
+          const errorKey =
+            this.mode() === 'admin' ? 'researchGroup.adminView.errors.userAlreadyMember' : 'onboarding.professorRequest.error';
           this.toastService.showErrorKey(errorKey);
         } else {
           const errorKey = this.mode() === 'admin' ? 'researchGroup.adminView.errors.create' : 'onboarding.professorRequest.error';

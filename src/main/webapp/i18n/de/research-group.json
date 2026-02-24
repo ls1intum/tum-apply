@@ -203,6 +203,10 @@
         "userNotFound": {
           "summary": "Benutzer:in nicht gefunden",
           "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+        },
+        "userAlreadyMember": {
+          "summary": "Benutzer:in bereits zugeordnet",
+          "detail": "Die ausgewählte Person ist bereits Mitglied einer anderen Forschungsgruppe."
         }
       },
       "success": {

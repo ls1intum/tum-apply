@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -111,6 +111,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -260,6 +261,25 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       await new Promise(resolve => setTimeout(resolve, 10)); // Increase timeout slightly
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.userNotFound');
+    });
+
+    it('should show already member error toast in admin mode when user already belongs to a research group', async () => {
+      const error = new HttpErrorResponse({
+        status: 400,
+        error: { message: "User with universityId 'aa00bka' is already a member of research group 'Existing Group'" },
+      });
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
+
+      fillValidForm({
+        researchGroupHead: 'Prof. Dr. Test',
+        researchGroupName: 'Test Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.userAlreadyMember');
     });
 
     it('should handle non-HttpErrorResponse errors in admin mode', async () => {
@@ -429,6 +449,111 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       await component.onAdminProfessorSearch('alice');
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should ignore stale admin professor search responses', async () => {
+      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
+
+      const firstResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+      const secondResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+
+      getAvailableUsersForResearchGroupMock
+        .mockReturnValueOnce(firstResponse.asObservable())
+        .mockReturnValueOnce(secondResponse.asObservable());
+
+      const firstCandidates: KeycloakUserDTO[] = [
+        {
+          id: '7f8d7f67-84c2-4bf8-89f2-84bbca2e7aa1',
+          firstName: 'Old',
+          lastName: 'Result',
+          email: 'old.result@tum.de',
+          universityId: 'ab12cde',
+          username: 'old.result',
+        },
+      ];
+
+      const secondCandidates: KeycloakUserDTO[] = [
+        {
+          id: '0ea4a5fd-2fd8-4b80-8c84-0bb3674ef6e2',
+          firstName: 'New',
+          lastName: 'Result',
+          email: 'new.result@tum.de',
+          universityId: 'cd34efg',
+          username: 'new.result',
+        },
+      ];
+
+      const firstSearchPromise = component.onAdminProfessorSearch('alice');
+      const secondSearchPromise = component.onAdminProfessorSearch('alicia');
+
+      secondResponse.next({ content: secondCandidates, totalElements: 1 });
+      secondResponse.complete();
+      await secondSearchPromise;
+
+      firstResponse.next({ content: firstCandidates, totalElements: 1 });
+      firstResponse.complete();
+      await firstSearchPromise;
+
+      expect(component.adminProfessorCandidates()).toEqual(secondCandidates);
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should only show admin professor search errors for latest request', async () => {
+      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
+
+      const firstResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+      const secondResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+
+      getAvailableUsersForResearchGroupMock
+        .mockReturnValueOnce(firstResponse.asObservable())
+        .mockReturnValueOnce(secondResponse.asObservable());
+
+      const secondCandidates: KeycloakUserDTO[] = [
+        {
+          id: 'bf733186-cf79-4f9d-878b-c183c4f5d6b8',
+          firstName: 'Latest',
+          lastName: 'Result',
+          email: 'latest.result@tum.de',
+          universityId: 'ef56ghi',
+          username: 'latest.result',
+        },
+      ];
+
+      const firstSearchPromise = component.onAdminProfessorSearch('alice');
+      const secondSearchPromise = component.onAdminProfessorSearch('alicia');
+
+      secondResponse.next({ content: secondCandidates, totalElements: 1 });
+      secondResponse.complete();
+      await secondSearchPromise;
+
+      firstResponse.error(new HttpErrorResponse({ status: 500 }));
+      await firstSearchPromise;
+
+      expect(component.adminProfessorCandidates()).toEqual(secondCandidates);
+      expect(mockToastService.showErrorKey).not.toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
+    });
+
+    it('should delay loading spinner until threshold for admin professor search', async () => {
+      vi.useFakeTimers();
+      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
+
+      const response = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+      getAvailableUsersForResearchGroupMock.mockReturnValue(response.asObservable());
+
+      const searchPromise = component.onAdminProfessorSearch('alice');
+      expect(component.isLoadingAdminUsers()).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(249);
+      expect(component.isLoadingAdminUsers()).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(1);
+      expect(component.isLoadingAdminUsers()).toBe(true);
+
+      response.next({ content: [], totalElements: 0 });
+      response.complete();
+      await searchPromise;
+
       expect(component.isLoadingAdminUsers()).toBe(false);
     });
 

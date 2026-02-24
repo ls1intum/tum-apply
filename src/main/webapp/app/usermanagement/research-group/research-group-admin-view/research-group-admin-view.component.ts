@@ -242,7 +242,7 @@ export class ResearchGroupAdminView {
     });
 
     dialogRef?.onClose.subscribe(result => {
-      if (result === true) {
+      if (result !== undefined && result !== null && result !== false) {
         void this.loadResearchGroups();
       }
     });

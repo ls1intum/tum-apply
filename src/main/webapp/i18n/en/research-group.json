@@ -203,6 +203,10 @@
         "userNotFound": {
           "summary": "User Not Found",
           "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
+        },
+        "userAlreadyMember": {
+          "summary": "User Already Assigned",
+          "detail": "The selected user is already a member of another research group."
         }
       },
       "success": {

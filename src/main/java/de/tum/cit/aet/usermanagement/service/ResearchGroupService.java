@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
@@ -28,6 +30,9 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,6 +56,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResearchGroupService {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final TypeReference<List<KeycloakUserDTO>> KEYCLOAK_USERS_TYPE = new TypeReference<>() {};
+
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
@@ -66,6 +74,12 @@ public class ResearchGroupService {
 
     @Value("${aet.environment:}")
     private String environmentName;
+
+    @Value("${aet.keycloak.local-mock-enabled:false}")
+    private boolean keycloakLocalMockEnabled;
+
+    @Value("${aet.keycloak.local-mock-file-path:src/main/webapp/content/mock/keycloak-users.json}")
+    private String keycloakLocalMockFilePath;
 
     /**
      * Get all members of the current user's research group.
@@ -491,13 +505,36 @@ public class ResearchGroupService {
         return userRepository
             .findByUniversityIdIgnoreCase(normalizedUniversityId)
             .orElseGet(() -> {
-                KeycloakUserDTO keycloakUser = keycloakUserService
-                    .findUserByUniversityId(normalizedUniversityId)
-                    .orElseThrow(() ->
-                        new EntityNotFoundException("User with universityId '%s' not found".formatted(normalizedUniversityId))
-                    );
-                return createLocalUserFromKeycloak(keycloakUser);
+                Optional<KeycloakUserDTO> keycloakUser = keycloakUserService.findUserByUniversityId(normalizedUniversityId);
+
+                if (keycloakUser.isEmpty() && keycloakLocalMockEnabled) {
+                    keycloakUser = findLocalMockKeycloakUserByUniversityId(normalizedUniversityId);
+                }
+
+                KeycloakUserDTO resolvedUser = keycloakUser.orElseThrow(() ->
+                    new EntityNotFoundException("User with universityId '%s' not found".formatted(normalizedUniversityId))
+                );
+                return createLocalUserFromKeycloak(resolvedUser);
             });
+    }
+
+    private Optional<KeycloakUserDTO> findLocalMockKeycloakUserByUniversityId(String universityId) {
+        try {
+            Path mockFilePath = Path.of(keycloakLocalMockFilePath);
+            if (!Files.exists(mockFilePath)) {
+                log.warn("Keycloak local mock fallback is enabled, but file does not exist: {}", keycloakLocalMockFilePath);
+                return Optional.empty();
+            }
+
+            List<KeycloakUserDTO> mockUsers = OBJECT_MAPPER.readValue(mockFilePath.toFile(), KEYCLOAK_USERS_TYPE);
+            return mockUsers
+                .stream()
+                .filter(user -> user.universityId() != null && user.universityId().equalsIgnoreCase(universityId))
+                .findFirst();
+        } catch (IOException e) {
+            log.warn("Failed to load Keycloak local mock users from {}", keycloakLocalMockFilePath, e);
+            return Optional.empty();
+        }
     }
 
     private User createLocalUserFromKeycloak(KeycloakUserDTO keycloakUser) {
