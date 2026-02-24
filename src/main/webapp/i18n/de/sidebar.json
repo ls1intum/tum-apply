@@ -5,10 +5,13 @@
       "dashboard": "Dashboard",
       "findpositions": "Stellen finden"
     },
+    "applications": {
+      "title": "Bewerbungen",
+      "myapplications": "Meine Bewerbungen"
+    },
     "recruitment": {
       "title": "Recruiting",
       "positions": "Stellen",
-      "myapplications": "Meine Bewerbungen",
       "savedpositions": "Gespeicherte Stellen",
       "applicationoverview": "Bewerbungen",
       "reviewapplications": "Prüfen",

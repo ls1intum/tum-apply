@@ -92,7 +92,7 @@ export class SidebarComponent {
           ],
         },
         {
-          title: 'sidebar.applications.applications',
+          title: 'sidebar.applications.title',
           buttons: [
             {
               icon: 'application-overview',

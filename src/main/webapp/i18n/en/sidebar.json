@@ -5,10 +5,13 @@
       "dashboard": "Dashboard",
       "findpositions": "Find Positions"
     },
+    "applications": {
+      "title": "Applications",
+      "myapplications": "My Applications"
+    },
     "recruitment": {
       "title": "Recruitment",
       "positions": "Positions",
-      "myapplications": "My Applications",
       "savedpositions": "Saved Positions",
       "applicationoverview": "Applications",
       "reviewapplications": "Review",
