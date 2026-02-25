@@ -59,7 +59,7 @@ public class EmailTemplateService {
     protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
         if (researchGroup == null && !emailType.isMultipleTemplates()) {
             return emailTemplateRepository
-                .findFirstByEmailType(emailType)
+                .findFirstByEmailTypeOrderByEmailTemplateIdAsc(emailType)
                 .orElseGet(() -> {
                     ResearchGroup fallbackGroup = researchGroupRepository
                         .findAll()
