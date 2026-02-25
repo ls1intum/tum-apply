@@ -1,10 +1,14 @@
-<article (click)="onCardClick()"
+<article
+  (click)="onCardClick()"
   class="flex rounded-lg border border-border-default bg-background-default overflow-hidden cursor-pointer transition-all hover:bg-background-surface"
-  [ngClass]="{ 'opacity-80': processStatus() === 'CLOSED' }">
+  [ngClass]="{ 'opacity-80': processStatus() === 'CLOSED' }"
+>
   <!-- Image (1/3) -->
-  <div class="w-1/3 min-h-[8rem] bg-cover bg-center shrink-0"
+  <div
+    class="w-1/3 min-h-[8rem] bg-cover bg-center shrink-0"
     [ngClass]="processStatus() === 'CLOSED' ? 'bg-background-surface-alt' : 'bg-primary'"
-    [style.backgroundImage]="process().imageUrl ? 'url(' + process().imageUrl + ')' : null"></div>
+    [style.backgroundImage]="process().imageUrl ? 'url(' + process().imageUrl + ')' : null"
+  ></div>
 
   <!-- Content (2/3) -->
   <div class="flex-1 flex flex-col justify-between p-4 gap-3">
@@ -13,13 +17,18 @@
       <h3 class="text-base font-semibold line-clamp-2 m-0 leading-tight text-text">
         {{ process().jobTitle }}
       </h3>
-      <jhi-tag [text]="processStatus() === 'CLOSED' ? 'Closed' : 'Active'"
-        [color]="processStatus() === 'CLOSED' ? 'secondary' : 'success'" />
+      <jhi-tag
+        [text]="processStatus() === 'CLOSED' ? 'Closed' : 'Active'"
+        [color]="processStatus() === 'CLOSED' ? 'secondary' : 'success'"
+      />
     </div>
 
     <!-- Warning (compact, between title and metrics) -->
     @if (processStatus() !== 'CLOSED' && process().invitedCount > totalSlots()) {
-    <jhi-message severity="warn" size="small" [message]="
+      <jhi-message
+        severity="warn"
+        size="small"
+        [message]="
           totalSlots() === 0
             ? process().invitedCount === 1
               ? 'interview.warning.zeroSlotsSingular'
@@ -27,62 +36,61 @@
             : process().invitedCount === 1
               ? 'interview.warning.notEnoughSlotsSingular'
               : 'interview.warning.notEnoughSlots'
-        " [shouldTranslate]="true" [translationParams]="{ invited: process().invitedCount, slots: totalSlots() }" />
+        "
+        [shouldTranslate]="true"
+        [translationParams]="{ invited: process().invitedCount, slots: totalSlots() }"
+      />
     }
 
     <!-- Metrics Row -->
     <div class="flex items-end justify-between gap-4">
       <!-- Metric: Uncontacted -->
       <div class="flex flex-col">
-        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold"
-          jhiTranslate="interview.overview.stats.uncontacted">Uncontacted</span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.stats.uncontacted"
+          >Uncontacted</span
+        >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="user" class="text-lg"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+          <fa-icon icon="user" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().uncontactedCount
-            }}</span>
+          }}</span>
         </div>
       </div>
 
       <!-- Metric: Invited -->
       <div class="flex flex-col">
-        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold"
-          jhiTranslate="interview.overview.stats.invited">Invited</span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.stats.invited"
+          >Invited</span
+        >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="user-group" class="text-lg"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+          <fa-icon icon="user-group" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().invitedCount
-            }}</span>
+          }}</span>
         </div>
       </div>
 
       <!-- Metric: Completed -->
       <div class="flex flex-col">
-        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold"
-          jhiTranslate="interview.overview.stats.completed">Completed</span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.stats.completed"
+          >Completed</span
+        >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="clipboard-check" class="text-lg"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+          <fa-icon icon="clipboard-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().completedCount
-            }}</span>
+          }}</span>
         </div>
       </div>
 
       <!-- Metric: Booked (Scheduled / Total Slots) -->
       <div class="flex flex-col">
-        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold"
-          jhiTranslate="interview.overview.stats.booked">Booked</span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.stats.booked"
+          >Booked</span
+        >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="calendar-check" class="text-lg"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none"
-            [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">
+          <fa-icon icon="calendar-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">
             {{ process().scheduledCount }} / {{ totalSlots() }}
           </span>
         </div>

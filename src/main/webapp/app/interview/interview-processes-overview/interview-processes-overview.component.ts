@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
@@ -8,6 +8,7 @@ import { UpcomingInterviewDTO } from 'app/generated/model/upcomingInterviewDTO';
 import { InterviewResourceApiService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import dayjs from 'dayjs/esm';
 
 import { UpcomingInterviewCardComponent } from './upcoming-interviews-widget/upcoming-interview-card/upcoming-interview-card.component';
 
@@ -19,6 +20,32 @@ import { UpcomingInterviewCardComponent } from './upcoming-interviews-widget/upc
 export class InterviewProcessesOverviewComponent {
   interviewProcesses = signal<InterviewOverviewDTO[]>([]);
   upcomingInterviews = signal<UpcomingInterviewDTO[]>([]);
+
+  /**
+   * Groups upcoming interviews by Month/Year format for the calendar view.
+   * Format: "FEBRUARY 2026"
+   */
+  groupedUpcomingInterviews = computed(() => {
+    const interviews = this.upcomingInterviews();
+    if (!interviews.length) return [];
+
+    const grouped = new Map<string, UpcomingInterviewDTO[]>();
+
+    for (const interview of interviews) {
+      if (!interview.startDateTime) continue;
+      const date = new Date(interview.startDateTime);
+      const monthLabel = dayjs(date).format('MMMM YYYY').toUpperCase();
+      const list = grouped.get(monthLabel) ?? [];
+      list.push(interview);
+      grouped.set(monthLabel, list);
+    }
+
+    return Array.from(grouped.entries()).map(([month, data]) => ({
+      monthLabel: month,
+      interviews: data,
+    }));
+  });
+
   loading = signal<boolean>(true);
   error = signal<boolean>(false);
 
