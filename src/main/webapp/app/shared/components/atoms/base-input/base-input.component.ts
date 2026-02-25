@@ -91,9 +91,5 @@ export abstract class BaseInputDirective<T> {
     this.isFocused.set(true);
   }
 
-  protected markAsTouchedManually(): void {
-    this.isTouched.set(true);
-  }
-
   // TODO: Add optional tooltip handling
 }
