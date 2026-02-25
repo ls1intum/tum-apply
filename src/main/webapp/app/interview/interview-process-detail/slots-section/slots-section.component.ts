@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
@@ -45,14 +45,28 @@ interface GroupedSlots {
   templateUrl: './slots-section.component.html',
 })
 export class SlotsSectionComponent {
+  // Constants
+  private readonly MAX_VISIBLE_SLOTS = 3;
+  private readonly DEFAULT_DATES_PER_PAGE = 5;
+
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly translateService = inject(TranslateService);
+  private readonly toastService = inject(ToastService);
+  private readonly breakpointObserver = inject(BreakpointObserver);
+
   // Inputs
   processId = input.required<string>();
+  invitedCount = input(0);
 
   // Outputs
   slotAssigned = output();
 
   // Signals
-  slots = signal<InterviewSlotDTO[]>([]);
+  futureSlots = signal<InterviewSlotDTO[]>([]);
+  pastSlots = signal<InterviewSlotDTO[]>([]);
+  showingPastSlots = signal(false);
+  initialized = signal(false);
   loading = signal(true);
   error = signal(false);
   currentMonthOffset = signal(0);
@@ -66,35 +80,17 @@ export class SlotsSectionComponent {
 
   // Computed
   datesPerPage = computed(() => this.breakpointState());
-
-  groupedSlots = computed<GroupedSlots[]>(() => {
-    const slotsData = this.slots();
-    if (slotsData.length === 0) return [];
-
-    const grouped = new Map<string, InterviewSlotDTO[]>();
-
-    slotsData.forEach(slot => {
-      const localDate = new Date(this.safeDate(slot.startDateTime));
-      const dateKey = localDate.toISOString().split('T')[0];
-
-      if (!grouped.has(dateKey)) {
-        grouped.set(dateKey, []);
-      }
-      grouped.get(dateKey)?.push(slot);
-    });
-
-    return Array.from(grouped.entries())
-      .map(([dateKey, dateSlots]) => ({
-        date: dateKey,
-        localDate: new Date(dateKey),
-        slots: dateSlots.sort((a, b) => this.safeDate(a.startDateTime) - this.safeDate(b.startDateTime)),
-      }))
-      .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
-  });
-
   targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
   currentYear = computed(() => this.targetDate().year());
   currentMonthNumber = computed(() => this.targetDate().month() + 1);
+
+  groupedSlots = computed<GroupedSlots[]>(() => {
+    const future = this.groupByDate(this.futureSlots());
+    const past = this.groupByDate(this.pastSlots());
+    // Merge past + future in chronological order
+    return [...past, ...future];
+  });
+
   currentMonthSlots = computed(() => this.groupedSlots());
 
   paginatedSlots = computed(() => {
@@ -118,18 +114,36 @@ export class SlotsSectionComponent {
     return Math.ceil(this.currentMonthSlots().length / this.datesPerPage());
   });
 
-  canGoPreviousDate = computed(() => this.currentDatePage() > 0);
+  canGoPreviousDate = computed(() => {
+    if (this.currentDatePage() > 0) return true;
+    // Enable left arrow to trigger lazy loading of past slots
+    return !this.showingPastSlots() && this.isCurrentMonth();
+  });
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
-  // Constants
-  private readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DEFAULT_DATES_PER_PAGE = 5;
+  emptyStateMessage = computed<string | null>(() => {
+    // Only show after initialization
+    if (!this.initialized()) return null;
 
-  // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly translateService = inject(TranslateService);
-  private readonly toastService = inject(ToastService);
-  private readonly breakpointObserver = inject(BreakpointObserver);
+    // No slots at all in any month
+    if (this.hasAnySlots() === false) {
+      return 'interview.slots.emptyState.noSlotsCreated';
+    }
+
+    // Current month has no future slots and no past slots loaded
+    if (this.futureSlots().length === 0 && this.pastSlots().length === 0) {
+      return 'interview.slots.emptyState.noSlotsInMonth';
+    }
+
+    return null;
+  });
+
+  notEnoughSlots = computed(() => {
+    if (!this.initialized()) return false;
+    if (!this.isCurrentMonth() && this.currentMonthOffset() < 0) return false;
+    const available = this.futureSlots().filter(s => !s.interviewee).length;
+    return this.invitedCount() > 0 && available < this.invitedCount();
+  });
 
   // Private Signals & Computed
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
@@ -178,17 +192,34 @@ export class SlotsSectionComponent {
     { allowSignalWrites: true },
   );
 
-  private readonly loadSlotsEffect = effect(() => {
+
+  private readonly initEffect = effect(() => {
+    const id = this.processId();
+    if (id !== '') {
+      void this.checkGlobalSlots(id);
+    }
+  });
+
+  // Loads future (or all) slots when month changes — guards on initialized
+  private readonly loadFutureEffect = effect(() => {
+    if (!this.initialized()) return;
     const id = this.processId();
     const year = this.currentYear();
     const month = this.currentMonthNumber();
     if (id !== '') {
-      void this.loadSlots(id, year, month);
+      void this.loadFutureSlots(id, year, month);
     }
   });
 
-  private readonly checkGlobalSlotsEffect = effect(() => {
-    void this.checkGlobalSlots();
+  // Lazy-loads past slots only when showingPastSlots flips to true
+  private readonly loadPastEffect = effect(() => {
+    if (!this.showingPastSlots()) return;
+    const id = this.processId();
+    const year = this.currentYear();
+    const month = this.currentMonthNumber();
+    if (id !== '') {
+      void this.loadPastSlots(id, year, month);
+    }
   });
 
   // Public methods
@@ -199,7 +230,10 @@ export class SlotsSectionComponent {
   async refreshSlots(): Promise<void> {
     const id = this.processId();
     if (id !== '') {
-      await this.loadSlots(id, this.currentYear(), this.currentMonthNumber());
+      await this.loadFutureSlots(id, this.currentYear(), this.currentMonthNumber());
+      if (this.showingPastSlots()) {
+        await this.loadPastSlots(id, this.currentYear(), this.currentMonthNumber());
+      }
     }
   }
 
@@ -209,18 +243,28 @@ export class SlotsSectionComponent {
   }
 
   previousMonth(): void {
+    this.loading.set(true);
     this.currentMonthOffset.update(currentMonth => currentMonth - 1);
     this.currentDatePage.set(0);
+    this.showingPastSlots.set(false);
+    this.futureSlots.set([]);
+    this.pastSlots.set([]);
   }
 
   nextMonth(): void {
+    this.loading.set(true);
     this.currentMonthOffset.update(currentMonth => currentMonth + 1);
     this.currentDatePage.set(0);
+    this.showingPastSlots.set(false);
+    this.futureSlots.set([]);
+    this.pastSlots.set([]);
   }
 
   previousDatePage(): void {
-    if (this.canGoPreviousDate()) {
+    if (this.currentDatePage() > 0) {
       this.currentDatePage.update(currentPage => currentPage - 1);
+    } else if (!this.showingPastSlots() && this.isCurrentMonth()) {
+      this.showingPastSlots.set(true);
     }
   }
 
@@ -277,7 +321,7 @@ export class SlotsSectionComponent {
       this.loading.set(true);
 
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
-      await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
+      await this.loadFutureSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
@@ -306,31 +350,42 @@ export class SlotsSectionComponent {
   }
 
   // Private methods
-  private async checkGlobalSlots(): Promise<void> {
+  private isCurrentMonth(): boolean {
+    return this.currentMonthOffset() === 0 || (this.currentYear() === dayjs().year() && this.currentMonthNumber() === dayjs().month() + 1);
+  }
+
+  private async checkGlobalSlots(processId: string): Promise<void> {
     try {
-      // Just check if any slots exist
-      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId(), undefined, undefined, 0, 1));
+      this.loading.set(true);
+      const response = await firstValueFrom(
+        this.interviewService.getSlotsByProcessId(processId, undefined, undefined, undefined, undefined, 0, 1),
+      );
       this.hasAnySlots.set((response.totalElements ?? 0) > 0);
     } catch {
-      // Ignore errors
+      this.error.set(true);
+    } finally {
+      this.initialized.set(true);
+      this.loading.set(false);
     }
   }
 
-  private async loadSlots(processId: string, year: number, month: number): Promise<void> {
-    const isFirstLoad = this.hasAnySlots() === undefined;
-
+  private async loadFutureSlots(processId: string, year: number, month: number): Promise<void> {
     try {
-      if (isFirstLoad) {
-        this.loading.set(true);
-      }
       this.error.set(false);
 
-      // Server side filtering by year and month
-      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, 0, 1000));
+      const isCurrentOrFuture = this.isCurrentMonth() || this.currentMonthOffset() > 0;
+      let response;
 
-      this.slots.set(response.content ?? []);
-      if (this.hasAnySlots() === undefined) {
-        this.hasAnySlots.set((response.totalElements ?? 0) > 0);
+      if (isCurrentOrFuture) {
+        // Current or future month: fetch only future slots
+        const now = new Date().toISOString();
+        response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, now, undefined, 0, 1000));
+        this.futureSlots.set(response.content ?? []);
+      } else {
+        // Past month: all slots are "past" — put them all into pastSlots, clear futureSlots
+        response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, undefined, undefined, 0, 1000));
+        this.pastSlots.set(response.content ?? []);
+        this.futureSlots.set([]);
       }
     } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
@@ -338,6 +393,40 @@ export class SlotsSectionComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private async loadPastSlots(processId: string, year: number, month: number): Promise<void> {
+    try {
+      const now = new Date().toISOString();
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, undefined, now, 0, 1000));
+      this.pastSlots.set(response.content ?? []);
+    } catch {
+      this.toastService.showErrorKey('interview.slots.error.loadFailed');
+    }
+  }
+
+  private groupByDate(slots: InterviewSlotDTO[]): GroupedSlots[] {
+    if (slots.length === 0) return [];
+
+    const grouped = new Map<string, InterviewSlotDTO[]>();
+
+    slots.forEach(slot => {
+      const localDate = new Date(this.safeDate(slot.startDateTime));
+      const dateKey = localDate.toISOString().split('T')[0];
+
+      if (!grouped.has(dateKey)) {
+        grouped.set(dateKey, []);
+      }
+      grouped.get(dateKey)?.push(slot);
+    });
+
+    return Array.from(grouped.entries())
+      .map(([dateKey, dateSlots]) => ({
+        date: dateKey,
+        localDate: new Date(dateKey),
+        slots: dateSlots.sort((a, b) => this.safeDate(a.startDateTime) - this.safeDate(b.startDateTime)),
+      }))
+      .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   }
 
   private safeDate(value?: string): number {

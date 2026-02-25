@@ -26,6 +26,7 @@ export class InterviewProcessDetailComponent {
 
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
+  invitedCount = signal(0);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -67,6 +68,9 @@ export class InterviewProcessDetailComponent {
       }
       if (process.jobId) {
         this.jobId.set(process.jobId);
+      }
+      if (process.invitedCount !== undefined) {
+        this.invitedCount.set(process.invitedCount);
       }
     } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');

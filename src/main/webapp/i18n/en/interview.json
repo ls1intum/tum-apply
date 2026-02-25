@@ -48,6 +48,7 @@
     },
     "slots": {
       "addSlots": "Add Slots",
+      "notEnoughSlots": "Not enough available slots for all invited interviewees.",
       "slotsCountSingular": "slot",
       "slotsCountPlural": "slots",
       "showMoreSingular": "more slot",
