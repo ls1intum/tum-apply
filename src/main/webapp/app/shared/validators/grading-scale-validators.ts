@@ -87,11 +87,8 @@ function clearRangeErrors(upperCtrl: AbstractControl, lowerCtrl: AbstractControl
 }
 
 function setRangeErrors(upperCtrl: AbstractControl, lowerCtrl: AbstractControl): void {
-  const currentUpperErrors = upperCtrl.errors ?? {};
-  const currentLowerErrors = lowerCtrl.errors ?? {};
-
-  upperCtrl.setErrors({ ...currentUpperErrors, outOfRange: true });
-  lowerCtrl.setErrors({ ...currentLowerErrors, outOfRange: true });
+  setControlError(upperCtrl, 'outOfRange', true);
+  setControlError(lowerCtrl, 'outOfRange', true);
 }
 
 function checkGradeInRange(type: GradeType, grade: string, upper: string, lower: string): boolean {
