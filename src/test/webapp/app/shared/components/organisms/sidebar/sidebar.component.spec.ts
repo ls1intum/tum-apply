@@ -67,7 +67,7 @@ describe('SidebarComponent', () => {
       fixture.detectChanges();
       expect(component.categories).toHaveLength(2);
       expect(component.categories?.[0].title).toBe('sidebar.dashboard.dashboard');
-      expect(component.categories?.[1].title).toBe('sidebar.applications.applications');
+      expect(component.categories?.[1].title).toBe('sidebar.applications.title');
     });
 
     it('should return categories for PROFESSOR role', () => {
