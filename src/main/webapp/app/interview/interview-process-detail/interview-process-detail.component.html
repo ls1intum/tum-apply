@@ -7,7 +7,7 @@
 
   <!-- Slots Section -->
   @if (processId()) {
-  <jhi-slots-section [processId]="safeProcessId()" [invitedCount]="invitedCount()" (slotAssigned)="onSlotAssigned()" />
+    <jhi-slots-section [processId]="safeProcessId()" [invitedCount]="invitedCount()" (slotAssigned)="onSlotAssigned()" />
   }
 
   <!-- Divider -->
@@ -15,8 +15,7 @@
 
   <!-- Interviewee Section -->
   @if (processId() && jobTitle()) {
-  <jhi-interviewee-section [processId]="safeProcessId()" [jobTitle]="safeJobTitle()"
-    [refreshKey]="intervieweeRefreshKey()" />
+    <jhi-interviewee-section [processId]="safeProcessId()" [jobTitle]="safeJobTitle()" [refreshKey]="intervieweeRefreshKey()" />
   }
 
   <!-- Divider -->
