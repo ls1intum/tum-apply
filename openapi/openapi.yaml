@@ -3327,4 +3327,5 @@ components:
           items:
             type: string
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
+        universityId: {type: string}
         userId: {type: string, format: uuid}
