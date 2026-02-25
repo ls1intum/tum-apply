@@ -454,7 +454,8 @@ describe('MyPositionsPageComponent', () => {
       items[0]?.command?.();
 
       expect(component.currentJobId()).toBe('2');
-      expect(confirmSpy).toHaveBeenCalled();
+      expect(confirmSpy).toHaveBeenCalledOnce();
+      expect(confirmSpy).toHaveBeenCalledWith();
     });
 
     it('should confirm delete for draft jobs', () => {
@@ -468,7 +469,8 @@ describe('MyPositionsPageComponent', () => {
       items[1]?.command?.();
 
       expect(component.currentJobId()).toBe('4');
-      expect(confirmSpy).toHaveBeenCalled();
+      expect(confirmSpy).toHaveBeenCalledOnce();
+      expect(confirmSpy).toHaveBeenCalledWith();
     });
 
     it('should confirm close for published jobs', () => {
@@ -482,7 +484,8 @@ describe('MyPositionsPageComponent', () => {
       items[1]?.command?.();
 
       expect(component.currentJobId()).toBe('5');
-      expect(confirmSpy).toHaveBeenCalled();
+      expect(confirmSpy).toHaveBeenCalledOnce();
+      expect(confirmSpy).toHaveBeenCalledWith();
     });
 
     it('should build edit/close menu items for published jobs', () => {
