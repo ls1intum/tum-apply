@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ImageResource {
     public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID departmentId) {
         log.info("GET /api/images/defaults/job-banners?departmentId={}", departmentId);
         List<? extends Image> images = imageService.getDefaultJobBanners(departmentId);
-        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
         return ResponseEntity.ok(dtos);
     }
 
@@ -55,12 +56,12 @@ public class ImageResource {
      *
      * @return a list of default job banner images for the current user's department
      */
-    @ProfessorOrEmployeeOrAdmin
+    @ProfessorOrEmployee
     @GetMapping("/defaults/job-banners/for-me")
     public ResponseEntity<List<ImageDTO>> getMyDefaultJobBanners() {
         log.info("GET /api/images/defaults/job-banners/for-me");
         List<? extends Image> images = imageService.getMyDefaultJobBanners();
-        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
         return ResponseEntity.ok(dtos);
     }
 
@@ -76,7 +77,7 @@ public class ImageResource {
     public ResponseEntity<List<ImageDTO>> getDefaultJobBannersBySchool(@RequestParam UUID schoolId) {
         log.info("GET /api/images/defaults/job-banners/by-school?schoolId={}", schoolId);
         List<? extends Image> images = imageService.getDefaultJobBannersBySchool(schoolId);
-        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
         return ResponseEntity.ok(dtos);
     }
 
@@ -111,6 +112,21 @@ public class ImageResource {
     }
 
     /**
+     * Get all job banner images for a specific research group (admin only).
+     *
+     * @param researchGroupId the target research group ID
+     * @return a list of job banner images for the given research group
+     */
+    @Admin
+    @GetMapping("/research-group/job-banners/by-research-group")
+    public ResponseEntity<List<ImageDTO>> getResearchGroupJobBannersByResearchGroup(@RequestParam UUID researchGroupId) {
+        log.info("GET /api/images/research-group/job-banners/by-research-group?researchGroupId={}", researchGroupId);
+        List<? extends Image> images = imageService.getResearchGroupJobBannersByResearchGroup(researchGroupId);
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
      * Upload a job banner image (for professors to use on their jobs)
      *
      * @param file the image file
@@ -121,6 +137,28 @@ public class ImageResource {
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
         log.info("POST /api/images/upload/job-banner filename={}", file.getOriginalFilename());
         Image image = imageService.uploadJobBanner(file);
+        return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
+    }
+
+    /**
+     * Upload a job banner image for a specific research group (admin only).
+     *
+     * @param file            the image file
+     * @param researchGroupId the target research group ID
+     * @return the uploaded image DTO
+     */
+    @Admin
+    @PostMapping(value = "/upload/job-banner/by-research-group", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageDTO> uploadJobBannerForResearchGroup(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("researchGroupId") UUID researchGroupId
+    ) {
+        log.info(
+            "POST /api/images/upload/job-banner/by-research-group filename={} researchGroupId={}",
+            file.getOriginalFilename(),
+            researchGroupId
+        );
+        Image image = imageService.uploadJobBannerForResearchGroup(researchGroupId, file);
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 

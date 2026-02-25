@@ -1,6 +1,11 @@
 <div class="page-container">
   <div class="page-header">
-    <h1 jhiTranslate="researchGroup.imageLibrary.title"></h1>
+    <h1>
+      {{ 'researchGroup.imageLibrary.title' | translate }}
+      @if (selectedResearchGroupName()) {
+        - {{ selectedResearchGroupName() }}
+      }
+    </h1>
   </div>
 
   <!-- Statistics Cards -->
@@ -63,7 +68,7 @@
         }
 
         <!-- Upload New Image Button -->
-        <jhi-image-upload-button (imageUploaded)="onImageUploaded($event)" (uploadError)="onUploadError($event)" />
+        <jhi-image-upload-button [uploadFn]="uploadImage" (imageUploaded)="onImageUploaded($event)" (uploadError)="onUploadError($event)" />
       </div>
     </div>
   }
