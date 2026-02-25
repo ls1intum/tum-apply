@@ -23,7 +23,6 @@ export abstract class BaseInputDirective<T> {
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
   warningText = input<string | undefined>(undefined);
-  customErrorKey = input<string | undefined>(undefined);
   helperTextLeft = input<string | undefined>(undefined);
   helperTextRight = input<string | undefined>(undefined);
   helperTextRightClick = output();
@@ -54,10 +53,6 @@ export abstract class BaseInputDirective<T> {
     const ctrl = this.formControl();
     const errors = ctrl.errors;
     if (!errors) return null;
-    const customKey = this.customErrorKey();
-    if (customKey) {
-      return this.translate.instant(customKey);
-    }
     const key = Object.keys(errors)[0];
     const val = errors[key];
     const defaults: Record<string, string> = {

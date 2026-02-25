@@ -186,18 +186,6 @@ describe('StringInputComponent', () => {
       expect(comp.errorMessage()).toBeNull();
     });
 
-    it('should return translated custom error when customErrorKey is provided', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const ctrl = new FormControl('');
-      ctrl.setErrors({ custom: true });
-      fixture.componentRef.setInput('control', ctrl);
-      fixture.componentRef.setInput('customErrorKey', 'entity.applicationPage1.validation.postalCode');
-
-      const msg = comp.errorMessage();
-      expect(msg).toBe('entity.applicationPage1.validation.postalCode');
-    });
-
     it('should return minlength error message when validation fails', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
@@ -355,14 +343,6 @@ describe('StringInputComponent', () => {
       fixture.componentRef.setInput('errorEnabled', false);
 
       expect(comp.errorEnabled()).toBe(false);
-    });
-
-    it('should correctly bind customErrorKey input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('customErrorKey', 'custom.error.key');
-
-      expect(comp.customErrorKey()).toBe('custom.error.key');
     });
   });
 
