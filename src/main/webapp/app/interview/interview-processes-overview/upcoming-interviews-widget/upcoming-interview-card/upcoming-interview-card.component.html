@@ -1,26 +1,26 @@
 <a
   [routerLink]="['/interviews', 'process', interview().processId, 'interviewee', interview().intervieweeId, 'assessment']"
   [queryParams]="{ from: 'overview' }"
-  class="group flex items-stretch p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary"
+  class="group grid grid-cols-[1fr_auto_8.75rem] gap-4 p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary"
 >
   <!-- LEFT: Avatar + Name + Job -->
-  <div class="flex-1 flex items-center gap-3">
+  <div class="flex items-center gap-3">
     <!-- Avatar -->
     <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base shrink-0" [ngClass]="avatarColor()">
       {{ initials() }}
     </div>
     <!-- Name + Job Title -->
     <div class="flex flex-col justify-center min-w-0">
-      <span class="font-bold text-base">{{ interview().intervieweeName }}</span>
+      <span class="font-bold text-base truncate" [title]="interview().intervieweeName">{{ interview().intervieweeName }}</span>
       <span class="text-sm text-text-secondary leading-snug">{{ interview().jobTitle }}</span>
     </div>
   </div>
 
   <!-- Divider -->
-  <div class="border-r border-border-default mx-4"></div>
+  <div class="border-r border-border-default"></div>
 
   <!-- RIGHT: Date / Time / Location -->
-  <div class="flex flex-col justify-center gap-1.5 text-sm text-text-secondary shrink-0">
+  <div class="flex flex-col justify-center gap-1.5 text-sm text-text-secondary">
     <div class="flex items-center gap-2">
       <fa-icon icon="calendar" class="text-primary" />
       <span>{{ interview().startDateTime | localizedDate }}</span>
@@ -31,7 +31,7 @@
     </div>
     <div class="flex items-center gap-2">
       <fa-icon icon="location-dot" class="text-primary" />
-      <span>{{ interview().location }}</span>
+      <span class="truncate" [title]="interview().location">{{ interview().location }}</span>
     </div>
   </div>
 </a>
