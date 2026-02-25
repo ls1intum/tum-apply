@@ -20,7 +20,8 @@
         "invited": "Invited",
         "uncontacted": "Uncontacted",
         "totalInterviews": "Total Interviews",
-        "totalSlots": "Total Slots"
+        "totalSlots": "Total Slots",
+        "booked": "Booked"
       },
       "upcoming": {
         "title": "Upcoming",

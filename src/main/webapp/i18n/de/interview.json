@@ -20,7 +20,8 @@
         "invited": "Eingeladen",
         "uncontacted": "Nicht kontaktiert",
         "totalInterviews": "Interviews gesamt",
-        "totalSlots": "Anzahl Slots"
+        "totalSlots": "Anzahl Slots",
+        "booked": "Gebucht"
       },
       "upcoming": {
         "title": "Anstehend",
