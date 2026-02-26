@@ -1,6 +1,6 @@
-<div class="text-sm">
+<div class="text-sm break-words overflow-hidden">
   @if (text(); as t) {
-    <div [innerHTML]="safeHtml()"></div>
+    <div [innerHTML]="safeHtml()" class="break-words"></div>
   } @else {
     —
   }

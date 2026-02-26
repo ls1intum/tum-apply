@@ -37,36 +37,7 @@
       (next)="onNext()"
       (prev)="onPrev()"
     />
-    <div class="action-buttons-wrapper">
-      <jhi-button
-        class="w-full"
-        [styleClass]="'w-full'"
-        [label]="'evaluation.addToInterview' | translate"
-        variant="outlined"
-        severity="primary"
-        icon="calendar"
-        [disabled]="!canReview() || isAlreadyInInterview()"
-        (click)="openAddToInterviewDialog()"
-      />
-      <div class="review-actions">
-        <jhi-button
-          [label]="'evaluation.accept' | translate"
-          variant="outlined"
-          severity="success"
-          icon="check"
-          [disabled]="!canReview()"
-          (click)="openAcceptDialog()"
-        />
-        <jhi-button
-          [label]="'evaluation.reject' | translate"
-          variant="outlined"
-          severity="danger"
-          icon="xmark"
-          [disabled]="!canReview()"
-          (click)="openRejectDialog()"
-        />
-      </div>
-    </div>
+
     <!-- TODO: Replace p-dialog with jhi-dialog -->
     <p-dialog
       [modal]="true"
@@ -80,11 +51,9 @@
       <!-- Header (applicant + job title) - matches review-dialog style -->
       <ng-template #header>
         <div class="info">
-          <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
-          <div class="job-name">
-            <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-            <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
-          </div>
+          <span>{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
+          <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+          <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
         </div>
       </ng-template>
 
@@ -94,14 +63,15 @@
       <!-- Footer buttons -->
       <ng-template pTemplate="footer">
         <div class="flex justify-between w-full pt-4 gap-2">
-          <jhi-button
-            [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
-            variant="outlined"
-            severity="primary"
-            (click)="onAddToInterview(false)"
-          />
+          <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+
           <div class="flex gap-2">
-            <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+            <jhi-button
+              [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
+              variant="outlined"
+              severity="primary"
+              (click)="onAddToInterview(false)"
+            />
             <jhi-button
               [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
               severity="primary"
@@ -121,79 +91,122 @@
     />
 
     @if (currentApplication(); as application) {
+      <div
+        class="w-full flex flex-col xl:flex-row justify-between items-start xl:items-end py-2 gap-3 border-b border-border-default overflow-hidden"
+      >
+        <div class="flex gap-3">
+          <!-- Profile Image Placeholder / replace it with profile image component later on -->
+          <div
+            class="flex md:hidden items-center justify-center w-12 h-12 rounded-full bg-primary text-text-on-primary font-semibold text-lg flex-shrink-0"
+            [attr.aria-label]="'Profile picture placeholder for ' + application.applicationDetailDTO.applicant?.user?.name"
+          >
+            {{ initials() }}
+          </div>
+
+          <div class="flex flex-col">
+            <div class="flex flex-wrap items-center">
+              <span class="text-xl font-semibold">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
+              <div class="flex gap-2 ml-2">
+                @if (application.applicationDetailDTO.applicant?.user?.website) {
+                  <a
+                    [href]="application.applicationDetailDTO.applicant?.user?.website"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary"
+                  >
+                    <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
+                  </a>
+                }
+                @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
+                  <a
+                    [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary"
+                  >
+                    <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
+                  </a>
+                }
+              </div>
+            </div>
+            <div class="text-sm">
+              <!-- Bachelor's Degree -->
+              @if (bachelorSummary().degree || bachelorSummary().university) {
+                <span>
+                  {{ bachelorSummary().degree || '—' }}{{ bachelorSummary().university ? ', ' + bachelorSummary().university : ''
+                  }}{{ bachelorSummary().gradeInfo.displayValue ? ', ' : '' }}
+
+                  @if (bachelorSummary().gradeInfo.displayValue) {
+                    <span jhiTranslate="evaluation.details.grade"></span>:
+                    {{ bachelorSummary().gradeInfo.displayValue }}
+
+                    @if (bachelorSummary().gradeInfo.tooltipText) {
+                      <fa-icon
+                        class="icon"
+                        [icon]="['fas', 'circle-info']"
+                        [pTooltip]="bachelorSummary().gradeInfo.tooltipText"
+                        [escape]="false"
+                        tooltipPosition="top"
+                      />
+                    }
+                  }
+                </span>
+                <span> &middot; </span>
+              }
+              <!-- Nationality -->
+              <span class="whitespace-nowrap">{{
+                application.applicationDetailDTO.applicant?.user?.nationality
+                  ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
+                  : '—'
+              }}</span>
+              <!-- Gender (de-emphasized) -->
+              <span> &middot; </span>
+              <span class="whitespace-nowrap">{{
+                application.applicationDetailDTO.applicant?.user?.gender
+                  ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
+                  : '—'
+              }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0 w-full sm:w-auto">
+          <jhi-button
+            class="w-full sm:w-auto"
+            label="evaluation.addToInterview"
+            [shouldTranslate]="true"
+            variant="outlined"
+            severity="primary"
+            icon="calendar"
+            [disabled]="!canReview() || isAlreadyInInterview()"
+            (click)="openAddToInterviewDialog()"
+          />
+          <jhi-button
+            class="w-full sm:w-auto"
+            label="evaluation.reject"
+            [shouldTranslate]="true"
+            variant="outlined"
+            severity="danger"
+            icon="xmark"
+            [disabled]="!canReview()"
+            (click)="openRejectDialog()"
+          />
+          <jhi-button
+            class="w-full sm:w-auto"
+            label="evaluation.accept"
+            [shouldTranslate]="true"
+            variant="outlined"
+            severity="success"
+            icon="check"
+            [disabled]="!canReview()"
+            (click)="openAcceptDialog()"
+          />
+        </div>
+      </div>
       <div class="w-full">
         <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
-            <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
-              <div class="grid gap-8 md:grid-cols-2">
-                <!-- Applicant Information -->
-                <jhi-sub-section titleKey="evaluation.details.applicantInformation">
-                  <jhi-description-list
-                    [items]="[
-                      { labelKey: 'evaluation.details.applicantName', value: application.applicationDetailDTO.applicant?.user?.name },
-
-                      {
-                        labelKey: 'evaluation.details.applicantGender',
-                        value: application.applicationDetailDTO.applicant?.user?.gender
-                          ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
-                          : '—',
-                      },
-                      {
-                        labelKey: 'evaluation.details.applicantNationality',
-                        value: application.applicationDetailDTO.applicant?.user?.nationality
-                          ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
-                          : '—',
-                      },
-                    ]"
-                  />
-                </jhi-sub-section>
-
-                <!-- Links -->
-                <jhi-sub-section titleKey="evaluation.details.applicantLinks">
-                  <jhi-link-list
-                    [links]="[
-                      {
-                        labelKey: 'evaluation.details.applicantWebsite',
-                        url: application.applicationDetailDTO.applicant?.user?.linkedinUrl,
-                        icon: 'link',
-                      },
-                      {
-                        labelKey: 'evaluation.details.applicantLinkedIn',
-                        url: application.applicationDetailDTO.applicant?.user?.website,
-                        icon: 'linkedin',
-                        isBrandIcon: true,
-                      },
-                    ]"
-                  />
-                </jhi-sub-section>
-              </div>
-            </jhi-section>
-
-            <p-divider />
-
-            <!-- Education -->
-            <jhi-section titleKey="evaluation.details.educationTitle" icon="graduation-cap">
-              <div class="grid gap-8 md:grid-cols-2">
-                <!-- Bachelor -->
-                <jhi-sub-section titleKey="evaluation.details.educationBachelors">
-                  <jhi-description-list [items]="bachelorItemsComputed()" />
-                </jhi-sub-section>
-
-                <!-- Master -->
-                <jhi-sub-section titleKey="evaluation.details.educationMasters">
-                  <jhi-description-list [items]="masterItemsComputed()" />
-                </jhi-sub-section>
-              </div>
-            </jhi-section>
-
-            <p-divider />
-
             <!-- Application -->
             <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
-              <jhi-sub-section titleKey="evaluation.details.applicationDesiredStartDate">
-                <span class="text-sm"> {{ (application.applicationDetailDTO.desiredDate | localizedDate) || '—' }} </span>
-              </jhi-sub-section>
-
               <jhi-sub-section titleKey="evaluation.details.applicationMotivation">
                 <jhi-prose [text]="application.applicationDetailDTO.motivation" />
               </jhi-sub-section>
@@ -205,6 +218,29 @@
               <jhi-sub-section titleKey="evaluation.details.applicationProjects">
                 <jhi-prose [text]="application.applicationDetailDTO.projects" />
               </jhi-sub-section>
+
+              @if (application.appliedAt || application.applicationDetailDTO.desiredDate) {
+                <jhi-sub-section titleKey="evaluation.details.applicationDates">
+                  <div class="flex flex-wrap gap-4 text-sm">
+                    @if (application.appliedAt) {
+                      <div class="flex flex-col">
+                        <span class="text-text-secondary uppercase tracking-wide text-xs">
+                          <span jhiTranslate="evaluation.details.applied"></span>
+                        </span>
+                        <span>{{ application.appliedAt | localizedDate }}</span>
+                      </div>
+                    }
+                    @if (application.applicationDetailDTO.desiredDate) {
+                      <div class="flex flex-col">
+                        <span class="text-text-secondary uppercase tracking-wide text-xs">
+                          <span jhiTranslate="evaluation.details.start"></span>
+                        </span>
+                        <span>{{ application.applicationDetailDTO.desiredDate | localizedDate }}</span>
+                      </div>
+                    }
+                  </div>
+                </jhi-sub-section>
+              }
             </jhi-section>
           </div>
 
@@ -220,7 +256,7 @@
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
             <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">
-              <jhi-rating-section [applicationId]="currentApplicationId()" />
+              <jhi-rating-section [applicationId]="currentApplicationId()" (ratingUpdated)="onRatingUpdated()" />
             </jhi-section>
           </div>
           <div>

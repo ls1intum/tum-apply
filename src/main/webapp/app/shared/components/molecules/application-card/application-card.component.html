@@ -1,40 +1,77 @@
-<div class="card" [class.disabled]="disabled()" [class.placeholder]="placeholder()">
+<div
+  class="flex flex-col flex-1 gap-3 p-3 sm:p-4 sm:gap-4 w-54 md:w-96 lg:w-104 xl:w-120 border-2 rounded-lg"
+  [class.border-primary]="!disabled() && !placeholder()"
+  [class.opacity-50]="disabled()"
+  [class.border-border-default]="disabled()"
+  [class.cursor-not-allowed]="disabled()"
+  [class.pointer-events-none]="disabled()"
+  [class.border-transparent]="placeholder()"
+>
   @if (!placeholder()) {
-    <!-- Header -->
-    <div class="header">
-      <div class="name" [class.has-last]="!!nameParts().last">
-        <span class="first">{{ nameParts().first }}</span>
-        <span class="last">{{ nameParts().last }}</span>
+    <!-- Top Section with Avatar and Details -->
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Avatar/Image Placeholder (hidden on mobile) -->
+      <div
+        class="hidden md:flex shrink-0 w-14 h-14 bg-primary text-text-on-primary rounded-full items-center justify-center overflow-hidden font-bold text-2xl"
+      >
+        {{ initials() }}
       </div>
 
-      <jhi-tag
-        class="status-tag"
-        [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
-        [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
-        [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
-      />
+      <!-- Content Section -->
+      <div class="flex flex-col flex-1 gap-1">
+        <!-- Header with Name and Status -->
+        <div class="flex flex-col items-center md:flex-row md:justify-between md:items-start gap-2">
+          <div class="flex flex-col">
+            <h2 [class]="nameFontSize() + ' font-semibold'">
+              {{ application()?.applicationDetailDTO?.applicant?.user?.name }}
+            </h2>
+          </div>
+
+          <jhi-tag
+            class="shrink-0 self-start"
+            [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
+            [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
+            [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
+          />
+        </div>
+
+        <!-- Average Rating -->
+        <jhi-star-rating [rating]="displayRating()" size="medium" [showValue]="true" />
+      </div>
     </div>
 
+    <!-- Master's Degree Info -->
+    @if (masterSummary().degree || masterSummary().university) {
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm text-text-secondary uppercase tracking-wide">{{ 'evaluation.masterDegree' | translate }}</span>
+        <span>{{ masterSummary().degree || '—' }}</span>
+        <span class="text-sm">
+          {{ masterSummary().university || '—' }}
+          @if (masterSummary().gradeInfo.displayValue) {
+            &middot; {{ 'evaluation.grade' | translate }}: {{ masterSummary().gradeInfo.displayValue }}
+            @if (masterSummary().gradeInfo.tooltipText) {
+              <fa-icon
+                class="icon"
+                [icon]="['fas', 'circle-info']"
+                [pTooltip]="masterSummary().gradeInfo.tooltipText"
+                [escape]="false"
+                tooltipPosition="top"
+              />
+            }
+          }
+        </span>
+      </div>
+    }
+
+    <!-- Divider -->
+    <hr class="border-border-default" />
+
     <!-- Job Title -->
-    <div class="job">
-      <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-      <span class="job-title">
+    <div class="flex items-center gap-2">
+      <fa-icon class="text-primary" [icon]="['fas', 'briefcase']" />
+      <span [class]="jobFontSize()">
         {{ applicationDetails()?.jobTitle }}
       </span>
     </div>
-
-    <!--
-
-    Rating and Comments removed for now
-
-    <div class="rating">
-      <jhi-rating [rating]="application()?.rating" />
-      <div class="comments">
-        <p>0</p>
-        <fa-icon [icon]="['fas', 'comment-alt']" />
-      </div>
-    </div>
-
-    -->
   }
 </div>

@@ -7,27 +7,6 @@
     align-items: center;
     gap: 1.5rem;
     box-sizing: border-box;
-
-    .action-buttons-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      width: fit-content;
-      //TODO: Remove the ::ng-deep
-      ::ng-deep .w-full {
-        width: 100%;
-
-        .p-button {
-          width: 100%;
-        }
-      }
-
-      .review-actions {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-      }
-    }
   }
 
   jhi-application-carousel {
