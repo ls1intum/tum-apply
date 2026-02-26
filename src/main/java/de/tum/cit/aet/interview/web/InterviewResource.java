@@ -129,11 +129,15 @@ public class InterviewResource {
      * ordered by start time (ascending). Supports optional filtering by year and
      * month.
      *
-     * @param processId the ID of the interview process
-     * @param year      optional year filter
-     * @param month     optional month filter
-     * @param page      zero-based page index (default: 0)
-     * @param size      the size of the page (default: 20)
+     * @param processId      the ID of the interview process
+     * @param year           optional year filter
+     * @param month          optional month filter
+     * @param afterDateTime  optional date filter to only return slots after this
+     *                       date
+     * @param beforeDateTime optional date filter to only return slots before this
+     *                       date
+     * @param page           zero-based page index (default: 0)
+     * @param size           the size of the page (default: 20)
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and page of
      *         {@link InterviewSlotDTO}
      * @throws EntityNotFoundException if the interview process is not found

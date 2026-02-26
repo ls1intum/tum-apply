@@ -49,14 +49,14 @@ interface GroupedSlots {
 })
 export class SlotsSectionComponent {
   // Constants
-  private readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DEFAULT_DATES_PER_PAGE = 5;
+  readonly MAX_VISIBLE_SLOTS = 3;
+  readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly translateService = inject(TranslateService);
-  private readonly toastService = inject(ToastService);
-  private readonly breakpointObserver = inject(BreakpointObserver);
+  readonly interviewService = inject(InterviewResourceApiService);
+  readonly translateService = inject(TranslateService);
+  readonly toastService = inject(ToastService);
+  readonly breakpointObserver = inject(BreakpointObserver);
 
   // Inputs
   processId = input.required<string>();
@@ -79,39 +79,12 @@ export class SlotsSectionComponent {
   selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
   refreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
+  globalFutureUnbookedCount = signal<number>(0);
 
-  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
-  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
-
-  private readonly breakpointState = toSignal(
-    this.breakpointObserver
-      .observe([
-        `(min-width: ${BREAKPOINTS.ultraWide}px)`, // 5 columns (2048px)
-        '(min-width: 1700px)', // 4 columns
-        `(min-width: ${BREAKPOINTS.xl}px)`, // 3 columns (1300px)
-        `(min-width: ${BREAKPOINTS.lg}px)`, // 2 columns (1024px)
-      ])
-      .pipe(
-        map(result => {
-          if (result.matches) {
-            if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
-            if (result.breakpoints['(min-width: 1700px)']) return 4;
-            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
-            if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
-          }
-          return 1;
-        }),
-      ),
-    { initialValue: this.DEFAULT_DATES_PER_PAGE },
-  );
-
+  // Computed
   datesPerPage = computed(() => {
     return this.breakpointState();
   });
-
-  globalFutureUnbookedCount = signal<number>(0);
-
-  // Private Signals
   targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
   currentYear = computed(() => this.targetDate().year());
   currentMonthNumber = computed(() => this.targetDate().month() + 1);
@@ -120,7 +93,6 @@ export class SlotsSectionComponent {
     const future = this.groupByDate(this.futureSlots());
     const past = this.groupByDate(this.pastSlots());
 
-    // Ensure past slots and future slots are never on the same page index.
     if (past.length > 0 && future.length > 0) {
       const perPage = this.datesPerPage();
       const remainder = past.length % perPage;
@@ -174,22 +146,42 @@ export class SlotsSectionComponent {
 
   notEnoughSlots = computed(() => {
     if (!this.initialized()) return false;
-    const isNotEnough = this.invitedCount() > 0 && this.globalFutureUnbookedCount() < this.invitedCount();
-    console.log('notEnoughSlots DEBUG:', {
-      initialized: this.initialized(),
-      invited: this.invitedCount(),
-      unbooked: this.globalFutureUnbookedCount(),
-      result: isNotEnough,
-    });
-    return isNotEnough;
+    return this.invitedCount() > 0 && this.globalFutureUnbookedCount() < this.invitedCount();
   });
 
+  // Private Signals (state + toSignal)
+  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
+  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang());
+
+  private readonly breakpointState = toSignal(
+    this.breakpointObserver
+      .observe([
+        `(min-width: ${BREAKPOINTS.ultraWide}px)`, // 5 columns (2048px)
+        '(min-width: 1700px)', // 4 columns
+        `(min-width: ${BREAKPOINTS.xl}px)`, // 3 columns (1300px)
+        `(min-width: ${BREAKPOINTS.lg}px)`, // 2 columns (1024px)
+      ])
+      .pipe(
+        map(result => {
+          if (result.matches) {
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
+            if (result.breakpoints['(min-width: 1700px)']) return 4;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
+          }
+          return 1;
+        }),
+      ),
+    { initialValue: this.DEFAULT_DATES_PER_PAGE },
+  );
+
+  // Private Computed
   private readonly locale = computed(() => {
     this.currentLangSignal();
     return getLocale(this.translateService);
   });
 
-  // Effects
+  // Private Effects
   private readonly langChangeEffect = effect(() => {
     const langEvent = this.langChangeSignal();
     if (langEvent?.lang !== undefined) {

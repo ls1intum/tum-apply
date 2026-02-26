@@ -36,7 +36,7 @@ export class InterviewProcessDetailComponent {
 
   private readonly updateTitleEffect = effect(() => {
     const title = this.jobTitle();
-    if (title) {
+    if (title !== null && title !== '') {
       this.updateTabTitle(title);
     }
   });
@@ -45,7 +45,7 @@ export class InterviewProcessDetailComponent {
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId');
-    if (id) {
+    if (id !== null && id !== '') {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
@@ -69,9 +69,7 @@ export class InterviewProcessDetailComponent {
       if (process.jobId) {
         this.jobId.set(process.jobId);
       }
-      if (process.invitedCount !== undefined) {
-        this.invitedCount.set(process.invitedCount);
-      }
+      this.invitedCount.set(process.invitedCount);
     } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');
     }
