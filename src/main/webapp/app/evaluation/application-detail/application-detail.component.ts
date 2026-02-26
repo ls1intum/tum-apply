@@ -127,7 +127,7 @@ export class ApplicationDetailComponent {
         applicant?.bachelorGrade,
         applicant?.bachelorGradeUpperLimit,
         applicant?.bachelorGradeLowerLimit,
-        this.translateService, // Pass the injected TranslateService here
+        this.translateService,
       ),
     };
   });
