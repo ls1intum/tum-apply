@@ -203,7 +203,14 @@
         "INVITED": "Invited",
         "SCHEDULED": "Scheduled",
         "UNCONTACTED": "Uncontacted",
-        "COMPLETED": "Completed"
+        "COMPLETED": "Completed",
+        "tooltip": {
+          "ALL": "Shows all interviewees in this interview process",
+          "INVITED": "Interviewees who have received an invitation but have not yet booked a slot",
+          "SCHEDULED": "Interviewees who have successfully booked a slot",
+          "UNCONTACTED": "Interviewees who have been added to the process but have not been contacted yet",
+          "COMPLETED": "Interviewees whose interview has already taken place"
+        }
       },
       "error": {
         "loadFailed": {
