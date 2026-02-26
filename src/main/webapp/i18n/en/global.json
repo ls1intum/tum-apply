@@ -122,10 +122,7 @@
         "email": "Invalid email.",
         "min": "This field should be at least {{ min }}.",
         "max": "This field cannot be more than {{ max }}.",
-        "tooManyDecimals": "Please enter at most two decimal places.",
-        "invalidGrade": "Please enter the grade as a positive number, percentage, or letter.",
-        "formatMismatch": "Please enter all values in the same format.",
-        "boundaryMismatch": "The highest achievable grade must be better than the lowest passing grade.",
+        "invalidLimitType": "Please use the same format as the entered grade.",
         "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
     },
@@ -194,8 +191,6 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Highest Achievable Grade",
-      "lower_passing_limit": "Lowest Passing Grade",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",
@@ -228,14 +223,16 @@
     },
     "filters": {
       "filter": "Filter",
+      "sortingAndFilter": "Sorting & Filter",
       "selected": "Selected",
+      "clearAll": "Clear All",
       "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
       "apply": "Apply",
-      "recordsFound": "{{count}} {{entity}} found"
+      "recordsFound": "{{count}} {{entity}} found",
+      "show": "Show Positions",
+      "resetFilter": "Reset Filter"
     },
-    "filterBy": "Filter By:",
-    "sortBy": "Sort By:",
     "sorting": {
       "ascending": {
         "text": "Ascending (A-Z)",
@@ -349,9 +346,6 @@
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved",
         "FAILED": "Failed saving changes"
-      },
-      "gradingScale": {
-        "ONE_TO_FOUR": "German Scale (One to Four)"
       }
     },
     "applicationPage1": {
@@ -401,9 +395,15 @@
         "masterDegreeUniversity": "University of your Master’s Degree",
         "masterGrade": "Final Master Grade"
       },
+      "helperText": {
+        "scale": "Scale: ",
+        "gradingScale": "{{upperLimit}} (best) to {{lowerLimit}} (pass)",
+        "changeScale": "Change Scale"
+      },
+      "warnText": "Unusual format, please check your entry",
       "tooltip": {
-        "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
-        "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
+        "gradeUpperLimit": "Enter the highest achievable grade in your degree grading system (e.g. 1.0 in Germany).",
+        "gradeLowerLimit": "Enter the lowest passing grade in your degree grading system (e.g. 4.0 in Germany).",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
         "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",

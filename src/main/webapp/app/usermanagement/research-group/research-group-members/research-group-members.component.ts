@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
@@ -38,6 +39,7 @@ interface MembersRow {
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
+    BackButtonComponent,
     ButtonComponent,
     TranslateDirective,
     FontAwesomeModule,
@@ -60,6 +62,7 @@ export class ResearchGroupMembersComponent {
   total = signal<number>(0);
 
   researchGroupId = signal<string | undefined>(undefined);
+  researchGroupName = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -78,14 +81,11 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed<MembersRow[]>(() => {
-    const currentUserAuthorities = this.accountService.userAuthorities;
-    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
-
     return this.members().map((member): MembersRow => {
       const isCurrentUser = this.isCurrentUser(member);
       let canRemove = !isCurrentUser;
 
-      if (isEmployee) {
+      if (this.isEmployee()) {
         canRemove = false;
       }
 
@@ -103,6 +103,8 @@ export class ResearchGroupMembersComponent {
       };
     });
   });
+
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false);
 
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
@@ -125,6 +127,10 @@ export class ResearchGroupMembersComponent {
   private readonly routeIdEffect = effect(() => {
     const id = this.routeId();
     this.researchGroupId.set(id);
+    this.researchGroupName.set(undefined);
+    if (id) {
+      void this.loadResearchGroupName(id);
+    }
     void this.loadMembers();
   });
 
@@ -186,10 +192,6 @@ export class ResearchGroupMembersComponent {
     });
   }
 
-  goBack(): void {
-    void this.router.navigate(['/research-group/admin-view']);
-  }
-
   /** Internal methods */
 
   private formatRoles(roles?: string[]): string {
@@ -203,5 +205,14 @@ export class ResearchGroupMembersComponent {
 
   private isCurrentUser(member: UserShortDTO): boolean {
     return member.userId === this.accountService.userId;
+  }
+
+  private async loadResearchGroupName(researchGroupId: string): Promise<void> {
+    try {
+      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      this.researchGroupName.set(researchGroup.name);
+    } catch {
+      this.researchGroupName.set(undefined);
+    }
   }
 }

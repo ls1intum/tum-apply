@@ -118,9 +118,14 @@ export class ApplicationDetailComponent {
   });
 
   currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
-  bachelorItemsComputed = computed(() => this.getBachelorItems(this.currentApplicationApplicant()));
-  masterItemsComputed = computed(() => this.getMasterItems(this.currentApplicationApplicant()));
-
+  bachelorItemsComputed = computed(() => {
+    this.currentLang();
+    return this.getBachelorItems(this.currentApplicationApplicant());
+  });
+  masterItemsComputed = computed(() => {
+    this.currentLang();
+    return this.getMasterItems(this.currentApplicationApplicant());
+  });
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
@@ -136,10 +141,11 @@ export class ApplicationDetailComponent {
   private readonly interviewResourceService = inject(InterviewResourceApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private toastService = inject(ToastService);
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  private currentLang = toSignal(this.translateService.onLangChange);
 
   private _queryParamEffect = effect(() => {
     const qp = this.qpSignal();
@@ -191,52 +197,66 @@ export class ApplicationDetailComponent {
 
   getBachelorItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
     if (!applicant) return [];
-    const items: DescItem[] = [
-      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
-      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
-      { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
-    ];
 
-    /* const converted = this.getGradeItem(
+    const gradeDisplay = this.formatGradeWithConversion(
       applicant.bachelorGrade,
       applicant.bachelorGradeUpperLimit,
       applicant.bachelorGradeLowerLimit,
-      'evaluation.details.educationGradeConverted',
-      'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);*/
-    return items;
+    return [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
+      {
+        labelKey: 'evaluation.details.educationGrade',
+        value: gradeDisplay.displayValue,
+        tooltipText: gradeDisplay.tooltipText,
+      },
+    ];
   }
 
   getMasterItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
     if (!applicant) return [];
-    const items: DescItem[] = [
-      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
-      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
-      { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
-    ];
 
-    /* const converted = this.getGradeItem(
+    const gradeDisplay = this.formatGradeWithConversion(
       applicant.masterGrade,
       applicant.masterGradeUpperLimit,
       applicant.masterGradeLowerLimit,
-      'evaluation.details.educationGradeConverted',
-      'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);*/
-    return items;
+    return [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
+      {
+        labelKey: 'evaluation.details.educationGrade',
+        value: gradeDisplay.displayValue,
+        tooltipText: gradeDisplay.tooltipText,
+      },
+    ];
   }
 
-  getGradeItem(
+  /**
+   * Formats a grade with conversion info inline.
+   * Returns converted grade with original in parentheses if conversion happened.
+   *
+   * @returns Object with displayValue, wasConverted flag, and interpolated tooltipText
+   */
+  formatGradeWithConversion(
     grade: string | undefined,
     upperLimit: string | undefined,
     lowerLimit: string | undefined,
-    convertedLabel: string,
-    tooltipText?: string,
-  ): DescItem[] {
+  ): { displayValue: string; wasConverted: boolean; tooltipText?: string } {
     const originalGrade = grade ?? '';
+
+    if (originalGrade === '') {
+      return { displayValue: '', wasConverted: false };
+    }
+
+    if (!upperLimit || !lowerLimit) {
+      const tooltipText = this.translateService.instant('evaluation.details.conversionFailedTooltip');
+      return { displayValue: originalGrade, wasConverted: false, tooltipText };
+    }
+
     const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
 
     const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
@@ -245,11 +265,21 @@ export class ApplicationDetailComponent {
     const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
     const roundedConverted = Math.floor(numericConverted * 10) / 10;
 
-    if (!convertedGrade || roundedOriginal === roundedConverted) {
-      return [];
+    if (convertedGrade === '' || roundedOriginal === roundedConverted) {
+      const tooltipText = convertedGrade === '' ? this.translateService.instant('evaluation.details.conversionFailedTooltip') : undefined;
+      return { displayValue: originalGrade, wasConverted: false, tooltipText };
     }
 
-    return [{ labelKey: convertedLabel, value: convertedGrade, tooltipText }];
+    const tooltipText = this.translateService.instant('evaluation.details.converterTooltip', {
+      upperLimit,
+      lowerLimit,
+    });
+
+    return {
+      displayValue: `${convertedGrade} (${originalGrade})`,
+      wasConverted: true,
+      tooltipText,
+    };
   }
 
   onSearchEmit(searchQuery: string): void {

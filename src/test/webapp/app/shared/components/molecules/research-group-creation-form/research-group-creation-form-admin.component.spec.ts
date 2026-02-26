@@ -9,10 +9,12 @@ import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroup
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { provideTranslateMock } from 'util/translate.mock';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
@@ -36,6 +38,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
   let mockSchoolService: Partial<SchoolResourceApiService>;
   let mockDepartmentService: Partial<DepartmentResourceApiService>;
+  let mockUserService: Partial<UserResourceApiService>;
+  let mockGetCurrentUser: ReturnType<typeof vi.fn>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -79,6 +83,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       ),
     } as unknown as DepartmentResourceApiService;
 
+    mockGetCurrentUser = vi.fn(() => of({} as UserShortDTO));
+    mockUserService = {
+      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApiService['getCurrentUser'],
+    } as unknown as UserResourceApiService;
+
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
       providers: [
@@ -92,6 +101,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
         { provide: SchoolResourceApiService, useValue: mockSchoolService },
         { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
+        { provide: UserResourceApiService, useValue: mockUserService },
       ],
     }).compileComponents();
 
@@ -130,6 +140,10 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   describe('Admin Mode', () => {
     it('should set mode to admin when provided in dialog config', () => {
       expect(component.mode()).toBe('admin');
+    });
+
+    it('should not request current user prefill data in admin mode', () => {
+      expect(mockGetCurrentUser).not.toHaveBeenCalled();
     });
 
     it('should disable personal information fields in admin mode', () => {
