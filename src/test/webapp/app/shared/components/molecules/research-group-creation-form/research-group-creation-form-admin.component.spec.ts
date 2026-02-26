@@ -86,10 +86,12 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     } as unknown as DepartmentResourceApiService;
 
     mockGetCurrentUser = vi.fn(() => of({} as UserShortDTO));
+    getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
     mockUserService = {
       getCurrentUser: mockGetCurrentUser as unknown as UserResourceApiService['getCurrentUser'],
+      getAvailableUsersForResearchGroup:
+        getAvailableUsersForResearchGroupMock as unknown as UserResourceApiService['getAvailableUsersForResearchGroup'],
     } as unknown as UserResourceApiService;
-    getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
