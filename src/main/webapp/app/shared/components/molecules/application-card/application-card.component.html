@@ -41,12 +41,24 @@
     </div>
 
     <!-- Master's Degree Info -->
-    @if (masterDegree()) {
+    @if (masterSummary().degree || masterSummary().university) {
       <div class="flex flex-col gap-0.5">
         <span class="text-sm text-text-secondary uppercase tracking-wide">{{ 'evaluation.masterDegree' | translate }}</span>
-        <span>{{ masterDegree()!.name }}</span>
+        <span>{{ masterSummary().degree || '—' }}</span>
         <span class="text-sm">
-          {{ masterDegree()!.university }} &middot; {{ 'evaluation.grade' | translate }}: {{ masterDegree()!.grade }}
+          {{ masterSummary().university || '—' }}
+          @if (masterSummary().gradeInfo.displayValue) {
+            &middot; {{ 'evaluation.grade' | translate }}: {{ masterSummary().gradeInfo.displayValue }}
+            @if (masterSummary().gradeInfo.tooltipText) {
+              <fa-icon
+                class="icon"
+                [icon]="['fas', 'circle-info']"
+                [pTooltip]="masterSummary().gradeInfo.tooltipText"
+                [escape]="false"
+                tooltipPosition="top"
+              />
+            }
+          }
         </span>
       </div>
     }

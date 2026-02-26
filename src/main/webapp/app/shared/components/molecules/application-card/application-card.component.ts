@@ -1,18 +1,20 @@
 import { convertLikertToStandardRating } from 'app/shared/util/rating.util';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
 import { DividerModule } from 'primeng/divider';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { StarRatingComponent } from 'app/shared/components/atoms/star-rating/star-rating.component';
 import { getInitials } from 'app/shared/util/util';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, DividerModule, StarRatingComponent],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, DividerModule, StarRatingComponent, TooltipModule],
   templateUrl: './application-card.component.html',
   host: {
     class: 'flex flex-col h-full',
@@ -57,11 +59,6 @@ export class ApplicationCardComponent {
     return getInitials(fullName ?? '');
   });
 
-  readonly masterDegree = computed(() => {
-    const applicant = this.applicationDetails()?.applicant;
-    return this.calculateMasterDegree(applicant);
-  });
-
   /**
    * Converts the average rating from Likert scale (-2 to +2) to standard 1-5 scale
    */
@@ -93,21 +90,22 @@ export class ApplicationCardComponent {
     return 'text-sm';
   });
 
-  private calculateMasterDegree(
-    applicant: ApplicantForApplicationDetailDTO | undefined,
-  ): { name: string; university: string; grade: string } | null {
-    if (applicant === undefined) {
-      return null;
-    }
-    const degreeName = applicant.masterDegreeName;
-    const university = applicant.masterUniversity;
-    if (degreeName === undefined && university === undefined) {
-      return null;
-    }
+  readonly translateService = inject(TranslateService);
+  currentLang = toSignal(this.translateService.onLangChange);
+
+  readonly masterSummary = computed(() => {
+    const applicant = this.applicationDetails()?.applicant;
+    this.currentLang();
+
     return {
-      name: degreeName ?? '—',
-      university: university ?? '—',
-      grade: applicant.masterGrade ?? '—',
+      degree: applicant?.masterDegreeName,
+      university: applicant?.masterUniversity,
+      gradeInfo: formatGradeWithTranslation(
+        applicant?.masterGrade,
+        applicant?.masterGradeUpperLimit,
+        applicant?.masterGradeLowerLimit,
+        this.translateService,
+      ),
     };
-  }
+  });
 }

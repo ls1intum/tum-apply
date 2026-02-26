@@ -131,14 +131,24 @@
             </div>
             <div class="text-sm">
               <!-- Bachelor's Degree -->
-              @if (bachelorItemsComputed()[0]?.value || bachelorItemsComputed()[1]?.value) {
+              @if (bachelorSummary().degree || bachelorSummary().university) {
                 <span>
-                  {{ bachelorItemsComputed()[0]?.value || '—' }}
-                  @if (bachelorItemsComputed()[1]?.value) {
-                    , {{ bachelorItemsComputed()[1]?.value }}
-                  }
-                  @if (bachelorItemsComputed()[2]?.value) {
-                    (<span jhiTranslate="evaluation.details.grade"></span>: {{ bachelorItemsComputed()[2]?.value }})
+                  {{ bachelorSummary().degree || '—' }}{{ bachelorSummary().university ? ', ' + bachelorSummary().university : ''
+                  }}{{ bachelorSummary().gradeInfo.displayValue ? ', ' : '' }}
+
+                  @if (bachelorSummary().gradeInfo.displayValue) {
+                    <span jhiTranslate="evaluation.details.grade"></span>:
+                    {{ bachelorSummary().gradeInfo.displayValue }}
+
+                    @if (bachelorSummary().gradeInfo.tooltipText) {
+                      <fa-icon
+                        class="icon"
+                        [icon]="['fas', 'circle-info']"
+                        [pTooltip]="bachelorSummary().gradeInfo.tooltipText"
+                        [escape]="false"
+                        tooltipPosition="top"
+                      />
+                    }
                   }
                 </span>
                 <span> &middot; </span>
