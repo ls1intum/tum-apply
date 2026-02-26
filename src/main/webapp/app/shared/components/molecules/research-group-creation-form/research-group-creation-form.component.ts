@@ -309,7 +309,7 @@ export class ResearchGroupCreationFormComponent {
 
         const startIndex = page * this.ADMIN_USERS_PAGE_SIZE;
         const pageContent = filteredUsers.slice(startIndex, startIndex + this.ADMIN_USERS_PAGE_SIZE);
-        const nextCandidates = append ? [...this.adminProfessorCandidates(), ...pageContent] : pageContent;
+        const nextCandidates = append ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
 
         this.adminProfessorCandidates.set(nextCandidates);
         this.adminProfessorTotalCount.set(filteredUsers.length);
@@ -325,7 +325,7 @@ export class ResearchGroupCreationFormComponent {
       }
 
       const pageContent = response.content ?? [];
-      const nextCandidates = append ? [...this.adminProfessorCandidates(), ...pageContent] : pageContent;
+      const nextCandidates = append ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
 
       this.adminProfessorCandidates.set(nextCandidates);
       this.adminProfessorTotalCount.set(response.totalElements ?? nextCandidates.length);

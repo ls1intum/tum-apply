@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeycloakUserService {
 
+    public record PagedResult<T>(List<T> content, long total) {}
+
     private final CurrentUserService currentUserService;
     private final Keycloak keycloak;
     private final String realm;
@@ -53,51 +55,16 @@ public class KeycloakUserService {
     }
 
     /**
-     * Retrieves all Keycloak users matching the given search key.
-     * The search is performed against username, first name, last name, and email.
-     *
-     * @param searchKey the search key to filter users; must not be {@code null}
-     * @param pageDTO   pagination information
-     * @return a list of {@link KeycloakUserDTO} matching the search criteria
-     */
-    public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
-        List<KeycloakUserDTO> filtered = searchTumUsers(searchKey, true);
-        return paginate(pageDTO, filtered);
-    }
-
-    /**
-     * Returns the number of Keycloak users matching the given search key.
-     * Note: Querying all users for a count may be expensive. Use reasonable limits or adjust as needed.
-     *
-     * @param searchKey filter for username, first name, last name or email
-     * @return total number of matching users
-     */
-    public long countUsers(String searchKey) {
-        return searchTumUsers(searchKey, true).size();
-    }
-
-    /**
      * Retrieves Keycloak users that are eligible to be added to a research group.
      * Excludes users already assigned to any local research group.
      *
      * @param searchKey search key for Keycloak query
      * @param pageDTO local pagination parameters
-     * @return paginated list of available Keycloak users
+     * @return paginated list of available Keycloak users and the total amount before pagination
      */
-    public List<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO) {
+    public PagedResult<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO) {
         List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(searchTumUsers(searchKey, true));
-        return paginate(pageDTO, availableUsers);
-    }
-
-    /**
-     * Counts Keycloak users that are eligible to be added to a research group.
-     * Excludes users already assigned to any local research group.
-     *
-     * @param searchKey search key for Keycloak query
-     * @return total number of available users
-     */
-    public long countAvailableUsersForResearchGroup(String searchKey) {
-        return filterOutAssignedUsers(searchTumUsers(searchKey, true)).size();
+        return new PagedResult<>(paginate(pageDTO, availableUsers), availableUsers.size());
     }
 
     /**

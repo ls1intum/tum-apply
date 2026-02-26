@@ -15,6 +15,7 @@ import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import de.tum.cit.aet.usermanagement.web.UserResource.UpdatePasswordDTO;
 import de.tum.cit.aet.utility.DatabaseCleaner;
@@ -189,8 +190,9 @@ public class UserResourceTest extends AbstractResourceTest {
                 "ab12cde"
             );
 
-            when(keycloakUserService.getAvailableUsersForResearchGroup(eq("alice"), any())).thenReturn(List.of(keycloakUser));
-            when(keycloakUserService.countAvailableUsersForResearchGroup("alice")).thenReturn(1L);
+            when(keycloakUserService.getAvailableUsersForResearchGroup(eq("alice"), any())).thenReturn(
+                new PagedResult<>(List.of(keycloakUser), 1L)
+            );
 
             PageResponseDTO<KeycloakUserDTO> result = api
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_ADMIN"))
@@ -205,7 +207,6 @@ public class UserResourceTest extends AbstractResourceTest {
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getContent()).extracting(KeycloakUserDTO::universityId).containsExactly("ab12cde");
             verify(keycloakUserService, times(1)).getAvailableUsersForResearchGroup(eq("alice"), any());
-            verify(keycloakUserService, times(1)).countAvailableUsersForResearchGroup("alice");
         }
 
         @Test
