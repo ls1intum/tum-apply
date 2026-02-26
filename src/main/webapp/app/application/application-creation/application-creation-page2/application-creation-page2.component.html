@@ -49,34 +49,13 @@
           [control]="page2Form.controls.bachelorGrade"
           icon="circle-info"
           [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
+          [helperTextLeft]="helperTextBachelorGrade()"
+          [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+          (helperTextRightClick)="onChangeGradingScale('bachelor')"
+          [warningText]="warningTextBachelorGrade()"
         />
       </div>
     </div>
-
-    <!--
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}" [required]="true"
-        [(model)]="data.bachelorGradeUpperLimit" [control]="page2Form.controls.bachelorGradeUpperLimit"
-        icon="circle-info" [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeUpperLimit' | translate" />
-    </div>
-      <div class="form-field">
-        <jhi-string-input
-          label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
-          [required]="true"
-          [(model)]="data.bachelorGradeLowerLimit"
-          [control]="page2Form.controls.bachelorGradeLowerLimit"
-          icon="circle-info"
-          [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeLowerLimit' | translate"
-        />
-      </div>
-    <div class="form-field">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}" [required]="true"
-        [(model)]="data.bachelorGrade" [control]="page2Form.controls.bachelorGrade" icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate" />
-    </div>
-  </div>
-   -->
 
     <p-divider layout="horizontal">
       <span jhiTranslate="entity.applicationPage2.section.master"></span>
@@ -125,29 +104,14 @@
           [control]="page2Form.controls.masterGrade"
           icon="circle-info"
           [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
+          [helperTextLeft]="helperTextMasterGrade()"
+          [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+          (helperTextRightClick)="onChangeGradingScale('master')"
+          [warningText]="warningTextMasterGrade()"
         />
       </div>
     </div>
-
-    <!--
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}" [required]="true"
-        [(model)]="data.masterGradeUpperLimit" [control]="page2Form.controls.masterGradeUpperLimit" icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterGradeUpperLimit' | translate" />
-    </div>
-    <div class="form-field">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}" [required]="true"
-        [(model)]="data.masterGradeLowerLimit" [control]="page2Form.controls.masterGradeLowerLimit" icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterGradeLowerLimit' | translate" />
-    </div>
-    <div class="form-field">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}" [required]="true"
-        [(model)]="data.masterGrade" [control]="page2Form.controls.masterGrade" icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate" />
-    </div>
-  </div>
-  --></form>
+  </form>
 }
 <ng-template
   #gradeInput
@@ -169,6 +133,5 @@
     [max]="4"
     [minFractionDigits]="0"
     [maxFractionDigits]="1"
-    [customErrorKey]="'entity.applicationPage2.validation.invalidGrade'"
   />
 </ng-template>

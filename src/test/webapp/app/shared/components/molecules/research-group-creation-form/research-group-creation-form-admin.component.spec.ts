@@ -15,6 +15,7 @@ import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { KeycloakUserDTO } from 'app/generated/model/keycloakUserDTO';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
@@ -39,6 +40,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   let mockSchoolService: Partial<SchoolResourceApiService>;
   let mockDepartmentService: Partial<DepartmentResourceApiService>;
   let mockUserService: Partial<UserResourceApiService>;
+  let mockGetCurrentUser: ReturnType<typeof vi.fn>;
   let getAvailableUsersForResearchGroupMock: ReturnType<typeof vi.fn>;
   let mockToastService: ToastServiceMock;
 
@@ -83,10 +85,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       ),
     } as unknown as DepartmentResourceApiService;
 
-    getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
+    mockGetCurrentUser = vi.fn(() => of({} as UserShortDTO));
     mockUserService = {
-      getAvailableUsersForResearchGroup: getAvailableUsersForResearchGroupMock,
+      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApiService['getCurrentUser'],
     } as unknown as UserResourceApiService;
+    getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
@@ -141,6 +144,10 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   describe('Admin Mode', () => {
     it('should set mode to admin when provided in dialog config', () => {
       expect(component.mode()).toBe('admin');
+    });
+
+    it('should not request current user prefill data in admin mode', () => {
+      expect(mockGetCurrentUser).not.toHaveBeenCalled();
     });
 
     it('should disable personal information fields in admin mode', () => {

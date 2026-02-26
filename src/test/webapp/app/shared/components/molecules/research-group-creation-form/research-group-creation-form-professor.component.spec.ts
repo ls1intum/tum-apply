@@ -9,10 +9,12 @@ import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroup
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -37,6 +39,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
   let mockSchoolService: Partial<SchoolResourceApiService>;
   let mockDepartmentService: Partial<DepartmentResourceApiService>;
+  let mockUserService: Partial<UserResourceApiService>;
+  let mockGetCurrentUser: ReturnType<typeof vi.fn>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -80,6 +84,11 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       ),
     } as unknown as DepartmentResourceApiService;
 
+    mockGetCurrentUser = vi.fn(() => of({} as UserShortDTO));
+    mockUserService = {
+      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApiService['getCurrentUser'],
+    } as unknown as UserResourceApiService;
+
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
       providers: [
@@ -93,6 +102,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
         { provide: SchoolResourceApiService, useValue: mockSchoolService },
         { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
+        { provide: UserResourceApiService, useValue: mockUserService },
       ],
     }).compileComponents();
 
@@ -131,6 +141,10 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
    * Verifies that all form controls are properly created with correct initial states
    */
   describe('Form Initialization', () => {
+    it('should request current user data for professor prefill', () => {
+      expect(mockGetCurrentUser).toHaveBeenCalledOnce();
+    });
+
     it('should initialize with all required form fields', () => {
       expect(component.form.get('title')).toBeTruthy();
       expect(component.form.get('firstName')).toBeTruthy();
@@ -144,6 +158,52 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       expect(component.form.get('title')?.value).toBe('');
       expect(component.form.get('firstName')?.value).toBe('');
       expect(component.form.get('lastName')?.value).toBe('');
+    });
+
+    it('should prefill professor fields from current user data', async () => {
+      mockGetCurrentUser.mockReturnValue(
+        of({
+          firstName: 'Anna',
+          lastName: 'Muster',
+          email: 'anna.muster@tum.de',
+          universityId: 'ab12cde',
+        } as UserShortDTO),
+      );
+
+      await (component as any).prefillProfessorData();
+
+      expect(component.form.get('firstName')?.value).toBe('Anna');
+      expect(component.form.get('lastName')?.value).toBe('Muster');
+      expect(component.form.get('tumID')?.value).toBe('ab12cde');
+      expect(component.form.get('researchGroupHead')?.value).toBe('Anna Muster');
+      expect(component.form.get('researchGroupContactEmail')?.value).toBe('anna.muster@tum.de');
+    });
+
+    it('should not overwrite already entered values when prefilling', async () => {
+      component.form.patchValue({
+        firstName: 'ManualFirst',
+        lastName: 'ManualLast',
+        tumID: 'zz99zzz',
+        researchGroupHead: 'Manual Head',
+        researchGroupContactEmail: 'manual@tum.de',
+      });
+
+      mockGetCurrentUser.mockReturnValue(
+        of({
+          firstName: 'PrefilledFirst',
+          lastName: 'PrefilledLast',
+          email: 'prefilled@tum.de',
+          universityId: 'ab12cde',
+        } as UserShortDTO),
+      );
+
+      await (component as any).prefillProfessorData();
+
+      expect(component.form.get('firstName')?.value).toBe('ManualFirst');
+      expect(component.form.get('lastName')?.value).toBe('ManualLast');
+      expect(component.form.get('tumID')?.value).toBe('zz99zzz');
+      expect(component.form.get('researchGroupHead')?.value).toBe('Manual Head');
+      expect(component.form.get('researchGroupContactEmail')?.value).toBe('manual@tum.de');
     });
 
     it('should mark required fields as invalid when empty', () => {
