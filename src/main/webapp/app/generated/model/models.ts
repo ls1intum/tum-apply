@@ -72,6 +72,7 @@ export * from './pageResponseDTOInterviewSlotDTO';
 export * from './pageResponseDTOKeycloakUserDTO';
 export * from './pageResponseDTOResearchGroupAdminDTO';
 export * from './pageResponseDTOResearchGroupDTO';
+export * from './pageResponseDTOSchoolShortDTO';
 export * from './pageResponseDTOUserShortDTO';
 export * from './pageableObject';
 export * from './profOnboardingDTO';
