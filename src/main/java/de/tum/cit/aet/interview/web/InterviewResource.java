@@ -15,6 +15,7 @@ import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
 import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
