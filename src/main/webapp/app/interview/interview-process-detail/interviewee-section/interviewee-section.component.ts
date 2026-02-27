@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationE
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 import { SendInvitationsResultDTO } from 'app/generated/model/sendInvitationsResultDTO';
+import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -55,6 +56,9 @@ export class IntervieweeSectionComponent {
   jobTitle = input.required<string>();
   refreshKey = input<number>(0);
 
+  // Component Outputs
+  slotsRefresh = output();
+
   // Interviewee List State
   interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
   loadingInterviewees = signal(false);
@@ -76,6 +80,12 @@ export class IntervieweeSectionComponent {
   pageSize = signal(10);
   totalApplicants = signal(0);
   pendingResendId = signal<string | null>(null);
+
+  // Cancellation State
+  showCancelModal = signal(false);
+  selectedIntervieweeForCancel = signal<IntervieweeDTO | null>(null);
+  cancelSendReinvite = signal(false);
+  cancelDeleteSlot = signal(true);
 
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
@@ -305,6 +315,51 @@ export class IntervieweeSectionComponent {
     if (id !== null && processId !== '') {
       void this.performSendInvitation(processId, id);
       this.pendingResendId.set(null);
+    }
+  }
+
+  onCancelInterview(interviewee: IntervieweeDTO): void {
+    this.selectedIntervieweeForCancel.set(interviewee);
+    this.cancelSendReinvite.set(true);
+    this.cancelDeleteSlot.set(false);
+    this.showCancelModal.set(true);
+  }
+
+  async onCancelInterviewConfirm(): Promise<void> {
+    const interviewee = this.selectedIntervieweeForCancel();
+    const processId = this.processId();
+    if (interviewee?.scheduledSlot?.id == null || processId === '') return;
+
+    try {
+      const cancelParams: CancelInterviewDTO = {
+        sendReinvite: this.cancelSendReinvite(),
+        deleteSlot: this.cancelDeleteSlot(),
+      };
+
+      await firstValueFrom(this.interviewService.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
+
+      this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
+
+      // Update the interviewee state optimistically based on whether we reinvited
+      this.interviewees.update(list =>
+        list.map(i => {
+          if (i.id === interviewee.id) {
+            return {
+              ...i,
+              state: this.cancelSendReinvite() ? 'INVITED' : 'UNCONTACTED',
+              scheduledSlot: undefined,
+            };
+          }
+          return i;
+        }),
+      );
+
+      // Notify parent to refresh slots section
+      this.slotsRefresh.emit();
+    } catch {
+      this.toastService.showErrorKey('interview.slots.cancelInterview.error');
+    } finally {
+      this.showCancelModal.set(false);
     }
   }
 

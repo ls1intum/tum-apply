@@ -64,8 +64,9 @@
                       <jhi-slot-card
                         [slot]="slot"
                         (editSlot)="onEditSlot()"
-                        (deleteSlot)="onDeleteSlot(slot)"
-                        (assignApplicant)="onAssignApplicant(slot)"
+                        (deleteSlot)="onDeleteSlot($event)"
+                        (assignApplicant)="onAssignApplicant($event)"
+                        (cancelInterview)="onCancelInterview($event)"
                       />
                     }
 
@@ -139,11 +140,55 @@
 
 @if (selectedSlotForAssignment()) {
   <jhi-assign-applicant-modal
-    [visible]="showAssignModal()"
-    [slot]="selectedSlotForAssignment()!"
     [processId]="processId()"
-    [refreshKey]="refreshKey()"
+    [slot]="selectedSlotForAssignment()!"
+    [visible]="showAssignModal()"
     (visibleChange)="showAssignModal.set($event)"
-    (applicantAssigned)="onApplicantAssigned()"
+    (applicantAssigned)="onApplicantAssigned($event)"
   />
+}
+
+@if (selectedSlotForCancel()) {
+  <jhi-dialog
+    header="interview.slots.cancelInterview.header"
+    [shouldTranslateHeader]="true"
+    [(visible)]="showCancelModal"
+    [modal]="true"
+    [closable]="true"
+  >
+    <div class="flex flex-col gap-4 mt-2">
+      <p class="text-sm text-text-primary mb-1" jhiTranslate="interview.slots.cancelInterview.message">
+        Are you sure you want to cancel this interview?
+      </p>
+
+      <div class="flex flex-col gap-3">
+        <jhi-checkbox
+          [model]="cancelDeleteSlot()"
+          (modelChange)="cancelDeleteSlot.set($event)"
+          label="interview.slots.cancelInterview.deleteSlot"
+          inputId="deleteSlotCb"
+          [shouldTranslate]="true"
+          class="text-sm text-text-primary"
+        />
+        <jhi-checkbox
+          [model]="cancelSendReinvite()"
+          (modelChange)="cancelSendReinvite.set($event)"
+          label="interview.slots.cancelInterview.sendReinvite"
+          inputId="sendReinviteCb"
+          [shouldTranslate]="true"
+          class="text-sm text-text-primary"
+        />
+      </div>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <jhi-button variant="text" label="interview.slots.create.cancel" [shouldTranslate]="true" (click)="showCancelModal.set(false)" />
+        <jhi-button
+          severity="primary"
+          label="interview.slots.cancelInterview.button"
+          [shouldTranslate]="true"
+          (click)="onCancelInterviewConfirm()"
+        />
+      </div>
+    </div>
+  </jhi-dialog>
 }

@@ -705,6 +705,7 @@ public class InterviewService {
         String icsFileName = icsCalendarService.generateFileName(slot);
 
         EmailType type = isReschedule ? EmailType.INTERVIEW_RESCHEDULE_REQUESTED : EmailType.INTERVIEW_CANCELLED;
+        Object emailContent = isReschedule ? interviewee : slot;
 
         // Email to Applicant (with ICS cancellation)
         Email email = Email.builder()
@@ -712,7 +713,7 @@ public class InterviewService {
             .emailType(type)
             .language(Language.fromCode(applicant.getSelectedLanguage()))
             .researchGroup(job.getResearchGroup())
-            .content(slot)
+            .content(emailContent)
             .icsContent(icsContent)
             .icsFileName(icsFileName)
             .build();

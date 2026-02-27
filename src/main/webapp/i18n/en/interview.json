@@ -169,6 +169,21 @@
           "summary": "Permission denied",
           "detail": "You don't have permission to delete this slot"
         }
+      },
+      "cancelInterview": {
+        "header": "Cancel Interview",
+        "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
+        "button": "Cancel Interview",
+        "sendReinvite": "Re-invite applicant (Send booking link)",
+        "deleteSlot": "Delete this slot completely",
+        "success": {
+          "summary": "Interview cancelled",
+          "detail": "The interview has been successfully cancelled."
+        },
+        "error": {
+          "summary": "Cancellation failed",
+          "detail": "The interview could not be cancelled. Please try again or contact an admin."
+        }
       }
     },
     "interviewees": {
