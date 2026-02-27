@@ -42,11 +42,20 @@ export class SlotCardComponent {
       items.push({
         label: 'interview.slots.cancelInterview.button',
         icon: 'xmark',
-        command: () => this.onCancelInterview(),
+        command: () => {
+          this.onCancelInterview();
+        },
         severity: 'danger',
       });
     } else {
-      items.push({ label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' });
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        command: () => {
+          this.deleteDialog().confirm();
+        },
+        severity: 'danger',
+      });
     }
     return items;
   });

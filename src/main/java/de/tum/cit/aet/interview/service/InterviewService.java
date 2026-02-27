@@ -628,16 +628,14 @@ public class InterviewService {
     }
 
     /**
-     * Assigns an interviewee to an interview slot.
+     * Cancels an interview slot and optionally deletes it and/or sends a reinvite.
      *
-     * @param slotId        the ID of the slot to assign
-     * @param applicationId the ID of the application whose interviewee should be
-     *                      assigned
-     * @return the updated slot as DTO with interviewee details
-     * @throws EntityNotFoundException        if slot or interviewee not found
-     * @throws AccessDeniedException          if user doesn't have job access
-     * @throws ResourceAlreadyExistsException if slot is already booked
-     * @throws BadRequestException            if interviewee already has a slot
+     * @param processId    the ID of the interview process
+     * @param slotId       the ID of the slot to cancel
+     * @param cancelParams the DTO containing cancellation options
+     * @throws EntityNotFoundException if slot not found
+     * @throws BadRequestException     if slot does not belong to process or is
+     *                                 unbooked
      */
     @Transactional
     public void cancelInterview(UUID processId, UUID slotId, CancelInterviewDTO cancelParams) {
@@ -720,6 +718,18 @@ public class InterviewService {
         asyncEmailSender.sendAsync(email);
     }
 
+    /**
+     * Assigns an interviewee to an interview slot.
+     *
+     * @param slotId        the ID of the slot to assign
+     * @param applicationId the ID of the application whose interviewee should be
+     *                      assigned
+     * @return the updated slot as DTO with interviewee details
+     * @throws EntityNotFoundException        if slot or interviewee not found
+     * @throws AccessDeniedException          if user doesn't have job access
+     * @throws ResourceAlreadyExistsException if slot is already booked
+     * @throws BadRequestException            if interviewee already has a slot
+     */
     @Transactional
     public InterviewSlotDTO assignSlotToInterviewee(UUID slotId, UUID applicationId) {
         // 1. Load the slot with job for security check

@@ -320,8 +320,8 @@ export class IntervieweeSectionComponent {
 
   onCancelInterview(interviewee: IntervieweeDTO): void {
     this.selectedIntervieweeForCancel.set(interviewee);
-    this.cancelSendReinvite.set(true);
-    this.cancelDeleteSlot.set(false);
+    this.cancelSendReinvite.set(false);
+    this.cancelDeleteSlot.set(true);
     this.showCancelModal.set(true);
   }
 
