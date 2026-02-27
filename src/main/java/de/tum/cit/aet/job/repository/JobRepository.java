@@ -9,6 +9,7 @@ import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,40 +24,38 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     /**
-     * Finds all jobs created by a specific professor, filtered optionally by title
-     * and job state.
+     * Finds all jobs that belong to a given research group, with optional state and title/professor search filters.
      * Results are paginated.
      *
-     * @param userId      the ID of the professor (user)
-     * @param states      a list of job states to filter by (nullable)
-     * @param searchQuery general search term for job title (nullable, whitespace
-     *                    will be trimmed)
-     * @param pageable    pagination and sorting information
-     * @return a page of {@link CreatedJobDTO} matching the criteria
+     * @param researchGroupId the research group ID to filter by
+     * @param states          the optional list of job states to include
+     * @param searchQuery     the optional search string for job title or professor name
+     * @param pageable        the pagination configuration
+     * @return a page of matching jobs
      */
     @Query(
         """
-            SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
-                j.jobId,
-                j.supervisingProfessor.avatar,
-                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                j.state,
-                j.title,
-                j.startDate,
-                j.createdAt,
-                j.lastModifiedAt
-            )
-            FROM Job j
-            WHERE j.supervisingProfessor.userId = :userId
-            AND (:states IS NULL OR j.state IN :states)
-            AND (:searchQuery IS NULL OR
-                 j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE CONCAT('%', :searchQuery, '%')
-            )
+          SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
+            j.jobId,
+            j.supervisingProfessor.avatar,
+            CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+            j.state,
+            j.title,
+            j.startDate,
+            j.createdAt,
+            j.lastModifiedAt
+          )
+          FROM Job j
+          WHERE j.researchGroup.researchGroupId = :researchGroupId
+          AND (:states IS NULL OR j.state IN :states)
+          AND (:searchQuery IS NULL OR
+             j.title LIKE CONCAT('%', :searchQuery, '%') OR
+             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE CONCAT('%', :searchQuery, '%')
+          )
         """
     )
-    Page<CreatedJobDTO> findAllJobsByProfessor(
-        @Param("userId") UUID userId,
+    Page<CreatedJobDTO> findAllJobsByResearchGroup(
+        @Param("researchGroupId") UUID researchGroupId,
         @Param("states") List<JobState> states,
         @Param("searchQuery") String searchQuery,
         Pageable pageable
@@ -146,6 +145,15 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("searchQuery") String searchQuery,
         Pageable pageable
     );
+
+    /**
+     * Returns the supervising professor's user ID for the given job.
+     *
+     * @param jobId the job ID
+     * @return the supervising professor's user ID
+     */
+    @Query("SELECT j.supervisingProfessor.userId FROM Job j WHERE j.jobId = :jobId")
+    Optional<UUID> findSupervisingProfessorUserIdByJobId(@Param("jobId") UUID jobId);
 
     /**
      * Finds all available job postings with optional filtering options. Sorting is
@@ -275,11 +283,29 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     /**
      * Reassigns jobs supervised by a specific user to a deleted user.
      *
-     * @param user the user whose jobs are to be reassigned
+     * @param user        the user whose jobs are to be reassigned
      * @param deletedUser the deleted user to whom the jobs will be reassigned
-     * @param state the job state to apply after reassignment
+     * @param state       the job state to apply after reassignment
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Job j SET j.supervisingProfessor = :deletedUser, j.state = :state WHERE j.supervisingProfessor = :user")
     void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUser") User deletedUser, @Param("state") JobState state);
+
+    /**
+     * Checks if an image is referenced by any job
+     *
+     * @param imageId the image ID to check
+     * @return true if at least one job references this image, false otherwise
+     */
+    @Query("SELECT COUNT(j) > 0 FROM Job j WHERE j.image.imageId = :imageId")
+    boolean existsByImageId(@Param("imageId") UUID imageId);
+
+    /**
+     * Finds all image IDs that are currently referenced by at least one job
+     *
+     * @param imageIds the list of image IDs to check
+     * @return set of image IDs that are in use
+     */
+    @Query("SELECT DISTINCT j.image.imageId FROM Job j WHERE j.image.imageId IN :imageIds")
+    Set<UUID> findInUseImageIds(@Param("imageIds") List<UUID> imageIds);
 }

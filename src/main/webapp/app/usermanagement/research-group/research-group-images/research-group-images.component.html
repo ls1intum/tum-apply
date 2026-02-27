@@ -1,0 +1,123 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 jhiTranslate="researchGroup.imageLibrary.title"></h1>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <ng-container
+      *ngTemplateOutlet="
+        statsCard;
+        context: { icon: 'image', count: totalImages(), labelKey: 'researchGroup.imageLibrary.stats.totalImages' }
+      "
+    />
+    <ng-container
+      *ngTemplateOutlet="statsCard; context: { icon: 'image', count: inUseCount(), labelKey: 'researchGroup.imageLibrary.stats.inUse' }"
+    />
+    <ng-container
+      *ngTemplateOutlet="
+        statsCard;
+        context: { icon: 'image', count: notInUseCount(), labelKey: 'researchGroup.imageLibrary.stats.notInUse' }
+      "
+    />
+  </div>
+
+  @if (isLoading()) {
+    <!-- Loading State -->
+    <div class="flex flex-col items-center justify-center py-16">
+      <jhi-progress-spinner styleClass="w-16 h-16" strokeWidth="4" />
+      <p class="mt-4 text-base" jhiTranslate="researchGroup.imageLibrary.loading"></p>
+    </div>
+  } @else {
+    <!-- In Use Section -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.inUse"></h2>
+      @if (inUseImages().length === 0) {
+        <div class="mb-4">
+          <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noInUse' | translate" severity="primary" />
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+          @for (image of inUseImages(); track image.imageId) {
+            <ng-container *ngTemplateOutlet="imageCard; context: { image: image, showDelete: true, isInUse: true }" />
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Not In Use Section -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.notInUse"></h2>
+      @if (notInUseImages().length === 0 && allImages().length === 0) {
+        <div class="mb-4">
+          <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noImages' | translate" severity="primary" />
+        </div>
+      } @else if (notInUseImages().length === 0) {
+        <div class="mb-4">
+          <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noNotInUse' | translate" severity="primary" />
+        </div>
+      }
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        @for (image of notInUseImages(); track image.imageId) {
+          <ng-container *ngTemplateOutlet="imageCard; context: { image: image, showDelete: true, isInUse: false }" />
+        }
+
+        <!-- Upload New Image Button -->
+        <jhi-image-upload-button (imageUploaded)="onImageUploaded($event)" (uploadError)="onUploadError($event)" />
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Reusable Statistics Card Template -->
+<ng-template #statsCard let-icon="icon" let-count="count" let-labelKey="labelKey">
+  <div class="flex items-center p-6 rounded-lg bg-background-surface border border-border-default">
+    <div class="flex items-center justify-center w-14 h-14 rounded-lg bg-background-surface-alt text-primary mr-4 flex-shrink-0">
+      <fa-icon [icon]="['fas', icon]" size="lg" />
+    </div>
+    <div>
+      <div class="text-2xl leading-none mb-1">{{ count }}</div>
+      <div class="text-sm" [jhiTranslate]="labelKey"></div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Reusable Image Card Template -->
+<ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isInUse="isInUse">
+  <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
+    <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
+      <img [src]="image.url" [alt]="image.jobTitle || 'Job banner image'" class="w-full h-full object-cover" />
+      <!-- Delete Button (only when showDelete is true) -->
+      @if (showDelete) {
+        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
+          <jhi-confirm-dialog
+            #deleteDialog
+            [label]="'button.delete' | translate"
+            [confirmIcon]="'trash'"
+            [header]="
+              isInUse
+                ? ('researchGroup.imageLibrary.delete.titleInUse' | translate)
+                : ('researchGroup.imageLibrary.delete.title' | translate)
+            "
+            [message]="
+              isInUse
+                ? ('researchGroup.imageLibrary.delete.messageInUse' | translate)
+                : ('researchGroup.imageLibrary.delete.message' | translate)
+            "
+            [data]="image.imageId"
+            (confirmed)="deleteImage($any($event))"
+            severity="danger"
+            [showOpenButton]="false"
+          />
+          <jhi-button
+            icon="trash"
+            size="sm"
+            [severity]="'danger'"
+            (click)="deleteDialog.confirm()"
+            class="opacity-0 group-hover:opacity-100 transition-opacity"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</ng-template>

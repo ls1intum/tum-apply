@@ -836,21 +836,14 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/export/application/{id}/pdf:
+  /api/export/application/pdf:
     post:
       tags: [pdf-export-resource]
       operationId: exportApplicationToPDF
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
-            schema:
-              type: object
-              additionalProperties: {type: string}
+            schema: {$ref: '#/components/schemas/ApplicationPDFRequest'}
         required: true
       responses:
         '200':
@@ -2190,7 +2183,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationDetailDTO:
       type: object
       properties:
@@ -2199,7 +2192,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation: {type: string}
@@ -2254,7 +2247,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2270,7 +2263,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
@@ -2288,11 +2281,18 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
+    ApplicationPDFRequest:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        labels:
+          type: object
+          additionalProperties: {type: string}
     ApplicationReview:
       type: object
       properties:
@@ -2415,6 +2415,7 @@ components:
       type: object
       properties:
         cooldownSeconds: {type: integer, format: int64}
+        downloadToken: {type: string}
         lastRequestedAt: {type: string, format: date-time}
         nextAllowedAt: {type: string, format: date-time}
         status:
@@ -2463,7 +2464,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2474,7 +2476,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2485,7 +2488,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2499,7 +2503,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2554,6 +2559,7 @@ components:
         imageType:
           type: string
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        isInUse: {type: boolean}
         researchGroupId: {type: string, format: uuid}
         sizeBytes: {type: integer, format: int64}
         uploadedById: {type: string, format: uuid}
@@ -2670,6 +2676,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2680,7 +2687,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         departmentName: {type: string}
         imageUrl: {type: string}
@@ -2717,6 +2724,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2728,12 +2736,13 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
@@ -2745,6 +2754,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2782,6 +2792,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -3132,7 +3143,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}
@@ -3304,4 +3315,5 @@ components:
           items:
             type: string
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
+        universityId: {type: string}
         userId: {type: string, format: uuid}

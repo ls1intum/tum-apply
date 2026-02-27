@@ -17,12 +17,12 @@
       "manage": "Manage",
       "home": "Home",
       "mypositions": "My Positions",
-      "createposition": "Create Position",
       "interviews": "Interviews"
     },
     "researchgroup": {
       "emailtemplates": "My Email Templates",
       "researchgroup": "Research Group",
+      "imagelibrary": "My Images",
       "yourgroup": "My Group",
       "yourmembers": "My Members"
     },

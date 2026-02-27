@@ -7,6 +7,10 @@ import { AuthFacadeServiceMock, createAuthFacadeServiceMock, provideAuthFacadeSe
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
+import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
+import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 describe('ProfessorHeroSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorHeroSectionComponent>;
@@ -15,11 +19,13 @@ describe('ProfessorHeroSectionComponent', () => {
   let authFacadeServiceMock: AuthFacadeServiceMock;
   let accountServiceMock: AccountServiceMock;
   let routerMock: RouterMock;
+  let dialogServiceMock: DialogServiceMock;
 
   beforeEach(async () => {
     authFacadeServiceMock = createAuthFacadeServiceMock();
     accountServiceMock = createAccountServiceMock(false);
     routerMock = createRouterMock();
+    dialogServiceMock = createDialogServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [ProfessorHeroSectionComponent],
@@ -28,6 +34,7 @@ describe('ProfessorHeroSectionComponent', () => {
         provideAuthFacadeServiceMock(authFacadeServiceMock),
         provideAccountServiceMock(accountServiceMock),
         provideRouterMock(routerMock),
+        provideDialogServiceMock(dialogServiceMock),
       ],
     }).compileComponents();
 
@@ -68,20 +75,25 @@ describe('ProfessorHeroSectionComponent', () => {
       });
     });
 
-    describe('when user is signed in', () => {
-      beforeEach(() => {
+    describe('when user is signed in as professor', () => {
+      beforeEach(async () => {
+        authFacadeServiceMock = createAuthFacadeServiceMock();
         accountServiceMock = createAccountServiceMock(true);
-        // Recreate component with signed-in user
-        TestBed.resetTestingModule();
-        TestBed.configureTestingModule({
+        accountServiceMock.setAuthorities([UserShortDTO.RolesEnum.Professor]);
+        routerMock = createRouterMock();
+        dialogServiceMock = createDialogServiceMock();
+
+        await TestBed.resetTestingModule();
+        await TestBed.configureTestingModule({
           imports: [ProfessorHeroSectionComponent],
           providers: [
             provideTranslateMock(),
             provideAuthFacadeServiceMock(authFacadeServiceMock),
             provideAccountServiceMock(accountServiceMock),
             provideRouterMock(routerMock),
+            provideDialogServiceMock(dialogServiceMock),
           ],
-        });
+        }).compileComponents();
         fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -91,6 +103,76 @@ describe('ProfessorHeroSectionComponent', () => {
         await component.navigateToGetStarted();
 
         expect(routerMock.navigate).toHaveBeenCalledWith(['/my-positions']);
+        expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
+        expect(dialogServiceMock.open).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when user is signed in as employee', () => {
+      beforeEach(async () => {
+        authFacadeServiceMock = createAuthFacadeServiceMock();
+        accountServiceMock = createAccountServiceMock(true);
+        accountServiceMock.setAuthorities([UserShortDTO.RolesEnum.Employee]);
+        routerMock = createRouterMock();
+        dialogServiceMock = createDialogServiceMock();
+
+        await TestBed.resetTestingModule();
+        await TestBed.configureTestingModule({
+          imports: [ProfessorHeroSectionComponent],
+          providers: [
+            provideTranslateMock(),
+            provideAuthFacadeServiceMock(authFacadeServiceMock),
+            provideAccountServiceMock(accountServiceMock),
+            provideRouterMock(routerMock),
+            provideDialogServiceMock(dialogServiceMock),
+          ],
+        }).compileComponents();
+        fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+      });
+
+      it('should navigate to my-positions', async () => {
+        await component.navigateToGetStarted();
+
+        expect(routerMock.navigate).toHaveBeenCalledWith(['/my-positions']);
+        expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
+        expect(dialogServiceMock.open).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when user is signed in but not professor or employee', () => {
+      beforeEach(async () => {
+        authFacadeServiceMock = createAuthFacadeServiceMock();
+        accountServiceMock = createAccountServiceMock(true);
+        accountServiceMock.setAuthorities([]); // No professor/employee role
+        routerMock = createRouterMock();
+        dialogServiceMock = createDialogServiceMock();
+
+        await TestBed.resetTestingModule();
+        await TestBed.configureTestingModule({
+          imports: [ProfessorHeroSectionComponent],
+          providers: [
+            provideTranslateMock(),
+            provideAuthFacadeServiceMock(authFacadeServiceMock),
+            provideAccountServiceMock(accountServiceMock),
+            provideRouterMock(routerMock),
+            provideDialogServiceMock(dialogServiceMock),
+          ],
+        }).compileComponents();
+        fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+      });
+
+      it('should open the onboarding dialog', async () => {
+        await component.navigateToGetStarted();
+
+        expect(dialogServiceMock.open).toHaveBeenCalledWith(OnboardingDialog, {
+          ...ONBOARDING_FORM_DIALOG_CONFIG,
+          header: 'onboarding.title',
+        });
+        expect(routerMock.navigate).not.toHaveBeenCalled();
         expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
       });
     });

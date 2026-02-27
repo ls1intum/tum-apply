@@ -27,6 +27,9 @@ public interface DocumentDictionaryRepository extends TumApplyJpaRepository<Docu
 
     Set<DocumentDictionary> findAllByApplicationApplicationId(UUID applicationId);
 
+    @Query("SELECT dd.document.id FROM DocumentDictionary dd WHERE dd.application.applicationId = :applicationId")
+    List<UUID> findDocumentIdsByApplicationId(@Param("applicationId") UUID applicationId);
+
     void deleteByApplication(Application application);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)

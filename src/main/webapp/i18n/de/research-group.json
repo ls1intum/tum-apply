@@ -109,18 +109,18 @@
       }
     },
     "members": {
-      "loading": "Mitglieder werden geladen...",
-      "retry": "Erneut versuchen",
-      "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
       "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
+      "notice": "Die Mitglieder werden per E-Mail benachrichtigt, wenn sie zur Forschungsgruppe hinzugefügt werden.",
       "manageMembers": "Mitglieder verwalten",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
       "singleEntity": "Benutzer:in",
       "multipleEntities": "Benutzer:innen",
+      "selectedCountSingle": "{{count}} Mitglied ausgewählt",
+      "selectedCountMultiple": "{{count}} Mitglieder ausgewählt",
       "tableColumns": {
         "name": "Name",
         "email": "E-Mail",
@@ -167,10 +167,6 @@
           "summary": "Fehler beim Entfernen",
           "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
         }
-      },
-      "confirmDialog": {
-        "header": "Mitglieder hinzufügen",
-        "message": "Möchtest du die ausgewählten Mitglieder wirklich zur Forschungsgruppe hinzufügen? Sie werden per E-Mail benachrichtigt."
       },
       "noRole": "Keine Rolle"
     },
@@ -409,6 +405,50 @@
       "deleteDialog": {
         "header": "Department löschen",
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
+      }
+    },
+    "imageLibrary": {
+      "title": "Forschungsgruppen-Bildbibliothek",
+      "stats": {
+        "totalImages": "Bilder insgesamt",
+        "inUse": "In Verwendung",
+        "notInUse": "Nicht in Verwendung"
+      },
+      "loading": "Bilder werden geladen...",
+      "empty": {
+        "noInUse": "Derzeit sind keine Bilder in Verwendung",
+        "noNotInUse": "Alle Bilder sind derzeit in Verwendung",
+        "noImages": "Noch keine Bilder hochgeladen"
+      },
+      "section": {
+        "inUse": "In Verwendung",
+        "notInUse": "Nicht in Verwendung"
+      },
+      "delete": {
+        "title": "Bild löschen",
+        "message": "Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "titleInUse": "Bild löschen",
+        "messageInUse": "Dieses Bild wird derzeit von einer oder mehreren Stellen verwendet. Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+      },
+      "success": {
+        "imageUploaded": {
+          "summary": "Bild hochgeladen",
+          "detail": "Bild erfolgreich hochgeladen"
+        },
+        "imageDeleted": {
+          "summary": "Bild gelöscht",
+          "detail": "Bild erfolgreich gelöscht"
+        }
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bilder konnten nicht geladen werden. Bitte versuche es erneut."
+        },
+        "deleteFailed": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+        }
       }
     }
   }

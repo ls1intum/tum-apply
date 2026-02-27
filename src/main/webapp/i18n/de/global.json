@@ -33,6 +33,7 @@
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
+        "images": "TUMApply - Meine Bilder",
         "info": "TUMApply - Meine Gruppe"
       },
       "about-us": "TumApply - Über uns",
@@ -40,6 +41,9 @@
         "overview": "TUMApply - Interviewübersicht",
         "detail": "Interview - {{jobTitle}}",
         "assessment": "TUMApply - Interview Bewertung"
+      },
+      "dataExport": {
+        "download": "TUMApply - Datenexport Download"
       }
     },
     "menu": {
@@ -118,10 +122,7 @@
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
         "max": "Dieses Feld darf max. {{max}} sein.",
-        "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
-        "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
-        "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
-        "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
+        "invalidLimitType": "Bitte verwende dasselbe Format wie die eingegebene Note.",
         "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
     },
@@ -144,7 +145,32 @@
       "dev": "Entwicklung",
       "test": "Entwicklung"
     },
-    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
+    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente.",
+    "dataExport": {
+      "downloadSuccess": "Download erfolgreich!",
+      "downloadSuccessMessage": "Dein Datenexport wurde erfolgreich heruntergeladen.",
+      "downloadSuccessInfo": "Du kannst jetzt auf deine exportierten Daten in der heruntergeladenen Datei zugreifen.",
+      "downloading": "Download läuft...",
+      "downloadingInfo": "Dein Datenexport wird heruntergeladen.",
+      "request": "TUMApply - Datenexport Anfrage",
+      "download": "TUMApply - Datenexport Download",
+      "error": {
+        "downloadFailed": {
+          "summary": "Download fehlgeschlagen",
+          "detail": "Fehler beim Herunterladen des Datenexports. Der Link ist möglicherweise abgelaufen oder ungültig."
+        },
+        "noToken": {
+          "summary": "Ungültiges Token",
+          "detail": "Kein Download-Token bereitgestellt."
+        }
+      },
+      "success": {
+        "downloadSuccess": {
+          "summary": "Download erfolgreich",
+          "detail": "Ihr Datenexport wurde erfolgreich heruntergeladen."
+        }
+      }
+    }
   },
   "entity": {
     "action": {
@@ -165,8 +191,6 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Höchstmögliche Note",
-      "lower_passing_limit": "Niedrigste Note zum Bestehen",
       "grade": "Note",
       "university": "Universität",
       "motivation": "Motivation",
@@ -199,14 +223,17 @@
     },
     "filters": {
       "filter": "Filter",
+      "sortingAndFilter": "Sortierung & Filter",
       "selected": "Ausgewählt",
+      "clearAll": "Alle entfernen",
       "noResults": "Keine Ergebnisse gefunden",
       "numberSelected": "{{selected}} ausgewählt",
       "apply": "Anwenden",
-      "recordsFound": "{{count}} {{entity}} gefunden"
+      "recordsFound": "{{count}} {{entity}} gefunden",
+      "show": "Stellen anzeigen",
+      "resetFilter": "Filter zurücksetzen"
     },
-    "filterBy": "Filtern nach:",
-    "sortBy": "Sortieren nach:",
+
     "sorting": {
       "ascending": {
         "text": "Aufsteigend (A-Z)",
@@ -264,10 +291,26 @@
       },
       "error": {
         "replace_failed": "Dokument konnte nicht ersetzt werden",
-        "too_large": "Dateien sind zu groß",
-        "upload_failed": "Upload fehlgeschlagen",
-        "delete_failed": "Dokument konnte nicht gelöscht werden",
-        "rename_failed": "Dokument konnte nicht umbenannt werden"
+        "too_large_detailed": {
+          "summary": "Dateien zu groß",
+          "detail": "Maximale Upload-Größe ist {{maxSize}} MB pro Datei. Zu große Datei: {{totalSize}}"
+        },
+        "total_too_large": {
+          "summary": "Gesamtgröße überschreitet Limit",
+          "detail": "Maximale Gesamtgröße ist {{maxTotal}} MB.\nDeine Dateien insgesamt: {{actualTotal}}"
+        },
+        "upload_failed": {
+          "summary": "Upload fehlgeschlagen",
+          "detail": "Ein Fehler ist während des Uploads aufgetreten. Bitte versuche es erneut."
+        },
+        "delete_failed": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Ein Fehler ist während des Löschens des Dokuments aufgetreten. Bitte versuche es erneut."
+        },
+        "rename_failed": {
+          "summary": "Umbenennen fehlgeschlagen",
+          "detail": "Ein Fehler ist während des Umbenennens des Dokuments aufgetreten. Bitte versuche es erneut."
+        }
       }
     },
     "application_overview": {
@@ -304,9 +347,6 @@
         "SAVING": "Änderungen werden gespeichert...",
         "SAVED": "Änderungen gespeichert",
         "FAILED": "Speichern fehlgeschlagen"
-      },
-      "gradingScale": {
-        "ONE_TO_FOUR": "Deutsche Skala (Eins bis Vier)"
       }
     },
     "applicationPage1": {
@@ -356,9 +396,15 @@
         "masterDegreeUniversity": "Universität des Masters",
         "masterGrade": "Master-Abschlussnote"
       },
+      "helperText": {
+        "scale": "Skala: ",
+        "gradingScale": "{{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)",
+        "changeScale": "Skala ändern"
+      },
+      "warnText": "Ungewöhnliches Format, bitte überprüfe die Eingabe",
       "tooltip": {
-        "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
-        "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
+        "gradeUpperLimit": "Gib die bestmögliche Note in deinem Notensystem an (z. B. 1,0 in Deutschland).",
+        "gradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
         "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",
@@ -587,6 +633,30 @@
     "file": {
       "could.not.extract": "Datei konnte nicht extrahiert werden",
       "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{{ fileType }}\""
+    }
+  },
+  "imageUpload": {
+    "error": {
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bilddatei überschreitet die maximale Größe von 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte lade nur JPG- oder PNG-Bilder hoch"
+      },
+      "dimensionsTooLarge": {
+        "summary": "Bild zu groß",
+        "detail": "Bildabmessungen überschreiten das zulässige Maximum (4096×4096 Pixel)"
+      },
+      "invalidImage": {
+        "summary": "Ungültiges Bild",
+        "detail": "Die Datei ist beschädigt oder kein gültiges Bild"
+      },
+      "uploadFailed": {
+        "summary": "Upload fehlgeschlagen",
+        "detail": "Bild-Upload fehlgeschlagen. Bitte versuche es erneut"
+      }
     }
   }
 }

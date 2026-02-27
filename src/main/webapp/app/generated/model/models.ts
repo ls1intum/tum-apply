@@ -14,6 +14,7 @@ export * from './applicationEvaluationOverviewDTO';
 export * from './applicationEvaluationOverviewListDTO';
 export * from './applicationForApplicantDTO';
 export * from './applicationOverviewDTO';
+export * from './applicationPDFRequest';
 export * from './applicationReview';
 export * from './assignSlotRequestDTO';
 export * from './assignedIntervieweeDTO';
