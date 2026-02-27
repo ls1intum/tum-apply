@@ -105,7 +105,7 @@ model/pageResponseDTOInterviewSlotDTO.ts
 model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
-model/pageResponseDTOSchoolShortDTO.ts
+model/pageResponseDTOSchoolDTO.ts
 model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
 model/profOnboardingDTO.ts

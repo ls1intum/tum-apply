@@ -2994,13 +2994,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/SchoolDTO'}
         totalElements: {type: integer, format: int64}
-    PageResponseDTOSchoolShortDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/SchoolShortDTO'}
-        totalElements: {type: integer, format: int64}
     PageResponseDTOUserShortDTO:
       type: object
       properties:

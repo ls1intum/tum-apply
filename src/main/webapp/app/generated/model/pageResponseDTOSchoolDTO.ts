@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { SchoolShortDTO } from './schoolShortDTO';
+import { SchoolDTO } from './schoolDTO';
 
 
-export interface PageResponseDTOSchoolShortDTO { 
-    content?: Array<SchoolShortDTO>;
+export interface PageResponseDTOSchoolDTO { 
+    content?: Array<SchoolDTO>;
     totalElements?: number;
 }
 
