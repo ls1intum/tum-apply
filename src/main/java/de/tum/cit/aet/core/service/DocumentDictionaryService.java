@@ -122,7 +122,7 @@ public class DocumentDictionaryService {
      *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
-    public Set<DocumentDictionary> getDocumentDictionaries(Applicant applicant, DocumentType documentType) {
+    public Set<DocumentDictionary> getApplicantDocumentDictionaries(Applicant applicant, DocumentType documentType) {
         return documentDictionaryRepository.findByApplicantAndDocumentType(applicant, documentType);
     }
 
@@ -135,7 +135,7 @@ public class DocumentDictionaryService {
      *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
-    public Set<DocumentDictionary> getDocumentDictionaries(Application application, DocumentType documentType) {
+    public Set<DocumentDictionary> getApplicationDocumentDictionaries(Application application, DocumentType documentType) {
         return documentDictionaryRepository.findByApplicationAndDocumentType(application, documentType);
     }
 
@@ -145,7 +145,7 @@ public class DocumentDictionaryService {
      * @param customFieldAnswer the custom field answer whose documents to retrieve
      * @return set of matching DocumentDictionary entries
      */
-    public Set<DocumentDictionary> getDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
+    public Set<DocumentDictionary> getCustomFieldAnswerDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryRepository.findByCustomFieldAnswer(customFieldAnswer);
     }
 

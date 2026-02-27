@@ -201,7 +201,7 @@ class ApplicantRetentionServiceIntegrationTest {
             documentDictionaryRepository,
             professor,
             application,
-            applicant,
+            null,
             DocumentType.CV,
             "cv.pdf"
         );
@@ -236,7 +236,7 @@ class ApplicantRetentionServiceIntegrationTest {
             documentDictionaryRepository,
             professor,
             oldApp,
-            applicant,
+            null,
             DocumentType.CV,
             "old-cv.pdf"
         );
@@ -251,7 +251,7 @@ class ApplicantRetentionServiceIntegrationTest {
             documentDictionaryRepository,
             professor,
             recentApp,
-            applicant,
+            null,
             DocumentType.CV,
             "recent-cv.pdf"
         );

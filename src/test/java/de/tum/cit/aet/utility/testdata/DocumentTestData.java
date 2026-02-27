@@ -77,6 +77,9 @@ public final class DocumentTestData {
         DocumentType type,
         String name
     ) {
+        if ((application == null) == (applicant == null)) {
+            throw new IllegalArgumentException("Exactly one owner must be set: application XOR applicant.");
+        }
         DocumentDictionary dict = new DocumentDictionary();
         dict.setDocument(document);
         dict.setApplication(application);

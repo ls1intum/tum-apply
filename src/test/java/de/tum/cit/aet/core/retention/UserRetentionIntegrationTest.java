@@ -182,7 +182,7 @@ class UserRetentionIntegrationTest {
             documentDictionaryRepository,
             savedApplicantUser,
             application,
-            applicant,
+            null,
             DocumentType.CV,
             "cv.pdf"
         );
@@ -341,7 +341,7 @@ class UserRetentionIntegrationTest {
             documentDictionaryRepository,
             savedApplicantUser,
             application,
-            applicant,
+            null,
             DocumentType.CV,
             "cv-batch.pdf"
         );

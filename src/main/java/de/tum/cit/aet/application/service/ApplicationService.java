@@ -44,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Service
 public class ApplicationService {
+
     private static final List<DocumentType> PROFILE_SYNCED_DOCUMENT_TYPES = List.of(
         DocumentType.CV,
         DocumentType.REFERENCE,
@@ -155,7 +156,10 @@ public class ApplicationService {
      */
     private void prefillDocumentsFromApplicantProfile(Applicant applicant, Application application) {
         for (DocumentType documentType : PROFILE_SYNCED_DOCUMENT_TYPES) {
-            Set<DocumentDictionary> applicantDocuments = documentDictionaryService.getDocumentDictionaries(applicant, documentType);
+            Set<DocumentDictionary> applicantDocuments = documentDictionaryService.getApplicantDocumentDictionaries(
+                applicant,
+                documentType
+            );
             copyDocumentsToApplication(applicantDocuments, application);
         }
     }
@@ -285,8 +289,8 @@ public class ApplicationService {
      * @param documentType the type of documents to sync
      */
     private void syncDocumentsByType(Application application, Applicant applicant, DocumentType documentType) {
-        Set<DocumentDictionary> applicationDocs = documentDictionaryService.getDocumentDictionaries(application, documentType);
-        Set<DocumentDictionary> applicantDocs = documentDictionaryService.getDocumentDictionaries(applicant, documentType);
+        Set<DocumentDictionary> applicationDocs = documentDictionaryService.getApplicationDocumentDictionaries(application, documentType);
+        Set<DocumentDictionary> applicantDocs = documentDictionaryService.getApplicantDocumentDictionaries(applicant, documentType);
 
         // Delete all existing documents from applicant profile
         for (DocumentDictionary applicantDoc : applicantDocs) {
@@ -409,7 +413,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type CV
      */
     public Set<DocumentDictionary> getCVs(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.CV);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.CV);
     }
 
     /**
@@ -419,7 +423,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type REFERENCE
      */
     public Set<DocumentDictionary> getReferences(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.REFERENCE);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.REFERENCE);
     }
 
     /**
@@ -429,7 +433,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
      */
     public Set<DocumentDictionary> getBachelorTranscripts(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
     /**
@@ -439,7 +443,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type MASTER_TRANSCRIPT
      */
     public Set<DocumentDictionary> getMasterTranscripts(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
     }
 
     /**
@@ -482,7 +486,7 @@ public class ApplicationService {
      * @param newDocuments the set of newly uploaded documents to associate
      */
     protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Pair<Document, String>> newDocuments) {
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicationDocumentDictionaries(application, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
 
@@ -514,7 +518,7 @@ public class ApplicationService {
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
         }
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, documentType);
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicationDocumentDictionaries(application, documentType);
         return existingEntries.stream().map(DocumentInformationHolderDTO::getFromDocumentDictionary).collect(Collectors.toSet());
     }
 

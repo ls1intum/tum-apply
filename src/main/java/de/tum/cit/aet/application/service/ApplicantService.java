@@ -29,7 +29,7 @@ public class ApplicantService {
      * @return set of document dictionary entries of type CV
      */
     public Set<DocumentDictionary> getCVs(Applicant applicant) {
-        return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CV);
+        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.CV);
     }
 
     /**
@@ -39,7 +39,7 @@ public class ApplicantService {
      * @return set of document dictionary entries of type REFERENCE
      */
     public Set<DocumentDictionary> getReferences(Applicant applicant) {
-        return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.REFERENCE);
+        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.REFERENCE);
     }
 
     /**
@@ -49,7 +49,7 @@ public class ApplicantService {
      * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
      */
     public Set<DocumentDictionary> getBachelorTranscripts(Applicant applicant) {
-        return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT);
+        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
     /**
@@ -59,7 +59,7 @@ public class ApplicantService {
      * @return set of document dictionary entries of type MASTER_TRANSCRIPT
      */
     public Set<DocumentDictionary> getMasterTranscripts(Applicant applicant) {
-        return documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT);
+        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ApplicantService {
      * @param newDocuments   the set of newly uploaded documents to associate
      */
     protected void updateDocumentDictionaries(Applicant applicant, DocumentType type, Set<Pair<Document, String>> newDocuments) {
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(applicant, type);
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicantDocumentDictionaries(applicant, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplicant(applicant));
     }
 }

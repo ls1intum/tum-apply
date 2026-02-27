@@ -164,7 +164,7 @@ class ApplicantRetentionJobIntegrationTest {
             documentDictionaryRepository,
             professor,
             application,
-            applicant,
+            null,
             DocumentType.CV,
             fileName
         );

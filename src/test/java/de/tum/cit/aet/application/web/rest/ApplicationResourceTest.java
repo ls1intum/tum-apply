@@ -450,15 +450,17 @@ class ApplicationResourceTest extends AbstractResourceTest {
             assertThat(returnedApp.applicationId()).isNotNull();
 
             // Verify documents were prefilled to the application
-            Set<DocumentDictionary> applicationCVs = documentDictionaryRepository.findByApplicationApplicationIdAndDocumentType(
-                returnedApp.applicationId(),
+            Application createdApplication = applicationRepository.findById(returnedApp.applicationId()).orElseThrow();
+
+            Set<DocumentDictionary> applicationCVs = documentDictionaryRepository.findByApplicationAndDocumentType(
+                createdApplication,
                 DocumentType.CV
             );
             assertThat(applicationCVs).hasSize(1);
             assertThat(applicationCVs.iterator().next().getDocument().getDocumentId()).isEqualTo(cvDoc.getDocument().getDocumentId());
 
-            Set<DocumentDictionary> applicationReferences = documentDictionaryRepository.findByApplicationApplicationIdAndDocumentType(
-                returnedApp.applicationId(),
+            Set<DocumentDictionary> applicationReferences = documentDictionaryRepository.findByApplicationAndDocumentType(
+                createdApplication,
                 DocumentType.REFERENCE
             );
             assertThat(applicationReferences).hasSize(1);
@@ -466,11 +468,10 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 referenceDoc.getDocument().getDocumentId()
             );
 
-            Set<DocumentDictionary> applicationBachelorTranscripts =
-                documentDictionaryRepository.findByApplicationApplicationIdAndDocumentType(
-                    returnedApp.applicationId(),
-                    DocumentType.BACHELOR_TRANSCRIPT
-                );
+            Set<DocumentDictionary> applicationBachelorTranscripts = documentDictionaryRepository.findByApplicationAndDocumentType(
+                createdApplication,
+                DocumentType.BACHELOR_TRANSCRIPT
+            );
             assertThat(applicationBachelorTranscripts).hasSize(1);
             assertThat(applicationBachelorTranscripts.iterator().next().getDocument().getDocumentId()).isEqualTo(
                 bachelorDoc.getDocument().getDocumentId()
@@ -818,7 +819,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 documentDictionaryRepository,
                 applicant.getUser(),
                 application,
-                applicant,
+                null,
                 DocumentType.CV,
                 "test_cv.pdf"
             );
@@ -847,7 +848,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 documentDictionaryRepository,
                 applicant.getUser(),
                 application,
-                applicant,
+                null,
                 DocumentType.CV,
                 "test_cv.pdf"
             );
@@ -863,7 +864,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 documentDictionaryRepository,
                 applicant.getUser(),
                 application,
-                applicant,
+                null,
                 DocumentType.CV,
                 "test_cv.pdf"
             );
@@ -886,7 +887,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 documentDictionaryRepository,
                 applicant.getUser(),
                 application,
-                applicant,
+                null,
                 DocumentType.CV,
                 "original_name.pdf"
             );
@@ -921,7 +922,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 documentDictionaryRepository,
                 applicant.getUser(),
                 application,
-                applicant,
+                null,
                 DocumentType.CV,
                 "test_cv.pdf"
             );
@@ -942,7 +943,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 documentDictionaryRepository,
                 applicant.getUser(),
                 application,
-                applicant,
+                null,
                 DocumentType.CV,
                 "test_cv.pdf"
             );

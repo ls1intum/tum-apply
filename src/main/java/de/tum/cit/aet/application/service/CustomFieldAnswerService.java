@@ -29,7 +29,7 @@ public class CustomFieldAnswerService {
      * @return a set of associated {@link DocumentDictionary} objects
      */
     public Set<DocumentDictionary> getDocuments(CustomFieldAnswer customFieldAnswer) {
-        return documentDictionaryService.getDocumentDictionaries(customFieldAnswer);
+        return documentDictionaryService.getCustomFieldAnswerDocumentDictionaries(customFieldAnswer);
     }
 
     /**
