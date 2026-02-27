@@ -115,7 +115,7 @@ describe('SchoolEditDialogComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
 
-    it('should handle duplicate name error', async () => {
+    it('should handle duplicate name or abbreviation error', async () => {
       createComponent();
       component.form.patchValue({ name: 'New School', abbreviation: 'NS' });
       const error = new HttpErrorResponse({ status: 409 });
@@ -123,7 +123,7 @@ describe('SchoolEditDialogComponent', () => {
 
       await component.onSubmit();
 
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.createDialog.errors.duplicateName');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.createDialog.errors.duplicateNameOrAbbreviation');
     });
 
     it('should handle other errors during save', async () => {

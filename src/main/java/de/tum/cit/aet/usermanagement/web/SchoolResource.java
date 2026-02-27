@@ -69,7 +69,7 @@ public class SchoolResource {
      */
     @Admin
     @GetMapping("/admin/search")
-    public ResponseEntity<PageResponseDTO<SchoolShortDTO>> getSchoolsForAdmin(
+    public ResponseEntity<PageResponseDTO<SchoolDTO>> getSchoolsForAdmin(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @RequestParam(required = false) String searchQuery,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
@@ -82,7 +82,7 @@ public class SchoolResource {
             sortDTO,
             request.getRequestURI()
         );
-        PageResponseDTO<SchoolShortDTO> response = schoolService.getSchoolsForAdmin(pageDTO, searchQuery, sortDTO);
+        PageResponseDTO<SchoolDTO> response = schoolService.getSchoolsForAdmin(pageDTO, searchQuery, sortDTO);
         return ResponseEntity.ok(response);
     }
 

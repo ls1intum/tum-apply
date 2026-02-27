@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.School;
+import de.tum.cit.aet.usermanagement.dto.DepartmentShortDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
@@ -17,6 +18,7 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,9 @@ public class SchoolService {
     public SchoolShortDTO createSchool(SchoolCreationDTO dto) {
         if (schoolRepository.existsByNameIgnoreCase(dto.name())) {
             throw new ResourceAlreadyExistsException("School with name '" + dto.name() + "' already exists");
+        }
+        if (schoolRepository.existsByAbbreviationIgnoreCase(dto.abbreviation())) {
+            throw new ResourceAlreadyExistsException("School with abbreviation '" + dto.abbreviation() + "' already exists");
         }
 
         School school = new School();
@@ -108,14 +113,39 @@ public class SchoolService {
      * @param pageDTO paging parameters
      * @param searchQuery optional search query
      * @param sortDTO sorting parameters
-     * @return paginated schools as short DTOs
+     * @return paginated schools with departments
      */
-    public PageResponseDTO<SchoolShortDTO> getSchoolsForAdmin(PageDTO pageDTO, String searchQuery, SortDTO sortDTO) {
+    public PageResponseDTO<SchoolDTO> getSchoolsForAdmin(PageDTO pageDTO, String searchQuery, SortDTO sortDTO) {
         PageRequest pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.SCHOOLS_ADMIN, true);
         String normalizedSearch = StringUtil.normalizeSearchQuery(searchQuery);
 
         Page<SchoolShortDTO> page = schoolRepository.findAllForAdmin(normalizedSearch, pageable);
-        return new PageResponseDTO<>(page.getContent(), page.getTotalElements());
+        List<SchoolShortDTO> schoolContent = page.getContent();
+        List<UUID> schoolIds = schoolContent.stream().map(SchoolShortDTO::schoolId).filter(Objects::nonNull).toList();
+
+        Map<UUID, List<DepartmentShortDTO>> departmentsBySchoolId = departmentRepository
+            .findBySchoolSchoolIdInOrderBySchoolSchoolIdAscNameAsc(schoolIds)
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    department -> department.getSchool().getSchoolId(),
+                    Collectors.mapping(DepartmentShortDTO::fromEntity, Collectors.toList())
+                )
+            );
+
+        List<SchoolDTO> content = schoolContent
+            .stream()
+            .map(school ->
+                new SchoolDTO(
+                    school.schoolId(),
+                    school.name(),
+                    school.abbreviation(),
+                    departmentsBySchoolId.getOrDefault(school.schoolId(), List.of())
+                )
+            )
+            .toList();
+
+        return new PageResponseDTO<>(content, page.getTotalElements());
     }
 
     /**
@@ -132,6 +162,12 @@ public class SchoolService {
 
         if (!school.getName().equalsIgnoreCase(dto.name()) && schoolRepository.existsByNameIgnoreCase(dto.name())) {
             throw new ResourceAlreadyExistsException("School with name '" + dto.name() + "' already exists");
+        }
+        if (
+            !school.getAbbreviation().equalsIgnoreCase(dto.abbreviation()) &&
+            schoolRepository.existsByAbbreviationIgnoreCase(dto.abbreviation())
+        ) {
+            throw new ResourceAlreadyExistsException("School with abbreviation '" + dto.abbreviation() + "' already exists");
         }
 
         school.setName(dto.name());

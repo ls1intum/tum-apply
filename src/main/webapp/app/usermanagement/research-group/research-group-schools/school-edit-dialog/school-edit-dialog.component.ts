@@ -68,7 +68,7 @@ export class SchoolEditDialogComponent {
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         if (error.status === 409) {
-          this.toastService.showErrorKey(`${this.translationKey}.errors.duplicateName`);
+          this.toastService.showErrorKey(`${this.translationKey}.errors.duplicateNameOrAbbreviation`);
         } else {
           this.toastService.showErrorKey(`${this.translationKey}.errors.createFailed`);
         }

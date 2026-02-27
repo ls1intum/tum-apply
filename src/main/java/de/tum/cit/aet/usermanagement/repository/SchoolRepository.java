@@ -26,6 +26,8 @@ public interface SchoolRepository extends TumApplyJpaRepository<School, UUID> {
 
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsByAbbreviationIgnoreCase(String abbreviation);
+
     @Query(
         """
             SELECT new de.tum.cit.aet.usermanagement.dto.SchoolShortDTO(

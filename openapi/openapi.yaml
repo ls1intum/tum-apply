@@ -1906,7 +1906,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOSchoolShortDTO'}
+              schema: {$ref: '#/components/schemas/PageResponseDTOSchoolDTO'}
   /api/schools/delete/{id}:
     delete:
       tags: [school-resource]
@@ -2986,6 +2986,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/ResearchGroupDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOSchoolDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/SchoolDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOSchoolShortDTO:
       type: object

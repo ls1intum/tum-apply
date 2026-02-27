@@ -136,6 +136,15 @@ public class SchoolResourceTest extends AbstractResourceTest {
         }
 
         @Test
+        void cannotCreateSchoolWithDuplicateAbbreviation() {
+            // Arrange - Use existing school abbreviation
+            SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Medicine", "CIT");
+
+            // Act & Assert
+            api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 409);
+        }
+
+        @Test
         void cannotCreateSchoolWithBlankName() {
             // Arrange
             SchoolCreationDTO createDTO = new SchoolCreationDTO("", "MED");
@@ -308,6 +317,15 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void cannotUpdateSchoolWithDuplicateName() {
             SchoolCreationDTO updateDTO = new SchoolCreationDTO(secondSchool.getName(), "UPD");
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .putAndRead(API_BASE_PATH + "/update/" + testSchool.getSchoolId(), updateDTO, Void.class, 409);
+        }
+
+        @Test
+        void cannotUpdateSchoolWithDuplicateAbbreviation() {
+            SchoolCreationDTO updateDTO = new SchoolCreationDTO("Updated School", secondSchool.getAbbreviation());
 
             api
                 .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))

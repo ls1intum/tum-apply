@@ -415,8 +415,10 @@
       "entities": "Schools",
       "tableColumns": {
         "name": "Name",
-        "abbreviation": "Abkürzung"
+        "abbreviation": "Abkürzung",
+        "departments": "Departments"
       },
+      "noDepartments": "Keine Departments",
       "toastMessages": {
         "loadFailed": {
           "summary": "Fehler",
@@ -437,6 +439,7 @@
         "namePlaceholder": "z.B. School of Engineering and Design",
         "abbreviationLabel": "Abkürzung",
         "abbreviationPlaceholder": "z.B. ED",
+        "abbreviationUniqueHint": "Abkürzungen müssen eindeutig sein und dürfen nicht für eine andere School verwendet werden.",
         "createButton": "School erstellen",
         "success": {
           "created": {
@@ -453,9 +456,9 @@
             "summary": "Fehler",
             "detail": "School konnte nicht gespeichert werden. Bitte versuche es erneut."
           },
-          "duplicateName": {
-            "summary": "Name existiert bereits",
-            "detail": "Eine School mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
+          "duplicateNameOrAbbreviation": {
+            "summary": "Name oder Abkürzung existiert bereits",
+            "detail": "Eine School mit diesem Namen oder dieser Abkürzung existiert bereits. Bitte wähle andere Werte."
           }
         }
       },

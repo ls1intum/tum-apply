@@ -11,12 +11,12 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { SchoolDTO } from 'app/generated/model/schoolDTO';
 
 import { SchoolEditDialogComponent } from './school-edit-dialog/school-edit-dialog.component';
 
 interface SchoolPageResponse {
-  content?: SchoolShortDTO[];
+  content?: SchoolDTO[];
   totalElements?: number;
 }
 
@@ -24,6 +24,7 @@ interface SchoolTableRow {
   schoolId?: string;
   name?: string;
   abbreviation?: string;
+  departments?: string;
 }
 
 @Component({
@@ -39,7 +40,7 @@ export class ResearchGroupSchoolsComponent {
   sortBy = signal<string>('name');
   sortDirection = signal<'ASC' | 'DESC'>('ASC');
 
-  schools = signal<SchoolShortDTO[]>([]);
+  schools = signal<SchoolDTO[]>([]);
   total = signal<number>(0);
 
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -51,6 +52,7 @@ export class ResearchGroupSchoolsComponent {
     return [
       { field: 'name', header: `${this.translationKey}.tableColumns.name`, width: '20rem' },
       { field: 'abbreviation', header: `${this.translationKey}.tableColumns.abbreviation`, width: '12rem' },
+      { field: 'departments', header: `${this.translationKey}.tableColumns.departments`, width: '24rem' },
       { field: 'actions', header: '', width: '8rem', template: buttonTpl },
     ];
   });
@@ -65,6 +67,7 @@ export class ResearchGroupSchoolsComponent {
       schoolId: school.schoolId,
       name: school.name,
       abbreviation: school.abbreviation,
+      departments: this.getDepartmentsLabel(school),
     }));
   });
 
@@ -129,8 +132,8 @@ export class ResearchGroupSchoolsComponent {
 
     const dialogRef = this.dialogService.open(SchoolEditDialogComponent, {
       header: this.translate.instant(`${this.translationKey}.editDialog.title`),
-      width: '600px',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
+      width: '60rem',
+      style: { background: 'var(--color-background-default)' },
       closable: true,
       draggable: false,
       modal: true,
@@ -165,8 +168,8 @@ export class ResearchGroupSchoolsComponent {
   async onCreateSchool(): Promise<void> {
     const dialogRef = this.dialogService.open(SchoolEditDialogComponent, {
       header: this.translate.instant(`${this.translationKey}.createDialog.title`),
-      width: '600px',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
+      width: '60rem',
+      style: { background: 'var(--color-background-default)' },
       closable: true,
       draggable: false,
       modal: true,
@@ -180,5 +183,14 @@ export class ResearchGroupSchoolsComponent {
     if (created) {
       await this.loadSchools();
     }
+  }
+
+  private getDepartmentsLabel(school: SchoolDTO): string {
+    const departmentNames = (school.departments ?? [])
+      .map(department => department.name)
+      .filter((departmentName): departmentName is string => !!departmentName)
+      .join(', ');
+
+    return departmentNames || this.translate.instant(`${this.translationKey}.noDepartments`);
   }
 }
