@@ -812,7 +812,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromApplicationRemovesIt() {
-            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
             DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
                 documentDictionaryRepository,
@@ -841,7 +841,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromApplicationWithoutAuthReturnsForbidden() {
-            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
             DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
                 documentDictionaryRepository,
@@ -854,6 +854,24 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             api.deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
         }
+
+        @Test
+        void deleteDocumentFromSentApplicationReturnsBadRequest() {
+            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                application,
+                applicant,
+                DocumentType.CV,
+                "test_cv.pdf"
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 400);
+        }
     }
 
     // ===== RENAME DOCUMENT =====
@@ -862,7 +880,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void renameDocumentUpdatesName() {
-            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
             DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
                 documentDictionaryRepository,
@@ -897,7 +915,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void renameDocumentWithoutAuthReturnsForbidden() {
-            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
             DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
                 documentDictionaryRepository,
@@ -915,6 +933,29 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 403
             );
         }
+
+        @Test
+        void renameDocumentForSentApplicationReturnsBadRequest() {
+            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                application,
+                applicant,
+                DocumentType.CV,
+                "test_cv.pdf"
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    "/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=renamed.pdf",
+                    null,
+                    Void.class,
+                    400
+                );
+        }
     }
 
     // ===== UPLOAD DOCUMENTS =====
@@ -923,7 +964,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void uploadDocumentsUploadsSuccessfully() {
-            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
 
             MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "bachelor_transcript.pdf", "PDF content here");
 
@@ -959,15 +1000,30 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void uploadDocumentsWithoutAuthReturnsForbidden() {
-            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
             MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
             api.multipartPostAndRead(
                 "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
                 List.of(file),
                 new TypeReference<>() {},
-                401
+                403
             );
+        }
+
+        @Test
+        void uploadDocumentsForSentApplicationReturnsBadRequest() {
+            Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .multipartPostAndRead(
+                    "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
+                    List.of(file),
+                    new TypeReference<>() {},
+                    400
+                );
         }
     }
 }
