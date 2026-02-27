@@ -104,13 +104,24 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Deletes a DocumentDictionary entry from applicant profile.
+     * Deletes an applicant-owned DocumentDictionary entry.
      * This method is intended for internal use when syncing documents from application to profile.
      *
+     * @param applicant            the applicant who must own the entry
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    public void deleteApplicantDocumentDictionary(UUID documentDictionaryId) {
-        documentDictionaryRepository.deleteById(documentDictionaryId);
+    public void deleteApplicantOwnedDocumentDictionary(Applicant applicant, UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = documentDictionaryRepository
+            .findById(documentDictionaryId)
+            .orElseThrow(() -> new EntityNotFoundException("Document dictionary with id " + documentDictionaryId + " not found"));
+
+        if (documentDictionary.getApplicant() == null || !documentDictionary.getApplicant().getUserId().equals(applicant.getUserId())) {
+            throw new EntityNotFoundException(
+                "Applicant document dictionary with id " + documentDictionaryId + " not found for applicant " + applicant.getUserId()
+            );
+        }
+
+        documentDictionaryRepository.delete(documentDictionary);
     }
 
     /**

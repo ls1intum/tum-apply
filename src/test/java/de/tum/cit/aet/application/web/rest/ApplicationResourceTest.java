@@ -404,82 +404,57 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void createApplicationPrefillsDocumentsFromApplicantProfile() throws Exception {
-            // Upload documents to applicant profile
-            DocumentDictionary cvDoc = DocumentTestData.savedDictionaryWithDocument(
-                storageRootConfig,
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                "/testdocs/test-doc1.pdf",
-                "cv.pdf",
-                DocumentType.CV,
-                "cv.pdf"
-            );
-            DocumentDictionary referenceDoc = DocumentTestData.savedDictionaryWithDocument(
-                storageRootConfig,
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
+            DocumentDictionary cvDoc = createApplicantProfileDocument("/testdocs/test-doc1.pdf", "cv.pdf", DocumentType.CV);
+            DocumentDictionary referenceDoc = createApplicantProfileDocument(
                 "/testdocs/test-doc2.pdf",
                 "reference.pdf",
-                DocumentType.REFERENCE,
-                "reference.pdf"
+                DocumentType.REFERENCE
             );
-            DocumentDictionary bachelorDoc = DocumentTestData.savedDictionaryWithDocument(
-                storageRootConfig,
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
+            DocumentDictionary bachelorDoc = createApplicantProfileDocument(
                 "/testdocs/test-doc3.pdf",
                 "bachelor_transcript.pdf",
-                DocumentType.BACHELOR_TRANSCRIPT,
-                "bachelor_transcript.pdf"
+                DocumentType.BACHELOR_TRANSCRIPT
             );
 
-            // Create new application
             ApplicationForApplicantDTO returnedApp = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead("/api/applications/create/" + publishedJob.getJobId(), null, ApplicationForApplicantDTO.class, 200);
 
             assertThat(returnedApp.applicationId()).isNotNull();
 
-            // Verify documents were prefilled to the application
             Application createdApplication = applicationRepository.findById(returnedApp.applicationId()).orElseThrow();
-
-            Set<DocumentDictionary> applicationCVs = documentDictionaryRepository.findByApplicationAndDocumentType(
+            assertApplicationHasDocumentIdForType(createdApplication, DocumentType.CV, cvDoc.getDocument().getDocumentId());
+            assertApplicationHasDocumentIdForType(createdApplication, DocumentType.REFERENCE, referenceDoc.getDocument().getDocumentId());
+            assertApplicationHasDocumentIdForType(
                 createdApplication,
-                DocumentType.CV
-            );
-            assertThat(applicationCVs).hasSize(1);
-            assertThat(applicationCVs.iterator().next().getDocument().getDocumentId()).isEqualTo(cvDoc.getDocument().getDocumentId());
-
-            Set<DocumentDictionary> applicationReferences = documentDictionaryRepository.findByApplicationAndDocumentType(
-                createdApplication,
-                DocumentType.REFERENCE
-            );
-            assertThat(applicationReferences).hasSize(1);
-            assertThat(applicationReferences.iterator().next().getDocument().getDocumentId()).isEqualTo(
-                referenceDoc.getDocument().getDocumentId()
-            );
-
-            Set<DocumentDictionary> applicationBachelorTranscripts = documentDictionaryRepository.findByApplicationAndDocumentType(
-                createdApplication,
-                DocumentType.BACHELOR_TRANSCRIPT
-            );
-            assertThat(applicationBachelorTranscripts).hasSize(1);
-            assertThat(applicationBachelorTranscripts.iterator().next().getDocument().getDocumentId()).isEqualTo(
+                DocumentType.BACHELOR_TRANSCRIPT,
                 bachelorDoc.getDocument().getDocumentId()
             );
 
-            // Verify original applicant profile documents are still intact
             Set<DocumentDictionary> applicantCVs = documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV);
             assertThat(applicantCVs).hasSize(1);
+        }
+
+        private DocumentDictionary createApplicantProfileDocument(String sourcePath, String filename, DocumentType documentType)
+            throws Exception {
+            return DocumentTestData.savedDictionaryWithDocument(
+                storageRootConfig,
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                sourcePath,
+                filename,
+                documentType,
+                filename
+            );
+        }
+
+        private void assertApplicationHasDocumentIdForType(Application application, DocumentType documentType, UUID expectedDocumentId) {
+            Set<DocumentDictionary> documents = documentDictionaryRepository.findByApplicationAndDocumentType(application, documentType);
+            assertThat(documents).hasSize(1);
+            assertThat(documents.iterator().next().getDocument().getDocumentId()).isEqualTo(expectedDocumentId);
         }
     }
 

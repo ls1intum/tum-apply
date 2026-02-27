@@ -7,11 +7,11 @@
 -- =============================================
 
 -- Clean existing test documents
-DELETE FROM document_dictionary WHERE document_dictionary_id LIKE '00000000-0000-0000-0000-40000000%';
-DELETE FROM documents WHERE document_id LIKE '00000000-0000-0000-0000-40000000%';
+DELETE FROM TUMApply.document_dictionary WHERE document_dictionary_id LIKE '00000000-0000-0000-0000-40000000%';
+DELETE FROM TUMApply.documents WHERE document_id LIKE '00000000-0000-0000-0000-40000000%';
 
 -- Insert test documents
-INSERT INTO documents (document_id, sha256_id, path, mime_type, size_bytes, uploaded_by, created_at, last_modified_at)
+INSERT INTO TUMApply.documents (document_id, sha256_id, path, mime_type, size_bytes, uploaded_by, created_at, last_modified_at)
 VALUES 
     -- Single test document used for all test cases
     ('00000000-0000-0000-0000-400000000001', 
@@ -27,7 +27,7 @@ VALUES
 -- IMPORTANT:
 --   - application snapshot document: applicant_id = NULL, application_id = <application>
 --   - applicant profile document:   applicant_id = <applicant>, application_id = NULL
-INSERT INTO document_dictionary (document_dictionary_id, document_id, applicant_id, application_id, document_type, name)
+INSERT INTO TUMApply.document_dictionary (document_dictionary_id, document_id, applicant_id, application_id, document_type, name)
 VALUES 
     -- Documents for SAVED application (Max Applicant - Time Series Forecasting Intern)
     ('00000000-0000-0000-0000-400000010001', 

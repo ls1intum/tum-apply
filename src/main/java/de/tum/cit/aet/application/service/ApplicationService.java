@@ -294,7 +294,7 @@ public class ApplicationService {
 
         // Delete all existing documents from applicant profile
         for (DocumentDictionary applicantDoc : applicantDocs) {
-            documentDictionaryService.deleteApplicantDocumentDictionary(applicantDoc.getDocumentDictionaryId());
+            documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant, applicantDoc.getDocumentDictionaryId());
         }
 
         // Copy all documents from application dictionary to applicant profile
