@@ -14,28 +14,6 @@ export class UserAvatarComponent {
   colorKey = input<string | undefined>(undefined);
   size = input<'sm' | 'md' | 'lg'>('md');
 
-  private readonly lightAvatarPalette = [
-    '#B5D0FA',
-    '#BFECD7',
-    '#FFE6A8',
-    '#FFCACA',
-    '#E0CFFA',
-    '#BDEDEA',
-    '#FCD3BE',
-    '#F5CAE0',
-  ];
-  private readonly darkAvatarPalette = [
-    '#8EAAD5',
-    '#8BC2AD',
-    '#DCC684',
-    '#D98EA2',
-    '#A898DA',
-    '#87C2BF',
-    '#B8848E',
-    '#D59BB7',
-  ];
-  private readonly themeService = inject(ThemeService);
-
   initials = computed(() => {
     const first = this.firstName()?.trim();
     const last = this.lastName()?.trim();
@@ -74,7 +52,12 @@ export class UserAvatarComponent {
   });
 
   backgroundColor = computed(() => {
-    const source = this.colorKey()?.trim() || this.fullName()?.trim() || `${this.firstName() ?? ''} ${this.lastName() ?? ''}`.trim() || 'U';
+    const source = this.firstNonEmpty(
+      this.colorKey()?.trim(),
+      this.fullName()?.trim(),
+      `${this.firstName() ?? ''} ${this.lastName() ?? ''}`.trim(),
+      'U',
+    );
     const hash = this.hashString(source);
     const palette = this.themeService.theme() === 'dark' ? this.darkAvatarPalette : this.lightAvatarPalette;
     return palette[Math.abs(hash) % palette.length];
@@ -82,17 +65,27 @@ export class UserAvatarComponent {
 
   textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.4 : 0.5));
   borderColor = computed(() => this.withAlpha(this.textColor(), 0.45));
-  textShadow = computed(() =>
-    this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)',
-  );
+  textShadow = computed(() => (this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)'));
+
+  private readonly lightAvatarPalette = ['#B5D0FA', '#BFECD7', '#FFE6A8', '#FFCACA', '#E0CFFA', '#BDEDEA', '#FCD3BE', '#F5CAE0'];
+  private readonly darkAvatarPalette = ['#8EAAD5', '#8BC2AD', '#DCC684', '#D98EA2', '#A898DA', '#87C2BF', '#B8848E', '#D59BB7'];
+  private readonly themeService = inject(ThemeService);
 
   private hashString(value: string): number {
     let hash = 0;
     for (let i = 0; i < value.length; i++) {
-      hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0;
+      hash = (hash * 31 + value.charCodeAt(i)) % Number.MAX_SAFE_INTEGER;
     }
-    return hash;
+    return Math.floor(hash);
+  }
+
+  private firstNonEmpty(...values: (string | undefined)[]): string {
+    for (const value of values) {
+      if (value !== undefined && value !== '') {
+        return value;
+      }
+    }
+    return 'U';
   }
 
   private darkenHex(hex: string, factor: number): string {
