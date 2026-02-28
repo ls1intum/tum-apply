@@ -1,19 +1,33 @@
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
-      @if (researchGroupId()) {
-        <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
-      } @else {
-        <h1 jhiTranslate="researchGroup.memberHeader"></h1>
-      }
+      <div class="flex items-center gap-2">
+        @if (researchGroupId()) {
+          <jhi-back-button />
+          <h1>
+            <span jhiTranslate="researchGroup.memberHeaderAdmin"></span>
+            @if (researchGroupName()) {
+              <span> - {{ researchGroupName() }}</span>
+            }
+          </h1>
+        } @else {
+          <h1>
+            <span jhiTranslate="sidebar.researchgroup.title"></span>
+            -
+            <span jhiTranslate="researchGroup.memberHeader"></span>
+          </h1>
+        }
+      </div>
     </div>
-    <jhi-button
-      [label]="'researchGroup.members.addMembers'"
-      icon="user-plus"
-      [shouldTranslate]="true"
-      severity="primary"
-      (click)="openAddMembersModal()"
-    />
+    @if (!isEmployee()) {
+      <jhi-button
+        [label]="'researchGroup.members.addMembers'"
+        icon="user-plus"
+        [shouldTranslate]="true"
+        severity="primary"
+        (click)="openAddMembersModal()"
+      />
+    }
   </div>
 
   <!-- Members Table -->
@@ -51,8 +65,4 @@
       />
     }
   </ng-template>
-
-  @if (researchGroupId()) {
-    <jhi-button [label]="'button.back'" severity="info" variant="outlined" [shouldTranslate]="true" icon="arrow-left" (click)="goBack()" />
-  }
 </div>

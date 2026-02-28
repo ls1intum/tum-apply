@@ -65,10 +65,13 @@ describe('UploadButtonComponent', () => {
       clear: vi.fn(),
     } as unknown as FileUpload);
 
-    const bigFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'bigfile.pdf'); // 2MB
+    const bigFile = new File([new ArrayBuffer(26 * 1024 * 1024)], 'bigfile.pdf'); // 26MB (exceeds 25MB limit)
     await component.onFileSelected({ currentFiles: [bigFile] } as FileSelectEvent);
 
-    expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.too_large');
+    expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.too_large_detailed', {
+      maxSize: '25',
+      totalSize: `bigfile.pdf (${component.formatSize(26 * 1024 * 1024)})`,
+    });
     expect(component.selectedFiles()).toBe(undefined);
   });
 

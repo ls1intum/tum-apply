@@ -118,9 +118,6 @@ jhipster:
 
 # Application specific properties:
 aet:
+  environment: test
   email:
     enabled: true
-
-user:
-  retention:
-    dry-run: ${USER_RETENTION_DRY_RUN:true}

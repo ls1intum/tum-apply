@@ -8,7 +8,7 @@
       "steps": {
         "basicInfo": "Basic Information",
         "employmentTerms": "Employment Terms",
-        "imageSelection": "Job Banner Image",
+        "imageSelection": "Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
@@ -134,10 +134,11 @@
         "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
         "templateEN": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
         "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.</p><br><p><strong>Zulassungsvoraussetzungen</strong></p><p>TODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).</p>",
-        "aiHeaderText": "AI Assistant",
-        "aiButton1": "Write With AI",
-        "aiButton2": "Rewrite With AI",
-        "aiHelperText": "Add bullet points and get a first draft.\nFor better results, fill in the fields above. AI generation may take a moment.",
+        "aiHeaderText": "TUMApply AI Assistant",
+        "aiButton1": "Write with TUMApply",
+        "aiButton2": "Rewrite with TUMApply",
+        "aiHelperText": "Specify the most important information and let TUMApply AI write it for you.",
+        "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
@@ -146,20 +147,16 @@
       }
     },
     "imageSection": {
-      "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library.",
+      "description": "Select an optional banner image that will be displayed in your position card. Choose from default images or use your research group's image library.",
       "defaultImages": "Default Images",
       "orDivider": "or",
-      "researchGroupImages": "Research Group Image Library",
-      "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this job.",
+      "researchGroupImages": "Image Collection",
+      "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this position.",
       "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
       "uploadFormats": "JPG, JPEG, PNG formats accepted",
       "uploadSuccess": {
         "summary": "Upload Successful",
         "detail": "Image uploaded successfully"
-      },
-      "uploadFailed": {
-        "summary": "Upload Failed",
-        "detail": "Failed to upload image. Please try again."
       },
       "deleteImageSuccess": {
         "summary": "Image Deleted",
@@ -169,25 +166,9 @@
         "summary": "Delete Failed",
         "detail": "Failed to delete image. Please try again."
       },
-      "fileTooLarge": {
-        "summary": "File Too Large",
-        "detail": "Image must be smaller than 5MB"
-      },
-      "invalidFileType": {
-        "summary": "Invalid File Type",
-        "detail": "Please select an image file (JPG, JPEG, PNG)"
-      },
       "loadImagesFailed": {
         "summary": "Load Failed",
         "detail": "Failed to load images. Please refresh the page."
-      },
-      "dimensionsTooLarge": {
-        "summary": "Image Too Large",
-        "detail": "Image dimensions must not exceed 4096x4096 pixels"
-      },
-      "invalidImage": {
-        "summary": "Invalid Image",
-        "detail": "Unable to read image file. Please select a valid image."
       },
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
@@ -206,9 +187,10 @@
         "title": "Extras",
         "description": "Add custom questions that applicants will see in the application form."
       },
-      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached to this job. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>.",
-      "dataPrivacyConfirmationText": "I have read and understood the Data Privacy Statement and consent to the processing of my personal data as described therein.",
-      "dataPrivacyErrorText": "Please confirm that you have read and understood the Data Privacy Statement and consent to the processing of your personal data in order to proceed."
+      "suitableForDisabled": {
+        "label": "This position is suitable for persons with disabilities",
+        "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with disabilities"
+      }
     },
     "confirmDialog": {
       "header": "Publish Doctorate Position",
@@ -281,7 +263,7 @@
   },
   "myPositionsPage": {
     "header": {
-      "title": "Manage your Doctorate Positions",
+      "title": "Positions",
       "createButton": "Create Position"
     },
     "searchFilterSortBar": {
@@ -366,8 +348,16 @@
       "fullTime": "Full-time",
       "partTime": "Part-time ({{percentage}}%)"
     },
+    "infos": {
+      "applicantLanguageInfo": "Applicants only see the job description in the language they have selected."
+    },
     "dataPrivacy": {
-      "dataProtectionText": "When you apply for a position with the Technical University of Munich (TUM), you are submitting personal information. With regard to personal information, please take note of the <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung. </a>(data protection information on collecting and processing personal data contained in your application in accordance with Art. 13 of the General Data Protection Regulation (GDPR)). By submitting your application, you confirm that you have acknowledged the above data protection information of TUM."
+      "dataProtectionText": "When you apply for a position with the Technical University of Munich (TUM), you are submitting personal information. Please take note of the <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/#English\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Data protection information for processing personal data in relation to your application</a>. By submitting your application, you confirm that you have acknowledged the above data protection information of TUM."
+    },
+    "equalOpportunities": {
+      "title": "Equal Opportunities Statement",
+      "baseText": "TUM is committed to equal opportunities and explicitly welcomes applications from women and from persons with disabilities. Applicants with disabilities will be given preferential consideration in the case of equal suitability, qualifications, and professional performance.",
+      "suitableText": "This position is suitable for persons with disabilities."
     },
     "noData": "No data available"
   },

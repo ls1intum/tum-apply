@@ -33,6 +33,7 @@
         "templates": "TUMApply - My Templates",
         "templateCreation": "TUMApply - New Template",
         "templateEdit": "TUMApply - Edit Template",
+        "images": "TUMApply - My Images",
         "info": "TUMApply - My Group"
       },
       "about-us": "TumApply - About Us",
@@ -121,10 +122,7 @@
         "email": "Invalid email.",
         "min": "This field should be at least {{ min }}.",
         "max": "This field cannot be more than {{ max }}.",
-        "tooManyDecimals": "Please enter at most two decimal places.",
-        "invalidGrade": "Please enter the grade as a positive number, percentage, or letter.",
-        "formatMismatch": "Please enter all values in the same format.",
-        "boundaryMismatch": "The highest achievable grade must be better than the lowest passing grade.",
+        "invalidLimitType": "Please use the same format as the entered grade.",
         "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
     },
@@ -193,8 +191,6 @@
     },
     "detail_card": {
       "name": "Name",
-      "upper_passing_limit": "Highest Achievable Grade",
-      "lower_passing_limit": "Lowest Passing Grade",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",
@@ -227,14 +223,16 @@
     },
     "filters": {
       "filter": "Filter",
+      "sortingAndFilter": "Sorting & Filter",
       "selected": "Selected",
+      "clearAll": "Clear All",
       "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
       "apply": "Apply",
-      "recordsFound": "{{count}} {{entity}} found"
+      "recordsFound": "{{count}} {{entity}} found",
+      "show": "Show Positions",
+      "resetFilter": "Reset Filter"
     },
-    "filterBy": "Filter By:",
-    "sortBy": "Sort By:",
     "sorting": {
       "ascending": {
         "text": "Ascending (A-Z)",
@@ -292,10 +290,26 @@
       },
       "error": {
         "replace_failed": "Failed to replace document",
-        "too_large": "Files are too large",
-        "upload_failed": "Upload failed",
-        "delete_failed": "Failed to delete document",
-        "rename_failed": "Failed to rename document"
+        "too_large_detailed": {
+          "summary": "Files Too Large",
+          "detail": "Maximum upload size is {{maxSize}} MB per file. Oversized file: {{totalSize}}"
+        },
+        "total_too_large": {
+          "summary": "Total Size Exceeds Limit",
+          "detail": "Maximum total upload size is {{maxTotal}} MB.\nYour files total: {{actualTotal}}"
+        },
+        "upload_failed": {
+          "summary": "Upload Failed",
+          "detail": "Failed to upload document. Please try again."
+        },
+        "delete_failed": {
+          "summary": "Delete Failed",
+          "detail": "Failed to delete document. Please try again."
+        },
+        "rename_failed": {
+          "summary": "Rename Failed",
+          "detail": "Failed to rename document. Please try again."
+        }
       }
     },
     "application_overview": {
@@ -332,9 +346,6 @@
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved",
         "FAILED": "Failed saving changes"
-      },
-      "gradingScale": {
-        "ONE_TO_FOUR": "German Scale (One to Four)"
       }
     },
     "applicationPage1": {
@@ -384,9 +395,15 @@
         "masterDegreeUniversity": "University of your Master’s Degree",
         "masterGrade": "Final Master Grade"
       },
+      "helperText": {
+        "scale": "Scale: ",
+        "gradingScale": "{{upperLimit}} (best) to {{lowerLimit}} (pass)",
+        "changeScale": "Change Scale"
+      },
+      "warnText": "Unusual format, please check your entry",
       "tooltip": {
-        "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
-        "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
+        "gradeUpperLimit": "Enter the highest achievable grade in your degree grading system (e.g. 1.0 in Germany).",
+        "gradeLowerLimit": "Enter the lowest passing grade in your degree grading system (e.g. 4.0 in Germany).",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
         "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",
@@ -615,6 +632,30 @@
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
+    }
+  },
+  "imageUpload": {
+    "error": {
+      "fileTooLarge": {
+        "summary": "File Too Large",
+        "detail": "Image file exceeds the maximum size of 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Invalid File Type",
+        "detail": "Please upload JPG or PNG images only"
+      },
+      "dimensionsTooLarge": {
+        "summary": "Image Too Large",
+        "detail": "Image dimensions exceed the maximum allowed (4096×4096 pixels)"
+      },
+      "invalidImage": {
+        "summary": "Invalid Image",
+        "detail": "The file is corrupted or not a valid image"
+      },
+      "uploadFailed": {
+        "summary": "Upload Failed",
+        "detail": "Failed to upload image. Please try again"
+      }
     }
   }
 }

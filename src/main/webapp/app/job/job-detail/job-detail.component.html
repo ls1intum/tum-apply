@@ -109,10 +109,11 @@
         <section>
           <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
           @if (isProfessorOrEmployee()) {
-            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
+            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.infos.applicantLanguageInfo' | translate" />
+            <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
             <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
-            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
+            <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
             <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
           } @else {
             <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
@@ -230,6 +231,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Equal Opportunities Statement -->
+    <section class="mb-8 mt-6">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.equalOpportunities.title"></h2>
+      <div class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere">
+        <span jhiTranslate="jobDetailPage.equalOpportunities.baseText"></span>
+        @if (job.suitableForDisabled) {
+          <span class="block mt-2" jhiTranslate="jobDetailPage.equalOpportunities.suitableText"></span>
+        }
+      </div>
+    </section>
 
     <!-- Data Protection Information -->
     <section class="mb-8">

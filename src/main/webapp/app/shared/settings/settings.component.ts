@@ -37,7 +37,7 @@ export class SettingsComponent {
 
     // Hide notifications tab for admins
     if (this.role() !== UserShortDTO.RolesEnum.Admin) {
-      baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] });
+      baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications' });
     }
 
     // Add Personal Information and documents tabs only for applicants
