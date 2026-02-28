@@ -48,7 +48,7 @@
     "minimatch": "7.4.8",
     "qs": "6.15.0",
     "rimraf": "6.1.2",
-    "semver": "7.7.3",
+    "semver": "7.7.4",
     "tough-cookie": "6.0.0",
     "webpack": "5.104.1",
     "webpack-dev-middleware": "7.4.5",
