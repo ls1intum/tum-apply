@@ -82,7 +82,7 @@
     "@primeuix/utils": "0.6.4",
     "dayjs": "1.11.19",
     "franc-min": "6.2.0",
-    "keycloak-js": "26.2.2",
+    "keycloak-js": "26.2.3",
     "ngx-quill": "30.0.1",
     "postal-codes-js": "2.5.2",
     "primeicons": "7.0.0",
