@@ -1,0 +1,18 @@
+:host ::ng-deep jhi-tab-view.settings-tab-view .p-tabs {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 11rem);
+  min-height: 28rem;
+}
+
+:host ::ng-deep jhi-tab-view.settings-tab-view .p-tablist {
+  background: var(--color-background-default);
+  flex: 0 0 auto;
+}
+
+:host ::ng-deep jhi-tab-view.settings-tab-view .p-tabpanels {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

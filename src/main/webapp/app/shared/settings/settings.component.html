@@ -3,7 +3,7 @@
     <h1 jhiTranslate="settings.header">Settings</h1>
   </div>
 
-  <jhi-tab-view [tabs]="tabs()" [activeTabId]="activeTab()" [lazyLoad]="true" (tabChange)="onTabChange($event)">
+  <jhi-tab-view class="settings-tab-view" [tabs]="tabs()" [activeTabId]="activeTab()" [lazyLoad]="true" (tabChange)="onTabChange($event)">
     <ng-template jhiTabPanel="general">
       <div class="mb-4">
         <div class="text-lg font-semibold mb-2">
@@ -28,14 +28,14 @@
     </ng-template>
 
     <ng-template jhiTabPanel="personal-information">
-      <div class="px-4 xl:px-32 2xl:px-64">
-        <jhi-personal-information-settings />
+      <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+        <jhi-personal-information-settings class="w-full" />
       </div>
     </ng-template>
 
     <ng-template jhiTabPanel="documents">
-      <div class="px-2 xl:px-32 2xl:px-64">
-        <jhi-settings-documents />
+      <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+        <jhi-settings-documents class="w-full" />
       </div>
     </ng-template>
   </jhi-tab-view>

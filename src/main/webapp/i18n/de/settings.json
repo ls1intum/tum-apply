@@ -59,13 +59,13 @@
         "aquabloom": "Hell AquaBloom",
         "system": "System"
       }
-    }
-    ,
+    },
     "documents": {
       "description": "Lade hier deine Dokumente hoch und verwalte sie. \nDeine gespeicherten Dokumente werden verwendet, um Bewerbungen automatisch auszufüllen.",
       "sections": {
         "bachelor": "Bachelor Studium",
-        "master": "Master Studium"
+        "master": "Master Studium",
+        "additionalDocuments": "Zusätzliche Unterlagen"
       },
       "labels": {
         "bachelorCertificate": "Bachelor-Zeugnis",

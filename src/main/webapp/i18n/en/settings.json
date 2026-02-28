@@ -59,13 +59,13 @@
         "aquabloom": "Light AquaBloom",
         "system": "System"
       }
-    }
-    ,
+    },
     "documents": {
       "description": "Upload and manage your documents here. \nYour saved documents are used to prefill forms during the application process.",
       "sections": {
         "bachelor": "Bachelor Studies",
-        "master": "Master Studies"
+        "master": "Master Studies",
+        "additionalDocuments": "Additional Documents"
       },
       "labels": {
         "bachelorCertificate": "Bachelor Certificate",
