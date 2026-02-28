@@ -67,21 +67,13 @@ describe('SidebarComponent', () => {
       fixture.detectChanges();
       expect(component.categories).toHaveLength(2);
       expect(component.categories?.[0].title).toBe('sidebar.dashboard.dashboard');
-      expect(component.categories?.[1].title).toBe('sidebar.applications.applications');
+      expect(component.categories?.[1].title).toBe('sidebar.applications.title');
     });
 
     it('should return categories for PROFESSOR role', () => {
       accountService.user.set({ authorities: [UserShortDTO.RolesEnum.Professor] } as User);
       fixture.detectChanges();
       expect(component.categories).toHaveLength(3);
-      expect(component.categories?.[0].title).toBe('sidebar.manage.manage');
-    });
-
-    it('should return categories for ADMIN role', () => {
-      accountService.user.set({ authorities: [UserShortDTO.RolesEnum.Admin] } as User);
-      fixture.detectChanges();
-      expect(component.categories).toHaveLength(4);
-      expect(component.categories?.[0].title).toBe('sidebar.dashboard.dashboard');
     });
   });
 

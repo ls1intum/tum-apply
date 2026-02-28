@@ -241,7 +241,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'researchGroup.memberPage',
+    title: 'researchGroup.memberHeader',
   },
   {
     path: 'research-group/members',
@@ -251,7 +251,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'researchGroup.memberPage',
+    title: 'researchGroup.memberHeader',
   },
   {
     path: 'research-group/info',
