@@ -15,24 +15,24 @@ export class UserAvatarComponent {
   size = input<'sm' | 'md' | 'lg'>('md');
 
   private readonly lightAvatarPalette = [
-    '#BFD7FF',
-    '#C8F1DD',
-    '#FFE2B8',
-    '#FFD0D0',
-    '#E7D6FF',
-    '#C6F1EE',
-    '#FFDCC8',
-    '#F9D2E5',
+    '#B5D0FA',
+    '#BFECD7',
+    '#FFE6A8',
+    '#FFCACA',
+    '#E0CFFA',
+    '#BDEDEA',
+    '#FCD3BE',
+    '#F5CAE0',
   ];
   private readonly darkAvatarPalette = [
-    '#9FB6E8',
-    '#9FD6BE',
-    '#E4C19C',
-    '#E5AFAF',
-    '#C4B0E8',
-    '#96D0CC',
-    '#E6C0A6',
-    '#DEB0C8',
+    '#8EAAD5',
+    '#8BC2AD',
+    '#DCC684',
+    '#D98EA2',
+    '#A898DA',
+    '#87C2BF',
+    '#B8848E',
+    '#D59BB7',
   ];
   private readonly themeService = inject(ThemeService);
 
@@ -80,7 +80,7 @@ export class UserAvatarComponent {
     return palette[Math.abs(hash) % palette.length];
   });
 
-  textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.4 : 0.55));
+  textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.4 : 0.5));
   borderColor = computed(() => this.withAlpha(this.textColor(), 0.45));
   textShadow = computed(() =>
     this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)',
