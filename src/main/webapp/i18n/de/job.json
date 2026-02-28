@@ -150,7 +150,7 @@
       "description": "Wähle ein optionales Bannerbild aus, das in deiner Stellenkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe.",
       "defaultImages": "Standardbilder",
       "orDivider": "oder",
-      "researchGroupImages": "Gruppenbilder",
+      "researchGroupImages": "Bildersammlung",
       "researchGroupImagesDescription": "Diese Bilder werden innerhalb deiner Forschungsgruppe geteilt. Lade neue Bilder hoch, um sie zur Bibliothek hinzuzufügen, und wähle ein beliebiges Bild für diese Stelle aus.",
       "uploadRecommendation": "Empfohlen: 1200x675px (16:9 Format) · Max 5MB",
       "uploadFormats": "JPG, JPEG, PNG Formate akzeptiert",
