@@ -233,7 +233,6 @@
       "show": "Stellen anzeigen",
       "resetFilter": "Filter zurücksetzen"
     },
-
     "sorting": {
       "ascending": {
         "text": "Aufsteigend (A-Z)",
@@ -481,6 +480,12 @@
         "withdrawMessage": "Bist du sicher, dass du diese Bewerbung zurückziehen möchtest? Sobald sie zurückgezogen wurde, ist sie für den Professor nicht mehr sichtbar. Diese Aktion kann NICHT rückgängig gemacht werden!",
         "deleteHeader": "Löschvorgang bestätigen",
         "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
+      },
+      "emptyState": {
+        "headline": "Keine Bewerbungen",
+        "description1": "Du hast noch keine Bewerbung eingereicht.",
+        "description2": "Schau dir die verfügbaren Stellen an und reiche deine erste Bewerbung ein.",
+        "browsePositions": "Stellen durchsuchen"
       }
     },
     "applicationDetail": {
