@@ -1,7 +1,7 @@
 <a
   [routerLink]="['/interviews', 'process', interview().processId, 'interviewee', interview().intervieweeId, 'assessment']"
   [queryParams]="{ from: 'overview' }"
-  class="group grid grid-cols-[1fr_auto_8.75rem] gap-4 p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary"
+  class="group grid grid-cols-[1fr_auto_8.75rem] gap-4 p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary transition-colors"
 >
   <!-- LEFT: Avatar + Name + Job -->
   <div class="flex items-center gap-3">

@@ -1,26 +1,28 @@
 <article
   (click)="onCardClick()"
-  class="flex rounded-lg border border-border-default bg-background-default overflow-hidden cursor-pointer transition-all hover:bg-background-surface"
+  class="flex flex-row rounded-lg border border-border-default bg-background-default overflow-hidden cursor-pointer transition-all hover:bg-background-surface group"
   [ngClass]="{ 'opacity-80': processStatus() === 'CLOSED' }"
 >
-  <!-- Image (1/3) -->
+  <!-- Image -->
   <div
     class="w-1/3 min-h-[8rem] bg-cover bg-center shrink-0"
     [ngClass]="processStatus() === 'CLOSED' ? 'bg-background-surface-alt' : 'bg-primary'"
     [style.backgroundImage]="process().imageUrl ? 'url(' + process().imageUrl + ')' : null"
   ></div>
 
-  <!-- Content (2/3) -->
-  <div class="flex-1 flex flex-col justify-between p-4 gap-3">
+  <!-- Content -->
+  <div class="flex-1 flex flex-col justify-between p-4 gap-4">
     <!-- Title + Tag -->
-    <div class="flex items-start justify-between gap-2">
-      <h3 class="text-base font-semibold line-clamp-2 m-0 leading-tight text-text">
+    <div class="flex items-start justify-between gap-3">
+      <h3 class="text-base font-semibold line-clamp-2 m-0 leading-tight text-text flex-1 group-hover:text-primary transition-colors">
         {{ process().jobTitle }}
       </h3>
-      <jhi-tag
-        [text]="processStatus() === 'CLOSED' ? 'Closed' : 'Active'"
-        [color]="processStatus() === 'CLOSED' ? 'secondary' : 'success'"
-      />
+      <div class="shrink-0">
+        <jhi-tag
+          [text]="processStatus() === 'CLOSED' ? 'Closed' : 'Active'"
+          [color]="processStatus() === 'CLOSED' ? 'secondary' : 'success'"
+        />
+      </div>
     </div>
 
     <!-- Warning (compact, between title and metrics) -->
@@ -43,7 +45,7 @@
     }
 
     <!-- Metrics Row -->
-    <div class="flex items-end justify-between gap-4">
+    <div class="flex flex-wrap items-end justify-start gap-x-6 gap-y-4 pt-1">
       <!-- Metric: Uncontacted -->
       <div class="flex flex-col">
         <span class="text-xs text-text-secondary uppercase tracking-wider font-semibold" jhiTranslate="interview.overview.stats.uncontacted"
