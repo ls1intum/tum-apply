@@ -65,6 +65,8 @@ model/department.ts
 model/departmentCreationDTO.ts
 model/departmentDTO.ts
 model/departmentShortDTO.ts
+model/document.ts
+model/documentDictionary.ts
 model/documentInformationHolderDTO.ts
 model/emailSetting.ts
 model/emailSettingDTO.ts
