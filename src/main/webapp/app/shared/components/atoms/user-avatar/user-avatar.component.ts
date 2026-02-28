@@ -48,15 +48,23 @@ export class UserAvatarComponent {
   textShadow = computed(() => (this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)'));
 
   private readonly lightAvatarPalette = ['#B5D0FA', '#BFECD7', '#FFE6A8', '#FFCACA', '#E0CFFA', '#BDEDEA', '#FCD3BE', '#F5CAE0'];
-  private readonly darkAvatarPalette = ['#8EAAD5', '#8BC2AD', '#DCC684', '#D98EA2', '#A898DA', '#87C2BF', '#B8848E', '#D59BB7'];
+  private readonly darkAvatarPalette = ['#9FB6E8', '#9FD6BE', '#E4C19C', '#E5AFAF', '#C4B0E8', '#96D0CC', '#E6C0A6', '#DEB0C8'];
   private readonly themeService = inject(ThemeService);
 
   private hashString(value: string): number {
     let hash = 0;
+    const uint32 = 4_294_967_296; // 2^32
+    const int32Boundary = 2_147_483_648; // 2^31
+
     for (let i = 0; i < value.length; i++) {
-      hash = (hash * 31 + value.charCodeAt(i)) % Number.MAX_SAFE_INTEGER;
+      // Keep legacy 32-bit signed hash behavior for stable color mapping.
+      hash = (hash * 31 + value.charCodeAt(i)) % uint32;
+      if (hash < 0) {
+        hash += uint32;
+      }
     }
-    return Math.floor(hash);
+
+    return hash >= int32Boundary ? hash - uint32 : hash;
   }
 
   private initialsFromNameParts(first: string | undefined, last: string | undefined): string | undefined {
