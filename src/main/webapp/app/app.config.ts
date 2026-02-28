@@ -37,6 +37,7 @@ import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interc
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
 import { PrimengTranslationService } from './shared/language/primeng-translation.service';
+import { LoadingInterceptor } from './core/interceptor/loading.interceptor';
 
 /**
  * Application initializer that enforces strict order:
@@ -112,6 +113,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHandlerInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
       multi: true,
     },
     {
