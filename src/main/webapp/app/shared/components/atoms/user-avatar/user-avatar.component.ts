@@ -17,31 +17,11 @@ export class UserAvatarComponent {
   initials = computed(() => {
     const first = this.firstName()?.trim();
     const last = this.lastName()?.trim();
-
-    if (first || last) {
-      const firstInitial = first?.charAt(0) ?? '';
-      const lastInitial = last?.charAt(0) ?? '';
-      const direct = `${firstInitial}${lastInitial}`.toUpperCase();
-      if (direct !== '') {
-        return direct;
-      }
+    const fromNames = this.initialsFromNameParts(first, last);
+    if (fromNames !== undefined) {
+      return fromNames;
     }
-
-    const name = this.fullName()?.trim() ?? '';
-    if (name === '') {
-      return 'U';
-    }
-
-    const parts = name.split(/\s+/).filter(Boolean);
-    if (parts.length === 0) {
-      return 'U';
-    }
-
-    if (parts.length === 1) {
-      return parts[0].charAt(0).toUpperCase();
-    }
-
-    return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+    return this.initialsFromFullName(this.fullName()?.trim() ?? '');
   });
 
   ariaLabel = computed(() => {
@@ -77,6 +57,30 @@ export class UserAvatarComponent {
       hash = (hash * 31 + value.charCodeAt(i)) % Number.MAX_SAFE_INTEGER;
     }
     return Math.floor(hash);
+  }
+
+  private initialsFromNameParts(first: string | undefined, last: string | undefined): string | undefined {
+    const firstInitial = first?.charAt(0) ?? '';
+    const lastInitial = last?.charAt(0) ?? '';
+    const direct = `${firstInitial}${lastInitial}`.toUpperCase();
+    return direct !== '' ? direct : undefined;
+  }
+
+  private initialsFromFullName(name: string): string {
+    if (name === '') {
+      return 'U';
+    }
+
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return 'U';
+    }
+
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+
+    return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
   }
 
   private firstNonEmpty(...values: (string | undefined)[]): string {
