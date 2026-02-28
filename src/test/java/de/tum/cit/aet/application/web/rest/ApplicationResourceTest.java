@@ -609,13 +609,24 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void deleteApplicationRemovesIt() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                application,
+                null,
+                DocumentType.CV,
+                "delete-app-test-cv.pdf"
+            );
             assertThat(applicationRepository.existsById(application.getApplicationId())).isTrue();
+            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .deleteAndRead("/api/applications/" + application.getApplicationId(), null, Void.class, 204);
 
             assertThat(applicationRepository.existsById(application.getApplicationId())).isFalse();
+            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
         }
 
         @Test

@@ -186,6 +186,15 @@ class UserRetentionIntegrationTest {
             DocumentType.CV,
             "cv.pdf"
         );
+        var applicantProfileDictionary = DocumentTestData.savedDictionaryWithMockDocument(
+            documentRepository,
+            documentDictionaryRepository,
+            savedApplicantUser,
+            null,
+            applicant,
+            DocumentType.CV,
+            "applicant-profile-cv.pdf"
+        );
 
         saveUserSettings(savedApplicantUser);
         ProfileImage profileImage = saveProfileImage(savedApplicantUser, "/images/profile.png", "image/png", 123L);
@@ -193,6 +202,8 @@ class UserRetentionIntegrationTest {
         userRetentionService.processUserIdsList(List.of(applicantId), LocalDateTime.now(), false);
 
         assertApplicantDataDeleted(savedApplicantUser, application, review, rating, comment, slot, profileImage);
+        assertThat(documentDictionaryRepository.findById(applicantProfileDictionary.getDocumentDictionaryId())).isEmpty();
+        assertThat(documentRepository.findById(applicantProfileDictionary.getDocument().getDocumentId())).isEmpty();
     }
 
     @Test
