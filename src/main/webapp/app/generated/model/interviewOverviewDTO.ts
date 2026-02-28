@@ -13,6 +13,7 @@ export interface InterviewOverviewDTO {
     completedCount: number;
     invitedCount: number;
     jobId: string;
+    jobState: string;
     jobTitle: string;
     processId: string;
     scheduledCount: number;

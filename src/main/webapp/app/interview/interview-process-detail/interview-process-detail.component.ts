@@ -71,9 +71,9 @@ export class InterviewProcessDetailComponent {
       if (process.jobId) {
         this.jobId.set(process.jobId);
       }
-      //  if (process.jobState) {
-      //  this.jobState.set(process.jobState);
-      // }
+      if (process.jobState) {
+        this.jobState.set(process.jobState);
+      }
     } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');
     }

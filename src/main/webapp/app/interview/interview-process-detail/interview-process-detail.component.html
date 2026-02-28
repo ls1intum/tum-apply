@@ -6,7 +6,7 @@
       <h1 class="h1-text hyphens-none">{{ jobTitle() }}</h1>
     </div>
     @if (isJobClosed()) {
-      <jhi-tag severity="danger" class="whitespace-nowrap" jhiTranslate="interview.process.status.closed" />
+      <jhi-tag color="contrast" [text]="'interview.overview.status.closed' | translate" />
     }
   </div>
 
