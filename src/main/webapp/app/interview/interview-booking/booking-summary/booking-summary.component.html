@@ -41,7 +41,7 @@
       <div>
         <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.supervisor">Supervisor</div>
         <div class="flex items-center gap-2">
-          <fa-icon icon="user-tie" class="text-primary w-4" />
+          <jhi-user-avatar [firstName]="supervisor()?.firstName" [lastName]="supervisor()?.lastName" size="md" />
           <div class="text-sm font-medium text-text-primary">{{ supervisorName() }}</div>
         </div>
       </div>

@@ -1,0 +1,29 @@
+.avatar {
+  align-items: center;
+  border: 0.5px solid transparent;
+  border-radius: 9999px;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.avatar-sm {
+  font-size: 0.7rem;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.avatar-md {
+  font-size: 0.8rem;
+  height: 2rem;
+  width: 2rem;
+}
+
+.avatar-lg {
+  font-size: 0.95rem;
+  height: 2.5rem;
+  width: 2.5rem;
+}

@@ -33,6 +33,12 @@
   flex-shrink: 0;
 }
 
+.name-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
 .name {
   margin: 0;
   font-size: 1.25rem;
@@ -113,6 +119,10 @@
     align-items: baseline;
     gap: 0.3rem;
     flex-wrap: wrap;
+  }
+
+  .name-group {
+    order: 1;
   }
 
   .job {
@@ -196,7 +206,6 @@
     font-size: 0.85rem;
     line-height: 1.2;
     padding: 0.2rem;
-    order: 1;
     text-align: left;
   }
 

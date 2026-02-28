@@ -3,12 +3,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { TagComponent } from '../../atoms/tag/tag.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, UserAvatarComponent],
   templateUrl: './application-card.component.html',
   styleUrl: './application-card.component.scss',
 })
@@ -45,4 +46,6 @@ export class ApplicationCardComponent {
     const first = parts.join(' ');
     return { first, last };
   });
+
+  readonly fullName = computed(() => this.application()?.applicationDetailDTO.applicant?.user.name?.trim() ?? '');
 }
