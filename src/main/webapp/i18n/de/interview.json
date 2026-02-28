@@ -205,7 +205,7 @@
         "UNCONTACTED": "Nicht kontaktiert",
         "COMPLETED": "Abgeschlossen",
         "tooltip": {
-          "ALL": "Zeigt alle Bewerber:innen dieses Interviewprozesses an",
+          "ALL": "Alle Bewerber:innen dieses Interviewprozesses",
           "INVITED": "Bewerber:innen, die eine Einladung erhalten, aber noch keinen Termin gebucht haben",
           "SCHEDULED": "Bewerber:innen, die erfolgreich einen Termin gebucht haben",
           "UNCONTACTED": "Bewerber:innen, die dem Prozess hinzugefügt wurden, aber noch nicht kontaktiert wurden",
