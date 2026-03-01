@@ -407,6 +407,69 @@
         "message": "Are you sure you want to delete this department?"
       }
     },
+    "schools": {
+      "header": "Schools",
+      "createButton": "Create School",
+      "searchPlaceholder": "Search schools...",
+      "entity": "School",
+      "entities": "Schools",
+      "tableColumns": {
+        "name": "Name",
+        "abbreviation": "Abbreviation",
+        "departments": "Departments"
+      },
+      "noDepartments": "No departments",
+      "toastMessages": {
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Error loading schools. Please try again."
+        },
+        "deleteSuccess": {
+          "summary": "Success",
+          "detail": "School deleted successfully."
+        },
+        "deleteFailed": {
+          "summary": "Error",
+          "detail": "School cannot be deleted if departments are linked."
+        }
+      },
+      "createDialog": {
+        "title": "Create School",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. School of Engineering and Design",
+        "abbreviationLabel": "Abbreviation",
+        "abbreviationPlaceholder": "e.g. ED",
+        "abbreviationUniqueHint": "Abbreviations must be unique and cannot be reused by another school.",
+        "createButton": "Create School",
+        "success": {
+          "created": {
+            "summary": "Success",
+            "detail": "School created successfully."
+          },
+          "updated": {
+            "summary": "Success",
+            "detail": "School updated successfully."
+          }
+        },
+        "errors": {
+          "createFailed": {
+            "summary": "Error",
+            "detail": "Failed to save school. Please try again."
+          },
+          "duplicateNameOrAbbreviation": {
+            "summary": "Name or Abbreviation Already Exists",
+            "detail": "A school with this name or abbreviation already exists. Please choose different values."
+          }
+        }
+      },
+      "editDialog": {
+        "title": "Edit School"
+      },
+      "deleteDialog": {
+        "header": "Delete School",
+        "message": "Are you sure you want to delete this school? This action is only possible when no departments are linked."
+      }
+    },
     "imageLibrary": {
       "title": "Image Collection",
       "stats": {
