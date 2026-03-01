@@ -5,7 +5,8 @@
     "tabs": {
       "general": "Allgemein",
       "notifications": "Benachrichtigungen",
-      "personalInformation": "Persönliche Informationen"
+      "personalInformation": "Persönliche Informationen",
+      "documents": "Dokumente"
     },
     "personalInformation": {
       "description": "Aktualisiere hier deine persönlichen Informationen. \nDeine gespeicherten Daten werden verwendet, um Bewerbungen automatisch auszufüllen.",
@@ -57,6 +58,30 @@
         "blossom": "Hell Blossom",
         "aquabloom": "Hell AquaBloom",
         "system": "System"
+      }
+    },
+    "documents": {
+      "description": "Lade hier deine Dokumente hoch und verwalte sie. \nDeine gespeicherten Dokumente werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "sections": {
+        "bachelor": "Bachelor Studium",
+        "master": "Master Studium",
+        "additionalDocuments": "Zusätzliche Unterlagen"
+      },
+      "labels": {
+        "bachelorCertificate": "Bachelor-Zeugnis",
+        "masterCertificate": "Master-Zeugnis"
+      },
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Dokumente. Bitte versuche es erneut."
+      },
+      "saved": {
+        "summary": "Erfolgreich gespeichert",
+        "detail": "Dokumente erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Speichern der Dokumente. Bitte versuche es erneut."
       }
     }
   }

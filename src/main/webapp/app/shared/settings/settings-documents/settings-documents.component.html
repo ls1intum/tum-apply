@@ -1,0 +1,158 @@
+<form [formGroup]="form">
+  <div class="flex justify-between items-center mb-6">
+    <div [innerHTML]="('settings.documents.description' | translate).replace(/\n/g, '<br>')"></div>
+    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!hasChanges() || saving()" (click)="saveAll()" />
+  </div>
+  <p-divider layout="horizontal"
+    ><span>{{ 'settings.documents.sections.bachelor' | translate }}</span></p-divider
+  >
+
+  <div class="flex flex-col lg:flex-row lg:gap-8">
+    <div class="lg:w-1/2 w-full">
+      @if (applicationIdForDocuments(); as applicationId) {
+        <div class="w-full mb-6">
+          <label>
+            <span>{{ 'entity.applicationPage2.label.bachelorCertificate' | translate }}</span>
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+              tooltipPosition="top"
+            />
+          </label>
+          <jhi-upload-button
+            uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
+            documentType="BACHELOR_TRANSCRIPT"
+            [applicationId]="applicationId"
+            [(documentIds)]="bachelorDocuments"
+            [deferUpload]="true"
+            (queuedFilesChange)="onBachelorQueuedFilesChange($event)"
+          />
+        </div>
+      }
+    </div>
+
+    <div class="flex-1 flex flex-col">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.bachelorDegreeName' | translate }}"
+        [control]="form.get('bachelorDegreeName') ?? undefined"
+      />
+
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.bachelorDegreeUniversity' | translate }}"
+        [control]="form.get('bachelorDegreeUniversity') ?? undefined"
+      />
+
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
+        [control]="form.get('bachelorGrade') ?? undefined"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
+        [helperTextLeft]="helperTextBachelorGrade()"
+        [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+        (helperTextRightClick)="onChangeGradingScale('bachelor')"
+        [warningText]="warningTextBachelorGrade()"
+      />
+    </div>
+  </div>
+
+  <p-divider layout="horizontal"
+    ><span>{{ 'settings.documents.sections.master' | translate }}</span></p-divider
+  >
+
+  <div class="flex flex-col lg:flex-row lg:gap-8">
+    <div class="lg:w-1/2 w-full">
+      @if (applicationIdForDocuments(); as applicationId) {
+        <div class="w-full mb-6">
+          <label>
+            <span>{{ 'entity.applicationPage2.label.masterCertificate' | translate }}</span>
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+              tooltipPosition="top"
+            />
+          </label>
+          <jhi-upload-button
+            [applicationId]="applicationId"
+            documentType="MASTER_TRANSCRIPT"
+            uploadKey="entity.upload.upload_instruction.MASTER_TRANSCRIPT"
+            [(documentIds)]="masterDocuments"
+            [deferUpload]="true"
+            (queuedFilesChange)="onMasterQueuedFilesChange($event)"
+          />
+        </div>
+      }
+    </div>
+
+    <div class="flex-1 flex flex-col">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.masterDegreeName' | translate }}"
+        [control]="form.get('masterDegreeName') ?? undefined"
+      />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.masterDegreeUniversity' | translate }}"
+        [control]="form.get('masterDegreeUniversity') ?? undefined"
+      />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}"
+        [control]="form.get('masterGrade') ?? undefined"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
+        [helperTextLeft]="helperTextMasterGrade()"
+        [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+        (helperTextRightClick)="onChangeGradingScale('master')"
+        [warningText]="warningTextMasterGrade()"
+      />
+    </div>
+  </div>
+
+  <p-divider layout="horizontal"
+    ><span>{{ 'settings.documents.sections.additionalDocuments' | translate }}</span></p-divider
+  >
+
+  @if (applicationIdForDocuments(); as applicationId) {
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1 mb-6">
+        <label>
+          <span>{{ 'entity.applicationPage3.label.curriculumVitae' | translate }}</span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </label>
+        <jhi-upload-button
+          uploadKey="entity.upload.upload_instruction.CV"
+          documentType="CV"
+          [applicationId]="applicationId"
+          [(documentIds)]="cvDocuments"
+          [allowMultiple]="false"
+          [deferUpload]="true"
+          (queuedFilesChange)="onCvQueuedFilesChange($event)"
+        />
+      </div>
+
+      <div class="flex-1">
+        <label>
+          <span>{{ 'entity.applicationPage3.label.additionalReferences' | translate }}</span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </label>
+        <jhi-upload-button
+          uploadKey="entity.upload.upload_instruction.REFERENCE"
+          documentType="REFERENCE"
+          [applicationId]="applicationId"
+          [(documentIds)]="referenceDocuments"
+          [deferUpload]="true"
+          (queuedFilesChange)="onReferenceQueuedFilesChange($event)"
+        />
+      </div>
+    </div>
+  }
+</form>

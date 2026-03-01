@@ -42,11 +42,14 @@ export class UploadButtonComponent {
   markAsRequired = input<boolean>(false);
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
+  queuedFilesChange = output<File[]>();
 
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
   allowMultiple = input<boolean>(true);
+  deferUpload = input<boolean>(false);
+  queuedFiles = signal<File[]>([]);
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
@@ -105,14 +108,20 @@ export class UploadButtonComponent {
     // Find and delete the existing document with the same name
     const existingDoc = this.documentIds()?.find(doc => doc.name === pendingFile.name);
     if (existingDoc) {
-      try {
-        await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
+      if (this.deferUpload()) {
         const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
         this.documentIds.set(updatedList);
-      } catch {
-        this.toastService.showErrorKey('entity.upload.error.replace_failed');
-        this.pendingDuplicateFile.set(null);
-        return;
+        this.removeQueuedFileFor(existingDoc);
+      } else {
+        try {
+          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
+          const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
+          this.documentIds.set(updatedList);
+        } catch {
+          this.toastService.showErrorKey('entity.upload.error.replace_failed');
+          this.pendingDuplicateFile.set(null);
+          return;
+        }
       }
     }
 
@@ -128,17 +137,23 @@ export class UploadButtonComponent {
 
     // Delete all existing documents (for single-file mode replacement)
     const existingDocs = this.documentIds() ?? [];
-    for (const doc of existingDocs) {
-      try {
-        await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
-      } catch {
-        this.toastService.showErrorKey('entity.upload.error.replace_failed');
-        return;
+    if (this.deferUpload()) {
+      this.documentIds.set([]);
+      this.queuedFiles.set([]);
+      this.queuedFilesChange.emit([]);
+    } else {
+      for (const doc of existingDocs) {
+        try {
+          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
+        } catch {
+          this.toastService.showErrorKey('entity.upload.error.replace_failed');
+          return;
+        }
       }
-    }
 
-    // Clear the document list before uploading new file
-    this.documentIds.set([]);
+      // Clear the document list before uploading new file
+      this.documentIds.set([]);
+    }
 
     await this.processFiles(pendingFiles);
     this.pendingReplacementFiles.set([]);
@@ -168,6 +183,13 @@ export class UploadButtonComponent {
 
   async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const documentId = documentInfo.id;
+    if (this.deferUpload()) {
+      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+      this.documentIds.set(updatedList);
+      this.removeQueuedFileFor(documentInfo);
+      return;
+    }
+
     try {
       await firstValueFrom(this.applicationService.deleteDocumentFromApplication(documentId));
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
@@ -190,6 +212,20 @@ export class UploadButtonComponent {
     }
 
     const documentId = documentInfo.id;
+    if (this.deferUpload()) {
+      const updatedDocs =
+        this.documentIds()?.map(doc =>
+          doc.id === documentId
+            ? {
+                ...doc,
+                name: newName,
+              }
+            : doc,
+        ) ?? [];
+      this.documentIds.set(updatedDocs);
+      return;
+    }
+
     try {
       await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
       const updatedDocs =
@@ -240,7 +276,7 @@ export class UploadButtonComponent {
     }
 
     // Consider already selected files when calculating the total size
-    const selectedFile = this.selectedFiles() ?? [];
+    const selectedFile = this.deferUpload() ? this.queuedFiles() : (this.selectedFiles() ?? []);
 
     const combinedFiles = selectedFile.concat(files);
     const combinedFilesTotal = combinedFiles.reduce((sum, file) => sum + file.size, 0);
@@ -257,6 +293,21 @@ export class UploadButtonComponent {
         maxTotal: maxTotalSizeMb.toString(),
         actualTotal: this.formatSize(totalSize),
       });
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
+    }
+
+    if (this.deferUpload()) {
+      const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => ({
+        id: `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        name: file.name,
+        size: file.size,
+      }));
+      const updatedList = [...(this.documentIds() ?? []), ...tempDocumentEntries];
+      this.documentIds.set(updatedList);
+      this.queuedFiles.set(combinedFiles);
+      this.queuedFilesChange.emit(combinedFiles);
       this.fileUploadComponent()?.clear();
       this.resetNativeFileInput();
       return;
@@ -281,5 +332,20 @@ export class UploadButtonComponent {
         nativeInput.value = '';
       }
     }, 0);
+  }
+
+  private removeQueuedFileFor(documentInfo: DocumentInformationHolderDTO): void {
+    const files = this.queuedFiles();
+    if (files.length === 0) {
+      return;
+    }
+    const index = files.findIndex(file => file.name === documentInfo.name && file.size === documentInfo.size);
+    if (index < 0) {
+      return;
+    }
+    const updated = [...files];
+    updated.splice(index, 1);
+    this.queuedFiles.set(updated);
+    this.queuedFilesChange.emit(updated);
   }
 }
