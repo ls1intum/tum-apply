@@ -1,8 +1,6 @@
 <span
-  class="avatar"
-  [class.avatar-sm]="size() === 'sm'"
-  [class.avatar-md]="size() === 'md'"
-  [class.avatar-lg]="size() === 'lg'"
+  class="inline-flex shrink-0 items-center justify-center rounded-full border-[0.5px] border-solid border-transparent font-semibold uppercase leading-none select-none"
+  [class]="sizeClass()"
   [attr.aria-label]="ariaLabel()"
   [style.background-color]="backgroundColor()"
   [style.color]="textColor()"

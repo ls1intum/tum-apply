@@ -78,7 +78,7 @@
         <div class="w-full xl:w-[30%] flex flex-col gap-6">
           <!-- User Information Card -->
           <div class="flex items-center gap-4 rounded-lg border border-border-default bg-background-default p-4 overflow-hidden">
-            <jhi-user-avatar [firstName]="interviewee()?.user?.firstName" [lastName]="interviewee()?.user?.lastName" size="lg" />
+            <jhi-user-avatar [fullName]="applicantName()" size="lg" />
             <div class="flex flex-col min-w-0">
               <span class="text-lg font-bold text-text-primary truncate">{{ applicantName() }}</span>
               <span class="text-sm text-text-secondary truncate">{{ degreeName() }}</span>

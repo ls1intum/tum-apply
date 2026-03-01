@@ -57,7 +57,7 @@
             tabindex="0"
             (click)="toggleUserSelection(user)"
           >
-            <jhi-user-avatar class="flex-shrink-0" [firstName]="user.firstName" [lastName]="user.lastName" size="md" />
+            <jhi-user-avatar class="flex-shrink-0" [fullName]="((user.firstName ?? '') + ' ' + (user.lastName ?? '')).trim()" size="md" />
             <div class="flex-1">
               <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
               <div class="text-sm text-text-secondary">{{ user.email }}</div>

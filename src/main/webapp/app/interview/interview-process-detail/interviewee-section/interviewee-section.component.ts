@@ -29,8 +29,6 @@ type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
 interface ApplicantRow {
   applicationId: string;
   name: string;
-  firstName?: string;
-  lastName?: string;
   selected: boolean;
 }
 
@@ -127,12 +125,9 @@ export class IntervieweeSectionComponent {
         if (name === 'null null' || name.trim() === '') {
           name = 'Unknown';
         }
-        const { firstName, lastName } = this.splitDisplayName(name);
         return {
           applicationId: app.applicationDetailDTO.applicationId,
           name,
-          firstName,
-          lastName,
           selected: selected.has(app.applicationDetailDTO.applicationId),
         };
       });
@@ -361,22 +356,5 @@ export class IntervieweeSectionComponent {
     } finally {
       this.sendingInvitationId.set(null);
     }
-  }
-
-  private splitDisplayName(name: string): { firstName?: string; lastName?: string } {
-    const cleaned = name.trim();
-    if (cleaned === '' || cleaned === 'Unknown') {
-      return {};
-    }
-
-    const parts = cleaned.split(/\s+/).filter(Boolean);
-    if (parts.length === 1) {
-      return { firstName: parts[0] };
-    }
-
-    return {
-      firstName: parts.slice(0, -1).join(' '),
-      lastName: parts[parts.length - 1],
-    };
   }
 }

@@ -82,7 +82,10 @@
   <ng-template #applicantTpl let-person>
     <div class="flex items-center gap-3 cursor-pointer" (click)="selectApplicant(person)">
       <jhi-checkbox [model]="isSelected(person)" [errorEnabled]="false" (click)="$event.stopPropagation(); selectApplicant(person)" />
-      <jhi-user-avatar [firstName]="person.user?.firstName" [lastName]="person.user?.lastName" size="md" />
+      <jhi-user-avatar
+        [fullName]="person.user?.name ?? ((person.user?.firstName ?? '') + ' ' + (person.user?.lastName ?? '')).trim()"
+        size="md"
+      />
       <span class="font-medium text-text-primary">{{ person.user?.firstName }} {{ person.user?.lastName }}</span>
     </div>
   </ng-template>
