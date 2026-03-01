@@ -2,6 +2,8 @@ package de.tum.cit.aet.interview.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -17,6 +19,7 @@ import lombok.Setter;
  * state.
  */
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 @Table(
     name = "interviewees",
     uniqueConstraints = @UniqueConstraint(name = "uk_interviewee_app_process", columnNames = { "application_id", "interview_process_id" })

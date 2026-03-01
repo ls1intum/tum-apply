@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
+@NoUserDataExportRequired(reason = "Organizational master data is not part of user-personal export scope")
 @Table(name = "research_groups")
 public class ResearchGroup extends AbstractAuditingEntity {
 

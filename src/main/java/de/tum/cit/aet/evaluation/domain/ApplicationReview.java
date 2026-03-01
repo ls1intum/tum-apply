@@ -1,6 +1,8 @@
 package de.tum.cit.aet.evaluation.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Getter
 @Setter
 @Table(name = "application_reviews")

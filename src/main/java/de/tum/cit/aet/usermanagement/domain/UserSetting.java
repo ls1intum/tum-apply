@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.usermanagement.domain.key.UserSettingId;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
@@ -15,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.USER_SETTINGS)
 @Table(name = "user_settings")
 @NoArgsConstructor
 public class UserSetting {

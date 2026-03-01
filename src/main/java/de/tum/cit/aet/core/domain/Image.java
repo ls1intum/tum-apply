@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import lombok.Setter;
  * - ProfileImage: PROFILE_PICTURE images belonging to individual users
  */
 @Entity
+@NoUserDataExportRequired(reason = "Images are exported as binary files by UserExportZipWriter")
 @Getter
 @Setter
 @Table(name = "images")

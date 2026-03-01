@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.domain;
 
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.domain.converter.StringListConverter;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.job.constants.CustomFieldType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@NoUserDataExportRequired(reason = "Job template metadata is not part of user data export scope")
 @Getter
 @Setter
 @Table(name = "custom_fields")

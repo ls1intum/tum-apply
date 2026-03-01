@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
+@NoUserDataExportRequired(reason = "Organizational master data is not part of user-personal export scope")
 @Table(name = "schools")
 @Getter
 @Setter
