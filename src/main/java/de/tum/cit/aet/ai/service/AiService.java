@@ -93,10 +93,20 @@ public class AiService {
      * @return The translated text response with detected and target language info
      */
     private AIJobDescriptionTranslationDTO translateText(String text, String toLang) {
+        Set<String> inclusive = "de".equals(toLang) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
+        Set<String> nonInclusive = "de".equals(toLang) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+
         return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
-            .user(u -> u.text(translationResource).param("text", text).param("targetLanguage", toLang))
+            .user(u ->
+                u
+                    .text(translationResource)
+                    .param("text", text)
+                    .param("targetLanguage", toLang)
+                    .param("inclusiveWords", String.join(", ", inclusive))
+                    .param("nonInclusiveWords", String.join(", ", nonInclusive))
+            )
             .call()
             .entity(AIJobDescriptionTranslationDTO.class);
     }
