@@ -19,6 +19,7 @@ import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.*;
+import de.tum.cit.aet.interview.dto.CancelInterviewDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeState;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
@@ -624,6 +625,97 @@ public class InterviewService {
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
 
         return interviewees.stream().map(this::mapIntervieweeToDTO).toList();
+    }
+
+    /**
+     * Cancels an interview slot and optionally deletes it and/or sends a reinvite.
+     *
+     * @param processId    the ID of the interview process
+     * @param slotId       the ID of the slot to cancel
+     * @param cancelParams the DTO containing cancellation options
+     * @throws EntityNotFoundException if slot not found
+     * @throws BadRequestException     if slot does not belong to process or is
+     *                                 unbooked
+     */
+    @Transactional
+    public void cancelInterview(UUID processId, UUID slotId, CancelInterviewDTO cancelParams) {
+        // 1. Load the slot with job for security check
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview slot", slotId));
+
+        // 2. Validate process ID
+        if (!slot.getInterviewProcess().getId().equals(processId)) {
+            throw new BadRequestException("Slot does not belong to the specified interview process");
+        }
+
+        // 3. Security: Verify current user has research group access (Professor or
+        // Employee)
+        Job job = slot.getInterviewProcess().getJob();
+        verifyResearchGroupAccess(job);
+
+        // 4. Validate slot is booked
+        if (!slot.getIsBooked() || slot.getInterviewee() == null) {
+            throw new BadRequestException("Cannot cancel an unbooked slot");
+        }
+
+        Interviewee interviewee = slot.getInterviewee();
+
+        // 5. Unlink applicant and slot
+        slot.setIsBooked(false);
+        slot.setInterviewee(null);
+        interviewee.getSlots().remove(slot);
+
+        // 6. Send appropriate email (must be done before saving to ensure state is
+        // consistent)
+        sendInterviewCancellationEmail(slot, interviewee, job, cancelParams.sendReinvite());
+
+        if (Boolean.TRUE.equals(cancelParams.sendReinvite())) {
+            // we send the self-scheduling invitation directly
+            try {
+                interviewee.getApplication().setJob(job);
+                sendSelfSchedulingEmail(interviewee, job);
+                interviewee.setLastInvited(Instant.now());
+            } catch (Exception e) {
+                log.debug(
+                    "Failed to send re-invitation email to {}: {}",
+                    interviewee.getApplication().getApplicant().getUser().getEmail(),
+                    e.getMessage()
+                );
+            }
+        }
+
+        // 7. Save or delete slot
+        intervieweeRepository.save(interviewee);
+
+        if (Boolean.TRUE.equals(cancelParams.deleteSlot())) {
+            interviewSlotRepository.delete(slot);
+        } else {
+            interviewSlotRepository.save(slot);
+        }
+    }
+
+    private void sendInterviewCancellationEmail(InterviewSlot slot, Interviewee interviewee, Job job, boolean isReschedule) {
+        Application application = interviewee.getApplication();
+        User applicant = application.getApplicant().getUser();
+
+        String icsContent = icsCalendarService.generateIcsContent(slot, job);
+        String icsFileName = icsCalendarService.generateFileName(slot);
+
+        EmailType type = isReschedule ? EmailType.INTERVIEW_RESCHEDULE_REQUESTED : EmailType.INTERVIEW_CANCELLED;
+        Object emailContent = isReschedule ? interviewee : slot;
+
+        // Email to Applicant (with ICS cancellation)
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(type)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(emailContent)
+            .icsContent(icsContent)
+            .icsFileName(icsFileName)
+            .build();
+        asyncEmailSender.sendAsync(email);
     }
 
     /**

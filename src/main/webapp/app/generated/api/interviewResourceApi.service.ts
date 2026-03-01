@@ -20,6 +20,8 @@ import { AddIntervieweesDTO } from '../model/addIntervieweesDTO';
 // @ts-ignore
 import { AssignSlotRequestDTO } from '../model/assignSlotRequestDTO';
 // @ts-ignore
+import { CancelInterviewDTO } from '../model/cancelInterviewDTO';
+// @ts-ignore
 import { ConflictDataDTO } from '../model/conflictDataDTO';
 // @ts-ignore
 import { CreateSlotsDTO } from '../model/createSlotsDTO';
@@ -180,6 +182,75 @@ export class InterviewResourceApiService extends BaseService {
             {
                 context: localVarHttpContext,
                 body: assignSlotRequestDTO,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param processId 
+     * @param slotId 
+     * @param cancelInterviewDTO 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling cancelInterview.');
+        }
+        if (slotId === null || slotId === undefined) {
+            throw new Error('Required parameter slotId was null or undefined when calling cancelInterview.');
+        }
+        if (cancelInterviewDTO === null || cancelInterviewDTO === undefined) {
+            throw new Error('Required parameter cancelInterviewDTO was null or undefined when calling cancelInterview.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots/${this.configuration.encodeParam({name: "slotId", value: slotId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/cancel`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: cancelInterviewDTO,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

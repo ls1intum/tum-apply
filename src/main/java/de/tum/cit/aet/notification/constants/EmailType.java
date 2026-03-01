@@ -86,6 +86,19 @@ public enum EmailType {
     INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false),
 
     /**
+     * Notification that an interview slot was cancelled (and no new link is sent)
+     * To: Applicant
+     */
+    INTERVIEW_CANCELLED("INTERVIEW_CANCELLED", Set.of(UserRole.APPLICANT), true, false),
+
+    /**
+     * Notification that an interview slot was cancelled and the applicant is
+     * requested to reschedule
+     * To: Applicant
+     */
+    INTERVIEW_RESCHEDULE_REQUESTED("INTERVIEW_RESCHEDULE_REQUESTED", Set.of(UserRole.APPLICANT), true, false),
+
+    /**
      * Data export ready notification
      * To: User who requested the export
      */

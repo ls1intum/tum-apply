@@ -22,6 +22,7 @@ export * from './authSessionInfoDTO';
 export * from './biasedWordDTO';
 export * from './bookSlotRequestDTO';
 export * from './bookingDTO';
+export * from './cancelInterviewDTO';
 export * from './conflictDataDTO';
 export * from './createSlotsDTO';
 export * from './createdJobDTO';

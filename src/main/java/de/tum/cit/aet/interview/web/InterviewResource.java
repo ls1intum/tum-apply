@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
+import de.tum.cit.aet.interview.dto.CancelInterviewDTO;
 import de.tum.cit.aet.interview.dto.ConflictDataDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
@@ -362,5 +363,29 @@ public class InterviewResource {
         SendInvitationsResultDTO result = interviewService.sendSelfSchedulingInvitations(processId, dto);
         log.info("Sent {} invitations for process: {}", result.sentCount(), processId);
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * {@code POST  /api/interviews/processes/:processId/slots/:slotId/cancel} :
+     * Cancel a scheduled interview.
+     * Unlinks the interviewee from the slot and optionally sends a re-invite or
+     * deletes the slot.
+     *
+     * @param processId    the ID of the interview process
+     * @param slotId       the ID of the slot to cancel
+     * @param cancelParams DTO containing options for sending a re-invite and
+     *                     deleting the slot
+     * @return {@link ResponseEntity} with status {@code 200 (OK)} upon success
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/processes/{processId}/slots/{slotId}/cancel")
+    public ResponseEntity<Void> cancelInterview(
+        @PathVariable UUID processId,
+        @PathVariable UUID slotId,
+        @RequestBody CancelInterviewDTO cancelParams
+    ) {
+        log.info("REST request to cancel interview slot {} for process {}", slotId, processId);
+        interviewService.cancelInterview(processId, slotId, cancelParams);
+        return ResponseEntity.ok().build();
     }
 }

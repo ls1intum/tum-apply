@@ -15,6 +15,9 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -41,12 +44,15 @@ interface GroupedSlots {
     SlotCreationFormComponent,
     FontAwesomeModule,
     AssignApplicantModalComponent,
+    DialogComponent,
+    CheckboxComponent,
   ],
   templateUrl: './slots-section.component.html',
 })
 export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
+  refreshKey = input<number>(0);
 
   // Outputs
   slotAssigned = output();
@@ -61,7 +67,13 @@ export class SlotsSectionComponent {
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
   selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
-  refreshKey = signal(0);
+
+  showCancelModal = signal(false);
+  selectedSlotForCancel = signal<InterviewSlotDTO | null>(null);
+  cancelSendReinvite = signal(false);
+  cancelDeleteSlot = signal(true);
+
+  internalRefreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
 
   // Computed
@@ -179,6 +191,8 @@ export class SlotsSectionComponent {
   );
 
   private readonly loadSlotsEffect = effect(() => {
+    this.refreshKey(); // track external refresh key
+    this.internalRefreshKey(); // track internal refresh key
     const id = this.processId();
     const year = this.currentYear();
     const month = this.currentMonthNumber();
@@ -273,14 +287,19 @@ export class SlotsSectionComponent {
       return;
     }
 
-    try {
-      this.loading.set(true);
+    // Optimistically update UI
+    const originalSlots = this.slots();
+    this.slots.set(originalSlots.filter(s => s.id !== slotId));
 
+    try {
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
       await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
+      // Revert optimistic update on failure
+      this.slots.set(originalSlots);
+
       const httpError = error as { status?: number };
       if (httpError.status === 400) {
         this.toastService.showErrorKey('interview.slots.delete.errorBooked');
@@ -289,20 +308,60 @@ export class SlotsSectionComponent {
       } else {
         this.toastService.showErrorKey('interview.slots.delete.error');
       }
-    } finally {
-      this.loading.set(false);
     }
   }
 
   onAssignApplicant(slot: InterviewSlotDTO): void {
     this.selectedSlotForAssignment.set(slot);
-    this.refreshKey.update(n => n + 1);
+    this.internalRefreshKey.update(n => n + 1);
     this.showAssignModal.set(true);
   }
 
-  onApplicantAssigned(): void {
-    void this.refreshSlots();
+  onApplicantAssigned(updatedSlot?: InterviewSlotDTO): void {
+    if (updatedSlot) {
+      this.slots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
+    } else {
+      void this.refreshSlots();
+    }
     this.slotAssigned.emit();
+  }
+
+  onCancelInterview(slot: InterviewSlotDTO): void {
+    this.selectedSlotForCancel.set(slot);
+    this.cancelSendReinvite.set(true);
+    this.cancelDeleteSlot.set(false);
+    this.showCancelModal.set(true);
+  }
+
+  async onCancelInterviewConfirm(): Promise<void> {
+    const slot = this.selectedSlotForCancel();
+    if (!slot?.id) return;
+
+    // Optimistically remove/update slot from UI if deleteSlot is checked
+    const originalSlots = this.slots();
+    if (this.cancelDeleteSlot()) {
+      this.slots.set(originalSlots.filter(s => s.id !== slot.id));
+    }
+
+    try {
+      const cancelParams: CancelInterviewDTO = {
+        sendReinvite: this.cancelSendReinvite(),
+        deleteSlot: this.cancelDeleteSlot(),
+      };
+
+      await firstValueFrom(this.interviewService.cancelInterview(this.processId(), slot.id, cancelParams));
+      await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
+
+      this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
+    } catch {
+      // Revert optimistic update on failure
+      if (this.cancelDeleteSlot()) {
+        this.slots.set(originalSlots);
+      }
+      this.toastService.showErrorKey('interview.slots.cancelInterview.error');
+    } finally {
+      this.showCancelModal.set(false);
+    }
   }
 
   // Private methods
@@ -336,7 +395,9 @@ export class SlotsSectionComponent {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
     } finally {
-      this.loading.set(false);
+      if (isFirstLoad) {
+        this.loading.set(false);
+      }
     }
   }
 
