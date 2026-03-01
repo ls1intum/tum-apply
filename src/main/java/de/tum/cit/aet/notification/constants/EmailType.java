@@ -101,7 +101,13 @@ public enum EmailType {
         Set.of(UserRole.APPLICANT, UserRole.EMPLOYEE, UserRole.PROFESSOR),
         false,
         false
-    );
+    ),
+
+    /**
+     * Warning email sent to applicants before their application data is deleted as part of the applicant retention policy.
+     * To: Applicants whose data is scheduled for deletion under the retention policy.
+     */
+    APPLICANT_DATA_DELETION_WARNING("APPLICANT_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT), false, false);
 
     private final String value;
 

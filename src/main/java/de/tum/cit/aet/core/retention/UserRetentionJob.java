@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class UserRetentionJob {
 
+    private static final int DAYS_BEFORE_DELETION_WARNING = 28;
+
     private final UserRetentionProperties properties;
     private final UserRepository userRepository;
     private final UserRetentionService userRetentionService;
@@ -61,18 +63,26 @@ public class UserRetentionJob {
     }
 
     /**
-     * Scheduled method that runs daily at 3 AM UTC (configurable via {@code user.retention.cron}) to warn users about impending data deletion.
-     * It calculates a cutoff date based on the configured number of inactive days before deletion and delegates the warning process
-     * to the {@link UserRetentionService#warnUserOfDataDeletion(LocalDateTime)} method.
-     *
-     * <p>This job ensures users are notified before their data is permanently deleted due to inactivity.</p>
+     * Warns inactive non-admin users exactly 28 days before their deletion date.
+     * <p>
+     * Runs daily (configurable via {@code user.retention.cron}), computes the warning date as
+     * {@code nowUtc - (inactiveDaysBeforeDeletion - 28)} and calls
+     * {@link UserRetentionService#warnUserOfDataDeletion(LocalDateTime)}. Only the calendar date is compared
+     * in the repository query, so the time component of {@code warningDate} is ignored.
+     * Skips execution when {@code inactiveDaysBeforeDeletion} is not set or below the 28-day warning offset.
+     * </p>
      */
     @Scheduled(cron = "${user.retention.cron:0 0 3 * * *}", zone = "UTC")
     public void warnUserOfDataDeletion() {
         Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
+        if (inactiveDays == null || inactiveDays <= DAYS_BEFORE_DELETION_WARNING) {
+            log.warn("User retention warning skipped: invalid inactiveDaysBeforeDeletion value={}", inactiveDays);
+            return;
+        }
+
         LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
-        LocalDateTime cutoff = nowUtc.minusDays(inactiveDays);
-        userRetentionService.warnUserOfDataDeletion(cutoff);
+        LocalDateTime warningDate = nowUtc.minusDays(inactiveDays - DAYS_BEFORE_DELETION_WARNING);
+        userRetentionService.warnUserOfDataDeletion(warningDate);
     }
 
     // ------------ Helper methods ------------

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.retention;
 
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class ApplicantRetentionJob {
+
+    private static final int DAYS_BEFORE_DELETION_WARNING = 28;
 
     private final ApplicantRetentionProperties properties;
     private final ApplicantRetentionService applicantRetentionService;
@@ -58,6 +61,32 @@ public class ApplicantRetentionJob {
             config.maxRuntimeMinutes()
         );
     }
+
+    /**
+     * Warns applicants exactly 28 days before their data deletion date.
+     * <p>
+     * Runs daily (configurable via {@code applicant.retention.cron}), computes the warning date as
+     * {@code nowUtc - (daysBeforeDeletion - 28)}, and invokes
+     * {@link ApplicantRetentionService#warnApplicantOfDataDeletion(LocalDateTime)}.
+     * The repository compares only the calendar date (ignoring time), so warnings fire once on that day.
+     * Skips execution when {@code daysBeforeDeletion} is not set or below the 28-day warning offset.
+     * </p>
+     */
+    @Scheduled(cron = "${applicant.retention.cron:0 27 3 * * *}", zone = "UTC")
+    public void warnApplicantOfDataDeletion() {
+        LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
+        Integer daysBeforeDeletion = properties.getDaysBeforeDeletion();
+        if (daysBeforeDeletion == null || daysBeforeDeletion <= DAYS_BEFORE_DELETION_WARNING) {
+            log.warn("Applicant retention warning skipped: invalid daysBeforeDeletion value={}", daysBeforeDeletion);
+            return;
+        }
+
+        LocalDateTime warningCutoff = nowUtc.minusDays(daysBeforeDeletion - DAYS_BEFORE_DELETION_WARNING);
+
+        applicantRetentionService.warnApplicantOfDataDeletion(warningCutoff);
+    }
+
+    // ------------ Helper methods ------------
 
     private ApplicationRunConfig buildRunConfig() {
         Integer daysBeforeDeletion = properties.getDaysBeforeDeletion();
