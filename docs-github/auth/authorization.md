@@ -5,6 +5,7 @@
 The application supports the following roles (assigned in the DB):
 
 - `APPLICANT`
+- `EMPLOYEE`
 - `PROFESSOR`
 - `ADMIN`
 
@@ -17,6 +18,39 @@ Roles are not assigned via Keycloak – they are provisioned in the server datab
 - On first login, users are automatically created (if not existing) and assigned a role.
 - Role assignments are stored in `UserResearchGroupRole`.
 - Roles are loaded together with the user using a JPA `@EntityGraph`.
+
+---
+
+### 👥 Employee Role (Server-Verified)
+
+The employee role is implemented via controller-level security annotations in the backend:
+
+- `@ProfessorOrEmployee` → endpoint is available to **both EMPLOYEE and PROFESSOR**.
+- `@ProfessorOrEmployeeOrAdmin` → endpoint is available to **EMPLOYEE, PROFESSOR, and ADMIN**.
+
+The following capabilities are verified from server controller methods annotated with the employee-enabled annotations:
+
+| Area                   | Employee capability                                                                                                                                                | Annotation used on endpoint   | Professors can do this too? |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- | --------------------------- |
+| Evaluation             | Accept/reject applications, open applications, list evaluation overviews/details, download applicant documents, list job names                                     | `@ProfessorOrEmployee`        | ✅ Yes                      |
+| Internal collaboration | Read/create/update/delete internal comments, read/update application ratings                                                                                       | `@ProfessorOrEmployee`        | ✅ Yes                      |
+| Interviews             | Full interview workflow: overview, upcoming interviews, process details, create/delete slots, assign slots, add interviewees, update assessments, send invitations | `@ProfessorOrEmployee`        | ✅ Yes                      |
+| Jobs                   | Create/update/delete jobs, change job state, list research-group jobs, view protected job details                                                                  | `@ProfessorOrEmployeeOrAdmin` | ✅ Yes                      |
+| Email templates        | List, get, create, and update research-group templates                                                                                                             | `@ProfessorOrEmployee`        | ✅ Yes                      |
+| Research groups        | View own group members, read group details, update research group data                                                                                             | `@ProfessorOrEmployeeOrAdmin` | ✅ Yes                      |
+| Images and banners     | View default and research-group banners, list own uploads, upload job banners                                                                                      | `@ProfessorOrEmployeeOrAdmin` | ✅ Yes                      |
+| Export                 | Export job preview to PDF                                                                                                                                          | `@ProfessorOrEmployee`        | ✅ Yes                      |
+| AI support             | Generate job draft stream, translate/persist job descriptions                                                                                                      | `@ProfessorOrEmployeeOrAdmin` | ✅ Yes                      |
+
+#### ❌ Explicitly not allowed for employees
+
+The following actions are explicitly restricted by annotations that **exclude EMPLOYEE**:
+
+- Delete email templates (`@Professor` on `DELETE /api/email-templates/{templateId}`).
+- Delete images (`@ProfessorOrAdmin` on `DELETE /api/images/{imageId}`).
+- Add/remove research group members (`@ProfessorOrAdmin` on `/api/research-groups/members`).
+- Search users available for research-group assignment (`@ProfessorOrAdmin` on `GET /api/users/available-for-research-group`).
+- Use admin-only endpoints such as research-group moderation and admin creation flows (`@Admin`).
 
 ---
 

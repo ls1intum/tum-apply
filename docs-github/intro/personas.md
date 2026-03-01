@@ -34,3 +34,27 @@ This document outlines the primary personas who use the TUMApply platform and th
 - Application overview and filters
 - Rating, commenting and status assignment
 - Feedback via email templates
+
+---
+
+## 🧑‍🔬 Employee
+
+**Goals:**
+
+- Support a research group in job and applicant management
+- Collaborate with professors during evaluation and interview workflows
+- Maintain group-level operational content (templates, banners, job drafts)
+
+**Features:**
+
+- Create and manage jobs for the research group
+- Evaluate applications (including comments and ratings)
+- Manage interview processes and invitations
+- Create/update email templates and upload job banners
+
+**Explicit limitations:**
+
+- Cannot delete email templates
+- Cannot delete images
+- Cannot add or remove research-group members
+- Cannot access professor/admin-only management endpoints
