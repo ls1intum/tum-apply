@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { User } from './user';
+import { DocumentDictionary } from './documentDictionary';
 import { Application } from './application';
 
 
@@ -19,6 +20,7 @@ export interface Applicant {
     bachelorUniversity?: string;
     city?: string;
     country?: string;
+    documentDictionaries?: Array<DocumentDictionary>;
     masterDegreeName?: string;
     masterGrade?: string;
     masterGradeLowerLimit?: string;

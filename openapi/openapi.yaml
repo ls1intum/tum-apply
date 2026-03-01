@@ -2088,6 +2088,10 @@ components:
         bachelorUniversity: {type: string}
         city: {type: string}
         country: {type: string}
+        documentDictionaries:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterGradeLowerLimit: {type: string}
@@ -2171,6 +2175,10 @@ components:
           items: {$ref: '#/components/schemas/CustomFieldAnswer'}
           uniqueItems: true
         desiredStartDate: {type: string, format: date}
+        documentDictionaries:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
         internalComments:
           type: array
           items: {$ref: '#/components/schemas/InternalComment'}
@@ -2447,7 +2455,30 @@ components:
       properties:
         departmentId: {type: string, format: uuid}
         name: {type: string}
+    Document:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        documentId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        mimeType: {type: string}
+        path: {type: string}
+        sha256Id: {type: string}
+        sizeBytes: {type: integer, format: int64}
+        uploadedBy: {$ref: '#/components/schemas/User'}
     DocumentDTO: {}
+    DocumentDictionary:
+      type: object
+      properties:
+        applicant: {$ref: '#/components/schemas/Applicant'}
+        application: {}
+        customFieldAnswer: {$ref: '#/components/schemas/CustomFieldAnswer'}
+        document: {$ref: '#/components/schemas/Document'}
+        documentDictionaryId: {type: string, format: uuid}
+        documentType:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+        name: {type: string}
     DocumentInformationHolderDTO:
       type: object
       properties:

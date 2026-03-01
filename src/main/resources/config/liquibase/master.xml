@@ -37,6 +37,7 @@
   <include file="changelog/00000000000025_create_data_export_requests.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000026_add_interview_state_to_applications.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000027_add_suitable_for_disabled_to_jobs.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000028_enforce_single_owner_in_document_dictionary.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

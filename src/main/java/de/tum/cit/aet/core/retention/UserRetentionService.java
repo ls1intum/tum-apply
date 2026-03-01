@@ -27,8 +27,10 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -192,10 +194,13 @@ public class UserRetentionService {
         }
         log.info("User retention: processing APPLICANT userId={}", user.getUserId());
 
-        // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and documents)
+        Set<UUID> documentIdsToDelete = new HashSet<>();
+
+        // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and dictionaries)
         List<Application> applications = applicationRepository.findAllByApplicantId(user.getUserId());
         if (!applications.isEmpty()) {
             List<UUID> applicationIds = applications.stream().map(Application::getApplicationId).toList();
+            documentIdsToDelete.addAll(documentDictionaryRepository.findDocumentIdsByApplicationIds(applicationIds));
 
             interviewSlotRepository.deleteByIntervieweeApplicationIdIn(applicationIds);
             intervieweeRepository.deleteByApplicationIdIn(applicationIds);
@@ -208,10 +213,20 @@ public class UserRetentionService {
             applicationRepository.deleteAllInBatch(applications);
         }
 
-        documentRepository.deleteByUploadedBy(user);
+        // 2. Delete applicant-owned profile/custom dictionaries
+        UUID userId = user.getUserId();
+        documentIdsToDelete.addAll(documentDictionaryRepository.findDocumentIdsByApplicantId(userId));
+        documentDictionaryRepository.deleteByApplicantId(userId);
 
-        // 2. Delete applicant data
-        applicantRepository.deleteById(user.getUserId());
+        // 3. Delete documents that became unreferenced after dictionary cleanup
+        for (UUID documentId : documentIdsToDelete) {
+            if (!documentDictionaryRepository.existsByDocumentDocumentId(documentId)) {
+                documentRepository.deleteById(documentId);
+            }
+        }
+
+        // 4. Delete applicant data
+        applicantRepository.deleteById(userId);
     }
 
     private void handleProfessorOrEmployee(User user, boolean dryRun) {

@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+import org.springframework.mock.web.MockMultipartFile;
 
 /**
  * Test data helpers for Documents + DocumentDictionary.
@@ -76,6 +77,9 @@ public final class DocumentTestData {
         DocumentType type,
         String name
     ) {
+        if ((application == null) == (applicant == null)) {
+            throw new IllegalArgumentException("Exactly one owner must be set: application XOR applicant.");
+        }
         DocumentDictionary dict = new DocumentDictionary();
         dict.setDocument(document);
         dict.setApplication(application);
@@ -136,5 +140,41 @@ public final class DocumentTestData {
 
         // Create document dictionary entry
         return savedDictionary(documentDictionaryRepository, document, application, applicant, documentType, fileName);
+    }
+
+    /**
+     * Creates a MockMultipartFile for testing document uploads.
+     *
+     * @param fieldName the form field name (typically "files")
+     * @param filename the original filename
+     * @param contentType the MIME type (e.g., "application/pdf")
+     * @param content the file content as bytes
+     * @return a MockMultipartFile instance
+     */
+    public static MockMultipartFile createMockMultipartFile(String fieldName, String filename, String contentType, byte[] content) {
+        return new MockMultipartFile(fieldName, filename, contentType, content);
+    }
+
+    /**
+     * Creates a MockMultipartFile with default PDF content for testing.
+     *
+     * @param fieldName the form field name (typically "files")
+     * @param filename the original filename
+     * @return a MockMultipartFile instance with PDF MIME type and default content
+     */
+    public static MockMultipartFile createMockPdfFile(String fieldName, String filename) {
+        return createMockMultipartFile(fieldName, filename, "application/pdf", "PDF content here".getBytes());
+    }
+
+    /**
+     * Creates a MockMultipartFile with specific content for testing.
+     *
+     * @param fieldName the form field name (typically "files")
+     * @param filename the original filename
+     * @param content the file content as string
+     * @return a MockMultipartFile instance with PDF MIME type
+     */
+    public static MockMultipartFile createMockPdfFile(String fieldName, String filename, String content) {
+        return createMockMultipartFile(fieldName, filename, "application/pdf", content.getBytes());
     }
 }

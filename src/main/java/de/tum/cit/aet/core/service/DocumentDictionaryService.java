@@ -104,6 +104,27 @@ public class DocumentDictionaryService {
     }
 
     /**
+     * Deletes an applicant-owned DocumentDictionary entry.
+     * This method is intended for internal use when syncing documents from application to profile.
+     *
+     * @param applicant            the applicant who must own the entry
+     * @param documentDictionaryId the id of the document dictionary entry to delete
+     */
+    public void deleteApplicantOwnedDocumentDictionary(Applicant applicant, UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = documentDictionaryRepository
+            .findById(documentDictionaryId)
+            .orElseThrow(() -> new EntityNotFoundException("Document dictionary with id " + documentDictionaryId + " not found"));
+
+        if (documentDictionary.getApplicant() == null || !documentDictionary.getApplicant().getUserId().equals(applicant.getUserId())) {
+            throw new EntityNotFoundException(
+                "Applicant document dictionary with id " + documentDictionaryId + " not found for applicant " + applicant.getUserId()
+            );
+        }
+
+        documentDictionaryRepository.delete(documentDictionary);
+    }
+
+    /**
      * Retrieves all DocumentDictionary entries for a given applicant and document
      * type.
      *
@@ -112,7 +133,7 @@ public class DocumentDictionaryService {
      *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
-    public Set<DocumentDictionary> getDocumentDictionaries(Applicant applicant, DocumentType documentType) {
+    public Set<DocumentDictionary> getApplicantDocumentDictionaries(Applicant applicant, DocumentType documentType) {
         return documentDictionaryRepository.findByApplicantAndDocumentType(applicant, documentType);
     }
 
@@ -125,7 +146,7 @@ public class DocumentDictionaryService {
      *                     BACHELOR_TRANSCRIPT)
      * @return set of matching DocumentDictionary entries
      */
-    public Set<DocumentDictionary> getDocumentDictionaries(Application application, DocumentType documentType) {
+    public Set<DocumentDictionary> getApplicationDocumentDictionaries(Application application, DocumentType documentType) {
         return documentDictionaryRepository.findByApplicationAndDocumentType(application, documentType);
     }
 
@@ -135,7 +156,7 @@ public class DocumentDictionaryService {
      * @param customFieldAnswer the custom field answer whose documents to retrieve
      * @return set of matching DocumentDictionary entries
      */
-    public Set<DocumentDictionary> getDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
+    public Set<DocumentDictionary> getCustomFieldAnswerDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
         return documentDictionaryRepository.findByCustomFieldAnswer(customFieldAnswer);
     }
 
