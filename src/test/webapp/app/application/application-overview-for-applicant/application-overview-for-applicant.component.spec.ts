@@ -60,6 +60,10 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   });
 
   it('should initialize with default values', async () => {
+    await comp.loadPage({ first: 0, rows: 10 });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     expect(comp.loading()).toBe(false);
     expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
     expect(comp.pageSize()).toBe(10);

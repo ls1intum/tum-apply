@@ -26,14 +26,31 @@
     <h1 jhiTranslate="entity.application_overview.applicant.header" class="h1-text"></h1>
   </header>
 
-  <jhi-dynamic-table
-    [columns]="columns()"
-    [data]="pageData()"
-    [totalRecords]="total()"
-    [rows]="pageSize()"
-    [selectable]="true"
-    (lazyLoad)="loadPage($event)"
-  />
+  @if (total() > 0 || loading()) {
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="pageData()"
+      [totalRecords]="total()"
+      [rows]="pageSize()"
+      [selectable]="true"
+      (lazyLoad)="loadPage($event)"
+    />
+  } @else {
+    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <div class="[&_button]:!rounded-full">
+        <jhi-button icon="file-lines" severity="contrast" class="pointer-events-none" />
+      </div>
+      <h2 jhiTranslate="entity.applicationOverview.emptyState.headline" class="text-xl font-semibold text-text"></h2>
+      <p jhiTranslate="entity.applicationOverview.emptyState.description1" class="text-text-primary max-w-3xl"></p>
+      <p jhiTranslate="entity.applicationOverview.emptyState.description2" class="text-text-primary max-w-3xl"></p>
+      <jhi-button
+        label="entity.applicationOverview.emptyState.browsePositions"
+        [shouldTranslate]="true"
+        (click)="onBrowsePositions()"
+        variant="outlined"
+      />
+    </div>
+  }
 
   <ng-template #stateTemplate let-row>
     <jhi-application-state-for-applicants [state]="row.applicationState" />
