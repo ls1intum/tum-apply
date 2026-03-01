@@ -18,6 +18,7 @@ import { Section } from 'app/shared/components/atoms/section/section';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
@@ -46,6 +47,7 @@ interface ApplicantRow {
     IntervieweeCardComponent,
     DynamicTableComponent,
     ConfirmDialog,
+    UserAvatarComponent,
   ],
   templateUrl: './interviewee-section.component.html',
 })

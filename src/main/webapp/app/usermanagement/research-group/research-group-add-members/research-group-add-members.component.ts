@@ -12,6 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 const I18N_BASE = 'researchGroup.members';
 
@@ -26,6 +27,7 @@ const I18N_BASE = 'researchGroup.members';
     ProgressSpinnerModule,
     CheckboxComponent,
     InfoBoxComponent,
+    UserAvatarComponent,
   ],
   templateUrl: './research-group-add-members.component.html',
 })

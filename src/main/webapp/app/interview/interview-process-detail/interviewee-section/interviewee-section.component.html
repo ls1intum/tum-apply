@@ -52,6 +52,7 @@
 <ng-template #nameTemplate let-row>
   <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
     <jhi-checkbox [model]="row.selected" [errorEnabled]="false" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
+    <jhi-user-avatar [fullName]="row.name" size="md" />
     <span class="font-medium text-text-primary">{{ row.name }}</span>
   </div>
 </ng-template>

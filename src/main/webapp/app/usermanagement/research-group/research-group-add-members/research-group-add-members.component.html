@@ -57,11 +57,7 @@
             tabindex="0"
             (click)="toggleUserSelection(user)"
           >
-            <div
-              class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-default flex items-center justify-center text-text-on-primary font-semibold"
-            >
-              {{ user.firstName ? user.firstName.charAt(0) : '' }}{{ user.lastName ? user.lastName.charAt(0) : '' }}
-            </div>
+            <jhi-user-avatar class="flex-shrink-0" [fullName]="((user.firstName ?? '') + ' ' + (user.lastName ?? '')).trim()" size="md" />
             <div class="flex-1">
               <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
               <div class="text-sm text-text-secondary">{{ user.email }}</div>

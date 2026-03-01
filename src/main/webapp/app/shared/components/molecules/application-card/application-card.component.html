@@ -2,9 +2,12 @@
   @if (!placeholder()) {
     <!-- Header -->
     <div class="header">
-      <div class="name" [class.has-last]="!!nameParts().last">
-        <span class="first">{{ nameParts().first }}</span>
-        <span class="last">{{ nameParts().last }}</span>
+      <div class="name-group">
+        <jhi-user-avatar [fullName]="fullName()" size="md" />
+        <div class="name" [class.has-last]="!!nameParts().last">
+          <span class="first">{{ nameParts().first }}</span>
+          <span class="last">{{ nameParts().last }}</span>
+        </div>
       </div>
 
       <jhi-tag

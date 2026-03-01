@@ -180,12 +180,6 @@ describe('ReviewDialogComponent', () => {
 
   describe('_defaultTextEffect', () => {
     it('should set editorModel when visible is true', () => {
-      (component.translate as unknown as { translations: Record<string, any> }).translations = {
-        en: {
-          'evaluation.defaultAcceptMessage': 'Default message',
-        },
-      };
-
       fixture.componentInstance.visible.set(true);
       fixture.detectChanges();
 
