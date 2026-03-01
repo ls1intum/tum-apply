@@ -203,6 +203,10 @@
         "userNotFound": {
           "summary": "Benutzer:in nicht gefunden",
           "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+        },
+        "userAlreadyMember": {
+          "summary": "Benutzer:in bereits zugeordnet",
+          "detail": "Die ausgewählte Person ist bereits Mitglied einer anderen Forschungsgruppe."
         }
       },
       "success": {
@@ -264,6 +268,15 @@
       "tumID": {
         "label": "Professor:in TUM-ID",
         "placeholder": "z.B. ab12cde"
+      },
+      "professorSelect": {
+        "searchPlaceholder": "Professor:in nach Name oder E-Mail suchen...",
+        "singleEntity": "Professor:in",
+        "multipleEntities": "Professor:innen",
+        "noResults": "Keine verfügbaren Professor:innen gefunden.",
+        "requiredError": "Bitte wähle eine Professor:in aus.",
+        "loadMore": "Mehr laden",
+        "changeButton": "Auswahl ändern"
       },
       "createButton": "Forschungsgruppe erstellen",
       "createDialog": {

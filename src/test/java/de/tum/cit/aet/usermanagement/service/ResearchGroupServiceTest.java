@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +67,9 @@ class ResearchGroupServiceTest {
 
     @Mock
     private DepartmentRepository departmentRepository;
+
+    @Mock
+    private KeycloakUserService keycloakUserService;
 
     @Mock
     private AsyncEmailSender emailSender;
@@ -514,6 +518,81 @@ class ResearchGroupServiceTest {
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
                 .isInstanceOf(ResourceAlreadyExistsException.class)
                 .hasMessageContaining("already exists");
+        }
+    }
+
+    @Nested
+    class CreateResearchGroupAsAdmin {
+
+        @Test
+        void shouldCreateResearchGroupAsAdminUsingLocalMockFallbackWhenKeycloakHasNoResult() {
+            // Arrange
+            ReflectionTestUtils.setField(researchGroupService, "keycloakLocalMockEnabled", true);
+            ReflectionTestUtils.setField(
+                researchGroupService,
+                "keycloakLocalMockFilePath",
+                "src/main/webapp/content/mock/keycloak-users.json"
+            );
+
+            ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
+                "Prof.",
+                "Any",
+                "User",
+                "aa00boa",
+                "Prof. Annika Mueller",
+                "Admin Created Group",
+                TEST_DEPARTMENT_ID,
+                "admin-created@test.com",
+                "ACG",
+                "https://acg.test",
+                "Description",
+                "CS",
+                "Main St",
+                "12345",
+                "Munich"
+            );
+
+            when(researchGroupRepository.existsByNameIgnoreCase("Admin Created Group")).thenReturn(false);
+            when(userRepository.findByUniversityIdIgnoreCase("aa00boa")).thenReturn(Optional.empty());
+            when(keycloakUserService.findUserByUniversityId("aa00boa")).thenReturn(Optional.empty());
+            when(departmentRepository.findByIdElseThrow(TEST_DEPARTMENT_ID)).thenReturn(testDepartment);
+            when(researchGroupRepository.save(any(ResearchGroup.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(any(User.class), any(ResearchGroup.class))).thenReturn(
+                Optional.empty()
+            );
+            when(userResearchGroupRoleRepository.findAllByUser(any(User.class))).thenReturn(Set.of());
+
+            // Act
+            ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
+
+            // Assert
+            assertThat(created.getState()).isEqualTo(ResearchGroupState.ACTIVE);
+
+            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+            verify(userRepository, atLeastOnce()).save(userCaptor.capture());
+            assertThat(userCaptor.getAllValues()).anySatisfy(savedProfessor -> {
+                assertThat(savedProfessor.getUniversityId()).isEqualTo("aa00boa");
+                assertThat(savedProfessor.getFirstName()).isEqualTo("Annika");
+                assertThat(savedProfessor.getLastName()).isEqualTo("Mueller");
+            });
+        }
+
+        @Test
+        void shouldThrowEntityNotFoundWhenFallbackIsDisabledAndKeycloakHasNoResult() {
+            // Arrange
+            ReflectionTestUtils.setField(researchGroupService, "keycloakLocalMockEnabled", false);
+
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Admin Group", TEST_DEPARTMENT_ID);
+
+            when(researchGroupRepository.existsByNameIgnoreCase("Admin Group")).thenReturn(false);
+            when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.empty());
+            when(keycloakUserService.findUserByUniversityId("ab12cde")).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy(() -> researchGroupService.createResearchGroupAsAdmin(request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("ab12cde");
         }
     }
 

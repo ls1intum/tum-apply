@@ -33,7 +33,9 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 export class SearchFilterSortBar {
   // total number of records found
   totalRecords = input<number>(0);
+  showRecords = input<boolean>(true);
   searchText = input<string | undefined>(undefined);
+  fullWidth = input<boolean>(false);
 
   // list of filters to be displayed
   filters = input<Filter[]>([]);
