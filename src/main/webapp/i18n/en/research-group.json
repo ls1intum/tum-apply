@@ -439,7 +439,7 @@
         "namePlaceholder": "e.g. School of Engineering and Design",
         "abbreviationLabel": "Abbreviation",
         "abbreviationPlaceholder": "e.g. ED",
-        "abbreviationUniqueHint": "Abbreviations must be unique and cannot be reused by another school.",
+        "abbreviationUniqueHint": "Abbreviations must be unique and cannot be used by another school.",
         "createButton": "Create School",
         "success": {
           "created": {
