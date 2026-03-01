@@ -50,7 +50,7 @@
     "rimraf": "6.1.2",
     "semver": "7.7.4",
     "tough-cookie": "6.0.0",
-    "webpack": "5.104.1",
+    "webpack": "5.105.2",
     "webpack-dev-middleware": "7.4.5",
     "webpack-dev-server": "5.2.2",
     "word-wrap": "1.2.5",
