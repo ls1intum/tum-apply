@@ -16,6 +16,12 @@
       </div>
 
       <jhi-footer />
+
+      @if (loadingService.isLoading()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-background-surface/50 backdrop-blur-sm">
+          <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
+        </div>
+      }
     </div>
   </div>
 </div>

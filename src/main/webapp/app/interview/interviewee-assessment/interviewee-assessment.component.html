@@ -1,12 +1,5 @@
 <!-- Page Container -->
 <div class="page-container min-h-screen flex flex-col">
-  <!-- Loading State -->
-  @if (loading()) {
-    <div class="flex items-center justify-center h-64">
-      <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
-    </div>
-  }
-
   <!-- Error State -->
   @if (error(); as errorKey) {
     <div class="flex items-center justify-center h-64">

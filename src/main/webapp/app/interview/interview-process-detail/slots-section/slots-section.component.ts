@@ -4,7 +4,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { InterviewResourceApiService } from 'app/generated';
@@ -34,7 +33,6 @@ interface GroupedSlots {
     TranslateModule,
     TranslateDirective,
     ButtonComponent,
-    ProgressSpinnerModule,
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
