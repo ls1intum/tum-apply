@@ -12,6 +12,12 @@ DELETE FROM interview_slots;
 -- Slots for Process 00000000-0000-0000-0000-000000030001
 -- ======================================================
 
+-- 📅 PAST SLOTS (2026-02-10)
+INSERT INTO interview_slots (id, interview_process_id, start_date_time, end_date_time, location, stream_link, is_booked, created_by, created_at, last_modified_by, last_modified_at)
+VALUES
+  ('00000000-0000-0000-0000-000000050001', '00000000-0000-0000-0000-000000030001', '2026-02-10 08:00:00', '2026-02-10 08:45:00', 'Room MI 01.11.018', NULL, FALSE, 'system', '2026-02-01 10:00:00', 'system', '2026-02-01 10:00:00'),
+  ('00000000-0000-0000-0000-000000050002', '00000000-0000-0000-0000-000000030001', '2026-02-10 09:00:00', '2026-02-10 09:45:00', 'Room MI 01.11.018', NULL, FALSE, 'system', '2026-02-01 10:00:00', 'system', '2026-02-01 10:00:00');
+
 -- 📅 2025-11-20 (Wednesday) - 3 slots
 INSERT INTO interview_slots (id, interview_process_id, start_date_time, end_date_time, location, stream_link, is_booked, created_by, created_at, last_modified_by, last_modified_at)
 VALUES

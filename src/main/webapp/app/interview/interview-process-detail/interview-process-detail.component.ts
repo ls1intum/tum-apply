@@ -26,6 +26,7 @@ export class InterviewProcessDetailComponent {
 
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
+  invitedCount = signal(0);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -35,7 +36,7 @@ export class InterviewProcessDetailComponent {
 
   private readonly updateTitleEffect = effect(() => {
     const title = this.jobTitle();
-    if (title) {
+    if (title !== null && title !== '') {
       this.updateTabTitle(title);
     }
   });
@@ -44,7 +45,7 @@ export class InterviewProcessDetailComponent {
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId');
-    if (id) {
+    if (id !== null && id !== '') {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
@@ -68,6 +69,7 @@ export class InterviewProcessDetailComponent {
       if (process.jobId) {
         this.jobId.set(process.jobId);
       }
+      this.invitedCount.set(process.invitedCount);
     } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');
     }
