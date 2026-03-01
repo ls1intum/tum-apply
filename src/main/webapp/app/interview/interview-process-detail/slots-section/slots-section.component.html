@@ -29,7 +29,9 @@
         <p class="text-text-secondary" jhiTranslate="interview.detail.empty.description">
           Create your first interview slots to get started.
         </p>
-        <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
+        @if (!isClosed()) {
+          <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
+        }
       </div>
     </div>
   } @else {
@@ -37,6 +39,7 @@
       <!-- Month Navigation -->
       <jhi-month-navigation
         [currentMonth]="currentMonth()"
+        [isClosed]="isClosed()"
         (previousMonth)="previousMonth()"
         (nextMonth)="nextMonth()"
         (addSlots)="openCreateSlotsModal()"
@@ -63,6 +66,7 @@
                     @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
                       <jhi-slot-card
                         [slot]="slot"
+                        [isClosed]="isClosed()"
                         (editSlot)="onEditSlot()"
                         (deleteSlot)="onDeleteSlot(slot)"
                         (assignApplicant)="onAssignApplicant(slot)"

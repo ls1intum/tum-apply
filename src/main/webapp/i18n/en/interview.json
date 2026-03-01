@@ -14,6 +14,9 @@
         "newProcess": "New Interview Process",
         "viewDetails": "View Details"
       },
+      "status": {
+        "closed": "Closed"
+      },
       "stats": {
         "completed": "Completed",
         "scheduled": "Scheduled",
@@ -299,6 +302,12 @@
           "summary": "Not Found",
           "detail": "This applicant does not exist or has been removed."
         }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Process Closed",
+        "description": "This interview process is now closed. You can no longer book or change interview slots."
       }
     }
   }

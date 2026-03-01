@@ -11,15 +11,17 @@
       <jhi-button [icon]="'chevron-right'" [variant]="'text'" [severity]="'primary'" size="sm" (click)="nextMonth.emit()" />
     </div>
 
-    <jhi-button
-      [icon]="'plus'"
-      [label]="'interview.slots.addSlots'"
-      [shouldTranslate]="true"
-      [severity]="'primary'"
-      size="sm"
-      styleClass="whitespace-nowrap"
-      (click)="addSlots.emit()"
-    />
+    @if (!isClosed()) {
+      <jhi-button
+        [icon]="'plus'"
+        [label]="'interview.slots.addSlots'"
+        [shouldTranslate]="true"
+        [severity]="'primary'"
+        size="sm"
+        styleClass="whitespace-nowrap"
+        (click)="addSlots.emit()"
+      />
+    }
   </div>
 
   <div class="mt-2 w-full h-[1px] bg-border-default"></div>

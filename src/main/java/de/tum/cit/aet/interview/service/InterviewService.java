@@ -23,6 +23,7 @@ import de.tum.cit.aet.interview.dto.IntervieweeState;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
@@ -139,7 +140,8 @@ public class InterviewService {
                     scheduledCount,
                     invitedCount,
                     uncontactedCount,
-                    totalInterviews
+                    totalInterviews,
+                    job.getState().getValue()
                 );
             })
             .toList();
@@ -231,7 +233,8 @@ public class InterviewService {
             scheduledCount,
             invitedCount,
             uncontactedCount,
-            totalInterviews
+            totalInterviews,
+            job.getState().getValue()
         );
     }
 
@@ -302,9 +305,15 @@ public class InterviewService {
         // Employee)
         Job job = process.getJob();
         verifyResearchGroupAccess(job);
+
+        // 3. Security: Check if Job is CLOSED
+        if (job.getState() == JobState.CLOSED) {
+            throw new BadRequestException("This interview process is closed because the linked job has been closed.");
+        }
+
         User professor = job.getSupervisingProfessor();
 
-        // 3. Convert DTOs to entities
+        // 4. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
             .slots()
             .stream()
@@ -370,7 +379,12 @@ public class InterviewService {
         Job job = slot.getInterviewProcess().getJob();
         verifyResearchGroupAccess(job);
 
-        // 3.Cannot delete booked slots
+        // 3. Security: Check if Job is CLOSED
+        if (job.getState() == JobState.CLOSED) {
+            throw new BadRequestException("This interview process is closed because the linked job has been closed.");
+        }
+
+        // 4.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
             throw new BadRequestException("Cannot delete booked slot.");
@@ -569,7 +583,12 @@ public class InterviewService {
         Job job = process.getJob();
         verifyResearchGroupAccess(job);
 
-        // 3. Load all applications
+        // 3. Security: Check if Job is CLOSED
+        if (job.getState() == JobState.CLOSED) {
+            throw new BadRequestException("This interview process is closed because the linked job has been closed.");
+        }
+
+        // 4. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
 
         // 5. Create Interviewees (skip if already exists)
@@ -650,7 +669,12 @@ public class InterviewService {
         Job job = slot.getInterviewProcess().getJob();
         verifyResearchGroupAccess(job);
 
-        // 3. Check if slot is already booked
+        // 3. Security: Check if Job is CLOSED
+        if (job.getState() == JobState.CLOSED) {
+            throw new BadRequestException("This interview process is closed because the linked job has been closed.");
+        }
+
+        // 4. Check if slot is already booked
         if (slot.getIsBooked()) {
             throw new ResourceAlreadyExistsException("Interview slot is already booked");
         }
@@ -755,7 +779,12 @@ public class InterviewService {
         Job job = process.getJob();
         verifyResearchGroupAccess(job);
 
-        // 3. Fetch interviewees based on filter
+        // 3. Security: Check if Job is CLOSED
+        if (job.getState() == JobState.CLOSED) {
+            throw new BadRequestException("This interview process is closed because the linked job has been closed.");
+        }
+
+        // 4. Fetch interviewees based on filter
         List<Interviewee> interviewees;
         if (Boolean.TRUE.equals(request.onlyUninvited())) {
             interviewees = intervieweeRepository.findAllByInterviewProcessIdAndLastInvitedIsNull(processId);

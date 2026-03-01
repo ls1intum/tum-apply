@@ -22,6 +22,7 @@ export class IntervieweeCardComponent {
   interviewee = input.required<IntervieweeDTO>();
   processId = input.required<string>();
   sending = input<boolean>(false);
+  isClosed = input<boolean>(false);
 
   // Outputs
   sendInvitation = output<IntervieweeDTO>();
