@@ -1,22 +1,18 @@
 import { Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
 import { TranslateDirective } from 'app/shared/language';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 
-interface StatItem {
-  key: string;
-  count: number;
-  label: string;
-  colorClass: string;
-  widthPercent: number;
-}
+type ProcessStatus = 'ACTIVE' | 'CLOSED' | 'NEW';
 
 @Component({
   standalone: true,
   selector: 'jhi-interview-process-card',
-  imports: [CommonModule, CardModule, TranslateModule, TranslateDirective],
+  imports: [CommonModule, TranslateModule, TranslateDirective, FontAwesomeModule, MessageComponent, TagComponent],
   templateUrl: './interview-process-card.component.html',
 })
 export class InterviewProcessCardComponent {
@@ -24,46 +20,14 @@ export class InterviewProcessCardComponent {
   cardClick = output<string>();
 
   /**
-   * Stats with calculated width percentages
+   * Computed status based on the job's state
    */
-  stats = computed<StatItem[]>(() => {
-    const process = this.process();
-    const total = process.totalInterviews;
+  processStatus = computed<ProcessStatus>(() => {
+    return this.process().isClosed ? 'CLOSED' : 'ACTIVE';
+  });
 
-    const calculateWidth = (count: number): number => {
-      return total === 0 ? 0 : (count / total) * 100;
-    };
-
-    return [
-      {
-        key: 'completed',
-        count: process.completedCount,
-        label: 'interview.overview.stats.completed',
-        colorClass: 'bg-primary-default',
-        widthPercent: calculateWidth(process.completedCount),
-      },
-      {
-        key: 'scheduled',
-        count: process.scheduledCount,
-        label: 'interview.overview.stats.scheduled',
-        colorClass: 'bg-primary-400',
-        widthPercent: calculateWidth(process.scheduledCount),
-      },
-      {
-        key: 'invited',
-        count: process.invitedCount,
-        label: 'interview.overview.stats.invited',
-        colorClass: 'bg-primary-300',
-        widthPercent: calculateWidth(process.invitedCount),
-      },
-      {
-        key: 'uncontacted',
-        count: process.uncontactedCount,
-        label: 'interview.overview.stats.uncontacted',
-        colorClass: 'bg-primary-200',
-        widthPercent: calculateWidth(process.uncontactedCount),
-      },
-    ];
+  totalSlots = computed<number>(() => {
+    return this.process().totalSlots;
   });
 
   onCardClick(): void {

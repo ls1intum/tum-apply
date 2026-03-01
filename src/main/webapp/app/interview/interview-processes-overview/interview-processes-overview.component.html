@@ -8,12 +8,12 @@
     </h1>
   </header>
 
-  <!-- Two-column Layout -->
-  <div class="flex flex-col lg:flex-row gap-4 items-start">
-    <!-- Left Section -->
-    <div class="w-full lg:flex-1 min-w-0 flex flex-col">
+  <!-- Top/Bottom Layout -->
+  <div class="flex flex-col gap-8 items-stretch mt-6">
+    <!-- Top Section: Positions -->
+    <div class="w-full flex flex-col">
       <div class="flex justify-between items-center mb-4 h-10">
-        <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.positions.title">Positions</h2>
+        <h2 class="text-xl font-semibold text-text-primary" jhiTranslate="interview.overview.positions.title">Positions</h2>
       </div>
 
       @if (error()) {
@@ -35,15 +35,15 @@
       <!-- Empty State -->
       @if (!loading() && !error() && interviewProcesses().length === 0) {
         <div class="flex flex-col items-center justify-center bg-background-default border border-border-default rounded-lg p-12">
-          <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
+          <i class="pi pi-inbox text-text-tertiary text-5xl mb-4"></i>
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="interview.overview.empty.title">No interview processes</h3>
-          <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description"></p>
+          <p class="text-sm text-text-secondary" jhiTranslate="interview.overview.empty.description"></p>
         </div>
       }
 
-      <!-- Cards -->
+      <!-- Cards Grid -->
       @if (!loading() && !error() && interviewProcesses().length > 0) {
-        <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           @for (process of interviewProcesses(); track process.jobId) {
             <jhi-interview-process-card [process]="process" (cardClick)="viewDetails($event)" />
           }
@@ -51,13 +51,10 @@
       }
     </div>
 
-    <!-- Divider -->
-    <div class="hidden lg:block w-px bg-divider-default self-stretch"></div>
-
-    <!-- Right Section -->
-    <div class="w-full lg:w-96 shrink-0 flex flex-col">
+    <!-- Bottom Section: Upcoming Interviews (Calendar View) -->
+    <div class="w-full flex flex-col mt-4">
       <div class="mb-4 h-10 flex items-center">
-        <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
+        <h2 class="text-xl font-semibold text-text-primary" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
       </div>
 
       <!-- Error State -->
@@ -82,11 +79,25 @@
         <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="secondary" icon="calendar" />
       }
 
-      <!-- List State -->
-      @if (!loading() && !error() && upcomingInterviews().length > 0) {
-        <div class="flex flex-col gap-3">
-          @for (interview of upcomingInterviews(); track interview.id) {
-            <jhi-upcoming-interview-card [interview]="interview" />
+      <!-- Calendar List State -->
+      @if (!loading() && !error() && groupedUpcomingInterviews().length > 0) {
+        <div class="flex flex-col gap-6">
+          @for (monthGroup of groupedUpcomingInterviews(); track monthGroup.monthLabel) {
+            <section class="flex flex-col gap-3">
+              <!-- Reusing month-navigation styling: centered bold text, top/bottom divider -->
+              <div class="text-text-primary mb-3 mt-2 border-b border-border-default">
+                <div class="flex items-center justify-center pb-2">
+                  <h3 class="text-base font-semibold tracking-wider text-text-primary">{{ monthGroup.monthLabel }}</h3>
+                </div>
+              </div>
+
+              <!-- Grid for the upcoming cards within the month -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                @for (interview of monthGroup.interviews; track interview.id; let i = $index) {
+                  <jhi-upcoming-interview-card [interview]="interview" [index]="i" />
+                }
+              </div>
+            </section>
           }
         </div>
       }

@@ -2590,15 +2590,18 @@ components:
       type: object
       properties:
         completedCount: {type: integer, format: int64}
+        imageUrl: {type: string}
         invitedCount: {type: integer, format: int64}
+        isClosed: {type: boolean}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
+        totalSlots: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
-        totalInterviews, uncontactedCount]
+        totalInterviews, totalSlots, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
