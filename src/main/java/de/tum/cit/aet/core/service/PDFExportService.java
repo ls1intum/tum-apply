@@ -106,11 +106,7 @@ public class PDFExportService {
             .startInfoSection(labels.get("bachelorInfo"))
             .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
             .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
-            // .addSectionData(labels.get("upperGradeLimit"),
-            // getValue(app.applicant().bachelorGradeUpperLimit()))
-            // .addSectionData(labels.get("lowerGradeLimit"),
-            // getValue(app.applicant().bachelorGradeLowerLimit()))
-            .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
+            .addSectionData(labels.get("grade"), labels.getOrDefault("bachelorGradeDisplay", getValue(app.applicant().bachelorGrade())));
 
         // Master Section
         if (app.applicant().masterDegreeName() != null) {
@@ -118,11 +114,7 @@ public class PDFExportService {
                 .startInfoSection(labels.get("masterInfo"))
                 .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
                 .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
-                // .addSectionData(labels.get("upperGradeLimit"),
-                // getValue(app.applicant().masterGradeUpperLimit()))
-                // .addSectionData(labels.get("lowerGradeLimit"),
-                // getValue(app.applicant().masterGradeLowerLimit()))
-                .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
+                .addSectionData(labels.get("grade"), labels.getOrDefault("masterGradeDisplay", getValue(app.applicant().masterGrade())));
         }
 
         // Metadata

@@ -1,9 +1,9 @@
 {
   "interview": {
     "overview": {
-      "title": "Übersicht der Interviews",
+      "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Stellen"
       },
       "loading": "Interview Prozesse werden geladen...",
       "empty": {

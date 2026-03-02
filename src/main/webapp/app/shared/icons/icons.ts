@@ -13,9 +13,9 @@ export const facWithdraw: IconDefinition = {
   ],
 } as IconDefinition;
 
-export const facMyJobs: IconDefinition = {
+export const facJobs: IconDefinition = {
   prefix: 'fas' as IconPrefix,
-  iconName: 'my-jobs' as IconName,
+  iconName: 'jobs' as IconName,
   icon: [
     24,
     21,
@@ -123,7 +123,7 @@ export const facSparkle: IconDefinition = {
 
 export const tumApplyIconPack: IconPack = {
   facWithdraw,
-  facMyJobs,
+  facJobs,
   facCreateJob,
   facApplicationOverview,
   facReviewApplications,
