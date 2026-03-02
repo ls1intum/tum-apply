@@ -79,8 +79,6 @@ function getPersonalInformationsLabel(translate: TranslateService): Record<strin
     masterInfo: translate.instant('entity.detail_card.master_info'),
     degreeName: translate.instant('entity.detail_card.name'),
     university: translate.instant('entity.detail_card.university'),
-    upperGradeLimit: translate.instant('entity.detail_card.upper_passing_limit'),
-    lowerGradeLimit: translate.instant('entity.detail_card.lower_passing_limit'),
     grade: translate.instant('entity.detail_card.grade'),
   };
 }
@@ -122,4 +120,14 @@ function getFooterLabels(translate: TranslateService): Record<string, string> {
     page: translate.instant('pdf.pageCount.page'),
     of: translate.instant('pdf.pageCount.of'),
   };
+}
+
+// ----------- Other helper functions related to PDF generation -----------
+
+export function formatGradeDisplay(translate: TranslateService, grade?: string, upperLimit?: string, lowerLimit?: string): string {
+  if (!grade) return '-';
+  if (!upperLimit || !lowerLimit) return grade;
+
+  const scale = translate.instant('entity.applicationPage2.helperText.gradingScale', { upperLimit, lowerLimit });
+  return `${grade} (${scale})`;
 }

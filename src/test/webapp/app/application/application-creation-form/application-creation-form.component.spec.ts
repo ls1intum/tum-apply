@@ -763,13 +763,13 @@ describe('ApplicationForm', () => {
         bachelorDegreeName: 'Computer Science',
         bachelorDegreeUniversity: 'MIT',
         bachelorGrade: '3.8',
-        //bachelorGradeLowerLimit: '4',
-        //bachelorGradeUpperLimit: '1',
+        bachelorGradeLowerLimit: '4',
+        bachelorGradeUpperLimit: '1',
         masterDegreeName: 'Software Engineering',
         masterDegreeUniversity: 'Stanford',
         masterGrade: '3.9',
-        //masterGradeLowerLimit: '4',
-        //masterGradeUpperLimit: '1',
+        masterGradeLowerLimit: '4',
+        masterGradeUpperLimit: '1',
       });
 
       comp.applicationDetailsData.set({

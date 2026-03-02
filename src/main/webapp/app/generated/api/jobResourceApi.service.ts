@@ -470,10 +470,10 @@ export class JobResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageCreatedJobDTO>;
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageCreatedJobDTO>>;
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageCreatedJobDTO>>;
-    public getJobsByProfessor(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageCreatedJobDTO>;
+    public getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageCreatedJobDTO>>;
+    public getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageCreatedJobDTO>>;
+    public getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -518,7 +518,7 @@ export class JobResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/jobs/professor`;
+        let localVarPath = `/api/jobs/research-group`;
         return this.httpClient.request<PageCreatedJobDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
