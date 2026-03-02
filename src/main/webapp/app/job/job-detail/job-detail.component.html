@@ -36,7 +36,7 @@
         }
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
-            <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
+            <jhi-user-avatar [fullName]="job.supervisingProfessor || ''" size="sm" />
             <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong> {{ job.supervisingProfessor || '-' }}</span>
           </div>
           <div class="flex items-center gap-2 text-sm">

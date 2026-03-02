@@ -7,21 +7,30 @@
   (keydown)="onKeyDown($event)"
 >
   <div
-    class="relative h-32 flex items-end px-4 pb-3 bg-cover bg-center flex-shrink-0"
+    class="relative h-32 px-4 pb-3 bg-cover bg-center flex-shrink-0"
     [style.background-image]="
       headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
     "
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
-    <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-pill">
-      {{ departmentName() }}
-    </span>
+    <div class="absolute left-2 -bottom-4 z-10">
+      <div class="flex items-center">
+        <div class="z-20 scale-110 origin-left">
+          <jhi-user-avatar [fullName]="professor()" size="lg" />
+        </div>
+        <span
+          class="-ml-4 rounded-pill bg-black/45 backdrop-blur-sm text-white text-xs font-medium h-6 pl-7 pr-3 max-w-[12rem] truncate leading-none flex items-center"
+        >
+          {{ departmentName() }}
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- Content section -->
-  <div class="p-4 flex-1 flex flex-col">
+  <div class="p-4 pt-7 flex-1 flex flex-col">
     <!-- Job title -->
-    <h3 class="text-lg font-semibold line-clamp-2 min-h-[3.5rem] flex items-center" [title]="jobTitle()">
+    <h3 class="text-lg font-semibold line-clamp-2 leading-snug mb-2" [title]="jobTitle()">
       {{ jobTitle() }}
     </h3>
 
