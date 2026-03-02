@@ -131,7 +131,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
       await component.onSearchEmit('Dept');
       await Promise.resolve();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, [], 'Dept', 'name', 'ASC');
+      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, [], 'Dept', 'name', 'DESC');
     });
 
     it('calls API with filter values', async () => {
@@ -139,7 +139,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
       await component.onFilterEmit({ filterId: 'school', selectedValues: ['School 1'] });
       await Promise.resolve();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, ['School 1'], '', 'name', 'ASC');
+      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, ['School 1'], '', 'name', 'DESC');
     });
 
     it('calls API on sort change', async () => {
