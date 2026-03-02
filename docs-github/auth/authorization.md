@@ -23,7 +23,7 @@ Roles are not assigned via Keycloak – they are provisioned in the server datab
 
 ### 👥 Employee Role (Server-Verified)
 
-The employee role is implemented via controller-level security annotations in the backend:
+The employee role is implemented via controller-level security annotations in the server:
 
 - `@ProfessorOrEmployee` → endpoint is available to **both EMPLOYEE and PROFESSOR**.
 - `@ProfessorOrEmployeeOrAdmin` → endpoint is available to **EMPLOYEE, PROFESSOR, and ADMIN**.

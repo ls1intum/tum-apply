@@ -54,7 +54,4 @@ This document outlines the primary personas who use the TUMApply platform and th
 
 **Explicit limitations:**
 
-- Cannot delete email templates
-- Cannot delete images
-- Cannot add or remove research-group members
 - Cannot access professor/admin-only management endpoints

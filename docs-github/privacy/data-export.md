@@ -22,7 +22,7 @@ The export is produced asynchronously and delivered via a token-based download l
 
 1. The user opens the Privacy page while logged in and clicks **Export my data**.
 2. The request is accepted immediately (`202 Accepted`) and enters queue processing.
-3. Export generation runs asynchronously in the backend scheduler.
+3. Export generation runs asynchronously in the server scheduler.
 4. After successful generation, the user receives an email with a download link.
 5. The user downloads a ZIP file containing JSON summary + documents + images.
 
@@ -110,35 +110,7 @@ If processing fails at any point, request is marked as `FAILED`.
 
 ---
 
-### 1.6 API endpoints
-
-Base path: `/api/users`
-
-- `GET /data-export/status` (authenticated)
-  - Returns `DataExportStatusDTO` with:
-    - current status,
-    - last request timestamp,
-    - next allowed request timestamp,
-    - remaining cooldown seconds,
-    - download token (when applicable).
-
-- `POST /data-export` (authenticated)
-  - Accepts a new request.
-  - Returns `202 Accepted`.
-  - Can return:
-    - `409` if a request is already actively being created,
-    - `429` if weekly cooldown is not yet over.
-
-- `GET /data-export/download/{token}` (authenticated)
-  - Returns ZIP file stream with `Content-Disposition` attachment header.
-  - Token is validated against the current user.
-  - Can return conflict/not-found style errors when token is invalid, expired, or not yet downloadable.
-
-> Note: The service also contains a token-only retrieval method (without user ownership check), but the exposed resource currently uses authenticated download.
-
----
-
-### 1.7 Scheduling and processing
+### 1.6 Scheduling and processing
 
 `UserDataExportService#processPendingDataExports` runs on:
 
@@ -155,7 +127,7 @@ For each pending (`REQUESTED`) item:
 
 ---
 
-### 1.8 Cooldown and expiry behavior
+### 1.7 Cooldown and expiry behavior
 
 - **Request cooldown**: once per 7 days (derived from `lastRequestedAt`).
 - **Link expiry**: `aet.data-export.expires-days`
@@ -170,7 +142,7 @@ Validation checks on download:
 
 ---
 
-### 1.9 ZIP structure and file handling
+### 1.8 ZIP structure and file handling
 
 `UserExportZipWriter` generates archives in configured export root and includes:
 
