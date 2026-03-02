@@ -8,6 +8,7 @@ import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupReques
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { firstValueFrom } from 'rxjs';
@@ -111,10 +112,12 @@ export class ResearchGroupCreationFormComponent {
   private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
   private readonly schoolService = inject(SchoolResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
+  private readonly userService = inject(UserResourceApiService);
   private readonly toastService = inject(ToastService);
 
   constructor() {
     this.form = this.createForm();
+    void this.prefillProfessorData();
     void this.loadSchoolsAndDepartments();
   }
 
@@ -275,5 +278,50 @@ export class ResearchGroupCreationFormComponent {
       postalCode: s(v.researchGroupPostalCode),
       city: s(v.researchGroupCity),
     };
+  }
+
+  private async prefillProfessorData(): Promise<void> {
+    if (this.mode() !== 'professor') {
+      return;
+    }
+
+    try {
+      const currentUser = await firstValueFrom(this.userService.getCurrentUser());
+      const firstName = this.normalizePrefillValue(currentUser.firstName);
+      const lastName = this.normalizePrefillValue(currentUser.lastName);
+      const email = this.normalizePrefillValue(currentUser.email);
+      const universityId = this.normalizePrefillValue(currentUser.universityId);
+      const fullName = [firstName, lastName].filter(part => part !== '').join(' ');
+
+      this.setControlValueIfEmpty('firstName', firstName);
+      this.setControlValueIfEmpty('lastName', lastName);
+      this.setControlValueIfEmpty('tumID', universityId);
+      this.setControlValueIfEmpty('researchGroupHead', fullName);
+      this.setControlValueIfEmpty('researchGroupContactEmail', email);
+    } catch {
+      // If fetching user data fails, we simply don't prefill the form. No need to show an error message.
+    }
+  }
+
+  private normalizePrefillValue(value: unknown): string {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  private setControlValueIfEmpty(controlName: string, valueToSet: string): void {
+    if (valueToSet === '') {
+      return;
+    }
+
+    const control = this.form.get(controlName);
+    if (!control) {
+      return;
+    }
+
+    const currentValue = control.value;
+    if (typeof currentValue === 'string' && currentValue.trim() !== '') {
+      return;
+    }
+
+    control.setValue(valueToSet, { emitEvent: false });
   }
 }

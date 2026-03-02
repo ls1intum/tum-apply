@@ -1,6 +1,34 @@
 <div class="filter-multiselect" [class.open]="isOpen()">
-  <div class="filter-button" (click)="toggleDropdown()" tabindex="0">
-    <span>{{ filterLabel() | translate }}</span>
+  <div
+    class="filter-button"
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="isOpen()"
+    aria-haspopup="listbox"
+    (click)="toggleDropdown()"
+    (keydown)="onTriggerKeydown($event)"
+  >
+    <div class="filter-trigger">
+      @if (!hasSelectedItems()) {
+        <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
+      } @else {
+        @if (showChipsCounterOnly()) {
+          <span class="trigger-summary">{{ getSummaryLabel() }}</span>
+        } @else {
+          <div class="chip-row">
+            @for (option of selectedOptions(); track option.value) {
+              <p-chip
+                [label]="shouldTranslateOptions() ? (option.label | translate) : option.label"
+                [removable]="true"
+                (onRemove)="removeOption(option.value); $event.stopPropagation()"
+                (click)="$event.stopPropagation()"
+                [pt]="{ root: { class: 'compact-chip' } }"
+              />
+            }
+          </div>
+        }
+      }
+    </div>
     <fa-icon class="filter-icon" [icon]="['fas', 'chevron-down']" [ngClass]="{ rotated: isOpen() }" />
   </div>
 
@@ -24,10 +52,18 @@
         <div class="options-list">
           <!-- List all selected options -->
           @if (hasSelectedItems()) {
-            <p-divider align="left">
-              <span class="divider-text">{{ 'entity.filters.selected' | translate }}</span>
-            </p-divider>
-            @for (option of selectedOptions(); track option.value) {
+            <div class="selected-header-row">
+              <p-divider align="left">
+                <span class="divider-text"> {{ 'entity.filters.selected' | translate }} ({{ selectedOptions().length }}) </span>
+              </p-divider>
+
+              <p-divider align="right">
+                <button type="button" class="divider-text clear-button" (click)="clearAll(); $event.stopPropagation()">
+                  {{ 'entity.filters.clearAll' | translate }}
+                </button>
+              </p-divider>
+            </div>
+            @for (option of selectedOptions(); track option.value; let i = $index) {
               <div class="option-item selected" (click)="toggleOption(option.value)">
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
                 <span class="option-label">
@@ -48,8 +84,8 @@
 
           <!-- List all unselected options -->
           @if (hasUnselectedItems()) {
-            @for (option of unselectedOptions(); track option.value) {
-              <div class="option-item" (click)="toggleOption(option.value)">
+            @for (option of unselectedOptions(); track option.value; let i = $index) {
+              <div class="option-item" (click)="toggleOption(option.value)" [class.focused]="focusedIndexOptionList() === i">
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
                 <span class="option-label">
                   @if (shouldTranslateOptions()) {
@@ -63,13 +99,26 @@
           }
 
           <!-- Display that no results were found-->
-          @if (filteredOptions().length === 0) {
+          @if (!filteredOptions().length) {
             <div class="no-results">
               <span>{{ 'entity.filters.noResults' | translate }}</span>
             </div>
           }
         </div>
       </div>
+    </div>
+  }
+
+  @if (!showSelectedChipsInTrigger() && hasSelectedItems()) {
+    <div class="selected-chips-list">
+      @for (option of selectedOptions(); track option.value) {
+        <p-chip
+          [label]="shouldTranslateOptions() ? (option.label | translate) : option.label"
+          [removable]="true"
+          (onRemove)="removeOption(option.value)"
+          [pt]="{ root: { class: 'compact-chip' } }"
+        />
+      }
     </div>
   }
 </div>
