@@ -38,7 +38,7 @@ export class ResearchGroupSchoolsComponent {
 
   searchQuery = signal<string>('');
   sortBy = signal<string>('name');
-  sortDirection = signal<'ASC' | 'DESC'>('ASC');
+  sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   schools = signal<SchoolDTO[]>([]);
   total = signal<number>(0);

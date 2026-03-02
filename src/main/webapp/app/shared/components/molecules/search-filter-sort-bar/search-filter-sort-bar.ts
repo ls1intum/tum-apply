@@ -56,7 +56,7 @@ export class SearchFilterSortBar {
 
   selectedFiltersById = signal<Record<string, string[]>>({});
   selectedSortField = signal<string | undefined>(undefined);
-  selectedSortDirection = signal<SortDirection>('ASC');
+  selectedSortDirection = signal<SortDirection>('DESC');
 
   readonly hasMobileActions = computed(() => this.filters().length || (this.sortableFields()?.length ?? 0));
   readonly hasActiveFilters = computed(() => Object.values(this.selectedFiltersById()).some(values => values.length));
