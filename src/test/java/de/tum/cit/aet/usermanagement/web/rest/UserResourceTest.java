@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.service.AuthenticationService;
@@ -200,7 +201,7 @@ public class UserResourceTest extends AbstractResourceTest {
                 .getAndRead(
                     API_BASE_PATH + "/available-for-research-group",
                     Map.of("pageNumber", "0", "pageSize", "10", "searchQuery", "alice"),
-                    new com.fasterxml.jackson.core.type.TypeReference<PageResponseDTO<KeycloakUserDTO>>() {},
+                    new TypeReference<PageResponseDTO<KeycloakUserDTO>>() {},
                     200
                 );
 

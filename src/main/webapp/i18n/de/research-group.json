@@ -274,7 +274,7 @@
         "singleEntity": "Professor:in",
         "multipleEntities": "Professor:innen",
         "noResults": "Keine verfügbaren Professor:innen gefunden.",
-        "requiredError": "Bitte wähle eine Professor:in aus.",
+        "requiredError": "Bitte wähle eine:n Professor:in aus.",
         "loadMore": "Mehr laden",
         "changeButton": "Auswahl ändern"
       },
