@@ -35,7 +35,7 @@ export class ApplicationCardComponent {
   };
 
   readonly nameParts = computed<{ first: string; last: string }>(() => {
-    const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim() ?? '';
+    const fullName = this.fullName();
     const parts = fullName.split(' ').filter(p => p.length > 0);
 
     if (parts.length <= 2) {

@@ -21,7 +21,8 @@ export class UserAvatarComponent {
 
   backgroundColor = computed(() => {
     // We use the fullname as source so each user consistently gets the same color.
-    const source = this.fullName()?.trim() ?? 'U';
+    const normalizedName = this.fullName()?.trim();
+    const source = normalizedName === '' ? 'U' : (normalizedName ?? 'U');
     const hash = this.hashString(source);
     const palette = this.themeService.theme() === 'dark' ? this.darkAvatarPalette : this.lightAvatarPalette;
     return palette[Math.abs(hash) % palette.length];

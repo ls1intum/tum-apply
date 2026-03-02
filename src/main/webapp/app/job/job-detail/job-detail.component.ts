@@ -29,7 +29,6 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { createMenuActionSignals } from 'app/shared/util/util';
-import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import * as DropDownOptions from '../dropdown-options';
 
@@ -81,7 +80,6 @@ export interface JobDetails {
     MenuComponent,
     LocalizedDatePipe,
     InfoBoxComponent,
-    UserAvatarComponent,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
