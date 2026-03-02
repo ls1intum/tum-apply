@@ -62,6 +62,10 @@ public class PDFExportService {
 
         if (app.jobId() != null) {
             JobDetailDTO job = jobService.getJobDetails(app.jobId());
+            // Determine job description language and content
+            String lang = labels.getOrDefault("lang", "en");
+            String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
+
             // Overview Section if no in preview
             builder
                 .setOverviewTitle(labels.get("overview"))
@@ -76,7 +80,7 @@ public class PDFExportService {
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
                 .setOverviewDescriptionTitle(labels.get("jobDescription"))
-                .setOverviewDescription(job.jobDescriptionEN());
+                .setOverviewDescription(descriptionForExport);
         }
 
         // Personal Statements Group
@@ -448,5 +452,4 @@ public class PDFExportService {
         if (de != null && !de.trim().isEmpty()) return de;
         return "-";
     }
-
 }
