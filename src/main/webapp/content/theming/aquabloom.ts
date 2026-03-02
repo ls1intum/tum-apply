@@ -1,9 +1,9 @@
 import { definePreset } from '@primeuix/themes';
-import Lara from '@primeuix/themes/lara';
+import Aura from '@primeuix/themes/aura';
 
 import { sharedComponentConfig, sharedLightColorScheme, sharedPrimitiveConfig } from './shared-theme-config';
 
-export const AquaBloomTheme = definePreset(Lara, {
+export const AquaBloomTheme = definePreset(Aura, {
   primitive: sharedPrimitiveConfig,
   semantic: {
     primary: {

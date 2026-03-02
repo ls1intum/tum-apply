@@ -1,10 +1,11 @@
-import { Component, ElementRef, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ChipModule } from 'primeng/chip';
 
 // Interface for filter options which can be passed to the filter component
 export interface Filter {
@@ -22,7 +23,7 @@ export interface FilterChange {
 
 @Component({
   selector: 'jhi-filter-multiselect',
-  imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule],
+  imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,
@@ -36,12 +37,16 @@ export class FilterMultiselect {
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
+  showSelectedChipsInTrigger = input<boolean>(true);
+  selectedValuesInput = input<string[] | undefined>(undefined);
+  focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);
 
   isOpen = signal(false);
   searchTerm = signal('');
   dropdownAlignment = signal<'left' | 'right'>('left');
+  maxVisibleChips = 2;
 
   // gives the selected values back to the parent component
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
@@ -85,6 +90,7 @@ export class FilterMultiselect {
   selectedOptions = computed(() => this.sortedOptions().filter(opt => opt.selected));
 
   unselectedOptions = computed(() => this.sortedOptions().filter(opt => !opt.selected));
+  showChipsCounterOnly = computed(() => this.showSelectedChipsInTrigger() && this.selectedOptions().length > this.maxVisibleChips);
 
   hasSelectedItems = computed(() => this.selectedOptions().length > 0);
   hasUnselectedItems = computed(() => this.unselectedOptions().length > 0);
@@ -95,16 +101,93 @@ export class FilterMultiselect {
   private readonly elementRef = inject(ElementRef);
   private readonly translateService = inject(TranslateService);
 
+  // Sync selected values between inputs and mobile filter bar
+  private readonly syncSelectedValuesEffect = effect(() => {
+    const externalSelectedValues = this.selectedValuesInput();
+    if (externalSelectedValues === undefined) {
+      return;
+    }
+
+    if (!this.areFilterValuesEqual(this.selectedValues(), externalSelectedValues)) {
+      this.selectedValues.set([...externalSelectedValues]);
+    }
+  });
   toggleDropdown(): void {
     this.isOpen.update(current => !current);
     if (this.isOpen()) {
       this.searchTerm.set('');
       this.calculateDropdownAlignment();
+      this.focusedIndexOptionList.set(0);
+    }
+  }
+
+  onTriggerKeydown(event: KeyboardEvent): void {
+    const options = this.filteredOptions();
+    const maxIndex = options.length - 1;
+
+    switch (event.key) {
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+
+        if (!this.isOpen()) {
+          this.toggleDropdown();
+          this.focusedIndexOptionList.set(0);
+        } else if (this.focusedIndexOptionList() >= 0) {
+          const option = options[this.focusedIndexOptionList()];
+          this.toggleOption(option);
+        }
+        break;
+
+      case 'ArrowDown':
+        event.preventDefault();
+
+        if (!this.isOpen()) {
+          this.toggleDropdown();
+          this.focusedIndexOptionList.set(0);
+        } else {
+          const next = this.focusedIndexOptionList() < maxIndex ? this.focusedIndexOptionList() + 1 : 0; // wrap to top
+
+          this.focusedIndexOptionList.set(next);
+        }
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+
+        if (this.isOpen()) {
+          const prev = this.focusedIndexOptionList() > 0 ? this.focusedIndexOptionList() - 1 : maxIndex; // wrap to bottom
+
+          this.focusedIndexOptionList.set(prev);
+        }
+        break;
+
+      case 'Escape':
+        if (this.isOpen()) {
+          this.toggleDropdown();
+          this.focusedIndexOptionList.set(-1);
+        }
+        break;
     }
   }
 
   closeDropdown(): void {
     this.isOpen.set(false);
+  }
+
+  removeOption(value: string): void {
+    this.toggleOption(value);
+  }
+
+  getSummaryLabel(): string {
+    return this.translateService.instant('entity.filters.numberSelected', {
+      selected: this.selectedOptions().length,
+    });
+  }
+
+  clearAll(): void {
+    this.selectedValues.set([]);
+    this.emitChange();
   }
 
   toggleOption(option: string): void {
@@ -132,6 +215,14 @@ export class FilterMultiselect {
     if (!this.elementRef.nativeElement.contains(event.target as Node)) {
       this.closeDropdown();
     }
+  }
+  // check that filter of mobile view and normal view are aligned
+  private areFilterValuesEqual(first: string[], second: string[]): boolean {
+    if (first.length !== second.length) {
+      return false;
+    }
+
+    return first.every((value, index) => value === second[index]);
   }
 
   private emitChange(): void {

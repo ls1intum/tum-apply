@@ -1453,10 +1453,10 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JobFiltersDTO'}
-  /api/jobs/professor:
+  /api/jobs/research-group:
     get:
       tags: [job-resource]
-      operationId: getJobsByProfessor
+      operationId: getJobsForCurrentResearchGroup
       parameters:
       - name: pageSize
         in: query
@@ -1746,6 +1746,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/professors:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupProfessors
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/{id}:
     get:
       tags: [research-group-resource]
@@ -1863,6 +1875,70 @@ paths:
     post:
       tags: [school-resource]
       operationId: createSchool
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SchoolCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolShortDTO'}
+  /api/schools/admin/search:
+    get:
+      tags: [school-resource]
+      operationId: getSchoolsForAdmin
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOSchoolDTO'}
+  /api/schools/delete/{id}:
+    delete:
+      tags: [school-resource]
+      operationId: deleteSchool
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/schools/update/{id}:
+    put:
+      tags: [school-resource]
+      operationId: updateSchool
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -2923,6 +2999,13 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ResearchGroupDTO'}
         totalElements: {type: integer, format: int64}
+    PageResponseDTOSchoolDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/SchoolDTO'}
+        totalElements: {type: integer, format: int64}
     PageResponseDTOUserShortDTO:
       type: object
       properties:
@@ -3315,4 +3398,5 @@ components:
           items:
             type: string
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
+        universityId: {type: string}
         userId: {type: string, format: uuid}
