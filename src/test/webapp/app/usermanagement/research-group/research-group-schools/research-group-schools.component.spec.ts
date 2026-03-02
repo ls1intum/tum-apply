@@ -96,7 +96,7 @@ describe('ResearchGroupSchoolsComponent', () => {
       component.onSearchEmit('School');
       await Promise.resolve();
 
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledWith(10, 0, 'School', 'name', 'ASC');
+      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledWith(10, 0, 'School', 'name', 'DESC');
     });
 
     it('calls API on sort change', async () => {
