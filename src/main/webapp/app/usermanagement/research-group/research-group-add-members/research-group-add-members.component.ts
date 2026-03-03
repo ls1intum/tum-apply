@@ -245,11 +245,12 @@ export class ResearchGroupAddMembersComponent {
   }
 
   onPageChange(event: { first?: number; rows?: number }): void {
-    const hasPageData = event.first != null && event.rows != null && event.rows !== 0;
-    const pageNumber = hasPageData ? event.first / event.rows : 0;
+    const first = event.first;
+    const rows = event.rows;
+    const pageNumber = first != null && rows != null && rows !== 0 ? first / rows : 0;
     this.page.set(pageNumber);
-    if (event.rows != null) {
-      this.pageSize.set(event.rows);
+    if (rows != null) {
+      this.pageSize.set(rows);
     }
     const query = this.searchQuery();
     void this.loadAvailableUsers(query.length > 0 ? query : undefined);

@@ -53,6 +53,11 @@ describe('ResearchGroupAddMembersComponent', () => {
     totalElements: 2,
   };
 
+  const withDisplayName = (user: KeycloakUserDTO) => ({
+    ...user,
+    displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+  });
+
   beforeEach(async () => {
     mockUserService = {
       getAvailableUsersForResearchGroup: vi.fn().mockReturnValue(of({ content: [], totalElements: 0 })),
@@ -123,7 +128,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('john');
 
-      expect(component.users()).toEqual(mockPageResponse.content);
+      expect(component.users()).toEqual((mockPageResponse.content ?? []).map(withDisplayName));
       expect(component.totalRecords()).toBe(mockPageResponse.totalElements);
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
@@ -221,7 +226,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       expect(window.clearTimeout).toHaveBeenCalledWith(123);
       // loaderTimeout should be set again and cleared by finally block, so it's not null
-      expect(component.users()).toEqual(mockPageResponse.content);
+      expect(component.users()).toEqual((mockPageResponse.content ?? []).map(withDisplayName));
     });
 
     it('should ignore stale requests and only apply the latest result', async () => {
@@ -251,7 +256,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       }
       await p2; // wait for the newer request to be applied
 
-      expect(component.users()).toEqual([mockUser2]);
+      expect(component.users()).toEqual([withDisplayName(mockUser2)]);
 
       // now complete the first request (older arrives later) - should be ignored
       if (firstSubscriber) {
@@ -260,7 +265,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       }
       await p1; // wait for the older request to finish (it should have no effect)
 
-      expect(component.users()).toEqual([mockUser2]);
+      expect(component.users()).toEqual([withDisplayName(mockUser2)]);
       expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
     });
 
@@ -291,7 +296,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       }
       await p2; // wait for the newer request to be applied
 
-      expect(component.users()).toEqual([mockUser2]);
+      expect(component.users()).toEqual([withDisplayName(mockUser2)]);
 
       // now complete the first request (older arrives later and errors) - should be ignored
       if (firstSubscriber) {
@@ -322,7 +327,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('alice');
 
-      expect(component.users()).toEqual([mockUsers[0]]);
+      expect(component.users()).toEqual([withDisplayName(mockUsers[0])]);
       expect(component.totalRecords()).toBe(1);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
@@ -340,7 +345,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('alice');
 
-      expect(component.users()).toEqual([mockUsers[1]]);
+      expect(component.users()).toEqual([withDisplayName(mockUsers[1])]);
       expect(component.totalRecords()).toBe(1);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
@@ -366,7 +371,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       await component.loadAvailableUsers('tum');
 
       expect(component.totalRecords()).toBe(6);
-      expect(component.users()).toEqual([mockUsers[2], mockUsers[3]]);
+      expect(component.users()).toEqual([withDisplayName(mockUsers[2]), withDisplayName(mockUsers[3])]);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
   });
