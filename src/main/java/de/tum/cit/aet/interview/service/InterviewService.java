@@ -320,10 +320,10 @@ public class InterviewService {
             .map(slotInput -> createSlotFromInput(process, slotInput))
             .toList();
 
-        // 4. Validate no time conflicts (pass professor to avoid lazy loading)
+        // 5. Validate no time conflicts (pass professor to avoid lazy loading)
         validateNoTimeConflicts(newSlots, professor, processId);
 
-        // 5. Save all slots
+        // 6. Save all slots
         List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
 
         return savedSlots.stream().map(InterviewSlotDTO::fromEntity).toList();
@@ -384,13 +384,13 @@ public class InterviewService {
             throw new BadRequestException("This interview process is closed because the linked job has been closed.");
         }
 
-        // 4.Cannot delete booked slots
+        // 4. Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
             throw new BadRequestException("Cannot delete booked slot.");
         }
 
-        // 4. Delete the slot
+        // 5. Delete the slot
         interviewSlotRepository.delete(slot);
     }
 
@@ -679,7 +679,7 @@ public class InterviewService {
             throw new ResourceAlreadyExistsException("Interview slot is already booked");
         }
 
-        // 4. Find the interviewee by application ID within this interview process
+        // 5. Find the interviewee by application ID within this interview process
         UUID processId = slot.getInterviewProcess().getId();
         Interviewee interviewee = intervieweeRepository
             .findByApplicationApplicationIdAndInterviewProcessId(applicationId, processId)
@@ -687,17 +687,17 @@ public class InterviewService {
                 new EntityNotFoundException("Applicant not found in this interview process. Please add the applicant first.")
             );
 
-        // 5. interviewee must not already have a slot
+        // 6. Interviewee must not already have a slot
         if (interviewee.hasSlot()) {
             throw new BadRequestException("Applicant already has a scheduled interview slot.");
         }
 
-        // 6. Establish bidirectional relationship
+        // 7. Establish bidirectional relationship
         slot.setInterviewee(interviewee);
         slot.setIsBooked(true);
         interviewee.getSlots().add(slot);
 
-        // 7. Auto-delete overlapping unbooked slots from other processes
+        // 8. Auto-delete overlapping unbooked slots from other processes
         UUID professorId = job.getSupervisingProfessor().getUserId();
         List<InterviewSlot> overlappingSlots = interviewSlotRepository.findOverlappingUnbookedSlots(
             professorId,
@@ -711,14 +711,14 @@ public class InterviewService {
             interviewSlotRepository.deleteAll(overlappingSlots);
         }
 
-        // 8. Save entities
+        // 9. Save entities
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
-        // 9. Send interview invitation email
+        // 10. Send interview invitation email
         sendInterviewInvitationEmail(slot, interviewee, job);
 
-        // 10. Build response with interviewee details
+        // 11. Build response with interviewee details
         IntervieweeState state = calculateIntervieweeState(interviewee);
         AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
         return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
@@ -800,7 +800,7 @@ public class InterviewService {
                 .toList();
         }
 
-        // 4. Send emails
+        // 5. Send emails
         List<String> failedEmails = new ArrayList<>();
         List<Interviewee> updatedInterviewees = new ArrayList<>();
 
@@ -821,7 +821,7 @@ public class InterviewService {
             }
         }
 
-        // 5. Save updated timestamps
+        // 6. Save updated timestamps
         intervieweeRepository.saveAll(updatedInterviewees);
 
         return new SendInvitationsResultDTO(updatedInterviewees.size(), failedEmails);

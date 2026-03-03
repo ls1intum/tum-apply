@@ -307,7 +307,7 @@
     "booking": {
       "closedProcess": {
         "title": "Process Closed",
-        "description": "This interview process is now closed. You can no longer book or change interview slots."
+        "description": "This interview process is now closed. You can no longer book interview slots."
       }
     }
   }
