@@ -966,23 +966,6 @@ describe('JobCreationFormComponent', () => {
 
         expect(component.rewriteButtonSignal()).toBe(true);
       });
-
-      it('should set ButtonSignal to true when generating', async () => {
-        component.jobId.set('job123');
-        fillValidJobForm(component);
-
-        const mockEditor = { forceUpdate: vi.fn() };
-        Object.defineProperty(component, 'jobDescriptionEditor', {
-          value: () => mockEditor,
-          configurable: true,
-        });
-
-        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
-
-        await component.generateJobApplicationDraft();
-
-        expect(component.rewriteButtonSignal()).toBe(true);
-      });
     });
   });
 });

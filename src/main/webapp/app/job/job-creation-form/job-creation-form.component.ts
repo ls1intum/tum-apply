@@ -953,6 +953,7 @@ export class JobCreationFormComponent {
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
+
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
       startDate: positionDetailsValue.startDate ?? '',
