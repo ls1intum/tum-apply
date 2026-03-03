@@ -360,6 +360,7 @@ export class IntervieweeSectionComponent {
       this.toastService.showErrorKey('interview.slots.cancelInterview.error');
     } finally {
       this.showCancelModal.set(false);
+      this.selectedIntervieweeForCancel.set(null);
     }
   }
 

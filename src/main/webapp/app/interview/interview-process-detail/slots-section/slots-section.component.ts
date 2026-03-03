@@ -335,7 +335,7 @@ export class SlotsSectionComponent {
 
   async onCancelInterviewConfirm(): Promise<void> {
     const slot = this.selectedSlotForCancel();
-    if (!slot?.id) return;
+    if (slot?.id == null) return;
 
     // Optimistically remove/update slot from UI if deleteSlot is checked
     const originalSlots = this.slots();
@@ -361,6 +361,7 @@ export class SlotsSectionComponent {
       this.toastService.showErrorKey('interview.slots.cancelInterview.error');
     } finally {
       this.showCancelModal.set(false);
+      this.selectedSlotForCancel.set(null);
     }
   }
 
