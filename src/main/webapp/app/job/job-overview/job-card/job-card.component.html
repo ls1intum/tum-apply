@@ -14,14 +14,18 @@
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
     <div class="absolute left-2 -bottom-4 z-10">
-      <div class="flex items-center">
-        <div class="z-20 scale-110 origin-left">
+      <div class="relative h-10 w-[15rem]">
+        <div
+          class="absolute left-0 top-1/2 -translate-y-1/2 z-20"
+          [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
+          tooltipPosition="top"
+        >
           <jhi-user-avatar [fullName]="professor()" size="lg" />
         </div>
         <span
-          class="-ml-4 rounded-pill bg-black/45 backdrop-blur-sm text-white text-xs font-medium h-6 pl-7 pr-3 max-w-[12rem] truncate leading-none flex items-center"
+          class="absolute left-0 top-1/2 -translate-y-1/2 rounded-pill bg-black/45 backdrop-blur-sm text-white text-xs font-medium h-6 pl-12 pr-3 leading-none inline-flex items-center w-fit max-w-full overflow-hidden"
         >
-          {{ departmentName() }}
+          <span class="block truncate">Prof. {{ professor() }}</span>
         </span>
       </div>
     </div>
@@ -44,13 +48,8 @@
     <!-- Info items -->
     <div class="space-y-2 mb-4 flex-shrink-0">
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon
-          [icon]="['fas', 'user-tie']"
-          class="icon w-4"
-          [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
-          tooltipPosition="top"
-        />
-        <span class="truncate">Prof. {{ professor() }}</span>
+        <fa-icon [icon]="['fas', 'building-user']" class="icon w-4" />
+        <span class="truncate">{{ departmentName() }}</span>
       </div>
       <div class="flex items-center gap-2 text-sm">
         <fa-icon

@@ -28,6 +28,11 @@ export class IntervieweeCardComponent {
   sendInvitation = output<IntervieweeDTO>();
 
   // Computed values
+  fullName = computed(() => {
+    const user = this.interviewee().user;
+    return `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim();
+  });
+
   scheduledDate = computed(() => {
     const slot = this.interviewee().scheduledSlot;
     return slot ? formatDate(slot.startDateTime, this.locale()) : '';

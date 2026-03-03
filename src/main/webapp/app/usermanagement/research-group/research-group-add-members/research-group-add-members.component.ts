@@ -15,6 +15,7 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 const I18N_BASE = 'researchGroup.members';
+type UserListItem = KeycloakUserDTO & { displayName: string };
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
@@ -40,7 +41,7 @@ export class ResearchGroupAddMembersComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  users = signal<KeycloakUserDTO[]>([]);
+  users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
   userService = inject(UserResourceApiService);
@@ -148,6 +149,13 @@ export class ResearchGroupAddMembersComponent {
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
 
+  private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
+    return users.map(user => ({
+      ...user,
+      displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+    }));
+  }
+
   constructor() {
     void this.loadAvailableUsers();
   }
@@ -199,7 +207,7 @@ export class ResearchGroupAddMembersComponent {
       const startIndex = this.page() * this.pageSize();
       const endIndex = startIndex + this.pageSize();
       this.totalRecords.set(filteredUsers.length);
-      this.users.set(filteredUsers.slice(startIndex, endIndex));
+      this.users.set(this.toUserListItems(filteredUsers.slice(startIndex, endIndex)));
       return;
     }
 
@@ -219,7 +227,7 @@ export class ResearchGroupAddMembersComponent {
         return;
       }
       this.totalRecords.set(response.totalElements ?? 0);
-      this.users.set(response.content ?? []);
+      this.users.set(this.toUserListItems(response.content ?? []));
     } catch {
       // Only show an error toast for the most recent request; stale errors shouldn't alarm the user
       if (requestId === this.latestRequestId) {
