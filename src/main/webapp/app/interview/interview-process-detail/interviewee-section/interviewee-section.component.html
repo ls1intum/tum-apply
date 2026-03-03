@@ -115,7 +115,8 @@
   <jhi-dialog
     header="interview.slots.cancelInterview.header"
     [shouldTranslateHeader]="true"
-    [(visible)]="showCancelModal"
+    [visible]="showCancelModal()"
+    (visibleChange)="showCancelModal.set($event)"
     [modal]="true"
     [closable]="true"
     styleClass="w-[90vw] md:w-[400px]"
