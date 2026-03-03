@@ -17,7 +17,7 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
 
     jobDescription: translate.instant('jobDetailPage.sections.jobDescription'),
 
-    lang: translate.getCurrentLang() ?? 'en',
+    lang: translate.getCurrentLang(),
   };
 }
 
@@ -32,7 +32,7 @@ export function getJobPDFLabels(translate: TranslateService): Record<string, str
     jobPdfEnding: translate.instant('pdf.jobPdfEnding'),
     overview: translate.instant('jobDetailPage.cards.positionOverview'),
 
-    lang: translate.getCurrentLang() ?? 'en',
+    lang: translate.getCurrentLang(),
   };
 }
 

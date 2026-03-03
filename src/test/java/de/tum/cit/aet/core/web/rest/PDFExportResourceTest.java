@@ -416,13 +416,17 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsEn = createCompleteLabelsMap();
             labelsEn.put("lang", "en");
-            byte[] pdfBothEn = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + both.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothEn = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + both.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfBothEn);
             assertThat(extractTextFromPdf(pdfBothEn)).contains("unique-en-both");
 
             Map<String, String> labelsDe = createCompleteLabelsMap();
             labelsDe.put("lang", "de");
-            byte[] pdfBothDe = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + both.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothDe = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + both.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfBothDe);
             assertThat(extractTextFromPdf(pdfBothDe)).contains("unique-de-both");
 
@@ -448,7 +452,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsDeFallback = createCompleteLabelsMap();
             labelsDeFallback.put("lang", "de");
-            byte[] pdfOnlyEnDeRequested = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + onlyEn.getJobId() + "/pdf", labelsDeFallback, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfOnlyEnDeRequested = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + onlyEn.getJobId() + "/pdf", labelsDeFallback, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfOnlyEnDeRequested);
             // requested DE but only EN exists -> fallback to EN
             assertThat(extractTextFromPdf(pdfOnlyEnDeRequested)).contains("unique-en-only");
@@ -475,7 +481,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsEnRequested = createCompleteLabelsMap();
             labelsEnRequested.put("lang", "en");
-            byte[] pdfOnlyDeEnRequested = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + onlyDe.getJobId() + "/pdf", labelsEnRequested, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfOnlyDeEnRequested = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + onlyDe.getJobId() + "/pdf", labelsEnRequested, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfOnlyDeEnRequested);
             // requested EN but only DE exists -> fallback to DE
             assertThat(extractTextFromPdf(pdfOnlyDeEnRequested)).contains("unique-de-only");
@@ -499,7 +507,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 JobState.PUBLISHED
             );
 
-            byte[] pdfNone = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + none.getJobId() + "/pdf", createCompleteLabelsMap(), 200, MediaType.APPLICATION_PDF);
+            byte[] pdfNone = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + none.getJobId() + "/pdf",
+                    createCompleteLabelsMap(),
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
             assertValidPdf(pdfNone);
             // the PDF builder uses '-' when description missing
             assertThat(extractTextFromPdf(pdfNone)).contains("-");
@@ -523,7 +538,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 JobState.PUBLISHED
             );
 
-            byte[] pdfBothEmpty = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + bothEmpty.getJobId() + "/pdf", createCompleteLabelsMap(), 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothEmpty = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + bothEmpty.getJobId() + "/pdf",
+                    createCompleteLabelsMap(),
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
             assertValidPdf(pdfBothEmpty);
             assertThat(extractTextFromPdf(pdfBothEmpty)).contains("-");
         }
@@ -551,7 +573,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsDe = createCompleteLabelsMap();
             labelsDe.put("lang", "de");
-            byte[] pdfDeWs = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + deWhitespace.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfDeWs = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + deWhitespace.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfDeWs);
             assertThat(extractTextFromPdf(pdfDeWs)).contains("unique-en-ws");
 
@@ -576,7 +600,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsDeRequested = createCompleteLabelsMap();
             labelsDeRequested.put("lang", "de");
-            byte[] pdfBothEmptyExplicit = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + bothEmptyExplicit.getJobId() + "/pdf", labelsDeRequested, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothEmptyExplicit = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + bothEmptyExplicit.getJobId() + "/pdf",
+                    labelsDeRequested,
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
             assertValidPdf(pdfBothEmptyExplicit);
             assertThat(extractTextFromPdf(pdfBothEmptyExplicit)).contains("-");
         }
@@ -604,7 +635,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsDe = createCompleteLabelsMap();
             labelsDe.put("lang", "de");
-            byte[] pdf = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + onlyDe.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
+            byte[] pdf = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + onlyDe.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdf);
             assertThat(extractTextFromPdf(pdf)).contains("unique-de-sole");
         }
@@ -632,7 +665,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             Map<String, String> labelsEn = createCompleteLabelsMap();
             labelsEn.put("lang", "en");
-            byte[] pdf = api.withoutPostProcessors().postAndReturnBytes(BASE_URL + "/job/" + onlyEn.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
+            byte[] pdf = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + onlyEn.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdf);
             assertThat(extractTextFromPdf(pdf)).contains("unique-en-sole");
         }
@@ -761,12 +796,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
             labelsEn.put("lang", "en");
             JobPreviewRequest reqEn = new JobPreviewRequest(jobFormDTO, labelsEn);
 
-            byte[] pdfEn = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqEn,
-                200,
-                MediaType.APPLICATION_PDF
-            );
+            byte[] pdfEn = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqEn, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfEn);
             String textEn = extractTextFromPdf(pdfEn);
             assertThat(textEn).contains("unique-en-preview");
@@ -775,12 +805,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
             labelsDe.put("lang", "de");
             JobPreviewRequest reqDe = new JobPreviewRequest(jobFormDTO, labelsDe);
 
-            byte[] pdfDe = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqDe,
-                200,
-                MediaType.APPLICATION_PDF
-            );
+            byte[] pdfDe = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqDe, 200, MediaType.APPLICATION_PDF);
             assertValidPdf(pdfDe);
             String textDe = extractTextFromPdf(pdfDe);
             assertThat(textDe).contains("unique-de-preview");
@@ -811,14 +836,24 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labelsEn = createCompleteLabelsMap();
             labelsEn.put("lang", "en");
             JobPreviewRequest reqEn = new JobPreviewRequest(both, labelsEn);
-            byte[] pdfBothEn = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqEn, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothEn = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                reqEn,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfBothEn);
             assertThat(extractTextFromPdf(pdfBothEn)).contains("unique-en-pb");
 
             Map<String, String> labelsDe = createCompleteLabelsMap();
             labelsDe.put("lang", "de");
             JobPreviewRequest reqDe = new JobPreviewRequest(both, labelsDe);
-            byte[] pdfBothDe = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqDe, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothDe = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                reqDe,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfBothDe);
             assertThat(extractTextFromPdf(pdfBothDe)).contains("unique-de-pb");
 
@@ -845,7 +880,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labelsDeRequest = createCompleteLabelsMap();
             labelsDeRequest.put("lang", "de");
             JobPreviewRequest onlyEnReq = new JobPreviewRequest(onlyEn, labelsDeRequest);
-            byte[] pdfOnlyEnFallback = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", onlyEnReq, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfOnlyEnFallback = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                onlyEnReq,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfOnlyEnFallback);
             assertThat(extractTextFromPdf(pdfOnlyEnFallback)).contains("unique-en-only-pb");
 
@@ -872,7 +912,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labelsEnRequest = createCompleteLabelsMap();
             labelsEnRequest.put("lang", "en");
             JobPreviewRequest onlyDeReq = new JobPreviewRequest(onlyDe, labelsEnRequest);
-            byte[] pdfOnlyDeFallback = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", onlyDeReq, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfOnlyDeFallback = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                onlyDeReq,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfOnlyDeFallback);
             assertThat(extractTextFromPdf(pdfOnlyDeFallback)).contains("unique-de-only-pb");
 
@@ -897,7 +942,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             );
 
             JobPreviewRequest noneReq = new JobPreviewRequest(none, createCompleteLabelsMap());
-            byte[] pdfNone = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", noneReq, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfNone = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                noneReq,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfNone);
             assertThat(extractTextFromPdf(pdfNone)).contains("-");
 
@@ -922,7 +972,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             );
 
             JobPreviewRequest bothEmptyReq = new JobPreviewRequest(bothEmpty, createCompleteLabelsMap());
-            byte[] pdfBothEmpty = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", bothEmptyReq, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothEmpty = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                bothEmptyReq,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfBothEmpty);
             assertThat(extractTextFromPdf(pdfBothEmpty)).contains("-");
         }
@@ -952,7 +1007,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labelsDe = createCompleteLabelsMap();
             labelsDe.put("lang", "de");
             JobPreviewRequest reqDeWs = new JobPreviewRequest(deWs, labelsDe);
-            byte[] pdfDeWs = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqDeWs, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfDeWs = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                reqDeWs,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfDeWs);
             assertThat(extractTextFromPdf(pdfDeWs)).contains("unique-en-ws-pb");
 
@@ -977,7 +1037,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             );
 
             JobPreviewRequest bothEmptyReq = new JobPreviewRequest(bothEmptyExplicit, labelsDe);
-            byte[] pdfBothEmpty = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", bothEmptyReq, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfBothEmpty = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                bothEmptyReq,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfBothEmpty);
             assertThat(extractTextFromPdf(pdfBothEmpty)).contains("-");
 
@@ -1004,7 +1069,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labelsDeOnly = createCompleteLabelsMap();
             labelsDeOnly.put("lang", "de");
             JobPreviewRequest reqDeOnly = new JobPreviewRequest(onlyDe, labelsDeOnly);
-            byte[] pdfDeOnly = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqDeOnly, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfDeOnly = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                reqDeOnly,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfDeOnly);
             assertThat(extractTextFromPdf(pdfDeOnly)).contains("unique-de-only-pb");
 
@@ -1031,7 +1101,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labelsEnOnly = createCompleteLabelsMap();
             labelsEnOnly.put("lang", "en");
             JobPreviewRequest reqEnOnly = new JobPreviewRequest(onlyEn, labelsEnOnly);
-            byte[] pdfEnOnly = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqEnOnly, 200, MediaType.APPLICATION_PDF);
+            byte[] pdfEnOnly = asProfessor(professor).postAndReturnBytes(
+                BASE_URL + "/job/preview/pdf",
+                reqEnOnly,
+                200,
+                MediaType.APPLICATION_PDF
+            );
             assertValidPdf(pdfEnOnly);
             assertThat(extractTextFromPdf(pdfEnOnly)).contains("unique-en-only-pb");
         }
