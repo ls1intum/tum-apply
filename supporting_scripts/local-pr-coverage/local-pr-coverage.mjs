@@ -24,11 +24,11 @@
  *   --help                       Show help
  */
 
-import { execSync, execFileSync, spawnSync } from 'child_process';
+import {execSync, execFileSync, spawnSync} from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { getVitestModules } from '../utils.mjs';
+import {fileURLToPath} from 'url';
+import {getVitestModules} from '../utils.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,7 +37,6 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 // Configuration
 const CLIENT_SRC_PREFIX = 'src/main/webapp/app/';
 const SERVER_SRC_PREFIX = 'src/main/java/de/tum/cit/aet/';
-const CLIENT_COVERAGE_SUMMARY = path.join(PROJECT_ROOT, 'build/test-results/jest/coverage-summary.json');
 const VITEST_COVERAGE_SUMMARY = path.join(PROJECT_ROOT, 'build/test-results/vitest/coverage/coverage-summary.json');
 const SERVER_COVERAGE_DIR = path.join(PROJECT_ROOT, 'build/reports/jacoco');
 
@@ -620,30 +619,13 @@ function lookupCoverageInSummary(fullPath, coverageSummary) {
  * For files in Vitest modules (e.g., fileupload), prefers Vitest coverage data.
  * Falls back to the other coverage source if not found in the primary source.
  */
-function getClientFileCoverage(filePath, jestCoverageSummary, vitestCoverageSummary = null) {
+function getClientFileCoverage(filePath, vitestCoverageSummary = null) {
   // The coverage summary uses full paths from src/main/webapp/
   const fullPath = `src/main/webapp/app/${filePath}`;
 
-  // Check if file is in a Vitest module
-  const moduleName = filePath.split('/')[0];
-  const isVitestModule = VITEST_MODULES.has(moduleName);
-
-  // For Vitest modules, check Vitest coverage first, then fall back to Jest
-  // For Jest modules, check Jest coverage first, then fall back to Vitest
-  if (isVitestModule) {
-    const vitestCoverage = lookupCoverageInSummary(fullPath, vitestCoverageSummary);
-    if (vitestCoverage !== null) {
-      return vitestCoverage;
-    }
-    // Fall back to Jest coverage (in case vitest coverage is unavailable)
-    return lookupCoverageInSummary(fullPath, jestCoverageSummary);
-  } else {
-    const jestCoverage = lookupCoverageInSummary(fullPath, jestCoverageSummary);
-    if (jestCoverage !== null) {
-      return jestCoverage;
-    }
-    // Fall back to Vitest coverage (in case file is covered transitively by vitest tests)
-    return lookupCoverageInSummary(fullPath, vitestCoverageSummary);
+  const vitestCoverage = lookupCoverageInSummary(fullPath, vitestCoverageSummary);
+  if (vitestCoverage !== null) {
+    return vitestCoverage;
   }
 }
 
@@ -952,7 +934,7 @@ function findTestFilesInModule(sourceFilePath) {
 function findAllJavaTestFiles(dir) {
   const results = [];
   try {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const entries = fs.readdirSync(dir, {withFileTypes: true});
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
@@ -973,7 +955,7 @@ function findAllJavaTestFiles(dir) {
 function findFilesRecursively(dir, fileName) {
   const results = [];
   try {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const entries = fs.readdirSync(dir, {withFileTypes: true});
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
@@ -996,20 +978,6 @@ function buildClientCoverageTable(clientFiles, options) {
     return null;
   }
 
-  // Always try to load both coverage files for robustness
-  // The getClientFileCoverage function will check both sources with appropriate fallbacks
-  let jestCoverageSummary = null;
-  if (fs.existsSync(CLIENT_COVERAGE_SUMMARY)) {
-    try {
-      jestCoverageSummary = JSON.parse(fs.readFileSync(CLIENT_COVERAGE_SUMMARY, 'utf-8'));
-      log('Loaded Jest coverage-summary.json', options);
-    } catch (err) {
-      log(`Failed to parse Jest coverage data: ${err.message}`, options);
-    }
-  } else {
-    log('Jest coverage-summary.json not found', options);
-  }
-
   let vitestCoverageSummary = null;
   if (fs.existsSync(VITEST_COVERAGE_SUMMARY)) {
     try {
@@ -1022,7 +990,7 @@ function buildClientCoverageTable(clientFiles, options) {
     log('Vitest coverage-summary.json not found', options);
   }
 
-  if (!jestCoverageSummary && !vitestCoverageSummary) {
+  if (!vitestCoverageSummary) {
     return 'Coverage data not found. Run tests first or check if coverage-summary.json exists.';
   }
 
@@ -1035,7 +1003,7 @@ function buildClientCoverageTable(clientFiles, options) {
       continue;
     }
 
-    const coverage = getClientFileCoverage(filePath, jestCoverageSummary, vitestCoverageSummary);
+    const coverage = getClientFileCoverage(filePath, vitestCoverageSummary);
     const absoluteSourcePath = path.join(PROJECT_ROOT, 'src/main/webapp/app', filePath);
     const lineCount = getSourceFileLineCount(absoluteSourcePath);
     const expectCount = countClientExpects(filePath);
@@ -1115,15 +1083,15 @@ function copyToClipboard(text) {
   try {
     const platform = process.platform;
     if (platform === 'darwin') {
-      execSync('pbcopy', { input: text });
+      execSync('pbcopy', {input: text});
     } else if (platform === 'linux') {
       try {
-        execSync('xclip -selection clipboard', { input: text });
+        execSync('xclip -selection clipboard', {input: text});
       } catch {
-        execSync('xsel --clipboard --input', { input: text });
+        execSync('xsel --clipboard --input', {input: text});
       }
     } else if (platform === 'win32') {
-      execSync('clip', { input: text });
+      execSync('clip', {input: text});
     } else {
       return false;
     }
@@ -1163,7 +1131,7 @@ async function main() {
 
   // Step 2: Categorize changed files
   const categorized = categorizeChangedFiles(changedFiles, options);
-  const { clientFiles, serverFiles } = categorized;
+  const {clientFiles, serverFiles} = categorized;
 
   // Modules to test: use explicit if specified, otherwise auto-detected
   let clientModulesToTest = hasExplicitClientModules ? options.clientModules : categorized.clientModules;
