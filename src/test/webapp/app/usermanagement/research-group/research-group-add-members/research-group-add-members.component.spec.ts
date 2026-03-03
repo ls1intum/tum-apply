@@ -193,7 +193,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     });
 
     it('should clear users when given an empty query and users exist', async () => {
-      component.users.set([mockUser1]);
+      component.users.set([withDisplayName(mockUser1)]);
       component.totalRecords.set(1);
       vi.clearAllMocks();
 
