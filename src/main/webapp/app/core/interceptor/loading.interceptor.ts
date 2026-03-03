@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { ApplicationRef, Injectable, inject } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable, finalize } from 'rxjs';
 
@@ -11,6 +11,7 @@ import { LoadingService } from './loading.service';
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
   private readonly loadingService = inject(LoadingService);
+  private readonly appRef = inject(ApplicationRef);
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let triggered = false;
@@ -19,6 +20,7 @@ export class LoadingInterceptor implements HttpInterceptor {
     const timer = setTimeout(() => {
       triggered = true;
       this.loadingService.show();
+      this.appRef.tick();
     }, 500);
 
     return next.handle(request).pipe(
@@ -29,6 +31,7 @@ export class LoadingInterceptor implements HttpInterceptor {
         // Only hide if we actually showed it
         if (triggered) {
           this.loadingService.hide();
+          this.appRef.tick();
         }
       }),
     );
