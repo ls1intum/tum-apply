@@ -25,7 +25,7 @@ export class InterviewProcessDetailComponent {
   jobTitle = signal<string | null>(null);
   jobState = signal<string | null>(null);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
-  readonly isJobClosed = computed(() => this.jobState() === 'CLOSED');
+  readonly isJobClosed = computed(() => this.jobState() === 'CLOSED' || this.jobState() === 'APPLICANT_FOUND');
 
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
