@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DocumentDictionary } from './documentDictionary';
 import { InternalComment } from './internalComment';
 import { Applicant } from './applicant';
 import { ApplicationReview } from './applicationReview';
@@ -44,6 +45,7 @@ export interface Application {
     createdAt?: string;
     customFieldAnswers?: Array<CustomFieldAnswer>;
     desiredStartDate?: string;
+    documentDictionaries?: Array<DocumentDictionary>;
     internalComments?: Array<InternalComment>;
     job?: any | null;
     lastModifiedAt?: string;
