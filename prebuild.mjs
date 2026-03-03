@@ -81,8 +81,14 @@ fs.writeFileSync(envOutPath, environmentConfig);
 // =====================
 
 const groups = [
-  { folder: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'en'), output: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'en.json') },
-  { folder: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'de'), output: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'de.json') },
+  {
+    folder: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'en'),
+    output: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'en.json'),
+  },
+  {
+    folder: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'de'),
+    output: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'de.json'),
+  },
 ];
 
 const isObject = obj => obj && typeof obj === 'object';
