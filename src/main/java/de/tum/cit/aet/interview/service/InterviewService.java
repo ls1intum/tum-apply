@@ -96,7 +96,8 @@ public class InterviewService {
         // Sort: active jobs first, then by createdAt DESC
         interviewProcesses.sort(
             Comparator.<InterviewProcess, Integer>comparing(ip -> {
-                JobState state = ip.getJob().getState();
+                Job job = ip.getJob();
+                JobState state = job != null ? job.getState() : null;
                 return (state == JobState.CLOSED || state == JobState.APPLICANT_FOUND) ? 1 : 0;
             }).thenComparing(ip -> ip.getJob().getCreatedAt(), Comparator.reverseOrder())
         );
