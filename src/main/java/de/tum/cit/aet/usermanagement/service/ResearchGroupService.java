@@ -93,6 +93,27 @@ public class ResearchGroupService {
     }
 
     /**
+     * Get all professors of the current user's research group.
+     *
+     * @return list of professors in the current research group
+     */
+    public List<UserShortDTO> getResearchGroupProfessors() {
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
+        List<UUID> userIds = userRepository.findUserIdsByResearchGroupId(researchGroupId);
+        if (userIds.isEmpty()) {
+            return List.of();
+        }
+
+        UUID currentUserId = currentUserService.getUserId();
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIds, currentUserId);
+        return members
+            .stream()
+            .map(UserShortDTO::new)
+            .filter(dto -> dto.getRoles() != null && dto.getRoles().contains(UserRole.PROFESSOR))
+            .toList();
+    }
+
+    /**
      * Get all members of the research group by id.
      *
      * @param researchGroupId the ID of the research group
