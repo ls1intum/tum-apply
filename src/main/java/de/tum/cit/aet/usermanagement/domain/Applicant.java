@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +28,9 @@ public class Applicant {
     // Contains all the Applications that a User (Applicant) has submitted
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Application> submittedApplications;
+
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<DocumentDictionary> documentDictionaries;
 
     @Column(name = "street")
     private String street;
