@@ -37,7 +37,8 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 // Configuration
 const CLIENT_SRC_PREFIX = 'src/main/webapp/app/';
 const SERVER_SRC_PREFIX = 'src/main/java/de/tum/cit/aet/';
-const VITEST_COVERAGE_SUMMARY = path.join(PROJECT_ROOT, 'build/test-results/lcov-report/coverage-summary.json');
+const CLIENT_COVERAGE_SUMMARY = path.join(PROJECT_ROOT, 'build/test-results/jest/coverage-summary.json');
+const VITEST_COVERAGE_SUMMARY = path.join(PROJECT_ROOT, 'build/test-results/vitest/coverage/coverage-summary.json');
 const SERVER_COVERAGE_DIR = path.join(PROJECT_ROOT, 'build/reports/jacoco');
 
 const VITEST_MODULES = getVitestModules(PROJECT_ROOT);
@@ -54,9 +55,7 @@ function validateModuleNames(modules, optionName) {
     if (SAFE_MODULE_NAME_PATTERN.test(module)) {
       validModules.push(module);
     } else {
-      console.error(
-        `Error: Invalid module name "${module}" in ${optionName}. Module names can only contain letters, numbers, dashes, and underscores.`,
-      );
+      console.error(`Error: Invalid module name "${module}" in ${optionName}. Module names can only contain letters, numbers, dashes, and underscores.`);
       process.exit(1);
     }
   }
@@ -88,9 +87,7 @@ function validateBranchName(branch) {
   // Allow only safe characters: alphanumeric, dash, underscore, dot, forward slash
   const safeBranchPattern = /^[a-zA-Z0-9_.\/-]+$/;
   if (!safeBranchPattern.test(branch)) {
-    console.error(
-      `Error: Invalid branch name "${branch}". Branch names can only contain letters, numbers, dashes, underscores, dots, and forward slashes.`,
-    );
+    console.error(`Error: Invalid branch name "${branch}". Branch names can only contain letters, numbers, dashes, underscores, dots, and forward slashes.`);
     process.exit(1);
   }
 
@@ -134,11 +131,8 @@ function parseArgs() {
           process.exit(1);
         }
         options.clientModules = validateModuleNames(
-          args[++i]
-            .split(',')
-            .map(m => m.trim())
-            .filter(Boolean),
-          '--client-modules',
+          args[++i].split(',').map((m) => m.trim()).filter(Boolean),
+          '--client-modules'
         );
         break;
       case '--server-modules':
@@ -147,11 +141,8 @@ function parseArgs() {
           process.exit(1);
         }
         options.serverModules = validateModuleNames(
-          args[++i]
-            .split(',')
-            .map(m => m.trim())
-            .filter(Boolean),
-          '--server-modules',
+          args[++i].split(',').map((m) => m.trim()).filter(Boolean),
+          '--server-modules'
         );
         break;
       case '--skip-tests':
@@ -323,21 +314,13 @@ function categorizeChangedFiles(changedFiles, options) {
 
   // Files to exclude from coverage reporting (cannot be properly tested)
   const excludedClientPatterns = ['.module.ts', '.spec.ts', '.routes.ts', '.route.ts'];
-  const excludedClientFiles = [
-    'app.component.ts',
-    'app.config.ts',
-    'app.constants.ts',
-    'app.main.ts',
-    'app.routes.ts',
-    'polyfills.ts',
-    'primeng-artemis-theme.ts',
-  ];
+  const excludedClientFiles = ['app.component.ts', 'app.config.ts', 'app.constants.ts', 'app.main.ts', 'app.routes.ts', 'polyfills.ts', 'primeng-artemis-theme.ts'];
 
   for (const [filePath, changeType] of Object.entries(changedFiles)) {
     // Client files
     if (filePath.startsWith(CLIENT_SRC_PREFIX) && filePath.endsWith('.ts')) {
       // Skip excluded patterns
-      if (excludedClientPatterns.some(pattern => filePath.endsWith(pattern))) {
+      if (excludedClientPatterns.some((pattern) => filePath.endsWith(pattern))) {
         log(`Skipping (excluded pattern): ${filePath}`, options);
         continue;
       }
@@ -404,7 +387,17 @@ async function runClientTests(modules, options) {
     return true;
   }
 
+  // Separate Jest and Vitest modules
+  const jestModules = modules.filter((m) => !VITEST_MODULES.has(m));
+  const vitestModules = modules.filter((m) => VITEST_MODULES.has(m));
+
   info(`Running client tests for modules: ${modules.join(', ')}`);
+  if (vitestModules.length > 0) {
+    log(`  Vitest modules: ${vitestModules.join(', ')}`, options);
+  }
+  if (jestModules.length > 0) {
+    log(`  Jest modules: ${jestModules.join(', ')}`, options);
+  }
 
   log(`Running prebuild...`, options);
 
@@ -433,10 +426,28 @@ async function runClientTests(modules, options) {
 
   let allSuccess = true;
 
-    log(`Running Vitest for modules: ${modules.join(', ')}`, options);
+  // Run Vitest for Vitest modules
+  if (vitestModules.length > 0) {
+    log(`Running Vitest for modules: ${vitestModules.join(', ')}`, options);
     try {
-      const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-      const vitestResult = spawnSync(npmCmd, ['run', 'test'], {
+      const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+      // Build coverage include patterns for only the modules being tested
+      // This prevents measuring coverage for unrelated modules
+      const coverageIncludes = vitestModules.map(m => `src/main/webapp/app/${m}/**/*.ts`);
+      const vitestArgs = [
+        'vitest', 'run', '--coverage',
+        // Override coverage.include to only measure the modules being tested
+        ...coverageIncludes.map(pattern => `--coverage.include=${pattern}`),
+        // Disable global thresholds since we're only testing a subset
+        '--coverage.thresholds.lines=0',
+        '--coverage.thresholds.statements=0',
+        '--coverage.thresholds.branches=0',
+        '--coverage.thresholds.functions=0',
+        // Filter test files to only run tests for these modules
+        ...vitestModules,
+      ];
+      log(`Running: npx ${vitestArgs.join(' ')}`, options);
+      const vitestResult = spawnSync(npxCmd, vitestArgs, {
         cwd: PROJECT_ROOT,
         stdio: options.verbose ? 'inherit' : 'pipe',
         encoding: 'utf-8',
@@ -467,6 +478,60 @@ async function runClientTests(modules, options) {
       warn(`Vitest failed: ${err.message}`);
       allSuccess = false;
     }
+  }
+
+  // Run Jest for non-Vitest modules
+  if (jestModules.length > 0) {
+    // Build test pattern to match files in the specified modules
+    // Escape module names for regex safety (modules are already validated)
+    const testPattern = jestModules.map((m) => `^${escapeRegex(PROJECT_ROOT)}/src/main/webapp/app/${escapeRegex(m)}/`).join('|');
+
+    log(`Running ng test with pattern: ${testPattern}`, options);
+
+    // Run ng test with arguments array (no shell interpolation)
+    // Disable coverage threshold since we're only running a subset of tests
+    try {
+      const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+      const testResult = spawnSync(npxCmd, [
+        'ng', 'test',
+        '--coverage',
+        '--log-heap-usage',
+        '-w=4',
+        `--test-path-pattern=${testPattern}`,
+        '--coverage-threshold={}'
+      ], {
+        cwd: PROJECT_ROOT,
+        stdio: options.verbose ? 'inherit' : 'pipe',
+        encoding: 'utf-8',
+        maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large test outputs
+      });
+      if (testResult.status !== 0) {
+        warn(`Jest tests exited with code ${testResult.status || 1}`);
+
+        // Extract and display failed tests summary
+        const allOutput = (testResult.stdout || '') + (testResult.stderr || '');
+        const failedTests = extractJestFailedTests(allOutput);
+        if (failedTests.length > 0) {
+          printFailedTestsSummary(failedTests);
+        } else if (!options.verbose) {
+          // If no failed tests found in output, show raw output
+          if (testResult.stdout) {
+            console.log(testResult.stdout);
+          }
+          if (testResult.stderr) {
+            console.error(testResult.stderr);
+          }
+        }
+        allSuccess = false;
+      } else {
+        success('Jest tests completed');
+      }
+    } catch (err) {
+      warn(`Jest tests failed: ${err.message}`);
+      allSuccess = false;
+    }
+  }
+
   return allSuccess;
 }
 
@@ -522,8 +587,7 @@ function printFailedTestsSummary(failedTests) {
   console.log('\n' + '─'.repeat(60));
   error(`${failedTests.length} test(s) failed:`);
   console.log('');
-  for (const test of failedTests.slice(0, 20)) {
-    // Limit to first 20
+  for (const test of failedTests.slice(0, 20)) { // Limit to first 20
     console.log(`  ❌ ${test}`);
   }
   if (failedTests.length > 20) {
@@ -552,7 +616,12 @@ async function runServerTests(modules, options) {
   try {
     // Use spawnSync with argument array for safety
     // maxBuffer is set to 50MB to handle large test outputs (default is 1MB which can cause the process to be killed)
-    const gradleResult = spawnSync(gradleWrapper, ['test', `-DincludeModules=${modulesArg}`, 'jacocoTestReport', '-x', 'webapp'], {
+    const gradleResult = spawnSync(gradleWrapper, [
+      'test',
+      `-DincludeModules=${modulesArg}`,
+      'jacocoTestReport',
+      '-x', 'webapp'
+    ], {
       cwd: PROJECT_ROOT,
       stdio: options.verbose ? 'inherit' : 'pipe',
       encoding: 'utf-8',
@@ -610,10 +679,31 @@ function lookupCoverageInSummary(fullPath, coverageSummary) {
  * For files in Vitest modules (e.g., fileupload), prefers Vitest coverage data.
  * Falls back to the other coverage source if not found in the primary source.
  */
-function getClientFileCoverage(filePath, vitestCoverageSummary = null) {
+function getClientFileCoverage(filePath, jestCoverageSummary, vitestCoverageSummary = null) {
   // The coverage summary uses full paths from src/main/webapp/
   const fullPath = `src/main/webapp/app/${filePath}`;
-  return lookupCoverageInSummary(fullPath, vitestCoverageSummary);
+
+  // Check if file is in a Vitest module
+  const moduleName = filePath.split('/')[0];
+  const isVitestModule = VITEST_MODULES.has(moduleName);
+
+  // For Vitest modules, check Vitest coverage first, then fall back to Jest
+  // For Jest modules, check Jest coverage first, then fall back to Vitest
+  if (isVitestModule) {
+    const vitestCoverage = lookupCoverageInSummary(fullPath, vitestCoverageSummary);
+    if (vitestCoverage !== null) {
+      return vitestCoverage;
+    }
+    // Fall back to Jest coverage (in case vitest coverage is unavailable)
+    return lookupCoverageInSummary(fullPath, jestCoverageSummary);
+  } else {
+    const jestCoverage = lookupCoverageInSummary(fullPath, jestCoverageSummary);
+    if (jestCoverage !== null) {
+      return jestCoverage;
+    }
+    // Fall back to Vitest coverage (in case file is covered transitively by vitest tests)
+    return lookupCoverageInSummary(fullPath, vitestCoverageSummary);
+  }
 }
 
 /**
@@ -627,10 +717,7 @@ function getServerFileCoverage(filePath, moduleName) {
   const fileName = parts[parts.length - 1];
 
   // Try module-specific report first, then aggregated
-  const reportPaths = [
-    path.join(SERVER_COVERAGE_DIR, moduleName, 'jacocoTestReport.xml'),
-    path.join(SERVER_COVERAGE_DIR, 'aggregated', 'jacocoTestReport.xml'),
-  ];
+  const reportPaths = [path.join(SERVER_COVERAGE_DIR, moduleName, 'jacocoTestReport.xml'), path.join(SERVER_COVERAGE_DIR, 'aggregated', 'jacocoTestReport.xml')];
 
   for (const reportPath of reportPaths) {
     if (!fs.existsSync(reportPath)) {
@@ -907,13 +994,13 @@ function findTestFilesInModule(sourceFilePath) {
   // e.g., de/tum/cit/aet/artemis/core/repository/CourseRepository.java
   // -> Look in src/test/java/de/tum/cit/aet/artemis/core/
   const parts = sourceFilePath.split('/');
-  const artemisIndex = parts.indexOf('aet');
+  const artemisIndex = parts.indexOf('artemis');
   if (artemisIndex === -1 || artemisIndex + 1 >= parts.length) {
     return [];
   }
 
   const moduleName = parts[artemisIndex + 1]; // e.g., 'core'
-  const moduleTestDir = path.join(PROJECT_ROOT, 'src/test/java/de/tum/cit/aet', moduleName);
+  const moduleTestDir = path.join(PROJECT_ROOT, 'src/test/java/de/tum/cit/aet/artemis', moduleName);
 
   return findAllJavaTestFiles(moduleTestDir);
 }
@@ -968,6 +1055,20 @@ function buildClientCoverageTable(clientFiles, options) {
     return null;
   }
 
+  // Always try to load both coverage files for robustness
+  // The getClientFileCoverage function will check both sources with appropriate fallbacks
+  let jestCoverageSummary = null;
+  if (fs.existsSync(CLIENT_COVERAGE_SUMMARY)) {
+    try {
+      jestCoverageSummary = JSON.parse(fs.readFileSync(CLIENT_COVERAGE_SUMMARY, 'utf-8'));
+      log('Loaded Jest coverage-summary.json', options);
+    } catch (err) {
+      log(`Failed to parse Jest coverage data: ${err.message}`, options);
+    }
+  } else {
+    log('Jest coverage-summary.json not found', options);
+  }
+
   let vitestCoverageSummary = null;
   if (fs.existsSync(VITEST_COVERAGE_SUMMARY)) {
     try {
@@ -980,7 +1081,7 @@ function buildClientCoverageTable(clientFiles, options) {
     log('Vitest coverage-summary.json not found', options);
   }
 
-  if (!vitestCoverageSummary) {
+  if (!jestCoverageSummary && !vitestCoverageSummary) {
     return 'Coverage data not found. Run tests first or check if coverage-summary.json exists.';
   }
 
@@ -993,7 +1094,7 @@ function buildClientCoverageTable(clientFiles, options) {
       continue;
     }
 
-    const coverage = getClientFileCoverage(filePath, vitestCoverageSummary);
+    const coverage = getClientFileCoverage(filePath, jestCoverageSummary, vitestCoverageSummary);
     const absoluteSourcePath = path.join(PROJECT_ROOT, 'src/main/webapp/app', filePath);
     const lineCount = getSourceFileLineCount(absoluteSourcePath);
     const expectCount = countClientExpects(filePath);
@@ -1039,7 +1140,7 @@ function buildServerCoverageTable(serverFiles, serverModules, options) {
     const fileName = filePath.split('/').pop();
 
     // Determine which module this file belongs to
-    const afterArtemis = filePath.replace('de/tum/cit/aet/', '');
+    const afterArtemis = filePath.replace('de/tum/cit/aet/artemis/', '');
     const moduleName = afterArtemis.split('/')[0];
 
     const coverage = getServerFileCoverage(filePath, moduleName);
@@ -1134,12 +1235,8 @@ async function main() {
     info(`Using explicitly specified server modules for testing: ${serverModulesToTest.join(', ')}`);
   }
 
-  info(
-    `Client: ${Object.keys(clientFiles).length} changed files, testing ${clientModulesToTest.length} modules (${clientModulesToTest.join(', ') || 'none'})`,
-  );
-  info(
-    `Server: ${Object.keys(serverFiles).length} changed files, testing ${serverModulesToTest.length} modules (${serverModulesToTest.join(', ') || 'none'})`,
-  );
+  info(`Client: ${Object.keys(clientFiles).length} changed files, testing ${clientModulesToTest.length} modules (${clientModulesToTest.join(', ') || 'none'})`);
+  info(`Server: ${Object.keys(serverFiles).length} changed files, testing ${serverModulesToTest.length} modules (${serverModulesToTest.join(', ') || 'none'})`);
 
   // Step 3: Run tests if not skipped
   if (!options.skipTests) {
@@ -1204,7 +1301,7 @@ async function main() {
   console.log('');
 }
 
-main().catch(err => {
+main().catch((err) => {
   error(err.message);
   process.exit(1);
 });
