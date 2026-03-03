@@ -155,7 +155,7 @@ def get_branch_name(repo_path: str) -> str:
     return repo.active_branch.name
 
 
-def get_changed_files(repo_path, branch_name, base_branch_name="origin/develop"):
+def get_changed_files(repo_path, branch_name, base_branch_name="origin/main"):
     repo = git.Repo(repo_path, search_parent_directories=True)
     try:
         branch_head = repo.commit(branch_name)
@@ -286,12 +286,12 @@ def main(argv):
     parser.add_argument(
         "--branch-name",
         default=None,
-        help="Name of the Git branch you want to compare with the base branch (default: origin/develop)",
+        help="Name of the Git branch you want to compare with the base branch (default: origin/main)",
     )
     parser.add_argument(
         "--base-branch-name",
-        default="origin/develop",
-        help="Name of the Git base branch (default: origin/develop)",
+        default="origin/main",
+        help="Name of the Git base branch (default: origin/main)",
     )
     parser.add_argument(
         "--build-id", default=None, help="Build ID of the GitHub run id"
@@ -312,7 +312,7 @@ def main(argv):
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
     if args.base_branch_name is None:
-        args.base_branch_name = "origin/develop"
+        args.base_branch_name = "origin/main"
         logging.info("Base branch set to: %s", args.base_branch_name)
     if args.build_id is None:
         logging.info("Using latest build ID")
