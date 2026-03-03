@@ -149,13 +149,6 @@ export class ResearchGroupAddMembersComponent {
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
 
-  private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
-    return users.map(user => ({
-      ...user,
-      displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
-    }));
-  }
-
   constructor() {
     void this.loadAvailableUsers();
   }
@@ -211,7 +204,7 @@ export class ResearchGroupAddMembersComponent {
       return;
     }
 
-    if (this.loaderTimeout) {
+    if (this.loaderTimeout !== null) {
       clearTimeout(this.loaderTimeout);
       this.loaderTimeout = null;
     }
@@ -236,10 +229,8 @@ export class ResearchGroupAddMembersComponent {
     } finally {
       // only touch loading/timeout if this is the latest request
       if (requestId === this.latestRequestId) {
-        if (this.loaderTimeout) {
-          clearTimeout(this.loaderTimeout);
-          this.loaderTimeout = null;
-        }
+        clearTimeout(this.loaderTimeout);
+        this.loaderTimeout = null;
         this.loading.set(false);
       }
     }
@@ -254,16 +245,18 @@ export class ResearchGroupAddMembersComponent {
   }
 
   onPageChange(event: { first?: number; rows?: number }): void {
-    const pageNumber = event.first && event.rows ? event.first / event.rows : 0;
+    const hasPageData = event.first != null && event.rows != null && event.rows !== 0;
+    const pageNumber = hasPageData ? event.first / event.rows : 0;
     this.page.set(pageNumber);
-    if (event.rows) {
+    if (event.rows != null) {
       this.pageSize.set(event.rows);
     }
-    void this.loadAvailableUsers(this.searchQuery() || undefined);
+    const query = this.searchQuery();
+    void this.loadAvailableUsers(query.length > 0 ? query : undefined);
   }
 
   toggleUserSelection(user: KeycloakUserDTO): void {
-    if (!user.id) {
+    if (user.id == null || user.id === '') {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
     }
@@ -295,7 +288,8 @@ export class ResearchGroupAddMembersComponent {
       this.dialogRef.close(true);
     } catch (err) {
       if (err instanceof HttpErrorResponse) {
-        const errorMessage = err.error?.message ?? '';
+        const rawMessage: unknown = err.error?.message;
+        const errorMessage = typeof rawMessage === 'string' ? rawMessage : '';
         if (err.status === 400 && errorMessage.toLowerCase().includes('already a member')) {
           this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailedAlreadyMember`);
         } else if (err.status === 400 && errorMessage.toLowerCase().includes('not have a valid universityid')) {
@@ -311,10 +305,17 @@ export class ResearchGroupAddMembersComponent {
   }
 
   isUserSelected(user: KeycloakUserDTO): boolean {
-    if (!user.id) {
+    if (user.id == null || user.id === '') {
       return false;
     }
 
     return this.selectedUsers().has(user.id);
+  }
+
+  private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
+    return users.map(user => ({
+      ...user,
+      displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+    }));
   }
 }
