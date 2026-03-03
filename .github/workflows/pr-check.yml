@@ -209,7 +209,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report-client
-          path: build/test-results/lcov-report/
+          path: build/test-results/vitest/coverage/
 
       - name: Post Coverage Comment
         if: failure() && github.event_name == 'pull_request'
@@ -223,7 +223,7 @@ jobs:
             **🔍 View coverage locally:**
             ```bash
             npm run test:ci
-            open build/test-results/lcov-report/index.html
+            open build/test-results/vitest/coverage/index.html
             ```
 
             **🌐 View coverage from GitHub:**

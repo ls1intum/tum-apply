@@ -20,9 +20,10 @@ export default defineConfig(({ mode }) => ({
     outputFile: 'junit.xml',
     coverage: {
       reporter: ['text', 'lcov', 'html', 'json-summary'],
-      reportsDirectory: 'build/test-results/lcov-report',
-      provider: 'v8',
+      reportsDirectory: 'build/test-results/vitest/coverage',
+      provider: 'istanbul',
       all: true,
+      include: ['src/main/webapp/app/**/*.ts'],
       exclude: [
         '**/node_modules/**',
         '**/generated/**',
@@ -31,7 +32,18 @@ export default defineConfig(({ mode }) => ({
         'src/test/webapp/util/**',
         '**/*.html',
         '**/*.scss',
+        '**/*.route.ts',        // exclude route definition files (not really testable)
+        '**/*.routes.ts',       // exclude route definition files (not really testable)
+        '**/*.model.ts',        // exclude data model files (not really testable)
+        'src/main/webapp/app/core/config/application-config.model.ts',
+        'src/main/webapp/app/core/config/runtime-config.loader.ts',
       ],
+      thresholds: {
+        lines: 85.00,
+        statements: 85.00,
+        branches: 70.00,
+        functions: 85.00,
+      },
     },
   },
   define: {

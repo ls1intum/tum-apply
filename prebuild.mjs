@@ -13,11 +13,18 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const languagesHash = await hashElement(path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n'), {
-  algo: 'md5',
-  encoding: 'hex',
-  files: { include: ['*.json'] },
-});
+let languagesHash;
+try {
+  languagesHash = await hashElement(path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n'), {
+    algo: 'md5',
+    encoding: 'hex',
+    files: { include: ['*.json'] },
+  });
+} catch (err) {
+  // If i18n folder does not exist or hashing fails, continue with a fallback hash
+  console.warn(`Warning: could not hash i18n folder: ${err.message}`);
+  languagesHash = { hash: 'NO_I18N' };
+}
 
 // =====================
 // Environment variables
@@ -32,14 +39,15 @@ function inferVersion() {
   let version = 'DEV';
 
   try {
-    let data = fs.readFileSync('build.gradle', 'UTF-8');
+    // Read build.gradle from project root (resolved against this script's directory)
+    let data = fs.readFileSync(path.resolve(__dirname, 'build.gradle'), 'UTF-8');
 
     // Try to match devVersion first (new format), then fall back to version (old format)
     let match = data.match(/\bdevVersion\s*=\s*"([^"]+)"/) || data.match(/\nversion\s*=\s*"([^"]+)"/);
 
     version = match?.[1] ?? 'DEV';
   } catch (error) {
-    console.log("Error while retrieving 'APP_VERSION' property", error);
+    console.log("Error while retrieving 'APP_VERSION' property", error.message || error);
   }
 
   return version;
@@ -62,15 +70,19 @@ export const environment = {
   },
 };
 `;
-fs.writeFileSync(path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts'), environmentConfig);
+
+// Ensure output directory exists before writing
+const envOutPath = path.resolve(__dirname, 'src', 'main', 'webapp', 'app', 'environments', 'environment.override.ts');
+fs.mkdirSync(path.dirname(envOutPath), { recursive: true });
+fs.writeFileSync(envOutPath, environmentConfig);
 
 // =====================
 // i18n merging
 // =====================
 
 const groups = [
-  { folder: './src/main/webapp/i18n/en', output: './src/main/webapp/i18n/en.json' },
-  { folder: './src/main/webapp/i18n/de', output: './src/main/webapp/i18n/de.json' },
+  { folder: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'en'), output: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'en.json') },
+  { folder: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'de'), output: path.resolve(__dirname, 'src', 'main', 'webapp', 'i18n', 'de.json') },
 ];
 
 const isObject = obj => obj && typeof obj === 'object';

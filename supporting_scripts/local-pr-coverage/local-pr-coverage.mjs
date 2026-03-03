@@ -387,17 +387,10 @@ async function runClientTests(modules, options) {
     return true;
   }
 
-  // Separate Jest and Vitest modules
-  const jestModules = modules.filter((m) => !VITEST_MODULES.has(m));
-  const vitestModules = modules.filter((m) => VITEST_MODULES.has(m));
+  const vitestModules = modules.slice();
 
   info(`Running client tests for modules: ${modules.join(', ')}`);
-  if (vitestModules.length > 0) {
-    log(`  Vitest modules: ${vitestModules.join(', ')}`, options);
-  }
-  if (jestModules.length > 0) {
-    log(`  Jest modules: ${jestModules.join(', ')}`, options);
-  }
+  log(`  Vitest modules: ${vitestModules.join(', ')}`, options);
 
   log(`Running prebuild...`, options);
 
@@ -476,58 +469,6 @@ async function runClientTests(modules, options) {
       }
     } catch (err) {
       warn(`Vitest failed: ${err.message}`);
-      allSuccess = false;
-    }
-  }
-
-  // Run Jest for non-Vitest modules
-  if (jestModules.length > 0) {
-    // Build test pattern to match files in the specified modules
-    // Escape module names for regex safety (modules are already validated)
-    const testPattern = jestModules.map((m) => `^${escapeRegex(PROJECT_ROOT)}/src/main/webapp/app/${escapeRegex(m)}/`).join('|');
-
-    log(`Running ng test with pattern: ${testPattern}`, options);
-
-    // Run ng test with arguments array (no shell interpolation)
-    // Disable coverage threshold since we're only running a subset of tests
-    try {
-      const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-      const testResult = spawnSync(npxCmd, [
-        'ng', 'test',
-        '--coverage',
-        '--log-heap-usage',
-        '-w=4',
-        `--test-path-pattern=${testPattern}`,
-        '--coverage-threshold={}'
-      ], {
-        cwd: PROJECT_ROOT,
-        stdio: options.verbose ? 'inherit' : 'pipe',
-        encoding: 'utf-8',
-        maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large test outputs
-      });
-      if (testResult.status !== 0) {
-        warn(`Jest tests exited with code ${testResult.status || 1}`);
-
-        // Extract and display failed tests summary
-        const allOutput = (testResult.stdout || '') + (testResult.stderr || '');
-        const failedTests = extractJestFailedTests(allOutput);
-        if (failedTests.length > 0) {
-          printFailedTestsSummary(failedTests);
-        } else if (!options.verbose) {
-          // If no failed tests found in output, show raw output
-          if (testResult.stdout) {
-            console.log(testResult.stdout);
-          }
-          if (testResult.stderr) {
-            console.error(testResult.stderr);
-          }
-        }
-        allSuccess = false;
-      } else {
-        success('Jest tests completed');
-      }
-    } catch (err) {
-      warn(`Jest tests failed: ${err.message}`);
       allSuccess = false;
     }
   }
