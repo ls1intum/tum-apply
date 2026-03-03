@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
@@ -9,14 +8,25 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 const I18N_BASE = 'researchGroup.members';
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
-  imports: [TranslateModule, SearchFilterSortBar, ButtonComponent, CheckboxModule, FormsModule, PaginatorModule, ConfirmDialog],
+  imports: [
+    TranslateModule,
+    SearchFilterSortBar,
+    ButtonComponent,
+    FormsModule,
+    PaginatorModule,
+    ProgressSpinnerModule,
+    CheckboxComponent,
+    InfoBoxComponent,
+  ],
   templateUrl: './research-group-add-members.component.html',
 })
 export class ResearchGroupAddMembersComponent {
@@ -43,6 +53,95 @@ export class ResearchGroupAddMembersComponent {
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | null = null;
+
+  // Local mock users for UI testing without Keycloak/server
+  private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
+  private readonly MOCK_USERS: KeycloakUserDTO[] = [
+    {
+      id: '7a6b8f3a-09f4-4e9f-8d09-2e2d1a1d8a01',
+      firstName: 'Aniruddh',
+      lastName: 'Zaveri',
+      email: 'aniruddh.zaveri@tum.de',
+      universityId: 'ab12asd',
+    },
+    {
+      id: '2c9c3d14-1a5b-4a8f-9c21-4b1d9e2a3f02',
+      firstName: 'Aniruddh',
+      lastName: 'Pawar',
+      email: 'ge69hug@mytum.de',
+      universityId: 'ab12adv',
+    },
+    {
+      id: 'e4b2f1c3-5d6e-4f1a-8b9c-3d4e5f6a7b03',
+      firstName: 'Alice',
+      lastName: 'Curie',
+      email: 'alice.curie@tum.de',
+      universityId: 'ab12agf',
+    },
+    {
+      id: 'f5a6b7c8-9d0e-4f1a-8b2c-3d4e5f6a7b04',
+      firstName: 'Ben',
+      lastName: 'Schmidt',
+      email: 'ben.schmidt@mytum.de',
+      universityId: 'ab12gkl',
+    },
+    {
+      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c05',
+      firstName: 'Carla',
+      lastName: 'Nguyen',
+      email: 'carla.nguyen@tum.de',
+      universityId: 'ab12hij',
+    },
+    {
+      id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d06',
+      firstName: 'David',
+      lastName: 'Ibrahim',
+      email: 'david.ibrahim@mytum.de',
+      universityId: 'ab12klm',
+    },
+    {
+      id: 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e07',
+      firstName: 'Elena',
+      lastName: 'Rossi',
+      email: 'elena.rossi@tum.de',
+      universityId: 'ab12nop',
+    },
+    {
+      id: 'd4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f08',
+      firstName: 'Farid',
+      lastName: 'Khan',
+      email: 'farid.khan@mytum.de',
+      universityId: 'ab12qrs',
+    },
+    {
+      id: 'e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a09',
+      firstName: 'Greta',
+      lastName: 'Meyer',
+      email: 'greta.meyer@tum.de',
+      universityId: 'ab12tuv',
+    },
+    {
+      id: 'f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b10',
+      firstName: 'Hugo',
+      lastName: 'Weiss',
+      email: 'hugo.weiss@mytum.de',
+      universityId: 'ab12wxy',
+    },
+    {
+      id: '0a1b2c3d-4e5f-4a6b-8c9d-0e1f2a3b4c11',
+      firstName: 'Isabella',
+      lastName: 'Fischer',
+      email: 'isabella.fischer@tum.de',
+      universityId: 'ab12zab',
+    },
+    {
+      id: '1b2c3d4e-5f6a-4b7c-9d0e-1f2a3b4c5d12',
+      firstName: 'Jonas',
+      lastName: 'Bauer',
+      email: 'jonas.bauer@mytum.de',
+      universityId: 'ab12cde',
+    },
+  ];
 
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
@@ -84,6 +183,21 @@ export class ResearchGroupAddMembersComponent {
     }
 
     if (query !== '' && query.length < this.MIN_SEARCH_LENGTH) {
+      return;
+    }
+
+    if (this.USE_MOCK_USERS) {
+      const normalizedQuery = query.toLowerCase();
+      const filteredUsers = normalizedQuery
+        ? this.MOCK_USERS.filter(user =>
+            `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
+          )
+        : this.MOCK_USERS;
+
+      const startIndex = this.page() * this.pageSize();
+      const endIndex = startIndex + this.pageSize();
+      this.totalRecords.set(filteredUsers.length);
+      this.users.set(filteredUsers.slice(startIndex, endIndex));
       return;
     }
 

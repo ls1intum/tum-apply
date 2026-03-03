@@ -7,7 +7,6 @@ import { DividerModule } from 'primeng/divider';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
-import SharedModule from 'app/shared/shared.module';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -16,6 +15,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
+import { TranslateDirective } from 'app/shared/language';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -45,7 +45,7 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
     FontAwesomeModule,
     TooltipModule,
     TranslateModule,
-    SharedModule,
+    TranslateDirective,
     EditorComponent,
   ],
   templateUrl: './application-creation-page3.component.html',
@@ -62,9 +62,10 @@ export default class ApplicationCreationPage3Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  formbuilder = inject(FormBuilder);
-
   hasInitialized = signal(false);
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
+
+  formbuilder = inject(FormBuilder);
 
   page3Form: FormGroup = this.formbuilder.group({
     experiences: ['', htmlTextRequiredValidator],
@@ -85,8 +86,6 @@ export default class ApplicationCreationPage3Component {
     const docInfoHolder = this.documentIdsCv();
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
-
-  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;

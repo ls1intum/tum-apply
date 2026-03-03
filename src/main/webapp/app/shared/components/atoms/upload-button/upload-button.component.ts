@@ -1,6 +1,5 @@
 import { Component, ElementRef, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import SharedModule from 'app/shared/shared.module';
 import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
@@ -11,7 +10,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { FileSelectEvent } from 'primeng/fileupload';
-import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -27,23 +26,13 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
-  imports: [
-    FontAwesomeModule,
-    FormsModule,
-    SharedModule,
-    FileUpload,
-    ButtonComponent,
-    TooltipModule,
-    TranslateModule,
-    TranslateDirective,
-    DialogComponent,
-  ],
+  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
   standalone: true,
 })
 export class UploadButtonComponent {
-  readonly maxUploadSizeInMb = 1;
+  readonly maxUploadSizeInMb = 25;
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
@@ -57,11 +46,17 @@ export class UploadButtonComponent {
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
+  allowMultiple = input<boolean>(true);
 
   // Duplicate dialog state
-  showDuplicateDialog = signal<boolean>(false);
   pendingDuplicateFile = signal<File | null>(null);
   duplicateFileName = signal<string>('');
+
+  // Replacement dialog state (for single file mode)
+  pendingReplacementFiles = signal<File[]>([]);
+
+  duplicateConfirmDialog = viewChild<ConfirmDialog>('duplicateConfirmDialog');
+  replacementConfirmDialog = viewChild<ConfirmDialog>('replacementConfirmDialog');
 
   private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
@@ -70,13 +65,27 @@ export class UploadButtonComponent {
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
 
+    // For single-file mode, check if document already exists
+    if (!this.allowMultiple() && (this.documentIds()?.length ?? 0) > 0) {
+      this.pendingReplacementFiles.set(files);
+      this.replacementConfirmDialog()?.confirm();
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
+    }
+
     // Check for duplicate filenames
     for (const file of files) {
       if (this.isDuplicateFilename(file.name)) {
         // Show confirmation dialog for duplicate
         this.pendingDuplicateFile.set(file);
         this.duplicateFileName.set(file.name);
-        this.showDuplicateDialog.set(true);
+
+        // Use setTimeout to ensure signal updates before dialog shows
+        setTimeout(() => {
+          this.duplicateConfirmDialog()?.confirm();
+        }, 0);
+
         this.fileUploadComponent()?.clear();
         this.resetNativeFileInput();
         return;
@@ -87,14 +96,9 @@ export class UploadButtonComponent {
     await this.processFiles(files);
   }
 
-  onDuplicateCancel(): void {
-    this.closeDuplicateDialog();
-  }
-
-  async onDuplicateReplace(): Promise<void> {
+  async onConfirmDuplicate(): Promise<void> {
     const pendingFile = this.pendingDuplicateFile();
     if (!pendingFile) {
-      this.closeDuplicateDialog();
       return;
     }
 
@@ -107,13 +111,37 @@ export class UploadButtonComponent {
         this.documentIds.set(updatedList);
       } catch {
         this.toastService.showErrorKey('entity.upload.error.replace_failed');
-        this.closeDuplicateDialog();
+        this.pendingDuplicateFile.set(null);
         return;
       }
     }
 
-    this.closeDuplicateDialog();
     await this.processFiles([pendingFile]);
+    this.pendingDuplicateFile.set(null);
+  }
+
+  async onConfirmReplacement(): Promise<void> {
+    const pendingFiles = this.pendingReplacementFiles();
+    if (pendingFiles.length === 0) {
+      return;
+    }
+
+    // Delete all existing documents (for single-file mode replacement)
+    const existingDocs = this.documentIds() ?? [];
+    for (const doc of existingDocs) {
+      try {
+        await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
+      } catch {
+        this.toastService.showErrorKey('entity.upload.error.replace_failed');
+        return;
+      }
+    }
+
+    // Clear the document list before uploading new file
+    this.documentIds.set([]);
+
+    await this.processFiles(pendingFiles);
+    this.pendingReplacementFiles.set([]);
   }
 
   async onUpload(): Promise<void> {
@@ -174,8 +202,7 @@ export class UploadButtonComponent {
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
-    } catch (err) {
-      console.error('Failed to rename document', err);
+    } catch {
       this.toastService.showErrorKey('entity.upload.error.rename_failed');
     }
   }
@@ -184,8 +211,9 @@ export class UploadButtonComponent {
     if (bytes === 0) return '0 B';
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)).toString() + ' ' + sizes[i];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
+    const size = bytes / Math.pow(k, i);
+    return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
   }
 
   private isDuplicateFilename(filename: string): boolean {
@@ -193,27 +221,49 @@ export class UploadButtonComponent {
     return existingDocs.some(doc => doc.name === filename);
   }
 
-  private closeDuplicateDialog(): void {
-    this.showDuplicateDialog.set(false);
-    this.pendingDuplicateFile.set(null);
-    this.duplicateFileName.set('');
-  }
-
   private async processFiles(files: File[]): Promise<void> {
-    const selectedFile = this.selectedFiles();
-    if (selectedFile === undefined) {
-      this.selectedFiles.set(files);
-    } else {
-      this.selectedFiles.set([...selectedFile, ...files]);
+    const maxSizeBytes = this.maxUploadSizeInMb * 1024 * 1024;
+    const maxTotalSizeMb = this.maxUploadSizeInMb; // total limit (MB) — same as per-file by design
+    const maxTotalSizeBytes = maxTotalSizeMb * 1024 * 1024;
+
+    // Validate incoming files individually first (always enforce per-file limit)
+    for (const file of files) {
+      if (file.size > maxSizeBytes) {
+        this.toastService.showErrorKey('entity.upload.error.too_large_detailed', {
+          maxSize: this.maxUploadSizeInMb.toString(),
+          totalSize: `${file.name} (${this.formatSize(file.size)})`,
+        });
+        this.fileUploadComponent()?.clear();
+        this.resetNativeFileInput();
+        return;
+      }
     }
 
-    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-    if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
-      this.toastService.showErrorKey('entity.upload.error.too_large');
-      this.selectedFiles.set(undefined);
+    // Consider already selected files when calculating the total size
+    const selectedFile = this.selectedFiles() ?? [];
+
+    const combinedFiles = selectedFile.concat(files);
+    const combinedFilesTotal = combinedFiles.reduce((sum, file) => sum + file.size, 0);
+
+    // Also include already uploaded documents (persisted on the server) in the total size
+    const existingDocs = this.documentIds() ?? [];
+    const existingDocsTotal = existingDocs.reduce((sum, doc) => sum + doc.size, 0);
+
+    const totalSize = existingDocsTotal + combinedFilesTotal;
+
+    // Enforce combined total size limit
+    if (totalSize > maxTotalSizeBytes) {
+      this.toastService.showErrorKey('entity.upload.error.total_too_large', {
+        maxTotal: maxTotalSizeMb.toString(),
+        actualTotal: this.formatSize(totalSize),
+      });
+      this.fileUploadComponent()?.clear();
       this.resetNativeFileInput();
       return;
     }
+
+    // Only add files if validation passes
+    this.selectedFiles.set(combinedFiles);
 
     this.fileUploadComponent()?.clear();
     this.resetNativeFileInput();

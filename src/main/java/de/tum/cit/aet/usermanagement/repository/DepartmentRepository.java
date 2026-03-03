@@ -24,6 +24,10 @@ public interface DepartmentRepository extends TumApplyJpaRepository<Department, 
 
     List<Department> findBySchoolSchoolIdOrderByNameAsc(UUID schoolId);
 
+    List<Department> findBySchoolSchoolIdInOrderBySchoolSchoolIdAscNameAsc(List<UUID> schoolIds);
+
+    boolean existsBySchoolSchoolId(UUID schoolId);
+
     List<Department> findAllByOrderBySchoolSchoolIdAscNameAsc();
 
     @Query(
@@ -44,7 +48,7 @@ public interface DepartmentRepository extends TumApplyJpaRepository<Department, 
                    LOWER(s.name) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
                    LOWER(s.abbreviation) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
             )
-            AND (:schoolNames IS NULL OR s.name IN :schoolNames)
+            AND (:schoolNames IS NULL OR LOWER(s.name) IN :schoolNames)
         """
     )
     Page<DepartmentDTO> findAllForAdmin(

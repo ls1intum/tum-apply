@@ -5,10 +5,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage1Component, {
   getPage1FromApplication,
-  postalCodeValidator,
-  selectGender,
   selectLanguage,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page1/application-creation-page1.component';
+import { postalCodeValidator } from '../../../../../main/webapp/app/shared/validators/custom-validators';
+import { selectGender } from '../../../../../main/webapp/app/shared/constants/genders';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';

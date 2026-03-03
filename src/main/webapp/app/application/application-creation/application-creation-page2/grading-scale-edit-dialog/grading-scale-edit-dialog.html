@@ -1,0 +1,42 @@
+<form [formGroup]="limitsForm()">
+  <div class="flex flex-col gap-4">
+    <div class="flex items-start gap-4">
+      <!-- Upper Limit Input -->
+      <div class="flex-1">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
+          [control]="limitsForm().controls.upperLimit"
+          [(model)]="data().upperLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.gradeUpperLimit' | translate"
+        />
+      </div>
+
+      <!-- Exchange Icon Button -->
+      <jhi-button
+        variant="text"
+        class="mt-6"
+        (click)="onSwap()"
+        [attr.aria-label]="'entity.applicationPage2.gradingScaleDialog.swap' | translate"
+        icon="arrow-right-arrow-left"
+      />
+
+      <!-- Lower Limit Input -->
+      <div class="flex-1">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
+          [control]="limitsForm().controls.lowerLimit"
+          [(model)]="data().lowerLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.gradeLowerLimit' | translate"
+        />
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-2 mt-4">
+      <jhi-button label="button.cancel" severity="primary" [shouldTranslate]="true" (click)="onCancel()" variant="outlined" />
+      <jhi-button label="button.save" severity="primary" [shouldTranslate]="true" [disabled]="!isValid()" (click)="onSave()" />
+    </div>
+  </div>
+</form>

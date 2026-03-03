@@ -12,7 +12,10 @@ import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.EmailTemplateService;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -55,9 +58,13 @@ public class ResearchGroupService {
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final AsyncEmailSender emailSender;
+    private final EmailTemplateService emailTemplateService;
 
     @Value("${aet.contact-email:tum-apply.aet@xcit.tum.de}")
     private String supportEmail;
+
+    @Value("${aet.environment:}")
+    private String environmentName;
 
     /**
      * Get all members of the current user's research group.
@@ -83,6 +90,27 @@ public class ResearchGroupService {
         List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
 
         return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
+    }
+
+    /**
+     * Get all professors of the current user's research group.
+     *
+     * @return list of professors in the current research group
+     */
+    public List<UserShortDTO> getResearchGroupProfessors() {
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
+        List<UUID> userIds = userRepository.findUserIdsByResearchGroupId(researchGroupId);
+        if (userIds.isEmpty()) {
+            return List.of();
+        }
+
+        UUID currentUserId = currentUserService.getUserId();
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIds, currentUserId);
+        return members
+            .stream()
+            .map(UserShortDTO::new)
+            .filter(dto -> dto.getRoles() != null && dto.getRoles().contains(UserRole.PROFESSOR))
+            .toList();
     }
 
     /**
@@ -290,6 +318,8 @@ public class ResearchGroupService {
         group.setState(ResearchGroupState.ACTIVE);
         ResearchGroup saved = researchGroupRepository.save(group);
 
+        ensureEmailTemplates(saved);
+
         Set<UserResearchGroupRole> roles = userResearchGroupRoleRepository.findAllByResearchGroup(group);
 
         if (roles.isEmpty()) {
@@ -303,6 +333,8 @@ public class ResearchGroupService {
                 role.setRole(UserRole.PROFESSOR);
                 userResearchGroupRoleRepository.save(role);
             });
+
+        userRepository.findByUniversityIdIgnoreCase(saved.getUniversityId()).ifPresent(prof -> sendApprovedResearchGroupEmail(prof, group));
 
         return saved;
     }
@@ -389,6 +421,8 @@ public class ResearchGroupService {
     /**
      * Creates a research group request from a professor during onboarding.
      * The research group starts in DRAFT state and needs admin approval.
+     * The professor is associated with the research group using the provided universityId and assigned the APPLICANT role.
+     * An email notification is sent to support/administrators to review the new research group request.
      *
      * @param request the professor's research group request
      * @return the created research group in DRAFT state
@@ -410,12 +444,15 @@ public class ResearchGroupService {
         researchGroup.setState(ResearchGroupState.DRAFT);
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
+        ensureEmailTemplates(saved);
 
         currentUser.setUniversityId(request.universityId());
         currentUser.setResearchGroup(saved);
         userRepository.save(currentUser);
 
         ensureUserRoleInGroup(currentUser, saved, UserRole.APPLICANT);
+
+        notifySupportOfNewResearchGroupRequest(saved);
 
         return saved;
     }
@@ -458,6 +495,7 @@ public class ResearchGroupService {
         } catch (DataIntegrityViolationException e) {
             throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
         }
+        ensureEmailTemplates(saved);
 
         // Assign the professor to the research group
         professor.setResearchGroup(saved);
@@ -512,7 +550,20 @@ public class ResearchGroupService {
             request.professorName()
         );
 
-        sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
+        User support = new User();
+        support.setEmail(supportEmail);
+        support.setSelectedLanguage(Language.ENGLISH.getCode());
+
+        Email email = Email.builder()
+            .to(support)
+            .customSubject(buildSubjectWithEnvironment("Employee Research Group Access Request - " + currentUser.getEmail()))
+            .customBody(emailBody)
+            .sendAlways(true)
+            .language(Language.ENGLISH)
+            .content(currentUser)
+            .build();
+
+        emailSender.sendAsync(email);
     }
 
     /**
@@ -609,6 +660,35 @@ public class ResearchGroupService {
         }
     }
 
+    private void notifySupportOfNewResearchGroupRequest(ResearchGroup rg) {
+        String emailBody = String.format(
+            """
+            <html>
+            <body>
+                <h2>New Research Group Request</h2>
+                <p>A new research group has been requested and is awaiting approval.</p>
+
+                <p>Please review and approve or deny this research group request in the admin panel.</p>
+            </body>
+            </html>
+            """
+        );
+
+        User support = new User();
+        support.setEmail(supportEmail);
+        support.setSelectedLanguage(Language.ENGLISH.getCode());
+
+        Email email = Email.builder()
+            .to(support)
+            .customSubject(buildSubjectWithEnvironment("New Research Group Request - " + rg.getName()))
+            .customBody(emailBody)
+            .sendAlways(true)
+            .language(Language.ENGLISH)
+            .build();
+
+        emailSender.sendAsync(email);
+    }
+
     /**
      * Sends a welcome email to a user who has been added to a new research group.
      *
@@ -616,47 +696,50 @@ public class ResearchGroupService {
      * @param researchGroup The research group they were added to.
      */
     private void sendWelcomeToResearchGroupEmail(User user, ResearchGroup researchGroup) {
-        String emailBody = String.format(
-            """
-            <html>
-            <body>
-                <h2>Welcome to the Research Group!</h2>
-                <p>Dear %s %s,</p>
-                <p>You have been successfully added to the research group <strong>%s</strong>.</p>
-                <p>Feel free to contact your head or our support.</p>
-                <p>Best regards,<br>The TumApply Team</p>
-            </body>
-            </html>
-            """,
-            user.getFirstName(),
-            user.getLastName(),
-            researchGroup.getName()
-        );
+        Language language = user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH;
 
-        sendEmail(
-            user.getEmail(),
-            "You have been added to the research group " + researchGroup.getName(),
-            emailBody,
-            user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
-        );
+        Email email = Email.builder()
+            .to(user)
+            .language(language)
+            .emailType(EmailType.RESEARCH_GROUP_MEMBER_ADDED)
+            .content(new ResearchGroupEmailContext(user, researchGroup))
+            .researchGroup(researchGroup)
+            .build();
+
+        emailSender.sendAsync(email);
     }
 
     /**
-     * Sends an email with custom subject and body to a recipient.
-     * This is a general-purpose email sending method that can be reused for various notification types.
+     * Sends a welcome email to the professor whose research group was approved.
      *
-     * @param recipientEmail the email address of the recipient
-     * @param subject the email subject
-     * @param body the HTML email body
-     * @param language the language preference for the email
+     * @param prof          The professor who was approved.
+     * @param researchGroup The research group that was approved.
      */
-    private void sendEmail(String recipientEmail, String subject, String body, Language language) {
-        User recipient = new User();
-        recipient.setEmail(recipientEmail);
-        recipient.setSelectedLanguage(language.getCode());
+    private void sendApprovedResearchGroupEmail(User prof, ResearchGroup researchGroup) {
+        Language language = prof.getSelectedLanguage() != null ? Language.fromCode(prof.getSelectedLanguage()) : Language.ENGLISH;
 
-        Email email = Email.builder().to(recipient).customSubject(subject).customBody(body).sendAlways(true).language(language).build();
+        Email email = Email.builder()
+            .to(prof)
+            .language(language)
+            .emailType(EmailType.RESEARCH_GROUP_APPROVED)
+            .content(new ResearchGroupEmailContext(prof, researchGroup))
+            .researchGroup(researchGroup)
+            .build();
 
         emailSender.sendAsync(email);
+    }
+
+    /**
+     * Ensures default email templates exist for the given research group.
+     */
+    private void ensureEmailTemplates(ResearchGroup researchGroup) {
+        emailTemplateService.addMissingTemplates(researchGroup);
+    }
+
+    private String buildSubjectWithEnvironment(String subject) {
+        if (environmentName == null || environmentName.isBlank()) {
+            return subject;
+        }
+        return "[" + environmentName.toUpperCase() + "] " + subject;
     }
 }

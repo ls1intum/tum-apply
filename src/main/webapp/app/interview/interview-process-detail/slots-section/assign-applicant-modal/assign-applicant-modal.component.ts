@@ -51,7 +51,7 @@ export class AssignApplicantModalComponent {
   assignLoading = signal(false);
 
   // Filters out already scheduled interviewees
-  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED'));
+  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED'));
 
   // Returns true if an applicant is selected and not currently assigning
   canAssign = computed(() => this.selectedApplicantId() !== null && !this.assignLoading());

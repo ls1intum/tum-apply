@@ -6,6 +6,8 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -69,17 +71,34 @@ public final class ApplicantTestData {
     private static User newApplicantUser() {
         User applicantUser = new User();
         applicantUser.setUserId(UUID.randomUUID());
-        applicantUser.setEmail("ada@example.com");
+        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
         applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
         applicantUser.setFirstName("Ada");
         applicantUser.setLastName("Lovelace");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
         attachApplicantRole(applicantUser);
 
         return applicantUser;
     }
 
-    // --- Saved variants -------------------------------------------------------------------------
+    private static User newApplicantUserWithWebsiteAndLinkedin() {
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("ada@example.com");
+        applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
+        applicantUser.setFirstName("Ada");
+        applicantUser.setLastName("Lovelace");
+        applicantUser.setWebsite("https://example.com");
+        applicantUser.setLinkedinUrl("https://linkedin.com/in/testuser");
+
+        attachApplicantRole(applicantUser);
+
+        return applicantUser;
+    }
+
+    // --- Saved variants
+    // -------------------------------------------------------------------------
 
     public static Applicant saved(ApplicantRepository repo, User user) {
         return repo.save(newApplicant(user));
@@ -89,7 +108,75 @@ public final class ApplicantTestData {
         return saved(repo, newApplicantUser());
     }
 
-    // --- Attach roles ---------------------------------------------------------------------------
+    public static Applicant savedWithNewUserWithWebsiteAndLinkedin(ApplicantRepository repo) {
+        return saved(repo, newApplicantUserWithWebsiteAndLinkedin());
+    }
+
+    /**
+     * Saves an Applicant for a User that was already saved (with role attached).
+     * Does NOT call newApplicant to avoid re-attaching the APPLICANT role.
+     */
+    public static Applicant savedWithExistingUser(ApplicantRepository repo, User savedUser) {
+        Applicant a = new Applicant();
+        a.setUser(savedUser);
+        a.setStreet("Teststr. 1");
+        a.setPostalCode("12345");
+        a.setCity("Munich");
+        a.setCountry("de");
+        a.setBachelorDegreeName("B.Sc. Computer Science");
+        a.setBachelorGradeUpperLimit("1.0");
+        a.setBachelorGradeLowerLimit("4.0");
+        a.setBachelorGrade("1.7");
+        a.setBachelorUniversity("TUM");
+        a.setMasterDegreeName("M.Sc. Informatics");
+        a.setMasterGradeUpperLimit("1.0");
+        a.setMasterGradeLowerLimit("4.0");
+        a.setMasterGrade("1.3");
+        a.setMasterUniversity("TUM");
+        return repo.save(a);
+    }
+
+    /**
+     * Creates and saves an Applicant with a random unique email address.
+     * Useful when multiple applicants are needed in a single test.
+     */
+    public static Applicant savedWithRandomEmail(ApplicantRepository repo, UserRepository userRepo) {
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
+        applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
+        applicantUser.setFirstName("Test");
+        applicantUser.setLastName("Applicant");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachApplicantRole(applicantUser);
+        User savedUser = userRepo.save(applicantUser);
+
+        return savedWithExistingUser(repo, savedUser);
+    }
+
+    public static User saveApplicant(String email, UserRepository userRepository) {
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "App", "User");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        return userRepository.saveAndFlush(applicantUser);
+    }
+
+    public static User saveApplicantWithLastActivity(
+        String email,
+        ApplicantRepository applicantRepository,
+        UserRepository userRepository,
+        LocalDateTime lastActivityAt
+    ) {
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "Applicant", "User");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        applicantUser.setLastActivityAt(lastActivityAt);
+        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+        ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
+        return savedApplicantUser;
+    }
+
+    // --- Attach roles---------------------------------------------------------------------------
 
     /**
      * Attaches the APPLICANT role for a given user.

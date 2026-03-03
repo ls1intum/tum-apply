@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.util;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -18,11 +19,13 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Link;
 import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import de.tum.cit.aet.core.exception.PDFGenerationException;
@@ -47,6 +50,7 @@ public class PDFBuilder {
     private String metadataEndText;
     private String pageLabelPage;
     private String pageLabelOf;
+    private byte[] bannerImageBytes;
 
     private static final String TUMAPPLY_URL = "https://tumapply.aet.cit.tum.de";
 
@@ -55,6 +59,11 @@ public class PDFBuilder {
 
     // ----------------- Font Sizes -----------------
     private static final float FONT_SIZE_MAIN_HEADING = 18f;
+
+    // ----------------- Banner Image -----------------
+    private static final float BANNER_MAX_WIDTH = 250f;
+    private static final float BANNER_MAX_HEIGHT = 100f;
+    private static final float BANNER_MARGIN_BOTTOM = 8f;
     private static final float FONT_SIZE_GROUP_TITLE = 14f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
@@ -215,6 +224,17 @@ public class PDFBuilder {
         return this;
     }
 
+    /**
+     * Sets the banner image to be displayed at the top of the PDF
+     *
+     * @param imageBytes the raw image bytes (JPEG/PNG)
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setBannerImage(byte[] imageBytes) {
+        this.bannerImageBytes = imageBytes;
+        return this;
+    }
+
     // ----------------- Build PDF -----------------
 
     /**
@@ -248,6 +268,25 @@ public class PDFBuilder {
                 .setTextAlignment(TextAlignment.CENTER)
                 .setMarginBottom(HEADER_MARGIN_BOTTOM);
             document.add(mainHeadingParagraph);
+
+            // Banner Image (if set)
+            if (bannerImageBytes != null && bannerImageBytes.length > 0) {
+                try {
+                    Image bannerImage = new Image(ImageDataFactory.create(bannerImageBytes));
+                    // Scale image to fit within max dimensions while maintaining aspect ratio
+                    float originalWidth = bannerImage.getImageWidth();
+                    float originalHeight = bannerImage.getImageHeight();
+                    float scale = Math.min(BANNER_MAX_WIDTH / originalWidth, BANNER_MAX_HEIGHT / originalHeight);
+                    if (scale < 1) {
+                        bannerImage.scaleToFit(originalWidth * scale, originalHeight * scale);
+                    }
+                    bannerImage.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                    bannerImage.setMarginBottom(BANNER_MARGIN_BOTTOM);
+                    document.add(bannerImage);
+                } catch (Exception e) {
+                    // Log and continue without banner if image processing fails
+                }
+            }
 
             // Overview Section
             if (!overviewItems.isEmpty()) {

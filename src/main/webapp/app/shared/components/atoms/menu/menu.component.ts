@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, viewChild } from '@angular/core';
+import { Component, computed, inject, input, output, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -26,10 +26,30 @@ export interface JhiMenuItem {
   imports: [CommonModule, MenuModule, FontAwesomeModule, TranslateDirective],
 })
 export class MenuComponent {
+  /**
+   * The menu items to display.
+   */
   items = input.required<JhiMenuItem[]>();
+
+  /**
+   * Whether the menu is displayed as a popup overlay.
+   */
   popup = input<boolean>(true);
+
+  /**
+   * Element or selector where the menu overlay should be appended.
+   */
   appendTo = input<HTMLElement | string>('body');
+
+  /**
+   * Whether to translate the menu item labels.
+   */
   shouldTranslate = input<boolean>(false);
+
+  /**
+   * Emits whenever the popup visibility changes. true = opened, false = closed
+   */
+  visibleChange = output<boolean>();
 
   menu = viewChild.required<Menu>('menu');
 
@@ -64,6 +84,7 @@ export class MenuComponent {
     // This fixes PrimeNG 21 issue where popups don't close on navigation
     this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe(() => {
       this.clearMenuPopups();
+      this.visibleChange.emit(false);
     });
   }
 
@@ -78,9 +99,18 @@ export class MenuComponent {
   hide(): void {
     this.menu().hide();
   }
+  onShow(): void {
+    this.visibleChange.emit(true);
+  }
+
+  onHide(): void {
+    this.visibleChange.emit(false);
+  }
 
   private handleCommand(item: JhiMenuItem): void {
     item.command?.();
+    this.visibleChange.emit(false);
+
     // Clean up immediately in case navigation occurs
     this.clearMenuPopups();
   }

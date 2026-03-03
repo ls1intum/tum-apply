@@ -3,21 +3,52 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/ai/generate:
-    get:
+  /api/ai/generateJobApplicationDraftStream:
+    put:
       tags: [ai-resource]
-      operationId: storyWithStream
+      operationId: generateJobApplicationDraftStream
       parameters:
-      - name: message
+      - name: lang
         in: query
-        required: false
-        schema: {type: string, default: Tell a story in less than 100 words}
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobFormDTO'}
+        required: true
       responses:
         '200':
           description: OK
           content:
             text/event-stream:
-              schema: {type: string}
+              schema:
+                type: array
+                items: {type: string}
+  /api/ai/translateJobDescriptionForJob:
+    put:
+      tags: [ai-resource]
+      operationId: translateJobDescriptionForJob
+      parameters:
+      - name: jobId
+        in: query
+        required: true
+        schema: {type: string}
+      - name: toLang
+        in: query
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -103,6 +134,30 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageApplicationOverviewDTO'}
+  /api/applications/profile:
+    get:
+      tags: [application-resource]
+      operationId: getApplicantProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+    put:
+      tags: [application-resource]
+      operationId: updateApplicantProfile
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications/rename-document/{documentDictionaryId}:
     put:
       tags: [application-resource]
@@ -781,21 +836,14 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/export/application/{id}/pdf:
+  /api/export/application/pdf:
     post:
       tags: [pdf-export-resource]
       operationId: exportApplicationToPDF
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
-            schema:
-              type: object
-              additionalProperties: {type: string}
+            schema: {$ref: '#/components/schemas/ApplicationPDFRequest'}
         required: true
       responses:
         '200':
@@ -992,6 +1040,57 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/booking/{processId}:
+    get:
+      tags: [interview-booking-resource]
+      operationId: getBookingData
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 20, minimum: 1}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BookingDTO'}
+  /api/interviews/booking/{processId}/book:
+    post:
+      tags: [interview-booking-resource]
+      operationId: bookSlot
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BookSlotRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -1057,6 +1156,69 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweeDetails
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment:
+    put:
+      tags: [interview-resource]
+      operationId: updateAssessment
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateAssessmentDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
+  /api/interviews/processes/{processId}/send-invitations:
+    post:
+      tags: [interview-resource]
+      operationId: sendInvitations
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SendInvitationsRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SendInvitationsResultDTO'}
   /api/interviews/processes/{processId}/slots:
     get:
       tags: [interview-resource]
@@ -1088,6 +1250,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
+  /api/interviews/processes/{processId}/slots/conflict-data:
+    get:
+      tags: [interview-resource]
+      operationId: getConflictDataForDate
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: date
+        in: query
+        required: true
+        schema: {type: string, format: date}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConflictDataDTO'}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]
@@ -1141,6 +1322,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/upcoming:
+    get:
+      tags: [interview-resource]
+      operationId: getUpcomingInterviews
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UpcomingInterviewDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1260,10 +1453,10 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JobFiltersDTO'}
-  /api/jobs/professor:
+  /api/jobs/research-group:
     get:
       tags: [job-resource]
-      operationId: getJobsByProfessor
+      operationId: getJobsForCurrentResearchGroup
       parameters:
       - name: pageSize
         in: query
@@ -1553,6 +1746,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/professors:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupProfessors
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/{id}:
     get:
       tags: [research-group-resource]
@@ -1681,6 +1886,70 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/SchoolShortDTO'}
+  /api/schools/admin/search:
+    get:
+      tags: [school-resource]
+      operationId: getSchoolsForAdmin
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOSchoolDTO'}
+  /api/schools/delete/{id}:
+    delete:
+      tags: [school-resource]
+      operationId: deleteSchool
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/schools/update/{id}:
+    put:
+      tags: [school-resource]
+      operationId: updateSchool
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SchoolCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolShortDTO'}
   /api/schools/with-departments:
     get:
       tags: [school-resource]
@@ -1764,18 +2033,67 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
-  /api/users/export:
+  /api/users/data-export:
+    post:
+      tags: [user-data-export-resource]
+      summary: Request a data export for the current user
+      operationId: requestDataExport
+      responses:
+        '202': {description: Data export request accepted}
+        '409': {description: Data export request already exists or is in progress}
+        '429': {description: Data export request rate limit exceeded}
+        '500':
+          description: Internal server error while creating data export request
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
+  /api/users/data-export/download/{token}:
     get:
       tags: [user-data-export-resource]
-      summary: Export user data
-      operationId: exportUserData
+      summary: Download a prepared data export
+      operationId: downloadDataExport
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
       responses:
         '200':
-          description: OK
+          description: Data export download
           content:
-            application/zip:
+            application/json:
               schema: {type: string, format: binary}
-        '500': {description: Internal Server Error}
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema: {type: string, format: binary}
+        '409':
+          description: Export not ready or expired
+          content:
+            application/json:
+              schema: {type: string, format: binary}
+        '500':
+          description: Internal server error while downloading data export
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
+  /api/users/data-export/status:
+    get:
+      tags: [user-data-export-resource]
+      summary: Get data export status for the current user
+      operationId: getDataExportStatus
+      responses:
+        '200':
+          description: Current data export status
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DataExportStatusDTO'}
+        '500':
+          description: Internal server error while loading data export status
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1810,6 +2128,10 @@ paths:
         '200': {description: OK}
 components:
   schemas:
+    AIJobDescriptionTranslationDTO:
+      type: object
+      properties:
+        translatedText: {type: string}
     AcceptDTO:
       type: object
       properties:
@@ -1937,7 +2259,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationDetailDTO:
       type: object
       properties:
@@ -1946,7 +2268,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation: {type: string}
@@ -2001,7 +2323,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2017,7 +2339,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
@@ -2035,11 +2357,18 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
+    ApplicationPDFRequest:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        labels:
+          type: object
+          additionalProperties: {type: string}
     ApplicationReview:
       type: object
       properties:
@@ -2075,6 +2404,28 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    BookSlotRequestDTO:
+      type: object
+      properties:
+        slotId: {type: string, format: uuid}
+      required: [slotId]
+    BookingDTO:
+      type: object
+      properties:
+        availableSlots:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        jobTitle: {type: string}
+        researchGroupName: {type: string}
+        supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
+        userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
+    ConflictDataDTO:
+      type: object
+      properties:
+        currentProcessId: {type: string, format: uuid}
+        slots:
+          type: array
+          items: {$ref: '#/components/schemas/ExistingSlotDTO'}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2136,6 +2487,17 @@ components:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
     CustomFieldDTO: {}
+    DataExportStatusDTO:
+      type: object
+      properties:
+        cooldownSeconds: {type: integer, format: int64}
+        downloadToken: {type: string}
+        lastRequestedAt: {type: string, format: date-time}
+        nextAllowedAt: {type: string, format: date-time}
+        status:
+          type: string
+          enum: [REQUESTED, IN_CREATION, EMAIL_SENT, DOWNLOADED, DOWNLOADED_DELETED,
+            DELETED, FAILED]
     Department:
       type: object
       properties:
@@ -2176,7 +2538,10 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2185,7 +2550,10 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2194,7 +2562,10 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2206,7 +2577,10 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2221,6 +2595,14 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
+    ExistingSlotDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        interviewProcessId: {type: string, format: uuid}
+        isBooked: {type: boolean}
+        startDateTime: {type: string, format: date-time}
     GenderBiasAnalysisRequest:
       type: object
       properties:
@@ -2253,6 +2635,7 @@ components:
         imageType:
           type: string
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        isInUse: {type: boolean}
         researchGroupId: {type: string, format: uuid}
         sizeBytes: {type: integer, format: int64}
         uploadedById: {type: string, format: uuid}
@@ -2314,6 +2697,21 @@ components:
           type: string
           enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
         user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeDetailDTO:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        applicationId: {type: string, format: uuid}
+        assessmentNotes: {type: string}
+        documents: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        rating: {type: integer, format: int32}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
     IntervieweeUserDTO:
       type: object
       properties:
@@ -2333,7 +2731,6 @@ components:
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomField'}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2341,21 +2738,22 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         image: {$ref: '#/components/schemas/Image'}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
     JobCardDTO:
@@ -2365,7 +2763,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         departmentName: {type: string}
         imageUrl: {type: string}
@@ -2382,7 +2780,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2391,19 +2788,20 @@ components:
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         imageUrl: {type: string}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [jobId, state, supervisingProfessor, title]
@@ -2414,25 +2812,26 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        imageId: {type: string, format: uuid}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location: {type: string}
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
@@ -2450,7 +2849,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2458,19 +2856,20 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [fieldOfStudies, location, state, supervisingProfessor, title]
@@ -2599,6 +2998,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/ResearchGroupDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOSchoolDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/SchoolDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOUserShortDTO:
       type: object
@@ -2772,6 +3178,20 @@ components:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
+    SendInvitationsRequestDTO:
+      type: object
+      properties:
+        intervieweeIds:
+          type: array
+          items: {type: string, format: uuid}
+        onlyUninvited: {type: boolean}
+    SendInvitationsResultDTO:
+      type: object
+      properties:
+        failedEmails:
+          type: array
+          items: {type: string}
+        sentCount: {type: integer, format: int32}
     SlotInput:
       type: object
       properties:
@@ -2787,6 +3207,17 @@ components:
         empty: {type: boolean}
         sorted: {type: boolean}
         unsorted: {type: boolean}
+    UpcomingInterviewDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        intervieweeId: {type: string, format: uuid}
+        intervieweeName: {type: string}
+        jobTitle: {type: string}
+        location: {type: string}
+        processId: {type: string, format: uuid}
+        startDateTime: {type: string, format: date-time}
     UpdateApplicationDTO:
       type: object
       properties:
@@ -2795,12 +3226,18 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}
         specialSkills: {type: string}
       required: [applicant, applicationId, applicationState]
+    UpdateAssessmentDTO:
+      type: object
+      properties:
+        clearRating: {type: boolean}
+        notes: {type: string}
+        rating: {type: integer, format: int32, maximum: 2, minimum: -2}
     UpdatePasswordDTO:
       type: object
       properties:
@@ -2825,6 +3262,7 @@ components:
           uniqueItems: true
         firstName: {type: string}
         gender: {type: string}
+        lastActivityAt: {type: string, format: date-time}
         lastModifiedAt: {type: string, format: date-time}
         lastName: {type: string}
         linkedinUrl: {type: string}
@@ -2843,6 +3281,11 @@ components:
         universityId: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserBookingInfoDTO:
+      type: object
+      properties:
+        bookedSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        hasBookedSlot: {type: boolean}
     UserDTO:
       type: object
       properties:
@@ -2859,6 +3302,62 @@ components:
         selectedLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserDataExportException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName: {type: string}
+                  moduleName: {type: string}
+                  moduleVersion: {type: string}
+                  methodName: {type: string}
+                  fileName: {type: string}
+                  lineNumber: {type: integer, format: int32}
+                  className: {type: string}
+                  nativeMethod: {type: boolean}
+            message: {type: string}
+            localizedMessage: {type: string}
+        localizedMessage: {type: string}
+        message: {type: string}
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName: {type: string}
+              moduleName: {type: string}
+              moduleVersion: {type: string}
+              methodName: {type: string}
+              fileName: {type: string}
+              lineNumber: {type: integer, format: int32}
+              className: {type: string}
+              nativeMethod: {type: boolean}
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName: {type: string}
+                    moduleName: {type: string}
+                    moduleVersion: {type: string}
+                    methodName: {type: string}
+                    fileName: {type: string}
+                    lineNumber: {type: integer, format: int32}
+                    className: {type: string}
+                    nativeMethod: {type: boolean}
+              message: {type: string}
+              localizedMessage: {type: string}
     UserForApplicationDetailDTO:
       type: object
       properties:
@@ -2899,4 +3398,5 @@ components:
           items:
             type: string
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
+        universityId: {type: string}
         userId: {type: string, format: uuid}

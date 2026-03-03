@@ -175,6 +175,13 @@ export class MyPositionsPageComponent {
     return menuMap;
   });
 
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.jobMenuItems();
+    return (job: CreatedJobDTO): JhiMenuItem[] => {
+      return menuMap.get(job.jobId) ?? [];
+    };
+  });
+
   private jobService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
@@ -261,10 +268,6 @@ export class MyPositionsPageComponent {
     }
   }
 
-  getMenuItems(job: CreatedJobDTO): JhiMenuItem[] {
-    return this.jobMenuItems().get(job.jobId) ?? [];
-  }
-
   onConfirmEdit(): void {
     const jobId = this.currentJobId();
     if (jobId !== undefined && jobId !== '') {
@@ -298,7 +301,7 @@ export class MyPositionsPageComponent {
         return;
       }
       const pageData = await firstValueFrom(
-        this.jobService.getJobsByProfessor(
+        this.jobService.getJobsForCurrentResearchGroup(
           this.pageSize(),
           this.page(),
           emptyToUndef(this.selectedStatusFilters()),

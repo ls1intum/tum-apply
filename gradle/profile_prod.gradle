@@ -21,6 +21,7 @@ bootRun {
 
 tasks.register("webapp", NpmTask) {
   dependsOn npmInstall
+  environment = ['APP_VERSION': project.version]
   args = ["run", "webapp:prod"]
 }
 

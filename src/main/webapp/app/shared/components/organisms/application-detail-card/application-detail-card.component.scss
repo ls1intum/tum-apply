@@ -11,7 +11,7 @@ $detail-card-2-column-max-width: bp.$xl;
   width: 6rem;
   height: 6rem;
   position: relative;
-  border-radius: 3rem;
+  border-radius: var(--border-radius-full);
   overflow: hidden;
 }
 
@@ -39,7 +39,7 @@ $detail-card-2-column-max-width: bp.$xl;
 /* Generic card wrapper */
 .card {
   padding-bottom: 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius-lg);
   outline: 0.1rem solid var(--p-border-default);
   display: flex;
   flex-direction: column;
@@ -109,7 +109,7 @@ $detail-card-2-column-max-width: bp.$xl;
   padding-right: 1rem;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius-md);
   outline: 0.1rem solid var(--p-border-default);
   display: flex;
   flex-direction: column;

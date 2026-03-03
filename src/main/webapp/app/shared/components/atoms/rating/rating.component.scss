@@ -4,8 +4,7 @@
   width: 100%;
   max-width: 21rem;
   height: 1rem;
-
-  border-radius: 2rem;
+  border-radius: var(--p-border-radius-pill);
   overflow: hidden;
 
   .section {

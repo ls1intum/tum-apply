@@ -2,9 +2,28 @@
   "settings": {
     "header": "Einstellungen",
 
-    "notifications": {
-      "header": "Benachrichtigungen",
+    "tabs": {
+      "general": "Allgemein",
+      "notifications": "Benachrichtigungen",
+      "personalInformation": "Persönliche Informationen"
+    },
+    "personalInformation": {
+      "description": "Aktualisiere hier deine persönlichen Informationen. \nDeine gespeicherten Daten werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
+      },
+      "saved": {
+        "summary": "Erfolgreich gespeichert",
+        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
+      }
+    },
 
+    "notifications": {
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
@@ -38,25 +57,6 @@
         "blossom": "Hell Blossom",
         "aquabloom": "Hell AquaBloom",
         "system": "System"
-      }
-    },
-
-    "privacy": {
-      "header": "Datenschutz",
-      "export": {
-        "header": "Deine Daten",
-        "description": "Lade ein ZIP-Archiv mit einer Zusammenfassung deines Profils, Einstellungen und Dokumenten herunter.",
-        "button": "Exportiere meine Daten",
-        "cooldown": "Du kannst in {{seconds}}s einen neuen Export anfordern",
-        "inProgress": "Export läuft…",
-        "started": {
-          "summary": "Export gestartet",
-          "detail": "Du erhältst eine E-Mail, sobald das Archiv bereit ist."
-        },
-        "failed": {
-          "summary": "Export fehlgeschlagen",
-          "detail": "Bitte versuche es später erneut."
-        }
       }
     }
   }

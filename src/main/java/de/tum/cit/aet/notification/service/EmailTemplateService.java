@@ -21,6 +21,7 @@ import de.tum.cit.aet.notification.dto.EmailTemplateTranslationDTO;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -39,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmailTemplateService {
 
     private final EmailTemplateRepository emailTemplateRepository;
+    private final ResearchGroupRepository researchGroupRepository;
     private final CurrentUserService currentUserService;
 
     private final Set<EmailType> editableEmailTypes = EmailType.getEditableEmailTypes();
@@ -55,9 +57,26 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
+        if (researchGroup == null && !emailType.isMultipleTemplates()) {
+            return emailTemplateRepository
+                .findFirstByEmailTypeOrderByEmailTemplateIdAsc(emailType)
+                .orElseGet(() -> {
+                    ResearchGroup fallbackGroup = researchGroupRepository
+                        .findAll()
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("No research group available to create email template"));
+                    EmailTemplate newTemplate = createDefaultTemplate(fallbackGroup, templateName, emailType);
+                    return emailTemplateRepository.save(newTemplate);
+                });
+        }
+
         return emailTemplateRepository
             .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
-            .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", researchGroup.getResearchGroupId(), templateName, emailType));
+            .orElseGet(() -> {
+                EmailTemplate newTemplate = createDefaultTemplate(researchGroup, templateName, emailType);
+                return emailTemplateRepository.save(newTemplate);
+            });
     }
 
     /**
@@ -104,6 +123,7 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     public PageResponseDTO<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
+        addMissingTemplates(researchGroup);
         Pageable pageable = PageRequest.of(
             pageDTO.pageNumber(),
             pageDTO.pageSize(),

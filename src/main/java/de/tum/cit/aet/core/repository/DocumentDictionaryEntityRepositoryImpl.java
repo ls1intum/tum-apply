@@ -57,7 +57,9 @@ public class DocumentDictionaryEntityRepositoryImpl implements DocumentDictionar
                 case MASTER_TRANSCRIPT -> masterIds.add(documentInformationHolderDTO);
                 case REFERENCE -> referenceIds.add(documentInformationHolderDTO);
                 case CV -> dto.setCvDocumentDictionaryId(documentInformationHolderDTO);
-                default -> {} // For the moment, skip CUSTOM or others
+                default -> {
+                    // For the moment, skip CUSTOM or others
+                }
             }
         }
 

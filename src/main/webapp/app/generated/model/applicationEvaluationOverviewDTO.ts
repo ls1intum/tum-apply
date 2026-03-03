@@ -18,7 +18,7 @@ export interface ApplicationEvaluationOverviewDTO {
     state?: ApplicationEvaluationOverviewDTO.StateEnum;
 }
 export namespace ApplicationEvaluationOverviewDTO {
-    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
+    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
     export const StateEnum = {
         Saved: 'SAVED' as StateEnum,
         Sent: 'SENT' as StateEnum,
@@ -27,9 +27,7 @@ export namespace ApplicationEvaluationOverviewDTO {
         Rejected: 'REJECTED' as StateEnum,
         Withdrawn: 'WITHDRAWN' as StateEnum,
         JobClosed: 'JOB_CLOSED' as StateEnum,
-        Invited: 'INVITED' as StateEnum,
-        Scheduled: 'SCHEDULED' as StateEnum,
-        Completed: 'COMPLETED' as StateEnum
+        Interview: 'INTERVIEW' as StateEnum
     };
 }
 

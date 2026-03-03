@@ -9,6 +9,7 @@ import de.tum.cit.aet.usermanagement.dto.AdminDepartmentFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import de.tum.cit.aet.usermanagement.service.DepartmentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -70,6 +71,7 @@ public class DepartmentResource {
      * @param pageDTO paging params
      * @param filterDTO filter params (searchQuery, schoolNames)
      * @param sortDTO sorting params
+     * @param request HTTP servlet request to extract parameters
      * @return paginated departments
      */
     @Admin
@@ -77,7 +79,8 @@ public class DepartmentResource {
     public ResponseEntity<PageResponseDTO<DepartmentDTO>> getDepartmentsForAdmin(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute AdminDepartmentFilterDTO filterDTO,
-        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+        HttpServletRequest request
     ) {
         log.info(
             "GET /api/departments/admin/search - Fetching departments for admin with page={}, filter={}, sort={}",
@@ -85,7 +88,7 @@ public class DepartmentResource {
             filterDTO,
             sortDTO
         );
-        PageResponseDTO<DepartmentDTO> response = departmentService.getDepartmentsForAdmin(pageDTO, filterDTO, sortDTO);
+        PageResponseDTO<DepartmentDTO> response = departmentService.getDepartmentsForAdmin(pageDTO, filterDTO, sortDTO, request);
         return ResponseEntity.ok(response);
     }
 

@@ -1,4 +1,36 @@
 <div class="page-container">
+  <jhi-confirm-dialog
+    #approveDialog
+    [label]="'button.confirm' | translate"
+    [header]="'researchGroup.adminView.confirmDialog.header' | translate"
+    [message]="'researchGroup.adminView.confirmDialog.message' | translate"
+    severity="success"
+    confirmIcon="check"
+    [showOpenButton]="false"
+    (confirmed)="onConfirmApprove()"
+  />
+
+  <jhi-confirm-dialog
+    #denyDialog
+    [label]="'button.deny' | translate"
+    [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
+    [message]="'researchGroup.adminView.denyConfirmDialog.message' | translate"
+    severity="danger"
+    confirmIcon="times"
+    [showOpenButton]="false"
+    (confirmed)="onConfirmDeny()"
+  />
+
+  <jhi-confirm-dialog
+    #withdrawDialog
+    [label]="'button.withdraw' | translate"
+    [header]="'researchGroup.adminView.withdrawConfirmDialog.header' | translate"
+    [message]="'researchGroup.adminView.withdrawConfirmDialog.message' | translate"
+    severity="danger"
+    confirmIcon="withdraw"
+    [showOpenButton]="false"
+    (confirmed)="onConfirmWithdraw()"
+  />
   <div class="header-container">
     <div class="page-header">
       <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
@@ -46,63 +78,15 @@
           variant="text"
           (click)="onViewResearchGroup(researchGroup.id)"
         />
-        @if (researchGroup.status !== 'DENIED') {
-          <jhi-button
-            icon="users"
-            [ariaLabel]="'researchGroup.members.manageMembers'"
-            [tooltip]="'researchGroup.members.manageMembers' | translate"
-            severity="primary"
-            variant="text"
-            (click)="onManageMembers(researchGroup.id)"
-            [shouldTranslate]="true"
-          />
-        }
-        @if (researchGroup.status === 'ACTIVE') {
-          <jhi-confirm-dialog
-            [label]="'button.withdraw' | translate"
-            [iconOnly]="true"
-            [header]="'researchGroup.adminView.withdrawConfirmDialog.header' | translate"
-            [message]="'researchGroup.adminView.withdrawConfirmDialog.message' | translate"
-            confirmIcon="withdraw"
-            (confirmed)="onWithdrawResearchGroup(researchGroup.id)"
-            severity="danger"
-            [tooltip]="'button.withdraw' | translate"
-          />
-        }
-        @if (researchGroup.status === 'DRAFT') {
-          <jhi-confirm-dialog
-            [label]="'button.confirm' | translate"
-            [iconOnly]="true"
-            [header]="'researchGroup.adminView.confirmDialog.header' | translate"
-            [message]="'researchGroup.adminView.confirmDialog.message' | translate"
-            confirmIcon="check"
-            (confirmed)="onApproveResearchGroup(researchGroup.id)"
-            severity="success"
-            [tooltip]="'button.confirm' | translate"
-          />
-          <jhi-confirm-dialog
-            [label]="'button.deny' | translate"
-            [iconOnly]="true"
-            [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
-            [message]="'researchGroup.adminView.denyConfirmDialog.message' | translate"
-            confirmIcon="times"
-            (confirmed)="onDenyResearchGroup(researchGroup.id)"
-            severity="danger"
-            [tooltip]="'button.deny' | translate"
-          />
-        }
-        @if (researchGroup.status === 'DENIED') {
-          <jhi-confirm-dialog
-            [label]="'button.confirm' | translate"
-            [iconOnly]="true"
-            [header]="'researchGroup.adminView.confirmDialog.header' | translate"
-            [message]="'researchGroup.adminView.confirmDialog.message' | translate"
-            confirmIcon="check"
-            (confirmed)="onApproveResearchGroup(researchGroup.id)"
-            severity="success"
-            [tooltip]="'button.confirm' | translate"
-          />
-        }
+        <jhi-button
+          icon="ellipsis-vertical"
+          [tooltip]="getMenuItems()(researchGroup).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+          severity="primary"
+          variant="text"
+          (click)="menu.toggle($event)"
+          [disabled]="getMenuItems()(researchGroup).length === 0"
+        />
+        <jhi-menu #menu [items]="getMenuItems()(researchGroup)" [shouldTranslate]="true" />
       </div>
     </ng-template>
 

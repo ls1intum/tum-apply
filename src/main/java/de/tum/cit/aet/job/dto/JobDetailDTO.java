@@ -24,16 +24,17 @@ public record JobDetailDTO(
     Integer workload,
     Integer contractDuration,
     String fundingType,
-    String description,
-    String tasks,
-    String requirements,
+    String jobDescriptionEN,
+    String jobDescriptionDE,
     LocalDate startDate,
     LocalDate endDate,
     @NotNull LocalDateTime createdAt,
     @NotNull LocalDateTime lastModifiedAt,
     JobState state,
     UUID applicationId,
-    ApplicationState applicationState
+    ApplicationState applicationState,
+    Boolean suitableForDisabled,
+    UUID imageId // Job banner image ID for PDF export
 ) {
     public JobDetailDTO(
         @NotNull UUID jobId,
@@ -46,16 +47,17 @@ public record JobDetailDTO(
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescriptionEN,
+        String jobDescriptionDE,
         LocalDate startDate,
         LocalDate endDate,
         @NotNull LocalDateTime createdAt,
         @NotNull LocalDateTime lastModifiedAt,
         JobState state,
         UUID applicationId,
-        ApplicationState applicationState
+        ApplicationState applicationState,
+        Boolean suitableForDisabled,
+        UUID imageId
     ) {
         this(
             jobId,
@@ -68,16 +70,17 @@ public record JobDetailDTO(
             workload,
             contractDuration,
             UiTextFormatter.formatEnumValue(fundingType),
-            description,
-            tasks,
-            requirements,
+            jobDescriptionEN,
+            jobDescriptionDE,
             startDate,
             endDate,
             createdAt,
             lastModifiedAt,
             state,
             applicationId,
-            applicationState
+            applicationState,
+            suitableForDisabled,
+            imageId
         );
     }
 }

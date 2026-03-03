@@ -125,22 +125,4 @@ describe('Comment', () => {
     expect(savedSpy).toHaveBeenCalledWith('final');
     expect(exitSpy).toHaveBeenCalled();
   });
-
-  it('should emit deleted when delete button is clicked', () => {
-    const spy = vi.fn();
-    component.deleted.subscribe(spy);
-
-    fixture.componentRef.setInput('canEdit', true);
-    fixture.componentRef.setInput('isCreate', false);
-    fixture.detectChanges();
-
-    const buttons = fixture.nativeElement.querySelectorAll('jhi-button');
-    const deleteButton = Array.from(buttons).find((btn: any) => btn.getAttribute('icon') === 'trash');
-
-    expect(deleteButton).toBeTruthy();
-    (deleteButton as HTMLElement).click();
-    fixture.detectChanges();
-
-    expect(spy).toHaveBeenCalled();
-  });
 });

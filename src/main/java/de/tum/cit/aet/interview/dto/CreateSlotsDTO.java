@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * DTO for creating multiple interview slots.
- * Frontend generates the slots - backend validates and saves.
+ * Client generates the slots - server validates and saves.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record CreateSlotsDTO(@NotEmpty List<@Valid SlotInput> slots) {

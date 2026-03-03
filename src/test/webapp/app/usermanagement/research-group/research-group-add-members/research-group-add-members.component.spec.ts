@@ -87,6 +87,8 @@ describe('ResearchGroupAddMembersComponent', () => {
 
     fixture = TestBed.createComponent(ResearchGroupAddMembersComponent);
     component = fixture.componentInstance;
+    const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean };
+    componentWithMocks.USE_MOCK_USERS = false;
   });
 
   afterEach(() => {
@@ -303,6 +305,69 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       // No toast should be shown for the stale error
       expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Mock users', () => {
+    it('should use mock users and avoid API calls when enabled', async () => {
+      vi.clearAllMocks();
+      const mockUsers: KeycloakUserDTO[] = [
+        { id: 'mock-1', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
+        { id: 'mock-2', firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@mytum.de' },
+      ];
+
+      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      componentWithMocks.USE_MOCK_USERS = true;
+      componentWithMocks.MOCK_USERS = mockUsers;
+
+      await component.loadAvailableUsers('alice');
+
+      expect(component.users()).toEqual([mockUsers[0]]);
+      expect(component.totalRecords()).toBe(1);
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+    });
+
+    it('should handle missing user fields when filtering mock users', async () => {
+      vi.clearAllMocks();
+      const mockUsers: KeycloakUserDTO[] = [
+        { id: 'mock-1', firstName: undefined, lastName: undefined, email: undefined } as KeycloakUserDTO,
+        { id: 'mock-2', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
+      ];
+
+      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      componentWithMocks.USE_MOCK_USERS = true;
+      componentWithMocks.MOCK_USERS = mockUsers;
+
+      await component.loadAvailableUsers('alice');
+
+      expect(component.users()).toEqual([mockUsers[1]]);
+      expect(component.totalRecords()).toBe(1);
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+    });
+
+    it('should paginate mock users based on page and pageSize', async () => {
+      vi.clearAllMocks();
+      const mockUsers: KeycloakUserDTO[] = [
+        { id: 'mock-1', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
+        { id: 'mock-2', firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@mytum.de' },
+        { id: 'mock-3', firstName: 'Carla', lastName: 'Nguyen', email: 'carla.nguyen@tum.de' },
+        { id: 'mock-4', firstName: 'David', lastName: 'Ibrahim', email: 'david.ibrahim@mytum.de' },
+        { id: 'mock-5', firstName: 'Elena', lastName: 'Rossi', email: 'elena.rossi@tum.de' },
+        { id: 'mock-6', firstName: 'Farid', lastName: 'Khan', email: 'farid.khan@mytum.de' },
+      ];
+
+      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      componentWithMocks.USE_MOCK_USERS = true;
+      componentWithMocks.MOCK_USERS = mockUsers;
+
+      component.pageSize.set(2);
+      component.page.set(1);
+
+      await component.loadAvailableUsers('tum');
+
+      expect(component.totalRecords()).toBe(6);
+      expect(component.users()).toEqual([mockUsers[2], mockUsers[3]]);
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
   });
 

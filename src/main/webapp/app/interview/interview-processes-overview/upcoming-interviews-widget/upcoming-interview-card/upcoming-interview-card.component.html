@@ -1,0 +1,36 @@
+<a
+  [routerLink]="['/interviews', 'process', interview().processId, 'interviewee', interview().intervieweeId, 'assessment']"
+  [queryParams]="{ from: 'overview' }"
+  class="group flex flex-col gap-1 p-3 rounded-lg border border-border-default hover:bg-background-surface text-text-primary"
+>
+  <!-- Row 1: Applicant Name -->
+  <div class="font-bold truncate" [title]="interview().intervieweeName">
+    {{ interview().intervieweeName }}
+  </div>
+
+  <!-- Row 2: Job Title -->
+  <div class="flex items-center gap-1.5 text-sm text-text-primary" [title]="interview().jobTitle">
+    <fa-icon icon="briefcase" class="text-primary shrink-0" />
+    <span class="truncate min-w-0">{{ interview().jobTitle }}</span>
+  </div>
+
+  <!-- Row 3: Date & Time -->
+  <div class="flex items-center gap-3 text-sm text-text-primary mt-1">
+    <!-- Date -->
+    <div class="flex items-center gap-1.5">
+      <fa-icon icon="calendar" class="text-primary shrink-0" />
+      <span>{{ interview().startDateTime | localizedDate }}</span>
+    </div>
+    <!-- Time -->
+    <div class="flex items-center gap-1.5">
+      <fa-icon icon="clock" class="text-primary shrink-0" />
+      <span>{{ formattedTimeRange() }}</span>
+    </div>
+  </div>
+
+  <!-- Row 4: Location -->
+  <div class="flex items-center gap-1.5 text-sm text-text-primary" [title]="interview().location">
+    <fa-icon icon="location-dot" class="text-primary shrink-0" />
+    <span class="truncate min-w-0">{{ interview().location }}</span>
+  </div>
+</a>

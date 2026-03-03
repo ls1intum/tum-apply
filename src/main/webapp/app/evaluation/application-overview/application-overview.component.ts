@@ -75,6 +75,7 @@ export class ApplicationOverviewComponent {
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
+    INTERVIEW: 'info',
   });
 
   readonly availableStatusLabels = availableStatusOptions.map(option => option.label);

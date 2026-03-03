@@ -48,4 +48,8 @@ public class InterviewSlot extends AbstractAuditingEntity {
 
     @Column(name = "is_booked", nullable = false)
     private Boolean isBooked = false;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

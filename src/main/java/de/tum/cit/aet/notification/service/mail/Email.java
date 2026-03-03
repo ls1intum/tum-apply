@@ -73,6 +73,17 @@ public class Email {
     private Set<UUID> documentIds;
 
     /**
+     * ICS calendar content for interview invitations.
+     * If set, will be attached as a .ics file.
+     */
+    private String icsContent;
+
+    /**
+     * Filename for the ICS attachment (e.g., "interview_2025-01-15.ics")
+     */
+    private String icsFileName;
+
+    /**
      * Validates the email addresses
      */
     public void validate() {

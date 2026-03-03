@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
@@ -16,6 +15,7 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class EmailTemplateServiceTest {
 
-    private static final String TEMPLATE_NAME = "application-template";
+    private static final String TEMPLATE_NAME = null;
     private static final String SUBJECT_TEXT = "Application Status";
     private static final String BODY_HTML = "<p>Your application has been processed</p>";
 
@@ -45,13 +45,18 @@ class EmailTemplateServiceTest {
     @Captor
     private ArgumentCaptor<Iterable<EmailTemplate>> templateIterableCaptor;
 
+    @Captor
+    private ArgumentCaptor<EmailTemplate> templateCaptor;
+
     private EmailTemplateService emailTemplateService;
+
+    private ResearchGroupRepository researchGroupRepository;
 
     private ResearchGroup researchGroup;
 
     @BeforeEach
     void setUp() {
-        emailTemplateService = new EmailTemplateService(emailTemplateRepository, currentUserService);
+        emailTemplateService = new EmailTemplateService(emailTemplateRepository, researchGroupRepository, currentUserService);
         researchGroup = createResearchGroup();
     }
 
@@ -82,7 +87,7 @@ class EmailTemplateServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenTemplateNotFound() {
+        void shouldCreateTemplateWhenNotFound() {
             when(
                 emailTemplateRepository.findByResearchGroupAndTemplateNameAndEmailType(
                     researchGroup,
@@ -90,16 +95,21 @@ class EmailTemplateServiceTest {
                     EmailType.APPLICATION_ACCEPTED
                 )
             ).thenReturn(Optional.empty());
+            when(emailTemplateRepository.save(templateCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-            assertThatThrownBy(() -> emailTemplateService.get(researchGroup, TEMPLATE_NAME, EmailType.APPLICATION_ACCEPTED)).isInstanceOf(
-                EntityNotFoundException.class
-            );
+            EmailTemplate result = emailTemplateService.get(researchGroup, TEMPLATE_NAME, EmailType.APPLICATION_ACCEPTED);
+
+            assertThat(result).isNotNull();
+            assertThat(result.getEmailType()).isEqualTo(EmailType.APPLICATION_ACCEPTED);
             verify(emailTemplateRepository).findByResearchGroupAndTemplateNameAndEmailType(
                 researchGroup,
                 TEMPLATE_NAME,
                 EmailType.APPLICATION_ACCEPTED
             );
-            verifyNoMoreInteractions(emailTemplateRepository);
+
+            EmailTemplate savedTemplate = templateCaptor.getValue();
+            assertThat(savedTemplate.getEmailType()).isEqualTo(EmailType.APPLICATION_ACCEPTED);
+            assertThat(savedTemplate.getResearchGroup()).isEqualTo(researchGroup);
         }
 
         @Test
@@ -208,7 +218,7 @@ class EmailTemplateServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenTemplateDoesNotExist() {
+        void shouldCreateTemplateWhenNotFound() {
             when(
                 emailTemplateRepository.findByResearchGroupAndTemplateNameAndEmailType(
                     researchGroup,
@@ -216,10 +226,21 @@ class EmailTemplateServiceTest {
                     EmailType.APPLICATION_ACCEPTED
                 )
             ).thenReturn(Optional.empty());
+            when(emailTemplateRepository.save(templateCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-            assertThatThrownBy(() ->
-                emailTemplateService.getTemplateTranslation(researchGroup, TEMPLATE_NAME, EmailType.APPLICATION_ACCEPTED, Language.ENGLISH)
-            ).isInstanceOf(EntityNotFoundException.class);
+            EmailTemplateTranslation result = emailTemplateService.getTemplateTranslation(
+                researchGroup,
+                TEMPLATE_NAME,
+                EmailType.APPLICATION_ACCEPTED,
+                Language.ENGLISH
+            );
+
+            // Lazy-init creates template with default translations
+            assertThat(result).isNotNull();
+
+            EmailTemplate savedTemplate = templateCaptor.getValue();
+            assertThat(savedTemplate.getEmailType()).isEqualTo(EmailType.APPLICATION_ACCEPTED);
+            assertThat(savedTemplate.getResearchGroup()).isEqualTo(researchGroup);
         }
     }
 

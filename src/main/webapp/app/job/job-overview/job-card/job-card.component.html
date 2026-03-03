@@ -13,7 +13,7 @@
     "
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
-    <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
+    <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-pill">
       {{ departmentName() }}
     </span>
   </div>
@@ -68,12 +68,12 @@
     <!-- Tags/Badges section -->
     <div class="flex flex-wrap gap-2 mt-auto">
       @if (formattedContractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary">
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-pill border border-primary">
           {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
         </span>
       }
       @if (formattedWorkload()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary"> {{ formattedWorkload() }} </span>
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-pill border border-primary"> {{ formattedWorkload() }} </span>
       }
     </div>
   </div>

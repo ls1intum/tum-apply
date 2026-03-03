@@ -68,14 +68,11 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "job_description_en")
+    private String jobDescriptionEN;
 
-    @Column(name = "tasks")
-    private String tasks;
-
-    @Column(name = "requirements")
-    private String requirements;
+    @Column(name = "job_description_de")
+    private String jobDescriptionDE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
@@ -86,6 +83,9 @@ public class Job extends AbstractAuditingEntity {
 
     @Column(name = "start_date")
     private LocalDate startDate;
+
+    @Column(name = "suitable_for_disabled")
+    private Boolean suitableForDisabled;
 
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequence ASC")

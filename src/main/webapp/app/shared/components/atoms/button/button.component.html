@@ -19,6 +19,7 @@
     [buttonProps]="{ autofocus: autofocus() }"
     [pTooltip]="tooltip()"
     [tooltipPosition]="tooltipPosition()"
+    [tooltipOptions]="tooltipOptions()"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />

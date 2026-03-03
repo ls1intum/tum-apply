@@ -1,171 +1,179 @@
 <form [formGroup]="page1Form()">
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.firstName'"
-        id="firstName"
-        [required]="true"
-        [(model)]="data().firstName"
-        [control]="page1Form().controls.firstName"
-        [shouldTranslate]="true"
-      />
+  <div class="flex flex-col">
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.firstName'"
+          id="firstName"
+          [required]="true"
+          [(model)]="data().firstName"
+          [control]="page1Form().controls.firstName"
+          [shouldTranslate]="true"
+        />
+      </div>
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.lastName'"
+          id="lastName"
+          [required]="true"
+          [(model)]="data().lastName"
+          [control]="page1Form().controls.lastName"
+          [shouldTranslate]="true"
+        />
+      </div>
     </div>
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.lastName'"
-        id="lastName"
-        [required]="true"
-        [(model)]="data().lastName"
-        [control]="page1Form().controls.lastName"
-        [shouldTranslate]="true"
-      />
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.email'"
-        [disabled]="disabledEmail()"
-        id="email"
-        [required]="true"
-        [(model)]="data().email"
-        [control]="page1Form().controls.email"
-        [shouldTranslate]="true"
-      />
-    </div>
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.phoneNumber'"
-        id="phoneNumber"
-        [required]="true"
-        [(model)]="data().phoneNumber"
-        [control]="page1Form().controls.phoneNumber"
-        [shouldTranslate]="true"
-      />
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.email'"
+          [disabled]="disabledEmail()"
+          id="email"
+          [required]="true"
+          [(model)]="data().email"
+          [control]="page1Form().controls.email"
+          [shouldTranslate]="true"
+        />
+      </div>
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.phoneNumber'"
+          id="phoneNumber"
+          [required]="true"
+          [(model)]="data().phoneNumber"
+          [control]="page1Form().controls.phoneNumber"
+          [shouldTranslate]="true"
+        />
+      </div>
     </div>
   </div>
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.voluntaryInformation"></span></p-divider>
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-select
-        width="100%"
-        [label]="'entity.applicationPage1.label.gender' | translate"
-        [items]="selectGenderLocal"
-        [placeholder]="'entity.applicationPage1.placeholder.selectGender' | translate"
-        id="gender"
-        [(selected)]="data().gender"
-        (selectedChange)="updateSelect('gender', $event)"
-        [showClear]="true"
-        [translateItems]="true"
-      />
+  <div class="flex flex-col">
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-select
+          width="100%"
+          [label]="'entity.applicationPage1.label.gender' | translate"
+          [items]="selectGenderLocal"
+          [placeholder]="'entity.applicationPage1.placeholder.selectGender' | translate"
+          id="gender"
+          [(selected)]="data().gender"
+          (selectedChange)="updateSelect('gender', $event)"
+          [showClear]="true"
+          [translateItems]="true"
+          [errorEnabled]="true"
+        />
+      </div>
+      <div class="flex-1">
+        <jhi-select
+          width="100%"
+          [label]="'entity.applicationPage1.label.nationality' | translate"
+          [items]="selectNationalityComputed()"
+          [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
+          id="nationality"
+          [(selected)]="data().nationality"
+          (selectedChange)="updateSelect('nationality', $event)"
+          [filter]="true"
+          [showClear]="true"
+          [dataKey]="'value'"
+          [errorEnabled]="true"
+        />
+      </div>
     </div>
-    <div class="form-field">
-      <jhi-select
-        width="100%"
-        [label]="'entity.applicationPage1.label.nationality' | translate"
-        [items]="selectNationalityComputed()"
-        [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
-        id="nationality"
-        [(selected)]="data().nationality"
-        (selectedChange)="updateSelect('nationality', $event)"
-        [filter]="true"
-        [showClear]="true"
-        [dataKey]="'value'"
-      />
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.website'"
-        id="website"
-        [(model)]="data().website"
-        [control]="page1Form().controls.website"
-        [shouldTranslate]="true"
-      />
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.website'"
+          id="website"
+          [(model)]="data().website"
+          [control]="page1Form().controls.website"
+          [shouldTranslate]="true"
+        />
+      </div>
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.linkedIn'"
+          id="linkedIn"
+          [(model)]="data().linkedIn"
+          [control]="page1Form().controls.linkedIn"
+          [shouldTranslate]="true"
+        />
+      </div>
     </div>
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.linkedIn'"
-        id="linkedIn"
-        [(model)]="data().linkedIn"
-        [control]="page1Form().controls.linkedIn"
-        [shouldTranslate]="true"
-      />
-    </div>
-  </div>
 
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-datepicker
-        [selectedDate]="data().dateOfBirth"
-        [label]="'entity.applicationPage1.label.dateOfBirth'"
-        width="100%"
-        (selectedDateChange)="setDateOfBirth($event)"
-        [minDate]="minDate"
-        [maxDate]="maxDate"
-        [defaultDate]="defaultBirthDate"
-        [shouldTranslate]="true"
-      />
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-datepicker
+          [selectedDate]="data().dateOfBirth"
+          [label]="'entity.applicationPage1.label.dateOfBirth'"
+          width="100%"
+          (selectedDateChange)="setDateOfBirth($event)"
+          [minDate]="minDate"
+          [maxDate]="maxDate"
+          [defaultDate]="defaultBirthDate"
+          [shouldTranslate]="true"
+        />
+      </div>
+      <div class="flex-1"></div>
     </div>
-    <div class="form-field"></div>
   </div>
 
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.address"></span></p-divider>
-
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.street'"
-        id="street"
-        [required]="true"
-        [(model)]="data().street"
-        [control]="page1Form().controls.street"
-        [shouldTranslate]="true"
-      />
+  <div class="flex flex-col">
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.street'"
+          id="street"
+          [required]="true"
+          [(model)]="data().street"
+          [control]="page1Form().controls.street"
+          [shouldTranslate]="true"
+        />
+      </div>
     </div>
-  </div>
 
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.city'"
-        id="city"
-        [required]="true"
-        [(model)]="data().city"
-        [control]="page1Form().controls.city"
-        [shouldTranslate]="true"
-      />
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.city'"
+          id="city"
+          [required]="true"
+          [(model)]="data().city"
+          [control]="page1Form().controls.city"
+          [shouldTranslate]="true"
+        />
+      </div>
     </div>
-  </div>
 
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-select
-        [label]="'entity.applicationPage1.label.country' | translate"
-        [placeholder]="'entity.applicationPage1.placeholder.selectCountry' | translate"
-        id="country"
-        [required]="true"
-        [(selected)]="data().country"
-        width="100%"
-        [items]="selectCountriesLocal()"
-        (selectedChange)="updateSelect('country', $event)"
-        [filter]="true"
-        [dataKey]="'value'"
-      />
-    </div>
-    <div class="form-field">
-      <jhi-string-input
-        [label]="'entity.applicationPage1.label.postcode'"
-        id="postcode"
-        [required]="true"
-        [(model)]="data().postcode"
-        [control]="page1Form().controls.postcode"
-        [shouldTranslate]="true"
-      />
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1">
+        <jhi-select
+          [label]="'entity.applicationPage1.label.country' | translate"
+          [placeholder]="'entity.applicationPage1.placeholder.selectCountry' | translate"
+          id="country"
+          [required]="true"
+          [(selected)]="data().country"
+          width="100%"
+          [items]="selectCountriesLocal()"
+          (selectedChange)="updateSelect('country', $event)"
+          [filter]="true"
+          [dataKey]="'value'"
+          [errorEnabled]="true"
+        />
+      </div>
+      <div class="flex-1">
+        <jhi-string-input
+          [label]="'entity.applicationPage1.label.postcode'"
+          id="postcode"
+          [required]="true"
+          [(model)]="data().postcode"
+          [control]="page1Form().controls.postcode"
+          [shouldTranslate]="true"
+        />
+      </div>
     </div>
   </div>
 </form>

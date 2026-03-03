@@ -11,7 +11,7 @@ export function createThemeServiceMock(initialTheme: ThemeOption = 'light', init
   return {
     theme,
     syncWithSystem,
-    setTheme: vi.fn((newTheme: ThemeOption) => {
+    setTheme: vi.fn((newTheme: ThemeOption, _saveToStorage?: boolean) => {
       theme.set(newTheme);
     }),
     toggleTheme: vi.fn(() => {

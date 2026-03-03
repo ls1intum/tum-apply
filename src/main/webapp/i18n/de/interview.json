@@ -3,7 +3,7 @@
     "overview": {
       "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Stellen"
       },
       "loading": "Interview Prozesse werden geladen...",
       "empty": {
@@ -23,7 +23,7 @@
       },
       "upcoming": {
         "title": "Anstehend",
-        "empty": "Keine anstehenden Interviews geplant"
+        "empty": "Keine anstehenden Interviews"
       },
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
@@ -52,6 +52,7 @@
       "slotsCountPlural": "Termine",
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
+      "showLess": "Weniger anzeigen",
       "error": {
         "loadFailed": {
           "summary": "Interview Termine konnten nicht geladen werden",
@@ -107,6 +108,9 @@
           "required": "Dieses Feld ist erforderlich",
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
+          "conflictSameProcess": "Konflikt mit bestehendem Termin ({{time}}) in diesem Interviewprozess",
+          "conflictBookedOther": "Konflikt mit einem gebuchten Termin ({{time}}) in einem anderen Interviewprozess",
+          "hasConflicts": "Bitte behebe alle Zeitkonflikte vor dem Speichern",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
           "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
           "breakPositive": "Pausendauer darf nicht negativ sein",
@@ -137,8 +141,8 @@
         "singleSlot": "Einzelner Termin",
         "rangeSlot": "Zeitraum",
         "bookedSlot": "Gebuchter Termin",
-        "addStartTime": "Startzeit hinzufügen, um diesen Termin zu erstellen",
-        "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
+        "singleSlotHelp": "Gib eine Startzeit ein. Die Endzeit wird basierend auf der Interviewdauer berechnet.",
+        "rangeSlotHelp": "Gib Start- und Endzeit ein. Termine werden automatisch basierend auf Dauer und Pausenzeit berechnet.",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine",
@@ -171,7 +175,14 @@
       "title": "Bewerber:innen",
       "add": "Bewerber:in hinzufügen",
       "addTitle": "Bewerber:in hinzufügen",
-      "sendInvitations": "Einladung senden",
+      "sendInvitation": "Einladung senden",
+      "resendInvitation": "Einladung erneut senden",
+      "resendConfirmation": {
+        "header": "Einladung erneut senden",
+        "message": "Diese:r Bewerber:in hat bereits eine Einladung erhalten. Möchtest du sie erneut senden?"
+      },
+      "sendAllInvitations": "Einladungen senden",
+      "allInvited": "Alle Bewerber:innen wurden eingeladen",
       "empty": "Noch keine Bewerber:innen hinzugefügt",
       "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
@@ -215,6 +226,24 @@
           "summary": "Fehler",
           "detail": "Bewerber:innen konnten nicht hinzugefügt werden"
         }
+      },
+      "invitation": {
+        "successSingle": {
+          "summary": "Einladung gesendet",
+          "detail": "Die Einladung wurde erfolgreich gesendet"
+        },
+        "success": {
+          "summary": "Einladung gesendet",
+          "detail": "{{count}} Einladung(en) erfolgreich gesendet"
+        },
+        "partial": {
+          "summary": "{{sent}} gesendet, {{failed}} fehlgeschlagen",
+          "detail": "Fehlgeschlagen: {{emails}}. Bitte versuche erneut, die Einladungen zu senden."
+        },
+        "error": {
+          "summary": "Senden fehlgeschlagen",
+          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
       }
     },
     "assign": {
@@ -239,6 +268,36 @@
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
           "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        }
+      }
+    },
+    "assessment": {
+      "title": "Interview Bewertung",
+      "back": "Zurück zur Übersicht",
+      "rating": {
+        "label": "Bewertung",
+        "info": "Bewerte das Gespräch. Dies ist für Bewerber:innen nicht sichtbar."
+      },
+      "notes": {
+        "label": "Interview Notiz",
+        "empty": "Noch keine Notizen hinzugefügt.",
+        "saved": {
+          "summary": "Gespeichert",
+          "detail": "Die Interview Notiz wurde erfolgreich gespeichert."
+        }
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Bewertung konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bewerber:in konnte nicht geladen werden. Bitte lade die Seite neu."
+        },
+        "notFound": {
+          "summary": "Nicht gefunden",
+          "detail": "Diese:r Bewerber:in existiert nicht oder wurde entfernt."
         }
       }
     }

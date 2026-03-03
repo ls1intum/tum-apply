@@ -1,30 +1,30 @@
 {
   "privacy": {
     "headline": "Privacy",
-    "text": "The Research Group for Applied Education Technologies (referred to as AET in the following paragraphs) from the Technical University of Munich takes the protection of private data seriously. We process the automatically collected personal data obtained when you visit our website, in compliance with the applicable data protection regulations, in particular the Bavarian Data Protection (BayDSG), the Telemedia Act (TMG) and the General Data Protection Regulation (GDPR). Below, we inform you about the type, scope and purpose of the collection and use of personal data.",
+    "text": "The Research Group for Applied Education Technologies (AET) at the Technical University of Munich (TUM) takes the protection of personal data very seriously. In TUMApply, personal data is processed not only when visiting the website, but also as part of the internal application workflow. This includes account registration, creation and submission of applications, and uploads of documents such as CVs, transcripts, and motivation letters. Below, we inform you about the type, scope, purpose, legal basis, and retention of this processing.",
     "logging": {
       "headline": "Logging",
       "text": "The web servers of the AET are operated by the AET itself, based in Boltzmannstr. 3, 85748 Garching b. Munich. Every time our website is accessed, the web server temporarily processes the following information in log files:<ul class='bullet-list'><li>IP address of the requesting computer</li><li>Date and time of access</li><li>Name, URL and transferred data volume of the accessed file</li><li>Access status (requested file transferred, not found etc.)</li><li>Identification data of the browser and operating system used (if transmitted by the requesting web browser)</li><li>Website from which access was made (if transmitted by the requesting web browser)</li></ul>The processing of the data in this log file takes place as follows:<ul class='bullet-list'><li>The log entries are continuously updated automatically evaluated in order to be able to detect attacks on the web server and react accordingly.</li><li>In individual cases, i.e. in the case of reported disruptions, errors and security incidents, a manual analysis is carried out.</li><li>The IP addresses contained in the log entries are not merged with other databases by AET, so that no conclusions can be drawn about individual persons.</li></ul>"
     },
     "personalData": {
       "headline": "Use and transfer of personal data",
-      "text": "Our website can be used without providing personal data. All services that might require any form of personal data (e.g. registration for events, contact forms) are offered on external sites, linked here. The use of contact data published as part of the imprint obligation by third parties to send unsolicited advertising and information material is hereby prohibited. The operators of the pages reserve the right to take legal action in the event of the unsolicited sending of advertising information, such as spam mails."
+      "text": "In the context of digital recruitment, personal data is processed directly within TUMApply. Applicants create accounts, submit application data, and upload documents (e.g. CVs, transcripts, references, and motivation letters). This data is used to process applications, communicate during the selection process, and make recruitment decisions. Access to applicant data is restricted to authorized persons in the responsible research group and to administrators where required for operations and security. We do not sell personal data to third parties."
     },
     "dataProcessing": {
-      "headline": "Revocation of your consent to data processing",
-      "text": "Some data processing operations require your express consent possible. You can revoke your consent that you have already given at any time. A message by e-mail is sufficient for the revocation. The lawfulness of the data processing that took place up until the revocation remains unaffected by the revocation."
+      "headline": "Legal basis, special categories, and retention",
+      "text": "The processing of applicant data is carried out primarily on the basis of Art. 6(1)(b) GDPR (pre-contractual measures) and Art. 6(1)(e) GDPR (performance of a task carried out in the public interest) in conjunction with BayHIG. Where special categories of personal data are included in application documents, processing may also be based on Art. 9(1)(b) GDPR, where applicable under statutory employment and public-service provisions. If processing is based on consent in individual cases, consent can be withdrawn at any time with effect for the future.<p>Applicant data in completed recruitment procedures (accepted or rejected) is deleted on a fixed cycle after 6 months from the decision date, unless longer storage is required by law.</p>"
     },
     "complaint": {
       "headline": "Right to file a complaint with the responsible supervisory authority",
-      "text": "You have the right to lodge a complaint with the responsible supervisory authority in the event of a breach of data protection law. The responsible supervisory authority with regard to data protection issues is the Federal Commissioner for Data Protection and Freedom of Information of the state where our company is based. The following link provides a list of data protection authorities and their contact details: <a href='https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html' target='_blank' rel='noopener noreferrer' class='external-link'>https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>"
+      "text": "In the event of data-protection violations, you have the right to lodge a complaint with a supervisory authority. For TUM as a Bavarian public institution, the competent supervisory authority is the Bavarian State Commissioner for Data Protection (BayLfD): <a href='https://www.datenschutz-bayern.de/' target='_blank' rel='noopener noreferrer' class='external-link'>https://www.datenschutz-bayern.de/</a>"
     },
     "dataPortability": {
-      "headline": "Right to data portability",
-      "text": "You have the right to request the data that we process automatically on the basis of your consent or in fulfillment of a contract to be handed over to you or a third party. The data is provided in a machine-readable format. If you request the direct transfer of the data to another person responsible, this will only be done if it is technically feasible."
+      "headline": "Right to information (Art. 15 GDPR)",
+      "text": "You have the right to obtain information about your personal data processed by us and to receive a copy. This includes data processed in the recruitment workflow, including evaluations and assessments related to your application, insofar as no statutory exemptions apply."
     },
     "dataRight": {
-      "headline": "Right to information, correction, blocking, and deletion",
-      "text": "You have at any time within the framework of the applicable legal provisions the right to request information about your stored personal data, the origin of the data, its recipient and the purpose of the data processing, and if necessary, a right to correction, blocking or deletion of this data. You can contact us at any time via <a href='mailto:ls1.admin@in.tum.de' class='external-link'>ls1.admin@in.tum.de</a> regarding this and other questions on the subject of personal data."
+      "headline": "Rights to rectification, erasure, and restriction",
+      "text": "Within the legal framework, you have the right to rectification of inaccurate data (Art. 16 GDPR), erasure (Art. 17 GDPR), restriction of processing (Art. 18 GDPR), and objection to processing (Art. 21 GDPR). You can also request data portability under Art. 20 GDPR where applicable. For requests concerning your personal data, contact us at <a href='mailto:support-tum-apply.aet@xcit.tum.de' class='external-link'>support-tum-apply.aet@xcit.tum.de</a>."
     },
     "sslTls": {
       "headline": "SSL/TLS encryption",
@@ -33,6 +33,42 @@
     "emailSec": {
       "headline": "E-mail security",
       "text": "If you e-mail us, your e-mail address will only be used for correspondence with you. Please note that data transmission on the Internet can have security gaps. Complete protection of data from access by third parties is not possible."
+    },
+    "export": {
+      "button": "Export My Data",
+      "downloadFailed": {
+        "summary": "Download failed",
+        "detail": "The download of your data has failed. Please try again."
+      },
+      "downloadFailed404": {
+        "summary": "Export not found",
+        "detail": "The export could not be found. The link may have expired, the export may have already been downloaded and deleted, or there may be a technical error."
+      },
+      "downloadFailed409": {
+        "summary": "Export not ready",
+        "detail": "The export is not ready yet. You'll receive an email when it's ready."
+      },
+      "requested": {
+        "summary": "Data export requested (1x/week)",
+        "detail": "You can request a data export only once per week. The download link will be sent via email when it's ready."
+      },
+      "requestFailed": {
+        "summary": "Request failed",
+        "detail": "The data export request has failed. Please try again later. Possible causes include network issues, server overload, or a temporary technical error."
+      },
+      "requestFailed409": {
+        "summary": "Export already in progress",
+        "detail": "An export is already in progress. You'll receive an email when it's ready."
+      },
+      "requestFailed429": {
+        "summary": "Limit: one export per week",
+        "detail": "You can request the data export only once per week. Please try again next week."
+      },
+      "tooltip": {
+        "inCreation": "An export is currently being prepared. You will receive an email once it's ready.",
+        "cooldown": "You can request another export in {{days}} days. An email was sent with your data.",
+        "notLoggedIn": "Please log in to export your data."
+      }
     },
     "privacyConsent": {
       "title": "Privacy",

@@ -1,3 +1,26 @@
+<!-- Confirm Dialogs -->
+<jhi-confirm-dialog
+  #withdrawDialog
+  [label]="'button.withdraw' | translate"
+  [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+  [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+  severity="danger"
+  confirmIcon="withdraw"
+  [showOpenButton]="false"
+  (confirmed)="currentApplicationId() && onWithdrawApplication(currentApplicationId()!)"
+/>
+
+<jhi-confirm-dialog
+  #deleteDialog
+  [label]="'button.delete' | translate"
+  [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+  [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+  severity="danger"
+  confirmIcon="trash"
+  [showOpenButton]="false"
+  (confirmed)="currentApplicationId() && onDeleteApplication(currentApplicationId()!)"
+/>
+
 <div class="page-container">
   <header class="page-header">
     <h1 jhiTranslate="entity.application_overview.applicant.header" class="h1-text"></h1>
@@ -17,53 +40,16 @@
   </ng-template>
 
   <ng-template #actionTemplate let-row>
-    <div class="flex space-x-2">
+    <div class="flex justify-end gap-1">
+      <jhi-button [tooltip]="'button.view' | translate" icon="eye" variant="text" (click)="onViewApplication(row.applicationId)" />
       <jhi-button
-        [ariaLabel]="'button.view' | translate"
-        [icon]="'eye'"
+        [tooltip]="getMenuItems()(row).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+        icon="ellipsis-vertical"
         variant="text"
-        severity="primary"
-        [tooltip]="'button.view' | translate"
-        (click)="onViewApplication(row.applicationId)"
+        (click)="menu.toggle($event)"
+        [disabled]="getMenuItems()(row).length === 0"
       />
-
-      <jhi-button
-        [ariaLabel]="'button.edit' | translate"
-        [icon]="'pencil'"
-        severity="primary"
-        variant="text"
-        [tooltip]="row.applicationState !== 'SAVED' ? ('button.tooltip.editDisabled' | translate) : ('button.edit' | translate)"
-        (click)="onUpdateApplication(row.applicationId)"
-        [disabled]="row.applicationState !== 'SAVED'"
-      />
-
-      @if (['SENT', 'IN_REVIEW'].includes(row.applicationState)) {
-        <jhi-confirm-dialog
-          [label]="'button.withdraw' | translate"
-          [iconOnly]="true"
-          [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
-          [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-          [data]="row.applicationId"
-          confirmIcon="withdraw"
-          (confirmed)="onWithdrawApplication(row.applicationId)"
-          severity="danger"
-          [tooltip]="'button.withdraw' | translate"
-        />
-      }
-
-      @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-confirm-dialog
-          [label]="'button.delete' | translate"
-          [iconOnly]="true"
-          [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
-          [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-          [data]="row.applicationId"
-          confirmIcon="trash"
-          (confirmed)="onDeleteApplication(row.applicationId)"
-          severity="danger"
-          [tooltip]="'button.delete' | translate"
-        />
-      }
+      <jhi-menu #menu [items]="getMenuItems()(row)" [shouldTranslate]="true" />
     </div>
   </ng-template>
   <ng-template #jobNameTemplate let-row>

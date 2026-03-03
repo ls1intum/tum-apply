@@ -7,6 +7,8 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,7 +33,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      */
     @Query(
         """
-        SELECT i FROM Interviewee i
+        SELECT DISTINCT i FROM Interviewee i
         LEFT JOIN FETCH i.application a
         LEFT JOIN FETCH a.applicant ap
         LEFT JOIN FETCH ap.user
@@ -61,6 +63,24 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     Optional<Interviewee> findByApplicationApplicationIdAndInterviewProcessId(UUID applicationId, UUID processId);
 
     /**
+     * Finds an Interviewee by interview process ID and user ID.
+     * Fetches slots to check if user already has a booked slot.
+     *
+     * @param processId the ID of the interview process
+     * @param userId    the ID of the user (via application.applicant.user)
+     * @return Optional containing the interviewee with slots if found
+     */
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id = :processId
+        AND i.application.applicant.user.userId = :userId
+        """
+    )
+    Optional<Interviewee> findByProcessIdAndUserId(@Param("processId") UUID processId, @Param("userId") UUID userId);
+
+    /**
      * Finds all interviewees for multiple interview processes with their slot data.
      * Used for efficient statistics calculation across all interview processes.
      *
@@ -75,4 +95,58 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         """
     )
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
+
+    /**
+     * Finds all interviewees for a given applicant user id with process, job and slot data.
+     *
+     * @param userId the applicant user id
+     * @return list of interviewees with process/job and slot data
+     */
+    @Query(
+        """
+        SELECT DISTINCT i FROM Interviewee i
+        JOIN FETCH i.interviewProcess ip
+        JOIN FETCH ip.job j
+        LEFT JOIN FETCH i.slots
+        WHERE i.application.applicant.user.userId = :userId
+        """
+    )
+    List<Interviewee> findByApplicantUserIdWithDetails(@Param("userId") UUID userId);
+
+    /**
+     * Finds a single interviewee by ID within a process.
+     *
+     * @param intervieweeId the ID of the interviewee
+     * @param processId     the ID of the interview process
+     * @return the interviewee or empty if not found
+     */
+    @Query(
+        """
+        SELECT DISTINCT i FROM Interviewee i
+        JOIN FETCH i.interviewProcess ip
+        JOIN FETCH ip.job j
+        LEFT JOIN FETCH i.application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH ap.user
+        LEFT JOIN FETCH i.slots
+        WHERE i.id = :intervieweeId
+        AND ip.id = :processId
+        """
+    )
+    Optional<Interviewee> findByIdAndProcessId(@Param("intervieweeId") UUID intervieweeId, @Param("processId") UUID processId);
+
+    /* Finds all uninvited interviewees for a given interview process.
+     * Fetches application and user details to avoid N+1 issues when sending emails.
+     *
+     * @param processId the ID of the interview process
+     * @return list of uninvited interviewees with user details
+     */
+    @EntityGraph(attributePaths = { "application.applicant.user" })
+    List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
+
+    void deleteByApplication(Application application);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Interviewee i WHERE i.application.applicationId IN :applicationIds")
+    void deleteByApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 }

@@ -1,9 +1,9 @@
 <section>
-  <header class="flex items-center gap-2">
+  <header class="flex flex-wrap items-center gap-2">
     @if (icon(); as icon) {
-      <fa-icon class="text-[var(--p-primary-color)]" [icon]="icon" />
+      <fa-icon class="text-primary-default" [icon]="icon" />
     }
-    <h2 class="text-lg font-bold">{{ titleKey() | translate }}</h2>
+    <h2 class="text-lg font-bold" [jhiTranslate]="titleKey()"></h2>
     <ng-content select="[actions]" />
   </header>
   <div class="ml-3 mt-3">

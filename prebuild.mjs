@@ -34,9 +34,10 @@ function inferVersion() {
   try {
     let data = fs.readFileSync('build.gradle', 'UTF-8');
 
-    version = data.match(/\nversion\s=\s"(.*)"/);
+    // Try to match devVersion first (new format), then fall back to version (old format)
+    let match = data.match(/\bdevVersion\s*=\s*"([^"]+)"/) || data.match(/\nversion\s*=\s*"([^"]+)"/);
 
-    version = version[1] ?? 'DEV';
+    version = match?.[1] ?? 'DEV';
   } catch (error) {
     console.log("Error while retrieving 'APP_VERSION' property", error);
   }

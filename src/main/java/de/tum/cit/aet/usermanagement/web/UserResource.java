@@ -3,7 +3,7 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
@@ -52,6 +52,7 @@ public class UserResource {
 
     /**
      * Allows the currently authenticated user to update their first and last name.
+     * Names are stored in the local database and are independent from Keycloak.
      *
      * @param jwt               of the authenticated user
      * @param updateUserNameDTO contains the new first and last name
@@ -85,7 +86,7 @@ public class UserResource {
      * @param searchQuery optional search query to filter users by name or email
      * @return paginated list of available users as {@link KeycloakUserDTO}
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/available-for-research-group")
     public ResponseEntity<PageResponseDTO<KeycloakUserDTO>> getAvailableUsersForResearchGroup(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,

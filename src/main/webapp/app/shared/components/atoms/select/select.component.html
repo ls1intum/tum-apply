@@ -34,6 +34,7 @@
     [appendTo]="appendTo()"
     [dataKey]="dataKey()"
     class="custom-select"
+    [size]="size()"
   >
     <!-- Render each select item -->
     <ng-template pTemplate="item" let-item>
@@ -63,4 +64,7 @@
       </div>
     </ng-template>
   </p-select>
+  @if (errorEnabled()) {
+    <div class="error-text"></div>
+  }
 </div>

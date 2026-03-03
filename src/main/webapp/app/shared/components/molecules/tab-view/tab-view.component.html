@@ -1,0 +1,27 @@
+<p-tabs
+  class="w-full"
+  [value]="currentTabValue()"
+  [lazy]="lazyLoad()"
+  [selectOnFocus]="selectOnFocus()"
+  [tabindex]="0"
+  (valueChange)="onTabChange($event)"
+>
+  <p-tablist>
+    @for (tab of tabs(); track tab.id) {
+      <p-tab [value]="tab.id">
+        @if (tab.icon) {
+          <fa-icon [icon]="tab.icon" class="mr-1" />
+        }
+        <span [jhiTranslate]="tab.translationKey"></span>
+      </p-tab>
+    }
+  </p-tablist>
+
+  <p-tabpanels>
+    @for (tab of tabs(); track tab.id) {
+      <p-tabpanel [value]="tab.id">
+        <ng-container *ngTemplateOutlet="findTemplate(tab.id)" />
+      </p-tabpanel>
+    }
+  </p-tabpanels>
+</p-tabs>

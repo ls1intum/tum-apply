@@ -3,10 +3,22 @@
  * This file contains the common component overwrites that are used by all theme presets.
  */
 
+export const sharedPrimitiveConfig = {
+  borderRadius: {
+    xs: '0.125rem',
+    sm: '0.25rem',
+    md: '0.375rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    '2xl': '1rem',
+    pill: '9999px',
+  },
+};
+
 export const sharedComponentConfig = {
   button: {
     root: {
-      borderRadius: '0.5rem',
+      borderRadius: '{border-radius-md}',
       badgeSize: '1rem',
       transitionDuration: '{form.field.transition.duration}',
       paddingX: '0.875rem',
@@ -44,7 +56,7 @@ export const sharedComponentConfig = {
             activeBackground: '{success.activeColor}',
           },
           danger: {
-            background: '{danger.color}',
+            background: '{danger.500}',
             color: '{danger.inverseColor}',
             hoverColor: '{danger.inverseColor}',
             hoverBackground: '{danger.hoverColor}',
@@ -152,9 +164,9 @@ export const sharedComponentConfig = {
             hoverBackground: '{warn.hoverColorOutlined}',
           },
           danger: {
-            hoverBackground: '{danger.50}',
-            activeBackground: '{danger.100}',
-            color: '{danger.500}',
+            hoverBackground: '{danger.100}',
+            activeBackground: '{danger.200}',
+            color: '{danger.700}',
           },
           contrast: {
             hoverBackground: '{surface.50}',
@@ -257,7 +269,7 @@ export const sharedComponentConfig = {
     root: {
       fontSize: '0.75rem',
       gap: '0',
-      borderRadius: '1rem',
+      borderRadius: '{border-radius-pill}',
     },
     colorScheme: {
       light: {
@@ -293,6 +305,7 @@ export const sharedComponentConfig = {
       background: 'background.surface',
       checkedBackground: '{primary.color}',
       checkedHoverBackground: '{primary.hoverColor}',
+      borderRadius: '{border-radius-xs}',
     },
   },
   paginator: {
@@ -305,14 +318,14 @@ export const sharedComponentConfig = {
   },
   multiselect: {
     root: {
-      background: '{background.surface}',
-      color: '{text.primary}',
+      background: '{background.default}',
+      color: '{text.secondary}',
     },
     overlay: {
-      background: '{background.surface}',
+      background: '{background.default}',
     },
     option: {
-      color: '{text.primary}',
+      color: '{text.secondary}',
       selectedColor: '{text.primary}',
       selectedBackground: '{background.surface}',
       focusBackground: '{primary.color}',
@@ -323,7 +336,8 @@ export const sharedComponentConfig = {
     root: {
       color: '{text.primary}',
       background: '{background.default}',
-      borderRadius: '0.5rem',
+      borderRadius: '{border-radius-md}',
+      paddingY: '0.5rem',
     },
   },
   divider: {
@@ -339,7 +353,9 @@ export const sharedComponentConfig = {
   },
   select: {
     root: {
-      placeholderColor: '{text.tertiary}',
+      placeholderColor: '{text.secondary}',
+      paddingY: '0.5rem',
+      color: '{text.primary}',
     },
     overlay: {
       background: '{background.default}',
@@ -360,6 +376,9 @@ export const sharedComponentConfig = {
     },
   },
   message: {
+    root: {
+      borderRadius: '{border-radius-sm}',
+    },
     colorScheme: {
       light: {
         warn: {
@@ -454,7 +473,7 @@ export const sharedLightColorScheme = {
     hoverColorOutlined: '{warn.100}',
   },
   danger: {
-    color: '{danger.500}',
+    color: '{danger.700}',
     inverseColor: '{text.onDanger}',
     hoverColor: '{danger.600}',
     activeColor: '{danger.700}',
@@ -475,7 +494,7 @@ export const sharedLightColorScheme = {
     hoverColor: '{neutral.600}',
     activeColor: '{neutral.700}',
     disabledColor: '{neutral.200}',
-    hoverColorOutlined: '{neutral.200}',
+    hoverColorOutlined: '{neutral.400}',
   },
   background: {
     default: '{background.50}', // canvas

@@ -21,6 +21,7 @@ export interface User {
     emailSettings?: Array<EmailSetting>;
     firstName?: string;
     gender?: string;
+    lastActivityAt?: string;
     lastModifiedAt?: string;
     lastName?: string;
     linkedinUrl?: string;

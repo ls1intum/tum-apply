@@ -75,6 +75,7 @@ public class UserResourceTest extends AbstractResourceTest {
 
             assertThat(result).isNotNull();
             assertThat(result.getUserId()).isEqualTo(currentUser.getUserId());
+            assertThat(result.getUniversityId()).isEqualTo(currentUser.getUniversityId());
             assertThat(result.getEmail()).isEqualTo(currentUser.getEmail());
         }
 

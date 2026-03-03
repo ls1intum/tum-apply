@@ -25,7 +25,7 @@ export interface ApplicationDetailDTO {
     supervisingProfessorName: string;
 }
 export namespace ApplicationDetailDTO {
-    export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
+    export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
     export const ApplicationStateEnum = {
         Saved: 'SAVED' as ApplicationStateEnum,
         Sent: 'SENT' as ApplicationStateEnum,
@@ -34,9 +34,7 @@ export namespace ApplicationDetailDTO {
         Rejected: 'REJECTED' as ApplicationStateEnum,
         Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
         JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
-        Invited: 'INVITED' as ApplicationStateEnum,
-        Scheduled: 'SCHEDULED' as ApplicationStateEnum,
-        Completed: 'COMPLETED' as ApplicationStateEnum
+        Interview: 'INTERVIEW' as ApplicationStateEnum
     };
 }
 

@@ -91,11 +91,11 @@ class JobResourceTest extends AbstractResourceTest {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getDescription(),
-            job.getTasks(),
-            job.getRequirements(),
+            job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             JobState.DRAFT,
-            imageId
+            imageId,
+            true
         );
     }
 
@@ -187,10 +187,10 @@ class JobResourceTest extends AbstractResourceTest {
             12,
             FundingType.FULLY_FUNDED,
             "Build ML pipelines",
-            "data cleaning and model training",
-            "Python and TensorFlow",
+            "ML Pipeline erstellen",
             JobState.PUBLISHED,
-            null
+            null,
+            true
         );
 
         JobFormDTO returned = api
@@ -213,9 +213,8 @@ class JobResourceTest extends AbstractResourceTest {
                 Job::getWorkload,
                 Job::getContractDuration,
                 Job::getFundingType,
-                Job::getDescription,
-                Job::getTasks,
-                Job::getRequirements,
+                Job::getJobDescriptionEN,
+                Job::getJobDescriptionDE,
                 Job::getState
             )
             .containsExactly(
@@ -230,8 +229,7 @@ class JobResourceTest extends AbstractResourceTest {
                 12,
                 FundingType.FULLY_FUNDED,
                 "Build ML pipelines",
-                "data cleaning and model training",
-                "Python and TensorFlow",
+                "ML Pipeline erstellen",
                 JobState.PUBLISHED
             );
     }
@@ -252,9 +250,8 @@ class JobResourceTest extends AbstractResourceTest {
             entry("workload", "oops"),
             entry("contractDuration", 12),
             entry("fundingType", "FULLY_FUNDED"),
-            entry("description", "desc"),
-            entry("tasks", "tasks"),
-            entry("requirements", "req"),
+            entry("jobDescriptionEN", "desc"),
+            entry("jobDescriptionDE", "desc"),
             entry("state", "PUBLISHED")
         );
 
@@ -278,10 +275,10 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -302,10 +299,10 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -328,10 +325,10 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.PARTIALLY_FUNDED,
             "Updated Description",
-            "Updated Tasks",
-            "Updated Requirements",
+            "Neue Beschreibung",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
 
         JobFormDTO returnedJob = api
@@ -351,9 +348,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(updatedJob.getWorkload()).isEqualTo(updatedPayload.workload());
         assertThat(updatedJob.getContractDuration()).isEqualTo(updatedPayload.contractDuration());
         assertThat(updatedJob.getFundingType()).isEqualTo(updatedPayload.fundingType());
-        assertThat(updatedJob.getDescription()).isEqualTo(updatedPayload.description());
-        assertThat(updatedJob.getTasks()).isEqualTo(updatedPayload.tasks());
-        assertThat(updatedJob.getRequirements()).isEqualTo(updatedPayload.requirements());
+        assertThat(updatedJob.getJobDescriptionEN()).isEqualTo(updatedPayload.jobDescriptionEN());
+        assertThat(updatedJob.getJobDescriptionDE()).isEqualTo(updatedPayload.jobDescriptionDE());
         assertThat(updatedJob.getState()).isEqualTo(updatedPayload.state());
     }
 
@@ -373,10 +369,10 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
 
         api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload, JobFormDTO.class, 404);
@@ -398,10 +394,10 @@ class JobResourceTest extends AbstractResourceTest {
             3,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
         api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
     }
@@ -495,24 +491,24 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getJobsByProfessor_returnsJobsCreatedByProfessor() {
+    void getJobsForCurrentResearchGroupReturnsJobsForResearchGroup() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
+            .getAndRead("/api/jobs/research-group", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
         assertThat(page.totalElements()).isEqualTo(2);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getJobsByProfessorInvalidPaginationReturnsError() {
+    void getJobsForCurrentResearchGroupInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
+            .getAndRead("/api/jobs/research-group", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
-    void getJobsByProfessorWithoutAuthForbidden() {
-        api.getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
+    void getJobsForCurrentResearchGroupWithoutAuthForbidden() {
+        api.getAndRead("/api/jobs/research-group", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
     }
 
     @Test
@@ -535,9 +531,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
-        assertThat(returnedJob.description()).isEqualTo(job.getDescription());
-        assertThat(returnedJob.tasks()).isEqualTo(job.getTasks());
-        assertThat(returnedJob.requirements()).isEqualTo(job.getRequirements());
+        assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
+        assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.state()).isEqualTo(job.getState());
     }
 
@@ -573,9 +568,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
-        assertThat(returnedJob.description()).isEqualTo(job.getDescription());
-        assertThat(returnedJob.tasks()).isEqualTo(job.getTasks());
-        assertThat(returnedJob.requirements()).isEqualTo(job.getRequirements());
+        assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
+        assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
         assertThat(returnedJob.endDate()).isEqualTo(job.getEndDate());
         assertThat(returnedJob.createdAt()).isEqualTo(job.getCreatedAt());
