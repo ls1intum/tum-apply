@@ -1049,7 +1049,7 @@ function buildServerCoverageTable(serverFiles, serverModules, options) {
     const fileName = filePath.split('/').pop();
 
     // Determine which module this file belongs to
-    const afterArtemis = filePath.replace('de/tum/cit/aet/artemis/', '');
+    const afterArtemis = filePath.replace('de/tum/cit/aet/', '');
     const moduleName = afterArtemis.split('/')[0];
 
     const coverage = getServerFileCoverage(filePath, moduleName);
