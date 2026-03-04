@@ -20,7 +20,16 @@ const BLUR_PADDING_PX = 28;
 @Component({
   selector: 'jhi-profile-picture-settings',
   standalone: true,
-  imports: [ButtonComponent, DialogComponent, TranslateDirective, TranslateModule, FormsModule, FontAwesomeModule, TooltipModule, UserAvatarComponent],
+  imports: [
+    ButtonComponent,
+    DialogComponent,
+    TranslateDirective,
+    TranslateModule,
+    FormsModule,
+    FontAwesomeModule,
+    TooltipModule,
+    UserAvatarComponent,
+  ],
   templateUrl: './profile-picture-settings.component.html',
 })
 export class ProfilePictureSettingsComponent {
