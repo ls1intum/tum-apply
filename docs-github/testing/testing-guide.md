@@ -66,7 +66,6 @@ Provider type semantics:
 Important scope note:
 
 - The ArchUnit rules above enforce structure (annotation decision + valid provider mapping), but they do not by themselves prove complete runtime export coverage of JSON content.
-- Runtime coverage is validated by integration tests in `UserDataExportResourceTest` that read `data_export_summary.json` from the generated ZIP and assert section content for applicant/staff scenarios.
 
 When adding a new entity, always choose one of these two annotations. If you mark it as exported, ensure the configured provider exists, implements `UserDataSectionProvider`, and is annotated with `@Component`.
 
