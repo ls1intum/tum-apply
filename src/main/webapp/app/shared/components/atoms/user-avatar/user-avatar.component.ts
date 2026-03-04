@@ -8,7 +8,7 @@ import { ThemeService } from 'app/service/theme.service';
 })
 export class UserAvatarComponent {
   fullName = input<string | undefined>(undefined);
-  size = input<'sm' | 'md' | 'lg'>('md');
+  size = input<'md' | 'lg'>('md');
 
   // Show initials for the current display name, fallback to "U" when missing.
   initials = computed(() => this.initialsFromFullName(this.fullName()?.trim() ?? ''));
@@ -33,9 +33,6 @@ export class UserAvatarComponent {
   textShadow = computed(() => (this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)'));
   sizeClass = computed(() => {
     const size = this.size();
-    if (size === 'sm') {
-      return 'h-6 w-6 text-[0.7rem]';
-    }
     if (size === 'lg') {
       return 'h-10 w-10 text-[0.95rem]';
     }

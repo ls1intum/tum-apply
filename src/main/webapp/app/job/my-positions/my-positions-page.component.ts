@@ -15,6 +15,7 @@ import { emptyToUndef } from 'app/core/util/array-util.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
@@ -34,6 +35,7 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
     SearchFilterSortBar,
     LocalizedDatePipe,
     MenuComponent,
+    UserAvatarComponent,
     ButtonModule,
     FontAwesomeModule,
   ],
@@ -78,6 +80,7 @@ export class MyPositionsPageComponent {
   readonly createdAtTemplate = viewChild.required<TemplateRef<unknown>>('createdAtTemplate');
   readonly lastModifiedAtTemplate = viewChild.required<TemplateRef<unknown>>('lastModifiedAtTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
+  readonly professorTemplate = viewChild.required<TemplateRef<unknown>>('professorTemplate');
 
   readonly editPublishedDialog = viewChild.required<ConfirmDialog>('editPublishedDialog');
   readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
@@ -92,9 +95,10 @@ export class MyPositionsPageComponent {
     const stateTpl = this.stateTemplate();
     const startDateTpl = this.startDateTemplate();
     const lastModifiedAtTpl = this.lastModifiedAtTemplate();
+    const professorTpl = this.professorTemplate();
 
     return [
-      { field: 'professorName', header: 'myPositionsPage.tableColumn.supervisingProfessor', width: '12rem' },
+      { field: 'professorName', header: 'myPositionsPage.tableColumn.supervisingProfessor', width: '12rem', template: professorTpl },
       { field: 'title', header: 'myPositionsPage.tableColumn.job', width: '20rem' },
       {
         field: 'state',

@@ -32,7 +32,6 @@ import ReasonEnum = RejectDTO.ReasonEnum;
     UserAvatarComponent,
   ],
   templateUrl: './review-dialog.component.html',
-  styleUrl: './review-dialog.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class ReviewDialogComponent {
