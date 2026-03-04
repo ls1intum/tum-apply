@@ -13,6 +13,7 @@ export interface ResearchGroupResourceApiServiceMock {
   getResearchGroup: Mock;
   getResearchGroupMembers: Mock;
   getResearchGroupMembersById: Mock;
+  getResearchGroupProfessors: Mock;
   getResearchGroupsForAdmin: Mock;
   getResourceGroupDetails: Mock;
   removeMemberFromResearchGroup: Mock;
@@ -32,6 +33,7 @@ export function createResearchGroupResourceApiServiceMock(): ResearchGroupResour
     getResearchGroup: vi.fn(),
     getResearchGroupMembers: vi.fn(),
     getResearchGroupMembersById: vi.fn(),
+    getResearchGroupProfessors: vi.fn(),
     getResearchGroupsForAdmin: vi.fn(),
     getResourceGroupDetails: vi.fn(),
     removeMemberFromResearchGroup: vi.fn(),

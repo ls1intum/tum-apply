@@ -305,7 +305,7 @@ export class MyPositionsPageComponent {
         return;
       }
       const pageData = await firstValueFrom(
-        this.jobService.getJobsByProfessor(
+        this.jobService.getJobsForCurrentResearchGroup(
           this.pageSize(),
           this.page(),
           emptyToUndef(this.selectedStatusFilters()),

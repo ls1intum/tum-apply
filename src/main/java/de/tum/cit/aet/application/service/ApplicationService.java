@@ -45,6 +45,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ApplicationService {
 
+    private static final List<DocumentType> PROFILE_SYNCED_DOCUMENT_TYPES = List.of(
+        DocumentType.CV,
+        DocumentType.REFERENCE,
+        DocumentType.BACHELOR_TRANSCRIPT,
+        DocumentType.MASTER_TRANSCRIPT,
+        DocumentType.CUSTOM
+    );
+
     private final ApplicationRepository applicationRepository;
     private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
@@ -127,7 +135,46 @@ public class ApplicationService {
         newApplication.setApplicantMasterUniversity(applicant.getMasterUniversity());
 
         Application savedApplication = applicationRepository.save(newApplication);
+
+        // Prefill documents from applicant profile to the new application
+        prefillDocumentsFromApplicantProfile(applicant, savedApplication);
+
         return getFromEntity(savedApplication);
+    }
+
+    /**
+     * Copies document references from the applicant's profile to the newly created application.
+     * This includes CVs, references, bachelor transcripts, master transcripts, and custom documents.
+     *
+     * <p>
+     * Snapshot principle: each copied entry belongs to the application afterwards, so future
+     * profile edits do not mutate already-created applications.
+     * </p>
+     *
+     * @param applicant   the applicant whose documents should be copied
+     * @param application the newly created application to receive the document references
+     */
+    private void prefillDocumentsFromApplicantProfile(Applicant applicant, Application application) {
+        for (DocumentType documentType : PROFILE_SYNCED_DOCUMENT_TYPES) {
+            Set<DocumentDictionary> applicantDocuments = documentDictionaryService.getApplicantDocumentDictionaries(
+                applicant,
+                documentType
+            );
+            copyDocumentsToApplication(applicantDocuments, application);
+        }
+    }
+
+    /**
+     * Creates new DocumentDictionary entries for the application, referencing the same documents.
+     * No file content is duplicated; only ownership mapping rows are created.
+     *
+     * @param sourceDictionaries the source DocumentDictionary entries from the applicant profile
+     * @param application        the application to associate the new entries with
+     */
+    private void copyDocumentsToApplication(Set<DocumentDictionary> sourceDictionaries, Application application) {
+        for (DocumentDictionary source : sourceDictionaries) {
+            copyDocumentDictionary(source, copy -> copy.setApplication(application));
+        }
     }
 
     /**
@@ -192,6 +239,7 @@ public class ApplicationService {
         // When application is sent, sync snapshot data back to applicant profile
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
             syncSnapshotDataToApplicant(application);
+            syncDocumentsToApplicantProfile(application);
             confirmApplicationToApplicant(application);
             confirmApplicationToProfessor(application);
         }
@@ -209,6 +257,68 @@ public class ApplicationService {
         User user = applicant.getUser();
 
         applyApplicantData(user, applicant, ApplicantDTO.getFromApplicationSnapshot(application));
+    }
+
+    /**
+     * Syncs documents from application to the applicant's profile.
+     * This ensures documents uploaded during application creation are available for future applications
+     * and that profile documents reflect the final submitted application state.
+     *
+     * @param application the application containing the documents to sync
+     */
+    private void syncDocumentsToApplicantProfile(Application application) {
+        Applicant applicant = application.getApplicant();
+
+        for (DocumentType documentType : PROFILE_SYNCED_DOCUMENT_TYPES) {
+            syncDocumentsByType(application, applicant, documentType);
+        }
+    }
+
+    /**
+     * Syncs documents of a specific type from application to applicant profile.
+     * Replaces existing documents in the applicant profile with those from the application.
+     * This ensures that documents deleted or replaced in the application are also removed from the profile.
+     *
+     * <p>
+     * The replacement is intentional: after submission, the profile becomes the source for prefilling
+     * future applications with the latest confirmed document set.
+     * </p>
+     *
+     * @param application  the application containing the documents
+     * @param applicant    the applicant whose profile should receive the documents
+     * @param documentType the type of documents to sync
+     */
+    private void syncDocumentsByType(Application application, Applicant applicant, DocumentType documentType) {
+        Set<DocumentDictionary> applicationDocs = documentDictionaryService.getApplicationDocumentDictionaries(application, documentType);
+        Set<DocumentDictionary> applicantDocs = documentDictionaryService.getApplicantDocumentDictionaries(applicant, documentType);
+
+        // Delete all existing documents from applicant profile
+        for (DocumentDictionary applicantDoc : applicantDocs) {
+            documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant, applicantDoc.getDocumentDictionaryId());
+        }
+
+        // Copy all documents from application dictionary to applicant profile
+        for (DocumentDictionary appDoc : applicationDocs) {
+            copyDocumentDictionary(appDoc, copy -> copy.setApplicant(applicant));
+        }
+    }
+
+    /**
+     * Clones one DocumentDictionary entry to a different owner.
+     *
+     * <p>
+     * This is the core isolation mechanism: Applicant and Application never share the same
+     * dictionary row. They can still reference the same Document, but ownership metadata
+     * (name/type/owner relation) is separated.
+     * </p>
+     */
+    private void copyDocumentDictionary(DocumentDictionary source, java.util.function.Consumer<DocumentDictionary> ownerSetter) {
+        DocumentDictionary copy = new DocumentDictionary();
+        ownerSetter.accept(copy);
+        copy.setDocument(source.getDocument());
+        copy.setName(source.getName());
+        copy.setDocumentType(source.getDocumentType());
+        documentDictionaryService.save(copy);
     }
 
     private void confirmApplicationToApplicant(Application application) {
@@ -278,6 +388,8 @@ public class ApplicationService {
      * @param documentDictionaryId the ID of the document to be deleted
      */
     public void deleteDocument(UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = assertCanManageApplicationDocument(documentDictionaryId);
+        assertApplicationDocumentsEditable(documentDictionary.getApplication());
         documentDictionaryService.deleteById(documentDictionaryId);
     }
 
@@ -301,7 +413,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type CV
      */
     public Set<DocumentDictionary> getCVs(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.CV);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.CV);
     }
 
     /**
@@ -311,7 +423,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type REFERENCE
      */
     public Set<DocumentDictionary> getReferences(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.REFERENCE);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.REFERENCE);
     }
 
     /**
@@ -321,7 +433,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
      */
     public Set<DocumentDictionary> getBachelorTranscripts(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
     /**
@@ -331,7 +443,7 @@ public class ApplicationService {
      * @return set of document dictionary entries of type MASTER_TRANSCRIPT
      */
     public Set<DocumentDictionary> getMasterTranscripts(Application application) {
-        return documentDictionaryService.getDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
     }
 
     /**
@@ -374,7 +486,7 @@ public class ApplicationService {
      * @param newDocuments the set of newly uploaded documents to associate
      */
     protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Pair<Document, String>> newDocuments) {
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, type);
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicationDocumentDictionaries(application, type);
         documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
     }
 
@@ -393,6 +505,7 @@ public class ApplicationService {
         List<MultipartFile> files
     ) {
         Application application = assertCanManageApplication(applicationId);
+        assertApplicationDocumentsEditable(application);
 
         switch (documentType) {
             case BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE:
@@ -405,7 +518,7 @@ public class ApplicationService {
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
         }
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getDocumentDictionaries(application, documentType);
+        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicationDocumentDictionaries(application, documentType);
         return existingEntries.stream().map(DocumentInformationHolderDTO::getFromDocumentDictionary).collect(Collectors.toSet());
     }
 
@@ -444,6 +557,8 @@ public class ApplicationService {
      * @param newName    the new name to set for the document
      */
     public void renameDocument(UUID documentId, String newName) {
+        DocumentDictionary documentDictionary = assertCanManageApplicationDocument(documentId);
+        assertApplicationDocumentsEditable(documentDictionary.getApplication());
         documentDictionaryService.renameDocument(documentId, newName);
     }
 
@@ -558,6 +673,22 @@ public class ApplicationService {
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
         return application;
+    }
+
+    private DocumentDictionary assertCanManageApplicationDocument(UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = documentDictionaryService.findDocumentDictionaryById(documentDictionaryId);
+        Application application = documentDictionary.getApplication();
+        if (application == null) {
+            throw new OperationNotAllowedException("Only application documents can be managed via this endpoint.");
+        }
+        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+        return documentDictionary;
+    }
+
+    private void assertApplicationDocumentsEditable(Application application) {
+        if (!ApplicationState.SAVED.equals(application.getState())) {
+            throw new OperationNotAllowedException("Documents can only be modified while the application is in SAVED state.");
+        }
     }
 
     private Application assertCanViewApplication(UUID applicationId) {

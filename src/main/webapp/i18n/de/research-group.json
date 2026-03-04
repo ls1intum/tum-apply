@@ -407,6 +407,69 @@
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
       }
     },
+    "schools": {
+      "header": "Schools",
+      "createButton": "School erstellen",
+      "searchPlaceholder": "Schools suchen...",
+      "entity": "School",
+      "entities": "Schools",
+      "tableColumns": {
+        "name": "Name",
+        "abbreviation": "Abkürzung",
+        "departments": "Departments"
+      },
+      "noDepartments": "Keine Departments",
+      "toastMessages": {
+        "loadFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Laden der Schools. Bitte versuche es erneut."
+        },
+        "deleteSuccess": {
+          "summary": "Erfolg",
+          "detail": "School erfolgreich gelöscht."
+        },
+        "deleteFailed": {
+          "summary": "Fehler",
+          "detail": "School kann nicht gelöscht werden, solange Departments verknüpft sind."
+        }
+      },
+      "createDialog": {
+        "title": "Neue School erstellen",
+        "nameLabel": "Name",
+        "namePlaceholder": "z.B. School of Engineering and Design",
+        "abbreviationLabel": "Abkürzung",
+        "abbreviationPlaceholder": "z.B. ED",
+        "abbreviationUniqueHint": "Abkürzungen müssen eindeutig sein und dürfen nicht für eine andere School verwendet werden.",
+        "createButton": "School erstellen",
+        "success": {
+          "created": {
+            "summary": "Erfolg",
+            "detail": "School erfolgreich erstellt."
+          },
+          "updated": {
+            "summary": "Erfolg",
+            "detail": "School erfolgreich aktualisiert."
+          }
+        },
+        "errors": {
+          "createFailed": {
+            "summary": "Fehler",
+            "detail": "School konnte nicht gespeichert werden. Bitte versuche es erneut."
+          },
+          "duplicateNameOrAbbreviation": {
+            "summary": "Name oder Abkürzung existiert bereits",
+            "detail": "Eine School mit diesem Namen oder dieser Abkürzung existiert bereits. Bitte wähle andere Werte."
+          }
+        }
+      },
+      "editDialog": {
+        "title": "School bearbeiten"
+      },
+      "deleteDialog": {
+        "header": "School löschen",
+        "message": "Bist du sicher, dass du diese School löschen möchtest? Diese Aktion ist nur möglich, wenn keine Departments verknüpft sind."
+      }
+    },
     "imageLibrary": {
       "title": "Bildersammlung",
       "stats": {

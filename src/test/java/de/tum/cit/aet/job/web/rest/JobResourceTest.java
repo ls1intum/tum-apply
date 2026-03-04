@@ -491,24 +491,24 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getJobsByProfessor_returnsJobsCreatedByProfessor() {
+    void getJobsForCurrentResearchGroupReturnsJobsForResearchGroup() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
+            .getAndRead("/api/jobs/research-group", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
         assertThat(page.totalElements()).isEqualTo(2);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getJobsByProfessorInvalidPaginationReturnsError() {
+    void getJobsForCurrentResearchGroupInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
+            .getAndRead("/api/jobs/research-group", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
-    void getJobsByProfessorWithoutAuthForbidden() {
-        api.getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
+    void getJobsForCurrentResearchGroupWithoutAuthForbidden() {
+        api.getAndRead("/api/jobs/research-group", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
     }
 
     @Test
