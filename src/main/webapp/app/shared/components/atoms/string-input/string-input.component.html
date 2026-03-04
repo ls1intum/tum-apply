@@ -55,6 +55,22 @@
         />
       }
     </div>
+    @if (helperTextLeft()) {
+      <div class="flex justify-between items-center text-sm gap-2">
+        <span class="text-text-disabled flex-1">{{ helperTextLeft() }}</span>
+
+        @if (helperTextRight()) {
+          <span class="text-primary-default underline cursor-pointer flex-shrink-0" (click)="helperTextRightClick.emit()">{{
+            helperTextRight()
+          }}</span>
+        }
+      </div>
+    }
+    @if (warningText()) {
+      <div class="text-warning-hover text-sm gap-2">
+        {{ warningText() }}
+      </div>
+    }
     @if (errorEnabled()) {
       <div class="error-text">
         @if (inputState() === 'invalid' && !isFocused()) {

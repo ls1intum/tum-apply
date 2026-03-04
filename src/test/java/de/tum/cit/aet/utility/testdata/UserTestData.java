@@ -284,6 +284,25 @@ public final class UserTestData {
     }
 
     /**
+     * Creates and saves a placeholder "deleted" user with a specific ID.
+     * If the user already exists, returns the existing one.
+     */
+    public static User savedDeletedUser(UserRepository repo, UUID userId) {
+        if (repo.existsById(userId)) {
+            return repo.findById(userId).orElseThrow();
+        }
+
+        User deleted = new User();
+        deleted.setUserId(userId);
+        deleted.setEmail("deleted@user");
+        deleted.setFirstName("Deleted");
+        deleted.setLastName("User");
+        deleted.setSelectedLanguage("en");
+        deleted.setUniversityId("del" + UUID.randomUUID().toString().replace("-", "").substring(0, 4));
+        return repo.saveAndFlush(deleted);
+    }
+
+    /**
      * Creates and saves a user without a research group.
      */
     public static User createUserWithoutResearchGroup(

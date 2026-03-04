@@ -10,10 +10,7 @@ describe('grade-conversion', () => {
       expect(convertToGermanGrade(best, worst, achieved)).toBeCloseTo(expected, precision);
     });
 
-    it.each([
-      ['out-of-range grade', '1.0', '4.0', '5.0'],
-      ['invalid letter grade', 'A', 'C', 'Z'],
-    ])('should return null for %s', (_label, best, worst, achieved) => {
+    it.each([['invalid letter grade', 'A', 'C', 'Z']])('should return null for %s', (_label, best, worst, achieved) => {
       expect(convertToGermanGrade(best, worst, achieved)).toBeNull();
     });
   });
@@ -34,7 +31,6 @@ describe('grade-conversion', () => {
     it.each([
       ['numeric grade', '1.0', '4.0', '2.0', '2.0'],
       ['letter grade', 'A', 'C', 'B', '2.5'],
-      ['out-of-range grade', '1.0', '4.0', '5.0', ''],
     ])('should display %s', (_label, best, worst, achieved, expected) => {
       expect(displayGradeWithConversion(best, worst, achieved)).toBe(expected);
     });

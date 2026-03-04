@@ -285,24 +285,6 @@ describe('SearchFilterSortBar', () => {
       const recordCount = fixture.nativeElement.querySelector('div[jhiTranslate="entity.filters.recordsFound"]');
       expect(recordCount).toBeTruthy();
     });
-
-    it('should render "Filter by" text when filters are present', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        filters: mockFilters,
-      });
-
-      const filterBySpan = fixture.nativeElement.querySelector('.filter-sort span[jhiTranslate="entity.filterBy"]');
-      expect(filterBySpan).toBeTruthy();
-    });
-
-    it('should render "Sort by" text when sortable fields are present', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        sortableFields: mockSortOptions,
-      });
-
-      const sortBySpan = fixture.nativeElement.querySelector('.filter-sort span[jhiTranslate="entity.sortBy"]');
-      expect(sortBySpan).toBeTruthy();
-    });
   });
 
   describe('cleanup', () => {

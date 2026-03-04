@@ -1,6 +1,6 @@
 p-button > button:disabled {
   background: var(--p-background-disabled);
-  border: var(--p-background-disabled) solid;
+  border: 0.1rem var(--p-background-disabled) solid;
   color: var(--p-text-disabled);
 }
 
