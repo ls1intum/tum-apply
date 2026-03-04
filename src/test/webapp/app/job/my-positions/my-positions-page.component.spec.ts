@@ -83,15 +83,15 @@ describe('MyPositionsPageComponent', () => {
 
       const columns = component.columns();
 
-    expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'professorName')?.template).toBeTruthy();
+      expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
+      expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
+      expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
+      expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
+      expect(columns.find(c => c.field === 'professorName')?.template).toBeTruthy();
 
-    expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'title')?.template).toBeUndefined();
-  });
+      expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
+      expect(columns.find(c => c.field === 'title')?.template).toBeUndefined();
+    });
 
     it('should correctly build stateTextMap from availableStatusOptions', () => {
       const map = component.stateTextMap();

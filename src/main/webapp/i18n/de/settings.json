@@ -1,7 +1,6 @@
 {
   "settings": {
     "header": "Einstellungen",
-
     "tabs": {
       "general": "Allgemein",
       "notifications": "Benachrichtigungen",
@@ -15,14 +14,13 @@
       },
       "saved": {
         "summary": "Erfolgreich gespeichert",
-        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+        "detail": "Persönliche Informationen erfolgreich gespeichert. Änderungen werden auf deine nächste Bewerbung angewendet."
       },
       "saveFailed": {
         "summary": "Speichern fehlgeschlagen",
         "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
       }
     },
-
     "notifications": {
       "applicant": {
         "submission": {
@@ -45,7 +43,16 @@
         }
       }
     },
-
+    "profilePicture": {
+      "header": "Profilbild",
+      "description": "Mach dein Profil persönlicher mit einem Foto.",
+      "addButton": "Bearbeiten",
+      "resetButtonTooltip": "Entfernen",
+      "cropDialog": {
+        "header": "Profilbild zuschneiden",
+        "rotate": "Drehen"
+      }
+    },
     "appearance": {
       "header": "Aussehen",
       "theme": {
