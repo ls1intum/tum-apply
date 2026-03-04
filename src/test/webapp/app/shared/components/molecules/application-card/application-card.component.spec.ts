@@ -50,16 +50,19 @@ describe('ApplicationCardComponent', () => {
     fixture.componentRef.setInput('placeholder', true);
     fixture.detectChanges();
 
-    const card = fixture.nativeElement.querySelector('.card');
-    expect(card.classList.contains('placeholder')).toBe(true);
+    const card = fixture.nativeElement.firstElementChild as HTMLElement | null;
+    expect(card).toBeTruthy();
+    expect(card?.classList.contains('border-transparent')).toBe(true);
   });
 
   it('should not render content when placeholder is true', () => {
     fixture.componentRef.setInput('placeholder', true);
     fixture.detectChanges();
 
-    const header = fixture.nativeElement.querySelector('.header');
-    expect(header).toBeFalsy();
+    const avatar = fixture.nativeElement.querySelector('jhi-user-avatar');
+    const jobIcon = fixture.nativeElement.querySelector('fa-icon');
+    expect(avatar).toBeFalsy();
+    expect(jobIcon).toBeFalsy();
   });
 
   it('should render content when placeholder is false', () => {
@@ -75,7 +78,9 @@ describe('ApplicationCardComponent', () => {
     fixture.componentRef.setInput('application', app);
     fixture.detectChanges();
 
-    const header = fixture.nativeElement.querySelector('.header');
-    expect(header).toBeTruthy();
+    const avatar = fixture.nativeElement.querySelector('jhi-user-avatar');
+    const jobIcon = fixture.nativeElement.querySelector('fa-icon');
+    expect(avatar).toBeTruthy();
+    expect(jobIcon).toBeTruthy();
   });
 });

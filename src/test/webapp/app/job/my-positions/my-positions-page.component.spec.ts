@@ -83,9 +83,9 @@ describe('MyPositionsPageComponent', () => {
     expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
+    expect(columns.find(c => c.field === 'professorName')?.template).toBeTruthy();
 
     expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'professorName')?.template).toBeUndefined();
     expect(columns.find(c => c.field === 'title')?.template).toBeUndefined();
   });
 
