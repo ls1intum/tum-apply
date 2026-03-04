@@ -3,6 +3,8 @@ package de.tum.cit.aet.core.web;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.DataExportState;
 import de.tum.cit.aet.core.domain.DataExportRequest;
@@ -11,18 +13,27 @@ import de.tum.cit.aet.core.dto.DataExportStatusDTO;
 import de.tum.cit.aet.core.repository.DataExportRequestRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.service.UserDataExportService;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
@@ -39,6 +50,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration tests for {@link UserDataExportResource}.
@@ -56,10 +68,22 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     DataExportRequestRepository dataExportRequestRepository;
 
     @Autowired
+    ApplicantRepository applicantRepository;
+
+    @Autowired
     DocumentRepository documentRepository;
 
     @Autowired
+    ResearchGroupRepository researchGroupRepository;
+
+    @Autowired
+    JobRepository jobRepository;
+
+    @Autowired
     UserDataExportService userDataExportService;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -290,6 +314,43 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         assertThat(entries).contains(expectedEntry);
     }
 
+    @Test
+    @Transactional
+    void exportIncludesApplicantDataWhenApplicantRoleExists() throws Exception {
+        User user = savedUser("applicant-export@tum.de");
+        ApplicantTestData.attachApplicantRole(user);
+        user = userRepository.saveAndFlush(user);
+
+        Applicant applicant = new Applicant();
+        applicant.setUser(user);
+        applicant.setStreet("Teststr. 1");
+        applicant.setPostalCode("12345");
+        applicant.setCity("Munich");
+        applicant.setCountry("de");
+        applicantRepository.saveAndFlush(applicant);
+
+        JsonNode summary = processExportAndReadSummary(user);
+
+        assertThat(summary.has("profile")).isTrue();
+        assertThat(summary.has("applicantData")).isTrue();
+        assertThat(summary.has("staffData")).isFalse();
+        assertThat(summary.path("applicantData").path("city").asText()).isEqualTo("Munich");
+    }
+
+    @Test
+    void exportIncludesStaffDataWhenStaffRoleExists() throws Exception {
+        var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User user = UserTestData.savedProfessor(userRepository, researchGroup);
+        JobTestData.saved(jobRepository, user, researchGroup, "Staff Export Job", JobState.DRAFT, LocalDate.now());
+
+        JsonNode summary = processExportAndReadSummary(user);
+
+        assertThat(summary.has("profile")).isTrue();
+        assertThat(summary.has("staffData")).isTrue();
+        assertThat(summary.has("applicantData")).isFalse();
+        assertThat(summary.path("staffData").path("supervisedJobs").toString()).contains("Staff Export Job");
+    }
+
     private User savedUser(String email) {
         User user = UserTestData.newUser();
         user.setEmail(email);
@@ -331,5 +392,33 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             }
         }
         return entries;
+    }
+
+    private JsonNode processExportAndReadSummary(User user) throws Exception {
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+        request = dataExportRequestRepository.saveAndFlush(request);
+
+        userDataExportService.processPendingDataExports();
+
+        DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+        Path zipPath = Paths.get(updated.getFilePath());
+        return readJsonNodeFromZip(zipPath, "data_export_summary.json");
+    }
+
+    private JsonNode readJsonNodeFromZip(Path zipPath, String entryName) throws Exception {
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(Files.readAllBytes(zipPath)))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entryName.equals(entry.getName())) {
+                    byte[] payload = zis.readAllBytes();
+                    return objectMapper.readTree(payload);
+                }
+                zis.closeEntry();
+            }
+        }
+        throw new IllegalStateException("Zip entry not found: " + entryName);
     }
 }

@@ -66,6 +66,9 @@ class TechnicalStructureTest {
      *
      * Entities must declare exactly one intent via @ExportedUserData (included in export) or
      * @NoUserDataExportRequired (explicitly excluded). This avoids silently missing entities in data exports.
+     *
+     * Note: this is a structural guard only. Runtime completeness of exported JSON content is
+     * validated by dedicated integration tests in UserDataExportResourceTest.
      */
     @ArchTest
     static final ArchRule entitiesMustDeclareDataExportDecision = classes()
@@ -95,6 +98,9 @@ class TechnicalStructureTest {
      *
      * For every entity annotated with @ExportedUserData, the configured provider type must resolve to a
      * Spring @Component that implements UserDataSectionProvider.
+     *
+     * Note: this guarantees provider wiring and type safety, but not that every field/record is present
+     * in the final ZIP output. Content-level assertions are covered by integration tests.
      */
     @ArchTest
     static final ArchRule exportedEntitiesMustReferenceComponentProvider = classes()

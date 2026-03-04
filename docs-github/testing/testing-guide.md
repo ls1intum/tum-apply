@@ -49,6 +49,25 @@ Newly added ArchUnit rule text and purpose:
   - Function: any entity marked with `@ExportedUserData` must map to a valid, Spring-managed export provider.
   - Why: this guarantees exported entities are backed by executable export logic and can be collected consistently.
 
+Provider type semantics:
+
+- `UserDataExportProviderType.APPLICANT`
+  - Means: this entity belongs to the applicant-focused export section.
+  - Runtime effect: data is only contributed when the exported user has APPLICANT role.
+
+- `UserDataExportProviderType.STAFF`
+  - Means: this entity belongs to the staff-focused export section.
+  - Runtime effect: data is only contributed when the exported user has PROFESSOR/EMPLOYEE/ADMIN role.
+
+- `UserDataExportProviderType.USER_SETTINGS`
+  - Means: profile/settings ownership.
+  - Runtime effect: always contributed as part of base export profile/settings.
+
+Important scope note:
+
+- The ArchUnit rules above enforce structure (annotation decision + valid provider mapping), but they do not by themselves prove complete runtime export coverage of JSON content.
+- Runtime coverage is validated by integration tests in `UserDataExportResourceTest` that read `data_export_summary.json` from the generated ZIP and assert section content for applicant/staff scenarios.
+
 When adding a new entity, always choose one of these two annotations. If you mark it as exported, ensure the configured provider exists, implements `UserDataSectionProvider`, and is annotated with `@Component`.
 
 - Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
