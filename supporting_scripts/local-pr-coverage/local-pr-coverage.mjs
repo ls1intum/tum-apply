@@ -917,13 +917,13 @@ function findTestFilesInModule(sourceFilePath) {
   // e.g., de/tum/cit/aet/artemis/core/repository/CourseRepository.java
   // -> Look in src/test/java/de/tum/cit/aet/artemis/core/
   const parts = sourceFilePath.split('/');
-  const artemisIndex = parts.indexOf('artemis');
+  const artemisIndex = parts.indexOf('aet');
   if (artemisIndex === -1 || artemisIndex + 1 >= parts.length) {
     return [];
   }
 
   const moduleName = parts[artemisIndex + 1]; // e.g., 'core'
-  const moduleTestDir = path.join(PROJECT_ROOT, 'src/test/java/de/tum/cit/aet/artemis', moduleName);
+  const moduleTestDir = path.join(PROJECT_ROOT, 'src/test/java/de/tum/cit/aet', moduleName);
 
   return findAllJavaTestFiles(moduleTestDir);
 }
