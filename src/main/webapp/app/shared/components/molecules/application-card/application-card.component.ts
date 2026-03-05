@@ -3,14 +3,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { TagComponent } from '../../atoms/tag/tag.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, UserAvatarComponent],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule],
   templateUrl: './application-card.component.html',
+  styleUrl: './application-card.component.scss',
 })
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);
@@ -34,7 +34,7 @@ export class ApplicationCardComponent {
   };
 
   readonly nameParts = computed<{ first: string; last: string }>(() => {
-    const fullName = this.fullName();
+    const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim() ?? '';
     const parts = fullName.split(' ').filter(p => p.length > 0);
 
     if (parts.length <= 2) {
@@ -45,6 +45,4 @@ export class ApplicationCardComponent {
     const first = parts.join(' ');
     return { first, last };
   });
-
-  readonly fullName = computed(() => this.application()?.applicationDetailDTO.applicant?.user.name?.trim() ?? '');
 }
