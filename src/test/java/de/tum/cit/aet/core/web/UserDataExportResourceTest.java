@@ -18,6 +18,7 @@ import de.tum.cit.aet.core.service.UserDataExportService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
@@ -59,6 +60,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration tests for {@link UserDataExportResource}.
@@ -324,8 +326,19 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    @Transactional
     void exportIncludesApplicantDataWhenApplicantRoleExists() throws Exception {
-        User user = savedApplicantWithExportData("applicant-export@tum.de");
+        User user = savedUser("applicant-export@tum.de");
+        ApplicantTestData.attachApplicantRole(user);
+        user = userRepository.saveAndFlush(user);
+
+        Applicant applicant = new Applicant();
+        applicant.setUser(user);
+        applicant.setStreet("Teststr. 1");
+        applicant.setPostalCode("12345");
+        applicant.setCity("Munich");
+        applicant.setCountry("de");
+        applicantRepository.saveAndFlush(applicant);
 
         JsonNode summary = processExportAndReadSummary(user);
 
@@ -353,7 +366,8 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     void annotatedEntitiesMustHaveRuntimeJsonCoverage() throws Exception {
         JsonNode settingsSummary = processExportAndReadSummary(savedUser("settings-coverage@tum.de"));
 
-        User applicantUser = savedApplicantWithExportData("applicant-coverage@tum.de");
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        User applicantUser = applicant.getUser();
         JsonNode applicantSummary = processExportAndReadSummary(applicantUser);
 
         var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
@@ -449,12 +463,6 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         user.setEmail(email);
         user.setSelectedLanguage("en");
         return userRepository.saveAndFlush(user);
-    }
-
-    private User savedApplicantWithExportData(String email) {
-        User applicantUser = ApplicantTestData.saveApplicant(email, userRepository);
-        ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
-        return applicantUser;
     }
 
     private void cleanExportRoot() {
