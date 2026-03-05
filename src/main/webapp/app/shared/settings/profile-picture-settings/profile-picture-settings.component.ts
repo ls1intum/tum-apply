@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { firstValueFrom } from 'rxjs';
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
+import { ConfirmDialog } from '../../components/atoms/confirm-dialog/confirm-dialog';
 import { DialogComponent } from '../../components/atoms/dialog/dialog.component';
 import { UserAvatarComponent } from '../../components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from '../../language/translate.directive';
@@ -25,6 +26,7 @@ const BLUR_PADDING_PX = 28;
   standalone: true,
   imports: [
     ButtonComponent,
+    ConfirmDialog,
     DialogComponent,
     TranslateDirective,
     TranslateModule,
@@ -47,7 +49,6 @@ export class ProfilePictureSettingsComponent {
   readonly faRotateRight = faRotateRight;
 
   cropDialogVisible = signal(false);
-  savedProfilePictureUrl = signal<string | null>(null);
   rawImageSrc = signal<string | null>(null);
 
   zoomFactor = signal(1);
@@ -61,6 +62,8 @@ export class ProfilePictureSettingsComponent {
     const name = this.accountService.loadedUser()?.name.trim();
     return name === '' ? undefined : name;
   });
+
+  currentProfilePictureUrl = computed<string | null>(() => this.normalizeAvatarUrl(this.accountService.loadedUser()?.avatar));
 
   imageStyle = computed<Record<string, string>>(() => {
     const scale = this.effectiveScale();
@@ -182,7 +185,6 @@ export class ProfilePictureSettingsComponent {
   async onResetPicture(): Promise<void> {
     try {
       await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl: null }));
-      this.savedProfilePictureUrl.set(null);
       this.accountService.setAvatar(undefined);
     } catch (error) {
       console.error('Failed to reset profile picture', error);
@@ -280,7 +282,6 @@ export class ProfilePictureSettingsComponent {
       if (!avatarUrl) return;
 
       await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl }));
-      this.savedProfilePictureUrl.set(avatarUrl);
       this.accountService.setAvatar(avatarUrl);
 
       this.cropDialogVisible.set(false);
@@ -358,5 +359,10 @@ export class ProfilePictureSettingsComponent {
       image.src = src;
     };
     reader.readAsDataURL(file);
+  }
+
+  private normalizeAvatarUrl(avatarUrl: string | null | undefined): string | null {
+    const normalized = avatarUrl?.trim();
+    return normalized ? normalized : null;
   }
 }

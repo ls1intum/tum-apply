@@ -1,8 +1,8 @@
 <div class="mb-1">
   <div class="flex items-center gap-4 pb-1">
     <div class="relative h-24 w-24 shrink-0 cursor-pointer group" (click)="onAddPictureClick()">
-      @if (savedProfilePictureUrl()) {
-        <img [src]="savedProfilePictureUrl()" class="h-24 w-24 rounded-full object-cover" alt="Profile picture" />
+      @if (currentProfilePictureUrl()) {
+        <img [src]="currentProfilePictureUrl()" class="h-24 w-24 rounded-full object-cover" alt="Profile picture" />
       } @else {
         <div class="origin-top-left scale-[2.18] rounded-full overflow-hidden">
           <jhi-user-avatar [fullName]="fullName()" size="lg" />
@@ -23,6 +23,16 @@
           <p class="text-text-secondary" jhiTranslate="settings.profilePicture.description"></p>
         </div>
         <div class="flex items-center gap-1">
+          <jhi-confirm-dialog
+            #resetPictureDialog
+            [showOpenButton]="false"
+            [label]="'button.delete' | translate"
+            [header]="'settings.profilePicture.resetConfirm.header' | translate"
+            [message]="'settings.profilePicture.resetConfirm.message' | translate"
+            confirmIcon="trash"
+            severity="danger"
+            (confirmed)="onResetPicture()"
+          />
           <jhi-button
             icon="pen"
             variant="text"
@@ -35,8 +45,8 @@
             variant="text"
             severity="danger"
             [tooltip]="'settings.profilePicture.resetButtonTooltip' | translate"
-            [disabled]="!savedProfilePictureUrl()"
-            (click)="onResetPicture()"
+            [disabled]="!currentProfilePictureUrl()"
+            (click)="resetPictureDialog.confirm()"
           />
         </div>
       </div>

@@ -48,6 +48,10 @@
       "description": "Mach dein Profil persönlicher mit einem Foto.",
       "addButton": "Bearbeiten",
       "resetButtonTooltip": "Entfernen",
+      "resetConfirm": {
+        "header": "Profilbild löschen?",
+        "message": "Möchtest du dein aktuelles Profilbild wirklich löschen?"
+      },
       "cropDialog": {
         "header": "Profilbild zuschneiden",
         "rotate": "Drehen"

@@ -48,6 +48,10 @@
       "description": "Make your profile more personal with a photo.",
       "addButton": "Edit",
       "resetButtonTooltip": "Remove",
+      "resetConfirm": {
+        "header": "Delete profile picture?",
+        "message": "Are you sure you want to delete your current profile picture?"
+      },
       "cropDialog": {
         "header": "Crop Profile Picture",
         "rotate": "Rotate"
