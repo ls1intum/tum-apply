@@ -124,6 +124,13 @@ public class UserExportZipWriter {
             return;
         }
 
+        writeApplicantProfileCsv(zipOut, applicantData);
+        writeApplicantDocumentsCsv(zipOut, applicantData);
+        writeApplicantApplicationsCsv(zipOut, applicantData);
+        writeApplicantIntervieweesCsv(zipOut, applicantData);
+    }
+
+    private void writeApplicantProfileCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
         addCsvFileToZip(
             zipOut,
             "data/applicant_profile.csv",
@@ -162,7 +169,9 @@ public class UserExportZipWriter {
                 )
             )
         );
+    }
 
+    private void writeApplicantDocumentsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
         List<List<String>> documentRows = applicantData
             .documents()
             .stream()
@@ -177,13 +186,16 @@ public class UserExportZipWriter {
                 )
             )
             .toList();
+
         addCsvFileToZip(
             zipOut,
             "data/applicant_documents.csv",
             List.of("document_id", "name", "document_type", "mime_type", "size_bytes"),
             documentRows
         );
+    }
 
+    private void writeApplicantApplicationsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
         List<List<String>> applicationRows = applicantData
             .applications()
             .stream()
@@ -202,6 +214,7 @@ public class UserExportZipWriter {
                 )
             )
             .toList();
+
         addCsvFileToZip(
             zipOut,
             "data/applicant_applications.csv",
@@ -219,12 +232,15 @@ public class UserExportZipWriter {
             ),
             applicationRows
         );
+    }
 
+    private void writeApplicantIntervieweesCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
         List<List<String>> intervieweeRows = applicantData
             .interviewees()
             .stream()
             .map(interviewee -> List.of(toCsvValue(interviewee.jobTitle()), toCsvValue(interviewee.lastInvited())))
             .toList();
+
         addCsvFileToZip(zipOut, "data/applicant_interviewees.csv", List.of("job_title", "last_invited"), intervieweeRows);
     }
 
@@ -233,20 +249,36 @@ public class UserExportZipWriter {
             return;
         }
 
+        writeStaffSupervisedJobsCsv(zipOut, staffData);
+        writeStaffResearchGroupRolesCsv(zipOut, staffData);
+        writeStaffReviewsCsv(zipOut, staffData);
+        writeStaffCommentsCsv(zipOut, staffData);
+        writeStaffRatingsCsv(zipOut, staffData);
+        writeStaffInterviewProcessesCsv(zipOut, staffData);
+        writeStaffInterviewSlotsCsv(zipOut, staffData);
+    }
+
+    private void writeStaffSupervisedJobsCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> supervisedJobRows = staffData
             .supervisedJobs()
             .stream()
             .map(jobTitle -> List.of(toCsvValue(jobTitle)))
             .toList();
-        addCsvFileToZip(zipOut, "data/staff_supervised_jobs.csv", List.of("job_title"), supervisedJobRows);
 
+        addCsvFileToZip(zipOut, "data/staff_supervised_jobs.csv", List.of("job_title"), supervisedJobRows);
+    }
+
+    private void writeStaffResearchGroupRolesCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> roleRows = staffData
             .researchGroupRoles()
             .stream()
             .map(role -> List.of(toCsvValue(role.researchGroupName()), toCsvValue(role.role())))
             .toList();
-        addCsvFileToZip(zipOut, "data/staff_research_group_roles.csv", List.of("research_group", "role"), roleRows);
 
+        addCsvFileToZip(zipOut, "data/staff_research_group_roles.csv", List.of("research_group", "role"), roleRows);
+    }
+
+    private void writeStaffReviewsCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> reviewRows = staffData
             .reviews()
             .stream()
@@ -259,8 +291,11 @@ public class UserExportZipWriter {
                 )
             )
             .toList();
-        addCsvFileToZip(zipOut, "data/staff_reviews.csv", List.of("job_title", "applicant_name", "reason", "reviewed_at"), reviewRows);
 
+        addCsvFileToZip(zipOut, "data/staff_reviews.csv", List.of("job_title", "applicant_name", "reason", "reviewed_at"), reviewRows);
+    }
+
+    private void writeStaffCommentsCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> commentRows = staffData
             .comments()
             .stream()
@@ -273,8 +308,11 @@ public class UserExportZipWriter {
                 )
             )
             .toList();
-        addCsvFileToZip(zipOut, "data/staff_comments.csv", List.of("job_title", "applicant_name", "message", "created_at"), commentRows);
 
+        addCsvFileToZip(zipOut, "data/staff_comments.csv", List.of("job_title", "applicant_name", "message", "created_at"), commentRows);
+    }
+
+    private void writeStaffRatingsCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> ratingRows = staffData
             .ratings()
             .stream()
@@ -287,15 +325,21 @@ public class UserExportZipWriter {
                 )
             )
             .toList();
-        addCsvFileToZip(zipOut, "data/staff_ratings.csv", List.of("job_title", "applicant_name", "rating", "created_at"), ratingRows);
 
+        addCsvFileToZip(zipOut, "data/staff_ratings.csv", List.of("job_title", "applicant_name", "rating", "created_at"), ratingRows);
+    }
+
+    private void writeStaffInterviewProcessesCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> processRows = staffData
             .interviewProcesses()
             .stream()
             .map(process -> List.of(toCsvValue(process.jobTitle())))
             .toList();
-        addCsvFileToZip(zipOut, "data/staff_interview_processes.csv", List.of("job_title"), processRows);
 
+        addCsvFileToZip(zipOut, "data/staff_interview_processes.csv", List.of("job_title"), processRows);
+    }
+
+    private void writeStaffInterviewSlotsCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
         List<List<String>> slotRows = staffData
             .interviewSlots()
             .stream()
@@ -310,6 +354,7 @@ public class UserExportZipWriter {
                 )
             )
             .toList();
+
         addCsvFileToZip(
             zipOut,
             "data/staff_interview_slots.csv",
