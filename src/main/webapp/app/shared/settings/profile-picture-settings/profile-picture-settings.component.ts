@@ -278,8 +278,8 @@ export class ProfilePictureSettingsComponent {
       const formData = new FormData();
       formData.append('file', blob, 'profile-picture.jpg');
       const uploadedImage = await firstValueFrom(this.http.post<ImageDTO>('/api/images/upload/profile-picture', formData));
-      const avatarUrl = uploadedImage.url ?? null;
-      if (!avatarUrl) return;
+      const avatarUrl = this.normalizeAvatarUrl(uploadedImage.url);
+      if (avatarUrl === null) return;
 
       await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl }));
       this.accountService.setAvatar(avatarUrl);
@@ -363,6 +363,9 @@ export class ProfilePictureSettingsComponent {
 
   private normalizeAvatarUrl(avatarUrl: string | null | undefined): string | null {
     const normalized = avatarUrl?.trim();
-    return normalized ? normalized : null;
+    if (normalized == null || normalized === '') {
+      return null;
+    }
+    return normalized;
   }
 }
