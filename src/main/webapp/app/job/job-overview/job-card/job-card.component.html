@@ -13,17 +13,17 @@
     "
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
-    <div class="absolute left-2 -bottom-4 z-10">
+    <div class="absolute left-2 -bottom-4">
       <div class="relative h-10 w-[15rem]">
         <div
-          class="absolute left-0 top-1/2 -translate-y-1/2 z-20"
+          class="absolute left-0 top-1/2 -translate-y-1/2 z-1"
           [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
           tooltipPosition="top"
         >
           <jhi-user-avatar [fullName]="professor()" size="lg" />
         </div>
         <span
-          class="absolute left-0 top-1/2 -translate-y-1/2 rounded-pill bg-black/45 backdrop-blur-sm text-white text-xs font-medium h-6 pl-12 pr-3 leading-none inline-flex items-center w-fit max-w-full overflow-hidden"
+          class="absolute left-0 top-1/2 -translate-y-1/2 z-0 rounded-pill bg-black/45 backdrop-blur-sm text-white text-xs font-medium h-6 pl-12 pr-3 leading-none inline-flex items-center w-fit max-w-full overflow-hidden"
         >
           <span class="block truncate">Prof. {{ professor() }}</span>
         </span>
