@@ -9,6 +9,8 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.DataExportState;
 import de.tum.cit.aet.core.domain.DataExportRequest;
 import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.core.dto.DataExportStatusDTO;
 import de.tum.cit.aet.core.repository.DataExportRequestRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -16,7 +18,6 @@ import de.tum.cit.aet.core.service.UserDataExportService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
@@ -37,20 +38,27 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration tests for {@link UserDataExportResource}.
@@ -60,6 +68,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     private static final String STATUS_URL = "/api/users/data-export/status";
     private static final String REQUEST_URL = "/api/users/data-export";
     private static final String DOWNLOAD_URL = "/api/users/data-export/download/%s";
+    private static final String ENTITY_BASE_PACKAGE = "de.tum.cit.aet";
 
     @Autowired
     UserRepository userRepository;
@@ -315,19 +324,8 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @Transactional
     void exportIncludesApplicantDataWhenApplicantRoleExists() throws Exception {
-        User user = savedUser("applicant-export@tum.de");
-        ApplicantTestData.attachApplicantRole(user);
-        user = userRepository.saveAndFlush(user);
-
-        Applicant applicant = new Applicant();
-        applicant.setUser(user);
-        applicant.setStreet("Teststr. 1");
-        applicant.setPostalCode("12345");
-        applicant.setCity("Munich");
-        applicant.setCountry("de");
-        applicantRepository.saveAndFlush(applicant);
+        User user = savedApplicantWithExportData("applicant-export@tum.de");
 
         JsonNode summary = processExportAndReadSummary(user);
 
@@ -351,11 +349,112 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         assertThat(summary.path("staffData").path("supervisedJobs").toString()).contains("Staff Export Job");
     }
 
+    @Test
+    void annotatedEntitiesMustHaveRuntimeJsonCoverage() throws Exception {
+        JsonNode settingsSummary = processExportAndReadSummary(savedUser("settings-coverage@tum.de"));
+
+        User applicantUser = savedApplicantWithExportData("applicant-coverage@tum.de");
+        JsonNode applicantSummary = processExportAndReadSummary(applicantUser);
+
+        var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User staffUser = UserTestData.savedProfessor(userRepository, researchGroup);
+        staffUser = userRepository.findById(staffUser.getUserId()).orElseThrow();
+        JobTestData.saved(jobRepository, staffUser, researchGroup, "Coverage Job", JobState.DRAFT, LocalDate.now());
+        JsonNode staffSummary = processExportAndReadSummary(staffUser);
+
+        Map<UserDataExportProviderType, JsonNode> summaryByProviderType = new EnumMap<>(UserDataExportProviderType.class);
+        summaryByProviderType.put(UserDataExportProviderType.USER_SETTINGS, settingsSummary);
+        summaryByProviderType.put(UserDataExportProviderType.APPLICANT, applicantSummary);
+        summaryByProviderType.put(UserDataExportProviderType.STAFF, staffSummary);
+
+        Map<String, String> expectedJsonPathByEntity = expectedJsonPathByEntityClassName();
+        List<Class<?>> annotatedEntities = findExportAnnotatedEntities();
+
+        Set<String> discoveredClassNames = annotatedEntities.stream().map(Class::getName).collect(Collectors.toSet());
+        assertThat(expectedJsonPathByEntity.keySet())
+            .as("Every @ExportedUserData entity must have an explicit runtime JSON coverage mapping")
+            .isEqualTo(discoveredClassNames);
+
+        for (Class<?> entityClass : annotatedEntities) {
+            ExportedUserData annotation = entityClass.getAnnotation(ExportedUserData.class);
+            assertThat(annotation).isNotNull();
+
+            String jsonPath = expectedJsonPathByEntity.get(entityClass.getName());
+            JsonNode summary = summaryByProviderType.get(annotation.by());
+
+            assertThat(summary).as("Missing runtime summary for provider type %s", annotation.by()).isNotNull();
+
+            assertJsonPathExists(summary, jsonPath, entityClass.getName());
+        }
+    }
+
+    private Map<String, String> expectedJsonPathByEntityClassName() {
+        Map<String, String> pathByEntity = new HashMap<>();
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.User", "profile.email");
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.UserSetting", "settings");
+        pathByEntity.put("de.tum.cit.aet.notification.domain.EmailSetting", "emailSettings");
+
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.Applicant", "applicantData.city");
+        pathByEntity.put("de.tum.cit.aet.core.domain.DocumentDictionary", "applicantData.documents");
+        pathByEntity.put("de.tum.cit.aet.application.domain.Application", "applicantData.applications");
+        pathByEntity.put("de.tum.cit.aet.interview.domain.Interviewee", "applicantData.interviewees");
+
+        pathByEntity.put("de.tum.cit.aet.job.domain.Job", "staffData.supervisedJobs");
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole", "staffData.researchGroupRoles");
+        pathByEntity.put("de.tum.cit.aet.evaluation.domain.ApplicationReview", "staffData.reviews");
+        pathByEntity.put("de.tum.cit.aet.evaluation.domain.InternalComment", "staffData.comments");
+        pathByEntity.put("de.tum.cit.aet.evaluation.domain.Rating", "staffData.ratings");
+        pathByEntity.put("de.tum.cit.aet.interview.domain.InterviewProcess", "staffData.interviewProcesses");
+        pathByEntity.put("de.tum.cit.aet.interview.domain.InterviewSlot", "staffData.interviewSlots");
+        return pathByEntity;
+    }
+
+    // ---------------- Helper methods for test setup and assertions ----------------
+
+    private List<Class<?>> findExportAnnotatedEntities() {
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AnnotationTypeFilter(ExportedUserData.class));
+
+        return scanner
+            .findCandidateComponents(ENTITY_BASE_PACKAGE)
+            .stream()
+            .map(BeanDefinition::getBeanClassName)
+            .filter(Objects::nonNull)
+            .map(this::loadClass)
+            .map(clazz -> (Class<?>) clazz)
+            .collect(Collectors.toList());
+    }
+
+    private Class<?> loadClass(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Could not load class " + className, e);
+        }
+    }
+
+    private void assertJsonPathExists(JsonNode root, String dotPath, String entityClassName) {
+        JsonNode current = root;
+        for (String segment : dotPath.split("\\.")) {
+            current = current.path(segment);
+        }
+
+        assertThat(current.isMissingNode())
+            .as("Expected JSON path '%s' for entity %s to exist in export summary", dotPath, entityClassName)
+            .isFalse();
+    }
+
     private User savedUser(String email) {
         User user = UserTestData.newUser();
         user.setEmail(email);
         user.setSelectedLanguage("en");
         return userRepository.saveAndFlush(user);
+    }
+
+    private User savedApplicantWithExportData(String email) {
+        User applicantUser = ApplicantTestData.saveApplicant(email, userRepository);
+        ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
+        return applicantUser;
     }
 
     private void cleanExportRoot() {
@@ -395,8 +494,10 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     private JsonNode processExportAndReadSummary(User user) throws Exception {
+        User managedUser = userRepository.findById(user.getUserId()).orElseThrow();
+
         DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
+        request.setUser(managedUser);
         request.setStatus(DataExportState.REQUESTED);
         request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
         request = dataExportRequestRepository.saveAndFlush(request);
