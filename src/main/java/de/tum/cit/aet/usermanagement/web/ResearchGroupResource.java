@@ -18,6 +18,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,19 @@ public class ResearchGroupResource {
         log.info("GET /api/research-groups/members?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
         return ResponseEntity.ok(members);
+    }
+
+    /**
+     * Returns all professors of the current user's research group.
+     *
+     * @return list of professors
+     */
+    @ProfessorOrEmployeeOrAdmin
+    @GetMapping("/professors")
+    public ResponseEntity<List<UserShortDTO>> getResearchGroupProfessors() {
+        log.info("GET /api/research-groups/professors");
+        List<UserShortDTO> professors = researchGroupService.getResearchGroupProfessors();
+        return ResponseEntity.ok(professors);
     }
 
     /**
