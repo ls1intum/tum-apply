@@ -80,6 +80,20 @@ public class UserResource {
     }
 
     /**
+     * Allows the currently authenticated user to update their avatar URL.
+     *
+     * @param jwt of the authenticated user
+     * @param dto contains the new avatar URL (or null/blank to remove)
+     * @return 204 No Content if updated successfully
+     */
+    @Authenticated
+    @PutMapping("/avatar")
+    public ResponseEntity<Void> updateAvatar(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateAvatarDTO dto) {
+        userService.updateAvatar(jwt.getSubject(), dto.avatarUrl());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Retrieves a paginated list of users who are TUM-affiliated and not currently assigned to any research group.
      *
      * @param pageDTO     pagination parameters
@@ -99,4 +113,6 @@ public class UserResource {
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}
+
+    public record UpdateAvatarDTO(String avatarUrl) {}
 }

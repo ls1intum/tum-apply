@@ -1,5 +1,5 @@
 <div
-  class="flex flex-col gap-3 p-4 w-[clamp(15.5rem,90vw,20rem)] border-2 border-primary rounded-2xl max-[1280px]:w-[17.5rem] max-[1024px]:w-[14rem] max-[1024px]:p-[0.7rem] max-[1024px]:gap-2 max-[600px]:p-[0.45rem] max-[600px]:gap-[0.2rem] max-[480px]:w-[12.5rem] max-[550px]:w-[11rem] max-[550px]:p-[0.6rem] max-[550px]:gap-2 max-[400px]:w-[11.5rem]"
+  class="flex flex-col gap-3 p-4 w-[clamp(17rem,90vw,22rem)] border-2 border-primary rounded-2xl max-[1280px]:w-[19rem] max-[1024px]:w-[15.5rem] max-[1024px]:p-[0.7rem] max-[1024px]:gap-2 max-[600px]:p-[0.45rem] max-[600px]:gap-[0.2rem] max-[480px]:w-[13.25rem] max-[550px]:w-[11.75rem] max-[550px]:p-[0.6rem] max-[550px]:gap-2 max-[400px]:w-[11.9rem]"
   [class.opacity-50]="disabled()"
   [class.border-background-disabled]="disabled()"
   [class.cursor-not-allowed]="disabled()"
@@ -8,15 +8,20 @@
 >
   @if (!placeholder()) {
     <!-- Header -->
-    <div class="flex justify-between items-center h-8 gap-2 max-[1280px]:contents">
-      <div class="flex items-center gap-[0.6rem] -ml-[0.55rem] max-[1280px]:order-1">
-        <jhi-user-avatar [fullName]="fullName()" size="lg" />
+    <div class="flex justify-between items-center min-h-11 gap-2 max-[1280px]:contents">
+      <div class="flex min-w-0 flex-1 items-center gap-[0.6rem] max-[1280px]:order-1">
+        <jhi-user-avatar
+          class="shrink-0"
+          [fullName]="fullName()"
+          [avatarUrl]="application()?.applicationDetailDTO?.applicant?.user?.avatar"
+          size="lg"
+        />
         <div
-          class="m-0 text-[1.25rem] font-bold flex flex-col max-[1280px]:text-[1.25rem] max-[1280px]:font-bold max-[1280px]:order-1 max-[1280px]:text-left max-[1280px]:flex-row max-[1280px]:items-baseline max-[1280px]:gap-[0.3rem] max-[1280px]:flex-wrap max-[1024px]:text-[1.1rem] max-[600px]:text-[0.85rem] max-[600px]:leading-[1.2] max-[600px]:p-[0.2rem] max-[480px]:text-[0.8rem] max-[550px]:text-[1rem] max-[400px]:text-[0.75rem] max-[400px]:p-[0.15rem]"
+          class="m-0 min-w-0 text-[1.25rem] font-bold flex flex-col max-[1280px]:text-[1.25rem] max-[1280px]:font-bold max-[1280px]:text-left max-[1280px]:flex-row max-[1280px]:items-baseline max-[1280px]:gap-[0.3rem] max-[1280px]:flex-wrap max-[1024px]:text-[1.1rem] max-[600px]:text-[0.85rem] max-[600px]:leading-[1.2] max-[600px]:p-[0.2rem] max-[480px]:text-[0.8rem] max-[550px]:text-[1rem] max-[400px]:text-[0.75rem] max-[400px]:p-[0.15rem]"
           [class.has-last]="!!nameParts().last"
         >
-          <span class="whitespace-nowrap">{{ nameParts().first }}</span>
-          <span class="mt-[0.1rem] max-[1280px]:mt-0">{{ nameParts().last }}</span>
+          <span class="block truncate whitespace-nowrap">{{ nameParts().first }}</span>
+          <span class="mt-[0.1rem] block truncate max-[1280px]:mt-0">{{ nameParts().last }}</span>
         </div>
       </div>
 
@@ -30,10 +35,10 @@
 
     <!-- Job Title -->
     <div
-      class="flex items-start gap-[0.6rem] text-text-disabled min-h-[3rem] -ml-[0.55rem] mt-[0.3rem] max-[1280px]:order-2 max-[1280px]:justify-self-start max-[1024px]:gap-[0.4rem] max-[1024px]:min-h-[2.3rem] max-[600px]:gap-[0.35rem] max-[600px]:min-h-[1.8rem] max-[600px]:p-[0.2rem] max-[550px]:gap-[0.4rem] max-[550px]:min-h-[2rem] max-[400px]:p-[0.15rem]"
+      class="flex items-start gap-[0.6rem] text-text-disabled min-h-[3rem] mt-[0.3rem] max-[1280px]:order-2 max-[1280px]:justify-self-start max-[1024px]:gap-[0.4rem] max-[1024px]:min-h-[2.3rem] max-[600px]:gap-[0.35rem] max-[600px]:min-h-[1.8rem] max-[600px]:p-[0.2rem] max-[550px]:gap-[0.4rem] max-[550px]:min-h-[2rem] max-[400px]:p-[0.15rem]"
     >
       <fa-icon
-        class="text-primary w-[2.5rem] inline-flex justify-center shrink-0 mt-[0.12rem] max-[1280px]:text-[0.8rem] max-[600px]:text-[0.7rem] max-[550px]:text-[0.65rem] max-[400px]:text-[0.65rem]"
+        class="text-primary w-11 inline-flex justify-center shrink-0 mt-[0.12rem] max-[1280px]:text-[0.8rem] max-[600px]:text-[0.7rem] max-[550px]:text-[0.65rem] max-[400px]:text-[0.65rem]"
         [icon]="['fas', 'briefcase']"
       />
       <span

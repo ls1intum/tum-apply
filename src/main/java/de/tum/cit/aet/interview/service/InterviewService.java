@@ -871,7 +871,13 @@ public class InterviewService {
         if (user == null) {
             return null;
         }
-        return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new IntervieweeDTO.IntervieweeUserDTO(
+            user.getUserId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getAvatar()
+        );
     }
 
     /**

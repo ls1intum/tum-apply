@@ -24,6 +24,7 @@ import { ResearchGroupResourceApiService } from '../../../generated/api/research
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
 interface MembersRow {
+  avatar?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -91,6 +92,7 @@ export class ResearchGroupMembersComponent {
 
       return {
         email: member.email,
+        avatar: member.avatar,
         firstName: member.firstName,
         lastName: member.lastName,
         researchGroup: member.researchGroup,

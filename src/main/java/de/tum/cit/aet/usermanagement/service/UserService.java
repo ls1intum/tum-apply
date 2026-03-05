@@ -128,6 +128,20 @@ public class UserService {
     }
 
     /**
+     * Updates the user's avatar URL in the local database.
+     *
+     * @param userId    the Keycloak user ID
+     * @param avatarUrl the new avatar URL (can be null/blank to remove avatar)
+     */
+    @Transactional
+    public void updateAvatar(String userId, String avatarUrl) {
+        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);
+        user.setAvatar(normalizedAvatarUrl != null && !normalizedAvatarUrl.isBlank() ? normalizedAvatarUrl : null);
+        userRepository.save(user);
+    }
+
+    /**
      * Retrieves all users that are eligible to be added to a research group.
      *
      * <p>The result excludes any users who are already associated with a research group and

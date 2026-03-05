@@ -29,6 +29,7 @@ type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
 interface ApplicantRow {
   applicationId: string;
   name: string;
+  avatar?: string;
   selected: boolean;
 }
 
@@ -128,6 +129,7 @@ export class IntervieweeSectionComponent {
         return {
           applicationId: app.applicationDetailDTO.applicationId,
           name,
+          avatar: user?.avatar,
           selected: selected.has(app.applicationDetailDTO.applicationId),
         };
       });

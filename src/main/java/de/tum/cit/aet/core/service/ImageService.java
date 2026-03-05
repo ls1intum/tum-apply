@@ -163,10 +163,12 @@ public class ImageService {
     @Transactional
     public ProfileImage uploadProfilePicture(MultipartFile file) {
         User uploader = currentUserService.getUser();
+        imageRepository.deleteProfileImageByUser(uploader.getUserId());
         String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
 
         ProfileImage image = new ProfileImage();
         setBaseImageProperties(image, file, relativePath, uploader);
+        uploader.setAvatar(image.getUrl());
 
         return imageRepository.save(image);
     }

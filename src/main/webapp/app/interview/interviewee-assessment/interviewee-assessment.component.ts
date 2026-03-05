@@ -67,6 +67,7 @@ export class IntervieweeAssessmentComponent {
     if (!user) return '';
     return `${user.firstName} ${user.lastName}`;
   });
+  protected readonly applicantAvatar = computed(() => this.interviewee()?.user?.avatar);
 
   protected readonly degreeName = computed(() => {
     const applicant = this.interviewee()?.application?.applicant;

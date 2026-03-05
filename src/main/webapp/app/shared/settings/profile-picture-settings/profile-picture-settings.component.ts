@@ -1,10 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faMagnifyingGlassMinus, faMagnifyingGlassPlus, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { ImageDTO } from 'app/generated/model/imageDTO';
 import { TooltipModule } from 'primeng/tooltip';
+import { firstValueFrom } from 'rxjs';
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { DialogComponent } from '../../components/atoms/dialog/dialog.component';
@@ -103,6 +106,7 @@ export class ProfilePictureSettingsComponent {
   }));
 
   private readonly accountService = inject(AccountService);
+  private readonly http = inject(HttpClient);
 
   private img: HTMLImageElement | null = null;
   private imgNatW = signal(0);
@@ -175,8 +179,14 @@ export class ProfilePictureSettingsComponent {
     this.img = null;
   }
 
-  onResetPicture(): void {
-    this.savedProfilePictureUrl.set(null);
+  async onResetPicture(): Promise<void> {
+    try {
+      await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl: null }));
+      this.savedProfilePictureUrl.set(null);
+      this.accountService.setAvatar(undefined);
+    } catch (error) {
+      console.error('Failed to reset profile picture', error);
+    }
   }
 
   onRotate(): void {
@@ -204,7 +214,7 @@ export class ProfilePictureSettingsComponent {
     rotated.src = rotatedSrc;
   }
 
-  onSave(): void {
+  async onSave(): Promise<void> {
     if (!this.img) return;
 
     const canvas = this.saveCanvas.nativeElement;
@@ -259,10 +269,26 @@ export class ProfilePictureSettingsComponent {
     ctx.drawImage(this.img, fgDestX, fgDestY, fgDestW, fgDestH);
     ctx.restore();
 
-    this.savedProfilePictureUrl.set(canvas.toDataURL('image/jpeg', 0.92));
-    this.cropDialogVisible.set(false);
-    this.rawImageSrc.set(null);
-    this.img = null;
+    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+    if (!blob) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', blob, 'profile-picture.jpg');
+      const uploadedImage = await firstValueFrom(this.http.post<ImageDTO>('/api/images/upload/profile-picture', formData));
+      const avatarUrl = uploadedImage.url ?? null;
+      if (!avatarUrl) return;
+
+      await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl }));
+      this.savedProfilePictureUrl.set(avatarUrl);
+      this.accountService.setAvatar(avatarUrl);
+
+      this.cropDialogVisible.set(false);
+      this.rawImageSrc.set(null);
+      this.img = null;
+    } catch (error) {
+      console.error('Failed to save profile picture', error);
+    }
   }
 
   private resetCropState(): void {

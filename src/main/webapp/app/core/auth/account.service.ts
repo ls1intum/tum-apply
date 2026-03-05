@@ -9,6 +9,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  avatar?: string;
   researchGroup?: ResearchGroupShortDTO;
   authorities?: string[];
 }
@@ -92,6 +93,7 @@ export class AccountService {
         id: userShortDTO.userId,
         email: userShortDTO.email ?? '',
         name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
+        avatar: userShortDTO.avatar,
         researchGroup: userShortDTO.researchGroup ?? undefined,
         authorities: userShortDTO.roles,
       };
@@ -120,6 +122,10 @@ export class AccountService {
     if (trimmedPassword) {
       await firstValueFrom(this.userResourceService.updatePassword({ newPassword: trimmedPassword }));
     }
+  }
+
+  setAvatar(avatarUrl: string | undefined): void {
+    this.user.update(currentUser => (currentUser ? { ...currentUser, avatar: avatarUrl } : currentUser));
   }
 
   private async getCurrentUser(): Promise<UserShortDTO | null> {

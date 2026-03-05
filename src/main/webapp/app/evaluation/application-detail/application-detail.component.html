@@ -85,7 +85,11 @@
       <ng-template #header>
         <div class="info">
           <div class="flex items-center gap-2">
-            <jhi-user-avatar [fullName]="currentApplication()?.applicationDetailDTO?.applicant?.user?.name" size="lg" />
+            <jhi-user-avatar
+              [fullName]="currentApplication()?.applicationDetailDTO?.applicant?.user?.name"
+              [avatarUrl]="currentApplication()?.applicationDetailDTO?.applicant?.user?.avatar"
+              size="lg"
+            />
             <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
           </div>
           <div class="job-name">
