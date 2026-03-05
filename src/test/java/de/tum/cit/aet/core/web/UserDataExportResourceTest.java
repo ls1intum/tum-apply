@@ -402,6 +402,8 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         }
     }
 
+    // ---------------- Helper methods for test setup and assertions ----------------
+
     private Map<String, String> expectedJsonPathByEntityClassName() {
         Map<String, String> pathByEntity = new HashMap<>();
         pathByEntity.put("de.tum.cit.aet.usermanagement.domain.User", "profile.email");
@@ -422,8 +424,6 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         pathByEntity.put("de.tum.cit.aet.interview.domain.InterviewSlot", "staffData.interviewSlots");
         return pathByEntity;
     }
-
-    // ---------------- Helper methods for test setup and assertions ----------------
 
     private List<Class<?>> findExportAnnotatedEntities() {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
