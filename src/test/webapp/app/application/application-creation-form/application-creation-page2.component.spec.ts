@@ -13,6 +13,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
+import { Subject } from 'rxjs';
 
 const DEFAULT_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
   bachelorDegreeName: '',
@@ -115,6 +116,20 @@ describe('ApplicationPage2Component', () => {
       expect(formValues.masterGradeUpperLimit).toBe('4.0');
       expect(formValues.masterGradeLowerLimit).toBe('1.0');
     });
+
+    it('should auto-detect grading scale when grade is set but limits are missing', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...DEFAULT_PAGE2_FORM_DATA, bachelorGrade: '2.5', masterGrade: '3.0' },
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      expect(componentInstance.bachelorGradeLimits()).not.toBeNull();
+      expect(componentInstance.bachelorLimitsManuallySet()).toBe(false);
+      expect(componentInstance.masterGradeLimits()).not.toBeNull();
+      expect(componentInstance.masterLimitsManuallySet()).toBe(false);
+    });
   });
 
   describe('Form Validation', () => {
@@ -164,6 +179,44 @@ describe('ApplicationPage2Component', () => {
       fixture.detectChanges();
 
       expect(changedSpy).not.toHaveBeenCalled();
+    });
+
+    it('should update grade limits when bachelor or master grade changes after initialization', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      componentInstance.page2Form.controls.bachelorGrade.setValue('1.5');
+      componentInstance.page2Form.controls.masterGrade.setValue('1.0');
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+      fixture.detectChanges();
+
+      expect(componentInstance.lastBachelorGrade()).toBe('1.5');
+      expect(componentInstance.bachelorLimitsManuallySet()).toBe(false);
+      expect(componentInstance.lastMasterGrade()).toBe('1.0');
+      expect(componentInstance.masterLimitsManuallySet()).toBe(false);
+    });
+
+    it('should show warning text when bachelor or master grade is unusual', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...DEFAULT_PAGE2_FORM_DATA },
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      componentInstance.page2Form.controls.bachelorGrade.setValue('#');
+      componentInstance.page2Form.controls.masterGrade.setValue('#');
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+      fixture.detectChanges();
+
+      expect(componentInstance.warningTextBachelorGrade()).not.toBe('');
+      expect(componentInstance.warningTextMasterGrade()).not.toBe('');
     });
   });
 
@@ -251,6 +304,205 @@ describe('ApplicationPage2Component', () => {
         ...DEFAULT_PAGE2_FORM_DATA,
         bachelorDegreeName: 'BSc Biology',
       });
+    });
+  });
+
+  describe('onChangeGradingScale', () => {
+    it('should open dialog with correct data for bachelor grading scale', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('bachelor');
+
+      expect(mockDialogService.open).toHaveBeenCalledOnce();
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            gradeType: 'bachelor',
+            currentGrade: VALID_PAGE2_FORM_DATA.bachelorGrade,
+            currentUpperLimit: VALID_PAGE2_FORM_DATA.bachelorGradeUpperLimit,
+            currentLowerLimit: VALID_PAGE2_FORM_DATA.bachelorGradeLowerLimit,
+          }),
+        }),
+      );
+    });
+
+    it('should open dialog with correct data for master grading scale', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('master');
+
+      expect(mockDialogService.open).toHaveBeenCalledOnce();
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            gradeType: 'master',
+            currentGrade: VALID_PAGE2_FORM_DATA.masterGrade,
+            currentUpperLimit: VALID_PAGE2_FORM_DATA.masterGradeUpperLimit,
+            currentLowerLimit: VALID_PAGE2_FORM_DATA.masterGradeLowerLimit,
+          }),
+        }),
+      );
+    });
+
+    it('should update bachelor limits and set manuallySet flag when dialog returns a result', () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('bachelor');
+
+      onCloseSub.next({ upperLimit: '5.0', lowerLimit: '1.0' });
+      fixture.detectChanges();
+
+      expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('5.0');
+      expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('1.0');
+      expect(componentInstance.bachelorGradeLimits()).toEqual({ upperLimit: '5.0', lowerLimit: '1.0' });
+      expect(componentInstance.bachelorLimitsManuallySet()).toBe(true);
+    });
+
+    it('should update master limits and set manuallySet flag when dialog returns a result', () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('master');
+
+      onCloseSub.next({ upperLimit: '10.0', lowerLimit: '1.0' });
+      fixture.detectChanges();
+
+      expect(componentInstance.page2Form.get('masterGradeUpperLimit')?.value).toBe('10.0');
+      expect(componentInstance.page2Form.get('masterGradeLowerLimit')?.value).toBe('1.0');
+      expect(componentInstance.masterGradeLimits()).toEqual({ upperLimit: '10.0', lowerLimit: '1.0' });
+      expect(componentInstance.masterLimitsManuallySet()).toBe(true);
+    });
+
+    it('should not update limits when dialog is closed without a result', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...DEFAULT_PAGE2_FORM_DATA, bachelorGrade: '2.5' },
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('bachelor');
+      const limitsBefore = componentInstance.bachelorGradeLimits();
+
+      onCloseSub.next(undefined);
+      fixture.detectChanges();
+
+      expect(componentInstance.bachelorGradeLimits()).toEqual(limitsBefore);
+      expect(componentInstance.bachelorLimitsManuallySet()).toBe(false);
+    });
+
+    it('should call updateBachelorGradeLimits with empty string when bachelor grade is null', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      componentInstance.page2Form.controls.bachelorGrade.setValue(null);
+      await new Promise(resolve => setTimeout(resolve, 600));
+      fixture.detectChanges();
+
+      expect(componentInstance.lastBachelorGrade()).toBe('');
+      expect(componentInstance.bachelorLimitsManuallySet()).toBe(false);
+    });
+
+    it('should call updateMasterGradeLimits with empty string when master grade is null', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      componentInstance.page2Form.controls.masterGrade.setValue(null);
+      await new Promise(resolve => setTimeout(resolve, 600));
+      fixture.detectChanges();
+
+      expect(componentInstance.lastMasterGrade()).toBe('');
+      expect(componentInstance.masterLimitsManuallySet()).toBe(false);
+    });
+
+    it('should use empty string fallback for upper/lower limits when bachelor limit controls are null', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      componentInstance.page2Form.controls.bachelorGradeUpperLimit.setValue(null);
+      componentInstance.page2Form.controls.bachelorGradeLowerLimit.setValue(null);
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('bachelor');
+
+      expect(mockDialogService.open).toHaveBeenCalledOnce();
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            gradeType: 'bachelor',
+            currentUpperLimit: '',
+            currentLowerLimit: '',
+          }),
+        }),
+      );
+    });
+
+    it('should use empty string fallback for upper/lower limits when master limit controls are null (covers ?.value ?? "" branch)', async () => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: { ...VALID_PAGE2_FORM_DATA },
+      });
+
+      componentInstance.page2Form.controls.masterGradeUpperLimit.setValue(null);
+      componentInstance.page2Form.controls.masterGradeLowerLimit.setValue(null);
+      fixture.detectChanges();
+
+      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+
+      componentInstance.onChangeGradingScale('master');
+
+      expect(mockDialogService.open).toHaveBeenCalledOnce();
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            gradeType: 'master',
+            currentUpperLimit: '',
+            currentLowerLimit: '',
+          }),
+        }),
+      );
     });
   });
 });
