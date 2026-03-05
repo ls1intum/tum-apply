@@ -78,7 +78,22 @@ describe('UserAvatarComponent', () => {
     fixture.componentRef.setInput('size', 'lg');
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.sizeClass()).toBe('h-10 w-10 text-[0.95rem]');
+    expect(fixture.componentInstance.sizeClass()).toBe('h-11 w-11 text-[1.10rem]');
+  });
+
+  it('uses md size class by default', () => {
+    const fixture = TestBed.createComponent(UserAvatarComponent);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.sizeClass()).toBe('h-9 w-9 text-[0.95rem]');
+  });
+
+  it('uses xl size class when size is set to xl', () => {
+    const fixture = TestBed.createComponent(UserAvatarComponent);
+    fixture.componentRef.setInput('size', 'xl');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.sizeClass()).toBe('h-16 w-16 text-[1.2rem]');
   });
 
   it('covers initials fallback when split/filter produces no parts', () => {
