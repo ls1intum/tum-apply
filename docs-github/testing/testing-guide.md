@@ -65,8 +65,8 @@ Provider type semantics:
 
 Important scope note:
 
-- The ArchUnit rules above enforce structure (annotation decision + valid provider mapping), but they do not by themselves prove complete runtime export coverage of JSON content.
-- Runtime verification is covered in `src/test/java/de/tum/cit/aet/core/web/UserDataExportResourceTest.java`, especially `annotatedEntitiesMustHaveRuntimeJsonCoverage`, which checks that `@ExportedUserData` entities are represented in the generated export summary JSON.
+- The ArchUnit rules above enforce structure (annotation decision + valid provider mapping), but they do not by themselves prove complete runtime export coverage of CSV content.
+- Runtime verification is covered in `src/test/java/de/tum/cit/aet/core/web/UserDataExportResourceTest.java`, especially `annotatedEntitiesMustHaveRuntimeCsvCoverage`, which checks that `@ExportedUserData` entities are represented in the generated export CSV files.
 
 When adding a new entity, always choose one of these two annotations. If you mark it as exported, ensure the configured provider exists, implements `UserDataSectionProvider`, and is annotated with `@Component`.
 

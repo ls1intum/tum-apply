@@ -1,8 +1,11 @@
 package de.tum.cit.aet.core.service.export;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.ApplicantInternalCommentExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.ApplicantRatingExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.StaffDataDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserDataExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -12,9 +15,12 @@ import de.tum.cit.aet.core.util.FileUtil;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.Deflater;
@@ -29,7 +35,6 @@ import org.springframework.stereotype.Component;
 public class UserExportZipWriter {
 
     private final ZipExportService zipExportService;
-    private final ObjectMapper objectMapper;
     private final DocumentRepository documentRepository;
     private final ImageRepository imageRepository;
 
@@ -40,7 +45,7 @@ public class UserExportZipWriter {
     private String imageRoot;
 
     /**
-     * Creates a ZIP archive containing the user's exported data, including a JSON summary,
+     * Creates a ZIP archive containing the user's exported data as CSV files,
      * uploaded documents, and images. The ZIP file is stored in the configured data export root directory
      * with a filename format of "data-export-{userId}-{exportRequestId}.zip".
      *
@@ -60,11 +65,7 @@ public class UserExportZipWriter {
         try (ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(zipPath)))) {
             zipOut.setLevel(Deflater.BEST_COMPRESSION);
 
-            zipExportService.addFileToZip(
-                zipOut,
-                "data_export_summary.json",
-                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userData).getBytes()
-            );
+            writeCsvSummary(zipOut, userData);
 
             List<Document> uploadedDocuments = documentRepository.findByUploadedByUserId(userId);
             for (Document document : uploadedDocuments) {
@@ -81,6 +82,296 @@ public class UserExportZipWriter {
         }
 
         return zipPath;
+    }
+
+    private void writeCsvSummary(ZipOutputStream zipOut, UserDataExportDTO userData) {
+        addCsvFileToZip(
+            zipOut,
+            "data/profile.csv",
+            List.of("first_name", "last_name", "email", "gender", "nationality", "birthday"),
+            List.of(
+                List.of(
+                    toCsvValue(userData.profile().firstName()),
+                    toCsvValue(userData.profile().lastName()),
+                    toCsvValue(userData.profile().email()),
+                    toCsvValue(userData.profile().gender()),
+                    toCsvValue(userData.profile().nationality()),
+                    toCsvValue(userData.profile().birthday())
+                )
+            )
+        );
+
+        List<List<String>> userSettingsRows = userData
+            .settings()
+            .stream()
+            .map(setting -> List.of(toCsvValue(setting.key()), toCsvValue(setting.value())))
+            .toList();
+        addCsvFileToZip(zipOut, "data/user_settings.csv", List.of("key", "value"), userSettingsRows);
+
+        List<List<String>> emailSettingsRows = userData
+            .emailSettings()
+            .stream()
+            .map(setting -> List.of(toCsvValue(setting.emailType()), toCsvValue(setting.enabled())))
+            .toList();
+        addCsvFileToZip(zipOut, "data/email_settings.csv", List.of("email_type", "enabled"), emailSettingsRows);
+
+        writeApplicantCsv(zipOut, userData.applicantData());
+        writeStaffCsv(zipOut, userData.staffData());
+    }
+
+    private void writeApplicantCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
+        if (applicantData == null) {
+            return;
+        }
+
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_profile.csv",
+            List.of(
+                "street",
+                "postal_code",
+                "city",
+                "country",
+                "bachelor_degree_name",
+                "bachelor_grade_upper_limit",
+                "bachelor_grade_lower_limit",
+                "bachelor_grade",
+                "bachelor_university",
+                "master_degree_name",
+                "master_grade_upper_limit",
+                "master_grade_lower_limit",
+                "master_grade",
+                "master_university"
+            ),
+            List.of(
+                List.of(
+                    toCsvValue(applicantData.street()),
+                    toCsvValue(applicantData.postalCode()),
+                    toCsvValue(applicantData.city()),
+                    toCsvValue(applicantData.country()),
+                    toCsvValue(applicantData.bachelorDegreeName()),
+                    toCsvValue(applicantData.bachelorGradeUpperLimit()),
+                    toCsvValue(applicantData.bachelorGradeLowerLimit()),
+                    toCsvValue(applicantData.bachelorGrade()),
+                    toCsvValue(applicantData.bachelorUniversity()),
+                    toCsvValue(applicantData.masterDegreeName()),
+                    toCsvValue(applicantData.masterGradeUpperLimit()),
+                    toCsvValue(applicantData.masterGradeLowerLimit()),
+                    toCsvValue(applicantData.masterGrade()),
+                    toCsvValue(applicantData.masterUniversity())
+                )
+            )
+        );
+
+        List<List<String>> documentRows = applicantData
+            .documents()
+            .stream()
+            .sorted(Comparator.comparing(document -> document.documentId().toString()))
+            .map(document ->
+                List.of(
+                    toCsvValue(document.documentId()),
+                    toCsvValue(document.name()),
+                    toCsvValue(document.documentType()),
+                    toCsvValue(document.mimeType()),
+                    toCsvValue(document.size())
+                )
+            )
+            .toList();
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_documents.csv",
+            List.of("document_id", "name", "document_type", "mime_type", "size_bytes"),
+            documentRows
+        );
+
+        List<List<String>> applicationRows = applicantData
+            .applications()
+            .stream()
+            .map(application ->
+                List.of(
+                    toCsvValue(application.jobTitle()),
+                    toCsvValue(application.state()),
+                    toCsvValue(application.desiredStartDate()),
+                    toCsvValue(application.motivation()),
+                    toCsvValue(application.specialSkills()),
+                    toCsvValue(application.projects()),
+                    toCsvValue(application.review() != null ? application.review().reason() : null),
+                    toCsvValue(application.review() != null ? application.review().reviewedAt() : null),
+                    formatApplicantRatings(application.ratings()),
+                    formatApplicantComments(application.internalComments())
+                )
+            )
+            .toList();
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_applications.csv",
+            List.of(
+                "job_title",
+                "state",
+                "desired_start_date",
+                "motivation",
+                "special_skills",
+                "projects",
+                "review_reason",
+                "reviewed_at",
+                "ratings",
+                "internal_comments"
+            ),
+            applicationRows
+        );
+
+        List<List<String>> intervieweeRows = applicantData
+            .interviewees()
+            .stream()
+            .map(interviewee -> List.of(toCsvValue(interviewee.jobTitle()), toCsvValue(interviewee.lastInvited())))
+            .toList();
+        addCsvFileToZip(zipOut, "data/applicant_interviewees.csv", List.of("job_title", "last_invited"), intervieweeRows);
+    }
+
+    private void writeStaffCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {
+        if (staffData == null) {
+            return;
+        }
+
+        List<List<String>> supervisedJobRows = staffData
+            .supervisedJobs()
+            .stream()
+            .map(jobTitle -> List.of(toCsvValue(jobTitle)))
+            .toList();
+        addCsvFileToZip(zipOut, "data/staff_supervised_jobs.csv", List.of("job_title"), supervisedJobRows);
+
+        List<List<String>> roleRows = staffData
+            .researchGroupRoles()
+            .stream()
+            .map(role -> List.of(toCsvValue(role.researchGroupName()), toCsvValue(role.role())))
+            .toList();
+        addCsvFileToZip(zipOut, "data/staff_research_group_roles.csv", List.of("research_group", "role"), roleRows);
+
+        List<List<String>> reviewRows = staffData
+            .reviews()
+            .stream()
+            .map(review ->
+                List.of(
+                    toCsvValue(review.jobTitle()),
+                    toCsvValue(review.applicantName()),
+                    toCsvValue(review.reason()),
+                    toCsvValue(review.reviewedAt())
+                )
+            )
+            .toList();
+        addCsvFileToZip(zipOut, "data/staff_reviews.csv", List.of("job_title", "applicant_name", "reason", "reviewed_at"), reviewRows);
+
+        List<List<String>> commentRows = staffData
+            .comments()
+            .stream()
+            .map(comment ->
+                List.of(
+                    toCsvValue(comment.jobTitle()),
+                    toCsvValue(comment.applicantName()),
+                    toCsvValue(comment.message()),
+                    toCsvValue(comment.createdAt())
+                )
+            )
+            .toList();
+        addCsvFileToZip(zipOut, "data/staff_comments.csv", List.of("job_title", "applicant_name", "message", "created_at"), commentRows);
+
+        List<List<String>> ratingRows = staffData
+            .ratings()
+            .stream()
+            .map(rating ->
+                List.of(
+                    toCsvValue(rating.jobTitle()),
+                    toCsvValue(rating.applicantName()),
+                    toCsvValue(rating.rating()),
+                    toCsvValue(rating.createdAt())
+                )
+            )
+            .toList();
+        addCsvFileToZip(zipOut, "data/staff_ratings.csv", List.of("job_title", "applicant_name", "rating", "created_at"), ratingRows);
+
+        List<List<String>> processRows = staffData
+            .interviewProcesses()
+            .stream()
+            .map(process -> List.of(toCsvValue(process.jobTitle())))
+            .toList();
+        addCsvFileToZip(zipOut, "data/staff_interview_processes.csv", List.of("job_title"), processRows);
+
+        List<List<String>> slotRows = staffData
+            .interviewSlots()
+            .stream()
+            .map(slot ->
+                List.of(
+                    toCsvValue(slot.jobTitle()),
+                    toCsvValue(slot.start()),
+                    toCsvValue(slot.end()),
+                    toCsvValue(slot.location()),
+                    toCsvValue(slot.streamLink()),
+                    toCsvValue(slot.isBooked())
+                )
+            )
+            .toList();
+        addCsvFileToZip(
+            zipOut,
+            "data/staff_interview_slots.csv",
+            List.of("job_title", "start", "end", "location", "stream_link", "is_booked"),
+            slotRows
+        );
+    }
+
+    private String formatApplicantRatings(List<ApplicantRatingExportDTO> ratings) {
+        if (ratings == null || ratings.isEmpty()) {
+            return "";
+        }
+
+        List<String> formatted = new ArrayList<>();
+        for (ApplicantRatingExportDTO rating : ratings) {
+            formatted.add(toCsvValue(rating.rating()) + "@" + toCsvValue(rating.createdAt()));
+        }
+        return String.join("; ", formatted);
+    }
+
+    private String formatApplicantComments(List<ApplicantInternalCommentExportDTO> comments) {
+        if (comments == null || comments.isEmpty()) {
+            return "";
+        }
+
+        List<String> formatted = new ArrayList<>();
+        for (ApplicantInternalCommentExportDTO comment : comments) {
+            formatted.add(toCsvValue(comment.message()) + "@" + toCsvValue(comment.createdAt()));
+        }
+        return String.join("; ", formatted);
+    }
+
+    private void addCsvFileToZip(ZipOutputStream zipOut, String entryName, List<String> header, List<List<String>> rows) {
+        StringBuilder csvBuilder = new StringBuilder();
+        csvBuilder.append(toCsvLine(header)).append("\n");
+        for (List<String> row : rows) {
+            csvBuilder.append(toCsvLine(row)).append("\n");
+        }
+
+        try {
+            zipExportService.addFileToZip(zipOut, entryName, csvBuilder.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            throw new UserDataExportException("Failed to add CSV entry to ZIP export: " + entryName, e);
+        }
+    }
+
+    private String toCsvLine(List<String> columns) {
+        return columns.stream().map(this::escapeCsv).collect(java.util.stream.Collectors.joining(","));
+    }
+
+    private String escapeCsv(String value) {
+        String safeValue = value == null ? "" : value;
+        boolean requiresQuotes =
+            safeValue.contains(",") || safeValue.contains("\"") || safeValue.contains("\n") || safeValue.contains("\r");
+        if (!requiresQuotes) {
+            return safeValue;
+        }
+        return "\"" + safeValue.replace("\"", "\"\"") + "\"";
+    }
+
+    private String toCsvValue(Object value) {
+        return value == null ? "" : String.valueOf(value);
     }
 
     private void addDocumentToZip(ZipOutputStream zipOut, @NonNull Document document, String entryPath) {

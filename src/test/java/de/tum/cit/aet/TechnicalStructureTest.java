@@ -67,7 +67,7 @@ class TechnicalStructureTest {
      * Entities must declare exactly one intent via @ExportedUserData (included in export) or
      * @NoUserDataExportRequired (explicitly excluded). This avoids silently missing entities in data exports.
      *
-     * Note: this is a structural guard only. Runtime completeness of exported JSON content is
+     * Note: this is a structural guard only. Runtime completeness of exported CSV content is
      * validated by dedicated integration tests in UserDataExportResourceTest.
      */
     @ArchTest
