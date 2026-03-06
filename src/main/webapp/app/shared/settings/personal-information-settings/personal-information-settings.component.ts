@@ -36,7 +36,7 @@ export type PersonalInformationData = {
   postcode: string;
 };
 
-type PersonalInformationSnapshot = {
+interface PersonalInformationSnapshot {
   firstName: string;
   lastName: string;
   email: string;
@@ -50,7 +50,7 @@ type PersonalInformationSnapshot = {
   city: string;
   country?: string | number;
   postcode: string;
-};
+}
 
 @Component({
   selector: 'jhi-personal-information-settings',
