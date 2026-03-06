@@ -1,6 +1,3 @@
 {
-  "java.configuration.updateBuildConfiguration": "interactive",
-  "chat.tools.terminal.autoApprove": {
-    "./gradlew": true
-  }
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
