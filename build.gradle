@@ -76,6 +76,16 @@ spotless {
   }
 }
 
+configurations {
+  providedRuntime
+  mockitoAgent
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
 apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
@@ -169,16 +179,6 @@ checkstyle {
 
 checkstyleMain.source = "src/main/java"
 
-
-configurations {
-  providedRuntime
-}
-
-repositories {
-  mavenCentral()
-  mavenLocal()
-}
-
 dependencies {
   // Defines low-level streaming API, and includes JSON-specific implementations
   implementation "com.fasterxml.jackson.core:jackson-core:${fasterxml_version}"
@@ -221,6 +221,12 @@ dependencies {
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+  testImplementation "org.mockito:mockito-core:${mockito_version}"
+  // needed to add mockito as agent and avoid its warning
+  mockitoAgent ("org.mockito:mockito-core:${mockito_version}") {
+    transitive = false
+  }
+  testImplementation "org.mockito:mockito-junit-jupiter:${mockito_version}"
 
   // Consistently use the latest version of all spring security modules to avoid vulnerabilities
   implementation "org.springframework.security:spring-security-oauth2-core"
@@ -285,6 +291,15 @@ dependencies {
   // OpenAI / OpenAI-compatible (dev, localhost:1234, etc.)
   implementation "org.springframework.ai:spring-ai-starter-model-openai"
 }
+
+// Load Docker image versions from .env (single source of truth for Docker, tests, and build dependencies)
+apply from: 'gradle/env.gradle'
+envProperties.each { key, value ->
+  // Convert UPPER_CASE to lower_case to match gradle.properties convention
+  ext.set(key.toLowerCase(), value)
+}
+
+apply from: "gradle/test.gradle"
 
 tasks.register("cleanResources", Delete) {
   delete(layout.buildDirectory.dir("resources"))
