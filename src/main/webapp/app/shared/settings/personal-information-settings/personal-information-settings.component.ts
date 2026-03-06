@@ -199,7 +199,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile());
+      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile('body', false, { transferCache: false }));
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {

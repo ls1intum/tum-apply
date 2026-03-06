@@ -214,4 +214,33 @@ describe('Profile save isolation', () => {
       }),
     );
   });
+
+  it('keeps stored grading scale limits when documents settings initializes', async () => {
+    vi.useFakeTimers();
+
+    const profileWithManualLimits: ApplicantDTO = {
+      ...baseProfile,
+      bachelorGrade: '84%',
+      bachelorGradeUpperLimit: '100%',
+      bachelorGradeLowerLimit: '60%',
+    };
+
+    applicationResourceServiceMock.getApplicantProfile.mockReset();
+    applicationResourceServiceMock.getApplicantProfile.mockReturnValue(of(profileWithManualLimits));
+
+    const documentsComponent = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
+    await documentsComponent['loadProfile']();
+
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(documentsComponent.form.controls.bachelorGradeUpperLimit.value).toBe('100%');
+    expect(documentsComponent.form.controls.bachelorGradeLowerLimit.value).toBe('60%');
+    expect(documentsComponent.bachelorGradeLimits()).toEqual({
+      upperLimit: '100%',
+      lowerLimit: '60%',
+      isPercentage: true,
+    });
+
+    vi.useRealTimers();
+  });
 });

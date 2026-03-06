@@ -28,7 +28,7 @@ import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 
-type NormalizedSettingsDocumentsFormValue = {
+interface NormalizedSettingsDocumentsFormValue {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
   bachelorGradeUpperLimit: string;
@@ -39,12 +39,18 @@ type NormalizedSettingsDocumentsFormValue = {
   masterGradeUpperLimit: string;
   masterGradeLowerLimit: string;
   masterGrade: string;
-};
+}
 
-type ApplicantProfileUploadMethod = (
-  documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
-  files?: Blob,
-) => Observable<DocumentInformationHolderDTO[]>;
+interface ApplicantProfileUploadService {
+  uploadApplicantDocuments?: (
+    _documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    _files?: Blob,
+  ) => Observable<DocumentInformationHolderDTO[]>;
+  uploadApplicantProfileDocuments?: (
+    _documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    _files?: Blob,
+  ) => Observable<DocumentInformationHolderDTO[]>;
+}
 
 @Component({
   selector: 'jhi-settings-documents',
@@ -89,7 +95,7 @@ export class SettingsDocumentsComponent implements OnInit {
 
   saving = signal(false);
   hasLoaded = signal(false);
-  loadedProfile = signal<ApplicantDTO | null>(null);
+  hasInitialLimitsSet = signal(false);
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
   lastBachelorGrade = signal<string>(this.form.controls.bachelorGrade.value ?? '');
@@ -148,14 +154,12 @@ export class SettingsDocumentsComponent implements OnInit {
   private currentLang = toSignal(this.translateService.onLangChange);
   private formChangeTick = toSignal(this.form.valueChanges.pipe(map(() => Date.now())), { initialValue: 0 });
 
-  private bachelorGradeValue = toSignal(this.form.controls.bachelorGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()), {
-    initialValue: this.form.controls.bachelorGrade.value,
-  });
-  private masterGradeValue = toSignal(this.form.controls.masterGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()), {
-    initialValue: this.form.controls.masterGrade.value,
-  });
+  private bachelorGradeValue = toSignal(this.form.controls.bachelorGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
+  private masterGradeValue = toSignal(this.form.controls.masterGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
 
   private bachelorGradeEffect = effect(() => {
+    if (!this.hasInitialLimitsSet()) return;
+
     const grade = this.bachelorGradeValue();
     if (grade == null) return;
     if (grade === this.lastBachelorGrade()) return;
@@ -163,6 +167,8 @@ export class SettingsDocumentsComponent implements OnInit {
   });
 
   private masterGradeEffect = effect(() => {
+    if (!this.hasInitialLimitsSet()) return;
+
     const grade = this.masterGradeValue();
     if (grade == null) return;
     if (grade === this.lastMasterGrade()) return;
@@ -259,8 +265,7 @@ export class SettingsDocumentsComponent implements OnInit {
         masterGrade: this.form.get('masterGrade')?.value ?? undefined,
       };
 
-      const updatedProfile = await firstValueFrom(this.applicationService.updateApplicantDocumentSettings(applicantDTO));
-      this.loadedProfile.set(updatedProfile);
+      await firstValueFrom(this.applicationService.updateApplicantDocumentSettings(applicantDTO));
       await this.saveDeferredDocumentChanges();
       await this.loadProfile();
 
@@ -291,9 +296,12 @@ export class SettingsDocumentsComponent implements OnInit {
 
   private async loadProfile(): Promise<void> {
     try {
-      const profile = await firstValueFrom(this.applicationService.getApplicantProfile());
-      const profileDocumentIds = await firstValueFrom(this.applicationService.getApplicantProfileDocumentIds());
-      this.loadedProfile.set(profile);
+      this.hasInitialLimitsSet.set(false);
+
+      const profile = await firstValueFrom(this.applicationService.getApplicantProfile('body', false, { transferCache: false }));
+      const profileDocumentIds = await firstValueFrom(
+        this.applicationService.getApplicantProfileDocumentIds('body', false, { transferCache: false }),
+      );
       this.applyProfileDocumentIds(profileDocumentIds);
 
       this.form.patchValue({
@@ -321,6 +329,8 @@ export class SettingsDocumentsComponent implements OnInit {
             lowerLimit: profile.bachelorGradeLowerLimit,
           }),
         );
+      } else {
+        this.bachelorGradeLimits.set(null);
       }
 
       if (masterGrade !== '') {
@@ -330,8 +340,11 @@ export class SettingsDocumentsComponent implements OnInit {
             lowerLimit: profile.masterGradeLowerLimit,
           }),
         );
+      } else {
+        this.masterGradeLimits.set(null);
       }
 
+      this.hasInitialLimitsSet.set(true);
       this.storeInitialStateSnapshot();
       this.hasLoaded.set(true);
     } catch (err) {
@@ -427,10 +440,10 @@ export class SettingsDocumentsComponent implements OnInit {
     const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
 
     const deletedIds = initial.filter(doc => !currentById.has(doc.id)).map(doc => doc.id);
-    const renamedDocs = currentPersistedDocs.filter(doc => {
+    const renamedDocs = currentPersistedDocs.flatMap(doc => {
       const initialDoc = initial.find(existing => existing.id === doc.id);
       const newName = doc.name?.trim();
-      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name;
+      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name ? [{ id: doc.id, newName }] : [];
     });
 
     for (const documentId of deletedIds) {
@@ -438,7 +451,7 @@ export class SettingsDocumentsComponent implements OnInit {
     }
 
     for (const document of renamedDocs) {
-      await firstValueFrom(this.applicationService.renameApplicantProfileDocument(document.id, document.name!.trim()));
+      await firstValueFrom(this.applicationService.renameApplicantProfileDocument(document.id, document.newName));
     }
   }
 
@@ -446,7 +459,7 @@ export class SettingsDocumentsComponent implements OnInit {
     documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
     files: File[],
     targetSignal: {
-      set: (value: DocumentInformationHolderDTO[] | undefined) => void;
+      set: (_value: DocumentInformationHolderDTO[] | undefined) => void;
     },
   ): Promise<void> {
     if (files.length === 0) {
@@ -460,11 +473,11 @@ export class SettingsDocumentsComponent implements OnInit {
     targetSignal.set(latestResult);
   }
 
-  private getApplicantProfileUploadMethod(): ApplicantProfileUploadMethod {
-    const service = this.applicationService as unknown as {
-      uploadApplicantDocuments?: ApplicantProfileUploadMethod;
-      uploadApplicantProfileDocuments?: ApplicantProfileUploadMethod;
-    };
+  private getApplicantProfileUploadMethod(): (
+    _documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    _files?: Blob,
+  ) => Observable<DocumentInformationHolderDTO[]> {
+    const service = this.applicationService as unknown as ApplicantProfileUploadService;
 
     const uploadMethod = service.uploadApplicantDocuments ?? service.uploadApplicantProfileDocuments;
     if (uploadMethod === undefined) {
