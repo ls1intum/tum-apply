@@ -484,40 +484,24 @@ public class InterviewService {
         // 3. Convert PageDTO to Pageable
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
-        // 4. Query slots - branching on time and month filters
-        Page<InterviewSlot> slotsPage;
-        if (afterDateTime != null && year != null && month != null) {
-            // Future slots for a specific month
-            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
-            ZonedDateTime monthEnd = monthStart.plusMonths(1);
-            slotsPage = interviewSlotRepository.findFutureSlotsByProcessIdAndMonth(
-                processId,
-                afterDateTime,
-                monthStart.toInstant(),
-                monthEnd.toInstant(),
-                pageable
-            );
-        } else if (beforeDateTime != null && year != null && month != null) {
-            // Past slots for a specific month
-            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
-            ZonedDateTime monthEnd = monthStart.plusMonths(1);
-            slotsPage = interviewSlotRepository.findPastSlotsByProcessIdAndMonth(
-                processId,
-                beforeDateTime,
-                monthStart.toInstant(),
-                monthEnd.toInstant(),
-                pageable
-            );
-        } else if (afterDateTime != null) {
-            // (initial month detection)
-            slotsPage = interviewSlotRepository.findFutureSlotsByProcessId(processId, afterDateTime, pageable);
-        } else if (year != null && month != null) {
-            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
-            ZonedDateTime monthEnd = monthStart.plusMonths(1);
-            slotsPage = interviewSlotRepository.findByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable);
-        } else {
-            slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
+        // 4. Calculate month boundaries if year and month are provided
+        Instant monthStart = null;
+        Instant monthEnd = null;
+        if (year != null && month != null) {
+            ZonedDateTime start = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
+            monthStart = start.toInstant();
+            monthEnd = start.plusMonths(1).toInstant();
         }
+
+        // 5. Query slots with optional parameters
+        Page<InterviewSlot> slotsPage = interviewSlotRepository.findSlotsWithFilters(
+            processId,
+            afterDateTime,
+            beforeDateTime,
+            monthStart,
+            monthEnd,
+            pageable
+        );
 
         // 5. Convert to DTOs (using rich mapping logic)
         List<InterviewSlotDTO> slotDTOs = slotsPage

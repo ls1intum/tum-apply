@@ -29,11 +29,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable  pagination information
      * @return a page of {@link InterviewSlot} entities
      */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
+    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
 
@@ -141,139 +137,38 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
 
     /**
-     * Finds all interview slots for a given interview process within a specific
-     * month.
-     * Results are paginated and ordered by start time.
-     *
-     * @param processId  the ID of the interview process
-     * @param monthStart the start of the month (inclusive)
-     * @param monthEnd   the end of the month (exclusive)
-     * @param pageable   pagination information
-     * @return a page of {@link InterviewSlot} entities for the specified month
-     */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
-        ORDER BY s.startDateTime
-        """
-    )
-    Page<InterviewSlot> findByProcessIdAndMonth(
-        @Param("processId") UUID processId,
-        @Param("monthStart") Instant monthStart,
-        @Param("monthEnd") Instant monthEnd,
-        Pageable pageable
-    );
-
-    /**
-     * Finds all future interview slots (booked + unbooked) for a given process
-     * within a specific month.
-     * Used for the professor slots overview to display only future slots.
-     *
-     * @param processId     the ID of the interview process
-     * @param afterDateTime the cutoff time (typically now) — only slots with
-     *                      startDateTime >=  are returned
-     * @param monthStart    the start of the month (inclusive)
-     * @param monthEnd      the end of the month (exclusive)
-     * @param pageable      pagination information
-     * @return a page of future {@link InterviewSlot} entities for the specified
-     *         month
-     */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :afterDateTime
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
-        ORDER BY s.startDateTime
-        """
-    )
-    Page<InterviewSlot> findFutureSlotsByProcessIdAndMonth(
-        @Param("processId") UUID processId,
-        @Param("afterDateTime") Instant afterDateTime,
-        @Param("monthStart") Instant monthStart,
-        @Param("monthEnd") Instant monthEnd,
-        Pageable pageable
-    );
-
-    /**
-     * Finds all past interview slots (booked + unbooked) for a given process within
-     * a specific month.
-     * Used for lazy-loading past slots when the professor navigates backward.
+     * Finds interview slots for a given process, applying optional date filters.
      *
      * @param processId      the ID of the interview process
-     * @param beforeDateTime the cutoff time (typically now) — only slots with
-     *                       startDateTime < this are returned
-     * @param monthStart     the start of the month (inclusive)
-     * @param monthEnd       the end of the month (exclusive)
+     * @param afterDateTime  if provided, only slots on or after this time are
+     *                       returned
+     * @param beforeDateTime if provided, only slots strictly before this time are
+     *                       returned
+     * @param monthStart     if provided, only slots on or after this month start
+     *                       are returned
+     * @param monthEnd       if provided, only slots strictly before this month end
+     *                       are returned
      * @param pageable       pagination information
-     * @return a page of past {@link InterviewSlot} entities for the specified month
+     * @return a page of matching slots order by start time
      */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
+    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
     @Query(
         """
         SELECT s FROM InterviewSlot s
         WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime < :beforeDateTime
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
+        AND (cast(:afterDateTime as timestamp) IS NULL OR s.startDateTime >= :afterDateTime)
+        AND (cast(:beforeDateTime as timestamp) IS NULL OR s.startDateTime < :beforeDateTime)
+        AND (cast(:monthStart as timestamp) IS NULL OR s.startDateTime >= :monthStart)
+        AND (cast(:monthEnd as timestamp) IS NULL OR s.startDateTime < :monthEnd)
         ORDER BY s.startDateTime
         """
     )
-    Page<InterviewSlot> findPastSlotsByProcessIdAndMonth(
+    Page<InterviewSlot> findSlotsWithFilters(
         @Param("processId") UUID processId,
+        @Param("afterDateTime") Instant afterDateTime,
         @Param("beforeDateTime") Instant beforeDateTime,
         @Param("monthStart") Instant monthStart,
         @Param("monthEnd") Instant monthEnd,
-        Pageable pageable
-    );
-
-    /**
-     * Finds future interview slots for a process across all months (no month
-     * filter).
-     * Used for the initial one-shot detection of which month contains the first
-     * future slot.
-     *
-     * @param processId     the ID of the interview process
-     * @param afterDateTime the cutoff time (typically now) — only slots with
-     *                      startDateTime >= this are returned
-     * @param pageable      pagination information (typically page=0, size=1)
-     * @return a page of future {@link InterviewSlot} entities ordered by start time
-     *         ascending
-     */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :afterDateTime
-        ORDER BY s.startDateTime
-        """
-    )
-    Page<InterviewSlot> findFutureSlotsByProcessId(
-        @Param("processId") UUID processId,
-        @Param("afterDateTime") Instant afterDateTime,
         Pageable pageable
     );
 
@@ -346,7 +241,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
+    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
     Page<InterviewSlot> findUpcomingBookedSlotsForProfessor(
         @Param("professorId") UUID professorId,
         @Param("now") Instant now,
@@ -372,7 +267,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
+    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
     Page<InterviewSlot> findUpcomingBookedSlotsForResearchGroup(
         @Param("researchGroupId") UUID researchGroupId,
         @Param("now") Instant now,
