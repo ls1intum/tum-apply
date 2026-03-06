@@ -94,11 +94,11 @@ export class SlotsSectionComponent {
     const past = this.groupByDate(this.pastSlots());
 
     if (past.length > 0 && future.length > 0) {
-      const perPage = this.datesPerPage();
-      const remainder = past.length % perPage;
-      if (remainder !== 0) {
-        const paddingNeeded = perPage - remainder;
-        for (let i = 0; i < paddingNeeded; i++) {
+      const columnsPerPage = this.datesPerPage();
+      const pastColumnsInLastPage = past.length % columnsPerPage;
+      if (pastColumnsInLastPage !== 0) {
+        const emptyPaddingColumnsNeeded = columnsPerPage - pastColumnsInLastPage;
+        for (let i = 0; i < emptyPaddingColumnsNeeded; i++) {
           past.push({ date: `spacer-${i}`, localDate: new Date(0), slots: [], isHiddenPaddingDay: true });
         }
       }
@@ -400,16 +400,16 @@ export class SlotsSectionComponent {
           // so the first future group always starts at index `paddedPastLength`.
           const pastGroupsLength = this.groupByDate(past).length;
           let paddedPastLength = pastGroupsLength;
-          const perPage = this.datesPerPage();
+          const columnsPerPage = this.datesPerPage();
 
           if (pastGroupsLength > 0) {
-            const remainder = pastGroupsLength % perPage;
-            if (remainder !== 0) {
-              paddedPastLength += perPage - remainder;
+            const pastColumnsInLastPage = pastGroupsLength % columnsPerPage;
+            if (pastColumnsInLastPage !== 0) {
+              paddedPastLength += columnsPerPage - pastColumnsInLastPage;
             }
           }
 
-          this.currentDatePage.set(Math.floor(paddedPastLength / perPage));
+          this.currentDatePage.set(Math.floor(paddedPastLength / columnsPerPage));
         } else {
           this.currentDatePage.set(0);
         }
