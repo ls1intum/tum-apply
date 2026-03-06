@@ -50,13 +50,7 @@
       />
       @if (notEnoughSlots()) {
         <div class="mb-4">
-          <jhi-message
-            [severity]="'warn'"
-            [message]="'interview.slots.notEnoughSlots'"
-            [shouldTranslate]="true"
-            class="block w-full"
-            styleClass="w-full justify-start"
-          />
+          <jhi-message [severity]="'warn'" [message]="'interview.slots.notEnoughSlots'" [shouldTranslate]="true" class="block w-full" />
         </div>
       }
       @if (groupedSlots().length > 0 || canGoPreviousDate()) {
