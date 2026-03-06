@@ -267,6 +267,14 @@ jhi-menu {
   pointer-events: none;
 }
 
+.ql-editor {
+  ol,
+  ul {
+    padding-left: 0;
+    margin-left: 0.2rem;
+  }
+}
+
 /* -------------------------------
    Primeng Editor Toolbar Styling
 ---------------------------------- */
