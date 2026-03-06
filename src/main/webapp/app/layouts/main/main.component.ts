@@ -9,7 +9,7 @@ import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sideba
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
 import { LoadingService } from 'app/core/interceptor/loading.service';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -19,7 +19,7 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent, ProgressSpinnerModule],
+  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent, ProgressSpinnerComponent],
 })
 export default class MainComponent {
   readonly loadingService = inject(LoadingService);
