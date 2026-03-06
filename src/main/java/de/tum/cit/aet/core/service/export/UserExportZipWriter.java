@@ -34,6 +34,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserExportZipWriter {
 
+    private static final String ZIP_README_ENTRY_DE = "README_DATA_EXPORT_DE.txt";
+    private static final String ZIP_README_ENTRY_EN = "README_DATA_EXPORT_EN.txt";
+
     private final ZipExportService zipExportService;
     private final DocumentRepository documentRepository;
     private final ImageRepository imageRepository;
@@ -65,6 +68,7 @@ public class UserExportZipWriter {
         try (ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(zipPath)))) {
             zipOut.setLevel(Deflater.BEST_COMPRESSION);
 
+            addUserReadmeToZip(zipOut);
             writeCsvSummary(zipOut, userData);
 
             List<Document> uploadedDocuments = documentRepository.findByUploadedByUserId(userId);
@@ -82,6 +86,97 @@ public class UserExportZipWriter {
         }
 
         return zipPath;
+    }
+
+    private void addUserReadmeToZip(ZipOutputStream zipOut) {
+        try {
+            zipExportService.addFileToZip(zipOut, ZIP_README_ENTRY_DE, buildGermanUserReadme().getBytes(StandardCharsets.UTF_8));
+            zipExportService.addFileToZip(zipOut, ZIP_README_ENTRY_EN, buildEnglishUserReadme().getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            throw new UserDataExportException("Failed to add README to ZIP export", e);
+        }
+    }
+
+    private String buildGermanUserReadme() {
+        return """
+        TUMApply Datenexport - Inhalt dieser ZIP-Datei
+
+        Diese ZIP enthält deine exportierten Daten in klaren Ordnern.
+
+        1) Ordner "data/" (CSV-Dateien)
+        - data/profile.csv: Basis-Profildaten
+        - data/user_settings.csv: Deine Benutzereinstellungen
+        - data/email_settings.csv: Deine E-Mail-Benachrichtigungseinstellungen
+
+        Je nach Rolle können zusätzlich vorhanden sein:
+
+        Applicant-Daten:
+        - data/applicant_profile.csv
+        - data/applicant_documents.csv
+        - data/applicant_applications.csv
+        - data/applicant_interviewees.csv
+
+        Staff-Daten:
+        - data/staff_supervised_jobs.csv
+        - data/staff_research_group_roles.csv
+        - data/staff_reviews.csv
+        - data/staff_comments.csv
+        - data/staff_ratings.csv
+        - data/staff_interview_processes.csv
+        - data/staff_interview_slots.csv
+
+        2) Ordner "documents/uploaded/"
+        - Enthält hochgeladene Dokumentdateien.
+
+        3) Ordner "images/"
+        - Enthält exportierte Bilddateien.
+
+        Hinweise:
+        - Nicht jede Datei ist in jedem Export enthalten.
+        - Welche CSV-Dateien vorhanden sind, haengt von Ihren Rollen und Daten im System ab.
+        - CSV-Dateien koennen direkt in Excel, LibreOffice Calc oder ähnlichen Programmen geöffnet werden.
+        """;
+    }
+
+    private String buildEnglishUserReadme() {
+        return """
+        TUMApply Data Export - Contents of this ZIP File
+
+        This ZIP contains your exported data in clearly structured folders.
+
+        1) Folder "data/" (CSV files)
+        - data/profile.csv: Basic profile data
+        - data/user_settings.csv: Your user settings
+        - data/email_settings.csv: Your email notification settings
+
+        Depending on your role, additional files may be present:
+
+        Applicant data:
+        - data/applicant_profile.csv
+        - data/applicant_documents.csv
+        - data/applicant_applications.csv
+        - data/applicant_interviewees.csv
+
+        Staff data:
+        - data/staff_supervised_jobs.csv
+        - data/staff_research_group_roles.csv
+        - data/staff_reviews.csv
+        - data/staff_comments.csv
+        - data/staff_ratings.csv
+        - data/staff_interview_processes.csv
+        - data/staff_interview_slots.csv
+
+        2) Folder "documents/uploaded/"
+        - Contains uploaded document files.
+
+        3) Folder "images/"
+        - Contains exported image files.
+
+        Notes:
+        - Not every file is present in every export.
+        - Which CSV files are included depends on your roles and available data in the system.
+        - CSV files can be opened directly in Excel, LibreOffice Calc, or similar tools.
+        """;
     }
 
     private void writeCsvSummary(ZipOutputStream zipOut, UserDataExportDTO userData) {

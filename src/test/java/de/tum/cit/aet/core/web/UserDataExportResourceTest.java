@@ -210,7 +210,13 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         assertThat(Files.exists(zipPath)).isTrue();
 
         Set<String> entries = readZipEntries(zipPath);
-        assertThat(entries).contains("data/profile.csv");
+        assertThat(entries).contains("data/profile.csv", "README_DATA_EXPORT_DE.txt", "README_DATA_EXPORT_EN.txt");
+
+        String readmeDe = readZipEntryAsString(zipPath, "README_DATA_EXPORT_DE.txt");
+        assertThat(readmeDe).contains("data/profile.csv").contains("Datenexport");
+
+        String readmeEn = readZipEntryAsString(zipPath, "README_DATA_EXPORT_EN.txt");
+        assertThat(readmeEn).contains("data/profile.csv").contains("Data Export");
     }
 
     @Test
