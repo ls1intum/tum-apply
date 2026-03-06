@@ -135,7 +135,7 @@ model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
 model/updateUserNameDTO.ts
-model/uploadDocumentsRequest.ts
+model/uploadApplicantProfileDocumentsRequest.ts
 model/user.ts
 model/userBookingInfoDTO.ts
 model/userDTO.ts
