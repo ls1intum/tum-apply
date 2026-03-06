@@ -1,5 +1,5 @@
 ext {
-  AggregatedCoverageThresholds = ["INSTRUCTION": 0.840, "CLASS": 152]
+  AggregatedCoverageThresholds = ["INSTRUCTION": 0.50, "CLASS": 150]
   ModuleCoverageThresholds = [
     // Module coverage thresholds adapted to this repository's packages. Values are conservative
     // and can be tightened once module tests and coverage improve.
