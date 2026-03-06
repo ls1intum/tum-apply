@@ -3,7 +3,15 @@
     <h1 jhiTranslate="settings.header">Settings</h1>
   </div>
 
-  <jhi-tab-view class="settings-tab-view" [tabs]="tabs()" [activeTabId]="activeTab()" [lazyLoad]="true" (tabChange)="onTabChange($event)">
+  <jhi-tab-view
+    [tabs]="tabs()"
+    [activeTabId]="activeTab()"
+    [lazyLoad]="true"
+    [tabsClass]="'flex h-[calc(100dvh-11rem)] min-h-[28rem] flex-col'"
+    [tabListClass]="'shrink-0 bg-background-default'"
+    [tabPanelsClass]="'min-h-0 flex-1 overflow-x-hidden overflow-y-auto'"
+    (tabChange)="onTabChange($event)"
+  >
     <ng-template jhiTabPanel="general">
       <div class="mb-4">
         <div class="text-lg font-semibold mb-2">

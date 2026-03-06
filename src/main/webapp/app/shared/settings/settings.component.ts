@@ -27,7 +27,6 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'docum
     FontAwesomeModule,
   ],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.scss',
 })
 export class SettingsComponent {
   readonly activeTab = signal<SettingsTab>('general');
