@@ -76,16 +76,6 @@ spotless {
   }
 }
 
-configurations {
-  providedRuntime
-  mockitoAgent
-}
-
-repositories {
-  mavenCentral()
-  mavenLocal()
-}
-
 apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
@@ -178,6 +168,16 @@ checkstyle {
 }
 
 checkstyleMain.source = "src/main/java"
+
+configurations {
+  providedRuntime
+  mockitoAgent
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
 
 dependencies {
   // Defines low-level streaming API, and includes JSON-specific implementations
