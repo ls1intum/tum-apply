@@ -208,7 +208,7 @@
           "ALL": "Alle Bewerbende dieses Interviewprozesses",
           "INVITED": "Bewerbende, die eine Einladung erhalten, aber noch keinen Termin gebucht haben",
           "SCHEDULED": "Bewerbende, die erfolgreich einen Termin gebucht haben",
-          "UNCONTACTED": "Bewerbende, die dem Prozess hinzugefügt wurden, aber noch nicht kontaktiert wurden",
+          "UNCONTACTED": "Bewerbende, die dem Prozess hinzugefügt, aber noch nicht kontaktiert wurden",
           "COMPLETED": "Bewerbende, deren Interview bereits stattgefunden hat"
         }
       },
