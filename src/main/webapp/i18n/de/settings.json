@@ -48,6 +48,30 @@
       "description": "Mach dein Profil persönlicher mit einem Foto.",
       "addButton": "Bearbeiten",
       "resetButtonTooltip": "Entfernen",
+      "saved": {
+        "summary": "Profilbild aktualisiert",
+        "detail": "Dein Profilbild wurde erfolgreich aktualisiert."
+      },
+      "saveFailed": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "deleted": {
+        "summary": "Profilbild entfernt",
+        "detail": "Dein Profilbild wurde erfolgreich entfernt."
+      },
+      "deleteFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht entfernt werden. Bitte versuche es erneut."
+      },
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bitte wähle ein Bild, das kleiner als 5 MB ist."
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte wähle ein JPG- oder PNG-Bild."
+      },
       "resetConfirm": {
         "header": "Profilbild löschen?",
         "message": "Möchtest du dein aktuelles Profilbild wirklich löschen?"

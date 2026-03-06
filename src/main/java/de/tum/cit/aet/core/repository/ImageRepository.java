@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.repository;
 
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
@@ -90,13 +91,13 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<DepartmentImage> findOrphanedDepartmentImages();
 
     /**
-     * Deletes the profile image associated with the given user.
+     * Finds all profile images associated with the given user.
      *
-     * @param userId the ID of the user whose profile image should be deleted
+     * @param userId the ID of the user whose profile images should be returned
+     * @return all profile images for the given user
      */
-    @Modifying
-    @Query("DELETE FROM Image i WHERE i.uploadedBy.userId = :userId AND TYPE(i) = ProfileImage")
-    void deleteProfileImageByUser(@Param("userId") UUID userId);
+    @Query("SELECT pi FROM ProfileImage pi WHERE pi.uploadedBy.userId = :userId")
+    List<ProfileImage> findProfileImagesByUserId(@Param("userId") UUID userId);
 
     /**
      * Updates all {@link Image} records uploaded by the given {@code user} to associate them with the

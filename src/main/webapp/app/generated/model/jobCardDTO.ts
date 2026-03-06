@@ -12,6 +12,7 @@
 export interface JobCardDTO { 
     applicationId?: string;
     applicationState?: JobCardDTO.ApplicationStateEnum;
+    avatar?: string;
     contractDuration?: number;
     departmentName?: string;
     imageUrl?: string;

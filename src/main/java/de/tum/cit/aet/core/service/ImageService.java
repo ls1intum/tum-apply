@@ -163,7 +163,7 @@ public class ImageService {
     @Transactional
     public ProfileImage uploadProfilePicture(MultipartFile file) {
         User uploader = currentUserService.getUser();
-        imageRepository.deleteProfileImageByUser(uploader.getUserId());
+        deleteProfilePicturesForUser(uploader);
         String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
 
         ProfileImage image = new ProfileImage();
@@ -171,6 +171,25 @@ public class ImageService {
         uploader.setAvatar(image.getUrl());
 
         return imageRepository.save(image);
+    }
+
+    /**
+     * Deletes the current user's profile picture, including any stored files.
+     */
+    @Transactional
+    public void deleteCurrentUserProfilePicture() {
+        deleteProfilePicturesForUser(currentUserService.getUser());
+    }
+
+    /**
+     * Deletes all stored profile pictures for the given user ID.
+     * Intended for cleanup flows such as retention processing.
+     *
+     * @param userId the user whose stored profile pictures should be removed
+     */
+    @Transactional
+    public void deleteProfilePicturesByUserId(UUID userId) {
+        deleteProfilePicturesForUserId(userId);
     }
 
     /**
@@ -187,6 +206,18 @@ public class ImageService {
         image.setMimeType(file.getContentType());
         image.setSizeBytes(file.getSize());
         image.setUploadedBy(uploader);
+    }
+
+    private void deleteProfilePicturesForUser(User user) {
+        user.setAvatar(null);
+        deleteProfilePicturesForUserId(user.getUserId());
+    }
+
+    private void deleteProfilePicturesForUserId(UUID userId) {
+        for (ProfileImage existingImage : imageRepository.findProfileImagesByUserId(userId)) {
+            deleteImageFile(existingImage);
+            imageRepository.delete(existingImage);
+        }
     }
 
     /**

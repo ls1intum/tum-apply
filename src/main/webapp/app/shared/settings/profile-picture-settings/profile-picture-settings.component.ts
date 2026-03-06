@@ -1,11 +1,12 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faMagnifyingGlassMinus, faMagnifyingGlassPlus, faRotateRight } from '@fortawesome/free-solid-svg-icons';
-import { ImageDTO } from 'app/generated/model/imageDTO';
+import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
+import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
+import { ToastService } from 'app/service/toast-service';
 import { TooltipModule } from 'primeng/tooltip';
 import { firstValueFrom } from 'rxjs';
 
@@ -109,7 +110,9 @@ export class ProfilePictureSettingsComponent {
   }));
 
   private readonly accountService = inject(AccountService);
-  private readonly http = inject(HttpClient);
+  private readonly imageResourceService = inject(ImageResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly userResourceService = inject(UserResourceApiService);
 
   private img: HTMLImageElement | null = null;
   private imgNatW = signal(0);
@@ -184,10 +187,12 @@ export class ProfilePictureSettingsComponent {
 
   async onResetPicture(): Promise<void> {
     try {
-      await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl: null }));
+      await firstValueFrom(this.userResourceService.updateAvatar({}));
       this.accountService.setAvatar(undefined);
+      this.toastService.showSuccessKey('settings.profilePicture.deleted');
     } catch (error) {
       console.error('Failed to reset profile picture', error);
+      this.toastService.showErrorKey('settings.profilePicture.deleteFailed');
     }
   }
 
@@ -275,20 +280,22 @@ export class ProfilePictureSettingsComponent {
     if (!blob) return;
 
     try {
-      const formData = new FormData();
-      formData.append('file', blob, 'profile-picture.jpg');
-      const uploadedImage = await firstValueFrom(this.http.post<ImageDTO>('/api/images/upload/profile-picture', formData));
+      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadProfilePicture(blob));
       const avatarUrl = this.normalizeAvatarUrl(uploadedImage.url);
-      if (avatarUrl === null) return;
+      if (avatarUrl === null) {
+        this.toastService.showErrorKey('settings.profilePicture.saveFailed');
+        return;
+      }
 
-      await firstValueFrom(this.http.put('/api/users/avatar', { avatarUrl }));
       this.accountService.setAvatar(avatarUrl);
+      this.toastService.showSuccessKey('settings.profilePicture.saved');
 
       this.cropDialogVisible.set(false);
       this.rawImageSrc.set(null);
       this.img = null;
     } catch (error) {
       console.error('Failed to save profile picture', error);
+      this.toastService.showErrorKey('settings.profilePicture.saveFailed');
     }
   }
 
@@ -341,8 +348,14 @@ export class ProfilePictureSettingsComponent {
   }
 
   private loadFileForCrop(file: File): void {
-    if (file.size > MAX_UPLOAD_SIZE_BYTES) return;
-    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) return;
+    if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+      this.toastService.showErrorKey('settings.profilePicture.fileTooLarge');
+      return;
+    }
+    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+      this.toastService.showErrorKey('settings.profilePicture.invalidFileType');
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = () => {

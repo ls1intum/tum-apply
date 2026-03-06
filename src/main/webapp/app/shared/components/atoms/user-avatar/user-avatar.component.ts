@@ -44,7 +44,7 @@ export class UserAvatarComponent {
   });
 
   private readonly lightAvatarPalette = ['#B5D0FA', '#BFECD7', '#FFE6A8', '#FFCACA', '#E0CFFA', '#BDEDEA', '#FCD3BE', '#F5CAE0'];
-  private readonly darkAvatarPalette = ['#9FB6E8', '#9FD6BE', '#ebd19e', '#E5AFAF', '#C4B0E8', '#96D0CC', '#deb29c', '#DEB0C8'];
+  private readonly darkAvatarPalette = ['#ACC6EE', '#B4E3CC', '#F0D99F', '#EEBDBD', '#D6C7ED', '#AADDD9', '#EBC4B1', '#E6C0D4'];
   private readonly themeService = inject(ThemeService);
 
   private hashString(value: string): number {

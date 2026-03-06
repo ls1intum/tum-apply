@@ -29,6 +29,7 @@ describe('JobsPreviewSectionComponent', () => {
     startDate: '2025-09-01',
     applicationId: undefined,
     contractDuration: 6,
+    avatar: '/images/profiles/prof-john.jpg',
     imageUrl: undefined,
   };
 
@@ -85,6 +86,12 @@ describe('JobsPreviewSectionComponent', () => {
     expect(header.style.backgroundImage).toBe(
       'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80")',
     );
+  });
+
+  it('should pass the professor avatar to the job card', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toContain('/images/profiles/prof-john.jpg');
   });
 
   it('should handle error on load and show toast', async () => {

@@ -5,6 +5,8 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.AuthenticationService;
+import de.tum.cit.aet.core.service.ImageService;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserResource {
 
     private final AuthenticationService authenticationService;
+    private final ImageService imageService;
     private final UserService userService;
     private final KeycloakUserService keycloakUserService;
 
@@ -89,7 +92,12 @@ public class UserResource {
     @Authenticated
     @PutMapping("/avatar")
     public ResponseEntity<Void> updateAvatar(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateAvatarDTO dto) {
-        userService.updateAvatar(jwt.getSubject(), dto.avatarUrl());
+        String normalizedAvatarUrl = StringUtil.normalize(dto.avatarUrl(), false);
+        if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
+            imageService.deleteCurrentUserProfilePicture();
+        } else {
+            userService.updateAvatar(jwt.getSubject(), normalizedAvatarUrl);
+        }
         return ResponseEntity.noContent().build();
     }
 
