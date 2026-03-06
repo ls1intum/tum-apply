@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -8,6 +8,7 @@ import { ApplicationResourceApiService } from 'app/generated/api/applicationReso
 import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { AccountService } from 'app/core/auth/account.service';
 import { debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
@@ -16,24 +17,38 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import {
   GradingScaleLimitsResult,
-  detectGradingScale,
-  normalizeLimitsForGrade,
-  shouldShowGradeWarning,
+  getDetectedGradeLimitsPatch,
+  getGradeHelperText,
+  getGradeWarningText,
+  resolveGradingScaleLimits,
 } from 'app/shared/util/grading-scale.utils';
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
+import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 
-import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+
+type NormalizedSettingsDocumentsFormValue = {
+  bachelorDegreeName: string;
+  bachelorDegreeUniversity: string;
+  bachelorGradeUpperLimit: string;
+  bachelorGradeLowerLimit: string;
+  bachelorGrade: string;
+  masterDegreeName: string;
+  masterDegreeUniversity: string;
+  masterGradeUpperLimit: string;
+  masterGradeLowerLimit: string;
+  masterGrade: string;
+};
 
 @Component({
   selector: 'jhi-settings-documents',
   standalone: true,
   imports: [
     CommonModule,
+    DegreeDocumentSectionComponent,
     DividerModule,
     ReactiveFormsModule,
-    StringInputComponent,
     TranslateModule,
     ButtonComponent,
     TooltipModule,
@@ -69,6 +84,7 @@ export class SettingsDocumentsComponent implements OnInit {
 
   saving = signal(false);
   hasLoaded = signal(false);
+  loadedProfile = signal<ApplicantDTO | null>(null);
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
   lastBachelorGrade = signal<string>(this.form.controls.bachelorGrade.value ?? '');
@@ -96,6 +112,28 @@ export class SettingsDocumentsComponent implements OnInit {
   });
   hasChanges = computed(() => this.hasFormChanges() || this.hasDocumentChanges());
 
+  helperTextBachelorGrade = computed(() => {
+    this.currentLang();
+    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
+  });
+
+  helperTextMasterGrade = computed(() => {
+    this.currentLang();
+    return getGradeHelperText(this.translateService, this.masterGradeLimits());
+  });
+
+  warningTextBachelorGrade = computed(() => {
+    this.currentLang();
+    const grade = this.bachelorGradeValue() ?? '';
+    return getGradeWarningText(this.translateService, grade);
+  });
+
+  warningTextMasterGrade = computed(() => {
+    this.currentLang();
+    const grade = this.masterGradeValue() ?? '';
+    return getGradeWarningText(this.translateService, grade);
+  });
+
   private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
@@ -112,58 +150,18 @@ export class SettingsDocumentsComponent implements OnInit {
     initialValue: this.form.controls.masterGrade.value,
   });
 
-  helperTextBachelorGrade = computed(() => {
-    this.currentLang();
-    const limits = this.bachelorGradeLimits();
-    if (!limits) return '';
-
-    const scale = this.translateService.instant('entity.applicationPage2.helperText.scale') as string;
-    const gradingScale = this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
-      upperLimit: limits.upperLimit,
-      lowerLimit: limits.lowerLimit,
-    }) as string;
-
-    return `${scale}${gradingScale}`;
-  });
-
-  helperTextMasterGrade = computed(() => {
-    this.currentLang();
-    const limits = this.masterGradeLimits();
-    if (!limits) return '';
-
-    const scale = this.translateService.instant('entity.applicationPage2.helperText.scale') as string;
-    const gradingScale = this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
-      upperLimit: limits.upperLimit,
-      lowerLimit: limits.lowerLimit,
-    }) as string;
-
-    return `${scale}${gradingScale}`;
-  });
-
-  warningTextBachelorGrade = computed(() => {
-    this.currentLang();
-    const grade = this.bachelorGradeValue() ?? '';
-    return shouldShowGradeWarning(grade) ? this.translateService.instant('entity.applicationPage2.warnText') : '';
-  });
-
-  warningTextMasterGrade = computed(() => {
-    this.currentLang();
-    const grade = this.masterGradeValue() ?? '';
-    return shouldShowGradeWarning(grade) ? this.translateService.instant('entity.applicationPage2.warnText') : '';
-  });
-
   private bachelorGradeEffect = effect(() => {
     const grade = this.bachelorGradeValue();
-    if (grade === undefined) return;
+    if (grade == null) return;
     if (grade === this.lastBachelorGrade()) return;
-    this.updateBachelorGradeLimits(grade ?? '');
+    this.updateBachelorGradeLimits(grade);
   });
 
   private masterGradeEffect = effect(() => {
     const grade = this.masterGradeValue();
-    if (grade === undefined) return;
+    if (grade == null) return;
     if (grade === this.lastMasterGrade()) return;
-    this.updateMasterGradeLimits(grade ?? '');
+    this.updateMasterGradeLimits(grade);
   });
 
   ngOnInit(): void {
@@ -221,15 +219,29 @@ export class SettingsDocumentsComponent implements OnInit {
 
     this.saving.set(true);
     try {
-      // update applicant profile fields
       const loadedUser = this.accountService.loadedUser();
-      if (!loadedUser?.id) {
+      if (loadedUser?.id == null || loadedUser.id === '') {
         this.toastService.showErrorKey('settings.documents.saveFailed');
         return;
       }
 
       const applicantDTO: ApplicantDTO = {
-        user: { userId: loadedUser.id },
+        user: {
+          userId: loadedUser.id,
+          email: undefined,
+          firstName: undefined,
+          lastName: undefined,
+          phoneNumber: undefined,
+          gender: undefined,
+          nationality: undefined,
+          birthday: undefined,
+          website: undefined,
+          linkedinUrl: undefined,
+        },
+        street: undefined,
+        postalCode: undefined,
+        city: undefined,
+        country: undefined,
         bachelorDegreeName: this.form.get('bachelorDegreeName')?.value ?? undefined,
         bachelorUniversity: this.form.get('bachelorDegreeUniversity')?.value ?? undefined,
         bachelorGradeUpperLimit: this.form.get('bachelorGradeUpperLimit')?.value ?? undefined,
@@ -242,9 +254,10 @@ export class SettingsDocumentsComponent implements OnInit {
         masterGrade: this.form.get('masterGrade')?.value ?? undefined,
       };
 
-      await firstValueFrom(this.applicationService.updateApplicantProfile(applicantDTO));
-      await this.saveQueuedDocuments();
-      this.storeInitialStateSnapshot();
+      const updatedProfile = await firstValueFrom(this.applicationService.updateApplicantDocumentSettings(applicantDTO));
+      this.loadedProfile.set(updatedProfile);
+      await this.saveDeferredDocumentChanges();
+      await this.loadProfile();
 
       this.toastService.showSuccessKey('settings.documents.saved');
     } catch (err) {
@@ -274,6 +287,9 @@ export class SettingsDocumentsComponent implements OnInit {
   private async loadProfile(): Promise<void> {
     try {
       const profile = await firstValueFrom(this.applicationService.getApplicantProfile());
+      const profileDocumentIds = await firstValueFrom(this.applicationService.getApplicantProfileDocumentIds());
+      this.loadedProfile.set(profile);
+      this.applyProfileDocumentIds(profileDocumentIds);
 
       this.form.patchValue({
         bachelorDegreeName: profile.bachelorDegreeName ?? '',
@@ -293,30 +309,22 @@ export class SettingsDocumentsComponent implements OnInit {
       this.lastBachelorGrade.set(bachelorGrade);
       this.lastMasterGrade.set(masterGrade);
 
-      if (bachelorGrade) {
-        if (profile.bachelorGradeUpperLimit && profile.bachelorGradeLowerLimit) {
-          this.bachelorGradeLimits.set(
-            normalizeLimitsForGrade(bachelorGrade, {
-              upperLimit: profile.bachelorGradeUpperLimit,
-              lowerLimit: profile.bachelorGradeLowerLimit,
-            }),
-          );
-        } else {
-          this.bachelorGradeLimits.set(detectGradingScale(bachelorGrade));
-        }
+      if (bachelorGrade !== '') {
+        this.bachelorGradeLimits.set(
+          resolveGradingScaleLimits(bachelorGrade, {
+            upperLimit: profile.bachelorGradeUpperLimit,
+            lowerLimit: profile.bachelorGradeLowerLimit,
+          }),
+        );
       }
 
-      if (masterGrade) {
-        if (profile.masterGradeUpperLimit && profile.masterGradeLowerLimit) {
-          this.masterGradeLimits.set(
-            normalizeLimitsForGrade(masterGrade, {
-              upperLimit: profile.masterGradeUpperLimit,
-              lowerLimit: profile.masterGradeLowerLimit,
-            }),
-          );
-        } else {
-          this.masterGradeLimits.set(detectGradingScale(masterGrade));
-        }
+      if (masterGrade !== '') {
+        this.masterGradeLimits.set(
+          resolveGradingScaleLimits(masterGrade, {
+            upperLimit: profile.masterGradeUpperLimit,
+            lowerLimit: profile.masterGradeLowerLimit,
+          }),
+        );
       }
 
       this.storeInitialStateSnapshot();
@@ -329,29 +337,27 @@ export class SettingsDocumentsComponent implements OnInit {
 
   private updateBachelorGradeLimits(grade: string): void {
     this.lastBachelorGrade.set(grade);
-
-    const limits = detectGradingScale(grade);
-    this.bachelorGradeLimits.set(limits);
+    const limits = getDetectedGradeLimitsPatch(grade);
+    this.bachelorGradeLimits.set(resolveGradingScaleLimits(grade));
 
     this.form.patchValue({
-      bachelorGradeUpperLimit: limits?.upperLimit ?? '',
-      bachelorGradeLowerLimit: limits?.lowerLimit ?? '',
+      bachelorGradeUpperLimit: limits.upperLimit,
+      bachelorGradeLowerLimit: limits.lowerLimit,
     });
   }
 
   private updateMasterGradeLimits(grade: string): void {
     this.lastMasterGrade.set(grade);
-
-    const limits = detectGradingScale(grade);
-    this.masterGradeLimits.set(limits);
+    const limits = getDetectedGradeLimitsPatch(grade);
+    this.masterGradeLimits.set(resolveGradingScaleLimits(grade));
 
     this.form.patchValue({
-      masterGradeUpperLimit: limits?.upperLimit ?? '',
-      masterGradeLowerLimit: limits?.lowerLimit ?? '',
+      masterGradeUpperLimit: limits.upperLimit,
+      masterGradeLowerLimit: limits.lowerLimit,
     });
   }
 
-  private normalizedFormValue() {
+  private normalizedFormValue(): NormalizedSettingsDocumentsFormValue {
     this.formChangeTick();
     const value = this.form.getRawValue();
     return {
@@ -369,7 +375,7 @@ export class SettingsDocumentsComponent implements OnInit {
   }
 
   private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
-    return [...(docs ?? [])].sort((a, b) => (a.id ?? '').localeCompare(b.id ?? ''));
+    return [...(docs ?? [])].sort((a, b) => a.id.localeCompare(b.id));
   }
 
   private storeInitialStateSnapshot(): void {
@@ -385,11 +391,50 @@ export class SettingsDocumentsComponent implements OnInit {
     this.queuedReferenceFiles.set([]);
   }
 
+  private applyProfileDocumentIds(documentIds: ApplicationDocumentIdsDTO): void {
+    this.bachelorDocuments.set(documentIds.bachelorDocumentDictionaryIds ?? []);
+    this.masterDocuments.set(documentIds.masterDocumentDictionaryIds ?? []);
+    this.cvDocuments.set(documentIds.cvDocumentDictionaryId != null ? [documentIds.cvDocumentDictionaryId] : []);
+    this.referenceDocuments.set(documentIds.referenceDocumentDictionaryIds ?? []);
+  }
+
   private async saveQueuedDocuments(): Promise<void> {
     await this.uploadQueuedByType('BACHELOR_TRANSCRIPT', this.queuedBachelorFiles(), this.bachelorDocuments);
     await this.uploadQueuedByType('MASTER_TRANSCRIPT', this.queuedMasterFiles(), this.masterDocuments);
     await this.uploadQueuedByType('CV', this.queuedCvFiles(), this.cvDocuments);
     await this.uploadQueuedByType('REFERENCE', this.queuedReferenceFiles(), this.referenceDocuments);
+  }
+
+  private async saveDeferredDocumentChanges(): Promise<void> {
+    await this.commitDocumentTypeChanges(this.initialBachelorDocuments(), this.bachelorDocuments());
+    await this.commitDocumentTypeChanges(this.initialMasterDocuments(), this.masterDocuments());
+    await this.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
+    await this.commitDocumentTypeChanges(this.initialReferenceDocuments(), this.referenceDocuments());
+    await this.saveQueuedDocuments();
+  }
+
+  private async commitDocumentTypeChanges(
+    initialDocs: DocumentInformationHolderDTO[] | undefined,
+    currentDocs: DocumentInformationHolderDTO[] | undefined,
+  ): Promise<void> {
+    const initial = this.normalizedDocuments(initialDocs);
+    const currentPersistedDocs = this.normalizedDocuments(currentDocs).filter(doc => !this.isTemporaryDocument(doc));
+    const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
+
+    const deletedIds = initial.filter(doc => !currentById.has(doc.id)).map(doc => doc.id);
+    const renamedDocs = currentPersistedDocs.filter(doc => {
+      const initialDoc = initial.find(existing => existing.id === doc.id);
+      const newName = doc.name?.trim();
+      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name;
+    });
+
+    for (const documentId of deletedIds) {
+      await firstValueFrom(this.applicationService.deleteApplicantProfileDocument(documentId));
+    }
+
+    for (const document of renamedDocs) {
+      await firstValueFrom(this.applicationService.renameApplicantProfileDocument(document.id, document.name!.trim()));
+    }
   }
 
   private async uploadQueuedByType(
@@ -408,8 +453,10 @@ export class SettingsDocumentsComponent implements OnInit {
     );
 
     const latestResult = uploadResults[uploadResults.length - 1];
-    if (latestResult) {
-      targetSignal.set(latestResult);
-    }
+    targetSignal.set(latestResult);
+  }
+
+  private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
+    return document.id.startsWith('temp-');
   }
 }

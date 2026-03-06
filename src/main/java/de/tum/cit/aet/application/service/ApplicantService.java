@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -71,7 +72,11 @@ public class ApplicantService {
      */
     public void uploadCV(MultipartFile cv, Applicant applicant, User user) {
         Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(applicant, DocumentType.CV, Set.of(Pair.of(document, cv.getName())));
+        updateDocumentDictionaries(
+            applicant,
+            DocumentType.CV,
+            Set.of(Pair.of(document, Optional.ofNullable(cv.getOriginalFilename()).orElse("<empty>.pdf")))
+        );
     }
 
     /**
@@ -85,7 +90,7 @@ public class ApplicantService {
     public void uploadTranscripts(List<MultipartFile> references, DocumentType type, Applicant applicant, User user) {
         Set<Pair<Document, String>> documents = references
             .stream()
-            .map(file -> Pair.of(documentService.upload(file, user), file.getName()))
+            .map(file -> Pair.of(documentService.upload(file, user), Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))
             .collect(Collectors.toSet());
         updateDocumentDictionaries(applicant, type, documents);
     }

@@ -1,4 +1,5 @@
 import { AbstractControl } from '@angular/forms';
+import type { TranslateService } from '@ngx-translate/core';
 
 export type GradeType = 'letter' | 'numeric' | 'percentage' | 'invalid';
 
@@ -228,6 +229,54 @@ export function normalizeLimitsForGrade(grade: string, limits: GradingScaleLimit
   }
 
   return result;
+}
+
+export function hasGradeLimits(
+  limits: Partial<GradingScaleLimitsData> | null | undefined,
+): limits is Pick<GradingScaleLimitsData, 'upperLimit' | 'lowerLimit'> {
+  return limits?.upperLimit != null && limits.upperLimit !== '' && limits.lowerLimit != null && limits.lowerLimit !== '';
+}
+
+export function resolveGradingScaleLimits(grade: string, limits?: Partial<GradingScaleLimitsData> | null): GradingScaleLimitsResult {
+  if (grade.trim() === '') {
+    return null;
+  }
+
+  if (hasGradeLimits(limits)) {
+    return normalizeLimitsForGrade(grade, {
+      upperLimit: limits.upperLimit,
+      lowerLimit: limits.lowerLimit,
+    });
+  }
+
+  return detectGradingScale(grade);
+}
+
+export function getDetectedGradeLimitsPatch(grade: string): Pick<GradingScaleLimitsData, 'upperLimit' | 'lowerLimit'> {
+  const limits = detectGradingScale(grade);
+
+  return {
+    upperLimit: limits?.upperLimit ?? '',
+    lowerLimit: limits?.lowerLimit ?? '',
+  };
+}
+
+export function getGradeHelperText(translateService: Pick<TranslateService, 'instant'>, limits: GradingScaleLimitsResult): string {
+  if (!limits) {
+    return '';
+  }
+
+  const scale = translateService.instant('entity.applicationPage2.helperText.scale') as string;
+  const gradingScale = translateService.instant('entity.applicationPage2.helperText.gradingScale', {
+    upperLimit: limits.upperLimit,
+    lowerLimit: limits.lowerLimit,
+  }) as string;
+
+  return `${scale}${gradingScale}`;
+}
+
+export function getGradeWarningText(translateService: Pick<TranslateService, 'instant'>, grade: string): string {
+  return shouldShowGradeWarning(grade) ? (translateService.instant('entity.applicationPage2.warnText') as string) : '';
 }
 
 /**

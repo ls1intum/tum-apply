@@ -85,6 +85,7 @@ export class PersonalInformationSettingsComponent {
   });
 
   isValid = signal<boolean>(false);
+  loadedProfile = signal<ApplicantDTO | null>(null);
   initialDataSnapshot = signal<PersonalInformationSnapshot | null>(null);
   hasChanges = computed(() => {
     const initial = this.initialDataSnapshot();
@@ -218,6 +219,7 @@ export class PersonalInformationSettingsComponent {
         postcode: profile.postalCode ?? '',
       };
 
+      this.loadedProfile.set(profile);
       this.data.set(personalInfo);
       this.initialDataSnapshot.set(this.toSnapshot(personalInfo));
     } catch {
@@ -279,7 +281,8 @@ export class PersonalInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      await firstValueFrom(this.applicationResourceService.updateApplicantProfile(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicationResourceService.updateApplicantPersonalInformation(applicantDTO));
+      this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));
     } catch {
@@ -293,19 +296,19 @@ export class PersonalInformationSettingsComponent {
 
   private toSnapshot(data: PersonalInformationData): PersonalInformationSnapshot {
     return {
-      firstName: data.firstName ?? '',
-      lastName: data.lastName ?? '',
-      email: data.email ?? '',
-      phoneNumber: data.phoneNumber ?? '',
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
       gender: data.gender?.value,
       nationality: data.nationality?.value,
-      dateOfBirth: data.dateOfBirth ?? '',
-      website: data.website ?? '',
-      linkedIn: data.linkedIn ?? '',
-      street: data.street ?? '',
-      city: data.city ?? '',
+      dateOfBirth: data.dateOfBirth,
+      website: data.website,
+      linkedIn: data.linkedIn,
+      street: data.street,
+      city: data.city,
       country: data.country?.value,
-      postcode: data.postcode ?? '',
+      postcode: data.postcode,
     };
   }
 }

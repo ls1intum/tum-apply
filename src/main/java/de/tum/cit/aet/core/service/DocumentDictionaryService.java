@@ -125,6 +125,28 @@ public class DocumentDictionaryService {
     }
 
     /**
+     * Renames an applicant-owned DocumentDictionary entry.
+     *
+     * @param applicant            the applicant who must own the entry
+     * @param documentDictionaryId the id of the document dictionary entry to rename
+     * @param newName              the new name to set
+     */
+    public void renameApplicantOwnedDocumentDictionary(Applicant applicant, UUID documentDictionaryId, String newName) {
+        DocumentDictionary documentDictionary = documentDictionaryRepository
+            .findById(documentDictionaryId)
+            .orElseThrow(() -> new EntityNotFoundException("Document dictionary with id " + documentDictionaryId + " not found"));
+
+        if (documentDictionary.getApplicant() == null || !documentDictionary.getApplicant().getUserId().equals(applicant.getUserId())) {
+            throw new EntityNotFoundException(
+                "Applicant document dictionary with id " + documentDictionaryId + " not found for applicant " + applicant.getUserId()
+            );
+        }
+
+        documentDictionary.setName(newName);
+        documentDictionaryRepository.save(documentDictionary);
+    }
+
+    /**
      * Retrieves all DocumentDictionary entries for a given applicant and document
      * type.
      *

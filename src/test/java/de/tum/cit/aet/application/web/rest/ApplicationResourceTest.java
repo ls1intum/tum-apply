@@ -7,6 +7,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
@@ -793,6 +794,107 @@ class ApplicationResourceTest extends AbstractResourceTest {
         }
     }
 
+    // ===== GET PROFILE DOCUMENT IDS =====
+    @Nested
+    class ProfileDocumentIdsTests {
+
+        @Test
+        void getApplicantProfileDocumentIdsReturnsGroupedDocuments() {
+            DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.BACHELOR_TRANSCRIPT,
+                "bachelor_profile.pdf"
+            );
+            DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.CV,
+                "cv_profile.pdf"
+            );
+            DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.REFERENCE,
+                "reference_profile.pdf"
+            );
+
+            ApplicationDocumentIdsDTO dto = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead("/api/applications/profile/document-ids", null, ApplicationDocumentIdsDTO.class, 200);
+
+            assertThat(dto).isNotNull();
+            assertThat(dto.getBachelorDocumentDictionaryIds()).hasSize(1);
+            assertThat(dto.getBachelorDocumentDictionaryIds().iterator().next().getName()).isEqualTo("bachelor_profile.pdf");
+            assertThat(dto.getCvDocumentDictionaryId()).isNotNull();
+            assertThat(dto.getCvDocumentDictionaryId().getName()).isEqualTo("cv_profile.pdf");
+            assertThat(dto.getReferenceDocumentDictionaryIds()).hasSize(1);
+            assertThat(dto.getReferenceDocumentDictionaryIds().iterator().next().getName()).isEqualTo("reference_profile.pdf");
+        }
+
+        @Test
+        void getApplicantProfileDocumentIdsWithoutAuthReturnsForbidden() {
+            api.getAndRead("/api/applications/profile/document-ids", null, ApplicationDocumentIdsDTO.class, 403);
+        }
+    }
+
+    // ===== DELETE DOCUMENT FROM PROFILE =====
+    @Nested
+    class DeleteDocumentFromProfileTests {
+
+        @Test
+        void deleteDocumentFromProfileRemovesIt() {
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.CV,
+                "profile_cv.pdf"
+            );
+
+            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .deleteAndRead("/api/applications/profile/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
+
+            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
+        }
+
+        @Test
+        void deleteDocumentFromProfileWithoutAuthReturnsForbidden() {
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.CV,
+                "profile_cv.pdf"
+            );
+
+            api.deleteAndRead("/api/applications/profile/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
+        }
+
+        @Test
+        void deleteDocumentFromProfileNonexistentThrowsNotFound() {
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .deleteAndRead("/api/applications/profile/delete-document/" + UUID.randomUUID(), null, Void.class, 404);
+        }
+    }
+
     // ===== DELETE DOCUMENT FROM APPLICATION =====
     @Nested
     class DeleteDocumentFromApplicationTests {
@@ -943,6 +1045,63 @@ class ApplicationResourceTest extends AbstractResourceTest {
                     400
                 );
         }
+
+        @Test
+        void renameApplicantProfileDocumentUpdatesName() {
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.CV,
+                "profile_original_name.pdf"
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    "/api/applications/profile/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=profile_new_name.pdf",
+                    null,
+                    Void.class,
+                    200
+                );
+
+            DocumentDictionary updated = documentDictionaryRepository.findById(docDict.getDocumentDictionaryId()).orElseThrow();
+            assertThat(updated.getName()).isEqualTo("profile_new_name.pdf");
+        }
+
+        @Test
+        void renameApplicantProfileDocumentNonexistentThrowsNotFound() {
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    "/api/applications/profile/rename-document/" + UUID.randomUUID() + "?newName=profile_new_name.pdf",
+                    null,
+                    Void.class,
+                    404
+                );
+        }
+
+        @Test
+        void renameApplicantProfileDocumentWithoutAuthReturnsForbidden() {
+            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                DocumentType.CV,
+                "profile_original_name.pdf"
+            );
+
+            api.putAndRead(
+                "/api/applications/profile/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=profile_new_name.pdf",
+                null,
+                Void.class,
+                403
+            );
+        }
     }
 
     // ===== UPLOAD DOCUMENTS =====
@@ -969,6 +1128,25 @@ class ApplicationResourceTest extends AbstractResourceTest {
             assertThat(uploadedDoc.getId()).isNotNull();
             assertThat(uploadedDoc.getName()).isEqualTo("bachelor_transcript.pdf");
             assertThat(uploadedDoc.getSize()).isEqualTo("PDF content here".getBytes().length);
+        }
+
+        @Test
+        void uploadApplicantProfileDocumentsPreservesOriginalFilename() {
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "cv_profile.pdf", "PDF profile content");
+
+            Set<DocumentInformationHolderDTO> uploadedDocs = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .multipartPostAndRead(
+                    "/api/applications/profile/upload-documents/" + DocumentType.CV,
+                    List.of(file),
+                    new TypeReference<>() {},
+                    200
+                );
+
+            assertThat(uploadedDocs).hasSize(1);
+            DocumentInformationHolderDTO uploadedDoc = uploadedDocs.iterator().next();
+            assertThat(uploadedDoc.getName()).isEqualTo("cv_profile.pdf");
+            assertThat(uploadedDoc.getSize()).isEqualTo("PDF profile content".getBytes().length);
         }
 
         @Test

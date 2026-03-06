@@ -60,6 +60,7 @@ public class ApplicationService {
 
     private final DocumentService documentService;
     private final DocumentDictionaryService documentDictionaryService;
+    private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
 
@@ -256,7 +257,9 @@ public class ApplicationService {
         Applicant applicant = application.getApplicant();
         User user = applicant.getUser();
 
-        applyApplicantData(user, applicant, ApplicantDTO.getFromApplicationSnapshot(application));
+        ApplicantDTO dto = ApplicantDTO.getFromApplicationSnapshot(application);
+        applyPersonalInformationData(user, applicant, dto);
+        applyDocumentSettingsData(applicant, dto);
     }
 
     /**
@@ -523,6 +526,37 @@ public class ApplicationService {
     }
 
     /**
+     * Uploads applicant-profile documents of a given type and returns the resulting document list.
+     *
+     * @param documentType the type of documents to upload
+     * @param files        the files to upload
+     * @return the updated document list for that type
+     */
+    @Transactional
+    public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicantProfileAndType(DocumentType documentType, List<MultipartFile> files) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+
+        switch (documentType) {
+            case BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE:
+                applicantService.uploadTranscripts(files, documentType, applicant, user);
+                break;
+            case CV:
+                applicantService.uploadCV(files.getFirst(), applicant, user);
+                break;
+            default:
+                throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
+        }
+
+        return getApplicantDocumentInformation(applicant, documentType);
+    }
+
+    /**
      * Retrieves the document IDs associated with the application identified by the
      * given UUID.
      *
@@ -534,6 +568,28 @@ public class ApplicationService {
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
         Application application = assertCanViewApplication(applicationId);
         return documentDictionaryService.getDocumentIdsDTO(application);
+    }
+
+    /**
+     * Retrieves the current applicant profile's document IDs grouped by document type.
+     * Creates an empty applicant profile if none exists yet.
+     *
+     * @return an {@link ApplicationDocumentIdsDTO} containing the applicant profile documents
+     */
+    public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplicantProfile() {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+
+        ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
+        dto.setBachelorDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.BACHELOR_TRANSCRIPT));
+        dto.setMasterDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.MASTER_TRANSCRIPT));
+        dto.setReferenceDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.REFERENCE));
+        dto.setCvDocumentDictionaryId(getApplicantDocumentInformation(applicant, DocumentType.CV).stream().findFirst().orElse(null));
+        return dto;
     }
 
     /**
@@ -602,11 +658,88 @@ public class ApplicationService {
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
 
-        applyApplicantData(user, applicant, dto);
+        applyPersonalInformationData(user, applicant, dto);
+        applyDocumentSettingsData(applicant, dto);
         userRepository.save(user);
         applicantRepository.save(applicant);
 
         return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
+     * Updates only the current user's personal information segment.
+     *
+     * @param dto the updated applicant personal information
+     * @return the updated ApplicantDTO
+     */
+    @Transactional
+    public ApplicantDTO updateApplicantPersonalInformation(ApplicantDTO dto) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+
+        applyPersonalInformationData(user, applicant, dto);
+        userRepository.save(user);
+        applicantRepository.save(applicant);
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
+     * Updates only the current user's degree/document settings segment.
+     *
+     * @param dto the updated applicant document settings
+     * @return the updated ApplicantDTO
+     */
+    @Transactional
+    public ApplicantDTO updateApplicantDocumentSettings(ApplicantDTO dto) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+        applyDocumentSettingsData(applicant, dto);
+        applicantRepository.save(applicant);
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
+     * Deletes an applicant-profile document.
+     *
+     * @param documentDictionaryId the id of the document dictionary entry to delete
+     */
+    @Transactional
+    public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+        documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant, documentDictionaryId);
+    }
+
+    /**
+     * Renames an applicant-profile document.
+     *
+     * @param documentDictionaryId the id of the document dictionary entry to rename
+     * @param newName              the new name to set
+     */
+    @Transactional
+    public void renameApplicantProfileDocument(UUID documentDictionaryId, String newName) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+        documentDictionaryService.renameApplicantOwnedDocumentDictionary(applicant, documentDictionaryId, newName);
     }
 
     /**
@@ -622,10 +755,18 @@ public class ApplicationService {
         return applicantRepository.save(applicant);
     }
 
+    private Set<DocumentInformationHolderDTO> getApplicantDocumentInformation(Applicant applicant, DocumentType documentType) {
+        return documentDictionaryService
+            .getApplicantDocumentDictionaries(applicant, documentType)
+            .stream()
+            .map(DocumentInformationHolderDTO::getFromDocumentDictionary)
+            .collect(Collectors.toSet());
+    }
+
     /**
      * Applies applicant and user data from a DTO and persists both entities.
      */
-    private void applyApplicantData(User user, Applicant applicant, ApplicantDTO dto) {
+    private void applyPersonalInformationData(User user, Applicant applicant, ApplicantDTO dto) {
         if (dto.user() != null) {
             if (dto.user().firstName() != null) user.setFirstName(dto.user().firstName());
             if (dto.user().lastName() != null) user.setLastName(dto.user().lastName());
@@ -642,7 +783,9 @@ public class ApplicationService {
         applicant.setPostalCode(dto.postalCode());
         applicant.setCity(dto.city());
         applicant.setCountry(dto.country());
+    }
 
+    private void applyDocumentSettingsData(Applicant applicant, ApplicantDTO dto) {
         applicant.setBachelorDegreeName(dto.bachelorDegreeName());
         applicant.setBachelorGradeUpperLimit(dto.bachelorGradeUpperLimit());
         applicant.setBachelorGradeLowerLimit(dto.bachelorGradeLowerLimit());
