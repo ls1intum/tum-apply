@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { AccountService } from 'app/core/auth/account.service';
-import { debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -40,6 +40,11 @@ type NormalizedSettingsDocumentsFormValue = {
   masterGradeLowerLimit: string;
   masterGrade: string;
 };
+
+type ApplicantProfileUploadMethod = (
+  documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+  files?: Blob,
+) => Observable<DocumentInformationHolderDTO[]>;
 
 @Component({
   selector: 'jhi-settings-documents',
@@ -448,12 +453,25 @@ export class SettingsDocumentsComponent implements OnInit {
       return;
     }
 
-    const uploadResults = await Promise.all(
-      files.map(file => firstValueFrom(this.applicationService.uploadApplicantDocuments(documentType, file))),
-    );
+    const uploadApplicantProfileDocuments = this.getApplicantProfileUploadMethod();
+    const uploadResults = await Promise.all(files.map(file => firstValueFrom(uploadApplicantProfileDocuments(documentType, file))));
 
-    const latestResult = uploadResults[uploadResults.length - 1];
+    const latestResult: DocumentInformationHolderDTO[] | undefined = uploadResults[uploadResults.length - 1];
     targetSignal.set(latestResult);
+  }
+
+  private getApplicantProfileUploadMethod(): ApplicantProfileUploadMethod {
+    const service = this.applicationService as unknown as {
+      uploadApplicantDocuments?: ApplicantProfileUploadMethod;
+      uploadApplicantProfileDocuments?: ApplicantProfileUploadMethod;
+    };
+
+    const uploadMethod = service.uploadApplicantDocuments ?? service.uploadApplicantProfileDocuments;
+    if (uploadMethod === undefined) {
+      throw new Error('Applicant profile upload method is not available.');
+    }
+
+    return uploadMethod.bind(this.applicationService);
   }
 
   private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
