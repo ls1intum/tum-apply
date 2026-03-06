@@ -30,6 +30,21 @@ export class InterviewProcessCardComponent {
     return this.process().totalSlots;
   });
 
+  /**
+   * Computed message key for the "not enough slots" warning
+   */
+  warningMessage = computed<string | null>(() => {
+    if (this.processStatus() === 'CLOSED' || this.process().invitedCount <= this.totalSlots()) {
+      return null;
+    }
+
+    if (this.totalSlots() === 0) {
+      return this.process().invitedCount === 1 ? 'interview.warning.zeroSlotsSingular' : 'interview.warning.zeroSlots';
+    } else {
+      return this.process().invitedCount === 1 ? 'interview.warning.notEnoughSlotsSingular' : 'interview.warning.notEnoughSlots';
+    }
+  });
+
   onCardClick(): void {
     this.cardClick.emit(this.process().jobId);
   }
