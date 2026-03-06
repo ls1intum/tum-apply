@@ -4,12 +4,12 @@
   tabindex="0"
   role="button"
   class="flex flex-row rounded-lg border border-border-default bg-background-default overflow-hidden cursor-pointer transition-all hover:bg-background-surface group"
-  [ngClass]="{ 'opacity-80': processStatus() === 'CLOSED' }"
+  [class.opacity-80]="processStatus() === 'CLOSED'"
 >
   <!-- Image -->
   <div
     class="w-1/3 min-h-[8rem] bg-cover bg-center shrink-0"
-    [ngClass]="processStatus() === 'CLOSED' ? 'bg-background-surface-alt' : 'bg-primary'"
+    [class]="processStatus() === 'CLOSED' ? 'bg-background-surface-alt' : 'bg-primary'"
     [style.backgroundImage]="process().imageUrl ? 'url(' + process().imageUrl + ')' : null"
   ></div>
 
@@ -55,8 +55,8 @@
           >Uncontacted</span
         >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="user" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+          <fa-icon icon="user" class="text-lg" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().uncontactedCount
           }}</span>
         </div>
@@ -68,8 +68,8 @@
           >Invited</span
         >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="user-group" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+          <fa-icon icon="user-group" class="text-lg" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().invitedCount
           }}</span>
         </div>
@@ -81,8 +81,8 @@
           >Completed</span
         >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="clipboard-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
+          <fa-icon icon="clipboard-check" class="text-lg" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">{{
             process().completedCount
           }}</span>
         </div>
@@ -94,8 +94,8 @@
           >Booked</span
         >
         <div class="flex items-center gap-2 mt-0.5">
-          <fa-icon icon="calendar-check" class="text-lg" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
-          <span class="text-lg font-bold leading-none" [ngClass]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">
+          <fa-icon icon="calendar-check" class="text-lg" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'icon'" />
+          <span class="text-lg font-bold leading-none" [class]="processStatus() === 'CLOSED' ? 'text-text-secondary' : 'text-text'">
             {{ process().scheduledCount }} / {{ totalSlots() }}
           </span>
         </div>
