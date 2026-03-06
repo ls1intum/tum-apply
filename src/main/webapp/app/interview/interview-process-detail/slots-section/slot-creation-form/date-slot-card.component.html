@@ -97,29 +97,32 @@
                 >
                   <!-- Row 1: Time + Break inputs -->
                   <div class="flex flex-wrap gap-4 mb-3">
-                    <!-- START TIME -->
-                    <div class="flex flex-col gap-1 w-24">
-                      <label [for]="'start-' + range.id" class="text-xs text-text-primary">
-                        {{ 'interview.slots.create.startTime' | translate }}
-                      </label>
-                      <jhi-time-input
-                        [id]="'start-' + range.id"
-                        [value]="range.startTimeString || ''"
-                        (valueChange)="onStartInput(rangeIndex, $event)"
-                      />
-                    </div>
+                    <!-- START + END TIME group -->
+                    <div class="flex gap-1">
+                      <!-- START TIME -->
+                      <div class="flex flex-col gap-1 w-24">
+                        <label [for]="'start-' + range.id" class="text-xs text-text-primary">
+                          {{ 'interview.slots.create.startTime' | translate }}
+                        </label>
+                        <jhi-time-input
+                          [id]="'start-' + range.id"
+                          [value]="range.startTimeString || ''"
+                          (valueChange)="onStartInput(rangeIndex, $event)"
+                        />
+                      </div>
 
-                    <!-- END TIME -->
-                    <div class="flex flex-col gap-1 w-24">
-                      <label [for]="'end-' + range.id" class="text-xs text-text-primary">
-                        {{ 'interview.slots.create.endTime' | translate }}
-                      </label>
-                      <jhi-time-input
-                        [id]="'end-' + range.id"
-                        [value]="range.endTimeString || ''"
-                        (valueChange)="onEndInput(rangeIndex, $event)"
-                        [disabled]="range.type === 'single'"
-                      />
+                      <!-- END TIME -->
+                      <div class="flex flex-col gap-1 w-24">
+                        <label [for]="'end-' + range.id" class="text-xs text-text-primary">
+                          {{ 'interview.slots.create.endTime' | translate }}
+                        </label>
+                        <jhi-time-input
+                          [id]="'end-' + range.id"
+                          [value]="range.endTimeString || ''"
+                          (valueChange)="onEndInput(rangeIndex, $event)"
+                          [disabled]="range.type === 'single'"
+                        />
+                      </div>
                     </div>
 
                     <!-- Location Input (Single Slot: same row) -->
