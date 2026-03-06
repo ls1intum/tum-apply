@@ -1006,8 +1006,8 @@ paths:
                 file: {type: string, format: binary}
               required: [file]
       responses:
-        '201':
-          description: Created
+        '200':
+          description: OK
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ImageDTO'}
@@ -2061,7 +2061,7 @@ paths:
             schema: {$ref: '#/components/schemas/UpdateAvatarDTO'}
         required: true
       responses:
-        '204': {description: No Content}
+        '200': {description: OK}
   /api/users/data-export:
     post:
       tags: [user-data-export-resource]
