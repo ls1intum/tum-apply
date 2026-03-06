@@ -772,7 +772,7 @@ function getSourceFileLineCount(absolutePath) {
 function countClientExpects(sourceFilePath) {
   // Convert source file path to spec file path
   const specFilePath = sourceFilePath.replace('.ts', '.spec.ts');
-  const absolutePath = path.join(PROJECT_ROOT, 'src/main/webapp/app', specFilePath);
+  const absolutePath = path.join(PROJECT_ROOT, 'src/test/webapp/app', specFilePath);
 
   try {
     if (!fs.existsSync(absolutePath)) {
