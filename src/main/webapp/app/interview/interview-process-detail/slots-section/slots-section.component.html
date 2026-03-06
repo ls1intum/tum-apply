@@ -67,7 +67,7 @@
             <div class="grid gap-3" [style.grid-template-columns]="'repeat(' + datesPerPage() + ', 1fr)'">
               @for (group of paginatedSlots(); track group.date) {
                 <div class="flex flex-col gap-2">
-                  @if (!group.isSpacer) {
+                  @if (!group.isHiddenPaddingDay) {
                     <!-- Date Header -->
                     <jhi-date-header [date]="group.localDate" [slotCount]="group.slots.length" />
 

@@ -26,7 +26,7 @@ interface GroupedSlots {
   date: string;
   localDate: Date;
   slots: InterviewSlotDTO[];
-  isSpacer?: boolean;
+  isHiddenPaddingDay?: boolean;
 }
 
 @Component({
@@ -99,7 +99,7 @@ export class SlotsSectionComponent {
       if (remainder !== 0) {
         const paddingNeeded = perPage - remainder;
         for (let i = 0; i < paddingNeeded; i++) {
-          past.push({ date: `spacer-${i}`, localDate: new Date(0), slots: [], isSpacer: true });
+          past.push({ date: `spacer-${i}`, localDate: new Date(0), slots: [], isHiddenPaddingDay: true });
         }
       }
     }
