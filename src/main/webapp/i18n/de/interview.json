@@ -32,9 +32,9 @@
       }
     },
     "warning": {
-      "notEnoughSlots": "{{invited}} Bewerber:innen eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "notEnoughSlots": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
       "notEnoughSlotsSingular": "{{invited}} Bewerber:in eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
-      "zeroSlots": "{{invited}} Bewerber:innen eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
+      "zeroSlots": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
       "zeroSlotsSingular": "{{invited}} Bewerber:in eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
     },
     "detail": {
@@ -180,7 +180,7 @@
       }
     },
     "interviewees": {
-      "title": "Bewerber:innen",
+      "title": "Bewerbende",
       "add": "Bewerber:in hinzufügen",
       "addTitle": "Bewerber:in hinzufügen",
       "sendInvitation": "Einladung senden",
@@ -190,12 +190,12 @@
         "message": "Diese:r Bewerber:in hat bereits eine Einladung erhalten. Möchtest du sie erneut senden?"
       },
       "sendAllInvitations": "Einladungen senden",
-      "allInvited": "Alle Bewerber:innen wurden eingeladen",
-      "empty": "Noch keine Bewerber:innen hinzugefügt",
+      "allInvited": "Alle Bewerbende wurden eingeladen",
+      "empty": "Noch keine Bewerbende hinzugefügt",
       "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
       "selectAll": "Alle auswählen",
-      "noApplicants": "Keine Bewerber:innen verfügbar",
+      "noApplicants": "Keine Bewerbende verfügbar",
       "tryDifferentSearch": "Versuche einen anderen Suchbegriff",
       "selected": "{{count}} Bewerber:in(nen) ausgewählt",
       "addSelected": "Hinzufügen",
@@ -216,11 +216,11 @@
       "error": {
         "loadFailed": {
           "summary": "Fehler",
-          "detail": "Bewerber:innen konnten nicht geladen werden"
+          "detail": "Bewerbende konnten nicht geladen werden"
         },
         "loadApplicantsFailed": {
           "summary": "Fehler",
-          "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+          "detail": "Verfügbare Bewerbende konnten nicht geladen werden"
         },
         "invalidApplications": {
           "summary": "Ungültige Bewerbungen",
@@ -232,7 +232,7 @@
         },
         "addFailed": {
           "summary": "Fehler",
-          "detail": "Bewerber:innen konnten nicht hinzugefügt werden"
+          "detail": "Bewerbende konnten nicht hinzugefügt werden"
         }
       },
       "invitation": {
@@ -258,8 +258,8 @@
       "title": "Bewerber:in zuweisen",
       "selectedSlot": "Ausgewählter Termin",
       "selectApplicant": "Bewerber:in auswählen",
-      "noApplicants": "Keine eingeladenen Bewerber:innen verfügbar",
-      "allAssigned": "Alle Bewerber:innen im Interviewprozess haben bereits einen Termin",
+      "noApplicants": "Keine eingeladenen Bewerbende verfügbar",
+      "allAssigned": "Alle Bewerbende im Interviewprozess haben bereits einen Termin",
       "success": {
         "summary": "Zuweisung erfolgreich",
         "detail": "Die Bewerber:in wurde dem Termin zugewiesen."
@@ -275,7 +275,7 @@
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+          "detail": "Verfügbare Bewerbende konnten nicht geladen werden"
         }
       }
     },
@@ -284,7 +284,7 @@
       "back": "Zurück zur Übersicht",
       "rating": {
         "label": "Bewertung",
-        "info": "Bewerte das Gespräch. Dies ist für Bewerber:innen nicht sichtbar."
+        "info": "Bewerte das Gespräch. Dies ist für Bewerbende nicht sichtbar."
       },
       "notes": {
         "label": "Interview Notiz",
