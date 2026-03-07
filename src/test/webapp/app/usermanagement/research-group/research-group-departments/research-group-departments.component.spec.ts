@@ -11,7 +11,6 @@ import { createDepartmentResourceApiServiceMock, provideDepartmentResourceApiSer
 import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
 import { DepartmentEditDialogComponent } from 'app/usermanagement/research-group/research-group-departments/department-edit-dialog/department-edit-dialog.component';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 describe('ResearchGroupDepartmentsComponent', () => {
   let component: ResearchGroupDepartmentsComponent;
@@ -246,7 +245,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
     });
 
     it('should build menu items and execute commands', () => {
-      const deleteDialog = { confirm: vi.fn() } as unknown as ConfirmDialog;
+      const deleteDialog = { confirm: vi.fn() };
       const mockMenu = { toggle: vi.fn() } as unknown as Parameters<typeof component.onMenuToggle>[1];
 
       component.onMenuToggle(new Event('click'), mockMenu, { departmentId: '1' }, deleteDialog);

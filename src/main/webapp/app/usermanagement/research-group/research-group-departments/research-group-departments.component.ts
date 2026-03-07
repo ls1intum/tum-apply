@@ -20,6 +20,10 @@ import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/men
 
 import { DepartmentEditDialogComponent } from './department-edit-dialog/department-edit-dialog.component';
 
+interface Confirmable {
+  confirm(): void;
+}
+
 interface DepartmentTableRow {
   departmentId?: string;
   name?: string;
@@ -125,14 +129,14 @@ export class ResearchGroupDepartmentsComponent {
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private activeDepartment = signal<DepartmentTableRow | null>(null);
-  private activeDeleteDialog = signal<ConfirmDialog | null>(null);
+  private activeDeleteDialog = signal<Confirmable | null>(null);
 
   constructor() {
     void this.loadSchools();
     void this.loadDepartments();
   }
 
-  onMenuToggle(event: Event, menu: MenuComponent, department: DepartmentTableRow, deleteDialog: ConfirmDialog): void {
+  onMenuToggle(event: Event, menu: MenuComponent, department: DepartmentTableRow, deleteDialog: Confirmable): void {
     this.activeDepartment.set(department);
     this.activeDeleteDialog.set(deleteDialog);
     menu.toggle(event);
