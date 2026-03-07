@@ -58,8 +58,14 @@
         [label]="'button.delete' | translate"
         [showOpenButton]="false"
       />
-      <jhi-button severity="primary" variant="text" icon="ellipsis-vertical" [shouldTranslate]="true" (click)="menu.toggle($event)" />
-      <jhi-menu #menu [items]="menuItems(department, deleteDialog)" [shouldTranslate]="true" />
+      <jhi-button
+        severity="primary"
+        variant="text"
+        icon="ellipsis-vertical"
+        [shouldTranslate]="true"
+        (click)="onMenuToggle($event, menu, department, deleteDialog)"
+      />
+      <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
     </div>
   </ng-template>
 </div>

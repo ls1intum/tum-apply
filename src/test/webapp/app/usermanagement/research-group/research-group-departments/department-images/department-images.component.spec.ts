@@ -134,7 +134,7 @@ describe('DepartmentImages', () => {
       component.onDepartmentChange(option);
 
       expect(component.selectedDepartment()).toEqual(option);
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
   });
 

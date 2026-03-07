@@ -89,20 +89,10 @@ export class ResearchGroupDepartmentsComponent {
     }));
   });
 
-  private toastService = inject(ToastService);
-  private readonly departmentResourceApiService = inject(DepartmentResourceApiService);
-  private readonly schoolResourceApiService = inject(SchoolResourceApiService);
-  private readonly dialogService = inject(DialogService);
-  private readonly translate = inject(TranslateService);
-  private readonly router = inject(Router);
-
-  constructor() {
-    void this.loadSchools();
-    void this.loadDepartments();
-  }
-
-  menuItems(department: DepartmentTableRow, deleteDialog: ConfirmDialog): JhiMenuItem[] {
-    if (department.departmentId == null) {
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const department = this.activeDepartment();
+    const deleteDialog = this.activeDeleteDialog();
+    if (department?.departmentId == null || deleteDialog == null) {
       return [];
     }
 
@@ -126,6 +116,26 @@ export class ResearchGroupDepartmentsComponent {
         },
       },
     ];
+  });
+
+  private toastService = inject(ToastService);
+  private readonly departmentResourceApiService = inject(DepartmentResourceApiService);
+  private readonly schoolResourceApiService = inject(SchoolResourceApiService);
+  private readonly dialogService = inject(DialogService);
+  private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
+  private activeDepartment = signal<DepartmentTableRow | null>(null);
+  private activeDeleteDialog = signal<ConfirmDialog | null>(null);
+
+  constructor() {
+    void this.loadSchools();
+    void this.loadDepartments();
+  }
+
+  onMenuToggle(event: Event, menu: MenuComponent, department: DepartmentTableRow, deleteDialog: ConfirmDialog): void {
+    this.activeDepartment.set(department);
+    this.activeDeleteDialog.set(deleteDialog);
+    menu.toggle(event);
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {

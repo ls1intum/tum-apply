@@ -155,7 +155,6 @@ public class ImageService {
      * @throws EntityNotFoundException if the research group does not exist
      * @throws UploadException         if the file is invalid or cannot be stored
      */
-    @Transactional
     public ResearchGroupImage uploadJobBannerForResearchGroup(UUID researchGroupId, MultipartFile file) {
         User uploader = currentUserService.getUser();
         ResearchGroup researchGroup = researchGroupRepository

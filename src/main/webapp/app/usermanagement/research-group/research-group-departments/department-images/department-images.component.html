@@ -29,12 +29,12 @@
         @for (image of inUseImages(); track image.imageId ?? $index) {
           <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
             <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
-              <img [src]="image.url" [alt]="'Department image'" class="w-full h-full object-cover" />
+              <img [src]="image.url" alt="Department image" class="w-full h-full object-cover" />
               <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
                 <jhi-confirm-dialog
                   #deleteDialogInUse
                   [label]="'button.delete' | translate"
-                  [confirmIcon]="'trash'"
+                  confirmIcon="trash"
                   [header]="'researchGroup.departments.images.delete.title' | translate"
                   [message]="'researchGroup.departments.images.delete.message' | translate"
                   [data]="image.imageId"
@@ -72,7 +72,7 @@
       @for (image of notInUseImages(); track image.imageId ?? $index) {
         <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
           <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
-            <img [src]="image.url" [alt]="'Department image'" class="w-full h-full object-cover" />
+            <img [src]="image.url" alt="Department image" class="w-full h-full object-cover" />
             <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
               <jhi-confirm-dialog
                 #deleteDialog
@@ -88,7 +88,7 @@
               <jhi-button
                 icon="trash"
                 size="sm"
-                [severity]="'danger'"
+                severity="danger"
                 (click)="deleteDialog.confirm()"
                 class="opacity-0 group-hover:opacity-100 transition-opacity"
               />

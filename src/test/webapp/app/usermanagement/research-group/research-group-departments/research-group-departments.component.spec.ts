@@ -242,15 +242,15 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
   describe('actions', () => {
     it('should return empty menu items when department id is missing', () => {
-      const deleteDialog = { confirm: vi.fn() } as unknown as ConfirmDialog;
-
-      expect(component.menuItems({ departmentId: undefined }, deleteDialog)).toEqual([]);
+      expect(component.menuItems()).toEqual([]);
     });
 
     it('should build menu items and execute commands', () => {
       const deleteDialog = { confirm: vi.fn() } as unknown as ConfirmDialog;
+      const mockMenu = { toggle: vi.fn() } as unknown as Parameters<typeof component.onMenuToggle>[1];
 
-      const items = component.menuItems({ departmentId: '1' }, deleteDialog);
+      component.onMenuToggle(new Event('click'), mockMenu, { departmentId: '1' }, deleteDialog);
+      const items = component.menuItems();
       expect(items.length).toBe(2);
 
       items[0].command?.();
@@ -259,7 +259,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
       });
 
       items[1].command?.();
-      expect(deleteDialog.confirm).toHaveBeenCalled();
+      expect(deleteDialog.confirm).toHaveBeenCalledOnce();
     });
 
     it('should delete department and reload', () => {
