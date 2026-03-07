@@ -169,6 +169,22 @@
           "summary": "Zugriff verweigert",
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
         }
+      },
+      "edit": {
+        "title": "Ort bearbeiten",
+        "bookedInfo": "Der Bewerber wird per E-Mail über die Ortsänderung informiert.",
+        "success": {
+          "summary": "Ort aktualisiert",
+          "detail": "Der Terminort wurde erfolgreich aktualisiert."
+        },
+        "error": {
+          "summary": "Aktualisierung fehlgeschlagen",
+          "detail": "Der Ort konnte nicht aktualisiert werden. Bitte versuche es erneut."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu bearbeiten"
+        }
       }
     },
     "interviewees": {

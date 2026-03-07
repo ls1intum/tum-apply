@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -12,8 +13,11 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
-import { getLocale } from 'app/shared/util/date-time.util';
+import { formatDateWithWeekday, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
@@ -33,7 +37,11 @@ interface GroupedSlots {
   imports: [
     TranslateModule,
     TranslateDirective,
+    FormsModule,
     ButtonComponent,
+    DialogComponent,
+    MessageComponent,
+    StringInputComponent,
     ProgressSpinnerModule,
     MonthNavigationComponent,
     DateHeaderComponent,
@@ -60,7 +68,11 @@ export class SlotsSectionComponent {
   expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
+  showEditDialog = signal(false);
   selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
+  selectedSlotForEdit = signal<InterviewSlotDTO | null>(null);
+  editLocation = signal('');
+  editLoading = signal(false);
   refreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
 
@@ -263,8 +275,55 @@ export class SlotsSectionComponent {
     return `${count} ${this.translateService.instant(key)}`;
   }
 
-  onEditSlot(): void {
-    // TODO: Open Edit Modal
+  onEditSlot(slot: InterviewSlotDTO): void {
+    this.selectedSlotForEdit.set(slot);
+    this.editLocation.set(slot.location ?? '');
+    this.showEditDialog.set(true);
+  }
+
+  async saveSlotLocation(): Promise<void> {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.id === undefined || this.editLocation().trim() === '') return;
+
+    try {
+      this.editLoading.set(true);
+      await firstValueFrom(this.interviewService.updateSlotLocation(slot.id, { location: this.editLocation().trim() }));
+      this.toastService.showSuccessKey('interview.slots.edit.success');
+      this.closeEditDialog();
+      await this.refreshSlots();
+    } catch (error: unknown) {
+      const httpError = error as { status?: number };
+      if (httpError.status === 403) {
+        this.toastService.showErrorKey('interview.slots.edit.errorForbidden');
+      } else {
+        this.toastService.showErrorKey('interview.slots.edit.error');
+      }
+    } finally {
+      this.editLoading.set(false);
+    }
+  }
+
+  closeEditDialog(): void {
+    this.showEditDialog.set(false);
+    this.selectedSlotForEdit.set(null);
+    this.editLocation.set('');
+  }
+
+  editSlotDate(): string {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '') return '';
+    return formatDateWithWeekday(slot.startDateTime, this.locale());
+  }
+
+  editSlotTimeRange(): string {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '' || slot.endDateTime === undefined || slot.endDateTime === '')
+      return '';
+    return formatTimeRange(slot.startDateTime, slot.endDateTime);
+  }
+
+  editSlotIsBooked(): boolean {
+    return this.selectedSlotForEdit()?.isBooked ?? false;
   }
 
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {

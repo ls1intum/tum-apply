@@ -394,7 +394,7 @@ public class InterviewService {
     public InterviewSlotDTO updateSlotLocation(UUID slotId, UpdateSlotLocationDTO dto) {
         // 1. Load the slot
         InterviewSlot slot = interviewSlotRepository
-            .findByIdWithJob(slotId)
+            .findByIdWithJobAndInterviewee(slotId)
             .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
         // 2. Security: Verify current user has research group access (Professor or

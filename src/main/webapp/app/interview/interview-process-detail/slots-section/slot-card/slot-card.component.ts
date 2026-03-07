@@ -35,14 +35,12 @@ export class SlotCardComponent {
 
   // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => [
-    // TODO: Uncomment when edit functionality is implemented
-    // { label: 'button.edit', icon: 'pencil', command: () => this.onEdit() },
+    { label: 'button.edit', icon: 'pencil', command: () => this.onEdit(), severity: 'primary' },
     { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
   ]);
 
   onEdit(): void {
     this.editSlot.emit(this.slot());
-    // TODO: Open Edit Modal
   }
 
   onDelete(): void {
