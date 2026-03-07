@@ -85,10 +85,10 @@ export class ApplicationCarouselComponent {
     // 2. Focus Guard
     const active = document.activeElement as HTMLElement | null;
     if (active) {
-      const isInputLike = ['INPUT', 'TEXTAREA'].includes(active.tagName) || active.isContentEditable;
+      const isEditable = ['INPUT', 'TEXTAREA'].includes(active.tagName) || active.isContentEditable;
       const isInsideEditable = !!active.closest('[contenteditable="true"]');
 
-      if (isInputLike || isInsideEditable) {
+      if (isEditable || isInsideEditable) {
         return;
       }
     }
