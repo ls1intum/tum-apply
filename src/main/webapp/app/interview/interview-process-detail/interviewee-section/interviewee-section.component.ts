@@ -53,6 +53,7 @@ export class IntervieweeSectionComponent {
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
+  isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
 
   // Interviewee List State

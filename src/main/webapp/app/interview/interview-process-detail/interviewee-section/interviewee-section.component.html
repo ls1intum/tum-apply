@@ -1,28 +1,30 @@
 <jhi-section [titleKey]="'interview.interviewees.title'">
   <!-- Actions Slot -->
   <div actions class="flex flex-wrap gap-2 lg:ml-auto items-center">
-    <jhi-button
-      (click)="sendAllInvitations()"
-      [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
-      [loading]="sendingBulk()"
-      [shouldTranslate]="true"
-      [tooltip]="allInvitedTooltip()"
-      icon="paper-plane"
-      label="interview.interviewees.sendAllInvitations"
-      severity="primary"
-      size="sm"
-      variant="outlined"
-      styleClass="whitespace-nowrap"
-    />
-    <jhi-button
-      icon="plus"
-      label="interview.interviewees.add"
-      severity="primary"
-      size="sm"
-      [shouldTranslate]="true"
-      (click)="openAddModal()"
-      styleClass="whitespace-nowrap"
-    />
+    @if (!isClosed()) {
+      <jhi-button
+        (click)="sendAllInvitations()"
+        [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
+        [loading]="sendingBulk()"
+        [shouldTranslate]="true"
+        [tooltip]="allInvitedTooltip()"
+        icon="paper-plane"
+        label="interview.interviewees.sendAllInvitations"
+        severity="primary"
+        size="sm"
+        variant="outlined"
+        styleClass="whitespace-nowrap"
+      />
+      <jhi-button
+        icon="plus"
+        label="interview.interviewees.add"
+        severity="primary"
+        size="sm"
+        [shouldTranslate]="true"
+        (click)="openAddModal()"
+        styleClass="whitespace-nowrap"
+      />
+    }
   </div>
 
   <!-- Filter Tabs -->
@@ -42,6 +44,7 @@
           [interviewee]="interviewee"
           [processId]="processId()"
           [sending]="sendingInvitationId() === interviewee.id"
+          [isClosed]="isClosed()"
         />
       }
     </div>

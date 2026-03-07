@@ -14,6 +14,9 @@
         "newProcess": "Neuer Interview Prozess",
         "viewDetails": "Details anzeigen"
       },
+      "status": {
+        "closed": "Geschlossen"
+      },
       "stats": {
         "completed": "Abgeschlossen",
         "scheduled": "Geplant",
@@ -299,6 +302,12 @@
           "summary": "Nicht gefunden",
           "detail": "Diese:r Bewerber:in existiert nicht oder wurde entfernt."
         }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Prozess geschlossen",
+        "description": "Dieser Interviewprozess ist nun geschlossen. Du kannst keine Interviewtermine mehr buchen."
       }
     }
   }

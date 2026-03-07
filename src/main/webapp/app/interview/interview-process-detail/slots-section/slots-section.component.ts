@@ -47,6 +47,7 @@ interface GroupedSlots {
 export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
+  isClosed = input<boolean>(false);
 
   // Outputs
   slotAssigned = output();

@@ -16,6 +16,7 @@ import { formatTimeRange } from 'app/shared/util/date-time.util';
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
+  isClosed = input<boolean>(false);
 
   editSlot = output<InterviewSlotDTO>();
   deleteSlot = output<InterviewSlotDTO>();
