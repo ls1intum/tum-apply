@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -102,7 +102,7 @@ export class ResearchGroupCreationFormComponent {
   });
 
   // Template references
-  confirmDialog = viewChild<ConfirmDialog>('confirmDialog');
+  showConfirmDialog = signal(false);
 
   // Services
   private readonly fb = inject(FormBuilder);
@@ -164,7 +164,7 @@ export class ResearchGroupCreationFormComponent {
 
   onSubmit(): void {
     if (this.form.valid) {
-      this.confirmDialog()?.confirm();
+      this.showConfirmDialog.set(true);
     }
   }
 

@@ -1,28 +1,30 @@
 <!-- Confirmation Dialog for Professor -->
 @if (mode() === 'professor') {
   <jhi-confirm-dialog
-    #confirmDialog
     [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
     [message]="'onboarding.professorRequest.confirmDialog.message' | translate"
     [label]="'onboarding.professorRequest.confirmDialog.confirm' | translate"
     severity="primary"
     confirmIcon="paper-plane"
     [showOpenButton]="false"
+    [visible]="showConfirmDialog()"
     (confirmed)="onConfirmSubmit()"
+    (closed)="showConfirmDialog.set(false)"
   />
 }
 
 <!-- Confirmation Dialog for Admin -->
 @if (mode() === 'admin') {
   <jhi-confirm-dialog
-    #confirmDialog
     [header]="'researchGroup.adminView.createDialog.confirmHeader' | translate"
     [message]="'researchGroup.adminView.createDialog.confirmMessage' | translate"
     [label]="'researchGroup.adminView.createDialog.confirmButton' | translate"
     severity="primary"
     confirmIcon="check"
     [showOpenButton]="false"
+    [visible]="showConfirmDialog()"
     (confirmed)="onConfirmSubmit()"
+    (closed)="showConfirmDialog.set(false)"
   />
 }
 

@@ -79,7 +79,7 @@ export class IntervieweeSectionComponent {
 
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
-  readonly confirmDialog = viewChild.required(ConfirmDialog);
+  showResendDialog = signal(false);
 
   // Computed Signals
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
@@ -210,7 +210,7 @@ export class IntervieweeSectionComponent {
 
     if (interviewee.state === 'INVITED') {
       this.pendingResendId.set(interviewee.id);
-      this.confirmDialog().confirm();
+      this.showResendDialog.set(true);
     } else {
       void this.performSendInvitation(processId, interviewee.id);
     }

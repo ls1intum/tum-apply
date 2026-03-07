@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #sendPublishDialog
   class="confirm-dialog"
   [header]="'jobCreationForm.confirmDialog.header' | translate"
   [message]="'jobCreationForm.confirmDialog.message' | translate"
@@ -7,7 +6,9 @@
   [severity]="publishButtonSeverity"
   [confirmIcon]="publishButtonIcon"
   [showOpenButton]="false"
+  [visible]="showPublishDialog()"
   (confirmed)="publishJob()"
+  (closed)="showPublishDialog.set(false)"
   [dialogStyleClass]="'confirm-dialog-lg'"
 />
 @if (!isLoading()) {
