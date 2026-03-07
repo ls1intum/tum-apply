@@ -82,13 +82,15 @@ export class ApplicationCarouselComponent {
       return;
     }
 
-    // 2. Target-based Guard
-    const target = event.target as HTMLElement;
-    const isInput = ['INPUT', 'TEXTAREA'].includes(target.tagName);
-    const isEditable = target.isContentEditable || !!target.closest('[contenteditable="true"]');
+    // 2. Focus Guard
+    const active = document.activeElement as HTMLElement | null;
+    if (active) {
+      const isInputLike = ['INPUT', 'TEXTAREA'].includes(active.tagName) || active.isContentEditable;
+      const isInsideEditable = !!active.closest?.('[contenteditable="true"]');
 
-    if (isInput || isEditable) {
-      return;
+      if (isInputLike || isInsideEditable) {
+        return;
+      }
     }
 
     // 3. Navigation Logic
