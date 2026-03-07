@@ -33,18 +33,12 @@
             severity="danger"
             (confirmed)="onResetPicture()"
           />
-          <jhi-button
-            icon="pen"
-            variant="text"
-            severity="primary"
-            [tooltip]="'settings.profilePicture.addButton' | translate"
-            (click)="onAddPictureClick()"
-          />
+          <jhi-button icon="pen" variant="text" severity="primary" [tooltip]="'button.edit' | translate" (click)="onAddPictureClick()" />
           <jhi-button
             icon="trash"
             variant="text"
             severity="danger"
-            [tooltip]="'settings.profilePicture.resetButtonTooltip' | translate"
+            [tooltip]="'button.remove' | translate"
             [disabled]="!currentProfilePictureUrl()"
             (click)="resetPictureDialog.confirm()"
           />
@@ -54,89 +48,47 @@
   </div>
 
   <input #fileInput type="file" accept="image/jpeg,image/jpg,image/png" class="hidden" (change)="onFileSelected($event)" />
-  <canvas #saveCanvas class="hidden"></canvas>
 </div>
 
 <jhi-dialog
   [visible]="cropDialogVisible()"
-  (visibleChange)="cropDialogVisible.set($event)"
+  (visibleChange)="$event ? cropDialogVisible.set(true) : onCancel()"
   header="settings.profilePicture.cropDialog.header"
   [shouldTranslateHeader]="true"
   width="460px"
   [closable]="true"
   [dismissableMask]="false"
 >
-  @if (rawImageSrc()) {
+  @if (selectedFile()) {
     <div class="flex flex-col items-center gap-5 py-2">
-      <div
-        class="relative overflow-hidden rounded-md bg-surface-ground select-none"
-        style="touch-action: none"
+      <image-cropper
+        class="block overflow-hidden rounded-md bg-surface-ground"
         [style.width.px]="CROP_SIZE"
         [style.height.px]="CROP_SIZE"
-        (pointerdown)="onPointerDown($event)"
-        (pointermove)="onPointerMove($event)"
-        (pointerup)="onPointerUp($event)"
-        (pointercancel)="onPointerUp($event)"
-        (pointerleave)="onPointerUp($event)"
-      >
-        <img [src]="rawImageSrc()" [style]="blurImageStyle()" draggable="false" alt="" />
-        <img [src]="rawImageSrc()" [style]="imageStyle()" draggable="false" alt="" />
-        <div [style]="dimOverlayStyle()"></div>
-        <div
-          class="pointer-events-none absolute rounded-full border-2 border-white"
-          [style.width.px]="CROP_RADIUS * 2"
-          [style.height.px]="CROP_RADIUS * 2"
-          [style.left.px]="CROP_SIZE / 2 - CROP_RADIUS"
-          [style.top.px]="CROP_SIZE / 2 - CROP_RADIUS"
-        ></div>
-      </div>
-
-      <div class="relative flex items-center" [style.width.px]="CROP_SIZE">
-        <div class="mx-auto flex w-64 items-center gap-3 rounded-full bg-surface-section px-4 py-3">
-          <button
-            type="button"
-            class="shrink-0 text-sm text-text-secondary transition-colors"
-            [class.cursor-pointer]="zoomFactor() > minZoomFactor"
-            [class.hover:text-primary]="zoomFactor() > minZoomFactor"
-            [class.cursor-default]="zoomFactor() <= minZoomFactor"
-            [class.opacity-40]="zoomFactor() <= minZoomFactor"
-            [attr.aria-disabled]="zoomFactor() <= minZoomFactor"
-            (click)="zoomOut()"
-          >
-            <fa-icon [icon]="faMagnifyingGlassMinus" />
-          </button>
-          <input
-            type="range"
-            class="h-1 flex-1 cursor-pointer accent-primary"
-            [min]="minZoomFactor"
-            [max]="maxZoomFactor"
-            [step]="0.01"
-            [value]="zoomFactor()"
-            (input)="onZoomChange($event)"
-          />
-          <button
-            type="button"
-            class="shrink-0 text-lg text-text-secondary transition-colors"
-            [class.cursor-pointer]="zoomFactor() < maxZoomFactor"
-            [class.hover:text-primary]="zoomFactor() < maxZoomFactor"
-            [class.cursor-default]="zoomFactor() >= maxZoomFactor"
-            [class.opacity-40]="zoomFactor() >= maxZoomFactor"
-            [attr.aria-disabled]="zoomFactor() >= maxZoomFactor"
-            (click)="zoomIn()"
-          >
-            <fa-icon [icon]="faMagnifyingGlassPlus" />
-          </button>
-        </div>
-        <button
-          type="button"
-          class="absolute right-0 flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface-section text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary"
-          [pTooltip]="'settings.profilePicture.cropDialog.rotate' | translate"
-          tooltipPosition="top"
-          (click)="onRotate()"
-        >
-          <fa-icon [icon]="faRotateRight" />
-        </button>
-      </div>
+        [style.--cropper-outline-color]="'rgba(0, 0, 0, 0.55)'"
+        [style.--cropper-overlay-color]="'rgba(255, 255, 255, 0.08)'"
+        [style.--cropper-color]="'rgba(255, 255, 255, 0.18)'"
+        [style.--cropper-border]="'2px solid rgba(255, 255, 255, 0.95)'"
+        [style.--cropper-hover-border]="'2px solid rgba(255, 255, 255, 0.95)'"
+        [style.--cropper-focus-border]="'2px solid rgba(255, 255, 255, 0.95)'"
+        [imageFile]="selectedFile()"
+        [imageAltText]="fullName() ?? 'Profile picture'"
+        cropperFrameAriaLabel="Crop profile picture"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1"
+        [roundCropper]="true"
+        [allowMoveImage]="true"
+        [format]="'jpeg'"
+        [output]="'blob'"
+        [autoCrop]="false"
+        [imageQuality]="92"
+        [resizeToWidth]="300"
+        [resizeToHeight]="300"
+        [transform]="cropTransform"
+        (transformChange)="onTransformChange($event)"
+        (imageLoaded)="onImageLoaded()"
+        (loadImageFailed)="onLoadImageFailed()"
+      />
 
       <div class="flex justify-end gap-2 pt-1" [style.width.px]="CROP_SIZE">
         <jhi-button [label]="'button.cancel'" [shouldTranslate]="true" variant="outlined" severity="secondary" (click)="onCancel()" />

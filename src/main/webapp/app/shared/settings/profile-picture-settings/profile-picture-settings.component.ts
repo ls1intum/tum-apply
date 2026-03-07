@@ -3,24 +3,20 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faMagnifyingGlassMinus, faMagnifyingGlassPlus, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
+import { ImageCropperComponent, ImageTransform } from 'ngx-image-cropper';
 import { ToastService } from 'app/service/toast-service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import TranslateDirective from 'app/shared/language/translate.directive';
 import { TooltipModule } from 'primeng/tooltip';
 import { firstValueFrom } from 'rxjs';
 
-import { ButtonComponent } from '../../components/atoms/button/button.component';
-import { ConfirmDialog } from '../../components/atoms/confirm-dialog/confirm-dialog';
-import { DialogComponent } from '../../components/atoms/dialog/dialog.component';
-import { UserAvatarComponent } from '../../components/atoms/user-avatar/user-avatar.component';
-import TranslateDirective from '../../language/translate.directive';
-
 const CROP_CONTAINER_SIZE = 360;
-const CROP_RADIUS = 150;
 const MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
-const ZOOM_STEP = 0.05;
-const BLUR_PADDING_PX = 28;
 
 @Component({
   selector: 'jhi-profile-picture-settings',
@@ -35,32 +31,21 @@ const BLUR_PADDING_PX = 28;
     FontAwesomeModule,
     TooltipModule,
     UserAvatarComponent,
+    ImageCropperComponent,
   ],
   templateUrl: './profile-picture-settings.component.html',
 })
 export class ProfilePictureSettingsComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('saveCanvas') saveCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild(ImageCropperComponent) imageCropper?: ImageCropperComponent;
 
   readonly CROP_SIZE = CROP_CONTAINER_SIZE;
-  readonly CROP_RADIUS = CROP_RADIUS;
-
-  readonly faMagnifyingGlassMinus = faMagnifyingGlassMinus;
-  readonly faMagnifyingGlassPlus = faMagnifyingGlassPlus;
-  readonly faRotateRight = faRotateRight;
 
   // Dialog + image source state used by the cropper overlay.
   cropDialogVisible = signal(false);
-  rawImageSrc = signal<string | null>(null);
-
-  // User-controlled crop transform. `zoomFactor` is applied on top of `coverScale()`,
-  // which already guarantees that the circular crop area is fully covered.
-  zoomFactor = signal(1);
-  minZoomFactor = 0.5;
-  maxZoomFactor = 3;
-
-  panX = signal(0);
-  panY = signal(0);
+  selectedFile = signal<File | undefined>(undefined);
+  imageLoaded = signal(false);
+  cropTransform: ImageTransform = this.createDefaultTransform();
 
   fullName = computed<string | undefined>(() => {
     const name = this.accountService.loadedUser()?.name.trim();
@@ -69,65 +54,10 @@ export class ProfilePictureSettingsComponent {
 
   currentProfilePictureUrl = computed<string | null>(() => this.normalizeAvatarUrl(this.accountService.loadedUser()?.avatar));
 
-  // Foreground preview shown inside the crop dialog. The image is centered,
-  // then translated by the user's pan and finally scaled for the active zoom level.
-  imageStyle = computed<Record<string, string>>(() => {
-    const scale = this.effectiveScale();
-    const pan = this.clampedPanForScale(scale);
-    return {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      width: `${this.imgNatW()}px`,
-      height: `${this.imgNatH()}px`,
-      transform: `translate(-50%, -50%) translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
-      'transform-origin': 'center center',
-      'pointer-events': 'none',
-      'user-select': 'none',
-      'max-width': 'none',
-    };
-  });
-
-  // Soft blurred background behind the sharp foreground image so empty corners
-  // never appear while the user pans a portrait-oriented or landscape-oriented image.
-  blurImageStyle = computed<Record<string, string>>(() => {
-    const scale = this.blurScale();
-    const pan = this.clampedPanForScale(scale, CROP_RADIUS + BLUR_PADDING_PX);
-    return {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      width: `${this.imgNatW()}px`,
-      height: `${this.imgNatH()}px`,
-      transform: `translate(-50%, -50%) translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
-      'transform-origin': 'center center',
-      filter: 'blur(16px) saturate(1.05)',
-      opacity: '0.95',
-      'pointer-events': 'none',
-      'user-select': 'none',
-      'max-width': 'none',
-    };
-  });
-
-  dimOverlayStyle = computed<Record<string, string>>(() => ({
-    position: 'absolute',
-    inset: '0',
-    background: `radial-gradient(circle ${CROP_RADIUS}px at 50% 50%, transparent ${CROP_RADIUS - 1}px, rgba(0,0,0,0.55) ${CROP_RADIUS}px)`,
-    'pointer-events': 'none',
-  }));
-
   private readonly accountService = inject(AccountService);
   private readonly imageResourceService = inject(ImageResourceApiService);
   private readonly toastService = inject(ToastService);
   private readonly userResourceService = inject(UserResourceApiService);
-
-  private img: HTMLImageElement | null = null;
-  private imgNatW = signal(0);
-  private imgNatH = signal(0);
-
-  private dragActive = false;
-  private lastX = 0;
-  private lastY = 0;
 
   onAddPictureClick(): void {
     this.fileInput.nativeElement.click();
@@ -141,55 +71,8 @@ export class ProfilePictureSettingsComponent {
     input.value = '';
   }
 
-  onPointerDown(event: PointerEvent): void {
-    event.preventDefault();
-    const target = event.currentTarget as HTMLElement;
-    target.setPointerCapture(event.pointerId);
-    this.dragActive = true;
-    this.lastX = event.clientX;
-    this.lastY = event.clientY;
-  }
-
-  onPointerMove(event: PointerEvent): void {
-    if (!this.dragActive) return;
-
-    const dx = event.clientX - this.lastX;
-    const dy = event.clientY - this.lastY;
-    this.lastX = event.clientX;
-    this.lastY = event.clientY;
-
-    this.panX.set(this.panX() + dx);
-    this.panY.set(this.panY() + dy);
-    this.clampPan();
-  }
-
-  onPointerUp(event: PointerEvent): void {
-    this.dragActive = false;
-    const target = event.currentTarget as HTMLElement;
-    if (target.hasPointerCapture(event.pointerId)) {
-      target.releasePointerCapture(event.pointerId);
-    }
-  }
-
-  onZoomChange(event: Event): void {
-    this.zoomFactor.set(parseFloat((event.target as HTMLInputElement).value));
-    this.clampPan();
-  }
-
-  zoomOut(): void {
-    this.zoomFactor.set(Math.max(this.minZoomFactor, this.zoomFactor() - ZOOM_STEP));
-    this.clampPan();
-  }
-
-  zoomIn(): void {
-    this.zoomFactor.set(Math.min(this.maxZoomFactor, this.zoomFactor() + ZOOM_STEP));
-    this.clampPan();
-  }
-
   onCancel(): void {
-    this.cropDialogVisible.set(false);
-    this.rawImageSrc.set(null);
-    this.img = null;
+    this.resetCropDialog();
   }
 
   async onResetPicture(): Promise<void> {
@@ -197,105 +80,20 @@ export class ProfilePictureSettingsComponent {
       await firstValueFrom(this.userResourceService.updateAvatar({}));
       this.accountService.setAvatar(undefined);
       this.toastService.showSuccessKey('settings.profilePicture.deleted');
-    } catch (error) {
-      console.error('Failed to reset profile picture', error);
+    } catch {
       this.toastService.showErrorKey('settings.profilePicture.deleteFailed');
     }
   }
 
   /**
-   * Rotates the currently loaded image by 90 degrees clockwise and rebuilds the
-   * crop state from the rotated result so panning limits and zoom are recalculated.
-   */
-  onRotate(): void {
-    if (!this.img) return;
-
-    const offscreen = document.createElement('canvas');
-    offscreen.width = this.imgNatH();
-    offscreen.height = this.imgNatW();
-    const ctx = offscreen.getContext('2d');
-    if (!ctx) return;
-
-    ctx.translate(this.imgNatH() / 2, this.imgNatW() / 2);
-    ctx.rotate(Math.PI / 2);
-    ctx.drawImage(this.img, -this.imgNatW() / 2, -this.imgNatH() / 2);
-
-    const rotatedSrc = offscreen.toDataURL('image/png');
-    const rotated = new Image();
-    rotated.onload = () => {
-      this.img = rotated;
-      this.imgNatW.set(rotated.naturalWidth);
-      this.imgNatH.set(rotated.naturalHeight);
-      this.rawImageSrc.set(rotatedSrc);
-      this.resetCropState();
-    };
-    rotated.src = rotatedSrc;
-  }
-
-  /**
-   * Renders the visible crop result into a square canvas, masks it into a circle,
-   * uploads the generated JPEG and updates the in-memory avatar shown in the app shell.
-   *
-   * The preview uses a 360px interaction area with a 150px crop radius, while the
-   * exported avatar is normalized to a fixed 300x300px output for storage/display.
+   * Crops the current image through the cropper library, uploads the generated JPEG
+   * and updates the in-memory avatar shown in the app shell.
    */
   async onSave(): Promise<void> {
-    if (!this.img) return;
-
-    const canvas = this.saveCanvas.nativeElement;
-    const outSize = 300;
-    canvas.width = outSize;
-    canvas.height = outSize;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const natW = this.imgNatW();
-    const natH = this.imgNatH();
-    const fgScale = this.effectiveScale();
-    const bgScale = this.blurScale();
-    const fgPan = this.clampedPanForScale(fgScale);
-    const bgPan = this.clampedPanForScale(bgScale, CROP_RADIUS + BLUR_PADDING_PX);
-
-    const fgDisplayW = natW * fgScale;
-    const fgDisplayH = natH * fgScale;
-    const bgDisplayW = natW * bgScale;
-    const bgDisplayH = natH * bgScale;
-
-    const cc = CROP_CONTAINER_SIZE / 2;
-    const cropLeft = cc - CROP_RADIUS;
-    const cropTop = cc - CROP_RADIUS;
-    const scaleToOut = outSize / (CROP_RADIUS * 2);
-
-    // Convert from dialog-space coordinates into export-canvas coordinates.
-    const fgLeft = cc + fgPan.x - fgDisplayW / 2;
-    const fgTop = cc + fgPan.y - fgDisplayH / 2;
-    const bgLeft = cc + bgPan.x - bgDisplayW / 2;
-    const bgTop = cc + bgPan.y - bgDisplayH / 2;
-
-    const fgDestX = (fgLeft - cropLeft) * scaleToOut;
-    const fgDestY = (fgTop - cropTop) * scaleToOut;
-    const fgDestW = fgDisplayW * scaleToOut;
-    const fgDestH = fgDisplayH * scaleToOut;
-
-    const bgDestX = (bgLeft - cropLeft) * scaleToOut;
-    const bgDestY = (bgTop - cropTop) * scaleToOut;
-    const bgDestW = bgDisplayW * scaleToOut;
-    const bgDestH = bgDisplayH * scaleToOut;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(outSize / 2, outSize / 2, outSize / 2, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.filter = 'blur(16px) saturate(1.05)';
-    ctx.globalAlpha = 0.95;
-    ctx.drawImage(this.img, bgDestX, bgDestY, bgDestW, bgDestH);
-    ctx.filter = 'none';
-    ctx.globalAlpha = 1;
-    ctx.drawImage(this.img, fgDestX, fgDestY, fgDestW, fgDestH);
-    ctx.restore();
-
-    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+    if (!this.imageCropper) return;
+    const cropped = await this.imageCropper.crop('blob');
+    if (!cropped) return;
+    const blob = cropped.blob;
     if (!blob) return;
 
     try {
@@ -308,71 +106,28 @@ export class ProfilePictureSettingsComponent {
 
       this.accountService.setAvatar(avatarUrl);
       this.toastService.showSuccessKey('settings.profilePicture.saved');
-
-      this.cropDialogVisible.set(false);
-      this.rawImageSrc.set(null);
-      this.img = null;
-    } catch (error) {
-      console.error('Failed to save profile picture', error);
+      this.resetCropDialog();
+    } catch {
       this.toastService.showErrorKey('settings.profilePicture.saveFailed');
     }
   }
 
-  // Reset to a safe initial crop: centered image with the minimum zoom required
-  // to fully cover the circular crop area.
-  private resetCropState(): void {
-    if (this.imgNatW() <= 0 || this.imgNatH() <= 0) return;
-    const initialZoom = Math.max(this.minZoomFactor, Math.min(1, this.maxZoomFactor));
-    this.zoomFactor.set(initialZoom);
-    this.panX.set(0);
-    this.panY.set(0);
-    this.clampPan();
+  onImageLoaded(): void {
+    this.imageLoaded.set(true);
   }
 
-  private effectiveScale(): number {
-    const natW = this.imgNatW();
-    const natH = this.imgNatH();
-    if (natW <= 0 || natH <= 0) return 1;
-    return this.coverScale() * this.zoomFactor();
+  onTransformChange(transform: ImageTransform): void {
+    this.cropTransform = this.normalizeTransform(transform);
   }
 
-  private coverScale(): number {
-    const natW = this.imgNatW();
-    const natH = this.imgNatH();
-    if (natW <= 0 || natH <= 0) return 1;
-    return Math.max((CROP_RADIUS * 2) / natW, (CROP_RADIUS * 2) / natH);
-  }
-
-  private blurScale(): number {
-    return this.coverScale() * 1.2;
-  }
-
-  // Enforces the current pan limits after any zoom or drag update.
-  private clampPan(): void {
-    const scale = this.effectiveScale();
-    const pan = this.clampedPanForScale(scale);
-    this.panX.set(pan.x);
-    this.panY.set(pan.y);
-  }
-
-  // Prevents the visible crop circle from ever exposing empty space around the image.
-  private clampedPanForScale(scale: number, coverRadius: number = CROP_RADIUS): { x: number; y: number } {
-    const natW = this.imgNatW();
-    const natH = this.imgNatH();
-    if (natW <= 0 || natH <= 0) return { x: 0, y: 0 };
-    const displayW = natW * scale;
-    const displayH = natH * scale;
-    const maxPanX = Math.max(0, displayW / 2 - coverRadius);
-    const maxPanY = Math.max(0, displayH / 2 - coverRadius);
-    return {
-      x: Math.max(-maxPanX, Math.min(maxPanX, this.panX())),
-      y: Math.max(-maxPanY, Math.min(maxPanY, this.panY())),
-    };
+  onLoadImageFailed(): void {
+    this.toastService.showErrorKey('settings.profilePicture.invalidFileType');
+    this.resetCropDialog();
   }
 
   /**
-   * Validates the selected file, loads it as a data URL and initializes the crop dialog
-   * once the browser has decoded the image dimensions.
+   * Validates the selected file and opens the crop dialog. The cropper library
+   * handles image loading, touch gestures and crop interactions.
    */
   private loadFileForCrop(file: File): void {
     if (file.size > MAX_UPLOAD_SIZE_BYTES) {
@@ -383,22 +138,10 @@ export class ProfilePictureSettingsComponent {
       this.toastService.showErrorKey('settings.profilePicture.invalidFileType');
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const src = reader.result as string;
-      const image = new Image();
-      image.onload = () => {
-        this.img = image;
-        this.imgNatW.set(image.naturalWidth);
-        this.imgNatH.set(image.naturalHeight);
-        this.rawImageSrc.set(src);
-        this.resetCropState();
-        this.cropDialogVisible.set(true);
-      };
-      image.src = src;
-    };
-    reader.readAsDataURL(file);
+    this.selectedFile.set(file);
+    this.imageLoaded.set(false);
+    this.cropTransform = this.createDefaultTransform();
+    this.cropDialogVisible.set(true);
   }
 
   private normalizeAvatarUrl(avatarUrl: string | null | undefined): string | null {
@@ -407,5 +150,29 @@ export class ProfilePictureSettingsComponent {
       return null;
     }
     return normalized;
+  }
+
+  private resetCropDialog(): void {
+    this.cropDialogVisible.set(false);
+    this.selectedFile.set(undefined);
+    this.imageLoaded.set(false);
+    this.cropTransform = this.createDefaultTransform();
+  }
+
+  private normalizeTransform(transform: ImageTransform): ImageTransform {
+    return {
+      translateUnit: 'px',
+      ...transform,
+    };
+  }
+
+  private createDefaultTransform(): ImageTransform {
+    return {
+      scale: 1,
+      rotate: 0,
+      translateH: 0,
+      translateV: 0,
+      translateUnit: 'px',
+    };
   }
 }

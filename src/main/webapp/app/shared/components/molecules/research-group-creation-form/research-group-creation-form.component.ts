@@ -23,6 +23,7 @@ import { SelectComponent, SelectOption } from '../../atoms/select/select.compone
 import { ToastService } from '../../../../service/toast-service';
 import { tumIdValidator } from '../../../validators/custom-validators';
 import TranslateDirective from '../../../language/translate.directive';
+import { formatFullName } from '../../../util/name.util';
 
 type FormMode = 'professor' | 'admin';
 
@@ -291,7 +292,7 @@ export class ResearchGroupCreationFormComponent {
       const lastName = this.normalizePrefillValue(currentUser.lastName);
       const email = this.normalizePrefillValue(currentUser.email);
       const universityId = this.normalizePrefillValue(currentUser.universityId);
-      const fullName = [firstName, lastName].filter(part => part !== '').join(' ');
+      const fullName = formatFullName(firstName, lastName);
 
       this.setControlValueIfEmpty('firstName', firstName);
       this.setControlValueIfEmpty('lastName', lastName);

@@ -46,8 +46,6 @@
     "profilePicture": {
       "header": "Profilbild",
       "description": "Mach dein Profil persönlicher mit einem Foto.",
-      "addButton": "Bearbeiten",
-      "resetButtonTooltip": "Entfernen",
       "saved": {
         "summary": "Profilbild aktualisiert",
         "detail": "Dein Profilbild wurde erfolgreich aktualisiert."
@@ -70,7 +68,7 @@
       },
       "invalidFileType": {
         "summary": "Ungültiger Dateityp",
-        "detail": "Bitte wähle ein JPG- oder PNG-Bild."
+        "detail": "Bitte wähle ein JPEG-, JPG- oder PNG-Bild."
       },
       "resetConfirm": {
         "header": "Profilbild löschen?",

@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { ResearchGroupShortDTO } from '../../generated/model/researchGroupShortDTO';
 import { UserResourceApiService } from '../../generated/api/userResourceApi.service';
 import { UserShortDTO } from '../../generated/model/userShortDTO';
+import { formatFullName } from '../../shared/util/name.util';
 
 export interface User {
   id: string;
@@ -92,7 +93,7 @@ export class AccountService {
       const user: User = {
         id: userShortDTO.userId,
         email: userShortDTO.email ?? '',
-        name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
+        name: formatFullName(userShortDTO.firstName, userShortDTO.lastName) || 'User',
         avatar: userShortDTO.avatar,
         researchGroup: userShortDTO.researchGroup ?? undefined,
         authorities: userShortDTO.roles,

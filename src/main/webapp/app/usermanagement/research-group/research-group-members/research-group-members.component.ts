@@ -21,6 +21,7 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
 interface MembersRow {
@@ -98,7 +99,7 @@ export class ResearchGroupMembersComponent {
         researchGroup: member.researchGroup,
         roles: member.roles,
         userId: member.userId,
-        name: `${member.firstName} ${member.lastName}`,
+        name: formatFullName(member.firstName, member.lastName),
         role: this.formatRoles(member.roles),
         isCurrentUser,
         canRemove,
@@ -151,14 +152,14 @@ export class ResearchGroupMembersComponent {
     try {
       await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
-        memberName: `${member.firstName} ${member.lastName}`,
+        memberName: formatFullName(member.firstName, member.lastName),
       });
 
       // Refresh the members list
       await this.loadMembers();
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
-        memberName: `${member.firstName} ${member.lastName}`,
+        memberName: formatFullName(member.firstName, member.lastName),
       });
     }
   }

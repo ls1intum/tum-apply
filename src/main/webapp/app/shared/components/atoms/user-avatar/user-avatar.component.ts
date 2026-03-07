@@ -31,7 +31,7 @@ export class UserAvatarComponent {
 
   textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.55 : 0.6));
   borderColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.8 : 0.9));
-  textShadow = computed(() => (this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)'));
+  textShadow = computed(() => '0 1px 0 rgba(255, 255, 255, 0.28)');
   sizeClass = computed(() => {
     const size = this.size();
     if (size === 'xl') {
