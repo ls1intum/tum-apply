@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, catchError, debounceTime, merge, of, shareReplay, switchMap } from 'rxjs';
 import { GenderBiasAnalysisRequest, GenderBiasAnalysisResourceApiService, GenderBiasAnalysisResponse } from 'app/generated';
+import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 @Injectable({ providedIn: 'root' })
 export class GenderBiasAnalysisService {
@@ -64,5 +65,24 @@ export class GenderBiasAnalysisService {
 
     this.lastLanguages.set(fieldId, language);
     this.firstLoads.add(fieldId);
+  }
+
+  calculateScore(analysis: GenderBiasAnalysisResponse | null, htmlText: string): number {
+    if (!analysis || analysis.coding === 'empty') {
+      const hasContent = extractTextFromHtml(htmlText).trim().length > 0;
+      return hasContent ? 100 : 0;
+    }
+
+    const biasedWords = analysis.biasedWords ?? [];
+    const inclusiveCount = biasedWords.filter(word => word.type === 'inclusive').length;
+    const nonInclusiveCount = biasedWords.filter(word => word.type === 'non-inclusive').length;
+    const totalCount = inclusiveCount + nonInclusiveCount;
+
+    const inclusiveWeight = totalCount === 0 ? 1 : inclusiveCount / totalCount;
+
+    const factor = analysis.coding === 'neutral' ? 1 : analysis.coding === 'inclusive-coded' ? 0.9 : 0.2;
+    const score = Math.sqrt(inclusiveWeight * factor) * 100;
+
+    return Math.max(0, Math.min(100, Math.round(score)));
   }
 }

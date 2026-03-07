@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Language, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -26,6 +25,8 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/genderBiasAnalysisResponse';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApiService } from 'app/generated';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
@@ -43,6 +44,7 @@ import {
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -69,7 +71,6 @@ type JobFormMode = 'create' | 'edit';
   styleUrls: ['./job-creation-form.component.scss'],
   imports: [
     CommonModule,
-    TooltipModule,
     ReactiveFormsModule,
     FormsModule,
     FontAwesomeModule,
@@ -95,6 +96,7 @@ type JobFormMode = 'create' | 'edit';
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
     CheckboxComponent,
+    AiAssistantCardComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -172,9 +174,6 @@ export class JobCreationFormComponent {
   /** Tracks if the rewrite button should be shown (after first generation) */
   rewriteButtonSignal = signal<boolean>(false);
 
-  /** Computed: determines if the AI panel should be displayed */
-  showAiPanel = computed(() => this.aiToggleSignal());
-
   /** Computed: returns the localized template text for manual job description */
   templateText = computed(() =>
     this.currentDescriptionLanguage() === 'en'
@@ -227,6 +226,22 @@ export class JobCreationFormComponent {
   private aiService = inject(AiResourceApiService);
   private aiStreamingService = inject(AiStreamingService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
+  private genderBiasAnalysisService = inject(GenderBiasAnalysisService);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI SCORE SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Latest gender decoder result for the job description */
+  readonly jobDescriptionAnalysis = toSignal<GenderBiasAnalysisResponse | null>(
+    this.genderBiasAnalysisService.getAnalysisForField('jobDescription'),
+    {
+      initialValue: null,
+    },
+  );
+
+  /** Score shown in the AI sidebar */
+  readonly aiScore = computed(() => this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()));
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -441,7 +456,7 @@ export class JobCreationFormComponent {
 
   private isAutoScrolling = false;
 
-  aiSidebarVisible = false;
+  aiSidebarVisible = true;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
