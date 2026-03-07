@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/delete-document/{documentDictionaryId}:
+  /api/applications/documents/{documentDictionaryId}:
     delete:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
@@ -88,6 +88,21 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/applications/documents/{documentDictionaryId}/name:
+    put:
+      tags: [application-resource]
+      operationId: renameDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: newName
+        in: query
+        required: true
+        schema: {type: string}
       responses:
         '200': {description: OK}
   /api/applications/getDocumentIds/{applicationId}:
@@ -158,17 +173,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applications/profile/delete-document/{documentDictionaryId}:
-    delete:
-      tags: [application-resource]
-      operationId: deleteApplicantProfileDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
   /api/applications/profile/document-ids:
     get:
       tags: [application-resource]
@@ -194,22 +198,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applications/profile/personal-information:
-    put:
+  /api/applications/profile/documents/{documentDictionaryId}:
+    delete:
       tags: [application-resource]
-      operationId: updateApplicantPersonalInformation
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+      operationId: deleteApplicantProfileDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
         required: true
+        schema: {type: string, format: uuid}
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applications/profile/rename-document/{documentDictionaryId}:
+        '200': {description: OK}
+  /api/applications/profile/documents/{documentDictionaryId}/name:
     put:
       tags: [application-resource]
       operationId: renameApplicantProfileDocument
@@ -224,7 +224,7 @@ paths:
         schema: {type: string}
       responses:
         '200': {description: OK}
-  /api/applications/profile/upload-documents/{documentType}:
+  /api/applications/profile/documents/{documentType}:
     post:
       tags: [application-resource]
       summary: Upload applicant profile documents
@@ -257,58 +257,21 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
                 uniqueItems: true
-  /api/applications/rename-document/{documentDictionaryId}:
+  /api/applications/profile/personal-information:
     put:
       tags: [application-resource]
-      operationId: renameDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: newName
-        in: query
-        required: true
-        schema: {type: string}
-      responses:
-        '200': {description: OK}
-  /api/applications/upload-documents/{applicationId}/{documentType}:
-    post:
-      tags: [application-resource]
-      summary: Upload documents
-      operationId: uploadDocuments
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+      operationId: updateApplicantPersonalInformation
       requestBody:
         content:
-          multipart/form-data:
-            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
           application/json:
-            schema:
-              type: object
-              properties:
-                files:
-                  type: array
-                  items: {type: string, format: binary}
-              required: [files]
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-                uniqueItems: true
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications/withdraw/{applicationId}:
     put:
       tags: [application-resource]
@@ -396,6 +359,43 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+  /api/applications/{applicationId}/documents/{documentType}:
+    post:
+      tags: [application-resource]
+      summary: Upload documents
+      operationId: uploadDocuments
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: documentType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
+          application/json:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items: {type: string, format: binary}
+              required: [files]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+                uniqueItems: true
   /api/applications/{applicationId}/ratings:
     get:
       tags: [rating-resource]
