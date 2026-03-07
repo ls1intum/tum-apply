@@ -76,7 +76,6 @@ class ApplicantRetentionJobIntegrationTest {
     private EntityManager entityManager;
 
     private ResearchGroup researchGroup;
-    private User professor;
     private RetentionTestContext ctx;
 
     @BeforeEach
@@ -91,7 +90,7 @@ class ApplicantRetentionJobIntegrationTest {
 
         School school = SchoolTestData.savedDefault(schoolRepository);
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository, DepartmentTestData.savedDefault(departmentRepository, school));
-        professor = UserTestData.saveProfessor(researchGroup, userRepository);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         ctx = new RetentionTestContext(
             applicationRepository,
             applicantRepository,
