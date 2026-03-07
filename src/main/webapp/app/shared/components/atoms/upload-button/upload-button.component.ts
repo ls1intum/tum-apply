@@ -75,13 +75,6 @@ export class UploadButtonComponent {
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
 
-  /**
-   * Entry point from PrimeNG when the user chooses one or more files.
-   *
-   * This method does not upload immediately. It first enforces the component's UX rules:
-   * - single-file inputs require an explicit replacement confirmation
-   * - duplicate visible filenames require confirmation before the old entry is replaced
-   */
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
 
@@ -188,12 +181,6 @@ export class UploadButtonComponent {
     this.pendingReplacementFiles.set([]);
   }
 
-  /**
-   * Uploads the currently staged files to the backend.
-   *
-   * This path is only used for immediate-upload mode. Deferred mode stops earlier in `processFiles`
-   * after updating the local placeholder rows and queued file list.
-   */
   async onUpload(): Promise<void> {
     const files: File[] | undefined = this.selectedFiles();
     if (!files || files.length === 0) return;
@@ -374,12 +361,6 @@ export class UploadButtonComponent {
     await this.onUpload();
   }
 
-  /**
-   * Reset the hidden native file input so selecting the same file again still triggers a browser change event.
-   *
-   * PrimeNG's own `clear()` does not reliably cover this edge case, so the component resets the DOM node
-   * directly after the current render cycle.
-   */
   private resetNativeFileInput(): void {
     // Use setTimeout to ensure DOM is updated
     setTimeout(() => {
