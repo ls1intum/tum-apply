@@ -13,6 +13,7 @@ import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { deepEqual } from 'app/core/util/deepequal-util';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
@@ -34,6 +35,22 @@ export type PersonalInformationData = {
   country?: SelectOption;
   postcode: string;
 };
+
+interface PersonalInformationSnapshot {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  gender?: string | number;
+  nationality?: string | number;
+  dateOfBirth: string;
+  website: string;
+  linkedIn: string;
+  street: string;
+  city: string;
+  country?: string | number;
+  postcode: string;
+}
 
 @Component({
   selector: 'jhi-personal-information-settings',
@@ -68,7 +85,15 @@ export class PersonalInformationSettingsComponent {
   });
 
   isValid = signal<boolean>(false);
-  hasChanges = signal<boolean>(false);
+  loadedProfile = signal<ApplicantDTO | null>(null);
+  initialDataSnapshot = signal<PersonalInformationSnapshot | null>(null);
+  hasChanges = computed(() => {
+    const initial = this.initialDataSnapshot();
+    if (initial == null) {
+      return false;
+    }
+    return !deepEqual(this.toSnapshot(this.data()), initial);
+  });
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
@@ -151,7 +176,6 @@ export class PersonalInformationSettingsComponent {
         ...selectFields,
         ...normalizedValue,
       });
-      this.hasChanges.set(true);
       this.isValid.set(form.valid);
     });
 
@@ -175,7 +199,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile());
+      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile('body', false, { transferCache: false }));
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
@@ -195,7 +219,9 @@ export class PersonalInformationSettingsComponent {
         postcode: profile.postalCode ?? '',
       };
 
+      this.loadedProfile.set(profile);
       this.data.set(personalInfo);
+      this.initialDataSnapshot.set(this.toSnapshot(personalInfo));
     } catch {
       this.toastService.showErrorKey('settings.personalInformation.loadFailed');
     }
@@ -206,7 +232,6 @@ export class PersonalInformationSettingsComponent {
       ...this.data(),
       dateOfBirth: $event ?? '',
     });
-    this.hasChanges.set(true);
   }
 
   updateSelect(field: keyof PersonalInformationData, value: SelectOption | undefined): void {
@@ -214,7 +239,6 @@ export class PersonalInformationSettingsComponent {
       ...this.data(),
       [field]: value,
     });
-    this.hasChanges.set(true);
   }
 
   async onSave(): Promise<void> {
@@ -257,9 +281,10 @@ export class PersonalInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      await firstValueFrom(this.applicationResourceService.updateApplicantProfile(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicationResourceService.updateApplicantPersonalInformation(applicantDTO));
+      this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.personalInformation.saved');
-      this.hasChanges.set(false);
+      this.initialDataSnapshot.set(this.toSnapshot(this.data()));
     } catch {
       this.toastService.showErrorKey('settings.personalInformation.saveFailed');
     }
@@ -267,6 +292,23 @@ export class PersonalInformationSettingsComponent {
 
   async onCancel(): Promise<void> {
     await this.loadPersonalInformation();
-    this.hasChanges.set(false);
+  }
+
+  private toSnapshot(data: PersonalInformationData): PersonalInformationSnapshot {
+    return {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      gender: data.gender?.value,
+      nationality: data.nationality?.value,
+      dateOfBirth: data.dateOfBirth,
+      website: data.website,
+      linkedIn: data.linkedIn,
+      street: data.street,
+      city: data.city,
+      country: data.country?.value,
+      postcode: data.postcode,
+    };
   }
 }

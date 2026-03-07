@@ -9,7 +9,7 @@
  */
 
 
-export interface UploadDocumentsRequest { 
+export interface UploadApplicantProfileDocumentsRequest { 
     files: Array<Blob>;
 }
 

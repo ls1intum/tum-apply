@@ -5,7 +5,8 @@
     "tabs": {
       "general": "General",
       "notifications": "Notifications",
-      "personalInformation": "Personal Information"
+      "personalInformation": "Personal Information",
+      "documents": "Documents"
     },
     "personalInformation": {
       "description": "Update your personal information here. \nYour saved data is used to prefill forms during the application process.",
@@ -57,6 +58,30 @@
         "blossom": "Light Blossom",
         "aquabloom": "Light AquaBloom",
         "system": "System"
+      }
+    },
+    "documents": {
+      "description": "Upload and manage your documents here. \nYour saved documents are used to prefill forms during the application process.",
+      "sections": {
+        "bachelor": "Bachelor Studies",
+        "master": "Master Studies",
+        "additionalDocuments": "Additional Documents"
+      },
+      "labels": {
+        "bachelorCertificate": "Bachelor Certificate",
+        "masterCertificate": "Master Certificate"
+      },
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load documents. Please try again."
+      },
+      "saved": {
+        "summary": "Successfully saved",
+        "detail": "Documents saved successfully. Changes will be applied to your next application."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to save documents. Please try again."
       }
     }
   }
