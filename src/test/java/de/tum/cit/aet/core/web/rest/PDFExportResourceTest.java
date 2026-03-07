@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.web;
+package de.tum.cit.aet.core.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
