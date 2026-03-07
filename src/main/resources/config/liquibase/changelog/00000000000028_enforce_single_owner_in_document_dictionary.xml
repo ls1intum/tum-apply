@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="028_enforce_single_owner_in_document_dictionary" author="codex">
+  <changeSet id="028_enforce_single_owner_in_document_dictionary" author="celine">
     <comment>
       Enforce that each document_dictionary row belongs to exactly one owner:
       applicant OR application OR custom_field_answer.
