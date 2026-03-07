@@ -7,10 +7,12 @@ import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -190,6 +192,34 @@ public class ImageService {
     @Transactional
     public void deleteProfilePicturesByUserId(UUID userId) {
         deleteProfilePicturesForUserId(userId);
+    }
+
+    /**
+     * Ensures the provided avatar URL references a persisted profile picture owned by the given user.
+     *
+     * @param userId the owner that must match the stored profile picture
+     * @param avatarUrl the avatar URL to validate
+     * @throws BadRequestException when the URL is not a stored profile image of the user
+     */
+    public void assertUserOwnsProfilePictureUrl(UUID userId, String avatarUrl) {
+        String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);
+        if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank() || !normalizedAvatarUrl.startsWith("/images/profiles/")) {
+            throw new BadRequestException("Avatar URL must reference an existing profile picture owned by the current user");
+        }
+
+        if (!imageRepository.existsProfileImageByUserIdAndUrl(userId, normalizedAvatarUrl)) {
+            throw new BadRequestException("Avatar URL must reference an existing profile picture owned by the current user");
+        }
+    }
+
+    /**
+     * Ensures the provided avatar URL references a persisted profile picture owned by the current user.
+     *
+     * @param avatarUrl the avatar URL to validate
+     * @throws BadRequestException when the URL is not a stored profile image of the current user
+     */
+    public void assertCurrentUserOwnsProfilePictureUrl(String avatarUrl) {
+        assertUserOwnsProfilePictureUrl(currentUserService.getUserId(), avatarUrl);
     }
 
     /**

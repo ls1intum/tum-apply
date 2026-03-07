@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -291,6 +292,41 @@ class ImageServiceTest {
             assertThat(testUser.getAvatar()).isNull();
             assertThat(Files.exists(existingFile)).isFalse();
             verify(imageRepository).delete(existingImage);
+        }
+    }
+
+    @Nested
+    class AssertCurrentUserOwnsProfilePictureUrl {
+
+        @Test
+        void shouldAcceptStoredProfilePictureOwnedByCurrentUser() {
+            String avatarUrl = "/images/profiles/avatar.jpg";
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(imageRepository.existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl)).thenReturn(true);
+
+            assertThatCode(() -> imageService.assertCurrentUserOwnsProfilePictureUrl(avatarUrl)).doesNotThrowAnyException();
+
+            verify(imageRepository).existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl);
+        }
+
+        @Test
+        void shouldRejectNonProfileImageUrls() {
+            assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl("https://example.com/avatar.png"))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Avatar URL must reference an existing profile picture owned by the current user");
+
+            verify(imageRepository, never()).existsProfileImageByUserIdAndUrl(any(UUID.class), anyString());
+        }
+
+        @Test
+        void shouldRejectProfileImageUrlsNotOwnedByCurrentUser() {
+            String avatarUrl = "/images/profiles/other-user.jpg";
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(imageRepository.existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl)).thenReturn(false);
+
+            assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl(avatarUrl))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Avatar URL must reference an existing profile picture owned by the current user");
         }
     }
 

@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -30,11 +31,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final ImageService imageService;
     private static final Duration LAST_ACTIVITY_UPDATE_THRESHOLD = Duration.ofHours(24);
 
-    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository) {
+    public UserService(
+        UserRepository userRepository,
+        UserResearchGroupRoleRepository userResearchGroupRoleRepository,
+        ImageService imageService
+    ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
+        this.imageService = imageService;
     }
 
     /**
@@ -137,7 +144,12 @@ public class UserService {
     public void updateAvatar(String userId, String avatarUrl) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);
-        user.setAvatar(normalizedAvatarUrl != null && !normalizedAvatarUrl.isBlank() ? normalizedAvatarUrl : null);
+        if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
+            user.setAvatar(null);
+        } else {
+            imageService.assertUserOwnsProfilePictureUrl(user.getUserId(), normalizedAvatarUrl);
+            user.setAvatar(normalizedAvatarUrl);
+        }
         userRepository.save(user);
     }
 

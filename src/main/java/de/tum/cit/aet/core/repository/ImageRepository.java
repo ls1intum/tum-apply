@@ -100,6 +100,16 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<ProfileImage> findProfileImagesByUserId(@Param("userId") UUID userId);
 
     /**
+     * Checks whether the given user owns a persisted profile image with the provided URL.
+     *
+     * @param userId the owner of the profile image
+     * @param url the exact profile image URL
+     * @return {@code true} when the URL belongs to a stored profile image of that user
+     */
+    @Query("SELECT COUNT(pi) > 0 FROM ProfileImage pi WHERE pi.uploadedBy.userId = :userId AND pi.url = :url")
+    boolean existsProfileImageByUserIdAndUrl(@Param("userId") UUID userId, @Param("url") String url);
+
+    /**
      * Updates all {@link Image} records uploaded by the given {@code user} to associate them with the
      * provided {@code deletedUser} instead of the original user.
      *

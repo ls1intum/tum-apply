@@ -6,6 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.core.domain.ProfileImage;
+import de.tum.cit.aet.core.dto.ApiError;
+import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -19,6 +22,7 @@ import de.tum.cit.aet.usermanagement.web.UserResource.UpdatePasswordDTO;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +48,9 @@ public class UserResourceTest extends AbstractResourceTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ImageRepository imageRepository;
 
     @Autowired
     MvcTestClient api;
@@ -206,13 +213,40 @@ public class UserResourceTest extends AbstractResourceTest {
 
         @Test
         void returnsNoContentAndUpdatesAvatarWhenAvatarUrlIsPresent() {
-            UpdateAvatarDTO dto = new UpdateAvatarDTO("/images/profiles/avatar.jpg");
+            ProfileImage profileImage = imageRepository.save(ImageTestData.newProfilePicture(currentUser));
+            UpdateAvatarDTO dto = new UpdateAvatarDTO(profileImage.getUrl());
 
             api
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(API_BASE_PATH + "/avatar", dto, Void.class, 204);
 
             verify(userService).updateAvatar(currentUser.getUserId().toString(), dto.avatarUrl());
+        }
+
+        @Test
+        void returns400WhenAvatarUrlIsExternal() {
+            UpdateAvatarDTO dto = new UpdateAvatarDTO("https://example.com/tracker.png");
+
+            ApiError error = api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/avatar", dto, ApiError.class, 400);
+
+            assertThat(error.message()).isEqualTo("Avatar URL must reference an existing profile picture owned by the current user");
+            assertThat(userRepository.findById(currentUser.getUserId()).orElseThrow().getAvatar()).isNull();
+        }
+
+        @Test
+        void returns400WhenAvatarUrlReferencesAnotherUsersProfilePicture() {
+            User otherUser = UserTestData.createUserWithoutResearchGroup(userRepository, "other.user@tum.de", "Other", "User", "xy12zzz");
+            ProfileImage otherUsersProfileImage = imageRepository.save(ImageTestData.newProfilePicture(otherUser));
+            UpdateAvatarDTO dto = new UpdateAvatarDTO(otherUsersProfileImage.getUrl());
+
+            ApiError error = api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/avatar", dto, ApiError.class, 400);
+
+            assertThat(error.message()).isEqualTo("Avatar URL must reference an existing profile picture owned by the current user");
+            assertThat(userRepository.findById(currentUser.getUserId()).orElseThrow().getAvatar()).isNull();
         }
     }
 }

@@ -84,6 +84,7 @@ public class UserResource {
 
     /**
      * Allows the currently authenticated user to update their avatar URL.
+     * Non-empty values must point to a stored profile picture owned by the current user.
      *
      * @param jwt of the authenticated user
      * @param dto contains the new avatar URL (or null/blank to remove)
@@ -96,6 +97,7 @@ public class UserResource {
         if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
             imageService.deleteCurrentUserProfilePicture();
         } else {
+            imageService.assertCurrentUserOwnsProfilePictureUrl(normalizedAvatarUrl);
             userService.updateAvatar(jwt.getSubject(), normalizedAvatarUrl);
         }
         return ResponseEntity.noContent().build();
