@@ -201,11 +201,11 @@
           "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
         },
         "userNotFound": {
-          "summary": "Benutzer:in nicht gefunden",
-          "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+          "summary": "Person nicht gefunden",
+          "detail": "Es wurde keine Person mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
         },
         "userAlreadyMember": {
-          "summary": "Benutzer:in bereits zugeordnet",
+          "summary": "Person bereits zugeordnet",
           "detail": "Die ausgewählte Person ist bereits Mitglied einer anderen Forschungsgruppe."
         }
       },
@@ -270,9 +270,9 @@
         "placeholder": "z.B. ab12cde"
       },
       "professorSelect": {
-        "searchPlaceholder": "Professor:in nach Name oder E-Mail suchen...",
+        "searchPlaceholder": "Professoren nach Name oder E-Mail suchen...",
         "singleEntity": "Professor:in",
-        "multipleEntities": "Professor:innen",
+        "multipleEntities": "Professoren",
         "noResults": "Keine verfügbaren Professor:innen gefunden.",
         "requiredError": "Bitte wähle eine:n Professor:in aus.",
         "loadMore": "Mehr laden",
