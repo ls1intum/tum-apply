@@ -8,13 +8,10 @@ import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.Constants;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
-import de.tum.cit.aet.core.retention.ApplicantRetentionJob;
-import de.tum.cit.aet.core.retention.ApplicantRetentionService;
-import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.interview.domain.Interviewee;
 
 @AnalyzeClasses(packagesOf = TumApplyApp.class, importOptions = DoNotIncludeTests.class)
 class TechnicalStructureTest {
@@ -28,7 +25,7 @@ class TechnicalStructureTest {
         .optionalLayer("Service").definedBy("..service..", "..retention..")
         .layer("Security").definedBy("..security..")
         .optionalLayer("Persistence").definedBy("..repository..")
-        .layer("Domain").definedBy("..domain..", "..interview..")
+        .layer("Domain").definedBy("..domain..")
         .optionalLayer("Dto").definedBy("..dto..")
 
         .whereLayer("Config").mayNotBeAccessedByAnyLayer()
@@ -42,12 +39,7 @@ class TechnicalStructureTest {
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
             Constants.class,
             ApplicationProperties.class,
+            ApplicantRetentionProperties.class,
             UserRetentionProperties.class
-        ))
-        .ignoreDependency(belongToAnyOf(Interviewee.class, InterviewProcess.class), alwaysTrue())
-        .ignoreDependency(alwaysTrue(), belongToAnyOf(Interviewee.class, InterviewProcess.class))
-        .ignoreDependency(belongToAnyOf(ApplicantRetentionService.class), alwaysTrue())
-        .ignoreDependency(alwaysTrue(), belongToAnyOf(ApplicantRetentionService.class))
-        .ignoreDependency(belongToAnyOf(ApplicantRetentionJob.class), alwaysTrue())
-        .ignoreDependency(alwaysTrue(), belongToAnyOf(ApplicantRetentionJob.class));
+        ));
 }
