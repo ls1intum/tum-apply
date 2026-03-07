@@ -77,7 +77,7 @@
         [attr.aria-expanded]="isProfileMenuOpen()"
         aria-haspopup="menu"
       >
-        <fa-icon class="flex justify-center w-7 h-7 items-center rounded-full bg-primary-default text-white" icon="user" />
+        <jhi-user-avatar [fullName]="user()?.name" size="md" />
         <span class="font-medium">{{ user()?.name }}</span>
         <fa-icon
           class="text-xs text-text-default transition-transform duration-300"

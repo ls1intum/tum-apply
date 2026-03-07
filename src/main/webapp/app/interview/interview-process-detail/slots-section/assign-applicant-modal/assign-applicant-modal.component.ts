@@ -14,6 +14,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/date-time.util';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 // Modal component for assigning an applicant to an interview slot.
 // Displays available interviewees and allows single selection for slot assignment.
@@ -30,6 +31,7 @@ import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-t
     ProgressSpinnerModule,
     CheckboxComponent,
     DynamicTableComponent,
+    UserAvatarComponent,
   ],
   templateUrl: './assign-applicant-modal.component.html',
 })
