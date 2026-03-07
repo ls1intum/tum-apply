@@ -313,14 +313,13 @@ describe('UploadButtonComponent', () => {
       // 2. Select same file
       const newFile = new File(['content'], 'existing.pdf');
       const uploadSpy = vi.spyOn(component, 'onUpload');
-      const confirmDialogSpy = vi.spyOn(component.duplicateConfirmDialog()!, 'confirm');
 
       await component.onFileSelected({ currentFiles: [newFile] } as FileSelectEvent);
 
       // Advance timers to execute setTimeout
       await vi.runAllTimersAsync();
 
-      expect(confirmDialogSpy).toHaveBeenCalled();
+      expect(component.showDuplicateDialog()).toBe(true);
       expect(component.pendingDuplicateFile()).toBe(newFile);
       expect(component.duplicateFileName()).toBe('existing.pdf');
       expect(uploadSpy).not.toHaveBeenCalled();
