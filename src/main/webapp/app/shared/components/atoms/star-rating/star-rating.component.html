@@ -1,0 +1,20 @@
+<div class="flex items-center gap-2">
+  @if (rating() !== undefined) {
+    <div class="flex gap-0.5">
+      @for (star of starStates(); track $index) {
+        <fa-icon
+          [icon]="star.half ? ['fas', 'star-half-stroke'] : ['fas', 'star']"
+          [class]="size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base'"
+          [style.color]="star.filled || star.half ? starColor() : 'var(--p-background-surface-alt)'"
+        />
+      }
+    </div>
+    @if (showValue()) {
+      <span [class]="'text-text-primary ' + (size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base')">{{
+        formattedRating()
+      }}</span>
+    }
+  } @else {
+    <span class="text-sm text-text-disabled italic">{{ 'evaluation.noRatingsYet' | translate }}</span>
+  }
+</div>
