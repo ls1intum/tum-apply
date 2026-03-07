@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -91,13 +92,13 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<DepartmentImage> findOrphanedDepartmentImages();
 
     /**
-     * Finds all profile images associated with the given user.
+     * Finds the profile image associated with the given user.
      *
-     * @param userId the ID of the user whose profile images should be returned
-     * @return all profile images for the given user
+     * @param userId the ID of the user whose profile image should be returned
+     * @return the stored profile image for the given user, if present
      */
     @Query("SELECT pi FROM ProfileImage pi WHERE pi.uploadedBy.userId = :userId")
-    List<ProfileImage> findProfileImagesByUserId(@Param("userId") UUID userId);
+    Optional<ProfileImage> findProfileImageByUserId(@Param("userId") UUID userId);
 
     /**
      * Checks whether the given user owns a persisted profile image with the provided URL.

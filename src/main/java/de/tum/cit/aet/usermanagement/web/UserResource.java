@@ -45,6 +45,7 @@ public class UserResource {
     @Authenticated
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
+        log.info("GET /api/users/me - Retrieving current user for subject={}", jwt.getSubject());
         User user = authenticationService.provisionUserIfMissing(jwt);
 
         if (user == null) {
@@ -64,6 +65,7 @@ public class UserResource {
     @Authenticated
     @PutMapping("/name")
     public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserNameDTO updateUserNameDTO) {
+        log.info("PUT /api/users/name - Updating user name for subject={}", jwt.getSubject());
         userService.updateNames(jwt.getSubject(), updateUserNameDTO.firstName(), updateUserNameDTO.lastName());
         return ResponseEntity.noContent().build();
     }
@@ -78,6 +80,7 @@ public class UserResource {
     @Authenticated
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
+        log.info("PUT /api/users/password - Updating password for subject={}", jwt.getSubject());
         boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
         return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
     }
@@ -94,6 +97,11 @@ public class UserResource {
     @PutMapping("/avatar")
     public ResponseEntity<Void> updateAvatar(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateAvatarDTO dto) {
         String normalizedAvatarUrl = StringUtil.normalize(dto.avatarUrl(), false);
+        log.info(
+            "PUT /api/users/avatar - {} avatar for subject={}",
+            normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank() ? "Removing" : "Updating",
+            jwt.getSubject()
+        );
         if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
             imageService.deleteCurrentUserProfilePicture();
         } else {
@@ -116,7 +124,12 @@ public class UserResource {
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @RequestParam(required = false) String searchQuery
     ) {
-        log.info("Fetching available users for research group with search query: {}", searchQuery);
+        log.info(
+            "GET /api/users/available-for-research-group?pageNumber={}&pageSize={} - Fetching available users with searchQuery={}",
+            pageDTO.pageNumber(),
+            pageDTO.pageSize(),
+            searchQuery
+        );
         List<KeycloakUserDTO> users = keycloakUserService.getAllUsers(searchQuery, pageDTO);
         long total = keycloakUserService.countUsers(searchQuery);
         return ResponseEntity.ok(new PageResponseDTO<KeycloakUserDTO>(users, total));

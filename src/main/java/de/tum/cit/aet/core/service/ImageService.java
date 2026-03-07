@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -165,7 +166,7 @@ public class ImageService {
     @Transactional
     public ProfileImage uploadProfilePicture(MultipartFile file) {
         User uploader = currentUserService.getUser();
-        deleteProfilePicturesForUser(uploader);
+        deleteProfilePictureForUser(uploader);
         String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
 
         ProfileImage image = new ProfileImage();
@@ -180,18 +181,18 @@ public class ImageService {
      */
     @Transactional
     public void deleteCurrentUserProfilePicture() {
-        deleteProfilePicturesForUser(currentUserService.getUser());
+        deleteProfilePictureForUser(currentUserService.getUser());
     }
 
     /**
-     * Deletes all stored profile pictures for the given user ID.
+     * Deletes the stored profile picture for the given user ID.
      * Intended for cleanup flows such as retention processing.
      *
-     * @param userId the user whose stored profile pictures should be removed
+     * @param userId the user whose stored profile picture should be removed
      */
     @Transactional
-    public void deleteProfilePicturesByUserId(UUID userId) {
-        deleteProfilePicturesForUserId(userId);
+    public void deleteProfilePictureByUserId(UUID userId) {
+        deleteStoredProfilePictureByUserId(userId);
     }
 
     /**
@@ -238,16 +239,19 @@ public class ImageService {
         image.setUploadedBy(uploader);
     }
 
-    private void deleteProfilePicturesForUser(User user) {
+    private void deleteProfilePictureForUser(User user) {
         user.setAvatar(null);
-        deleteProfilePicturesForUserId(user.getUserId());
+        deleteStoredProfilePictureByUserId(user.getUserId());
     }
 
-    private void deleteProfilePicturesForUserId(UUID userId) {
-        for (ProfileImage existingImage : imageRepository.findProfileImagesByUserId(userId)) {
-            deleteImageFile(existingImage);
-            imageRepository.delete(existingImage);
+    private void deleteStoredProfilePictureByUserId(UUID userId) {
+        Optional<ProfileImage> existingImage = imageRepository.findProfileImageByUserId(userId);
+        if (existingImage.isEmpty()) {
+            return;
         }
+
+        deleteImageFile(existingImage.get());
+        imageRepository.delete(existingImage.get());
     }
 
     /**

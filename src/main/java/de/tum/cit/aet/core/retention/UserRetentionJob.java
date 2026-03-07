@@ -69,7 +69,16 @@ public class UserRetentionJob {
      */
     @Scheduled(cron = "${user.retention.cron:0 0 3 * * *}", zone = "UTC")
     public void warnUserOfDataDeletion() {
+        if (!Boolean.TRUE.equals(properties.getEnabled())) {
+            return;
+        }
+
         Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
+        if (inactiveDays == null || inactiveDays <= 0) {
+            log.warn("User retention enabled, but inactiveDaysBeforeDeletion is not configured (value={})", inactiveDays);
+            return;
+        }
+
         LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime cutoff = nowUtc.minusDays(inactiveDays);
         userRetentionService.warnUserOfDataDeletion(cutoff);

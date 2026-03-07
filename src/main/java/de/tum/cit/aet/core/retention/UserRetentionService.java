@@ -260,7 +260,7 @@ public class UserRetentionService {
         // Common data deletion/anonymization for all users
         emailSettingRepository.deleteByUser(user);
         UUID resolvedUserId = user.getUserId();
-        imageService.deleteProfilePicturesByUserId(resolvedUserId);
+        imageService.deleteProfilePictureByUserId(resolvedUserId);
         userSettingRepository.deleteByUser(user);
         userResearchGroupRoleRepository.deleteByUserId(resolvedUserId);
         userRepository.deleteByUserId(resolvedUserId);

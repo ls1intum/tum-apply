@@ -262,7 +262,7 @@ class ImageServiceTest {
             Files.writeString(existingFile, "old-image");
 
             when(currentUserService.getUser()).thenReturn(testUser);
-            when(imageRepository.findProfileImagesByUserId(TEST_USER_ID)).thenReturn(List.of(existingImage));
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.of(existingImage));
             when(imageRepository.save(any(ProfileImage.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             ProfileImage result = imageService.uploadProfilePicture(validFile);
@@ -285,7 +285,7 @@ class ImageServiceTest {
             Files.writeString(existingFile, "old-image");
 
             when(currentUserService.getUser()).thenReturn(testUser);
-            when(imageRepository.findProfileImagesByUserId(TEST_USER_ID)).thenReturn(List.of(existingImage));
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.of(existingImage));
 
             imageService.deleteCurrentUserProfilePicture();
 
