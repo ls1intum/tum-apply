@@ -203,6 +203,10 @@
         "userNotFound": {
           "summary": "User Not Found",
           "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
+        },
+        "userAlreadyMember": {
+          "summary": "User Already Assigned",
+          "detail": "The selected user is already a member of another research group."
         }
       },
       "success": {
@@ -264,6 +268,15 @@
       "tumID": {
         "label": "Professor TUM-ID",
         "placeholder": "e.g. ab12cde"
+      },
+      "professorSelect": {
+        "searchPlaceholder": "Search professor by name or email...",
+        "singleEntity": "Professor",
+        "multipleEntities": "Professors",
+        "noResults": "No available professors found.",
+        "requiredError": "Please select a professor.",
+        "loadMore": "Load more",
+        "changeButton": "Change selection"
       },
       "createButton": "Create Research Group",
       "createDialog": {

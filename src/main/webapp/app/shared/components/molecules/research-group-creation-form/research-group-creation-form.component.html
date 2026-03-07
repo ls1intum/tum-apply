@@ -98,16 +98,108 @@
     ></h3>
 
     @if (mode() === 'admin') {
-      <div>
-        <jhi-string-input
-          label="researchGroup.adminView.tumID.label"
-          placeholder="researchGroup.adminView.tumID.placeholder"
-          [required]="true"
-          [model]="form.get('tumID')?.value"
-          [control]="form.get('tumID') ?? undefined"
-          icon="id-card"
-          [shouldTranslate]="true"
+      <div class="flex flex-col gap-3">
+        <jhi-search-filter-sort-bar
+          [searchText]="'researchGroup.adminView.professorSelect.searchPlaceholder' | translate"
+          [fullWidth]="true"
+          [showRecords]="adminProfessorSearchQuery().trim().length >= MIN_ADMIN_SEARCH_LENGTH"
+          [totalRecords]="adminProfessorTotalCount()"
+          [singleEntity]="'researchGroup.adminView.professorSelect.singleEntity' | translate"
+          [multipleEntities]="'researchGroup.adminView.professorSelect.multipleEntities' | translate"
+          (searchOutput)="onAdminProfessorSearch($event)"
         />
+
+        @if (selectedAdminProfessor(); as selectedProfessor) {
+          <div class="rounded-lg border border-border-default p-3 bg-background-surface">
+            <div class="font-medium text-text-primary">{{ selectedProfessor.firstName }} {{ selectedProfessor.lastName }}</div>
+            <div class="text-sm text-text-secondary">{{ selectedProfessor.email }}</div>
+            <div class="text-sm text-text-secondary">{{ selectedProfessor.universityId }}</div>
+            <div class="mt-2">
+              <jhi-button
+                type="button"
+                size="xs"
+                variant="outlined"
+                severity="secondary"
+                [shouldTranslate]="true"
+                label="researchGroup.adminView.professorSelect.changeButton"
+                (click)="clearSelectedAdminProfessor()"
+              />
+            </div>
+          </div>
+        }
+
+        @if (!selectedAdminProfessor()) {
+          <div class="flex flex-col border border-border-default rounded-lg overflow-y-auto max-h-64">
+            @if (isLoadingAdminUsers()) {
+              <div class="flex items-center justify-center h-24 bg-background-default rounded-lg">
+                <p-progressSpinner styleClass="w-8 h-8 text-text-primary" />
+              </div>
+            }
+
+            @if (
+              !isLoadingAdminUsers() &&
+              adminProfessorSearchQuery().trim().length > 0 &&
+              adminProfessorSearchQuery().trim().length < MIN_ADMIN_SEARCH_LENGTH
+            ) {
+              <div class="p-4 text-sm text-center text-text-secondary">
+                {{ 'researchGroup.members.emptySearch' | translate: { minLength: MIN_ADMIN_SEARCH_LENGTH } }}
+              </div>
+            }
+
+            @if (
+              !isLoadingAdminUsers() &&
+              adminProfessorSearchQuery().trim().length >= MIN_ADMIN_SEARCH_LENGTH &&
+              adminProfessorCandidates().length === 0
+            ) {
+              <div class="p-4 text-sm text-center text-text-secondary">
+                {{ 'researchGroup.adminView.professorSelect.noResults' | translate }}
+              </div>
+            }
+
+            @if (!isLoadingAdminUsers() && adminProfessorCandidates().length > 0) {
+              @for (user of adminProfessorCandidates(); track user.id) {
+                <div
+                  class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
+                  [class.bg-background-surface-alt]="isAdminProfessorSelected(user)"
+                  [class.hover:bg-background-surface]="!isAdminProfessorSelected(user)"
+                  (click)="selectAdminProfessor(user)"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-default flex items-center justify-center text-text-on-primary font-semibold"
+                  >
+                    {{ user.firstName ? user.firstName.charAt(0) : '' }}{{ user.lastName ? user.lastName.charAt(0) : '' }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
+                    <div class="text-sm text-text-secondary">{{ user.email }}</div>
+                    <div class="text-sm text-text-secondary">{{ user.universityId }}</div>
+                  </div>
+                </div>
+              }
+
+              @if (hasMoreAdminProfessorCandidates()) {
+                <div class="p-3 border-t border-border-default bg-background-default">
+                  <jhi-button
+                    type="button"
+                    [fullWidth]="true"
+                    variant="outlined"
+                    severity="secondary"
+                    [shouldTranslate]="true"
+                    label="researchGroup.adminView.professorSelect.loadMore"
+                    [disabled]="isLoadingAdminUsers()"
+                    (click)="onLoadMoreAdminProfessors()"
+                  />
+                </div>
+              }
+            }
+          </div>
+        }
+
+        @if (form.get('tumID')?.invalid && form.get('tumID')?.touched && !selectedAdminProfessor()) {
+          <p class="m-0 text-sm text-status-danger" jhiTranslate="researchGroup.adminView.professorSelect.requiredError"></p>
+        }
       </div>
     }
 

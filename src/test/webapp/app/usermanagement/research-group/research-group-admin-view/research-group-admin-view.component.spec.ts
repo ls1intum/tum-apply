@@ -398,6 +398,24 @@ describe('ResearchGroupAdminView', () => {
       expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
     });
 
+    it('should reload when create dialog returns created group payload', async () => {
+      const mockDialogRef = {
+        onClose: {
+          subscribe: vi.fn((callback: (result: unknown) => void) => {
+            callback({ id: 'new-rg-id' });
+          }),
+        },
+      } as unknown as DynamicDialogRef;
+
+      mockDialogService.open.mockReturnValue(mockDialogRef);
+      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
+
+      component.onCreateResearchGroup();
+      await Promise.resolve();
+
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+    });
+
     it('should not reload when create dialog is cancelled', async () => {
       const mockDialogRef = {
         onClose: {

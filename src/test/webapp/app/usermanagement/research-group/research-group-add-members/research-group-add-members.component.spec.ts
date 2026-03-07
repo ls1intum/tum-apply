@@ -18,6 +18,7 @@ import {
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
 import { KeycloakUserDTO } from 'app/generated';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ResearchGroupAddMembersComponent', () => {
   let component: ResearchGroupAddMembersComponent;
@@ -77,6 +78,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       providers: [
         { provide: UserResourceApiService, useValue: mockUserService },
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
+        provideHttpClientMock(),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideToastServiceMock(mockToastService),
@@ -316,9 +318,12 @@ describe('ResearchGroupAddMembersComponent', () => {
         { id: 'mock-2', firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@mytum.de' },
       ];
 
-      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      const componentWithMocks = component as unknown as {
+        USE_MOCK_USERS: boolean;
+        mockUsers: { set: (value: KeycloakUserDTO[] | null) => void };
+      };
       componentWithMocks.USE_MOCK_USERS = true;
-      componentWithMocks.MOCK_USERS = mockUsers;
+      componentWithMocks.mockUsers.set(mockUsers);
 
       await component.loadAvailableUsers('alice');
 
@@ -334,9 +339,12 @@ describe('ResearchGroupAddMembersComponent', () => {
         { id: 'mock-2', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
       ];
 
-      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      const componentWithMocks = component as unknown as {
+        USE_MOCK_USERS: boolean;
+        mockUsers: { set: (value: KeycloakUserDTO[] | null) => void };
+      };
       componentWithMocks.USE_MOCK_USERS = true;
-      componentWithMocks.MOCK_USERS = mockUsers;
+      componentWithMocks.mockUsers.set(mockUsers);
 
       await component.loadAvailableUsers('alice');
 
@@ -356,9 +364,12 @@ describe('ResearchGroupAddMembersComponent', () => {
         { id: 'mock-6', firstName: 'Farid', lastName: 'Khan', email: 'farid.khan@mytum.de' },
       ];
 
-      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      const componentWithMocks = component as unknown as {
+        USE_MOCK_USERS: boolean;
+        mockUsers: { set: (value: KeycloakUserDTO[] | null) => void };
+      };
       componentWithMocks.USE_MOCK_USERS = true;
-      componentWithMocks.MOCK_USERS = mockUsers;
+      componentWithMocks.mockUsers.set(mockUsers);
 
       component.pageSize.set(2);
       component.page.set(1);
