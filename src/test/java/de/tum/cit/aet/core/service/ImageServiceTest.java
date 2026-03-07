@@ -6,8 +6,10 @@ import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -25,6 +27,8 @@ import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
@@ -63,10 +68,12 @@ class ImageServiceTest {
     private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
     private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
     private static final UUID TEST_IMAGE_ID = UUID.randomUUID();
-    private static final String IMAGE_ROOT = "/tmp/test-images";
     private static final long MAX_FILE_SIZE = 5242880L; // 5MB
     private static final int MAX_WIDTH = 4096;
     private static final int MAX_HEIGHT = 4096;
+
+    @TempDir
+    Path tempDir;
 
     private User testUser;
     private School testSchool;
@@ -81,7 +88,7 @@ class ImageServiceTest {
             departmentRepository,
             schoolRepository,
             currentUserService,
-            IMAGE_ROOT,
+            tempDir.toString(),
             MAX_FILE_SIZE,
             MAX_WIDTH,
             MAX_HEIGHT
@@ -231,6 +238,95 @@ class ImageServiceTest {
             assertThatThrownBy(() -> imageService.uploadDefaultImage(validFile, TEST_DEPARTMENT_ID))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Department");
+        }
+    }
+
+    @Nested
+    class UploadProfilePicture {
+
+        private MultipartFile validFile;
+
+        @BeforeEach
+        void setUpTestFile() throws IOException {
+            BufferedImage validImage = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+            byte[] imageBytes = createImageBytes(validImage);
+            validFile = new MockMultipartFile("file", "profile.jpg", "image/jpeg", imageBytes);
+        }
+
+        @Test
+        void shouldDeleteExistingProfilePictureFileBeforeSavingNewOne() throws IOException {
+            ProfileImage existingImage = ImageTestData.newProfilePicture(testUser);
+            existingImage.setImageId(UUID.randomUUID());
+            Path existingFile = tempDir.resolve(existingImage.getUrl().replace("/images/", ""));
+            Files.createDirectories(existingFile.getParent());
+            Files.writeString(existingFile, "old-image");
+
+            when(currentUserService.getUser()).thenReturn(testUser);
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.of(existingImage));
+            when(imageRepository.save(any(ProfileImage.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            ProfileImage result = imageService.uploadProfilePicture(validFile);
+
+            assertThat(Files.exists(existingFile)).isFalse();
+            assertThat(testUser.getAvatar()).isEqualTo(result.getUrl());
+            assertThat(Files.exists(tempDir.resolve(result.getUrl().replace("/images/", "")))).isTrue();
+            verify(imageRepository).delete(existingImage);
+            verify(imageRepository).save(any(ProfileImage.class));
+        }
+
+        @Test
+        void shouldDeleteCurrentUsersProfilePictureAndClearAvatar() throws IOException {
+            ProfileImage existingImage = ImageTestData.newProfilePicture(testUser);
+            existingImage.setImageId(UUID.randomUUID());
+            testUser.setAvatar(existingImage.getUrl());
+
+            Path existingFile = tempDir.resolve(existingImage.getUrl().replace("/images/", ""));
+            Files.createDirectories(existingFile.getParent());
+            Files.writeString(existingFile, "old-image");
+
+            when(currentUserService.getUser()).thenReturn(testUser);
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.of(existingImage));
+
+            imageService.deleteCurrentUserProfilePicture();
+
+            assertThat(testUser.getAvatar()).isNull();
+            assertThat(Files.exists(existingFile)).isFalse();
+            verify(imageRepository).delete(existingImage);
+        }
+    }
+
+    @Nested
+    class AssertCurrentUserOwnsProfilePictureUrl {
+
+        @Test
+        void shouldAcceptStoredProfilePictureOwnedByCurrentUser() {
+            String avatarUrl = "/images/profiles/avatar.jpg";
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(imageRepository.existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl)).thenReturn(true);
+
+            assertThatCode(() -> imageService.assertCurrentUserOwnsProfilePictureUrl(avatarUrl)).doesNotThrowAnyException();
+
+            verify(imageRepository).existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl);
+        }
+
+        @Test
+        void shouldRejectNonProfileImageUrls() {
+            assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl("https://example.com/avatar.png"))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Avatar URL must reference an existing profile picture owned by the current user");
+
+            verify(imageRepository, never()).existsProfileImageByUserIdAndUrl(any(UUID.class), anyString());
+        }
+
+        @Test
+        void shouldRejectProfileImageUrlsNotOwnedByCurrentUser() {
+            String avatarUrl = "/images/profiles/other-user.jpg";
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(imageRepository.existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl)).thenReturn(false);
+
+            assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl(avatarUrl))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Avatar URL must reference an existing profile picture owned by the current user");
         }
     }
 

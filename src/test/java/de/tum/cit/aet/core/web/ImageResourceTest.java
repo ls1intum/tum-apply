@@ -7,6 +7,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -498,6 +499,47 @@ public class ImageResourceTest extends AbstractResourceTest {
             assertThat(result).isNotNull();
             assertThat(result.imageId()).isNotNull();
             assertThat(result.url()).endsWith(".png"); // Should default to .png based on mime type
+        }
+    }
+
+    @Nested
+    class UploadProfilePictureTests {
+
+        @Test
+        void uploadProfilePictureSuccessfullyUploadsValidImageAndUpdatesAvatar() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("profile-picture.jpg");
+
+            ImageDTO result = api
+                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
+                .multipartPostAndRead(
+                    API_BASE_PATH + "/upload/profile-picture",
+                    List.of(validImageFile),
+                    new TypeReference<ImageDTO>() {},
+                    201
+                );
+
+            assertThat(result).isNotNull();
+            assertThat(result.imageId()).isNotNull();
+            assertThat(result.imageType()).isEqualTo(ImageType.PROFILE_PICTURE);
+            assertThat(result.uploadedById()).isEqualTo(professorUser.getUserId());
+
+            Image savedImage = imageRepository.findById(result.imageId()).orElse(null);
+            assertThat(savedImage).isInstanceOf(ProfileImage.class);
+
+            User reloadedUser = userRepository.findById(professorUser.getUserId()).orElseThrow();
+            assertThat(reloadedUser.getAvatar()).isEqualTo(result.url());
+        }
+
+        @Test
+        void uploadProfilePictureRequiresAuthentication() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("profile-picture.jpg");
+
+            api.multipartPostAndRead(
+                API_BASE_PATH + "/upload/profile-picture",
+                List.of(validImageFile),
+                new TypeReference<ImageDTO>() {},
+                401
+            );
         }
     }
 

@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
@@ -72,6 +74,19 @@ describe('JobCardComponent', () => {
       fixture.detectChanges();
 
       expect(component.formattedContractDuration()).toBeUndefined();
+    });
+  });
+
+  describe('Avatar Rendering', () => {
+    it('should pass the professor avatar URL to the user avatar component', () => {
+      fixture.componentRef.setInput('professor', 'Prof. Jane Doe');
+      fixture.componentRef.setInput('avatarUrl', '/images/profiles/prof-jane.jpg');
+      fixture.detectChanges();
+
+      const avatarComponent = fixture.debugElement.query(By.directive(UserAvatarComponent)).componentInstance as UserAvatarComponent;
+
+      expect(avatarComponent.fullName()).toBe('Prof. Jane Doe');
+      expect(avatarComponent.avatarUrl()).toBe('/images/profiles/prof-jane.jpg');
     });
   });
 });

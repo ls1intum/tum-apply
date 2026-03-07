@@ -1,7 +1,6 @@
 {
   "settings": {
     "header": "Einstellungen",
-
     "tabs": {
       "general": "Allgemein",
       "notifications": "Benachrichtigungen",
@@ -15,14 +14,13 @@
       },
       "saved": {
         "summary": "Erfolgreich gespeichert",
-        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+        "detail": "Persönliche Informationen erfolgreich gespeichert. Änderungen werden auf deine nächste Bewerbung angewendet."
       },
       "saveFailed": {
         "summary": "Speichern fehlgeschlagen",
         "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
       }
     },
-
     "notifications": {
       "applicant": {
         "submission": {
@@ -45,7 +43,42 @@
         }
       }
     },
-
+    "profilePicture": {
+      "header": "Profilbild",
+      "description": "Mach dein Profil persönlicher mit einem Foto.",
+      "saved": {
+        "summary": "Profilbild aktualisiert",
+        "detail": "Dein Profilbild wurde erfolgreich aktualisiert."
+      },
+      "saveFailed": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "deleted": {
+        "summary": "Profilbild entfernt",
+        "detail": "Dein Profilbild wurde erfolgreich entfernt."
+      },
+      "deleteFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht entfernt werden. Bitte versuche es erneut."
+      },
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bitte wähle ein Bild, das kleiner als 5 MB ist."
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte wähle ein JPEG-, JPG- oder PNG-Bild."
+      },
+      "resetConfirm": {
+        "header": "Profilbild löschen?",
+        "message": "Möchtest du dein aktuelles Profilbild wirklich löschen?"
+      },
+      "cropDialog": {
+        "header": "Profilbild zuschneiden",
+        "rotate": "Drehen"
+      }
+    },
     "appearance": {
       "header": "Aussehen",
       "theme": {

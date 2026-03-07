@@ -2,7 +2,6 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,6 +13,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -21,9 +21,11 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
 interface MembersRow {
+  avatar?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -42,7 +44,6 @@ interface MembersRow {
     BackButtonComponent,
     ButtonComponent,
     TranslateDirective,
-    FontAwesomeModule,
     TranslateModule,
     DynamicTableComponent,
     DialogModule,
@@ -51,6 +52,7 @@ interface MembersRow {
     IconFieldModule,
     InputIconModule,
     ConfirmDialog,
+    UserAvatarComponent,
   ],
   templateUrl: './research-group-members.component.html',
   styleUrl: './research-group-members.component.scss',
@@ -91,12 +93,13 @@ export class ResearchGroupMembersComponent {
 
       return {
         email: member.email,
+        avatar: member.avatar,
         firstName: member.firstName,
         lastName: member.lastName,
         researchGroup: member.researchGroup,
         roles: member.roles,
         userId: member.userId,
-        name: `${member.firstName} ${member.lastName}`,
+        name: formatFullName(member.firstName, member.lastName),
         role: this.formatRoles(member.roles),
         isCurrentUser,
         canRemove,
@@ -149,14 +152,14 @@ export class ResearchGroupMembersComponent {
     try {
       await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
-        memberName: `${member.firstName} ${member.lastName}`,
+        memberName: formatFullName(member.firstName, member.lastName),
       });
 
       // Refresh the members list
       await this.loadMembers();
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
-        memberName: `${member.firstName} ${member.lastName}`,
+        memberName: formatFullName(member.firstName, member.lastName),
       });
     }
   }

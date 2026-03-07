@@ -46,6 +46,7 @@ public record ApplicationForApplicantDTO(
                 job.getTitle(),
                 job.getLocation(),
                 job.getSupervisingProfessor().getLastName(),
+                job.getSupervisingProfessor().getAvatar(),
                 departmentName,
                 application.getApplicationId(),
                 application.getState(),

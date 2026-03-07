@@ -12,6 +12,7 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
 
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
@@ -55,7 +56,7 @@ export class InterviewBookingComponent {
   supervisor = computed(() => this.bookingData()?.supervisor);
   supervisorName = computed(() => {
     const s = this.bookingData()?.supervisor;
-    return s === undefined ? '' : `${s.firstName} ${s.lastName}`;
+    return s === undefined ? '' : formatFullName(s.firstName, s.lastName);
   });
 
   // Computed - Booking Status

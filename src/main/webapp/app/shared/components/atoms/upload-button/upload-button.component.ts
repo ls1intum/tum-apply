@@ -157,8 +157,7 @@ export class UploadButtonComponent {
       const allUploadedIds = uploadResults.flat();
       this.documentIds.set(allUploadedIds);
       this.selectedFiles.set([]);
-    } catch (err) {
-      console.error('Upload failed', err);
+    } catch {
       this.toastService.showErrorKey('entity.upload.error.upload_failed');
     } finally {
       this.isUploading.set(false);
@@ -172,8 +171,7 @@ export class UploadButtonComponent {
       await firstValueFrom(this.applicationService.deleteDocumentFromApplication(documentId));
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
       this.documentIds.set(updatedList);
-    } catch (err) {
-      console.error('Failed to delete document', err);
+    } catch {
       this.toastService.showErrorKey('entity.upload.error.delete_failed');
     }
   }
