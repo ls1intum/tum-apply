@@ -1,0 +1,25 @@
+<div class="relative grid h-[7.75rem] w-[7.75rem] place-items-center">
+  <svg viewBox="0 0 38 38" class="absolute inset-0 h-full w-full origin-center -scale-x-100 rotate-90 overflow-visible fill-none" xmlns="http://www.w3.org/2000/svg">
+    <!--Path figma complianceScore-->
+    <g transform="translate(0 -4)">
+      <path
+        d="M19 38C27.2843 38 34 31.2843 34 23C34 14.7157 27.2843 8 19 8C10.7157 8 4 14.7157 4 23C4 31.2843 10.7157 38 19 38Z"
+        stroke="#E8EAF0"
+        stroke-width="3"
+      />
+      <path
+        d="M34 22.97C34 14.6692 27.2843 8 19 8C10.7157 8 4 14.6692 4 22.97C4 31.2709 10.7157 38 19 38C27.2843 38 34 31.2709 34 22.97Z"
+        stroke="#3070B3"
+        stroke-width="3"
+        stroke-linecap="round"
+        class="duration-800 ease-in-out"
+        [style.strokeDasharray]="circumference"
+        [style.strokeDashoffset]="strokeOffset()"
+      />
+    </g>
+  </svg>
+  <div class="relative inline-flex items-baseline leading-none">
+    <span class="text-3xl font-bold text-text-primary">{{ animatedScore() }}</span>
+    <span class="text-base font-bold text-text-tertiary">%</span>
+  </div>
+</div>

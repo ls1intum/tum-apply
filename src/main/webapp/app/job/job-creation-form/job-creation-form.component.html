@@ -22,8 +22,9 @@
 
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
-    <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
-      <form [formGroup]="basicInfoForm" class="w-full">
+    <div class="panel1-layout relative px-4 xl:px-32 2xl:px-64" [class.panel1-layout-sidebar-collapsed]="!aiSidebarVisible">
+      <div class="panel1-main w-full min-w-0 box-border">
+        <form [formGroup]="basicInfoForm" class="w-full">
         <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
         <div class="flex flex-col">
@@ -136,82 +137,61 @@
         </div>
 
         <div class="flex flex-col gap-2 mb-6">
-          <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
-            <!-- Editor -->
-            <div>
-              <jhi-editor
-                #jobDescriptionEditor
-                fieldId="jobDescription"
-                label="jobCreationForm.positionDetailsSection.jobDescription.label"
-                [placeholder]="jobDescriptionPlaceholder()"
-                helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
-                tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
-                [required]="true"
-                [characterLimit]="4000"
-                [model]="jobDescriptionSignal()"
-                [control]="basicInfoForm.get('jobDescription') ?? undefined"
-                icon="circle-info"
-                [shouldTranslate]="true"
-                [showGenderDecoderButton]="true"
-              />
+          <div class="relative">
+            <div class="absolute top-0 left-0 right-0 flex items-center justify-end gap-1 text-sm text-primary">
+              <fa-icon class="text-xs" [icon]="['fas', 'custom-sparkle']" />
+              <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
             </div>
-
-            @if (showAiPanel()) {
-              <!-- Divider -->
-              <p-divider layout="vertical" styleClass="mx-2 hidden lg:block custom-divider" class="custom-divider" />
-
-              <!-- AI Panel -->
-              <!-- span full width when stacked (small screens), keep constrained on lg+ -->
-              <div class="lg:max-w-[200px] col-span-full lg:col-auto flex flex-col lg:pt-10">
-                <div class="flex gap-2">
-                  <h3
-                    class="mb-3 bold text-text-secondary"
-                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
-                  ></h3>
-                  <fa-icon
-                    class="icon"
-                    [icon]="['fas', 'circle-info']"
-                    [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
-                    tooltipPosition="top"
-                  />
-                </div>
-                <h4
-                  class="whitespace-pre-line mb-4 text-base text-sm text-text-tertiary"
-                  jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
-                ></h4>
-
-                <div class="flex justify-center">
-                  @if (isGeneratingDraft()) {
-                    <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
-                      <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
-                      <span
-                        class="text-sm font-semibold text-text-primary whitespace-nowrap"
-                        jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
-                      ></span>
-                    </div>
-                  } @else {
-                    <div class="w-full flex">
-                      <jhi-button
-                        type="button"
-                        [label]="
-                          rewriteButtonSignal()
-                            ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
-                            : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
-                        "
-                        [shouldTranslate]="true"
-                        severity="primary"
-                        icon="custom-sparkle"
-                        class="w-auto"
-                        (click)="generateJobApplicationDraft()"
-                      />
-                    </div>
-                  }
-                </div>
-              </div>
-            }
+            <jhi-editor
+              #jobDescriptionEditor
+              fieldId="jobDescription"
+              label="jobCreationForm.positionDetailsSection.jobDescription.label"
+              [placeholder]="jobDescriptionPlaceholder()"
+              helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+              tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
+              [required]="true"
+              [characterLimit]="5000"
+              [model]="jobDescriptionSignal()"
+              [control]="basicInfoForm.get('jobDescription') ?? undefined"
+              icon="circle-info"
+              [shouldTranslate]="true"
+              [showGenderDecoderButton]="true"
+            />
           </div>
         </div>
-      </form>
+        </form>
+      </div>
+
+      <aside class="ai-sidebar" [class.ai-collapsed]="!aiSidebarVisible">
+        <div class="ai-header">
+          <button type="button" class="ai-toggle" (click)="aiSidebarVisible = !aiSidebarVisible">
+            <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
+            <span class="ai-toggle-text text-base font-bold text-text-primary" jhiTranslate="jobCreationForm.aiSidebar.header"></span>
+          </button>
+
+          @if (aiSidebarVisible) {
+            <jhi-button
+              class="shrink-0 -mt-0.5 mr-3"
+              type="button"
+              icon="xmark"
+              variant="text"
+              severity="secondary"
+              size="md"
+              styleClass="!rounded-full"
+              (click)="aiSidebarVisible = false"
+            />
+          }
+        </div>
+
+        @if (aiSidebarVisible) {
+          <jhi-ai-assistant-card
+            [score]="aiScore()"
+            [isGenerating]="isGeneratingDraft()"
+            [isRewriteMode]="rewriteButtonSignal()"
+            (generate)="generateJobApplicationDraft()"
+          />
+        }
+      </aside>
     </div>
   </ng-template>
 

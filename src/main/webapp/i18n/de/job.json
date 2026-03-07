@@ -123,11 +123,15 @@
         "PartiallyFunded": "Teilweise finanziert"
       }
     },
+    "aiSidebar": {
+      "header": "KI-Assistent"
+    },
     "positionDetailsSection": {
       "description": "Beschreibe Forschungsschwerpunkt, Aufgaben/Erwartungen sowie Mindestanforderungen und Wunschqualifikationen für Kandidat:innen.",
       "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
+        "aiLabel": "KI schreibt und verbessert diesen Text für dich.",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Stelle.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
@@ -140,6 +144,8 @@
         "aiHelperText": "Gib die wichtigsten Informationen an und TUMApply KI schreibt es für dich.",
         "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
+        "aiScoreTitle": "Inklusivitäts-Score",
+        "aiScoreHelper": "Deine Ausschreibung könnte inklusiver sein. Beiträge mit höherem Score sprechen vielfältigere Bewerber:innen an und erhalten mehr Rückmeldungen.",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
