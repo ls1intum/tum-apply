@@ -59,7 +59,8 @@ export class UploadButtonComponent {
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
   allowMultiple = input<boolean>(true);
   deferUpload = input<boolean>(false);
-  queuedFiles = signal<File[]>([]);
+  queuedFilesById = signal<Map<string, File>>(new Map());
+  queuedFiles = computed(() => Array.from(this.queuedFilesById().values()));
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
@@ -127,7 +128,7 @@ export class UploadButtonComponent {
       if (this.deferUpload()) {
         const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
         this.documentIds.set(updatedList);
-        this.removeQueuedFileFor(existingDoc);
+        this.removeQueuedFileFor(existingDoc.id);
       } else {
         try {
           await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
@@ -161,8 +162,8 @@ export class UploadButtonComponent {
     const existingDocs = this.documentIds() ?? [];
     if (this.deferUpload()) {
       this.documentIds.set([]);
-      this.queuedFiles.set([]);
-      this.queuedFilesChange.emit([]);
+      this.queuedFilesById.set(new Map());
+      this.emitQueuedFilesChange();
     } else {
       for (const doc of existingDocs) {
         try {
@@ -211,7 +212,7 @@ export class UploadButtonComponent {
     if (this.deferUpload()) {
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
       this.documentIds.set(updatedList);
-      this.removeQueuedFileFor(documentInfo);
+      this.removeQueuedFileFor(documentId);
       return;
     }
 
@@ -253,6 +254,7 @@ export class UploadButtonComponent {
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
+      this.renameQueuedFile(documentId, newName);
       return;
     }
 
@@ -339,15 +341,20 @@ export class UploadButtonComponent {
     }
 
     if (this.deferUpload()) {
-      const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => ({
-        id: `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        name: file.name,
-        size: file.size,
-      }));
+      const updatedQueuedFiles = new Map(this.queuedFilesById());
+      const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => {
+        const id = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        updatedQueuedFiles.set(id, file);
+        return {
+          id,
+          name: file.name,
+          size: file.size,
+        };
+      });
       const updatedList = [...(this.documentIds() ?? []), ...tempDocumentEntries];
       this.documentIds.set(updatedList);
-      this.queuedFiles.set(combinedFiles);
-      this.queuedFilesChange.emit(combinedFiles);
+      this.queuedFilesById.set(updatedQueuedFiles);
+      this.emitQueuedFilesChange();
       this.fileUploadComponent()?.clear();
       this.resetNativeFileInput();
       return;
@@ -374,18 +381,34 @@ export class UploadButtonComponent {
   /**
    * Keeps the deferred upload queue in sync with the placeholder row removed from `documentIds`.
    */
-  private removeQueuedFileFor(documentInfo: DocumentInformationHolderDTO): void {
-    const files = this.queuedFiles();
-    if (files.length === 0) {
+  private removeQueuedFileFor(documentId: string): void {
+    const filesById = this.queuedFilesById();
+    if (!filesById.has(documentId)) {
       return;
     }
-    const index = files.findIndex(file => file.name === documentInfo.name && file.size === documentInfo.size);
-    if (index < 0) {
+    const updated = new Map(filesById);
+    updated.delete(documentId);
+    this.queuedFilesById.set(updated);
+    this.emitQueuedFilesChange();
+  }
+
+  private renameQueuedFile(documentId: string, newName: string): void {
+    const queuedFile = this.queuedFilesById().get(documentId);
+    if (!queuedFile || queuedFile.name === newName) {
       return;
     }
-    const updated = [...files];
-    updated.splice(index, 1);
-    this.queuedFiles.set(updated);
-    this.queuedFilesChange.emit(updated);
+
+    const renamedFile = new File([queuedFile], newName, {
+      type: queuedFile.type,
+      lastModified: queuedFile.lastModified,
+    });
+    const updated = new Map(this.queuedFilesById());
+    updated.set(documentId, renamedFile);
+    this.queuedFilesById.set(updated);
+    this.emitQueuedFilesChange();
+  }
+
+  private emitQueuedFilesChange(): void {
+    this.queuedFilesChange.emit(this.queuedFiles());
   }
 }

@@ -21,7 +21,13 @@ describe('UploadButtonComponent', () => {
   let applicationService: ApplicationResourceApiServiceMock;
   let toastService: ToastServiceMock;
 
-  function createUploadButtonFixture(inputs: { documentType: DocumentType; applicationId: string; markAsRequired?: boolean }) {
+  function createUploadButtonFixture(inputs: {
+    documentType: DocumentType;
+    applicationId: string;
+    markAsRequired?: boolean;
+    deferUpload?: boolean;
+    allowMultiple?: boolean;
+  }) {
     const fixture = TestBed.createComponent(UploadButtonComponent);
     Object.entries(inputs).forEach(([key, value]) => {
       fixture.componentRef.setInput(key, value);
@@ -298,6 +304,61 @@ describe('UploadButtonComponent', () => {
 
     const updatedDocs = component.documentIds();
     expect(updatedDocs?.length).toBe(0);
+  });
+
+  it('should remove a deferred queued file by placeholder id after renaming and deleting it', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV', deferUpload: true });
+    const component = fixture.componentInstance;
+
+    component.fileUploadComponent = signal({
+      clear: vi.fn(),
+    } as unknown as FileUpload);
+
+    await component.onFileSelected({
+      currentFiles: [new File(['old-content'], 'original.pdf', { type: 'application/pdf' })],
+    } as FileSelectEvent);
+
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+
+    await component.renameDocument({ ...queuedDocument!, name: 'renamed.pdf' });
+
+    expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
+    expect(component.queuedFiles()).toHaveLength(1);
+    expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
+
+    await component.deleteDictionary(component.documentIds()![0]);
+
+    expect(component.documentIds()).toEqual([]);
+    expect(component.queuedFiles()).toEqual([]);
+    expect(applicationService.deleteDocumentFromApplication).not.toHaveBeenCalled();
+  });
+
+  it('should replace a deferred renamed placeholder by id without leaving the old queued file behind', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV', deferUpload: true });
+    const component = fixture.componentInstance;
+
+    component.fileUploadComponent = signal({
+      clear: vi.fn(),
+    } as unknown as FileUpload);
+
+    await component.onFileSelected({ currentFiles: [new File(['old'], 'original.pdf', { type: 'application/pdf' })] } as FileSelectEvent);
+
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+
+    await component.renameDocument({ ...queuedDocument!, name: 'renamed.pdf' });
+
+    const replacementFile = new File(['replacement-content'], 'renamed.pdf', { type: 'application/pdf' });
+    component.pendingDuplicateFile.set(replacementFile);
+
+    await component.onConfirmDuplicate();
+
+    expect(component.documentIds()).toHaveLength(1);
+    expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
+    expect(component.queuedFiles()).toHaveLength(1);
+    expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
+    expect(component.queuedFiles()[0].size).toBe(replacementFile.size);
   });
 
   describe('Duplicate Handling', () => {
