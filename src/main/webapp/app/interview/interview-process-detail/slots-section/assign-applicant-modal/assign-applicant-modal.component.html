@@ -30,9 +30,7 @@
       <!-- List Container / Table -->
       <div class="flex flex-col gap-2 max-h-[40vh] overflow-y-auto pr-1">
         @if (intervieweeState() === 'loading') {
-          <div class="flex justify-center py-8">
-            <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
-          </div>
+          <div class="flex justify-center py-8"></div>
         } @else if (intervieweeState() === 'empty') {
           <div class="text-center py-8 text-text-secondary">
             <span jhiTranslate="interview.assign.noApplicants">No invited applicants available</span>

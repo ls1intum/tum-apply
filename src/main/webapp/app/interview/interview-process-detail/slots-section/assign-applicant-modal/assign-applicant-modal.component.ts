@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
@@ -27,7 +26,6 @@ import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-t
     DialogComponent,
     ButtonComponent,
     FontAwesomeModule,
-    ProgressSpinnerModule,
     CheckboxComponent,
     DynamicTableComponent,
   ],
