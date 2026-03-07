@@ -77,6 +77,29 @@ export class ApplicationCarouselComponent {
 
   @HostListener('document:keydown', ['$event'])
   handleGlobalKeyDown(event: KeyboardEvent): void {
+    // Ignore if another handler already prevented default
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    // Ignore when modifier keys are pressed (user might be using browser shortcuts)
+    if (event.metaKey || event.ctrlKey || event.altKey) {
+      return;
+    }
+
+    // If focus is inside an editable element (input, textarea, or contenteditable),
+    // we should not intercept arrow keys so the user can move the caret.
+    const active = document.activeElement as HTMLElement | null;
+    if (active) {
+      const tag = active.tagName;
+      const isInputLike = tag === 'INPUT' || tag === 'TEXTAREA' || active.isContentEditable;
+      // Also check ancestors in case the focused element is inside an editor/control
+      const insideEditable = !!active.closest && !!active.closest('input, textarea, [contenteditable="true"]');
+      if (isInputLike || insideEditable) {
+        return;
+      }
+    }
+
     switch (event.key) {
       case 'ArrowRight':
         event.preventDefault();
