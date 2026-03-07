@@ -867,7 +867,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applications/profile/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
+                .deleteAndRead("/api/applications/profile/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
 
             assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
         }
@@ -884,14 +884,14 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "profile_cv.pdf"
             );
 
-            api.deleteAndRead("/api/applications/profile/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
+            api.deleteAndRead("/api/applications/profile/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
         }
 
         @Test
         void deleteDocumentFromProfileNonexistentThrowsNotFound() {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applications/profile/delete-document/" + UUID.randomUUID(), null, Void.class, 404);
+                .deleteAndRead("/api/applications/profile/documents/" + UUID.randomUUID(), null, Void.class, 404);
         }
     }
 
@@ -916,7 +916,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
+                .deleteAndRead("/api/applications/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
 
             assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
         }
@@ -925,7 +925,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         void deleteDocumentFromApplicationNonexistentThrowsNotFound() {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applications/delete-document/" + UUID.randomUUID(), null, Void.class, 404);
+                .deleteAndRead("/api/applications/documents/" + UUID.randomUUID(), null, Void.class, 404);
         }
 
         @Test
@@ -941,7 +941,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "test_cv.pdf"
             );
 
-            api.deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
+            api.deleteAndRead("/api/applications/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
         }
 
         @Test
@@ -959,7 +959,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 400);
+                .deleteAndRead("/api/applications/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 400);
         }
     }
 
@@ -985,7 +985,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
-                    "/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=new_cv_name.pdf",
+                    "/api/applications/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=new_cv_name.pdf",
                     null,
                     Void.class,
                     200
@@ -999,7 +999,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         void renameDocumentNonexistentThrowsNotFound() {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applications/rename-document/" + UUID.randomUUID() + "?newName=new_name.pdf", null, Void.class, 404);
+                .putAndRead("/api/applications/documents/" + UUID.randomUUID() + "/name?newName=new_name.pdf", null, Void.class, 404);
         }
 
         @Test
@@ -1016,7 +1016,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             );
 
             api.putAndRead(
-                "/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=renamed.pdf",
+                "/api/applications/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=renamed.pdf",
                 null,
                 Void.class,
                 403
@@ -1039,7 +1039,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
-                    "/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=renamed.pdf",
+                    "/api/applications/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=renamed.pdf",
                     null,
                     Void.class,
                     400
@@ -1061,7 +1061,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
-                    "/api/applications/profile/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=profile_new_name.pdf",
+                    "/api/applications/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
                     null,
                     Void.class,
                     200
@@ -1076,7 +1076,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
-                    "/api/applications/profile/rename-document/" + UUID.randomUUID() + "?newName=profile_new_name.pdf",
+                    "/api/applications/profile/documents/" + UUID.randomUUID() + "/name?newName=profile_new_name.pdf",
                     null,
                     Void.class,
                     404
@@ -1096,7 +1096,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             );
 
             api.putAndRead(
-                "/api/applications/profile/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=profile_new_name.pdf",
+                "/api/applications/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
                 null,
                 Void.class,
                 403
@@ -1117,7 +1117,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Set<DocumentInformationHolderDTO> uploadedDocs = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .multipartPostAndRead(
-                    "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.BACHELOR_TRANSCRIPT,
+                    "/api/applications/" + application.getApplicationId() + "/documents/" + DocumentType.BACHELOR_TRANSCRIPT,
                     List.of(file),
                     new TypeReference<>() {},
                     200
@@ -1137,7 +1137,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Set<DocumentInformationHolderDTO> uploadedDocs = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .multipartPostAndRead(
-                    "/api/applications/profile/upload-documents/" + DocumentType.CV,
+                    "/api/applications/profile/documents/" + DocumentType.CV,
                     List.of(file),
                     new TypeReference<>() {},
                     200
@@ -1156,7 +1156,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .multipartPostAndRead(
-                    "/api/applications/upload-documents/" + UUID.randomUUID() + "/" + DocumentType.BACHELOR_TRANSCRIPT,
+                    "/api/applications/" + UUID.randomUUID() + "/documents/" + DocumentType.BACHELOR_TRANSCRIPT,
                     List.of(file),
                     new TypeReference<>() {},
                     404
@@ -1169,7 +1169,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
             api.multipartPostAndRead(
-                "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
+                "/api/applications/" + application.getApplicationId() + "/documents/" + DocumentType.MASTER_TRANSCRIPT,
                 List.of(file),
                 new TypeReference<>() {},
                 403
@@ -1184,7 +1184,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .multipartPostAndRead(
-                    "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
+                    "/api/applications/" + application.getApplicationId() + "/documents/" + DocumentType.MASTER_TRANSCRIPT,
                     List.of(file),
                     new TypeReference<>() {},
                     400

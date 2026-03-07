@@ -532,7 +532,6 @@ public class ApplicationService {
      * @param files        the files to upload
      * @return the updated document list for that type
      */
-    @Transactional
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicantProfileAndType(DocumentType documentType, List<MultipartFile> files) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
@@ -695,7 +694,6 @@ public class ApplicationService {
      * @param dto the updated applicant document settings
      * @return the updated ApplicantDTO
      */
-    @Transactional
     public ApplicantDTO updateApplicantDocumentSettings(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
@@ -714,7 +712,6 @@ public class ApplicationService {
      *
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    @Transactional
     public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
@@ -731,7 +728,6 @@ public class ApplicationService {
      * @param documentDictionaryId the id of the document dictionary entry to rename
      * @param newName              the new name to set
      */
-    @Transactional
     public void renameApplicantProfileDocument(UUID documentDictionaryId, String newName) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {

@@ -119,7 +119,7 @@ public class ApplicationResource {
         )
     )
     @ApplicantOrAdmin
-    @PostMapping("/profile/upload-documents/{documentType}")
+    @PostMapping("/profile/documents/{documentType}")
     public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadApplicantProfileDocuments(
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
@@ -134,7 +134,7 @@ public class ApplicationResource {
      * @return 204 No Content when deletion is successful
      */
     @ApplicantOrAdmin
-    @DeleteMapping("/profile/delete-document/{documentDictionaryId}")
+    @DeleteMapping("/profile/documents/{documentDictionaryId}")
     public ResponseEntity<Void> deleteApplicantProfileDocument(@PathVariable UUID documentDictionaryId) {
         applicationService.deleteApplicantProfileDocument(documentDictionaryId);
         return ResponseEntity.noContent().build();
@@ -148,7 +148,7 @@ public class ApplicationResource {
      * @return {@code 200 OK} if the rename operation was successful
      */
     @ApplicantOrAdmin
-    @PutMapping("/profile/rename-document/{documentDictionaryId}")
+    @PutMapping("/profile/documents/{documentDictionaryId}/name")
     public ResponseEntity<Void> renameApplicantProfileDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
         applicationService.renameApplicantProfileDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
@@ -204,7 +204,7 @@ public class ApplicationResource {
      * @return 204 No Content when deletion is successful
      */
     @ApplicantOrAdmin
-    @DeleteMapping("/delete-document/{documentDictionaryId}")
+    @DeleteMapping("/documents/{documentDictionaryId}")
     public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
         applicationService.deleteDocument(documentDictionaryId);
         return ResponseEntity.noContent().build();
@@ -218,7 +218,7 @@ public class ApplicationResource {
      * @return {@code 200 OK} if the rename operation was successful
      */
     @ApplicantOrAdmin
-    @PutMapping("/rename-document/{documentDictionaryId}")
+    @PutMapping("/documents/{documentDictionaryId}/name")
     public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
         applicationService.renameDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
@@ -295,7 +295,7 @@ public class ApplicationResource {
         )
     )
     @ApplicantOrAdmin
-    @PostMapping("/upload-documents/{applicationId}/{documentType}")
+    @PostMapping("/{applicationId}/documents/{documentType}")
     public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadDocuments(
         @PathVariable UUID applicationId,
         @PathVariable DocumentType documentType,
