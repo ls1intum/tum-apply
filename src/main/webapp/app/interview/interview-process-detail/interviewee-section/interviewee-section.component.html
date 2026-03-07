@@ -108,4 +108,6 @@
   severity="primary"
   (confirmed)="onConfirmResend()"
   [showOpenButton]="false"
+  [visible]="showResendDialog()"
+  (closed)="showResendDialog.set(false)"
 />

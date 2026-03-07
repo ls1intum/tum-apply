@@ -1,4 +1,4 @@
-import { Component, computed, input, output, viewChild } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,7 +21,7 @@ export class SlotCardComponent {
   deleteSlot = output<InterviewSlotDTO>();
   assignApplicant = output<InterviewSlotDTO>();
 
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  showDeleteDialog = signal(false);
 
   // Computed values
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
@@ -37,7 +37,7 @@ export class SlotCardComponent {
   readonly menuItems = computed<JhiMenuItem[]>(() => [
     // TODO: Uncomment when edit functionality is implemented
     // { label: 'button.edit', icon: 'pencil', command: () => this.onEdit() },
-    { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
+    { label: 'button.delete', icon: 'trash', command: () => this.showDeleteDialog.set(true), severity: 'danger' },
   ]);
 
   onEdit(): void {

@@ -68,9 +68,9 @@ export class ResearchGroupAdminView {
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
-  readonly approveDialog = viewChild.required<ConfirmDialog>('approveDialog');
-  readonly denyDialog = viewChild.required<ConfirmDialog>('denyDialog');
-  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
+  showApproveDialog = signal(false);
+  showDenyDialog = signal(false);
+  showWithdrawDialog = signal(false);
 
   currentResearchGroupId = signal<string | undefined>(undefined);
 
@@ -138,7 +138,7 @@ export class ResearchGroupAdminView {
           severity: 'danger',
           command: () => {
             this.currentResearchGroupId.set(groupId);
-            this.withdrawDialog().confirm();
+            this.showWithdrawDialog.set(true);
           },
         });
       }
@@ -150,7 +150,7 @@ export class ResearchGroupAdminView {
           severity: 'success',
           command: () => {
             this.currentResearchGroupId.set(groupId);
-            this.approveDialog().confirm();
+            this.showApproveDialog.set(true);
           },
         });
         items.push({
@@ -159,7 +159,7 @@ export class ResearchGroupAdminView {
           severity: 'danger',
           command: () => {
             this.currentResearchGroupId.set(groupId);
-            this.denyDialog().confirm();
+            this.showDenyDialog.set(true);
           },
         });
       }
@@ -171,7 +171,7 @@ export class ResearchGroupAdminView {
           severity: 'success',
           command: () => {
             this.currentResearchGroupId.set(groupId);
-            this.approveDialog().confirm();
+            this.showApproveDialog.set(true);
           },
         });
       }
