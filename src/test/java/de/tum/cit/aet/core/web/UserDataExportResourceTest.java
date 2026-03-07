@@ -47,6 +47,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -220,7 +221,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void downloadRequiresAuthenticationAndUpdatesStatus() throws Exception {
+    void downloadRequiresAuthenticationAndUpdatesStatus() {
         User user = savedUser("download-user@tum.de");
 
         DataExportRequest request = new DataExportRequest();
@@ -464,7 +465,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     private void cleanExportRoot() {
         Path root = Paths.get(exportRootConfig).toAbsolutePath().normalize();
         if (Files.exists(root)) {
-            try (var stream = Files.walk(root)) {
+            try (Stream<Path> stream = Files.walk(root)) {
                 stream
                     .sorted(Comparator.reverseOrder())
                     .forEach(path -> {

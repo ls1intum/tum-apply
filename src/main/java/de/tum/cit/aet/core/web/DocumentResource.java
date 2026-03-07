@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.web;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -63,7 +64,7 @@ public class DocumentResource {
      */
     private void verifyAccess(DocumentDictionary documentDictionary) {
         if (documentDictionary.getApplication() != null) {
-            var application = documentDictionary.getApplication();
+            Application application = documentDictionary.getApplication();
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 currentUserService.verifyJobAccess(application.getJob());
                 return;
@@ -73,7 +74,7 @@ public class DocumentResource {
         }
 
         if (documentDictionary.getCustomFieldAnswer() != null) {
-            var application = documentDictionary.getCustomFieldAnswer().getApplication();
+            Application application = documentDictionary.getCustomFieldAnswer().getApplication();
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 currentUserService.verifyJobAccess(application.getJob());
                 return;
