@@ -19,7 +19,9 @@
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total Interviews"
+        "totalInterviews": "Total Interviews",
+        "totalSlots": "Total Slots",
+        "booked": "Booked"
       },
       "upcoming": {
         "title": "Upcoming",
@@ -28,6 +30,12 @@
       "error": {
         "failedToLoad": "Failed to load interview processes."
       }
+    },
+    "warning": {
+      "notEnoughSlots": "{{invited}} applicants invited, but only {{slots}} slots available. Please create more slots.",
+      "notEnoughSlotsSingular": "{{invited}} applicant invited, but only {{slots}} slots available. Please create more slots.",
+      "zeroSlots": "{{invited}} applicants invited, but no slots are available. Please create new slots.",
+      "zeroSlotsSingular": "{{invited}} applicant invited, but no slots are available. Please create new slots."
     },
     "detail": {
       "error": {

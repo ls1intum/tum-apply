@@ -1,36 +1,37 @@
 <a
   [routerLink]="['/interviews', 'process', interview().processId, 'interviewee', interview().intervieweeId, 'assessment']"
   [queryParams]="{ from: 'overview' }"
-  class="group flex flex-col gap-1 p-3 rounded-lg border border-border-default hover:bg-background-surface text-text-primary"
+  class="group grid grid-cols-[1fr_auto_8.75rem] gap-4 p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary transition-colors"
 >
-  <!-- Row 1: Applicant Name -->
-  <div class="font-bold truncate" [title]="interview().intervieweeName">
-    {{ interview().intervieweeName }}
+  <!-- LEFT: Avatar + Name + Job -->
+  <div class="flex items-center gap-3">
+    <!-- Avatar -->
+    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base shrink-0" [ngClass]="avatarColor()">
+      {{ initials() }}
+    </div>
+    <!-- Name + Job Title -->
+    <div class="flex flex-col justify-center min-w-0">
+      <span class="font-bold text-base truncate" [title]="interview().intervieweeName">{{ interview().intervieweeName }}</span>
+      <span class="text-sm text-text-secondary leading-snug">{{ interview().jobTitle }}</span>
+    </div>
   </div>
 
-  <!-- Row 2: Job Title -->
-  <div class="flex items-center gap-1.5 text-sm text-text-primary" [title]="interview().jobTitle">
-    <fa-icon icon="briefcase" class="text-primary shrink-0" />
-    <span class="truncate min-w-0">{{ interview().jobTitle }}</span>
-  </div>
+  <!-- Divider -->
+  <div class="border-r border-border-default"></div>
 
-  <!-- Row 3: Date & Time -->
-  <div class="flex items-center gap-3 text-sm text-text-primary mt-1">
-    <!-- Date -->
-    <div class="flex items-center gap-1.5">
-      <fa-icon icon="calendar" class="text-primary shrink-0" />
+  <!-- RIGHT: Date / Time / Location -->
+  <div class="flex flex-col justify-center gap-1.5 text-sm text-text-secondary">
+    <div class="flex items-center gap-2">
+      <fa-icon icon="calendar" class="text-primary" />
       <span>{{ interview().startDateTime | localizedDate }}</span>
     </div>
-    <!-- Time -->
-    <div class="flex items-center gap-1.5">
-      <fa-icon icon="clock" class="text-primary shrink-0" />
+    <div class="flex items-center gap-2">
+      <fa-icon icon="clock" class="text-primary" />
       <span>{{ formattedTimeRange() }}</span>
     </div>
-  </div>
-
-  <!-- Row 4: Location -->
-  <div class="flex items-center gap-1.5 text-sm text-text-primary" [title]="interview().location">
-    <fa-icon icon="location-dot" class="text-primary shrink-0" />
-    <span class="truncate min-w-0">{{ interview().location }}</span>
+    <div class="flex items-center gap-2">
+      <fa-icon icon="location-dot" class="text-primary" />
+      <span class="truncate" [title]="interview().location">{{ interview().location }}</span>
+    </div>
   </div>
 </a>
