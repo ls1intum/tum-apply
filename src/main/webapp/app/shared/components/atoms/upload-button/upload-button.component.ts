@@ -24,6 +24,16 @@ const DocumentType = {
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
+/**
+ * Generic PDF upload control used by applicant document flows.
+ *
+ * The component has two operating modes:
+ * - immediate upload: accepted files are sent to the backend right away
+ * - deferred upload: accepted files are represented locally and emitted to the parent for a later bulk submit
+ *
+ * Duplicate-name handling, replacement confirmation, local renaming, and size validation all live
+ * here so the surrounding pages only need to provide the document type and current document list.
+ */
 @Component({
   selector: 'jhi-upload-button',
   imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
@@ -65,6 +75,13 @@ export class UploadButtonComponent {
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
 
+  /**
+   * Entry point from PrimeNG when the user chooses one or more files.
+   *
+   * This method does not upload immediately. It first enforces the component's UX rules:
+   * - single-file inputs require an explicit replacement confirmation
+   * - duplicate visible filenames require confirmation before the old entry is replaced
+   */
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
 
@@ -99,6 +116,12 @@ export class UploadButtonComponent {
     await this.processFiles(files);
   }
 
+  /**
+   * Replaces the existing document that shares the same display name as the pending file.
+   *
+   * In deferred mode only local state is changed. In immediate mode the old server document is
+   * deleted first so the UI state and persisted state stay aligned.
+   */
   async onConfirmDuplicate(): Promise<void> {
     const pendingFile = this.pendingDuplicateFile();
     if (!pendingFile) {
@@ -129,6 +152,12 @@ export class UploadButtonComponent {
     this.pendingDuplicateFile.set(null);
   }
 
+  /**
+   * Handles the "replace current file" flow for single-file document types such as CV.
+   *
+   * Existing entries are cleared first, then the newly selected file is processed as a normal
+   * upload or deferred queue addition.
+   */
   async onConfirmReplacement(): Promise<void> {
     const pendingFiles = this.pendingReplacementFiles();
     if (pendingFiles.length === 0) {
@@ -159,6 +188,12 @@ export class UploadButtonComponent {
     this.pendingReplacementFiles.set([]);
   }
 
+  /**
+   * Uploads the currently staged files to the backend.
+   *
+   * This path is only used for immediate-upload mode. Deferred mode stops earlier in `processFiles`
+   * after updating the local placeholder rows and queued file list.
+   */
   async onUpload(): Promise<void> {
     const files: File[] | undefined = this.selectedFiles();
     if (!files || files.length === 0) return;
@@ -181,6 +216,9 @@ export class UploadButtonComponent {
     }
   }
 
+  /**
+   * Deletes a persisted server document or, in deferred mode, removes the corresponding local placeholder.
+   */
   async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const documentId = documentInfo.id;
     if (this.deferUpload()) {
@@ -205,6 +243,11 @@ export class UploadButtonComponent {
     this.resetNativeFileInput();
   }
 
+  /**
+   * Persists an inline filename edit when possible.
+   *
+   * Deferred mode only updates local placeholder data because there is nothing on the server yet.
+   */
   async renameDocument(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const newName = documentInfo.name ?? '';
     if (!newName) {
@@ -257,6 +300,16 @@ export class UploadButtonComponent {
     return existingDocs.some(doc => doc.name === filename);
   }
 
+  /**
+   * Validates incoming files and normalizes them into the component's state model.
+   *
+   * The main distinction here is:
+   * - deferred mode: create temporary `documentIds` entries and keep the real `File` objects in `queuedFiles`
+   * - immediate mode: stage files in `selectedFiles` and then call `onUpload()`
+   *
+   * Total-size validation includes both already persisted documents and newly chosen files so the UI
+   * cannot drift past the same overall limit through multiple smaller additions.
+   */
   private async processFiles(files: File[]): Promise<void> {
     const maxSizeBytes = this.maxUploadSizeInMb * 1024 * 1024;
     const maxTotalSizeMb = this.maxUploadSizeInMb; // total limit (MB) — same as per-file by design
@@ -322,7 +375,10 @@ export class UploadButtonComponent {
   }
 
   /**
-   * Reset the native file input to allow reselection of the same file.
+   * Reset the hidden native file input so selecting the same file again still triggers a browser change event.
+   *
+   * PrimeNG's own `clear()` does not reliably cover this edge case, so the component resets the DOM node
+   * directly after the current render cycle.
    */
   private resetNativeFileInput(): void {
     // Use setTimeout to ensure DOM is updated
@@ -334,6 +390,9 @@ export class UploadButtonComponent {
     }, 0);
   }
 
+  /**
+   * Keeps the deferred upload queue in sync with the placeholder row removed from `documentIds`.
+   */
   private removeQueuedFileFor(documentInfo: DocumentInformationHolderDTO): void {
     const files = this.queuedFiles();
     if (files.length === 0) {
