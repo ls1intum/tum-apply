@@ -381,6 +381,61 @@ public class InterviewService {
     }
 
     /**
+     * Updates the location of an interview slot.
+     * Works for both booked and unbooked slots.
+     * If the slot is booked, sends a notification email to the applicant.
+     *
+     * @param slotId the ID of the slot to update
+     * @param dto    the update data containing the new location
+     * @return the updated slot as DTO
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public InterviewSlotDTO updateSlotLocation(UUID slotId, UpdateSlotLocationDTO dto) {
+        // 1. Load the slot
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
+
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
+        Job job = slot.getInterviewProcess().getJob();
+        verifyResearchGroupAccess(job);
+
+        // 3. Update location
+        slot.setLocation(dto.location());
+        interviewSlotRepository.save(slot);
+
+        log.info("Updated location of slot {} to '{}'", slotId, dto.location());
+
+        // 4. If booked, notify the applicant about the location change
+        if (slot.getIsBooked() && slot.getInterviewee() != null) {
+            sendLocationChangedEmail(slot, slot.getInterviewee(), job);
+        }
+
+        // 5. Return updated DTO
+        return InterviewSlotDTO.fromEntity(slot);
+    }
+
+    private void sendLocationChangedEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
+        User applicant = interviewee.getApplication().getApplicant().getUser();
+
+        String icsContent = icsCalendarService.generateIcsContent(slot, job);
+        String icsFileName = icsCalendarService.generateFileName(slot);
+
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(EmailType.INTERVIEW_LOCATION_CHANGED)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(slot)
+            .icsContent(icsContent)
+            .icsFileName(icsFileName)
+            .build();
+        asyncEmailSender.sendAsync(email);
+    }
+
+    /**
      * Validates that none of the new slots conflict with existing slots of the same
      * professor.
      * For the same process: blocks any overlapping slot.

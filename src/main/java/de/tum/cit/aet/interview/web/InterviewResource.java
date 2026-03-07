@@ -18,6 +18,7 @@ import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
 import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
+import de.tum.cit.aet.interview.dto.UpdateSlotLocationDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -261,6 +262,29 @@ public class InterviewResource {
         interviewService.deleteSlot(slotId);
         log.info("Successfully deleted slot: {}", slotId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * {@code PUT /api/interviews/slots/{slotId}/location} : Update the location
+     * of an interview slot.
+     * Works for both booked and unbooked slots. If the slot is booked,
+     * the assigned applicant is notified via email.
+     *
+     * @param slotId the ID of the slot to update
+     * @param dto    the new location data
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link InterviewSlotDTO}
+     *
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @PutMapping("/slots/{slotId}/location")
+    public ResponseEntity<InterviewSlotDTO> updateSlotLocation(@PathVariable UUID slotId, @Valid @RequestBody UpdateSlotLocationDTO dto) {
+        log.info("REST request to update location of slot: {}", slotId);
+        InterviewSlotDTO result = interviewService.updateSlotLocation(slotId, dto);
+        log.info("Successfully updated location of slot: {}", slotId);
+        return ResponseEntity.ok(result);
     }
 
     /**
