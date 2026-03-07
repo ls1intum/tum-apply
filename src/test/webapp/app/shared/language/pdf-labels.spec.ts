@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { provideTranslateMock } from '../../../util/translate.mock';
-import { getApplicationPDFLabels, getJobPDFLabels } from 'app/shared/language/pdf-labels';
+import { formatGradeDisplay, getApplicationPDFLabels, getJobPDFLabels } from 'app/shared/language/pdf-labels';
 
 /* ======================================================
  * Helper functions
@@ -246,6 +246,80 @@ describe('PDF Labels', () => {
         'page',
         'of',
       ]);
+    });
+  });
+
+  describe('formatGradeDisplay', () => {
+    let grade = '1.5';
+    let upperLimit = '1.0';
+    let lowerLimit = '4.0';
+
+    afterEach(() => {
+      vi.resetAllMocks();
+    });
+
+    describe('grade is absent', () => {
+      it('should return "-" when grade is undefined', () => {
+        expect(formatGradeDisplay(translate, undefined)).toBe('-');
+      });
+
+      it('should return "-" when grade is an empty string', () => {
+        expect(formatGradeDisplay(translate, '')).toBe('-');
+      });
+    });
+
+    describe('grade is present but limits are incomplete', () => {
+      it('should return the grade as-is when upperLimit is missing', () => {
+        expect(formatGradeDisplay(translate, grade, undefined, lowerLimit)).toBe(grade);
+      });
+
+      it('should return the grade as-is when lowerLimit is missing', () => {
+        expect(formatGradeDisplay(translate, grade, upperLimit, undefined)).toBe(grade);
+      });
+
+      it('should return the grade as-is when both limits are missing', () => {
+        expect(formatGradeDisplay(translate, grade)).toBe(grade);
+      });
+    });
+
+    describe('grade and both limits are provided', () => {
+      it('should return formatted grade with translated scale', () => {
+        const result = formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
+        const expectedScale = translate.instant('entity.applicationPage2.helperText.gradingScale', {
+          upperLimit: upperLimit,
+          lowerLimit: lowerLimit,
+        });
+
+        expect(result).toBe(`${grade} (${expectedScale})`);
+      });
+
+      it('should call translate.instant exactly once with the scale key and correct interpolation params', () => {
+        const instantSpy = vi.spyOn(translate, 'instant');
+
+        formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
+
+        expect(instantSpy).toHaveBeenCalledOnce();
+        expect(instantSpy).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
+          upperLimit: upperLimit,
+          lowerLimit: lowerLimit,
+        });
+      });
+
+      it('should not call translate.instant when grade is absent', () => {
+        const instantSpy = vi.spyOn(translate, 'instant');
+
+        formatGradeDisplay(translate, undefined, upperLimit, lowerLimit);
+
+        expect(instantSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not call translate.instant when limits are missing', () => {
+        const instantSpy = vi.spyOn(translate, 'instant');
+
+        formatGradeDisplay(translate, grade);
+
+        expect(instantSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });

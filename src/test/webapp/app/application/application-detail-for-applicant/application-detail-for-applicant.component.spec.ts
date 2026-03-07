@@ -63,7 +63,7 @@ function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationD
 
 describe('ApplicationDetailForApplicantComponent', () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('initializes and fetches application & document IDs when param provided', async () => {
@@ -306,5 +306,117 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const labels = getApplicationPDFLabels(translate as unknown as TranslateService);
     expect(labels.application).toBe('evaluation.application');
     expect(Object.keys(labels)).toContain('grade');
+  });
+
+  describe('bachelorGradeDisplay', () => {
+    it('returns "-" when bachelorGrade is missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: { user: { email: '' }, bachelorGrade: undefined } as any,
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.bachelorGradeDisplay()).toBe('-');
+    });
+
+    it('returns just the grade when one or both limits are missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: { email: '' },
+            bachelorGrade: '2.3',
+            bachelorGradeUpperLimit: undefined,
+            bachelorGradeLowerLimit: undefined,
+          } as any,
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.bachelorGradeDisplay()).toBe('2.3');
+    });
+
+    it('returns grade with formatted scale when both limits are present', () => {
+      const { component, translate } = setupTest(null);
+
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: { email: '' },
+            bachelorGrade: '1.7',
+            bachelorGradeUpperLimit: '4.0',
+            bachelorGradeLowerLimit: '1.0',
+          } as any,
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      const result = component.bachelorGradeDisplay();
+
+      expect(translate.instant).toHaveBeenCalledOnce();
+      expect(translate.instant).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit: '4.0',
+        lowerLimit: '1.0',
+      });
+      expect(result).toBe('1.7 (entity.applicationPage2.helperText.gradingScale)');
+    });
+  });
+
+  describe('masterGradeDisplay', () => {
+    it('returns "-" when masterGrade is missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: { user: { email: '' }, masterGrade: undefined } as any,
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.masterGradeDisplay()).toBe('-');
+    });
+
+    it('returns just the grade when one or both limits are missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: { email: '' },
+            masterGrade: '1.5',
+            masterGradeUpperLimit: undefined,
+            masterGradeLowerLimit: '1.0',
+          } as any,
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.masterGradeDisplay()).toBe('1.5');
+    });
+
+    it('returns grade with formatted scale when both limits are present', () => {
+      const { component, translate } = setupTest(null);
+
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: { email: '' },
+            masterGrade: '1.0',
+            masterGradeUpperLimit: '4.0',
+            masterGradeLowerLimit: '1.0',
+          } as any,
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      const result = component.masterGradeDisplay();
+
+      expect(translate.instant).toHaveBeenCalledOnce();
+      expect(translate.instant).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit: '4.0',
+        lowerLimit: '1.0',
+      });
+      expect(result).toBe('1.0 (entity.applicationPage2.helperText.gradingScale)');
+    });
   });
 });

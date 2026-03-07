@@ -7,7 +7,7 @@ import { ApplicationEvaluationResourceApiService } from 'app/generated/api/appli
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { provideTranslateMock } from 'util/translate.mock';
+import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
@@ -60,6 +60,8 @@ describe('ApplicationDetailComponent', () => {
       getDocumentDictionaryIds: vi.fn().mockReturnValue(of(makeDocumentIds())),
     };
 
+    const translateMock = createTranslateServiceMock();
+
     const mockActivatedRoute = createActivatedRouteMock({}, {});
     q$ = mockActivatedRoute.queryParamMapSubject;
 
@@ -71,7 +73,7 @@ describe('ApplicationDetailComponent', () => {
         { provide: ApplicationResourceApiService, useValue: applicationApi },
         provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
-        provideTranslateMock(),
+        provideTranslateMock(translateMock),
         provideToastServiceMock(),
       ],
     }).compileComponents();
@@ -810,6 +812,275 @@ describe('ApplicationDetailComponent', () => {
       expect(component.currentApplication()).toBeUndefined();
       expect(updateDocSpy).not.toHaveBeenCalled();
       expect(markSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Grade Display', () => {
+    describe('getDisplayGrade', () => {
+      it('should return empty string when all arguments are undefined', () => {
+        const result = component.getDisplayGrade(undefined, undefined, undefined);
+        expect(result).toBe('');
+      });
+
+      it('should return empty String when grade is undefined but limits are set', () => {
+        const result = component.getDisplayGrade('4.0', '1.0', undefined);
+        expect(result).toBe('');
+      });
+
+      it('should delegate to displayGradeWithConversion and return a value when all params are provided', () => {
+        const spy = vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.0');
+        const result = component.getDisplayGrade('4.0', '1.0', '80');
+        expect(result).toBe('2.0');
+        expect(spy).toHaveBeenCalledOnce();
+        expect(spy).toHaveBeenCalledWith('4.0', '1.0', '80');
+      });
+    });
+
+    describe('formatGradeWithConversion', () => {
+      it('should return empty displayValue and wasConverted=false when grade is undefined', () => {
+        const result = component.formatGradeWithConversion(undefined, '4.0', '1.0');
+        expect(result).toEqual({ displayValue: '', wasConverted: false });
+      });
+
+      it('should return empty displayValue and wasConverted=false when grade is empty string', () => {
+        const result = component.formatGradeWithConversion('', '4.0', '1.0');
+        expect(result).toEqual({ displayValue: '', wasConverted: false });
+      });
+
+      it('should return original grade with conversionFailedTooltip when upperLimit is missing', () => {
+        const result = component.formatGradeWithConversion('3.5', undefined, '1.0');
+        expect(result.displayValue).toBe('3.5');
+        expect(result.wasConverted).toBe(false);
+        expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+      });
+
+      it('should return original grade with conversionFailedTooltip when lowerLimit is missing', () => {
+        const result = component.formatGradeWithConversion('3.5', '4.0', undefined);
+        expect(result.displayValue).toBe('3.5');
+        expect(result.wasConverted).toBe(false);
+        expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+      });
+
+      it('should return original grade with conversionFailedTooltip when both limits are missing', () => {
+        const result = component.formatGradeWithConversion('2.0', undefined, undefined);
+        expect(result.displayValue).toBe('2.0');
+        expect(result.wasConverted).toBe(false);
+        expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+      });
+
+      it('should return original grade with conversionFailedTooltip when getDisplayGrade returns empty string', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('');
+
+        const result = component.formatGradeWithConversion('3.0', '4.0', '1.0');
+        expect(result.displayValue).toBe('3.0');
+        expect(result.wasConverted).toBe(false);
+        expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+      });
+
+      it('should return original grade with no tooltip when rounded values are equal', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('3.0');
+
+        const result = component.formatGradeWithConversion('3.0', '4.0', '1.0');
+        expect(result.displayValue).toBe('3.0');
+        expect(result.wasConverted).toBe(false);
+        expect(result.tooltipText).toBeUndefined();
+      });
+
+      it('should return converted grade with original in parentheses and converterTooltip when conversion differs', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.0');
+
+        const result = component.formatGradeWithConversion('3.5', '4.0', '1.0');
+        expect(result.displayValue).toBe('2.0 (3.5)');
+        expect(result.wasConverted).toBe(true);
+        expect(result.tooltipText).toBe('evaluation.details.converterTooltip');
+      });
+
+      it('should return original grade without tooltip when rounded values match (comma decimal)', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('3,0');
+
+        const result = component.formatGradeWithConversion('3,0', '4.0', '1.0');
+        expect(result.displayValue).toBe('3,0');
+        expect(result.wasConverted).toBe(false);
+        expect(result.tooltipText).toBeUndefined();
+      });
+    });
+
+    describe('getBachelorItems', () => {
+      it('should return empty array when applicant is undefined', () => {
+        expect(component.getBachelorItems(undefined)).toEqual([]);
+      });
+
+      it('should return correct DescItem structure for a full applicant', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.5');
+
+        const applicant = {
+          bachelorDegreeName: 'Computer Science',
+          bachelorUniversity: 'TU Munich',
+          bachelorGrade: '2.5',
+          bachelorGradeUpperLimit: '4.0',
+          bachelorGradeLowerLimit: '1.0',
+        } as any;
+
+        const items = component.getBachelorItems(applicant);
+
+        expect(items).toHaveLength(3);
+        expect(items[0]).toEqual({ labelKey: 'evaluation.details.educationDegree', value: 'Computer Science' });
+        expect(items[1]).toEqual({ labelKey: 'evaluation.details.educationUniversity', value: 'TU Munich' });
+        expect(items[2].labelKey).toBe('evaluation.details.educationGrade');
+        expect(items[2].value).toBe('2.5');
+      });
+
+      it('should include tooltipText in grade item when conversion fails', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('');
+
+        const applicant = {
+          bachelorDegreeName: 'Physics',
+          bachelorUniversity: 'LMU',
+          bachelorGrade: '85',
+          bachelorGradeUpperLimit: '100',
+          bachelorGradeLowerLimit: '0',
+        } as any;
+
+        const items = component.getBachelorItems(applicant);
+        expect(items[2].tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+      });
+
+      it('should include converted grade with tooltip when conversion differs', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('1.5');
+
+        const applicant = {
+          bachelorDegreeName: 'Math',
+          bachelorUniversity: 'KIT',
+          bachelorGrade: '90',
+          bachelorGradeUpperLimit: '100',
+          bachelorGradeLowerLimit: '50',
+        } as any;
+
+        const items = component.getBachelorItems(applicant);
+        expect(items[2].value).toBe('1.5 (90)');
+        expect(items[2].tooltipText).toBe('evaluation.details.converterTooltip');
+      });
+
+      it('should return items with undefined values for an applicant with no degree data', () => {
+        const applicant = {} as any;
+        const items = component.getBachelorItems(applicant);
+        expect(items).toHaveLength(3);
+        expect(items[0].value).toBeUndefined();
+        expect(items[1].value).toBeUndefined();
+        expect(items[2].value).toBe('');
+      });
+    });
+
+    describe('getMasterItems', () => {
+      it('should return empty array when applicant is undefined', () => {
+        expect(component.getMasterItems(undefined)).toEqual([]);
+      });
+
+      it('should return correct DescItem structure for a full applicant', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('1.8');
+
+        const applicant = {
+          masterDegreeName: 'Software Engineering',
+          masterUniversity: 'ETH Zurich',
+          masterGrade: '1.8',
+          masterGradeUpperLimit: '4.0',
+          masterGradeLowerLimit: '1.0',
+        } as any;
+
+        const items = component.getMasterItems(applicant);
+
+        expect(items).toHaveLength(3);
+        expect(items[0]).toEqual({ labelKey: 'evaluation.details.educationDegree', value: 'Software Engineering' });
+        expect(items[1]).toEqual({ labelKey: 'evaluation.details.educationUniversity', value: 'ETH Zurich' });
+        expect(items[2].labelKey).toBe('evaluation.details.educationGrade');
+        expect(items[2].value).toBe('1.8');
+      });
+
+      it('should include tooltipText in grade item when conversion fails', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('');
+
+        const applicant = {
+          masterDegreeName: 'AI',
+          masterUniversity: 'TU Berlin',
+          masterGrade: '75',
+          masterGradeUpperLimit: '100',
+          masterGradeLowerLimit: '0',
+        } as any;
+
+        const items = component.getMasterItems(applicant);
+        expect(items[2].tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+      });
+
+      it('should include converted grade with tooltip when conversion differs', () => {
+        vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.3');
+
+        const applicant = {
+          masterDegreeName: 'Data Science',
+          masterUniversity: 'RWTH Aachen',
+          masterGrade: '85',
+          masterGradeUpperLimit: '100',
+          masterGradeLowerLimit: '50',
+        } as any;
+
+        const items = component.getMasterItems(applicant);
+        expect(items[2].value).toBe('2.3 (85)');
+        expect(items[2].tooltipText).toBe('evaluation.details.converterTooltip');
+      });
+
+      it('should return items with undefined values for an applicant with no degree data', () => {
+        const applicant = {} as any;
+        const items = component.getMasterItems(applicant);
+        expect(items).toHaveLength(3);
+        expect(items[0].value).toBeUndefined();
+        expect(items[1].value).toBeUndefined();
+        expect(items[2].value).toBe('');
+      });
+    });
+  });
+
+  describe('Computed Education Items', () => {
+    it('bachelorItemsComputed should return empty array when currentApplication has no applicant', () => {
+      component.currentApplication.set(makeDetailApp('x'));
+      const items = component.bachelorItemsComputed();
+      expect(items).toHaveLength(0);
+    });
+
+    it('masterItemsComputed should return empty array when currentApplication has no applicant', () => {
+      component.currentApplication.set(makeDetailApp('x'));
+      const items = component.masterItemsComputed();
+      expect(items).toHaveLength(0);
+    });
+
+    it('bachelorItemsComputed should call getBachelorItems with current applicant', () => {
+      const getBachelorSpy = vi.spyOn(component, 'getBachelorItems').mockReturnValue([]);
+      component.currentApplication.set(makeDetailApp('1'));
+
+      component.bachelorItemsComputed();
+
+      expect(getBachelorSpy).toHaveBeenCalledOnce();
+      expect(getBachelorSpy).toHaveBeenCalledWith(component.currentApplicationApplicant());
+    });
+
+    it('masterItemsComputed should call getMasterItems with current applicant', () => {
+      const getMasterSpy = vi.spyOn(component, 'getMasterItems').mockReturnValue([]);
+      component.currentApplication.set(makeDetailApp('1'));
+
+      component.masterItemsComputed();
+
+      expect(getMasterSpy).toHaveBeenCalledOnce();
+      expect(getMasterSpy).toHaveBeenCalledWith(component.currentApplicationApplicant());
+    });
+
+    it('bachelorItemsComputed should return empty array when currentApplication is undefined', () => {
+      component.currentApplication.set(undefined);
+      fixture.detectChanges();
+      expect(component.bachelorItemsComputed()).toEqual([]);
+    });
+
+    it('masterItemsComputed should return empty array when currentApplication is undefined', () => {
+      component.currentApplication.set(undefined);
+      fixture.detectChanges();
+      expect(component.masterItemsComputed()).toEqual([]);
     });
   });
 });
