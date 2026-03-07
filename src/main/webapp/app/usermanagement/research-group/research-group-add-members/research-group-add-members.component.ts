@@ -44,7 +44,6 @@ export class ResearchGroupAddMembersComponent {
 
   userService = inject(UserResourceApiService);
   researchGroupService = inject(ResearchGroupResourceApiService);
-  http = inject(HttpClient);
   toastService = inject(ToastService);
 
   public readonly MIN_SEARCH_LENGTH = 3;
@@ -63,6 +62,8 @@ export class ResearchGroupAddMembersComponent {
 
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
+
+  private http = inject(HttpClient);
 
   constructor() {
     void this.loadAvailableUsers();

@@ -1,5 +1,5 @@
 <!-- Confirmation Dialog for Professor -->
-@if (mode() === 'professor') {
+@if (isProfessorMode()) {
   <jhi-confirm-dialog
     #confirmDialog
     [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
@@ -13,7 +13,7 @@
 }
 
 <!-- Confirmation Dialog for Admin -->
-@if (mode() === 'admin') {
+@if (isAdminMode()) {
   <jhi-confirm-dialog
     #confirmDialog
     [header]="'researchGroup.adminView.createDialog.confirmHeader' | translate"
@@ -28,12 +28,12 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
   <!-- Information Notice -->
-  @if (mode() === 'professor') {
+  @if (isProfessorMode()) {
     <jhi-info-box severity="primary" message="onboarding.professorRequest.approvalNotice" [shouldTranslate]="true" />
   }
 
   <!-- Personal Information -->
-  @if (mode() === 'professor') {
+  @if (isProfessorMode()) {
     <div class="flex flex-col gap-4">
       <h3
         class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
@@ -97,12 +97,12 @@
       jhiTranslate="onboarding.professorRequest.sections.researchGroupInfo"
     ></h3>
 
-    @if (mode() === 'admin') {
+    @if (isAdminMode()) {
       <div class="flex flex-col gap-3">
         <jhi-search-filter-sort-bar
           [searchText]="'researchGroup.adminView.professorSelect.searchPlaceholder' | translate"
           [fullWidth]="true"
-          [showRecords]="adminProfessorSearchQuery().trim().length >= MIN_ADMIN_SEARCH_LENGTH"
+          [showRecords]="isSearchQueryLongEnough()"
           [totalRecords]="adminProfessorTotalCount()"
           [singleEntity]="'researchGroup.adminView.professorSelect.singleEntity' | translate"
           [multipleEntities]="'researchGroup.adminView.professorSelect.multipleEntities' | translate"
@@ -132,36 +132,28 @@
           <div class="flex flex-col border border-border-default rounded-lg overflow-y-auto max-h-64">
             @if (isLoadingAdminUsers()) {
               <div class="flex items-center justify-center h-24 bg-background-default rounded-lg">
-                <p-progressSpinner styleClass="w-8 h-8 text-text-primary" />
+                <jhi-progress-spinner styleClass="w-8 h-8 text-text-primary" />
               </div>
             }
 
-            @if (
-              !isLoadingAdminUsers() &&
-              adminProfessorSearchQuery().trim().length > 0 &&
-              adminProfessorSearchQuery().trim().length < MIN_ADMIN_SEARCH_LENGTH
-            ) {
+            @if (showSearchMinLengthHint()) {
               <div class="p-4 text-sm text-center text-text-secondary">
                 {{ 'researchGroup.members.emptySearch' | translate: { minLength: MIN_ADMIN_SEARCH_LENGTH } }}
               </div>
             }
 
-            @if (
-              !isLoadingAdminUsers() &&
-              adminProfessorSearchQuery().trim().length >= MIN_ADMIN_SEARCH_LENGTH &&
-              adminProfessorCandidates().length === 0
-            ) {
+            @if (showNoSearchResults()) {
               <div class="p-4 text-sm text-center text-text-secondary">
                 {{ 'researchGroup.adminView.professorSelect.noResults' | translate }}
               </div>
             }
 
-            @if (!isLoadingAdminUsers() && adminProfessorCandidates().length > 0) {
+            @if (showCandidatesList()) {
               @for (user of adminProfessorCandidates(); track user.id) {
                 <div
                   class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
-                  [class.bg-background-surface-alt]="isAdminProfessorSelected(user)"
-                  [class.hover:bg-background-surface]="!isAdminProfessorSelected(user)"
+                  [class.bg-background-surface-alt]="selectedAdminProfessor()?.id === user.id"
+                  [class.hover:bg-background-surface]="selectedAdminProfessor()?.id !== user.id"
                   (click)="selectAdminProfessor(user)"
                   role="button"
                   tabindex="0"
@@ -347,7 +339,7 @@
       </div>
     </div>
 
-    @if (mode() === 'professor') {
+    @if (isProfessorMode()) {
       <div>
         <jhi-string-input
           label="onboarding.professorRequest.additionalNotes.label"
@@ -370,7 +362,7 @@
       variant="outlined"
       [disabled]="isSubmitting()"
     />
-    @if (mode() === 'professor') {
+    @if (isProfessorMode()) {
       <jhi-button
         type="submit"
         [disabled]="form.invalid || isSubmitting()"
@@ -380,7 +372,7 @@
         [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
       />
     }
-    @if (mode() === 'admin') {
+    @if (isAdminMode()) {
       <jhi-button
         type="submit"
         [disabled]="form.invalid || isSubmitting()"

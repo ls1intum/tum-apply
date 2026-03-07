@@ -92,7 +92,7 @@ public class UserResource {
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @RequestParam(required = false) String searchQuery
     ) {
-        log.info("Fetching available users for research group with search query: {}", searchQuery);
+        log.info("GET /api/users/available-for-research-group - Fetching available users with searchQuery={}", searchQuery);
         PagedResult<KeycloakUserDTO> usersPage = keycloakUserService.getAvailableUsersForResearchGroup(searchQuery, pageDTO);
         return ResponseEntity.ok(new PageResponseDTO<>(usersPage.content(), usersPage.total()));
     }

@@ -16,9 +16,9 @@ import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
+import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
@@ -54,13 +54,15 @@ interface SelectedAdminProfessor {
     FontAwesomeModule,
     InfoBoxComponent,
     SearchFilterSortBar,
-    ProgressSpinnerModule,
+    ProgressSpinnerComponent,
   ],
   templateUrl: './research-group-creation-form.component.html',
 })
 export class ResearchGroupCreationFormComponent {
   // Input to determine if this is admin mode or professor mode
   mode = computed<FormMode>(() => this.config?.data?.mode ?? 'professor');
+  isProfessorMode = computed(() => this.mode() === 'professor');
+  isAdminMode = computed(() => this.mode() === 'admin');
 
   // Form
   form: FormGroup;
@@ -78,6 +80,14 @@ export class ResearchGroupCreationFormComponent {
   adminProfessorCurrentPage = signal(0);
   hasMoreAdminProfessorCandidates = computed(() => this.adminProfessorCandidates().length < this.adminProfessorTotalCount());
   selectedAdminProfessor = signal<SelectedAdminProfessor | null>(null);
+  isSearchQueryLongEnough = computed(() => this.adminProfessorSearchQuery().trim().length >= this.MIN_ADMIN_SEARCH_LENGTH);
+  showSearchMinLengthHint = computed(
+    () => !this.isLoadingAdminUsers() && this.adminProfessorSearchQuery().trim().length > 0 && !this.isSearchQueryLongEnough(),
+  );
+  showNoSearchResults = computed(
+    () => !this.isLoadingAdminUsers() && this.isSearchQueryLongEnough() && this.adminProfessorCandidates().length === 0,
+  );
+  showCandidatesList = computed(() => !this.isLoadingAdminUsers() && this.adminProfessorCandidates().length > 0);
 
   // School and Department data
   schools = signal<SchoolShortDTO[]>([]);
@@ -142,10 +152,10 @@ export class ResearchGroupCreationFormComponent {
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
   private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
-  private mockUsers = signal<KeycloakUserDTO[] | null>(null);
+  private mockUsers = signal<KeycloakUserDTO[] | undefined>(undefined);
   private readonly MOCK_USERS_PATH = '/content/mock/keycloak-users.json';
   private readonly ADMIN_LOADER_DELAY_MS = 250;
-  private adminLoaderTimeout: number | null = null;
+  private adminLoaderTimeout: number | undefined = undefined;
   private latestAdminSearchRequestId = 0;
 
   constructor() {
@@ -221,9 +231,9 @@ export class ResearchGroupCreationFormComponent {
     this.adminProfessorSearchQuery.set(searchQuery);
     const trimmedQuery = searchQuery.trim();
 
-    if (this.adminLoaderTimeout !== null) {
+    if (this.adminLoaderTimeout !== undefined) {
       clearTimeout(this.adminLoaderTimeout);
-      this.adminLoaderTimeout = null;
+      this.adminLoaderTimeout = undefined;
     }
 
     if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
@@ -264,17 +274,9 @@ export class ResearchGroupCreationFormComponent {
     void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
   }
 
-  isAdminProfessorSelected(user: KeycloakUserDTO): boolean {
-    const selected = this.selectedAdminProfessor();
-    if (!selected?.id || !user.id) {
-      return false;
-    }
-    return selected.id === user.id;
-  }
-
   private async loadMockUsers(): Promise<KeycloakUserDTO[]> {
     const cachedUsers = this.mockUsers();
-    if (cachedUsers !== null) {
+    if (cachedUsers !== undefined) {
       return cachedUsers;
     }
 
@@ -338,7 +340,7 @@ export class ResearchGroupCreationFormComponent {
     } finally {
       if (requestId === this.latestAdminSearchRequestId) {
         clearTimeout(this.adminLoaderTimeout);
-        this.adminLoaderTimeout = null;
+        this.adminLoaderTimeout = undefined;
         this.isLoadingAdminUsers.set(false);
       }
     }
