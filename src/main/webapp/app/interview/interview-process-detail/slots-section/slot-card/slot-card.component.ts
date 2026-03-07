@@ -35,7 +35,7 @@ export class SlotCardComponent {
 
   // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => [
-    { label: 'button.edit', icon: 'pencil', command: () => this.onEdit(), severity: 'primary' },
+    { label: 'button.edit', icon: 'pencil', command: () => { this.onEdit(); }, severity: 'primary' },
     { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
   ]);
 
