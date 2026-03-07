@@ -153,13 +153,13 @@
   <jhi-dialog [visible]="showEditDialog()" (visibleChange)="closeEditDialog()" header="interview.slots.edit.title" width="30rem">
     <div class="flex flex-col gap-4">
       <!-- Read-only Date & Time -->
-      <div class="bg-background-default border border-border-default rounded p-4 flex flex-col gap-1">
-        <div class="flex items-center gap-2 text-sm text-text-primary font-semibold">
-          <fa-icon icon="calendar" class="text-text-secondary" />
+      <div class="bg-background-default border border-border-default rounded-sm p-4 flex flex-col gap-1">
+        <div class="flex items-center gap-2 text-sm text-text-primary">
+          <fa-icon icon="calendar" class="text-primary" />
           <span>{{ editSlotDate() }}</span>
         </div>
-        <div class="flex items-center gap-2 text-sm text-text-secondary">
-          <fa-icon icon="clock" class="text-text-secondary" />
+        <div class="flex items-center gap-2 text-sm text-text-primary">
+          <fa-icon icon="clock" class="text-primary" />
           <span>{{ editSlotTimeRange() }}</span>
         </div>
       </div>
