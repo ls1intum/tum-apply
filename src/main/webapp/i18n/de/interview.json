@@ -169,6 +169,21 @@
           "summary": "Zugriff verweigert",
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
         }
+      },
+      "cancelInterview": {
+        "button": "Interview absagen",
+        "header": "Interview absagen",
+        "message": "Möchtest du dieses Interview wirklich absagen? Bitte wähle aus, was mit dem Termin und dem Bewerber passieren soll:",
+        "sendReinvite": "Bewerber erneut einladen (Buchunglink schicken)",
+        "deleteSlot": "Diesen Termin-Slot komplett löschen",
+        "success": {
+          "summary": "Interview abgesagt",
+          "detail": "Das Interview wurde erfolgreich abgesagt."
+        },
+        "error": {
+          "summary": "Absage fehlgeschlagen",
+          "detail": "Das Interview konnte nicht abgesagt werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
       }
     },
     "interviewees": {

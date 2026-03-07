@@ -26,6 +26,8 @@ export class InterviewProcessDetailComponent {
 
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
+  // Signal to trigger slots section reload
+  slotsRefreshKey = signal(0);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -52,6 +54,10 @@ export class InterviewProcessDetailComponent {
 
   onSlotAssigned(): void {
     this.intervieweeRefreshKey.update(k => k + 1);
+  }
+
+  onSlotCancelled(): void {
+    this.slotsRefreshKey.update(k => k + 1);
   }
 
   private updateTabTitle(jobTitle: string): void {

@@ -25,6 +25,7 @@ export class IntervieweeCardComponent {
 
   // Outputs
   sendInvitation = output<IntervieweeDTO>();
+  cancelInterview = output<IntervieweeDTO>();
 
   // Computed values
   scheduledDate = computed(() => {
@@ -56,5 +57,10 @@ export class IntervieweeCardComponent {
   // Methods
   navigateToAssessment(): void {
     void this.router.navigate(['/interviews', 'process', this.processId(), 'interviewee', this.interviewee().id, 'assessment']);
+  }
+
+  onCancelInterview(event: Event): void {
+    event.stopPropagation();
+    this.cancelInterview.emit(this.interviewee());
   }
 }

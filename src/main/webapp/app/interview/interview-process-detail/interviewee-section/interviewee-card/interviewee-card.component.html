@@ -74,4 +74,20 @@
       />
     </div>
   }
+
+  <!-- Actions for SCHEDULED state -->
+  @if (interviewee().state === IntervieweeState.SCHEDULED) {
+    <div class="flex-shrink-0 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0">
+      <jhi-button
+        (click)="onCancelInterview($event)"
+        label="interview.slots.cancelInterview.button"
+        [shouldTranslate]="true"
+        icon="xmark"
+        variant="outlined"
+        severity="primary"
+        [fullWidth]="true"
+        styleClass="lg:w-auto w-full justify-center"
+      />
+    </div>
+  }
 </div>
