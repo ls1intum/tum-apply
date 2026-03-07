@@ -146,6 +146,43 @@ public final class ApplicationTestData {
      * Creates a rejected application with all related test data and overrides its lastModifiedAt timestamp.
      */
     public static ApplicationWithDocs savedRejectedWithLastModified(
+        RetentionTestContext ctx,
+        LocalDateTime lastModifiedAt,
+        String fileName
+    ) {
+        Applicant applicant = ApplicantTestData.savedWithRandomEmail(ctx.applicantRepository(), ctx.userRepository());
+        Job job = JobTestData.saved(
+            ctx.jobRepository(),
+            ctx.professor(),
+            ctx.researchGroup(),
+            "Retention test job",
+            JobState.PUBLISHED,
+            null
+        );
+        Application application = savedRejected(ctx.applicationRepository(), job, applicant);
+        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+            ctx.documentRepository(),
+            ctx.documentDictionaryRepository(),
+            ctx.professor(),
+            application,
+            null,
+            DocumentType.CV,
+            fileName
+        );
+
+        ctx
+            .entityManager()
+            .createNativeQuery("UPDATE applications SET last_modified_at = :date WHERE application_id = :id")
+            .setParameter("date", lastModifiedAt)
+            .setParameter("id", application.getApplicationId())
+            .executeUpdate();
+        ctx.entityManager().flush();
+        ctx.entityManager().clear();
+
+        return new ApplicationWithDocs(application, dictionary);
+    }
+
+    public record RetentionTestContext(
         ApplicationRepository applicationRepository,
         ApplicantRepository applicantRepository,
         UserRepository userRepository,
@@ -154,33 +191,8 @@ public final class ApplicationTestData {
         DocumentDictionaryRepository documentDictionaryRepository,
         EntityManager entityManager,
         User professor,
-        ResearchGroup researchGroup,
-        LocalDateTime lastModifiedAt,
-        String fileName
-    ) {
-        Applicant applicant = ApplicantTestData.savedWithRandomEmail(applicantRepository, userRepository);
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention test job", JobState.PUBLISHED, null);
-        Application application = savedRejected(applicationRepository, job, applicant);
-        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
-            documentRepository,
-            documentDictionaryRepository,
-            professor,
-            application,
-            null,
-            DocumentType.CV,
-            fileName
-        );
-
-        entityManager
-            .createNativeQuery("UPDATE applications SET last_modified_at = :date WHERE application_id = :id")
-            .setParameter("date", lastModifiedAt)
-            .setParameter("id", application.getApplicationId())
-            .executeUpdate();
-        entityManager.flush();
-        entityManager.clear();
-
-        return new ApplicationWithDocs(application, dictionary);
-    }
+        ResearchGroup researchGroup
+    ) {}
 
     public record ApplicationWithDocs(Application application, DocumentDictionary dictionary) {}
 }

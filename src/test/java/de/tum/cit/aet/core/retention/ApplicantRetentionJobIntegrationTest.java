@@ -19,6 +19,7 @@ import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.ApplicationTestData.ApplicationWithDocs;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData.RetentionTestContext;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
@@ -76,6 +77,7 @@ class ApplicantRetentionJobIntegrationTest {
 
     private ResearchGroup researchGroup;
     private User professor;
+    private RetentionTestContext ctx;
 
     @BeforeEach
     void setUp() {
@@ -90,11 +92,7 @@ class ApplicantRetentionJobIntegrationTest {
         School school = SchoolTestData.savedDefault(schoolRepository);
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository, DepartmentTestData.savedDefault(departmentRepository, school));
         professor = UserTestData.saveProfessor(researchGroup, userRepository);
-    }
-
-    @Test
-    void shouldRespectDryRunWhenEnabled() {
-        Application oldApplication = ApplicationTestData.savedRejectedWithLastModified(
+        ctx = new RetentionTestContext(
             applicationRepository,
             applicantRepository,
             userRepository,
@@ -103,7 +101,14 @@ class ApplicantRetentionJobIntegrationTest {
             documentDictionaryRepository,
             entityManager,
             professor,
-            researchGroup,
+            researchGroup
+        );
+    }
+
+    @Test
+    void shouldRespectDryRunWhenEnabled() {
+        Application oldApplication = ApplicationTestData.savedRejectedWithLastModified(
+            ctx,
             LocalDateTime.now(ZoneOffset.UTC).minusDays(2),
             "old-cv.pdf"
         ).application();
@@ -120,28 +125,12 @@ class ApplicantRetentionJobIntegrationTest {
     @Test
     void shouldOnlyDeleteApplicationsBeforeCutoff() {
         ApplicationWithDocs oldApplication = ApplicationTestData.savedRejectedWithLastModified(
-            applicationRepository,
-            applicantRepository,
-            userRepository,
-            jobRepository,
-            documentRepository,
-            documentDictionaryRepository,
-            entityManager,
-            professor,
-            researchGroup,
+            ctx,
             LocalDateTime.now(ZoneOffset.UTC).minusDays(3),
             "old-cv.pdf"
         );
         ApplicationWithDocs recentApplication = ApplicationTestData.savedRejectedWithLastModified(
-            applicationRepository,
-            applicantRepository,
-            userRepository,
-            jobRepository,
-            documentRepository,
-            documentDictionaryRepository,
-            entityManager,
-            professor,
-            researchGroup,
+            ctx,
             LocalDateTime.now(ZoneOffset.UTC).minusHours(6),
             "recent-cv.pdf"
         );
