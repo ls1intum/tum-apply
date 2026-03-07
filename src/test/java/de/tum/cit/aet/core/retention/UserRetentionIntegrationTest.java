@@ -10,6 +10,7 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -163,7 +164,7 @@ class UserRetentionIntegrationTest {
     }
 
     @Test
-    void shouldDeleteApplicantAndAllAssociatedData() throws Exception {
+    void shouldDeleteApplicantAndAllAssociatedData() {
         User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         User savedApplicantUser = ApplicantTestData.saveApplicant("applicant@test.local", userRepository);
         UUID applicantId = savedApplicantUser.getUserId();
@@ -186,7 +187,7 @@ class UserRetentionIntegrationTest {
             DocumentType.CV,
             "cv.pdf"
         );
-        var applicantProfileDictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        DocumentDictionary applicantProfileDictionary = DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
             documentDictionaryRepository,
             savedApplicantUser,
