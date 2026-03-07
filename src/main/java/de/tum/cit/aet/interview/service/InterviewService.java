@@ -444,21 +444,33 @@ public class InterviewService {
 
     /**
      * Retrieves interview slots for a given interview process with optional month
-     * filtering.
+     * and time filtering.
      * If year and month are provided, returns only slots within that month.
+     * If afterDateTime is provided, returns only slots starting at or after that
+     * time.
+     * If beforeDateTime is provided, returns only slots starting before that time.
      * Otherwise, returns all slots for the process.
      * Slots are returned ordered by start time (ascending).
      *
-     * @param processId the ID of the interview process
-     * @param year      optional year to filter by (e.g., 2025)
-     * @param month     optional month to filter by (1-12)
-     * @param pageDTO   pagination information
+     * @param processId      the ID of the interview process
+     * @param year           optional year to filter by (e.g., 2025)
+     * @param month          optional month to filter by (1-12)
+     * @param afterDateTime  optional cutoff — only slots with startDateTime >= this
+     * @param beforeDateTime optional cutoff — only slots with startDateTime < this
+     * @param pageDTO        pagination information
      * @return a page of interview slots ordered by start time
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException   if the user is not authorized to view these
      *                                 slots
      */
-    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(
+        UUID processId,
+        Integer year,
+        Integer month,
+        Instant afterDateTime,
+        Instant beforeDateTime,
+        PageDTO pageDTO
+    ) {
         // 1. Load Interview Process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
@@ -472,15 +484,24 @@ public class InterviewService {
         // 3. Convert PageDTO to Pageable
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
-        // 4. Query slots - with or without month filter
-        Page<InterviewSlot> slotsPage;
+        // 4. Calculate month boundaries if year and month are provided
+        Instant monthStart = null;
+        Instant monthEnd = null;
         if (year != null && month != null) {
-            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
-            ZonedDateTime monthEnd = monthStart.plusMonths(1);
-            slotsPage = interviewSlotRepository.findByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable);
-        } else {
-            slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
+            ZonedDateTime start = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
+            monthStart = start.toInstant();
+            monthEnd = start.plusMonths(1).toInstant();
         }
+
+        // 5. Query slots with optional parameters
+        Page<InterviewSlot> slotsPage = interviewSlotRepository.findSlotsWithFilters(
+            processId,
+            afterDateTime,
+            beforeDateTime,
+            monthStart,
+            monthEnd,
+            pageable
+        );
 
         // 5. Convert to DTOs (using rich mapping logic)
         List<InterviewSlotDTO> slotDTOs = slotsPage

@@ -20,6 +20,7 @@ import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -128,11 +129,15 @@ public class InterviewResource {
      * ordered by start time (ascending). Supports optional filtering by year and
      * month.
      *
-     * @param processId the ID of the interview process
-     * @param year      optional year filter
-     * @param month     optional month filter
-     * @param page      zero-based page index (default: 0)
-     * @param size      the size of the page (default: 20)
+     * @param processId      the ID of the interview process
+     * @param year           optional year filter
+     * @param month          optional month filter
+     * @param afterDateTime  optional date filter to only return slots after this
+     *                       date
+     * @param beforeDateTime optional date filter to only return slots before this
+     *                       date
+     * @param page           zero-based page index (default: 0)
+     * @param size           the size of the page (default: 20)
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and page of
      *         {@link InterviewSlotDTO}
      * @throws EntityNotFoundException if the interview process is not found
@@ -144,12 +149,21 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @RequestParam(required = false) Integer year,
         @RequestParam(required = false) Integer month,
+        @RequestParam(required = false) Instant afterDateTime,
+        @RequestParam(required = false) Instant beforeDateTime,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
         log.info("REST request to get slots for process: {}, year: {}, month: {}, page: {}", processId, year, month, page);
         PageDTO pageDTO = new PageDTO(size, page);
-        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(
+            processId,
+            year,
+            month,
+            afterDateTime,
+            beforeDateTime,
+            pageDTO
+        );
         log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
     }

@@ -48,6 +48,7 @@
     },
     "slots": {
       "addSlots": "Termine hinzufügen",
+      "notEnoughSlots": "Nicht genügend freie Termine für alle eingeladenen Bewerbenden verfügbar.",
       "slotsCountSingular": "Termin",
       "slotsCountPlural": "Termine",
       "showMoreSingular": "weiteren Termin",

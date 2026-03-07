@@ -27,6 +27,10 @@ export class SlotCardComponent {
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
   isVirtual = computed(() => this.slot().location === 'virtual');
   isBooked = computed(() => this.slot().isBooked ?? false);
+  isPast = computed(() => {
+    const start = this.slot().startDateTime;
+    return start !== undefined && start !== '' && new Date(start).getTime() < Date.now();
+  });
   applicantName = computed(() => {
     const interviewee = this.slot().interviewee;
     if (!interviewee) return '';
@@ -35,8 +39,6 @@ export class SlotCardComponent {
 
   // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => [
-    // TODO: Uncomment when edit functionality is implemented
-    // { label: 'button.edit', icon: 'pencil', command: () => this.onEdit() },
     { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
   ]);
 
