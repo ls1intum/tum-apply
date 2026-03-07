@@ -395,7 +395,7 @@ describe('ResearchGroupAdminView', () => {
           data: { mode: 'admin' },
         }),
       );
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should reload when create dialog returns created group payload', async () => {
@@ -413,7 +413,7 @@ describe('ResearchGroupAdminView', () => {
       component.onCreateResearchGroup();
       await Promise.resolve();
 
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not reload when create dialog is cancelled', async () => {
@@ -459,7 +459,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.activateResearchGroup).toHaveBeenCalledWith('rg-1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.approve');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when approving research group fails', async () => {
@@ -479,7 +479,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.denyResearchGroup).toHaveBeenCalledWith('rg-1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.deny');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when denying research group fails', async () => {
@@ -499,7 +499,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.withdrawResearchGroup).toHaveBeenCalledWith('rg-2');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.withdraw');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when withdrawing research group fails', async () => {
@@ -619,15 +619,15 @@ describe('ResearchGroupAdminView', () => {
 
       draftItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(approveConfirmSpy).toHaveBeenCalled();
+      expect(approveConfirmSpy).toHaveBeenCalledOnce();
 
       draftItems.find(item => item.label === 'button.deny')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(denyConfirmSpy).toHaveBeenCalled();
+      expect(denyConfirmSpy).toHaveBeenCalledOnce();
 
       activeItems.find(item => item.label === 'button.withdraw')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-2');
-      expect(withdrawConfirmSpy).toHaveBeenCalled();
+      expect(withdrawConfirmSpy).toHaveBeenCalledOnce();
 
       deniedItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-3');
