@@ -49,9 +49,12 @@ export class ProfilePictureSettingsComponent {
   readonly faMagnifyingGlassPlus = faMagnifyingGlassPlus;
   readonly faRotateRight = faRotateRight;
 
+  // Dialog + image source state used by the cropper overlay.
   cropDialogVisible = signal(false);
   rawImageSrc = signal<string | null>(null);
 
+  // User-controlled crop transform. `zoomFactor` is applied on top of `coverScale()`,
+  // which already guarantees that the circular crop area is fully covered.
   zoomFactor = signal(1);
   minZoomFactor = 0.5;
   maxZoomFactor = 3;
@@ -66,6 +69,8 @@ export class ProfilePictureSettingsComponent {
 
   currentProfilePictureUrl = computed<string | null>(() => this.normalizeAvatarUrl(this.accountService.loadedUser()?.avatar));
 
+  // Foreground preview shown inside the crop dialog. The image is centered,
+  // then translated by the user's pan and finally scaled for the active zoom level.
   imageStyle = computed<Record<string, string>>(() => {
     const scale = this.effectiveScale();
     const pan = this.clampedPanForScale(scale);
@@ -83,6 +88,8 @@ export class ProfilePictureSettingsComponent {
     };
   });
 
+  // Soft blurred background behind the sharp foreground image so empty corners
+  // never appear while the user pans a portrait-oriented or landscape-oriented image.
   blurImageStyle = computed<Record<string, string>>(() => {
     const scale = this.blurScale();
     const pan = this.clampedPanForScale(scale, CROP_RADIUS + BLUR_PADDING_PX);
@@ -196,6 +203,10 @@ export class ProfilePictureSettingsComponent {
     }
   }
 
+  /**
+   * Rotates the currently loaded image by 90 degrees clockwise and rebuilds the
+   * crop state from the rotated result so panning limits and zoom are recalculated.
+   */
   onRotate(): void {
     if (!this.img) return;
 
@@ -221,6 +232,13 @@ export class ProfilePictureSettingsComponent {
     rotated.src = rotatedSrc;
   }
 
+  /**
+   * Renders the visible crop result into a square canvas, masks it into a circle,
+   * uploads the generated JPEG and updates the in-memory avatar shown in the app shell.
+   *
+   * The preview uses a 360px interaction area with a 150px crop radius, while the
+   * exported avatar is normalized to a fixed 300x300px output for storage/display.
+   */
   async onSave(): Promise<void> {
     if (!this.img) return;
 
@@ -249,6 +267,7 @@ export class ProfilePictureSettingsComponent {
     const cropTop = cc - CROP_RADIUS;
     const scaleToOut = outSize / (CROP_RADIUS * 2);
 
+    // Convert from dialog-space coordinates into export-canvas coordinates.
     const fgLeft = cc + fgPan.x - fgDisplayW / 2;
     const fgTop = cc + fgPan.y - fgDisplayH / 2;
     const bgLeft = cc + bgPan.x - bgDisplayW / 2;
@@ -299,6 +318,8 @@ export class ProfilePictureSettingsComponent {
     }
   }
 
+  // Reset to a safe initial crop: centered image with the minimum zoom required
+  // to fully cover the circular crop area.
   private resetCropState(): void {
     if (this.imgNatW() <= 0 || this.imgNatH() <= 0) return;
     const initialZoom = Math.max(this.minZoomFactor, Math.min(1, this.maxZoomFactor));
@@ -326,6 +347,7 @@ export class ProfilePictureSettingsComponent {
     return this.coverScale() * 1.2;
   }
 
+  // Enforces the current pan limits after any zoom or drag update.
   private clampPan(): void {
     const scale = this.effectiveScale();
     const pan = this.clampedPanForScale(scale);
@@ -333,6 +355,7 @@ export class ProfilePictureSettingsComponent {
     this.panY.set(pan.y);
   }
 
+  // Prevents the visible crop circle from ever exposing empty space around the image.
   private clampedPanForScale(scale: number, coverRadius: number = CROP_RADIUS): { x: number; y: number } {
     const natW = this.imgNatW();
     const natH = this.imgNatH();
@@ -347,6 +370,10 @@ export class ProfilePictureSettingsComponent {
     };
   }
 
+  /**
+   * Validates the selected file, loads it as a data URL and initializes the crop dialog
+   * once the browser has decoded the image dimensions.
+   */
   private loadFileForCrop(file: File): void {
     if (file.size > MAX_UPLOAD_SIZE_BYTES) {
       this.toastService.showErrorKey('settings.profilePicture.fileTooLarge');
