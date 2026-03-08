@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -14,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Table(name = "user_research_group_roles")
 public class UserResearchGroupRole {
 

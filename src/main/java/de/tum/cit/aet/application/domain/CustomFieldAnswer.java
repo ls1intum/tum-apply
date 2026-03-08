@@ -1,6 +1,7 @@
 package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.core.domain.converter.StringListConverter;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.job.domain.CustomField;
 import jakarta.persistence.*;
 import java.util.List;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@NoUserDataExportRequired(reason = "Custom field answers are currently not part of user data export scope")
 @Getter
 @Setter
 @Table(name = "custom_field_answers")
