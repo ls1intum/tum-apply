@@ -1,50 +1,228 @@
 # 🎨 Color System & Theming
 
-TUMApply uses a scalable and customizable theming system that's built on PrimeNG Themes and Tailwind CSS. It supports
-both light and dark mode through a centralized theme management.
+TUMApply uses a comprehensive theming system built on **PrimeNG Themes** and **Tailwind CSS v4**. The system supports multiple themes with automatic dark mode detection and seamless switching.
 
 ---
 
-## 🧱 Structure
+## 🏗️ Architecture Overview
 
-The theming system is structured as follows:
+### Theme Sources (Single Source of Truth)
 
-- `src/main/webapp/content/theming/tumapplypreset.ts`: defines the custom PrimeNG theme with TUMApply-specific colors
-- **Tailwind CSS (Primary):** Always try to use Tailwind utility classes first.
-- **SCSS (Secondary):** Only use custom SCSS if the desired design cannot be achieved with Tailwind.
+**`src/main/webapp/content/theming/`**
+
+- **`tumapplypreset.ts`** — Main TUMApply theme (light + dark modes)
+- **`custompreset.ts`** — "Blossom" theme variant
+- **`aquabloom.ts`** — "AquaBloom" theme variant
+- **`shared-theme-config.ts`** — Shared primitives, component configs, and color schemes
+
+PrimeNG generates CSS custom properties from these presets automatically:
+
+- Color scales: `--p-primary-50` through `--p-primary-950`
+- Semantic tokens: `--p-primary-color`, `--p-background-default`, `--p-text-primary`, etc.
+- Component tokens: `--p-button-background`, `--p-stepper-step-number-size`, etc.
+
+### Tailwind Integration
+
+**`src/main/webapp/content/scss/_tokens.scss`**
+
+Maps PrimeNG CSS variables to Tailwind-compatible color tokens. This enables Tailwind utility classes while maintaining a single source of truth in the PrimeNG presets.
+
+```scss
+@theme {
+  --color-primary-default: var(--p-primary-color);
+  --color-text-primary: var(--p-text-primary);
+  --color-background-default: var(--p-background-default);
+  // ... etc.
+}
+```
+
+### Global Styles
+
+**`src/main/webapp/content/scss/global.scss`**
+
+```scss
+@use 'tailwindcss' as *;
+@use './tokens' as *;
+@plugin "tailwindcss-primeui";
+@custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *));
+```
+
+### Theme Service
+
+**`src/main/webapp/app/service/theme.service.ts`**
+
+- Manages theme switching (light, dark, blossom, aquabloom)
+- Syncs with system preferences via `prefers-color-scheme`
+- Persists user preference in `localStorage`
+- Applies theme by setting PrimeNG preset and CSS classes
 
 ---
 
-## 🎨 Using Colors
+## ✅ Best Practices
 
-To ensure a consistent design, avoid hard-coded hex values. Instead, use:
+### 1. **Always Use Semantic Colors**
 
-### ✅ PrimeNG variables (CSS custom properties)
-
-```
-color: var(--text-color);
-background-color: var(--surface-ground);
-```
-
-### ✅ Tailwind utility classes
+❌ **NEVER use hard-coded hex values:**
 
 ```html
-<div class="text-primary bg-surface-200 dark:bg-surface-700">...</div>
+<div style="color: #3070b3;">...</div>
+```
+
+✅ **Use Tailwind utility classes (PREFERRED):**
+
+```html
+<div class="text-primary-default bg-background-surface border-border-default">
+  <span class="text-text-secondary">Secondary text</span>
+</div>
+```
+
+✅ **Use PrimeNG CSS variables (for custom SCSS):**
+
+```scss
+.custom-element {
+  color: var(--p-text-primary);
+  background-color: var(--p-background-default);
+  border-color: var(--p-border-default);
+}
+```
+
+### 2. **Styling Priority**
+
+1. **Tailwind classes first** — Most common scenarios
+2. **PrimeNG CSS variables** — When Tailwind doesn't provide what you need
+3. **Custom SCSS** — Only when neither option works
+
+### 3. **Dark Mode Support**
+
+Use Tailwind's `dark:` variant with the custom dark mode selector:
+
+```html
+<div
+  class="bg-background-default text-text-primary 
+            dark:bg-background-surface dark:text-text-secondary"
+>
+  Adapts to theme automatically
+</div>
+```
+
+The `dark:` variant works with the `.tum-apply-dark-mode` class applied to `<html>`.
+
+### 4. **Available Color Categories**
+
+| Category       | Tailwind Classes                                 | CSS Variables                           | Use Case                       |
+| -------------- | ------------------------------------------------ | --------------------------------------- | ------------------------------ |
+| **Primary**    | `text-primary-default`, `bg-primary-hover`       | `--p-primary-color`                     | Primary actions, brand colors  |
+| **Secondary**  | `text-secondary-default`, `bg-secondary-hover`   | `--p-secondary-color`                   | Secondary actions              |
+| **Text**       | `text-text-primary`, `text-text-secondary`       | `--p-text-primary`                      | Text hierarchy                 |
+| **Background** | `bg-background-default`, `bg-background-surface` | `--p-background-default`                | Surfaces, cards                |
+| **Border**     | `border-border-default`                          | `--p-border-default`                    | Borders, dividers              |
+| **Semantic**   | `text-positive-default`, `text-negative-default` | `--p-success-color`, `--p-danger-color` | Success, error, warning states |
+
+### 5. **Common Patterns**
+
+**Card/Panel:**
+
+```html
+<div class="bg-background-surface border border-border-default rounded-lg p-4">
+  <h3 class="text-text-primary font-semibold">Title</h3>
+  <p class="text-text-secondary text-sm">Description</p>
+</div>
+```
+
+**Status Indicators:**
+
+```html
+<span class="text-positive-default">Success</span>
+<span class="text-negative-default">Error</span>
+<span class="text-warning-default">Warning</span>
+```
+
+**Interactive Elements:**
+
+```html
+<button
+  class="bg-primary-default text-text-on-primary 
+               hover:bg-primary-hover active:bg-primary-active"
+>
+  Click me
+</button>
 ```
 
 ---
 
-## ⚠️ Theme Customization
+## 🎨 Theme Customization
 
-To customize the theme, edit the color definitions in:
+### Modifying Existing Themes
 
-```
-src/main/webapp/content/theming/tumapplypreset.ts
+**Edit color definitions in:**
+
+- `src/main/webapp/content/theming/tumapplypreset.ts`
+- `src/main/webapp/content/theming/custompreset.ts`
+- `src/main/webapp/content/theming/aquabloom.ts`
+
+**Example:**
+
+```typescript
+export const TUMApplyPreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50: '#f3f6fc',
+      500: '#3070b3', // Main primary color
+      950: '#13243e',
+    },
+    // ... etc.
+  },
+});
 ```
 
-You can define new variables, override existing ones, or align Tailwind and PrimeNG settings for full consistency.
-For that please use:
+### Component-Specific Overrides
 
+**Edit:** `src/main/webapp/content/scss/prime-ng-overrides.scss`
+
+```scss
+:root {
+  --p-stepper-step-number-size: 1.75rem;
+  --p-accordion-header-background: var(--p-background-default);
+}
+
+// Custom classes
+.p-tag {
+  border: 0.1rem solid var(--p-border-default) !important;
+}
 ```
-src/main/webapp/content/scss/prime-ng-overrides.scss
+
+### Adding New Tailwind Tokens
+
+**Edit:** `src/main/webapp/content/scss/_tokens.scss`
+
+```scss
+@theme {
+  --color-custom-highlight: var(--p-primary-100);
+  // Now use: class="bg-custom-highlight"
+}
 ```
+
+---
+
+## 🔄 Theme Switching
+
+Users can switch themes via the UI. The `ThemeService` handles:
+
+- Theme persistence in localStorage
+- System preference synchronization
+- CSS class application (`.tum-apply-dark-mode`, `.tum-apply-blossom`, `.tum-apply-aquabloom`)
+- PrimeNG preset updates
+
+**Available themes:**
+
+- `light` — Default light theme
+- `dark` — Dark mode
+- `blossom` — Custom theme variant
+- `aquabloom` — Alternative theme variant
+
+---
+
+## 📚 Related Documentation
+
+- See [General Documentation](../general/general-documentation.md) for client-side best practices
+- Component library structure in `src/main/webapp/app/shared/components/`
