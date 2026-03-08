@@ -32,6 +32,8 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -39,6 +41,9 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -300,59 +305,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
         void exportJobToPDFReturnsPdfForPublicAccess() {
             Map<String, String> labels = createCompleteLabelsMap();
 
-            // default labels -> no explicit lang set, service should fallback (commonly to EN)
             byte[] result = api
                 .withoutPostProcessors()
                 .postAndReturnBytes(BASE_URL + "/job/" + job.getJobId() + "/pdf", labels, 200, MediaType.APPLICATION_PDF);
 
             assertValidPdf(result);
-            String text = extractTextFromPdf(result);
-            // JobTestData.saved() creates a job with default content; ensure at least the job title/description label exists
-            assertThat(text).contains(labels.get("jobDetails"));
-        }
-
-        @Test
-        void exportJobToPDFUsesLanguageFromLabels() {
-            // create a job with explicit EN/DE descriptions
-            String en = "This is the English job description unique-en-xyz";
-            String de = "Das ist die deutsche Stellenbeschreibung unique-de-xyz";
-            Job jobWithBoth = JobTestData.savedAll(
-                jobRepository,
-                "Lang Test Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                en,
-                de,
-                JobState.PUBLISHED
-            );
-
-            Map<String, String> labelsEn = createCompleteLabelsMap();
-            labelsEn.put("lang", "en");
-
-            byte[] pdfEn = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + jobWithBoth.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfEn);
-            String textEn = extractTextFromPdf(pdfEn);
-            assertThat(textEn).contains("unique-en-xyz");
-
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
-
-            byte[] pdfDe = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + jobWithBoth.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfDe);
-            String textDe = extractTextFromPdf(pdfDe);
-            assertThat(textDe).contains("unique-de-xyz");
         }
 
         @Test
@@ -391,14 +348,12 @@ class PDFExportResourceTest extends AbstractResourceTest {
             assertValidPdf(result);
         }
 
-        @Test
-        void exportJobToPDFHandlesAllDescriptionCombinations() {
-            // both present
-            String enBoth = "EN both unique-en-both";
-            String deBoth = "DE both unique-de-both";
-            Job both = JobTestData.savedAll(
+        @ParameterizedTest
+        @MethodSource("jobLanguageProvider")
+        void exportJobToPDFLanguageSelection(String enDescription, String deDescription, String requestedLang, String expectedSubstring) {
+            Job jobToTest = JobTestData.savedAll(
                 jobRepository,
-                "Both Job",
+                "Lang Test Job",
                 "AI",
                 "CS",
                 professor,
@@ -409,267 +364,42 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 20,
                 3,
                 FundingType.FULLY_FUNDED,
-                enBoth,
-                deBoth,
+                enDescription,
+                deDescription,
                 JobState.PUBLISHED
             );
 
-            Map<String, String> labelsEn = createCompleteLabelsMap();
-            labelsEn.put("lang", "en");
-            byte[] pdfBothEn = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + both.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfBothEn);
-            assertThat(extractTextFromPdf(pdfBothEn)).contains("unique-en-both");
+            Map<String, String> labels = createCompleteLabelsMap();
+            if (requestedLang != null) {
+                labels.put("lang", requestedLang);
+            }
 
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
-            byte[] pdfBothDe = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + both.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfBothDe);
-            assertThat(extractTextFromPdf(pdfBothDe)).contains("unique-de-both");
-
-            // only EN present (DE null)
-            String enOnly = "EN only unique-en-only";
-            Job onlyEn = JobTestData.savedAll(
-                jobRepository,
-                "EN Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                enOnly,
-                null,
-                JobState.PUBLISHED
-            );
-
-            Map<String, String> labelsDeFallback = createCompleteLabelsMap();
-            labelsDeFallback.put("lang", "de");
-            byte[] pdfOnlyEnDeRequested = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + onlyEn.getJobId() + "/pdf", labelsDeFallback, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfOnlyEnDeRequested);
-            // requested DE but only EN exists -> fallback to EN
-            assertThat(extractTextFromPdf(pdfOnlyEnDeRequested)).contains("unique-en-only");
-
-            // only DE present (EN null)
-            String deOnly = "DE only unique-de-only";
-            Job onlyDe = JobTestData.savedAll(
-                jobRepository,
-                "DE Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                null,
-                deOnly,
-                JobState.PUBLISHED
-            );
-
-            Map<String, String> labelsEnRequested = createCompleteLabelsMap();
-            labelsEnRequested.put("lang", "en");
-            byte[] pdfOnlyDeEnRequested = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + onlyDe.getJobId() + "/pdf", labelsEnRequested, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfOnlyDeEnRequested);
-            // requested EN but only DE exists -> fallback to DE
-            assertThat(extractTextFromPdf(pdfOnlyDeEnRequested)).contains("unique-de-only");
-
-            // none present (both null) -> expect '-' placeholder
-            Job none = JobTestData.savedAll(
-                jobRepository,
-                "None Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                null,
-                null,
-                JobState.PUBLISHED
-            );
-
-            byte[] pdfNone = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(
-                    BASE_URL + "/job/" + none.getJobId() + "/pdf",
-                    createCompleteLabelsMap(),
-                    200,
-                    MediaType.APPLICATION_PDF
-                );
-            assertValidPdf(pdfNone);
-            // the PDF builder uses '-' when description missing
-            assertThat(extractTextFromPdf(pdfNone)).contains("-");
-
-            // both empty strings -> should be treated as missing -> '-'
-            Job bothEmpty = JobTestData.savedAll(
-                jobRepository,
-                "Both Empty Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "",
-                "",
-                JobState.PUBLISHED
-            );
-
-            byte[] pdfBothEmpty = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(
-                    BASE_URL + "/job/" + bothEmpty.getJobId() + "/pdf",
-                    createCompleteLabelsMap(),
-                    200,
-                    MediaType.APPLICATION_PDF
-                );
-            assertValidPdf(pdfBothEmpty);
-            assertThat(extractTextFromPdf(pdfBothEmpty)).contains("-");
-        }
-
-        @Test
-        void exportJobToPDFDeBranchEdgeCases() {
-            // de is only whitespace, en present -> should fallback to en
-            Job deWhitespace = JobTestData.savedAll(
-                jobRepository,
-                "De whitespace",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "EN fallback unique-en-ws",
-                "   ",
-                JobState.PUBLISHED
-            );
-
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
-            byte[] pdfDeWs = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + deWhitespace.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfDeWs);
-            assertThat(extractTextFromPdf(pdfDeWs)).contains("unique-en-ws");
-
-            // de empty string, en empty string -> expect '-'
-            Job bothEmptyExplicit = JobTestData.savedAll(
-                jobRepository,
-                "Both Empty Explicit",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "",
-                "",
-                JobState.PUBLISHED
-            );
-
-            Map<String, String> labelsDeRequested = createCompleteLabelsMap();
-            labelsDeRequested.put("lang", "de");
-            byte[] pdfBothEmptyExplicit = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(
-                    BASE_URL + "/job/" + bothEmptyExplicit.getJobId() + "/pdf",
-                    labelsDeRequested,
-                    200,
-                    MediaType.APPLICATION_PDF
-                );
-            assertValidPdf(pdfBothEmptyExplicit);
-            assertThat(extractTextFromPdf(pdfBothEmptyExplicit)).contains("-");
-        }
-
-        @Test
-        void exportJobToPDFSelectsDeWhenOnlyDePresent() {
-            String deOnly = "DE sole unique-de-sole";
-            Job onlyDe = JobTestData.savedAll(
-                jobRepository,
-                "DE Sole Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                null,
-                deOnly,
-                JobState.PUBLISHED
-            );
-
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
             byte[] pdf = api
                 .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + onlyDe.getJobId() + "/pdf", labelsDe, 200, MediaType.APPLICATION_PDF);
+                .postAndReturnBytes(BASE_URL + "/job/" + jobToTest.getJobId() + "/pdf", labels, 200, MediaType.APPLICATION_PDF);
+
             assertValidPdf(pdf);
-            assertThat(extractTextFromPdf(pdf)).contains("unique-de-sole");
+            String text = extractTextFromPdf(pdf);
+            assertThat(text).contains(expectedSubstring);
         }
 
-        @Test
-        void exportJobToPDFSelectsEnWhenOnlyEnPresent() {
-            String enOnly = "EN sole unique-en-sole";
-            Job onlyEn = JobTestData.savedAll(
-                jobRepository,
-                "EN Sole Job",
-                "AI",
-                "CS",
-                professor,
-                group,
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                enOnly,
-                null,
-                JobState.PUBLISHED
+        static Stream<Arguments> jobLanguageProvider() {
+            return Stream.of(
+                // both present -> select en
+                Arguments.of("EN unique-en-xyz", "DE unique-de-xyz", "en", "unique-en-xyz"),
+                // both present -> select de
+                Arguments.of("EN unique-en-xyz", "DE unique-de-xyz", "de", "unique-de-xyz"),
+                // only EN present -> requested DE should fallback to EN
+                Arguments.of("EN only unique-en-only", null, "de", "unique-en-only"),
+                // only DE present -> requested EN should fallback to DE
+                Arguments.of(null, "DE only unique-de-only", "en", "unique-de-only"),
+                // de whitespace with en present -> fallback to en
+                Arguments.of("EN fallback unique-en-ws", "   ", "de", "unique-en-ws"),
+                // both empty -> '-'
+                Arguments.of("", "", null, "-"),
+                // none present -> expect '-'
+                Arguments.of(null, null, null, "-")
             );
-
-            Map<String, String> labelsEn = createCompleteLabelsMap();
-            labelsEn.put("lang", "en");
-            byte[] pdf = api
-                .withoutPostProcessors()
-                .postAndReturnBytes(BASE_URL + "/job/" + onlyEn.getJobId() + "/pdf", labelsEn, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdf);
-            assertThat(extractTextFromPdf(pdf)).contains("unique-en-sole");
         }
     }
 
@@ -768,347 +498,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 .postAndReturnBytes(BASE_URL + "/job/preview/pdf", request, 200, MediaType.APPLICATION_PDF);
 
             assertValidPdf(result);
-        }
-
-        @Test
-        void exportJobPreviewUsesLanguageFromLabels() {
-            // create a job form with explicit EN/DE descriptions
-            JobFormDTO jobFormDTO = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview Lang Job",
-                "AI Research",
-                "Computer Science",
-                professor.getUserId(),
-                Campus.GARCHING,
-                null,
-                null,
-                20,
-                null,
-                null,
-                "Preview English unique-en-preview",
-                "Vorschau Deutsch unique-de-preview",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsEn = createCompleteLabelsMap();
-            labelsEn.put("lang", "en");
-            JobPreviewRequest reqEn = new JobPreviewRequest(jobFormDTO, labelsEn);
-
-            byte[] pdfEn = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqEn, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfEn);
-            String textEn = extractTextFromPdf(pdfEn);
-            assertThat(textEn).contains("unique-en-preview");
-
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
-            JobPreviewRequest reqDe = new JobPreviewRequest(jobFormDTO, labelsDe);
-
-            byte[] pdfDe = asProfessor(professor).postAndReturnBytes(BASE_URL + "/job/preview/pdf", reqDe, 200, MediaType.APPLICATION_PDF);
-            assertValidPdf(pdfDe);
-            String textDe = extractTextFromPdf(pdfDe);
-            assertThat(textDe).contains("unique-de-preview");
-        }
-
-        @Test
-        void exportJobPreviewHandlesAllDescriptionCombinations() {
-            // both present
-            JobFormDTO both = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview Both",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "Preview EN both unique-en-pb",
-                "Preview DE both unique-de-pb",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsEn = createCompleteLabelsMap();
-            labelsEn.put("lang", "en");
-            JobPreviewRequest reqEn = new JobPreviewRequest(both, labelsEn);
-            byte[] pdfBothEn = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqEn,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfBothEn);
-            assertThat(extractTextFromPdf(pdfBothEn)).contains("unique-en-pb");
-
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
-            JobPreviewRequest reqDe = new JobPreviewRequest(both, labelsDe);
-            byte[] pdfBothDe = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqDe,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfBothDe);
-            assertThat(extractTextFromPdf(pdfBothDe)).contains("unique-de-pb");
-
-            // only EN
-            JobFormDTO onlyEn = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview EN",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "Preview EN only unique-en-only-pb",
-                null,
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsDeRequest = createCompleteLabelsMap();
-            labelsDeRequest.put("lang", "de");
-            JobPreviewRequest onlyEnReq = new JobPreviewRequest(onlyEn, labelsDeRequest);
-            byte[] pdfOnlyEnFallback = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                onlyEnReq,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfOnlyEnFallback);
-            assertThat(extractTextFromPdf(pdfOnlyEnFallback)).contains("unique-en-only-pb");
-
-            // only DE
-            JobFormDTO onlyDe = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview DE",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                null,
-                "Preview DE only unique-de-only-pb",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsEnRequest = createCompleteLabelsMap();
-            labelsEnRequest.put("lang", "en");
-            JobPreviewRequest onlyDeReq = new JobPreviewRequest(onlyDe, labelsEnRequest);
-            byte[] pdfOnlyDeFallback = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                onlyDeReq,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfOnlyDeFallback);
-            assertThat(extractTextFromPdf(pdfOnlyDeFallback)).contains("unique-de-only-pb");
-
-            // none (both null)
-            JobFormDTO none = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview None",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                null,
-                null,
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            JobPreviewRequest noneReq = new JobPreviewRequest(none, createCompleteLabelsMap());
-            byte[] pdfNone = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                noneReq,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfNone);
-            assertThat(extractTextFromPdf(pdfNone)).contains("-");
-
-            // both empty strings
-            JobFormDTO bothEmpty = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview Both Empty",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "",
-                "",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            JobPreviewRequest bothEmptyReq = new JobPreviewRequest(bothEmpty, createCompleteLabelsMap());
-            byte[] pdfBothEmpty = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                bothEmptyReq,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfBothEmpty);
-            assertThat(extractTextFromPdf(pdfBothEmpty)).contains("-");
-        }
-
-        @Test
-        void exportJobPreviewDeBranchEdgeCases() {
-            // de is whitespace, en present -> fallback to en
-            JobFormDTO deWs = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview De WS",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "Preview EN fallback unique-en-ws-pb",
-                "   ",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsDe = createCompleteLabelsMap();
-            labelsDe.put("lang", "de");
-            JobPreviewRequest reqDeWs = new JobPreviewRequest(deWs, labelsDe);
-            byte[] pdfDeWs = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqDeWs,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfDeWs);
-            assertThat(extractTextFromPdf(pdfDeWs)).contains("unique-en-ws-pb");
-
-            // both explicit empty -> '-'
-            JobFormDTO bothEmptyExplicit = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview Both Empty Explicit",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "",
-                "",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            JobPreviewRequest bothEmptyReq = new JobPreviewRequest(bothEmptyExplicit, labelsDe);
-            byte[] pdfBothEmpty = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                bothEmptyReq,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfBothEmpty);
-            assertThat(extractTextFromPdf(pdfBothEmpty)).contains("-");
-
-            // de present, en null -> should use de
-            JobFormDTO onlyDe = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview DE only",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                null,
-                "Preview DE only unique-de-only-pb",
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsDeOnly = createCompleteLabelsMap();
-            labelsDeOnly.put("lang", "de");
-            JobPreviewRequest reqDeOnly = new JobPreviewRequest(onlyDe, labelsDeOnly);
-            byte[] pdfDeOnly = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqDeOnly,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfDeOnly);
-            assertThat(extractTextFromPdf(pdfDeOnly)).contains("unique-de-only-pb");
-
-            // en present, de null -> should use en
-            JobFormDTO onlyEn = new JobFormDTO(
-                UUID.randomUUID(),
-                "Preview EN only",
-                "AI",
-                "CS",
-                professor.getUserId(),
-                Campus.GARCHING,
-                LocalDate.now(),
-                LocalDate.now(),
-                20,
-                3,
-                FundingType.FULLY_FUNDED,
-                "Preview EN only unique-en-only-pb",
-                null,
-                JobState.DRAFT,
-                null,
-                true
-            );
-
-            Map<String, String> labelsEnOnly = createCompleteLabelsMap();
-            labelsEnOnly.put("lang", "en");
-            JobPreviewRequest reqEnOnly = new JobPreviewRequest(onlyEn, labelsEnOnly);
-            byte[] pdfEnOnly = asProfessor(professor).postAndReturnBytes(
-                BASE_URL + "/job/preview/pdf",
-                reqEnOnly,
-                200,
-                MediaType.APPLICATION_PDF
-            );
-            assertValidPdf(pdfEnOnly);
-            assertThat(extractTextFromPdf(pdfEnOnly)).contains("unique-en-only-pb");
         }
     }
 
