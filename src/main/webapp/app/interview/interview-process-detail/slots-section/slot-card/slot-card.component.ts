@@ -38,10 +38,36 @@ export class SlotCardComponent {
     return formatFullName(interviewee.firstName, interviewee.lastName);
   });
 
+  cancelInterview = output<InterviewSlotDTO>();
+
   // Menu items for kebab menu
-  readonly menuItems = computed<JhiMenuItem[]>(() => [
-    { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
-  ]);
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const items: JhiMenuItem[] = [];
+    if (this.isBooked()) {
+      items.push({
+        label: 'interview.slots.cancelInterview.button',
+        icon: 'xmark',
+        command: () => {
+          this.onCancelInterview();
+        },
+        severity: 'danger',
+      });
+    } else {
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        command: () => {
+          this.deleteDialog().confirm();
+        },
+        severity: 'danger',
+      });
+    }
+    return items;
+  });
+
+  onCancelInterview(): void {
+    this.cancelInterview.emit(this.slot());
+  }
 
   onEdit(): void {
     this.editSlot.emit(this.slot());
