@@ -34,7 +34,6 @@ export class IntervieweeCardComponent {
     return formatFullName(user?.firstName, user?.lastName);
   });
   avatarUrl = computed(() => this.interviewee().user?.avatar);
-  });
 
   scheduledDate = computed(() => {
     const slot = this.interviewee().scheduledSlot;
