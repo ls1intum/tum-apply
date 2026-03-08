@@ -81,9 +81,7 @@ export class InterviewProcessDetailComponent {
       if (process.jobState) {
         this.jobState.set(process.jobState);
       }
-      if (process.invitedCount !== undefined) {
-        this.invitedCount.set(process.invitedCount);
-      }
+      this.invitedCount.set(process.invitedCount);
     } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');
     }

@@ -9,16 +9,16 @@ import java.util.UUID;
  * the client side.
  */
 public record InterviewOverviewDTO(
-        @NotNull UUID jobId,
-        @NotNull UUID processId,
-        @NotNull String jobTitle,
-        String imageUrl,
-        @NotNull Long completedCount,
-        @NotNull Long scheduledCount,
-        @NotNull Long invitedCount,
-        @NotNull Long uncontactedCount,
-        @NotNull Long totalInterviews,
-        @NotNull Long totalSlots,
-        @NotNull String jobState,
-        boolean isClosed) {
-}
+    @NotNull UUID jobId,
+    @NotNull UUID processId,
+    @NotNull String jobTitle,
+    String imageUrl,
+    @NotNull Long completedCount,
+    @NotNull Long scheduledCount,
+    @NotNull Long invitedCount,
+    @NotNull Long uncontactedCount,
+    @NotNull Long totalInterviews,
+    @NotNull Long totalSlots,
+    @NotNull String jobState,
+    boolean isClosed
+) {}

@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InterviewProcessClosedException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
@@ -88,8 +89,8 @@ public class InterviewBookingService {
         // 4. Build response
         Job job = process.getJob();
 
-        if (job.getState() == JobState.CLOSED) {
-            throw new AccessDeniedException("This interview process is closed because the linked job has been closed.");
+        if (job.getState() == JobState.CLOSED || job.getState() == JobState.APPLICANT_FOUND) {
+            throw new InterviewProcessClosedException("This interview process is closed because the linked job has been closed.");
         }
 
         ProfessorDTO supervisor = ProfessorDTO.fromEntity(job.getSupervisingProfessor());
@@ -150,8 +151,8 @@ public class InterviewBookingService {
             throw new AccessDeniedException("You have not yet been invited to book an interview");
         }
 
-        if (process.getJob().getState() == JobState.CLOSED) {
-            throw new BadRequestException("This interview process is closed because the linked job has been closed.");
+        if (process.getJob().getState() == JobState.CLOSED || process.getJob().getState() == JobState.APPLICANT_FOUND) {
+            throw new InterviewProcessClosedException("This interview process is closed because the linked job has been closed.");
         }
 
         // 4. Check if user already has a booked slot

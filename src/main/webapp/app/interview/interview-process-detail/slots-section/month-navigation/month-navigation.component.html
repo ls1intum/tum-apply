@@ -12,8 +12,15 @@
     </div>
 
     @if (!isClosed()) {
-    <jhi-button icon="plus" label="interview.slots.addSlots" [shouldTranslate]="true" severity="primary" size="sm"
-      styleClass="whitespace-nowrap" (click)="addSlots.emit()" />
+      <jhi-button
+        icon="plus"
+        label="interview.slots.addSlots"
+        [shouldTranslate]="true"
+        severity="primary"
+        size="sm"
+        styleClass="whitespace-nowrap"
+        (click)="addSlots.emit()"
+      />
     }
   </div>
 
