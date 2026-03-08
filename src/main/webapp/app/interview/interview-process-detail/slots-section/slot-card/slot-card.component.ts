@@ -27,24 +27,52 @@ export class SlotCardComponent {
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
   isVirtual = computed(() => this.slot().location === 'virtual');
   isBooked = computed(() => this.slot().isBooked ?? false);
+  isPast = computed(() => {
+    const start = this.slot().startDateTime;
+    return start !== undefined && start !== '' && new Date(start).getTime() < Date.now();
+  });
   applicantName = computed(() => {
     const interviewee = this.slot().interviewee;
     if (!interviewee) return '';
     return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
   });
 
+  cancelInterview = output<InterviewSlotDTO>();
+
   // Menu items for kebab menu
-  readonly menuItems = computed<JhiMenuItem[]>(() => [
-    {
-      label: 'button.edit',
-      icon: 'pencil',
-      command: () => {
-        this.onEdit();
+  // Menu items for kebab menu
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const items: JhiMenuItem[] = [
+      {
+        label: 'button.edit',
+        icon: 'pencil',
+        command: () => this.onEdit(),
+        severity: 'primary',
       },
-      severity: 'primary',
-    },
-    { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
-  ]);
+    ];
+
+    if (this.isBooked()) {
+      items.push({
+        label: 'interview.slots.cancelInterview.button',
+        icon: 'xmark',
+        command: () => this.onCancelInterview(),
+        severity: 'danger',
+      });
+    } else {
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        command: () => this.deleteDialog().confirm(),
+        severity: 'danger',
+      });
+    }
+
+    return items;
+  });
+
+  onCancelInterview(): void {
+    this.cancelInterview.emit(this.slot());
+  }
 
   onEdit(): void {
     this.editSlot.emit(this.slot());

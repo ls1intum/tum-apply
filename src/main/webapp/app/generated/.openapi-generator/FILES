@@ -4,6 +4,7 @@ api.base.service.ts
 api.module.ts
 api/aiResourceApi.service.ts
 api/api.ts
+api/applicantResourceApi.service.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -54,6 +55,7 @@ model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
 model/bookSlotRequestDTO.ts
 model/bookingDTO.ts
+model/cancelInterviewDTO.ts
 model/conflictDataDTO.ts
 model/createSlotsDTO.ts
 model/createdJobDTO.ts

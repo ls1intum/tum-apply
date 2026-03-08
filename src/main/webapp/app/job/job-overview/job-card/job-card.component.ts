@@ -9,6 +9,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TranslateDirective } from 'app/shared/language';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import * as DropDownOptions from '../../dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
@@ -21,7 +22,7 @@ export const ApplicationStatusExtended = {
 @Component({
   selector: 'jhi-job-card',
   templateUrl: './job-card.component.html',
-  imports: [FontAwesomeModule, CardModule, TooltipModule, TranslateModule, TranslateDirective, LocalizedDatePipe],
+  imports: [FontAwesomeModule, CardModule, TooltipModule, TranslateModule, TranslateDirective, LocalizedDatePipe, UserAvatarComponent],
 })
 export class JobCardComponent {
   jobId = input<string>('');

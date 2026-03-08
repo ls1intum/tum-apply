@@ -7,7 +7,6 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,33 +34,6 @@ public class ApplicationResource {
     @Autowired
     public ApplicationResource(ApplicationService applicationService) {
         this.applicationService = applicationService;
-    }
-
-    /**
-     * Retrieves the current user's applicant profile with personal information.
-     *
-     * @return ApplicantDTO with current user and applicant data
-     */
-    @ApplicantOrAdmin
-    @GetMapping("/profile")
-    public ResponseEntity<ApplicantDTO> getApplicantProfile() {
-        log.info("GET /api/applications/profile - Retrieving applicant profile for current user");
-        ApplicantDTO profile = applicationService.getApplicantProfile();
-        return ResponseEntity.ok(profile);
-    }
-
-    /**
-     * Updates the current user's applicant profile with personal information.
-     *
-     * @param applicantDTO the updated applicant data
-     * @return ApplicantDTO with updated user and applicant data
-     */
-    @ApplicantOrAdmin
-    @PutMapping("/profile")
-    public ResponseEntity<ApplicantDTO> updateApplicantProfile(@Valid @RequestBody ApplicantDTO applicantDTO) {
-        log.info("PUT /api/applications/profile - Updating applicant profile for current user");
-        ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
-        return ResponseEntity.ok(updatedProfile);
     }
 
     /**
@@ -114,8 +86,9 @@ public class ApplicationResource {
      * @return 204 No Content when deletion is successful
      */
     @ApplicantOrAdmin
-    @DeleteMapping("/delete-document/{documentDictionaryId}")
+    @DeleteMapping("/documents/{documentDictionaryId}")
     public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
+        log.info("DELETE /api/applications/documents/{} - Deleting application document", documentDictionaryId);
         applicationService.deleteDocument(documentDictionaryId);
         return ResponseEntity.noContent().build();
     }
@@ -128,8 +101,9 @@ public class ApplicationResource {
      * @return {@code 200 OK} if the rename operation was successful
      */
     @ApplicantOrAdmin
-    @PutMapping("/rename-document/{documentDictionaryId}")
+    @PutMapping("/documents/{documentDictionaryId}/name")
     public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        log.info("PUT /api/applications/documents/{}/name - Renaming application document", documentDictionaryId);
         applicationService.renameDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
     }
@@ -205,7 +179,7 @@ public class ApplicationResource {
         )
     )
     @ApplicantOrAdmin
-    @PostMapping("/upload-documents/{applicationId}/{documentType}")
+    @PostMapping("/{applicationId}/documents/{documentType}")
     public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadDocuments(
         @PathVariable UUID applicationId,
         @PathVariable DocumentType documentType,

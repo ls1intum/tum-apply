@@ -1,4 +1,5 @@
 import { AbstractControl } from '@angular/forms';
+import type { TranslateService } from '@ngx-translate/core';
 
 export type GradeType = 'letter' | 'numeric' | 'percentage' | 'invalid';
 
@@ -228,6 +229,77 @@ export function normalizeLimitsForGrade(grade: string, limits: GradingScaleLimit
   }
 
   return result;
+}
+
+export function hasGradeLimits(
+  limits: Partial<GradingScaleLimitsData> | null | undefined,
+): limits is Pick<GradingScaleLimitsData, 'upperLimit' | 'lowerLimit'> {
+  return limits?.upperLimit != null && limits.upperLimit !== '' && limits.lowerLimit != null && limits.lowerLimit !== '';
+}
+
+/**
+ * Resolves the grading scale limits to show for a given grade.
+ *
+ * When persisted/manual limits are available, those take precedence and are only normalized
+ * to the grade format (for example adding or removing `%`). Otherwise the limits are inferred
+ * from the entered grade.
+ */
+export function resolveGradingScaleLimits(grade: string, limits?: Partial<GradingScaleLimitsData> | null): GradingScaleLimitsResult {
+  if (grade.trim() === '') {
+    return null;
+  }
+
+  if (hasGradeLimits(limits)) {
+    return normalizeLimitsForGrade(grade, {
+      upperLimit: limits.upperLimit,
+      lowerLimit: limits.lowerLimit,
+    });
+  }
+
+  return detectGradingScale(grade);
+}
+
+/**
+ * Returns the auto-detected limits as a form patch for grade-limit controls.
+ *
+ * This intentionally ignores any previously stored manual limits because it is used when
+ * the grade input itself changes and the UI should reset to the newly detected defaults.
+ */
+export function getDetectedGradeLimitsPatch(grade: string): Pick<GradingScaleLimitsData, 'upperLimit' | 'lowerLimit'> {
+  const limits = detectGradingScale(grade);
+
+  return {
+    upperLimit: limits?.upperLimit ?? '',
+    lowerLimit: limits?.lowerLimit ?? '',
+  };
+}
+
+/**
+ * Builds the localized helper text that displays the currently active grading scale.
+ *
+ * Returns an empty string when no grading scale could be resolved for the current input.
+ */
+export function getGradeHelperText(translateService: Pick<TranslateService, 'instant'>, limits: GradingScaleLimitsResult): string {
+  if (!limits) {
+    return '';
+  }
+
+  const scale = translateService.instant('entity.applicationPage2.helperText.scale') as string;
+  const gradingScale = translateService.instant('entity.applicationPage2.helperText.gradingScale', {
+    upperLimit: limits.upperLimit,
+    lowerLimit: limits.lowerLimit,
+  }) as string;
+
+  return `${scale}${gradingScale}`;
+}
+
+/**
+ * Builds the localized warning text for suspicious grade formats.
+ *
+ * Returns an empty string when the current grade format does not require a warning.
+ */
+export function getGradeWarningText(translateService: Pick<TranslateService, 'instant'>, grade: string): string {
+  return shouldShowGradeWarning(grade) ? (translateService.instant('entity.applicationPage2.warnText') as string) : '';
 }
 
 /**

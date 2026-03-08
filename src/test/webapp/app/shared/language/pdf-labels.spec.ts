@@ -20,6 +20,7 @@ function expectOverviewLabels(labels: Record<string, string>) {
   expect(labels).toHaveProperty('fundingType');
   expect(labels).toHaveProperty('startDate');
   expect(labels).toHaveProperty('endDate');
+  expect(labels).toHaveProperty('lang');
 }
 
 function expectFooterLabels(labels: Record<string, string>) {
@@ -74,6 +75,8 @@ describe('PDF Labels', () => {
 
       expectOverviewLabels(labels);
       expectFooterLabels(labels);
+
+      expect(labels.lang).toBe(translate.getCurrentLang());
 
       expect(labels).toHaveProperty('personalStatements');
       expect(labels).toHaveProperty('personalInformation');
@@ -157,6 +160,8 @@ describe('PDF Labels', () => {
 
       expectOverviewLabels(labels);
       expectFooterLabels(labels);
+
+      expect(labels.lang).toBe(translate.getCurrentLang());
 
       expect(labels).toHaveProperty('jobDetails');
       expect(labels).toHaveProperty('description');
@@ -245,6 +250,7 @@ describe('PDF Labels', () => {
         'metaEndText',
         'page',
         'of',
+        'lang',
       ]);
     });
   });

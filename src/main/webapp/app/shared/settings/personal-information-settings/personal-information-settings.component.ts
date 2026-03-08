@@ -7,12 +7,13 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { deepEqual } from 'app/core/util/deepequal-util';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
@@ -34,6 +35,22 @@ export type PersonalInformationData = {
   country?: SelectOption;
   postcode: string;
 };
+
+interface PersonalInformationSnapshot {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  gender?: string | number;
+  nationality?: string | number;
+  dateOfBirth: string;
+  website: string;
+  linkedIn: string;
+  street: string;
+  city: string;
+  country?: string | number;
+  postcode: string;
+}
 
 @Component({
   selector: 'jhi-personal-information-settings',
@@ -68,7 +85,15 @@ export class PersonalInformationSettingsComponent {
   });
 
   isValid = signal<boolean>(false);
-  hasChanges = signal<boolean>(false);
+  loadedProfile = signal<ApplicantDTO | undefined>(undefined);
+  initialDataSnapshot = signal<PersonalInformationSnapshot | undefined>(undefined);
+  hasChanges = computed(() => {
+    const initial = this.initialDataSnapshot();
+    if (initial === undefined) {
+      return false;
+    }
+    return !deepEqual(this.toSnapshot(this.data()), initial);
+  });
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
@@ -84,7 +109,7 @@ export class PersonalInformationSettingsComponent {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-  applicationResourceService = inject(ApplicationResourceApiService);
+  applicantResourceService = inject(ApplicantResourceApiService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -138,20 +163,24 @@ export class PersonalInformationSettingsComponent {
   formEffect = effect(onCleanup => {
     const form = this.personalInfoForm();
     const data = this.data();
-    const valueSubscription = form.valueChanges.subscribe((value: Record<string, unknown>) => {
-      const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-      const selectFields = {
+    const valueSubscription = form.valueChanges.subscribe(() => {
+      const normalizedValue = Object.fromEntries(Object.entries(form.getRawValue()).map(([key, val]) => [key, val ?? '']));
+      const nextData: PersonalInformationData = {
+        firstName: normalizedValue.firstName as string,
+        lastName: normalizedValue.lastName as string,
+        email: normalizedValue.email as string,
+        phoneNumber: normalizedValue.phoneNumber as string,
         gender: data.gender,
         nationality: data.nationality,
-        country: data.country,
         dateOfBirth: data.dateOfBirth,
+        website: normalizedValue.website as string,
+        linkedIn: normalizedValue.linkedIn as string,
+        street: normalizedValue.street as string,
+        city: normalizedValue.city as string,
+        country: data.country,
+        postcode: normalizedValue.postcode as string,
       };
-      this.data.set({
-        ...this.data(),
-        ...selectFields,
-        ...normalizedValue,
-      });
-      this.hasChanges.set(true);
+      this.data.set(nextData);
       this.isValid.set(form.valid);
     });
 
@@ -175,7 +204,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile());
+      const profile = await firstValueFrom(this.applicantResourceService.getApplicantProfile('body', false, { transferCache: false }));
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
@@ -195,26 +224,24 @@ export class PersonalInformationSettingsComponent {
         postcode: profile.postalCode ?? '',
       };
 
+      this.loadedProfile.set(profile);
       this.data.set(personalInfo);
+      this.initialDataSnapshot.set(this.toSnapshot(personalInfo));
     } catch {
       this.toastService.showErrorKey('settings.personalInformation.loadFailed');
     }
   }
 
   setDateOfBirth($event: string | undefined): void {
-    this.data.set({
-      ...this.data(),
-      dateOfBirth: $event ?? '',
-    });
-    this.hasChanges.set(true);
+    const updatedData = structuredClone(this.data());
+    updatedData.dateOfBirth = $event ?? '';
+    this.data.set(updatedData);
   }
 
   updateSelect(field: keyof PersonalInformationData, value: SelectOption | undefined): void {
-    this.data.set({
-      ...this.data(),
-      [field]: value,
-    });
-    this.hasChanges.set(true);
+    const updatedData = structuredClone(this.data());
+    updatedData[field] = value as never;
+    this.data.set(updatedData);
   }
 
   async onSave(): Promise<void> {
@@ -257,9 +284,10 @@ export class PersonalInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      await firstValueFrom(this.applicationResourceService.updateApplicantProfile(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicantResourceService.updateApplicantPersonalInformation(applicantDTO));
+      this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.personalInformation.saved');
-      this.hasChanges.set(false);
+      this.initialDataSnapshot.set(this.toSnapshot(this.data()));
     } catch {
       this.toastService.showErrorKey('settings.personalInformation.saveFailed');
     }
@@ -267,6 +295,23 @@ export class PersonalInformationSettingsComponent {
 
   async onCancel(): Promise<void> {
     await this.loadPersonalInformation();
-    this.hasChanges.set(false);
+  }
+
+  private toSnapshot(data: PersonalInformationData): PersonalInformationSnapshot {
+    return {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      gender: data.gender?.value,
+      nationality: data.nationality?.value,
+      dateOfBirth: data.dateOfBirth,
+      website: data.website,
+      linkedIn: data.linkedIn,
+      street: data.street,
+      city: data.city,
+      country: data.country?.value,
+      postcode: data.postcode,
+    };
   }
 }
