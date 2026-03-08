@@ -44,7 +44,7 @@
     <div class="action-buttons-wrapper">
       <jhi-button
         class="w-full"
-        [styleClass]="'w-full'"
+        [styleClass]="'w-full !h-10'"
         [label]="'evaluation.addToInterview' | translate"
         variant="outlined"
         severity="primary"
@@ -54,6 +54,7 @@
       />
       <div class="review-actions">
         <jhi-button
+          [styleClass]="'!h-10'"
           [label]="'evaluation.accept' | translate"
           variant="outlined"
           severity="success"
@@ -62,6 +63,7 @@
           (click)="openAcceptDialog()"
         />
         <jhi-button
+          [styleClass]="'!h-10'"
           [label]="'evaluation.reject' | translate"
           variant="outlined"
           severity="danger"
@@ -75,7 +77,7 @@
     <p-dialog
       [modal]="true"
       [(visible)]="addToInterviewDialogVisible"
-      styleClass="review-dialog"
+      [styleClass]="'w-[56%] max-w-[42rem] p-3 [&_.p-dialog-header]:items-start'"
       [dismissableMask]="true"
       [closeOnEscape]="true"
       [draggable]="false"
@@ -83,28 +85,28 @@
     >
       <!-- Header (applicant + job title) - matches review-dialog style -->
       <ng-template #header>
-        <div class="info">
-          <div class="flex items-center gap-2">
+        <div class="w-full flex flex-col gap-2">
+          <div class="flex items-center gap-2 -ml-3">
             <jhi-user-avatar
               [fullName]="currentApplication()?.applicationDetailDTO?.applicant?.user?.name"
               [avatarUrl]="currentApplication()?.applicationDetailDTO?.applicant?.user?.avatar"
               size="lg"
             />
-            <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
+            <span class="font-bold text-[1.3rem]">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
           </div>
-          <div class="job-name">
-            <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+          <div class="flex items-center gap-2 text-text-disabled">
+            <fa-icon class="text-primary" [icon]="['fas', 'briefcase']" />
             <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
           </div>
         </div>
       </ng-template>
 
       <!-- Confirmation text -->
-      <p jhiTranslate="evaluation.addToInterviewDialog.confirmationText"></p>
+      <p class="mb-0" jhiTranslate="evaluation.addToInterviewDialog.confirmationText"></p>
 
       <!-- Footer buttons -->
       <ng-template pTemplate="footer">
-        <div class="flex justify-between w-full pt-4 gap-2">
+        <div class="flex justify-between w-full pt-3 gap-2">
           <jhi-button
             [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
             variant="outlined"

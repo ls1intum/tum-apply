@@ -64,11 +64,11 @@ export class ProfilePictureSettingsComponent {
   }
 
   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
     if (!file) return;
     this.loadFileForCrop(file);
-    input.value = '';
+    fileInput.value = '';
   }
 
   onCancel(): void {
