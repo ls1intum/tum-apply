@@ -182,15 +182,13 @@ public class ApplicantService {
      *
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    @Transactional
     public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
             throw new InvalidParameterException("UserId must not be null.");
         }
 
-        Applicant applicant = findOrCreateApplicant(userId);
-        documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant, documentDictionaryId);
+        documentDictionaryService.deleteApplicantOwnedDocumentDictionary(userId, documentDictionaryId);
     }
 
     /**
@@ -199,15 +197,13 @@ public class ApplicantService {
      * @param documentDictionaryId the id of the document dictionary entry to rename
      * @param newName              the new name to set
      */
-    @Transactional
     public void renameApplicantProfileDocument(UUID documentDictionaryId, String newName) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
             throw new InvalidParameterException("UserId must not be null.");
         }
 
-        Applicant applicant = findOrCreateApplicant(userId);
-        documentDictionaryService.renameApplicantOwnedDocumentDictionary(applicant, documentDictionaryId, newName);
+        documentDictionaryService.renameApplicantOwnedDocumentDictionary(userId, documentDictionaryId, newName);
     }
 
     /**
