@@ -142,7 +142,7 @@
         "rangeSlot": "Time Range",
         "bookedSlot": "Booked Slot",
         "singleSlotHelp": "Enter a start time. The interview duration determines the end time.",
-        "rangeSlotHelp": "Slots are automatically calculated based on duration and break time.",
+        "rangeSlotHelp": "Enter start and end time. Slots are automatically calculated based on duration and break time.",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
         "useForAll": "Use same location for all slots",
