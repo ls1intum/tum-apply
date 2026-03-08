@@ -52,6 +52,7 @@
       },
       "empty": {
         "title": "Noch keine Termine",
+        "closedTitle": "Prozess geschlossen",
         "description": "Erstelle deine ersten Interview Termine.",
         "closedDescription": "Für diesen geschlossenen Prozess können leider keine Termine erstellt werden."
       },
