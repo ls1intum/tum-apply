@@ -1,11 +1,13 @@
 <div class="mb-1">
   <div class="flex items-center gap-4 pb-1">
-    <div class="relative h-24 w-24 shrink-0 cursor-pointer group" (click)="onAddPictureClick()">
+    <div class="relative h-20 w-20 shrink-0 cursor-pointer group" (click)="onAddPictureClick()">
       @if (currentProfilePictureUrl()) {
-        <img [src]="currentProfilePictureUrl()" class="h-24 w-24 rounded-full object-cover" alt="Profile picture" />
+        <img [src]="currentProfilePictureUrl()" class="h-20 w-20 rounded-full object-cover" alt="Profile picture" />
       } @else {
-        <div class="origin-top-left scale-[2.18] rounded-full overflow-hidden">
-          <jhi-user-avatar [fullName]="fullName()" size="lg" />
+        <div class="h-20 w-20 rounded-full overflow-hidden">
+          <div class="origin-top-left scale-[1.25]">
+            <jhi-user-avatar [fullName]="fullName()" size="xl" />
+          </div>
         </div>
       }
 
