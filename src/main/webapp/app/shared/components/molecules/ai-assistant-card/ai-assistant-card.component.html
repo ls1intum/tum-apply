@@ -4,7 +4,10 @@
       <jhi-ai-score-ring [score]="score()" />
     </div>
 
-    <h3 class="m-0 text-base font-semibold text-text-secondary" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"></h3>
+    <h3
+      class="m-0 text-base font-semibold text-text-secondary"
+      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
+    ></h3>
 
     <p class="mt-1.5 mb-0 text-sm leading-6 text-text-tertiary" [jhiTranslate]="scoreFeedback()"></p>
   </div>
@@ -12,7 +15,10 @@
   <hr class="m-0 w-full max-w-72 border-0 border-t border-border-default opacity-70" />
 
   <div class="mt-4 flex items-start gap-2">
-    <h3 class="m-0 text-base font-semibold text-text-secondary" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
+    <h3
+      class="m-0 text-base font-semibold text-text-secondary"
+      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
+    ></h3>
     <fa-icon
       class="text-primary"
       [icon]="['fas', 'circle-info']"
@@ -21,13 +27,19 @@
     />
   </div>
 
-  <p class="m-0 w-full max-w-72 text-sm leading-6 text-text-tertiary" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></p>
+  <p
+    class="m-0 w-full max-w-72 text-sm leading-6 text-text-tertiary"
+    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
+  ></p>
 
   <div class="w-full max-w-64">
     @if (isGenerating()) {
       <div class="flex h-10 items-start gap-2 px-3">
         <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
-        <span class="text-base font-semibold text-text-primary whitespace-nowrap" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"></span>
+        <span
+          class="text-base font-semibold text-text-primary whitespace-nowrap"
+          jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
+        ></span>
       </div>
     } @else {
       <jhi-button

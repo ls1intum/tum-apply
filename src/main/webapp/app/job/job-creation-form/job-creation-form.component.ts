@@ -241,7 +241,9 @@ export class JobCreationFormComponent {
   );
 
   /** Score shown in the AI sidebar */
-  readonly aiScore = computed(() => this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()));
+  readonly aiScore = computed(() =>
+    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()),
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
