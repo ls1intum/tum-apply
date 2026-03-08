@@ -16,8 +16,8 @@
  * @param likertRating - The rating on the Likert scale (-2 to +2), can be null/undefined
  * @returns The converted rating on a 1-5 scale, or undefined if input is null/undefined
  */
-export function convertLikertToStandardRating(likertRating: number | null | undefined): number | undefined {
-  if (likertRating === null || likertRating === undefined) {
+export function convertLikertToStandardRating(likertRating: number | undefined): number | undefined {
+  if (likertRating === undefined) {
     return undefined;
   }
 
