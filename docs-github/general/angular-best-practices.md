@@ -425,33 +425,7 @@ get filteredApplications(): ApplicationDTO[] {
 
 ---
 
-### 14. **Convert Observables to Signals with `toSignal()`**
-
-✅ **GOOD:**
-
-```typescript
-private route = inject(ActivatedRoute);
-
-// Convert with initial value
-private routeParams = toSignal(this.route.paramMap, {
-  initialValue: this.route.snapshot.paramMap
-});
-
-// Use in computed signals
-readonly jobId = computed(() =>
-  this.routeParams()?.get('id')
-);
-```
-
-❌ **MISSING INITIAL VALUE** — Causes undefined initially:
-
-```typescript
-private routeParams = toSignal(this.route.paramMap); // ❌
-```
-
----
-
-### 15. **Use `effect()` Only for Side Effects**
+### 14. **Use `effect()` Only for Side Effects**
 
 ✅ **GOOD** — Side effects (DOM, logging, API calls):
 
