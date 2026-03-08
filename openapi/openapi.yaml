@@ -3400,6 +3400,7 @@ components:
     UpcomingInterviewDTO:
       type: object
       properties:
+        avatar: {type: string}
         endDateTime: {type: string, format: date-time}
         id: {type: string, format: uuid}
         intervieweeId: {type: string, format: uuid}

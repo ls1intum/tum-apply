@@ -20,3 +20,4 @@ export interface UpcomingInterviewDTO {
     processId?: string;
     startDateTime?: string;
 }
+
