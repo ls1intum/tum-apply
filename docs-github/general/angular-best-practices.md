@@ -457,6 +457,100 @@ buttonClasses = computed(() => {
 
 ---
 
+### 8. **Styling PrimeNG Components**
+
+PrimeNG components use `styleClass` (and variants like `dialogStyleClass`, `contentStyleClass`, etc.) to accept custom CSS classes.
+
+#### **When to Use `styleClass` vs Global Overrides**
+
+**Use `styleClass` for:**
+
+- ✅ Component-specific, one-off styling unique to a particular usage
+- ✅ Layout and spacing adjustments (margins, padding, width, alignment)
+- ✅ Conditional styling based on component state
+
+**Use `prime-ng-overrides.scss` for:**
+
+- ✅ Application-wide PrimeNG component defaults (all buttons, all dialogs, etc.)
+- ✅ PrimeNG CSS variable customizations (`--p-stepper-step-number-size`, etc.)
+- ✅ Theme-related adjustments that apply globally
+- ✅ Fixing PrimeNG internal DOM structure styling (`.p-carousel-indicators`, etc.)
+
+**Example decision tree:**
+
+```
+Is this styling needed in multiple places across the app?
+├─ YES → Is it modifying PrimeNG internals (.p-* classes)?
+│  ├─ YES → Add to prime-ng-overrides.scss
+│  └─ NO  → Use Tailwind in styleClass
+└─ NO  → Use Tailwind in styleClass
+```
+
+#### **Using `styleClass` (Component-Specific Styling)**
+
+✅ **GOOD** — Tailwind utilities only:
+
+```html
+<!-- Simple Tailwind classes -->
+<p-progressSpinner styleClass="w-10 h-10" strokeWidth="4" />
+<p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
+<jhi-message severity="warn" styleClass="mb-3" [message]="'...'" />
+
+<!-- With semantic tokens -->
+<p-dialog [styleClass]="'max-w-4xl bg-background-surface border-border-default'" />
+```
+
+✅ **GOOD** — Use computed for dynamic styling:
+
+```typescript
+// Component
+mode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
+
+dialogClasses = computed(() => {
+  const base = 'p-6 rounded-lg shadow-lg';
+  const modeClass =
+    this.mode() === 'REJECT'
+      ? 'border-2 border-negative-default bg-negative-surface'
+      : 'border-2 border-positive-default bg-positive-surface';
+  return `${base} ${modeClass}`;
+});
+```
+
+```html
+<p-dialog [styleClass]="dialogClasses()" />
+```
+
+#### **Using `prime-ng-overrides.scss` (Global Defaults)**
+
+✅ **GOOD** — Application-wide defaults:
+
+```scss
+// prime-ng-overrides.scss
+
+:root {
+  // Override PrimeNG design tokens globally
+  --p-stepper-step-number-size: 1.75rem;
+  --p-stepper-step-number-font-size: 1rem;
+  --p-accordion-header-background: var(--p-background-default);
+}
+
+// Style all tags globally
+.p-tag {
+  border: 0.1rem solid var(--p-border-default) !important;
+}
+
+// Fix PrimeNG internal structure for specific components
+.p-select-filter.p-component.p-inputtext {
+  border: 0.1rem solid var(--p-border-default);
+
+  &:enabled:focus {
+    border-color: var(--p-primary-color);
+  }
+}
+```
+
+---
+
 ## 📚 **Related Documentation**
 
 - [Color Theming & Styling](../theming/color-theming.md) — Complete theming guide
