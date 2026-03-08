@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateDirective } from 'app/shared/language';
 
 /**
  * Component that displays a star rating on a 1-5 scale.
@@ -8,7 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
  */
 @Component({
   selector: 'jhi-star-rating',
-  imports: [FontAwesomeModule, TranslateModule],
+  imports: [FontAwesomeModule, TranslateDirective],
   templateUrl: './star-rating.component.html',
 })
 export class StarRatingComponent {
