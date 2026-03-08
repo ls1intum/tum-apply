@@ -6,10 +6,13 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -23,18 +26,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeycloakUserService {
 
+    public record PagedResult<T>(List<T> content, long total) {}
+
     private final CurrentUserService currentUserService;
     private final Keycloak keycloak;
     private final String realm;
+    private final UserRepository userRepository;
     private static final int SAFETY_MAX = 1000;
 
     public KeycloakUserService(
+        UserRepository userRepository,
         @Value("${keycloak.url}") String url,
         @Value("${keycloak.realm}") String realm,
         @Value("${keycloak.admin.client-id}") String clientId,
         @Value("${keycloak.admin.client-secret}") String clientSecret,
         CurrentUserService currentUserService
     ) {
+        this.userRepository = userRepository;
         this.realm = realm;
         this.keycloak = KeycloakBuilder.builder()
             .serverUrl(url)
@@ -47,65 +55,95 @@ public class KeycloakUserService {
     }
 
     /**
-     * Retrieves all Keycloak users matching the given search key.
-     * The search is performed against username, first name, last name, and email.
+     * Retrieves Keycloak users that are eligible to be added to a research group.
+     * Excludes users already assigned to any local research group.
      *
-     * @param searchKey the search key to filter users; must not be {@code null}
-     * @param pageDTO   pagination information
-     * @return a list of {@link KeycloakUserDTO} matching the search criteria
+     * @param searchKey search key for Keycloak query
+     * @param pageDTO local pagination parameters
+     * @return paginated list of available Keycloak users and the total amount before pagination
      */
-    public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
-        // Keycloak search does not allow domain-specific filtering, so we fetch a reasonably sized
-        // chunk and filter locally by users whose email domain contains "tum". We then apply
-        // pagination locally to return exactly the requested page of filtered results.
-        int firstResult = 0; // always fetch from beginning and filter
+    public PagedResult<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO) {
+        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(searchTumUsers(searchKey, true));
+        return new PagedResult<>(paginate(pageDTO, availableUsers), availableUsers.size());
+    }
+
+    /**
+     * Finds a Keycloak user by university ID (LDAP_ID), case-insensitive.
+     *
+     * @param universityId university ID to search for
+     * @return matching Keycloak user if present
+     */
+    public Optional<KeycloakUserDTO> findUserByUniversityId(String universityId) {
+        String normalizedUniversityId = StringUtil.normalize(universityId, false);
+        if (normalizedUniversityId.isBlank()) {
+            return Optional.empty();
+        }
+
+        return searchTumUsers(normalizedUniversityId, false)
+            .stream()
+            .filter(user -> user.universityId() != null && user.universityId().equalsIgnoreCase(normalizedUniversityId))
+            .findFirst();
+    }
+
+    private List<KeycloakUserDTO> searchTumUsers(String searchKey, boolean excludeCurrentUser) {
+        int firstResult = 0;
         int maxResults = SAFETY_MAX;
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
         if (users == null || users.isEmpty()) {
             return List.of();
         }
 
-        List<KeycloakUserDTO> filtered = users
-            .stream()
-            .filter(u -> isLDAPUser(u) && !isCurrentUser(u))
-            .map(user ->
-                new KeycloakUserDTO(
-                    UUID.fromString(user.getId()),
-                    user.getUsername(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getEmail(),
-                    user.getAttributes().get("LDAP_ID").get(0)
-                )
-            )
-            .toList();
-
-        // apply pagination locally
-        int start = pageDTO.pageNumber() * pageDTO.pageSize();
-        if (start >= filtered.size()) {
-            return List.of();
-        }
-        int end = Math.min(start + pageDTO.pageSize(), filtered.size());
-        return filtered.subList(start, end);
-    }
-
-    /**
-     * Returns the number of Keycloak users matching the given search key.
-     * Note: Querying all users for a count may be expensive. Use reasonable limits or adjust as needed.
-     *
-     * @param searchKey filter for username, first name, last name or email
-     * @return total number of matching users
-     */
-    public long countUsers(String searchKey) {
-        // Count only the users matching the searchKey which also have a TUM domain.
-        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
-        if (users == null || users.isEmpty()) {
-            return 0L;
-        }
         return users
             .stream()
-            .filter(u -> isLDAPUser(u) && !isCurrentUser(u))
-            .count();
+            .filter(KeycloakUserService::isLDAPUser)
+            .filter(user -> !excludeCurrentUser || !isCurrentUser(user))
+            .map(this::toKeycloakUserDTO)
+            .toList();
+    }
+
+    private KeycloakUserDTO toKeycloakUserDTO(UserRepresentation user) {
+        return new KeycloakUserDTO(
+            UUID.fromString(user.getId()),
+            user.getUsername(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getAttributes().get("LDAP_ID").get(0)
+        );
+    }
+
+    private List<KeycloakUserDTO> filterOutAssignedUsers(List<KeycloakUserDTO> users) {
+        List<String> candidateUniversityIds = users
+            .stream()
+            .map(KeycloakUserDTO::universityId)
+            .filter(universityId -> universityId != null && !universityId.isBlank())
+            .map(String::toLowerCase)
+            .distinct()
+            .toList();
+
+        if (candidateUniversityIds.isEmpty()) {
+            return users;
+        }
+
+        Set<String> assignedUniversityIds = new HashSet<>(userRepository.findAssignedUniversityIdsIn(candidateUniversityIds));
+        return users
+            .stream()
+            .filter(user -> {
+                if (user.universityId() == null || user.universityId().isBlank()) {
+                    return false;
+                }
+                return !assignedUniversityIds.contains(user.universityId().toLowerCase());
+            })
+            .toList();
+    }
+
+    private List<KeycloakUserDTO> paginate(PageDTO pageDTO, List<KeycloakUserDTO> users) {
+        int start = pageDTO.pageNumber() * pageDTO.pageSize();
+        if (start >= users.size()) {
+            return List.of();
+        }
+        int end = Math.min(start + pageDTO.pageSize(), users.size());
+        return users.subList(start, end);
     }
 
     private static boolean isLDAPUser(UserRepresentation user) {
@@ -122,8 +160,22 @@ public class KeycloakUserService {
         if (currentUser == null) {
             return false;
         }
-        String universityId = currentUser.getUniversityId();
-        return universityId != null && universityId.equalsIgnoreCase(user.getAttributes().get("LDAP_ID").get(0));
+
+        String currentUniversityId = currentUser.getUniversityId();
+        if (currentUniversityId == null || currentUniversityId.isBlank()) {
+            return false;
+        }
+
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) {
+            return false;
+        }
+        List<String> ldapIds = attributes.get("LDAP_ID");
+        if (ldapIds == null || ldapIds.isEmpty()) {
+            return false;
+        }
+
+        return currentUniversityId.equalsIgnoreCase(ldapIds.get(0));
     }
 
     /**

@@ -4,6 +4,13 @@
   display: flex;
   flex-direction: column;
 
+  &.full-width {
+    .p-iconfield {
+      max-width: none;
+      min-width: 0;
+    }
+  }
+
   .p-iconfield {
     width: 100%;
     max-width: 18rem;

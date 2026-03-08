@@ -10,10 +10,10 @@ import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -92,10 +92,9 @@ public class UserResource {
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @RequestParam(required = false) String searchQuery
     ) {
-        log.info("Fetching available users for research group with search query: {}", searchQuery);
-        List<KeycloakUserDTO> users = keycloakUserService.getAllUsers(searchQuery, pageDTO);
-        long total = keycloakUserService.countUsers(searchQuery);
-        return ResponseEntity.ok(new PageResponseDTO<KeycloakUserDTO>(users, total));
+        log.info("GET /api/users/available-for-research-group - Fetching available users with searchQuery={}", searchQuery);
+        PagedResult<KeycloakUserDTO> usersPage = keycloakUserService.getAvailableUsersForResearchGroup(searchQuery, pageDTO);
+        return ResponseEntity.ok(new PageResponseDTO<>(usersPage.content(), usersPage.total()));
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}
