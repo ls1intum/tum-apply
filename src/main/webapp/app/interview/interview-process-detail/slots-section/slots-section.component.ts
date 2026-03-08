@@ -16,6 +16,9 @@ import { MessageComponent } from 'app/shared/components/atoms/message/message.co
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -43,6 +46,8 @@ interface GroupedSlots {
     SlotCreationFormComponent,
     FontAwesomeModule,
     AssignApplicantModalComponent,
+    DialogComponent,
+    CheckboxComponent,
     MessageComponent,
   ],
   templateUrl: './slots-section.component.html',
@@ -60,6 +65,7 @@ export class SlotsSectionComponent {
 
   // Inputs
   processId = input.required<string>();
+  refreshKey = input<number>(0);
   invitedCount = input(0);
 
   // Outputs
@@ -77,7 +83,13 @@ export class SlotsSectionComponent {
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
   selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
-  refreshKey = signal(0);
+
+  showCancelModal = signal(false);
+  selectedSlotForCancel = signal<InterviewSlotDTO | undefined>(undefined);
+  cancelSendReinvite = signal(false);
+  cancelDeleteSlot = signal(true);
+
+  internalRefreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
   globalFutureUnbookedCount = signal<number>(0);
 
@@ -218,6 +230,8 @@ export class SlotsSectionComponent {
   );
 
   private readonly initEffect = effect(() => {
+    this.refreshKey(); // track external refresh key
+    this.internalRefreshKey(); // track internal refresh key
     const id = this.processId();
     if (id !== '') {
       void this.checkGlobalSlots(id);
@@ -310,15 +324,52 @@ export class SlotsSectionComponent {
 
   onAssignApplicant(slot: InterviewSlotDTO): void {
     this.selectedSlotForAssignment.set(slot);
-    this.refreshKey.update(n => n + 1);
+    this.internalRefreshKey.update(n => n + 1);
     this.showAssignModal.set(true);
   }
 
-  onApplicantAssigned(): void {
-    void this.refreshSlots();
+  onApplicantAssigned(updatedSlot?: InterviewSlotDTO): void {
+    if (updatedSlot) {
+      this.futureSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
+      this.pastSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
+    } else {
+      void this.refreshSlots();
+    }
     this.slotAssigned.emit();
   }
 
+  onCancelInterview(slot: InterviewSlotDTO): void {
+    this.selectedSlotForCancel.set(slot);
+    this.cancelSendReinvite.set(true);
+    this.cancelDeleteSlot.set(false);
+    this.showCancelModal.set(true);
+  }
+
+  async onCancelInterviewConfirm(): Promise<void> {
+    const slot = this.selectedSlotForCancel();
+    if (slot?.id == null) return;
+
+    try {
+      const cancelParams: CancelInterviewDTO = {
+        sendReinvite: this.cancelSendReinvite(),
+        deleteSlot: this.cancelDeleteSlot(),
+      };
+
+      await firstValueFrom(this.interviewService.cancelInterview(this.processId(), slot.id, cancelParams));
+
+      // Hier rufen wir die NEUE main-Methode auf, um die Daten neu zu laden!
+      await this.checkGlobalSlots(this.processId(), false);
+
+      this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
+    } catch {
+      this.toastService.showErrorKey('interview.slots.cancelInterview.error');
+    } finally {
+      this.showCancelModal.set(false);
+      this.selectedSlotForCancel.set(undefined);
+    }
+  }
+
+  // Private methods
   private getShowMoreText(count: number): string {
     const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
     return `${count} ${this.translateService.instant(key)}`;
@@ -335,7 +386,7 @@ export class SlotsSectionComponent {
    *    count unbooked ones across ALL months for the global "Not Enough Slots" warning.
    *    A month-scoped query would miss slots in other months and produce false warnings.
    *
-   * After both resolve, `loadMonthSlots` is called to populate the calendar view.
+   * After both resolve, [loadMonthSlots](cci:1://file:///Users/abinayasivaguru/LokalTUMApply/src/main/webapp/app/interview/interview-process-detail/slots-section/slots-section.component.ts:443:2-515:3) is called to populate the calendar view.
    *
    * @param processId - the interview process ID
    * @param showLoading - whether to show the loading spinner (false for silent refreshes, e.g. after delete)
@@ -450,7 +501,9 @@ export class SlotsSectionComponent {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
     } finally {
-      this.loading.set(false);
+      if (showLoading) {
+        this.loading.set(false);
+      }
     }
   }
 

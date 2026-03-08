@@ -27,6 +27,7 @@ export class IntervieweeCardComponent {
 
   // Outputs
   sendInvitation = output<IntervieweeDTO>();
+  cancelInterview = output<IntervieweeDTO>();
 
   // Computed values
   fullName = computed(() => {
@@ -49,12 +50,7 @@ export class IntervieweeCardComponent {
   isVirtual = computed(() => this.interviewee().scheduledSlot?.location === 'virtual');
 
   // Constants
-  protected readonly IntervieweeState = {
-    UNCONTACTED: 'UNCONTACTED',
-    INVITED: 'INVITED',
-    SCHEDULED: 'SCHEDULED',
-    COMPLETED: 'COMPLETED',
-  } as const;
+  protected readonly IntervieweeState = IntervieweeDTO.StateEnum;
 
   // Services
   private readonly router = inject(Router);
@@ -64,5 +60,10 @@ export class IntervieweeCardComponent {
   // Methods
   navigateToAssessment(): void {
     void this.router.navigate(['/interviews', 'process', this.processId(), 'interviewee', this.interviewee().id, 'assessment']);
+  }
+
+  onCancelInterview(event: Event): void {
+    event.stopPropagation();
+    this.cancelInterview.emit(this.interviewee());
   }
 }
