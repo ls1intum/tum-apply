@@ -66,65 +66,7 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 ---
 
-### 3. **Extract Long Class Strings to Computed Signals**
-
-❌ **AVOID** — Extremely long inline class strings:
-
-```html
-<div
-  class="sticky bottom-0 mt-auto py-2 sm:py-3 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 w-[calc(100%+2rem)] lg:-mx-16 lg:px-16 lg:w-[calc(100%+8rem)] border-t"
->
-  ...
-</div>
-```
-
-✅ **BETTER** — Use computed signal for complex class combinations:
-
-```typescript
-// Component
-stickyFooterClasses = computed(
-  () =>
-    'sticky bottom-0 mt-auto py-2 sm:py-3 ' +
-    'bg-background-default transition-all duration-300 ease-in-out ' +
-    '-mx-4 px-4 w-[calc(100%+2rem)] border-t ' +
-    'lg:-mx-16 lg:px-16 lg:w-[calc(100%+8rem)] ' +
-    'z-[1000]',
-);
-```
-
-```html
-<div [class]="stickyFooterClasses()">...</div>
-```
-
-✅ **EVEN BETTER** — When classes depend on component state:
-
-```typescript
-footerClasses = computed(() => {
-  const base = 'sticky bottom-0 mt-auto py-2 sm:py-3 border-t transition-all duration-300 ease-in-out';
-  const spacing = '-mx-4 px-4 w-[calc(100%+2rem)] lg:-mx-16 lg:px-16 lg:w-[calc(100%+8rem)]';
-  const zIndex = 'z-[1000]';
-  const bg = this.isScrolled() ? 'bg-background-surface shadow-lg' : 'bg-background-default';
-
-  return `${base} ${spacing} ${bg} ${zIndex}`;
-});
-```
-
-```html
-<div [class]="footerClasses()">...</div>
-```
-
-**When to extract to computed:**
-
-- Class string exceeds ~100 characters
-- 10+ utility classes
-- Reused in multiple places
-- Depends on component state
-
-**For simple, static classes:** Keep them inline for visibility.
-
----
-
-### 4. **Use Conditional Class Bindings Correctly**
+### 3. **Use Conditional Class Bindings Correctly**
 
 ✅ **GOOD** — Single conditional class:
 
@@ -165,7 +107,7 @@ footerClasses = computed(() => {
 
 ---
 
-### 5. **Use Computed Signals for Complex Conditional Styling**
+### 4. **Use Computed Signals for Complex Conditional Styling**
 
 When you have complex conditional logic determining which classes to apply, use `computed()` to derive the class string or object.
 
@@ -253,7 +195,7 @@ buttonClasses = computed(() => {
 
 ---
 
-### 6. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
+### 5. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
 
 ❌ **WRONG**:
 
