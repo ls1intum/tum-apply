@@ -54,8 +54,22 @@ describe('ResearchGroupAddMembersComponent', () => {
   };
 
   const withDisplayName = (user: KeycloakUserDTO) => ({
-    ...user,
+    email: user.email,
+    firstName: user.firstName,
+    id: user.id,
+    lastName: user.lastName,
+    universityId: user.universityId,
+    username: user.username,
     displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+  });
+
+  const withoutId = (user: KeycloakUserDTO): KeycloakUserDTO => ({
+    email: user.email,
+    firstName: user.firstName,
+    id: undefined,
+    lastName: user.lastName,
+    universityId: user.universityId,
+    username: user.username,
   });
 
   beforeEach(async () => {
@@ -470,7 +484,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     });
 
     it('should show error toast when toggling user with undefined id', () => {
-      const userWithoutId: KeycloakUserDTO = { ...mockUser1, id: undefined } as KeycloakUserDTO;
+      const userWithoutId = withoutId(mockUser1);
 
       component.toggleUserSelection(userWithoutId);
 
@@ -480,7 +494,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     });
 
     it('should return false for isUserSelected when user has no id', () => {
-      const userWithoutId: KeycloakUserDTO = { ...mockUser1, id: undefined } as KeycloakUserDTO;
+      const userWithoutId = withoutId(mockUser1);
 
       expect(component.isUserSelected(userWithoutId)).toBe(false);
     });

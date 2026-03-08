@@ -19,7 +19,7 @@ describe('UserAvatarComponent', () => {
     }).compileComponents();
   });
 
-  it('uses "U" as initials for missing, empty, and whitespace-only names', () => {
+  it('should use "U" as initials for missing, empty, and whitespace-only names', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
 
     fixture.componentRef.setInput('fullName', undefined);
@@ -31,7 +31,7 @@ describe('UserAvatarComponent', () => {
     expect(fixture.componentInstance.initials()).toBe('U');
   });
 
-  it('derives first and last initials for full names', () => {
+  it('should derive first and last initials for full names', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
     fixture.componentRef.setInput('fullName', 'Max Applicant');
     fixture.detectChanges();
@@ -39,7 +39,7 @@ describe('UserAvatarComponent', () => {
     expect(fixture.componentInstance.initials()).toBe('MA');
   });
 
-  it('derives a single initial for one-part names', () => {
+  it('should derive a single initial for one-part names', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
     fixture.componentRef.setInput('fullName', 'max');
     fixture.detectChanges();
@@ -47,7 +47,7 @@ describe('UserAvatarComponent', () => {
     expect(fixture.componentInstance.initials()).toBe('M');
   });
 
-  it('uses fallback aria label for missing names and full label for present names', () => {
+  it('should use fallback aria label for missing names and full label for present names', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
 
     fixture.componentRef.setInput('fullName', '   ');
@@ -59,7 +59,7 @@ describe('UserAvatarComponent', () => {
     expect(fixture.componentInstance.ariaLabel()).toBe('Avatar of Sophie Lee');
   });
 
-  it('uses the same background color for undefined and empty/whitespace names', () => {
+  it('should use the same background color for undefined and empty/whitespace names', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
 
     fixture.componentRef.setInput('fullName', undefined);
@@ -73,7 +73,7 @@ describe('UserAvatarComponent', () => {
     expect(colorForEmpty).toBe(colorForUndefined);
   });
 
-  it('uses lg size class when size is set to lg', () => {
+  it('should use the lg size class when size is set to lg', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
     fixture.componentRef.setInput('size', 'lg');
     fixture.detectChanges();
@@ -81,14 +81,14 @@ describe('UserAvatarComponent', () => {
     expect(fixture.componentInstance.sizeClass()).toBe('h-10 w-10 text-[0.95rem]');
   });
 
-  it('covers initials fallback when split/filter produces no parts', () => {
+  it('should cover initials fallback when split/filter produces no parts', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
     const initialsFromFullName = (fixture.componentInstance as any).initialsFromFullName.bind(fixture.componentInstance);
 
     expect(initialsFromFullName('   ')).toBe('U');
   });
 
-  it('covers hashString negative hash branch', () => {
+  it('should cover the hashString negative hash branch', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
     const hashString = (fixture.componentInstance as any).hashString.bind(fixture.componentInstance);
 
@@ -100,7 +100,7 @@ describe('UserAvatarComponent', () => {
     expect(hashString(weirdValue as any)).toBe(4_294_967_295 - 4_294_967_296);
   });
 
-  it('returns default dark color for invalid hex input', () => {
+  it('should return the default dark color for invalid hex input', () => {
     const fixture = TestBed.createComponent(UserAvatarComponent);
     const darkenHex = (fixture.componentInstance as any).darkenHex.bind(fixture.componentInstance);
 
