@@ -82,7 +82,7 @@ export class SlotsSectionComponent {
   expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
-selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
+  selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
 
   showCancelModal = signal(false);
   selectedSlotForCancel = signal<InterviewSlotDTO | undefined>(undefined);
@@ -229,8 +229,7 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
     { allowSignalWrites: true },
   );
 
- 
-   private readonly initEffect = effect(() => {
+  private readonly initEffect = effect(() => {
     this.refreshKey(); // track external refresh key
     this.internalRefreshKey(); // track internal refresh key
     const id = this.processId();
@@ -238,7 +237,6 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
       void this.checkGlobalSlots(id);
     }
   });
-
 
   openCreateSlotsModal(): void {
     this.showSlotCreationForm.set(true);
@@ -313,9 +311,6 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
-      // Revert optimistic update on failure
-      this.slots.set(originalSlots);
-
       const httpError = error as { status?: number };
       if (httpError.status === 400) {
         this.toastService.showErrorKey('interview.slots.delete.errorBooked');
@@ -335,7 +330,8 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
 
   onApplicantAssigned(updatedSlot?: InterviewSlotDTO): void {
     if (updatedSlot) {
-      this.slots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
+      this.futureSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
+      this.pastSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
     } else {
       void this.refreshSlots();
     }
@@ -360,7 +356,7 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
       };
 
       await firstValueFrom(this.interviewService.cancelInterview(this.processId(), slot.id, cancelParams));
-      
+
       // Hier rufen wir die NEUE main-Methode auf, um die Daten neu zu laden!
       await this.checkGlobalSlots(this.processId(), false);
 
@@ -396,7 +392,6 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
    * @param showLoading - whether to show the loading spinner (false for silent refreshes, e.g. after delete)
    */
   private async checkGlobalSlots(processId: string, showLoading = true): Promise<void> {
-
     try {
       if (showLoading) {
         this.loading.set(true);
@@ -506,7 +501,7 @@ selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
     } finally {
-      if (isFirstLoad) {
+      if (showLoading) {
         this.loading.set(false);
       }
     }

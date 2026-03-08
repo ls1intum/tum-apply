@@ -361,12 +361,12 @@ export class IntervieweeSectionComponent {
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
 
-      // Update the interviewee state optimistically based on whether we reinvited
+      // Update the interviewee state based on whether we reinvited
       this.interviewees.update(list =>
         list.map(i => {
           if (i.id === interviewee.id) {
             return Object.assign({}, i, {
-              state: this.cancelSendReinvite() ? 'INVITED' : 'UNCONTACTED',
+              state: this.cancelSendReinvite() ? IntervieweeDTO.StateEnum.Invited : IntervieweeDTO.StateEnum.Uncontacted,
               scheduledSlot: undefined,
             });
           }

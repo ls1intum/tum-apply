@@ -182,9 +182,9 @@
       "cancelInterview": {
         "header": "Cancel Interview",
         "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
-        "button": "Cancel Interview",
+        "button": "Cancel",
         "sendReinvite": "Re-invite applicant (Send booking link)",
-        "deleteSlot": "Delete this slot completely",
+        "deleteSlot": "Delete this slot",
         "success": {
           "summary": "Interview cancelled",
           "detail": "The interview has been successfully cancelled."
