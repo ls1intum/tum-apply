@@ -224,5 +224,5 @@ Users can switch themes via the UI. The `ThemeService` handles:
 
 ## 📚 Related Documentation
 
-- See [General Documentation](../general/angular-best-practices.md) for client-side best practices
+- See [Client Best Practices](../general/angular-best-practices.md) for client-side best practices
 - Component library structure in `src/main/webapp/app/shared/components/`
