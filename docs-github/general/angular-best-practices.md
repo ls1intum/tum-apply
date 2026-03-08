@@ -465,7 +465,6 @@ Before committing code, verify:
 
 - [ ] No hard-coded colors (no `blue-500`, `gray-700`, `#3070b3`)
 - [ ] No inline `style=` attributes (unless truly dynamic values)
-- [ ] Long class strings split across multiple lines for readability
 - [ ] Using semantic color tokens (`text-primary`, `bg-background-surface`, etc.)
 - [ ] Responsive classes ordered: base → `sm:` → `md:` → `lg:` → `xl:`
 
