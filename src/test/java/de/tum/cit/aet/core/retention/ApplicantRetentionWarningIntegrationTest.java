@@ -26,6 +26,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
@@ -164,10 +165,7 @@ class ApplicantRetentionWarningIntegrationTest {
     }
 
     private Application createApplication(Job job, Applicant applicant, ApplicationState state) {
-        Application application = new Application();
-        application.setJob(job);
-        application.setApplicant(applicant);
-        application.setState(state);
+        Application application = ApplicationTestData.newApplication(job, applicant, state);
         return applicationRepository.saveAndFlush(application);
     }
 
