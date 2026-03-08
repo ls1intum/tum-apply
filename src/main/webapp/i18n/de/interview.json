@@ -54,7 +54,7 @@
         "title": "Noch keine Termine",
         "closedTitle": "Prozess geschlossen",
         "description": "Erstelle deine ersten Interview Termine.",
-        "closedDescription": "Für diesen geschlossenen Prozess können leider keine Termine erstellt werden."
+        "closedDescription": "Für diesen geschlossenen Prozess können keine Termine erstellt werden."
       },
       "noSlotsInMonth": "Keine Termine in {{month}}",
       "showLess": "Weniger anzeigen"
