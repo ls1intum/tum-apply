@@ -4,7 +4,7 @@ import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage1Component, {
-  getPage1FromApplication
+  getPage1FromApplication,
 } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { selectGender } from 'app/shared/constants/genders';
