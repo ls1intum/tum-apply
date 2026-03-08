@@ -88,10 +88,11 @@
 
               <!-- Inputs (only for non-scheduled) -->
               @if (range.type !== 'scheduled') {
+                @let slotIndex = 0;
                 <div
                   class="flex flex-col gap-1 rounded-md pt-1 pb-2 px-2"
-                  [class.border]="range.type === 'single' && allConflicts().has(range.id + '_0')"
-                  [class.border-negative-default]="range.type === 'single' && allConflicts().has(range.id + '_0')"
+                  [class.border]="range.type === 'single' && allConflicts().has(range.id + '_' + slotIndex)"
+                  [class.border-negative-default]="range.type === 'single' && allConflicts().has(range.id + '_' + slotIndex)"
                 >
                   <!-- Row 1: Time + Break inputs -->
                   <div class="flex flex-wrap gap-4 mb-3">
@@ -300,26 +301,26 @@
                   }
 
                   <!-- Conflict Error (Single Slot) -->
-                  @if (range.type === 'single' && allConflicts().has(range.id + '_0')) {
+                  @if (range.type === 'single' && allConflicts().has(range.id + '_' + slotIndex)) {
                     <jhi-message severity="error" variant="simple" styleClass="inline-message mt-1">
                       <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
-                      @switch (allConflicts().get(range.id + '_0')?.type) {
+                      @switch (allConflicts().get(range.id + '_' + slotIndex)?.type) {
                         @case ('BATCH_INTERNAL') {
                           {{ 'interview.slots.create.validation.conflict' | translate }}
-                          @if (allConflicts().get(range.id + '_0')?.displayTime) {
-                            ({{ allConflicts().get(range.id + '_0')?.displayTime }})
+                          @if (allConflicts().get(range.id + '_' + slotIndex)?.displayTime) {
+                            ({{ allConflicts().get(range.id + '_' + slotIndex)?.displayTime }})
                           }
                         }
                         @case ('SAME_PROCESS') {
                           {{
                             'interview.slots.create.validation.conflictSameProcess'
-                              | translate: { time: allConflicts().get(range.id + '_0')?.displayTime }
+                              | translate: { time: allConflicts().get(range.id + '_' + slotIndex)?.displayTime }
                           }}
                         }
                         @case ('BOOKED_OTHER_PROCESS') {
                           {{
                             'interview.slots.create.validation.conflictBookedOther'
-                              | translate: { time: allConflicts().get(range.id + '_0')?.displayTime }
+                              | translate: { time: allConflicts().get(range.id + '_' + slotIndex)?.displayTime }
                           }}
                         }
                       }

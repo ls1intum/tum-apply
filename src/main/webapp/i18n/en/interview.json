@@ -142,7 +142,7 @@
         "rangeSlot": "Slot Series",
         "bookedSlot": "Booked Slot",
         "singleSlotHelp": "Create a single slot with a start time. The interview duration determines the end time.",
-        "rangeSlotHelp": "Create a slot series with a start and end time, including breaks in between.",
+        "rangeSlotHelp": "Slots are automatically created based on duration and break time.",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
         "useForAll": "Use same location for all slots",
