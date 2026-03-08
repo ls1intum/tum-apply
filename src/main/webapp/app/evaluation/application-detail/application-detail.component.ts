@@ -58,7 +58,6 @@ const CAROUSEL_SIZE = 7;
     DocumentSection,
     CommentSection,
     RatingSection,
-    FontAwesomeModule,
     LocalizedDatePipe,
     TooltipModule,
   ],
