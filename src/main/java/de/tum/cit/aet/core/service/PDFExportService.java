@@ -71,12 +71,18 @@ public class PDFExportService {
                 .setOverviewTitle(labels.get("overview"))
                 .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
                 .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
-                .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
+                .addOverviewItem(
+                    labels.get("location"),
+                    getValue("en".equalsIgnoreCase(lang) ? app.jobLocation().getEnglishValue() : app.jobLocation().getGermanValue())
+                )
                 .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
                 .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
                 .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
                 .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
-                .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
+                .addOverviewItem(
+                    labels.get("fundingType"),
+                    getValue("en".equalsIgnoreCase(lang) ? job.fundingType().getEnglishValue() : job.fundingType().getGermanValue())
+                )
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
                 .setOverviewDescriptionTitle(labels.get("jobDescription"))
@@ -162,28 +168,27 @@ public class PDFExportService {
             log.debug("User not needed to see job status in PDF export as it's always published for them.");
         }
 
+        String lang = labels.getOrDefault("lang", "en");
+
         // Overview Section
         addJobOverview(
             builder,
             labels,
             new JobOverviewData(
                 job.supervisingProfessorName(),
-                job.location(),
+                "en".equalsIgnoreCase(lang) ? job.location().getEnglishValue() : job.location().getGermanValue(),
                 job.fieldOfStudies(),
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
                 formatContractDuration(job.contractDuration(), labels.get("years")),
-                getValue(job.fundingType()),
+                getValue("en".equalsIgnoreCase(lang) ? job.fundingType().getEnglishValue() : job.fundingType().getGermanValue()),
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
             )
         );
 
-        // Determine job description language and content
-        String lang = labels.getOrDefault("lang", "en");
-        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
-
         // Job Details Section
+        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
         addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Research Group Section
@@ -228,28 +233,31 @@ public class PDFExportService {
             .addHeaderItem(labels.get("jobBy") + supervisingProfessorName + labels.get("forJob") + "'" + jobFormDTO.title() + "'")
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(jobFormDTO.state()));
 
+        String lang = labels.getOrDefault("lang", "en");
+
         // Overview Section
         addJobOverview(
             builder,
             labels,
             new JobOverviewData(
                 supervisingProfessorName,
-                UiTextFormatter.formatEnumValue(jobFormDTO.location()),
+                "en".equalsIgnoreCase(lang) ? jobFormDTO.location().getEnglishValue() : jobFormDTO.location().getGermanValue(),
                 jobFormDTO.fieldOfStudies(),
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
                 jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
-                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+                jobFormDTO.fundingType() != null
+                    ? "en".equalsIgnoreCase(lang)
+                        ? jobFormDTO.fundingType().getEnglishValue()
+                        : jobFormDTO.fundingType().getGermanValue()
+                    : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )
         );
 
-        // Determine job description based on requested language
-        String lang = labels.getOrDefault("lang", "en");
-        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
-
         // Job Details Section
+        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
         addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Metadata
