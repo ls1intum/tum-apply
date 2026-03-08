@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.constants.DataExportState;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@NoUserDataExportRequired(reason = "Operational metadata for export workflow, not part of exported user payload")
 @Getter
 @Setter
 @Table(name = "data_export_requests")

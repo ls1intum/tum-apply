@@ -1,7 +1,7 @@
 {
   "evaluation": {
-    "overviewHeader": "Applications - Overview",
-    "reviewHeader": "Applications - Review",
+    "overviewHeader": "Applications",
+    "reviewHeader": "Review",
     "searchFilterSortBar": {
       "searchText": "Search Applications..."
     },

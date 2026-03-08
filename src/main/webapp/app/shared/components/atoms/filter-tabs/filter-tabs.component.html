@@ -6,6 +6,8 @@
       [class]="
         isActive(tab.key) ? 'border-primary-default text-primary-default' : 'border-transparent text-text-primary hover:text-text-primary'
       "
+      [pTooltip]="tab.tooltipKey ? (tab.tooltipKey | translate) : ''"
+      tooltipPosition="top"
       (click)="onTabClick(tab.key)"
     >
       <span [jhiTranslate]="tab.labelKey"></span>
