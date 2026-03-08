@@ -79,7 +79,7 @@ export class ResearchGroupCreationFormComponent {
   adminProfessorTotalCount = signal(0);
   adminProfessorCurrentPage = signal(0);
   hasMoreAdminProfessorCandidates = computed(() => this.adminProfessorCandidates().length < this.adminProfessorTotalCount());
-  selectedAdminProfessor = signal<SelectedAdminProfessor | null>(null);
+  selectedAdminProfessor = signal<SelectedAdminProfessor | undefined>(undefined);
   isSearchQueryLongEnough = computed(() => this.adminProfessorSearchQuery().trim().length >= this.MIN_ADMIN_SEARCH_LENGTH);
   showSearchMinLengthHint = computed(
     () => !this.isLoadingAdminUsers() && this.adminProfessorSearchQuery().trim().length > 0 && !this.isSearchQueryLongEnough(),
@@ -269,7 +269,7 @@ export class ResearchGroupCreationFormComponent {
   }
 
   clearSelectedAdminProfessor(): void {
-    this.selectedAdminProfessor.set(null);
+    this.selectedAdminProfessor.set(undefined);
     this.form.patchValue({ tumID: '' });
     void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
   }
