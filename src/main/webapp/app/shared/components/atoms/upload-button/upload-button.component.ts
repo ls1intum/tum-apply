@@ -248,8 +248,9 @@ export class UploadButtonComponent {
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-                ...doc,
+                id: doc.id,
                 name: newName,
+                size: doc.size,
               }
             : doc,
         ) ?? [];
@@ -264,8 +265,9 @@ export class UploadButtonComponent {
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-                ...doc,
+                id: doc.id,
                 name: newName,
+                size: doc.size,
               }
             : doc,
         ) ?? [];
@@ -351,7 +353,7 @@ export class UploadButtonComponent {
           size: file.size,
         };
       });
-      const updatedList = [...(this.documentIds() ?? []), ...tempDocumentEntries];
+      const updatedList = (this.documentIds() ?? []).concat(tempDocumentEntries);
       this.documentIds.set(updatedList);
       this.queuedFilesById.set(updatedQueuedFiles);
       this.emitQueuedFilesChange();

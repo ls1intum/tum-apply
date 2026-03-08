@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -68,7 +68,7 @@ interface ApplicantProfileUploadService {
   ],
   templateUrl: './settings-documents.component.html',
 })
-export class SettingsDocumentsComponent implements OnInit {
+export class SettingsDocumentsComponent {
   fb = inject(FormBuilder);
 
   form = this.fb.group({
@@ -175,7 +175,7 @@ export class SettingsDocumentsComponent implements OnInit {
     this.updateMasterGradeLimits(grade);
   });
 
-  ngOnInit(): void {
+  constructor() {
     void this.loadProfile();
   }
 
@@ -270,8 +270,7 @@ export class SettingsDocumentsComponent implements OnInit {
       await this.loadProfile();
 
       this.toastService.showSuccessKey('settings.documents.saved');
-    } catch (err) {
-      console.error(err);
+    } catch {
       this.toastService.showErrorKey('settings.documents.saveFailed');
     } finally {
       this.saving.set(false);
@@ -347,8 +346,7 @@ export class SettingsDocumentsComponent implements OnInit {
       this.hasInitialLimitsSet.set(true);
       this.storeInitialStateSnapshot();
       this.hasLoaded.set(true);
-    } catch (err) {
-      console.error(err);
+    } catch {
       this.toastService.showErrorKey('settings.documents.loadFailed');
     }
   }
@@ -393,7 +391,7 @@ export class SettingsDocumentsComponent implements OnInit {
   }
 
   private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
-    return [...(docs ?? [])].sort((a, b) => a.id.localeCompare(b.id));
+    return Array.from(docs ?? []).sort((a, b) => a.id.localeCompare(b.id));
   }
 
   private storeInitialStateSnapshot(): void {

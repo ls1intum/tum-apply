@@ -64,6 +64,11 @@ describe('Profile save isolation', () => {
   const toastServiceMock = createToastServiceMock();
   const dialogServiceMock = createDialogServiceMock();
   const cloneValue = <T>(value: T): T => structuredClone(value);
+  const createDocumentsComponent = async (): Promise<SettingsDocumentsComponent> => {
+    const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
+    await component['loadProfile']();
+    return component;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -112,8 +117,7 @@ describe('Profile save isolation', () => {
     const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
     await personalComponent.loadPersonalInformation();
 
-    const documentsComponent = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
-    await documentsComponent['loadProfile']();
+    const documentsComponent = await createDocumentsComponent();
 
     const updatedPersonalData = cloneValue(personalComponent.data());
     updatedPersonalData.firstName = 'Grace';
@@ -165,8 +169,7 @@ describe('Profile save isolation', () => {
       .mockReturnValueOnce(of(profileAfterDocumentsSave));
     applicationResourceServiceMock.updateApplicantPersonalInformation.mockReturnValueOnce(of(profileAfterBothSaves));
 
-    const documentsComponent = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
-    await documentsComponent['loadProfile']();
+    const documentsComponent = await createDocumentsComponent();
 
     const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
     await personalComponent.loadPersonalInformation();
@@ -209,8 +212,7 @@ describe('Profile save isolation', () => {
     applicationResourceServiceMock.getApplicantProfile.mockReset();
     applicationResourceServiceMock.getApplicantProfile.mockReturnValue(of(profileWithManualLimits));
 
-    const documentsComponent = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
-    await documentsComponent['loadProfile']();
+    const documentsComponent = await createDocumentsComponent();
 
     await vi.advanceTimersByTimeAsync(600);
 
