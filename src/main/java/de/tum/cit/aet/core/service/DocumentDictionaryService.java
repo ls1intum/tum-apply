@@ -111,17 +111,45 @@ public class DocumentDictionaryService {
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
     public void deleteApplicantOwnedDocumentDictionary(Applicant applicant, UUID documentDictionaryId) {
-        DocumentDictionary documentDictionary = documentDictionaryRepository
-            .findById(documentDictionaryId)
-            .orElseThrow(() -> new EntityNotFoundException("Document dictionary with id " + documentDictionaryId + " not found"));
-
-        if (documentDictionary.getApplicant() == null || !documentDictionary.getApplicant().getUserId().equals(applicant.getUserId())) {
-            throw new EntityNotFoundException(
-                "Applicant document dictionary with id " + documentDictionaryId + " not found for applicant " + applicant.getUserId()
-            );
-        }
-
+        DocumentDictionary documentDictionary = assertApplicantOwnedDocumentDictionary(applicant.getUserId(), documentDictionaryId);
         documentDictionaryRepository.delete(documentDictionary);
+    }
+
+    /**
+     * Deletes an applicant-owned DocumentDictionary entry by applicant user ID.
+     *
+     * @param applicantUserId      the owning applicant's user id
+     * @param documentDictionaryId the id of the document dictionary entry to delete
+     */
+    public void deleteApplicantOwnedDocumentDictionary(UUID applicantUserId, UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = assertApplicantOwnedDocumentDictionary(applicantUserId, documentDictionaryId);
+        documentDictionaryRepository.delete(documentDictionary);
+    }
+
+    /**
+     * Renames an applicant-owned DocumentDictionary entry.
+     *
+     * @param applicant            the applicant who must own the entry
+     * @param documentDictionaryId the id of the document dictionary entry to rename
+     * @param newName              the new name to set
+     */
+    public void renameApplicantOwnedDocumentDictionary(Applicant applicant, UUID documentDictionaryId, String newName) {
+        DocumentDictionary documentDictionary = assertApplicantOwnedDocumentDictionary(applicant.getUserId(), documentDictionaryId);
+        documentDictionary.setName(newName);
+        documentDictionaryRepository.save(documentDictionary);
+    }
+
+    /**
+     * Renames an applicant-owned DocumentDictionary entry by applicant user ID.
+     *
+     * @param applicantUserId      the owning applicant's user id
+     * @param documentDictionaryId the id of the document dictionary entry to rename
+     * @param newName              the new name to set
+     */
+    public void renameApplicantOwnedDocumentDictionary(UUID applicantUserId, UUID documentDictionaryId, String newName) {
+        DocumentDictionary documentDictionary = assertApplicantOwnedDocumentDictionary(applicantUserId, documentDictionaryId);
+        documentDictionary.setName(newName);
+        documentDictionaryRepository.save(documentDictionary);
     }
 
     /**
@@ -214,6 +242,20 @@ public class DocumentDictionaryService {
             .findById(documentId)
             .orElseThrow(() -> new EntityNotFoundException("Document with id " + documentId + " not found"));
         currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplication().getApplicant().getUserId());
+        return documentDictionary;
+    }
+
+    private DocumentDictionary assertApplicantOwnedDocumentDictionary(UUID applicantUserId, UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = documentDictionaryRepository
+            .findById(documentDictionaryId)
+            .orElseThrow(() -> new EntityNotFoundException("Document dictionary with id " + documentDictionaryId + " not found"));
+
+        if (documentDictionary.getApplicant() == null || !documentDictionary.getApplicant().getUserId().equals(applicantUserId)) {
+            throw new EntityNotFoundException(
+                "Applicant document dictionary with id " + documentDictionaryId + " not found for applicant " + applicantUserId
+            );
+        }
+
         return documentDictionary;
     }
 }

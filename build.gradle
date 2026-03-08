@@ -262,6 +262,8 @@ dependencies {
   testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
   testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+  // PDF text extraction for tests
+  testImplementation "org.apache.pdfbox:pdfbox:3.0.6"
   // Annotation processors
   annotationProcessor "org.glassfish.jaxb:jaxb-runtime:4.0.6"
   annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"

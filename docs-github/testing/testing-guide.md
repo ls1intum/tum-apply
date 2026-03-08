@@ -35,6 +35,41 @@ Test reports will be available under `build/reports/tests/` and `build/reports/j
   open build/test-results/vitest/coverage/index.html
   ```
 
+### Architecture Rules (ArchUnit)
+
+The class `src/test/java/de/tum/cit/aet/TechnicalStructureTest.java` contains architecture rules that run as part of server-side tests.
+
+Newly added ArchUnit rule text and purpose:
+
+- `declare @ExportedUserData or @NoUserDataExportRequired`
+  - Function: every class annotated with `@Entity` must explicitly document its export decision.
+  - Why: this prevents silently missing entities in user data export flows by forcing an explicit opt-in (`@ExportedUserData`) or opt-out (`@NoUserDataExportRequired`).
+
+- `reference a @Component provider implementing UserDataSectionProvider`
+  - Function: any entity marked with `@ExportedUserData` must map to a valid, Spring-managed export provider.
+  - Why: this guarantees exported entities are backed by executable export logic and can be collected consistently.
+
+Provider type semantics:
+
+- `UserDataExportProviderType.APPLICANT`
+  - Means: this entity belongs to the applicant-focused export section.
+  - Runtime effect: data is only contributed when the exported user has APPLICANT role.
+
+- `UserDataExportProviderType.STAFF`
+  - Means: this entity belongs to the staff-focused export section.
+  - Runtime effect: data is only contributed when the exported user has PROFESSOR/EMPLOYEE/ADMIN role.
+
+- `UserDataExportProviderType.USER_SETTINGS`
+  - Means: profile/settings ownership.
+  - Runtime effect: always contributed as part of base export profile/settings.
+
+Important scope note:
+
+- The ArchUnit rules above enforce structure (annotation decision + valid provider mapping), but they do not by themselves prove complete runtime export coverage of CSV content.
+- Runtime verification is covered in `src/test/java/de/tum/cit/aet/core/web/UserDataExportResourceTest.java`, especially `annotatedEntitiesMustHaveRuntimeCsvCoverage`, which checks that `@ExportedUserData` entities are represented in the generated export CSV files.
+
+When adding a new entity, always choose one of these two annotations. If you mark it as exported, ensure the configured provider exists, implements `UserDataSectionProvider`, and is annotated with `@Component`.
+
 - Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
   Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).
 

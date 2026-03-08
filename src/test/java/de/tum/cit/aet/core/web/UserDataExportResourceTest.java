@@ -7,29 +7,46 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.DataExportState;
 import de.tum.cit.aet.core.domain.DataExportRequest;
 import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.core.dto.DataExportStatusDTO;
 import de.tum.cit.aet.core.repository.DataExportRequestRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.service.UserDataExportService;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -37,9 +54,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration tests for {@link UserDataExportResource}.
@@ -49,6 +70,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     private static final String STATUS_URL = "/api/users/data-export/status";
     private static final String REQUEST_URL = "/api/users/data-export";
     private static final String DOWNLOAD_URL = "/api/users/data-export/download/%s";
+    private static final String ENTITY_BASE_PACKAGE = "de.tum.cit.aet";
 
     @Autowired
     UserRepository userRepository;
@@ -57,7 +79,16 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     DataExportRequestRepository dataExportRequestRepository;
 
     @Autowired
+    ApplicantRepository applicantRepository;
+
+    @Autowired
     DocumentRepository documentRepository;
+
+    @Autowired
+    ResearchGroupRepository researchGroupRepository;
+
+    @Autowired
+    JobRepository jobRepository;
 
     @Autowired
     UserDataExportService userDataExportService;
@@ -180,7 +211,13 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         assertThat(Files.exists(zipPath)).isTrue();
 
         Set<String> entries = readZipEntries(zipPath);
-        assertThat(entries).contains("data_export_summary.json");
+        assertThat(entries).contains("data/profile.csv", "README_DATA_EXPORT_DE.txt", "README_DATA_EXPORT_EN.txt");
+
+        String readmeDe = readZipEntryAsString(zipPath, "README_DATA_EXPORT_DE.txt");
+        assertThat(readmeDe).contains("data/profile.csv").contains("Datenexport");
+
+        String readmeEn = readZipEntryAsString(zipPath, "README_DATA_EXPORT_EN.txt");
+        assertThat(readmeEn).contains("data/profile.csv").contains("Data Export");
     }
 
     @Test
@@ -291,6 +328,133 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         assertThat(entries).contains(expectedEntry);
     }
 
+    @Test
+    @Transactional
+    void exportIncludesApplicantDataWhenApplicantRoleExists() throws Exception {
+        User user = savedUser("applicant-export@tum.de");
+        ApplicantTestData.attachApplicantRole(user);
+        user = userRepository.saveAndFlush(user);
+
+        Applicant applicant = new Applicant();
+        applicant.setUser(user);
+        applicant.setStreet("Teststr. 1");
+        applicant.setPostalCode("12345");
+        applicant.setCity("Munich");
+        applicant.setCountry("de");
+        applicantRepository.saveAndFlush(applicant);
+
+        Path zipPath = processExportAndGetZipPath(user);
+        String profileCsv = readZipEntryAsString(zipPath, "data/profile.csv");
+        String applicantProfileCsv = readZipEntryAsString(zipPath, "data/applicant_profile.csv");
+        Set<String> entries = readZipEntries(zipPath);
+
+        assertThat(profileCsv).contains("email").contains("applicant-export@tum.de");
+        assertThat(applicantProfileCsv).contains("city").contains("Munich");
+        assertThat(entries).doesNotContain("data/staff_supervised_jobs.csv");
+    }
+
+    @Test
+    void exportIncludesStaffDataWhenStaffRoleExists() throws Exception {
+        var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User user = UserTestData.savedProfessor(userRepository, researchGroup);
+        JobTestData.saved(jobRepository, user, researchGroup, "Staff Export Job", JobState.DRAFT, LocalDate.now());
+
+        Path zipPath = processExportAndGetZipPath(user);
+        String profileCsv = readZipEntryAsString(zipPath, "data/profile.csv");
+        String supervisedJobsCsv = readZipEntryAsString(zipPath, "data/staff_supervised_jobs.csv");
+        Set<String> entries = readZipEntries(zipPath);
+
+        assertThat(profileCsv).contains("email").contains(user.getEmail());
+        assertThat(supervisedJobsCsv).contains("job_title").contains("Staff Export Job");
+        assertThat(entries).doesNotContain("data/applicant_profile.csv");
+    }
+
+    @Test
+    void annotatedEntitiesMustHaveRuntimeCsvCoverage() throws Exception {
+        Set<String> settingsEntries = readZipEntries(processExportAndGetZipPath(savedUser("settings-coverage@tum.de")));
+
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        User applicantUser = applicant.getUser();
+        Set<String> applicantEntries = readZipEntries(processExportAndGetZipPath(applicantUser));
+
+        var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User staffUser = UserTestData.savedProfessor(userRepository, researchGroup);
+        staffUser = userRepository.findById(staffUser.getUserId()).orElseThrow();
+        JobTestData.saved(jobRepository, staffUser, researchGroup, "Coverage Job", JobState.DRAFT, LocalDate.now());
+        Set<String> staffEntries = readZipEntries(processExportAndGetZipPath(staffUser));
+
+        Map<UserDataExportProviderType, Set<String>> entriesByProviderType = new EnumMap<>(UserDataExportProviderType.class);
+        entriesByProviderType.put(UserDataExportProviderType.USER_SETTINGS, settingsEntries);
+        entriesByProviderType.put(UserDataExportProviderType.APPLICANT, applicantEntries);
+        entriesByProviderType.put(UserDataExportProviderType.STAFF, staffEntries);
+
+        Map<String, String> expectedCsvEntryByEntity = expectedCsvEntryByEntityClassName();
+        List<Class<?>> annotatedEntities = findExportAnnotatedEntities();
+
+        Set<String> discoveredClassNames = annotatedEntities.stream().map(Class::getName).collect(Collectors.toSet());
+        assertThat(expectedCsvEntryByEntity.keySet())
+            .as("Every @ExportedUserData entity must have an explicit runtime CSV coverage mapping")
+            .isEqualTo(discoveredClassNames);
+
+        for (Class<?> entityClass : annotatedEntities) {
+            ExportedUserData annotation = entityClass.getAnnotation(ExportedUserData.class);
+            assertThat(annotation).isNotNull();
+
+            String csvEntry = expectedCsvEntryByEntity.get(entityClass.getName());
+            Set<String> entries = entriesByProviderType.get(annotation.by());
+
+            assertThat(entries).as("Missing runtime export archive for provider type %s", annotation.by()).isNotNull();
+            assertThat(entries)
+                .as("Expected CSV entry '%s' for entity %s to exist in export archive", csvEntry, entityClass.getName())
+                .contains(csvEntry);
+        }
+    }
+
+    // ---------------- Helper methods for test setup and assertions ----------------
+
+    private Map<String, String> expectedCsvEntryByEntityClassName() {
+        Map<String, String> pathByEntity = new HashMap<>();
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.User", "data/profile.csv");
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.UserSetting", "data/user_settings.csv");
+        pathByEntity.put("de.tum.cit.aet.notification.domain.EmailSetting", "data/email_settings.csv");
+
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.Applicant", "data/applicant_profile.csv");
+        pathByEntity.put("de.tum.cit.aet.core.domain.DocumentDictionary", "data/applicant_documents.csv");
+        pathByEntity.put("de.tum.cit.aet.application.domain.Application", "data/applicant_applications.csv");
+        pathByEntity.put("de.tum.cit.aet.interview.domain.Interviewee", "data/applicant_interviewees.csv");
+
+        pathByEntity.put("de.tum.cit.aet.job.domain.Job", "data/staff_supervised_jobs.csv");
+        pathByEntity.put("de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole", "data/staff_research_group_roles.csv");
+        pathByEntity.put("de.tum.cit.aet.evaluation.domain.ApplicationReview", "data/staff_reviews.csv");
+        pathByEntity.put("de.tum.cit.aet.evaluation.domain.InternalComment", "data/staff_comments.csv");
+        pathByEntity.put("de.tum.cit.aet.evaluation.domain.Rating", "data/staff_ratings.csv");
+        pathByEntity.put("de.tum.cit.aet.interview.domain.InterviewProcess", "data/staff_interview_processes.csv");
+        pathByEntity.put("de.tum.cit.aet.interview.domain.InterviewSlot", "data/staff_interview_slots.csv");
+        return pathByEntity;
+    }
+
+    private List<Class<?>> findExportAnnotatedEntities() {
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AnnotationTypeFilter(ExportedUserData.class));
+
+        return scanner
+            .findCandidateComponents(ENTITY_BASE_PACKAGE)
+            .stream()
+            .map(BeanDefinition::getBeanClassName)
+            .filter(Objects::nonNull)
+            .map(this::loadClass)
+            .map(clazz -> (Class<?>) clazz)
+            .collect(Collectors.toList());
+    }
+
+    private Class<?> loadClass(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Could not load class " + className, e);
+        }
+    }
+
     private User savedUser(String email) {
         User user = UserTestData.newUser();
         user.setEmail(email);
@@ -332,5 +496,34 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             }
         }
         return entries;
+    }
+
+    private Path processExportAndGetZipPath(User user) throws Exception {
+        User managedUser = userRepository.findById(user.getUserId()).orElseThrow();
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(managedUser);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+        request = dataExportRequestRepository.saveAndFlush(request);
+
+        userDataExportService.processPendingDataExports();
+
+        DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+        return Paths.get(updated.getFilePath());
+    }
+
+    private String readZipEntryAsString(Path zipPath, String entryName) throws Exception {
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(Files.readAllBytes(zipPath)))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entryName.equals(entry.getName())) {
+                    byte[] payload = zis.readAllBytes();
+                    return new String(payload, StandardCharsets.UTF_8);
+                }
+                zis.closeEntry();
+            }
+        }
+        throw new IllegalStateException("Zip entry not found: " + entryName);
     }
 }
