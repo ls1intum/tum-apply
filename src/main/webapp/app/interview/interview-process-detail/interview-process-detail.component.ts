@@ -19,16 +19,19 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
   templateUrl: './interview-process-detail.component.html',
 })
 export class InterviewProcessDetailComponent {
-  processId = signal<string | null>(null);
+  processId = signal<string | undefined>(undefined);
   readonly safeProcessId = computed(() => this.processId() ?? '');
-  jobId = signal<string | null>(null);
-  jobTitle = signal<string | null>(null);
-  jobState = signal<string | null>(null);
+  jobId = signal<string | undefined>(undefined);
+  jobTitle = signal<string | undefined>(undefined);
+  jobState = signal<string | undefined>(undefined);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
   readonly isJobClosed = computed(() => this.jobState() === 'CLOSED' || this.jobState() === 'APPLICANT_FOUND');
 
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
+  // Signal to trigger slots section reload
+  slotsRefreshKey = signal(0);
+  invitedCount = signal(0);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -38,7 +41,7 @@ export class InterviewProcessDetailComponent {
 
   private readonly updateTitleEffect = effect(() => {
     const title = this.jobTitle();
-    if (title) {
+    if (title !== undefined && title !== '') {
       this.updateTabTitle(title);
     }
   });
@@ -46,8 +49,8 @@ export class InterviewProcessDetailComponent {
   private readonly location = inject(Location);
 
   constructor() {
-    const id = this.route.snapshot.paramMap.get('processId');
-    if (id) {
+    const id = this.route.snapshot.paramMap.get('processId') ?? undefined;
+    if (id !== undefined && id !== '') {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
@@ -55,6 +58,10 @@ export class InterviewProcessDetailComponent {
 
   onSlotAssigned(): void {
     this.intervieweeRefreshKey.update(k => k + 1);
+  }
+
+  onSlotCancelled(): void {
+    this.slotsRefreshKey.update(k => k + 1);
   }
 
   private updateTabTitle(jobTitle: string): void {
@@ -73,6 +80,9 @@ export class InterviewProcessDetailComponent {
       }
       if (process.jobState) {
         this.jobState.set(process.jobState);
+      }
+      if (process.invitedCount !== undefined) {
+        this.invitedCount.set(process.invitedCount);
       }
     } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');

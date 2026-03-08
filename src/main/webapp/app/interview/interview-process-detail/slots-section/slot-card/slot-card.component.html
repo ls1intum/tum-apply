@@ -1,36 +1,22 @@
-<div class="relative min-w-[13.75rem] border border-border-default rounded-lg p-2.5">
-  <!-- Kebab Menu Button -->
-  @if (!isClosed()) {
-    <button class="absolute top-2 right-2 p-0.5 hover:bg-background-surface rounded transition-colors z-10" (click)="menu.toggle($event)">
-      <fa-icon icon="ellipsis-vertical" class="text-text-primary text-xs" />
-    </button>
-  }
-
+<div class="min-w-[13.75rem] border border-border-default rounded-lg p-2.5" [class.opacity-50]="isPast()">
   <!-- Menu -->
   <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
 
   <!-- Confirm Dialog -->
-  <jhi-confirm-dialog
-    #deleteDialog
-    [label]="'button.delete' | translate"
+  <jhi-confirm-dialog #deleteDialog [label]="'button.delete' | translate"
     [header]="'interview.slots.delete.confirm.header' | translate"
-    [message]="'interview.slots.delete.confirm.message' | translate"
-    [severity]="'danger'"
-    [confirmIcon]="'trash'"
-    [showOpenButton]="false"
-    (confirmed)="onDelete()"
-  />
+    [message]="'interview.slots.delete.confirm.message' | translate" severity="danger" confirmIcon="trash"
+    [showOpenButton]="false" (confirmed)="onDelete()" />
 
   <!-- Card Content -->
-  <div class="flex flex-col gap-1.5 pr-5">
-    @if (isBooked()) {
+  <div class="flex gap-1.5">
+    <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+      @if (isBooked()) {
       <!-- Booked Slot: Time + Badge -->
       <div class="flex items-center justify-between">
         <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
-        <span
-          class="bg-positive-100 text-positive-default px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
-          jhiTranslate="interview.slots.status.booked"
-        >
+        <span class="bg-positive-100 text-positive-default px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
+          jhiTranslate="interview.slots.status.booked">
           booked
         </span>
       </div>
@@ -45,9 +31,9 @@
           </span>
         </div>
       </div>
-    }
+      }
 
-    @if (!isBooked()) {
+      @if (!isBooked()) {
       <!-- Available Slot: Time + Location -->
       <div class="flex items-center justify-between gap-2">
         <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
@@ -60,18 +46,18 @@
       </div>
 
       <!-- Assign Button -->
-      @if (!isClosed()) {
-        <jhi-button
-          class="w-full"
-          [fullWidth]="true"
-          variant="text"
-          icon="plus"
-          label="button.assign"
-          [shouldTranslate]="true"
-          [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all flex items-center justify-center'"
-          (click)="onAssign()"
-        />
+      @if (!isPast() && !isClosed()) {
+      <jhi-button [fullWidth]="true" variant="text" icon="plus" label="button.assign" [shouldTranslate]="true"
+        styleClass="h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all"
+        (click)="onAssign()" />
       }
+      }
+    </div>
+
+    <!-- Kebab Menu Button -->
+    @if (!isPast() && !isClosed()) {
+    <jhi-button icon="ellipsis-vertical" variant="text" size="sm"
+      styleClass="!w-6 !h-6 !min-w-0 !text-text-primary shrink-0" (click)="menu.toggle($event)" />
     }
   </div>
 </div>

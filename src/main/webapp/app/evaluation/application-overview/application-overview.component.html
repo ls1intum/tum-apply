@@ -49,6 +49,13 @@
     {{ (application.appliedAt?.toString() | localizedDate) || '-' }}
   </ng-template>
 
+  <ng-template #nameTemplate let-application>
+    <div class="flex items-center gap-2">
+      <jhi-user-avatar [fullName]="application.name ?? ''" size="lg" />
+      <span class="truncate">{{ application.name || '-' }}</span>
+    </div>
+  </ng-template>
+
   <ng-template #actionTemplate let-application>
     <jhi-button icon="eye" [tooltip]="'button.view' | translate" variant="text" (click)="navigateToDetail(application)" />
   </ng-template>

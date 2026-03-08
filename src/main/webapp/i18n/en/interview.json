@@ -22,7 +22,9 @@
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total Interviews"
+        "totalInterviews": "Total Interviews",
+        "totalSlots": "Total Slots",
+        "booked": "Booked"
       },
       "upcoming": {
         "title": "Upcoming",
@@ -31,6 +33,12 @@
       "error": {
         "failedToLoad": "Failed to load interview processes."
       }
+    },
+    "warning": {
+      "notEnoughSlots": "{{invited}} applicants invited, but only {{slots}} slots available. Please create more slots.",
+      "notEnoughSlotsSingular": "{{invited}} applicant invited, but only {{slots}} slots available. Please create more slots.",
+      "zeroSlots": "{{invited}} applicants invited, but no slots are available. Please create new slots.",
+      "zeroSlotsSingular": "{{invited}} applicant invited, but no slots are available. Please create new slots."
     },
     "detail": {
       "error": {
@@ -51,6 +59,7 @@
     },
     "slots": {
       "addSlots": "Add Slots",
+      "notEnoughSlots": "Not enough slots for all invited interviewees available.",
       "slotsCountSingular": "slot",
       "slotsCountPlural": "slots",
       "showMoreSingular": "more slot",
@@ -171,6 +180,21 @@
         "errorForbidden": {
           "summary": "Permission denied",
           "detail": "You don't have permission to delete this slot"
+        }
+      },
+      "cancelInterview": {
+        "header": "Cancel Interview",
+        "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
+        "button": "Cancel",
+        "sendReinvite": "Re-invite applicant (Send booking link)",
+        "deleteSlot": "Delete this slot",
+        "success": {
+          "summary": "Interview cancelled",
+          "detail": "The interview has been successfully cancelled."
+        },
+        "error": {
+          "summary": "Cancellation failed",
+          "detail": "The interview could not be cancelled. Please try again or contact an admin."
         }
       }
     },

@@ -6,13 +6,14 @@
       <h1 class="h1-text hyphens-none">{{ jobTitle() }}</h1>
     </div>
     @if (isJobClosed()) {
-      <jhi-tag color="contrast" [text]="'interview.overview.status.closed' | translate" />
+    <jhi-tag color="contrast" [text]="'interview.overview.status.closed' | translate" />
     }
   </div>
 
   <!-- Slots Section -->
   @if (processId()) {
-    <jhi-slots-section [processId]="safeProcessId()" [isClosed]="isJobClosed()" (slotAssigned)="onSlotAssigned()" />
+  <jhi-slots-section [processId]="safeProcessId()" [invitedCount]="invitedCount()" [refreshKey]="slotsRefreshKey()"
+    [isClosed]="isJobClosed()" (slotAssigned)="onSlotAssigned()" />
   }
 
   <!-- Divider -->
@@ -20,12 +21,8 @@
 
   <!-- Interviewee Section -->
   @if (processId() && jobTitle()) {
-    <jhi-interviewee-section
-      [processId]="safeProcessId()"
-      [jobTitle]="safeJobTitle()"
-      [isClosed]="isJobClosed()"
-      [refreshKey]="intervieweeRefreshKey()"
-    />
+  <jhi-interviewee-section [processId]="safeProcessId()" [jobTitle]="safeJobTitle()" [isClosed]="isJobClosed()"
+    [refreshKey]="intervieweeRefreshKey()" (slotsRefresh)="onSlotCancelled()" />
   }
 
   <!-- Divider -->
