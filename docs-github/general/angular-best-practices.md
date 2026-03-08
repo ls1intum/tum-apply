@@ -4,6 +4,205 @@ Essential patterns and common mistakes for client development in TUMApply.
 
 ---
 
+## 🔧 **TypeScript / Component Patterns**
+
+### 11. **Use `inject()` for Dependency Injection**
+
+✅ **GOOD:**
+
+```typescript
+export class MyComponent {
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+  private api = inject(ApplicationResourceApiService);
+}
+```
+
+❌ **OLD STYLE:**
+
+```typescript
+constructor(
+  private router: Router,
+  private toastService: ToastService
+) { }
+```
+
+---
+
+### 12. **Handle Async Operations with `async/await`**
+
+✅ **GOOD:**
+
+```typescript
+async loadApplications(): Promise<void> {
+  this.isLoading.set(true);
+  try {
+    const apps = await firstValueFrom(this.api.getApplications());
+    this.applications.set(apps);
+  } catch (error) {
+    this.toastService.showError('Failed to load applications');
+  } finally {
+    this.isLoading.set(false);
+  }
+}
+```
+
+❌ **AVOID** — Manual subscriptions:
+
+```typescript
+loadApplications(): void {
+  this.api.getApplications().subscribe({
+    next: apps => this.applications.set(apps),
+    error: err => this.handleError(err)
+  }); // Memory leak if not unsubscribed
+}
+```
+
+---
+
+### 13. **Use `computed()` for Derived State**
+
+✅ **GOOD:**
+
+```typescript
+applications = signal<ApplicationDTO[]>([]);
+searchTerm = signal('');
+
+// Automatically memoized, reactive
+filteredApplications = computed(() => this.applications().filter(app => app.name.toLowerCase().includes(this.searchTerm().toLowerCase())));
+```
+
+❌ **AVOID** — Getters (recalculate on every change detection):
+
+```typescript
+get filteredApplications(): ApplicationDTO[] {
+  return this.applications().filter(app =>
+    app.name.toLowerCase().includes(this.searchTerm().toLowerCase())
+  );
+}
+```
+
+---
+
+### 14. **Use `effect()` Only for Side Effects**
+
+✅ **GOOD** — Side effects (DOM, logging, API calls):
+
+```typescript
+constructor() {
+  effect(() => {
+    console.log('Count changed:', this.count());
+  });
+
+  effect(() => {
+    void this.saveToStorage(this.formData());
+  });
+}
+```
+
+❌ **WRONG** — Deriving values (use `computed()` instead):
+
+```typescript
+constructor() {
+  effect(() => {
+    // ❌ Don't do this
+    this.doubleCount = this.count() * 2;
+  });
+}
+
+// ✅ Use computed instead
+doubleCount = computed(() => this.count() * 2);
+```
+
+---
+
+## 🎯 **Angular Template Patterns**
+
+### 8. **Use Modern Control Flow (`@if`, `@for`, `@switch`)**
+
+✅ **GOOD** — Modern Angular 17+ syntax:
+
+```html
+@if (applications(); as apps) { @if (apps.length > 0) { @for (app of apps; track app.id) {
+<jhi-application-card [application]="app" />
+} } @else {
+<p>No applications found</p>
+} }
+```
+
+❌ **OLD SYNTAX** — Don't use in new code:
+
+```html
+<ng-container *ngIf="applications() as apps">
+  <div *ngIf="apps.length > 0; else empty">
+    <jhi-application-card *ngFor="let app of apps; trackBy: trackById" [application]="app" />
+  </div>
+  <ng-template #empty>
+    <p>No applications found</p>
+  </ng-template>
+</ng-container>
+```
+
+---
+
+### 9. **Internationalization (i18n)**
+
+✅ **ALL user-visible text must use translation:**
+
+```html
+<!-- Simple translation -->
+<h1 jhiTranslate="application.title">Application</h1>
+
+<!-- With parameters -->
+<span [jhiTranslate]="'application.count'" [translateValues]="{ count: count() }"> {{ count() }} applications </span>
+
+<!-- In attributes -->
+<jhi-button [label]="'button.save'" [shouldTranslate]="true" />
+```
+
+❌ **NEVER hard-code user-visible text:**
+
+```html
+<h1>Application</h1>
+<button>Save</button>
+```
+
+---
+
+### 10. **Component Communication**
+
+✅ **GOOD** — Use signals for inputs/outputs:
+
+```typescript
+export class MyComponent {
+  // Inputs
+  title = input.required<string>();
+  count = input<number>(0);
+
+  // Outputs
+  countChange = output<number>();
+
+  // Internal state
+  isLoading = signal(false);
+
+  // Derived state
+  displayText = computed(() => `${this.title()}: ${this.count()}`);
+}
+```
+
+```html
+<jhi-my-component [title]="'My Title'" [count]="count()" (countChange)="onCountChange($event)" />
+```
+
+❌ **AVOID** — Old decorator syntax for new code:
+
+```typescript
+@Input() title!: string;
+@Output() countChange = new EventEmitter<number>();
+```
+
+---
+
 ## 🎨 **Styling & HTML Best Practices**
 
 ### 1. **NEVER Hard-Code Colors**
@@ -255,231 +454,6 @@ buttonClasses = computed(() => {
 ```
 
 **Order:** Base classes → `sm:` → `md:` → `lg:` → `xl:` → `2xl:`
-
----
-
-## 🎯 **Angular Template Patterns**
-
-### 8. **Use Modern Control Flow (`@if`, `@for`, `@switch`)**
-
-✅ **GOOD** — Modern Angular 17+ syntax:
-
-```html
-@if (applications(); as apps) { @if (apps.length > 0) { @for (app of apps; track app.id) {
-<jhi-application-card [application]="app" />
-} } @else {
-<p>No applications found</p>
-} }
-```
-
-❌ **OLD SYNTAX** — Don't use in new code:
-
-```html
-<ng-container *ngIf="applications() as apps">
-  <div *ngIf="apps.length > 0; else empty">
-    <jhi-application-card *ngFor="let app of apps; trackBy: trackById" [application]="app" />
-  </div>
-  <ng-template #empty>
-    <p>No applications found</p>
-  </ng-template>
-</ng-container>
-```
-
----
-
-### 9. **Internationalization (i18n)**
-
-✅ **ALL user-visible text must use translation:**
-
-```html
-<!-- Simple translation -->
-<h1 jhiTranslate="application.title">Application</h1>
-
-<!-- With parameters -->
-<span [jhiTranslate]="'application.count'" [translateValues]="{ count: count() }"> {{ count() }} applications </span>
-
-<!-- In attributes -->
-<jhi-button [label]="'button.save'" [shouldTranslate]="true" />
-```
-
-❌ **NEVER hard-code user-visible text:**
-
-```html
-<h1>Application</h1>
-<button>Save</button>
-```
-
----
-
-### 10. **Component Communication**
-
-✅ **GOOD** — Use signals for inputs/outputs:
-
-```typescript
-export class MyComponent {
-  // Inputs
-  title = input.required<string>();
-  count = input<number>(0);
-
-  // Outputs
-  countChange = output<number>();
-
-  // Internal state
-  isLoading = signal(false);
-
-  // Derived state
-  displayText = computed(() => `${this.title()}: ${this.count()}`);
-}
-```
-
-```html
-<jhi-my-component [title]="'My Title'" [count]="count()" (countChange)="onCountChange($event)" />
-```
-
-❌ **AVOID** — Old decorator syntax for new code:
-
-```typescript
-@Input() title!: string;
-@Output() countChange = new EventEmitter<number>();
-```
-
----
-
-## 🔧 **TypeScript / Component Patterns**
-
-### 11. **Use `inject()` for Dependency Injection**
-
-✅ **GOOD:**
-
-```typescript
-export class MyComponent {
-  private router = inject(Router);
-  private toastService = inject(ToastService);
-  private api = inject(ApplicationResourceApiService);
-}
-```
-
-❌ **OLD STYLE:**
-
-```typescript
-constructor(
-  private router: Router,
-  private toastService: ToastService
-) { }
-```
-
----
-
-### 12. **Handle Async Operations with `async/await`**
-
-✅ **GOOD:**
-
-```typescript
-async loadApplications(): Promise<void> {
-  this.isLoading.set(true);
-  try {
-    const apps = await firstValueFrom(this.api.getApplications());
-    this.applications.set(apps);
-  } catch (error) {
-    this.toastService.showError('Failed to load applications');
-  } finally {
-    this.isLoading.set(false);
-  }
-}
-```
-
-❌ **AVOID** — Manual subscriptions:
-
-```typescript
-loadApplications(): void {
-  this.api.getApplications().subscribe({
-    next: apps => this.applications.set(apps),
-    error: err => this.handleError(err)
-  }); // Memory leak if not unsubscribed
-}
-```
-
----
-
-### 13. **Use `computed()` for Derived State**
-
-✅ **GOOD:**
-
-```typescript
-applications = signal<ApplicationDTO[]>([]);
-searchTerm = signal('');
-
-// Automatically memoized, reactive
-filteredApplications = computed(() => this.applications().filter(app => app.name.toLowerCase().includes(this.searchTerm().toLowerCase())));
-```
-
-❌ **AVOID** — Getters (recalculate on every change detection):
-
-```typescript
-get filteredApplications(): ApplicationDTO[] {
-  return this.applications().filter(app =>
-    app.name.toLowerCase().includes(this.searchTerm().toLowerCase())
-  );
-}
-```
-
----
-
-### 14. **Use `effect()` Only for Side Effects**
-
-✅ **GOOD** — Side effects (DOM, logging, API calls):
-
-```typescript
-constructor() {
-  effect(() => {
-    console.log('Count changed:', this.count());
-  });
-
-  effect(() => {
-    void this.saveToStorage(this.formData());
-  });
-}
-```
-
-❌ **WRONG** — Deriving values (use `computed()` instead):
-
-```typescript
-constructor() {
-  effect(() => {
-    // ❌ Don't do this
-    this.doubleCount = this.count() * 2;
-  });
-}
-
-// ✅ Use computed instead
-doubleCount = computed(() => this.count() * 2);
-```
-
----
-
-## 📚 **Quick Reference Checklist**
-
-Before committing code, verify:
-
-### HTML/Styling
-
-- [ ] No hard-coded colors (no `blue-500`, `gray-700`, `#3070b3`)
-- [ ] No inline `style=` attributes (unless truly dynamic values)
-- [ ] Using semantic color tokens (`text-primary`, `bg-background-surface`, etc.)
-- [ ] Responsive classes ordered: base → `sm:` → `md:` → `lg:` → `xl:`
-
-### Angular Templates
-
-- [ ] Using `@if`, `@for`, `@switch` (not `*ngIf`, `*ngFor`)
-- [ ] Using `@if (value(); as alias)` for type safety
-- [ ] Not using `[ngClass]` (use `[class.xyz]` or `computed()` with `[class]` instead)
-
-### TypeScript
-
-- [ ] Using `signal()`, `computed()`, `input()`, `output()`
-- [ ] Using `inject()` for dependency injection
-- [ ] Calling signals as functions: `signal()` not `signal`
-- [ ] HTTP calls use `async/await` with `firstValueFrom()`
 
 ---
 
