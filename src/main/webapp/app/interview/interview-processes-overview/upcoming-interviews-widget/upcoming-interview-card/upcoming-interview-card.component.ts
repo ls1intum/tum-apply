@@ -5,6 +5,8 @@ import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 
+const AVATAR_COLORS = ['var(--p-accent-200)', 'var(--p-info-200)', 'var(--p-warn-200)', 'var(--p-danger-200)'];
+
 @Component({
   selector: 'jhi-upcoming-interview-card',
   standalone: true,
@@ -13,6 +15,17 @@ import dayjs from 'dayjs/esm';
 })
 export class UpcomingInterviewCardComponent {
   interview = input.required<UpcomingInterviewDTO>();
+  index = input<number>(0);
+
+  initials = computed(() => {
+    const name = this.interview().intervieweeName ?? '';
+    const parts = name.trim().split(/\s+/);
+    const first = parts[0]?.charAt(0) ?? '';
+    const last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
+    return (first + last).toUpperCase();
+  });
+
+  avatarBgColor = computed(() => AVATAR_COLORS[this.index() % AVATAR_COLORS.length]);
 
   formattedTimeRange = computed(() => {
     const i = this.interview();

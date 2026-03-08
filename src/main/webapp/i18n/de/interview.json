@@ -19,7 +19,9 @@
         "scheduled": "Geplant",
         "invited": "Eingeladen",
         "uncontacted": "Nicht kontaktiert",
-        "totalInterviews": "Interviews gesamt"
+        "totalInterviews": "Interviews gesamt",
+        "totalSlots": "Anzahl Slots",
+        "booked": "Gebucht"
       },
       "upcoming": {
         "title": "Anstehend",
@@ -28,6 +30,12 @@
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
+    },
+    "warning": {
+      "notEnoughSlots": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "notEnoughSlotsSingular": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "zeroSlots": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
+      "zeroSlotsSingular": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
     },
     "detail": {
       "error": {
