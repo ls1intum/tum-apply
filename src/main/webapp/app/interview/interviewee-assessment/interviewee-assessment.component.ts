@@ -17,6 +17,7 @@ import { RatingComponent } from 'app/shared/components/atoms/rating/rating.compo
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
 import { Prose } from 'app/shared/components/atoms/prose/prose';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 /**
@@ -39,6 +40,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
     EditorComponent,
     DocumentSection,
     Prose,
+    UserAvatarComponent,
   ],
   templateUrl: './interviewee-assessment.component.html',
 })

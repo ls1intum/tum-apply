@@ -309,7 +309,7 @@ public class JobService {
      *                               title
      * @return a page of {@link CreatedJobDTO} for the research group's jobs
      */
-    public Page<CreatedJobDTO> getJobsByProfessor(
+    public Page<CreatedJobDTO> getJobsForCurrentResearchGroup(
         PageDTO pageDTO,
         ProfessorJobsFilterDTO professorJobsFilterDTO,
         SortDTO sortDTO,
@@ -386,7 +386,9 @@ public class JobService {
      * @return the supervising professor's user ID
      */
     public UUID getSupervisingProfessorUserId(UUID jobId) {
-        return jobRepository.findSupervisingProfessorUserIdByJobId(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        return jobRepository
+            .findSupervisingProfessorUserIdByJobId(jobId)
+            .orElseThrow(() -> new EntityNotFoundException("User for job with Id '" + jobId + "' does not exist"));
     }
 
     /**

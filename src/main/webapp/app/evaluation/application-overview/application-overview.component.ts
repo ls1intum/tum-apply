@@ -13,6 +13,7 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../shared/componen
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { UserAvatarComponent } from '../../shared/components/atoms/user-avatar/user-avatar.component';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
@@ -30,6 +31,7 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
     TranslateModule,
     TranslateDirective,
     SearchFilterSortBar,
+    UserAvatarComponent,
   ],
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
@@ -46,6 +48,7 @@ export class ApplicationOverviewComponent {
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
   readonly appliedAtTemplate = viewChild.required<TemplateRef<unknown>>('appliedAtTemplate');
+  readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedStatusFilters = signal<string[]>([]);
@@ -55,8 +58,9 @@ export class ApplicationOverviewComponent {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
     const appliedAtTpl = this.appliedAtTemplate();
+    const nameTpl = this.nameTemplate();
     return [
-      { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem' },
+      { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem', template: nameTpl },
       {
         field: 'state',
         header: 'evaluation.tableHeaders.status',

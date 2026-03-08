@@ -13,6 +13,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/date-time.util';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 // Modal component for assigning an applicant to an interview slot.
 // Displays available interviewees and allows single selection for slot assignment.
@@ -28,6 +29,7 @@ import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-t
     FontAwesomeModule,
     CheckboxComponent,
     DynamicTableComponent,
+    UserAvatarComponent,
   ],
   templateUrl: './assign-applicant-modal.component.html',
 })
@@ -40,7 +42,7 @@ export class AssignApplicantModalComponent {
 
   // Outputs
   visibleChange = output<boolean>();
-  applicantAssigned = output();
+  applicantAssigned = output<InterviewSlotDTO | undefined>();
 
   // Signals
   interviewees = signal<IntervieweeDTO[]>([]);
@@ -48,8 +50,10 @@ export class AssignApplicantModalComponent {
   loading = signal(false);
   assignLoading = signal(false);
 
-  // Filters out already scheduled interviewees
-  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED'));
+  // Filters out already scheduled, completed, and invited interviewees
+  availableInterviewees = computed(() =>
+    this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED' && i.state !== 'INVITED'),
+  );
 
   // Returns true if an applicant is selected and not currently assigning
   canAssign = computed(() => this.selectedApplicantId() !== null && !this.assignLoading());
@@ -97,16 +101,16 @@ export class AssignApplicantModalComponent {
 
     try {
       this.assignLoading.set(true);
-      await firstValueFrom(this.interviewService.assignSlotToInterviewee(slotId, { applicationId }));
+      const updatedSlot = await firstValueFrom(this.interviewService.assignSlotToInterviewee(slotId, { applicationId }));
       this.toastService.showSuccessKey('interview.assign.success');
-      this.applicantAssigned.emit();
+      this.applicantAssigned.emit(updatedSlot);
       this.closeModal();
     } catch (error: unknown) {
       const httpError = error as { status?: number };
       switch (httpError.status) {
         case 409:
           this.toastService.showErrorKey('interview.assign.error.alreadyBooked');
-          this.applicantAssigned.emit();
+          this.applicantAssigned.emit(undefined);
           this.closeModal();
           break;
         case 400:
@@ -115,7 +119,7 @@ export class AssignApplicantModalComponent {
         case 403:
         case 404:
           this.toastService.showErrorKey('interview.assign.error.failed');
-          this.applicantAssigned.emit();
+          this.applicantAssigned.emit(undefined);
           this.closeModal();
           break;
         default:
@@ -146,9 +150,9 @@ export class AssignApplicantModalComponent {
     return this.selectedApplicantId() === interviewee.applicationId;
   }
 
-  // Returns true if the interviewee already has a scheduled slot
+  // Returns true if the interviewee already has a scheduled slot or is invited
   isDisabled(interviewee: IntervieweeDTO): boolean {
-    return interviewee.state === 'SCHEDULED';
+    return interviewee.state === 'SCHEDULED' || interviewee.state === 'INVITED';
   }
 
   // Handles visibility changes from the dialog component

@@ -7,7 +7,6 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { BREAKPOINT_QUERIES } from 'app/shared/constants/breakpoints';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { ProfessorDTO } from 'app/generated/model/professorDTO';
 
@@ -221,6 +220,65 @@ describe('ApplicationCarouselComponent', () => {
 
       expect(spyNext).not.toHaveBeenCalled();
       expect(spyPrev).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate when focus is inside a textarea', () => {
+      const textarea = document.createElement('textarea');
+      document.body.appendChild(textarea);
+      textarea.focus();
+
+      const spyNext = vi.spyOn(component, 'loadNext');
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+
+      expect(spyNext).not.toHaveBeenCalled();
+
+      document.body.removeChild(textarea);
+    });
+
+    it('should not navigate when focus is inside an input', () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.focus();
+
+      const spyPrev = vi.spyOn(component, 'loadPrev');
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+
+      expect(spyPrev).not.toHaveBeenCalled();
+
+      document.body.removeChild(input);
+    });
+
+    it('should not navigate when an element with contenteditable is focused', () => {
+      const div = document.createElement('div');
+      div.setAttribute('contenteditable', 'true');
+      document.body.appendChild(div);
+      div.focus();
+
+      const spyNext = vi.spyOn(component, 'loadNext');
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+
+      expect(spyNext).not.toHaveBeenCalled();
+
+      document.body.removeChild(div);
+    });
+
+    it('should not navigate when modifier keys are pressed', () => {
+      const spyNext = vi.spyOn(component, 'loadNext');
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', ctrlKey: true }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', metaKey: true }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', altKey: true }));
+
+      expect(spyNext).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate when event already prevented', () => {
+      const spyNext = vi.spyOn(component, 'loadNext');
+      const ev = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+      Object.defineProperty(ev, 'defaultPrevented', { get: () => true });
+
+      component.handleGlobalKeyDown(ev);
+
+      expect(spyNext).not.toHaveBeenCalled();
     });
   });
 });
