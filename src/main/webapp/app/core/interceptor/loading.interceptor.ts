@@ -13,7 +13,7 @@ export class LoadingInterceptor implements HttpInterceptor {
   private readonly loadingService = inject(LoadingService);
   private readonly appRef = inject(ApplicationRef);
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<any>> {
     let triggered = false;
 
     // Start a timer to show the loading indicator after 500ms
