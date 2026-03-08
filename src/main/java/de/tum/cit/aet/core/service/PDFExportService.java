@@ -438,18 +438,23 @@ public class PDFExportService {
     }
 
     /**
-     * Returns the job description string for the requested language. Falls back to the other language if empty.
-     * If both are empty, returns "-".
+     * Selects the appropriate job description based on the requested language and availability
+     *
+     * @param englishDesc   English job description
+     * @param germanDesc    German job description
+     * @param lang          requested language ("en" or "de")
+     * @return the selected job description for export or a "-" if none is available
      */
-    private String selectJobDescriptionForLang(String en, String de, String lang) {
-        if ("de".equalsIgnoreCase(lang)) {
-            if (de != null && !de.trim().isEmpty()) return de;
-            if (en != null && !en.trim().isEmpty()) return en;
+    private String selectJobDescriptionForLang(String englishDesc, String germanDesc, String lang) {
+        String primary = "de".equalsIgnoreCase(lang) ? germanDesc : englishDesc;
+        String secondary = "de".equalsIgnoreCase(lang) ? englishDesc : germanDesc;
+
+        if (primary != null && !primary.trim().isEmpty()) {
+            return primary;
+        } else if (secondary != null && !secondary.trim().isEmpty()) {
+            return secondary;
+        } else {
             return "-";
         }
-        // default to English
-        if (en != null && !en.trim().isEmpty()) return en;
-        if (de != null && !de.trim().isEmpty()) return de;
-        return "-";
     }
 }
