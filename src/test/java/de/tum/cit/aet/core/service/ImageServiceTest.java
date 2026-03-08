@@ -271,6 +271,7 @@ class ImageServiceTest {
             assertThat(testUser.getAvatar()).isEqualTo(result.getUrl());
             assertThat(Files.exists(tempDir.resolve(result.getUrl().replace("/images/", "")))).isTrue();
             verify(imageRepository).delete(existingImage);
+            verify(imageRepository).flush();
             verify(imageRepository).save(any(ProfileImage.class));
         }
 

@@ -531,6 +531,32 @@ public class ImageResourceTest extends AbstractResourceTest {
         }
 
         @Test
+        void uploadProfilePictureReplacesExistingProfilePictureAndUpdatesAvatar() throws Exception {
+            ProfileImage existingImage = imageRepository.save(ImageTestData.newProfilePicture(professorUser));
+            professorUser.setAvatar(existingImage.getUrl());
+            userRepository.saveAndFlush(professorUser);
+
+            MockMultipartFile replacementImageFile = createValidImageFile("profile-picture-replacement.jpg");
+
+            ImageDTO result = api
+                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
+                .multipartPostAndRead(
+                    API_BASE_PATH + "/upload/profile-picture",
+                    List.of(replacementImageFile),
+                    new TypeReference<ImageDTO>() {},
+                    201
+                );
+
+            assertThat(imageRepository.findById(existingImage.getImageId())).isEmpty();
+
+            User reloadedUser = userRepository.findById(professorUser.getUserId()).orElseThrow();
+            assertThat(reloadedUser.getAvatar()).isEqualTo(result.url());
+
+            List<Image> uploadedImages = imageRepository.findByUploaderId(professorUser.getUserId());
+            assertThat(uploadedImages.stream().filter(ProfileImage.class::isInstance)).hasSize(1);
+        }
+
+        @Test
         void uploadProfilePictureRequiresAuthentication() throws Exception {
             MockMultipartFile validImageFile = createValidImageFile("profile-picture.jpg");
 

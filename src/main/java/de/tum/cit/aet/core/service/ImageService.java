@@ -252,6 +252,8 @@ public class ImageService {
 
         deleteImageFile(existingImage.get());
         imageRepository.delete(existingImage.get());
+        // Flush the delete before a replacement upload inserts a new PROFILE_PICTURE row.
+        imageRepository.flush();
     }
 
     /**
