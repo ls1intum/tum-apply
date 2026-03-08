@@ -83,7 +83,7 @@ export class IntervieweeSectionComponent {
 
   // Cancellation State
   showCancelModal = signal(false);
-  selectedIntervieweeForCancel = signal<IntervieweeDTO | null>(null);
+  selectedIntervieweeForCancel = signal<IntervieweeDTO | undefined>(undefined);
   cancelSendReinvite = signal(false);
   cancelDeleteSlot = signal(true);
 
@@ -344,11 +344,10 @@ export class IntervieweeSectionComponent {
       this.interviewees.update(list =>
         list.map(i => {
           if (i.id === interviewee.id) {
-            return {
-              ...i,
+            return Object.assign({}, i, {
               state: this.cancelSendReinvite() ? 'INVITED' : 'UNCONTACTED',
               scheduledSlot: undefined,
-            };
+            });
           }
           return i;
         }),
@@ -360,7 +359,7 @@ export class IntervieweeSectionComponent {
       this.toastService.showErrorKey('interview.slots.cancelInterview.error');
     } finally {
       this.showCancelModal.set(false);
-      this.selectedIntervieweeForCancel.set(null);
+      this.selectedIntervieweeForCancel.set(undefined);
     }
   }
 

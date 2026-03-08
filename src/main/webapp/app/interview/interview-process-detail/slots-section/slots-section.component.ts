@@ -69,7 +69,7 @@ export class SlotsSectionComponent {
   selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
 
   showCancelModal = signal(false);
-  selectedSlotForCancel = signal<InterviewSlotDTO | null>(null);
+  selectedSlotForCancel = signal<InterviewSlotDTO | undefined>(undefined);
   cancelSendReinvite = signal(false);
   cancelDeleteSlot = signal(true);
 
@@ -361,7 +361,7 @@ export class SlotsSectionComponent {
       this.toastService.showErrorKey('interview.slots.cancelInterview.error');
     } finally {
       this.showCancelModal.set(false);
-      this.selectedSlotForCancel.set(null);
+      this.selectedSlotForCancel.set(undefined);
     }
   }
 
