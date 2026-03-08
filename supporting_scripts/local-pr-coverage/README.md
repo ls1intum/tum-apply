@@ -83,17 +83,17 @@ The output is a Markdown table compatible with GitHub PR descriptions:
 ```markdown
 #### Client
 
-| Class/File          | Line Coverage | Lines | Expects | Ratio |
-|---------------------|--------------:|------:|--------:|------:|
-| course.service.ts   |         95.2% |   120 |      15 |  12.5 |
-| course.component.ts |         87.3% |    85 |       8 |   9.4 |
+| Class/File | Line Coverage | Lines | Expects | Ratio |
+|------------|-------------:|------:|--------:|------:|
+| job-creation-form.component.ts | 95.2% | 120 | 15 | 12.5 |
+| job-detail.component.ts | 87.3% | 85 | 8 | 9.4 |
 
 #### Server
 
-| Class/File          | Line Coverage | Lines |
-|---------------------|--------------:|------:|
-| CourseService.java  |         91.5% |   200 |
-| CourseResource.java |         88.2% |   150 |
+| Class/File | Line Coverage | Lines |
+|------------|-------------:|------:|
+| PDFExportService.java | 91.5% | 200 |
+| PDFExportResource.java | 88.2% | 150 |
 ```
 
 ### Column Descriptions
