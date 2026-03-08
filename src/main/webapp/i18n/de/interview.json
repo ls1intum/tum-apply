@@ -56,6 +56,7 @@
     },
     "slots": {
       "addSlots": "Termine hinzufügen",
+      "notEnoughSlots": "Nicht genügend freie Termine für alle eingeladenen Bewerbenden verfügbar.",
       "slotsCountSingular": "Termin",
       "slotsCountPlural": "Termine",
       "showMoreSingular": "weiteren Termin",
@@ -181,30 +182,30 @@
     },
     "interviewees": {
       "title": "Bewerbende",
-      "add": "Bewerber:in hinzufügen",
-      "addTitle": "Bewerber:in hinzufügen",
+      "add": "Bewerbende hinzufügen",
+      "addTitle": "Bewerbende hinzufügen",
       "sendInvitation": "Einladung senden",
       "resendInvitation": "Einladung erneut senden",
       "resendConfirmation": {
         "header": "Einladung erneut senden",
-        "message": "Diese:r Bewerber:in hat bereits eine Einladung erhalten. Möchtest du sie erneut senden?"
+        "message": "Diese bewerbende Person hat bereits eine Einladung erhalten. Möchtest du sie erneut senden?"
       },
       "sendAllInvitations": "Einladungen senden",
-      "allInvited": "Alle Bewerbende wurden eingeladen",
+      "allInvited": "Alle Bewerbenden wurden eingeladen",
       "empty": "Noch keine Bewerbende hinzugefügt",
-      "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
+      "emptyHint": "Klicke auf \"Bewerbende hinzufügen\", um zu starten",
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
       "selectAll": "Alle auswählen",
-      "noApplicants": "Keine Bewerbende verfügbar",
+      "noApplicants": "Keine Bewerbenden verfügbar",
       "tryDifferentSearch": "Versuche einen anderen Suchbegriff",
-      "selected": "{{count}} Bewerber:in(nen) ausgewählt",
+      "selected": "{{count}} Bewerbende ausgewählt",
       "addSelected": "Hinzufügen",
       "tableColumns": {
-        "name": "Bewerber:in"
+        "name": "Bewerbende"
       },
       "addSuccess": {
-        "summary": "Bewerber:in hinzugefügt",
-        "detail": "{{count}} Bewerber:in(nen) erfolgreich hinzugefügt"
+        "summary": "Bewerbende hinzugefügt",
+        "detail": "{{count}} Bewerbende erfolgreich hinzugefügt"
       },
       "filter": {
         "ALL": "Alle",
@@ -262,23 +263,23 @@
       }
     },
     "assign": {
-      "title": "Bewerber:in zuweisen",
+      "title": "Bewerbende zuweisen",
       "selectedSlot": "Ausgewählter Termin",
-      "selectApplicant": "Bewerber:in auswählen",
-      "noApplicants": "Keine eingeladenen Bewerbende verfügbar",
-      "allAssigned": "Alle Bewerbende im Interviewprozess haben bereits einen Termin",
+      "selectApplicant": "Bewerbende auswählen",
+      "noApplicants": "Keine eingeladenen Bewerbenden verfügbar",
+      "allAssigned": "Alle Bewerbenden im Interviewprozess haben bereits einen Termin",
       "success": {
         "summary": "Zuweisung erfolgreich",
-        "detail": "Die Bewerber:in wurde dem Termin zugewiesen."
+        "detail": "Die bewerbende Person wurde dem Termin zugewiesen."
       },
       "error": {
         "notInProcess": {
-          "summary": "Ungültige:r Bewerber:in",
-          "detail": "Bewerber:in ist nicht in diesem Interviewprozess"
+          "summary": "Ungültige bewerbende Person",
+          "detail": "Bewerbende ist nicht in diesem Interviewprozess"
         },
         "failed": {
           "summary": "Zuweisung fehlgeschlagen",
-          "detail": "Fehler beim Zuweisen der Bewerber:in. Bitte versuchen Sie es erneut."
+          "detail": "Fehler beim Zuweisen der bewerbenden Person. Bitte versuchen Sie es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
@@ -308,11 +309,11 @@
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Bewerber:in konnte nicht geladen werden. Bitte lade die Seite neu."
+          "detail": "Bewerbende konnte nicht geladen werden. Bitte lade die Seite neu."
         },
         "notFound": {
           "summary": "Nicht gefunden",
-          "detail": "Diese:r Bewerber:in existiert nicht oder wurde entfernt."
+          "detail": "Diese bewerbende Person existiert nicht oder wurde entfernt."
         }
       }
     }
