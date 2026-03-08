@@ -27,7 +27,6 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
-import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -54,7 +53,6 @@ public class ApplicationService {
     );
 
     private final ApplicationRepository applicationRepository;
-    private final ApplicantRepository applicantRepository;
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
 
@@ -91,13 +89,7 @@ public class ApplicationService {
         if (existingApplication != null) {
             return getFromEntity(existingApplication);
         }
-        Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
-        Applicant applicant;
-        if (applicantOptional.isEmpty()) {
-            applicant = createApplicant(userId);
-        } else {
-            applicant = applicantOptional.get();
-        }
+        Applicant applicant = applicantService.findOrCreateApplicant(userId);
 
         Application newApplication = new Application();
         newApplication.setApplicant(applicant);
@@ -258,8 +250,8 @@ public class ApplicationService {
         User user = applicant.getUser();
 
         ApplicantDTO dto = ApplicantDTO.getFromApplicationSnapshot(application);
-        applyPersonalInformationData(user, applicant, dto);
-        applyDocumentSettingsData(applicant, dto);
+        applicantService.applyPersonalInformationData(user, applicant, dto);
+        applicantService.applyDocumentSettingsData(applicant, dto);
     }
 
     /**
@@ -526,36 +518,6 @@ public class ApplicationService {
     }
 
     /**
-     * Uploads applicant-profile documents of a given type and returns the resulting document list.
-     *
-     * @param documentType the type of documents to upload
-     * @param files        the files to upload
-     * @return the updated document list for that type
-     */
-    public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicantProfileAndType(DocumentType documentType, List<MultipartFile> files) {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-
-        switch (documentType) {
-            case BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE:
-                applicantService.uploadTranscripts(files, documentType, applicant, user);
-                break;
-            case CV:
-                applicantService.uploadCV(files.getFirst(), applicant, user);
-                break;
-            default:
-                throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
-        }
-
-        return getApplicantDocumentInformation(applicant, documentType);
-    }
-
-    /**
      * Retrieves the document IDs associated with the application identified by the
      * given UUID.
      *
@@ -567,28 +529,6 @@ public class ApplicationService {
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
         Application application = assertCanViewApplication(applicationId);
         return documentDictionaryService.getDocumentIdsDTO(application);
-    }
-
-    /**
-     * Retrieves the current applicant profile's document IDs grouped by document type.
-     * Creates an empty applicant profile if none exists yet.
-     *
-     * @return an {@link ApplicationDocumentIdsDTO} containing the applicant profile documents
-     */
-    public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplicantProfile() {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-
-        ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
-        dto.setBachelorDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.BACHELOR_TRANSCRIPT));
-        dto.setMasterDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.MASTER_TRANSCRIPT));
-        dto.setReferenceDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.REFERENCE));
-        dto.setCvDocumentDictionaryId(getApplicantDocumentInformation(applicant, DocumentType.CV).stream().findFirst().orElse(null));
-        return dto;
     }
 
     /**
@@ -615,186 +555,6 @@ public class ApplicationService {
         DocumentDictionary documentDictionary = assertCanManageApplicationDocument(documentId);
         assertApplicationDocumentsEditable(documentDictionary.getApplication());
         documentDictionaryService.renameDocument(documentId, newName);
-    }
-
-    /**
-     * Retrieves the current user's applicant profile with all personal information.
-     * Creates an empty applicant profile if none exists yet.
-     *
-     * @return the ApplicantDTO with current user and applicant data
-     */
-    public ApplicantDTO getApplicantProfile() {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
-        Applicant applicant;
-        if (applicantOptional.isEmpty()) {
-            applicant = createApplicant(userId);
-        } else {
-            applicant = applicantOptional.get();
-        }
-
-        return ApplicantDTO.getFromEntity(applicant);
-    }
-
-    /**
-     * Updates the current user's applicant profile with personal information.
-     * Writes directly to `User` and `Applicant` entities.
-     *
-     * @param dto the updated applicant data
-     * @return the updated ApplicantDTO
-     */
-    @Transactional
-    public ApplicantDTO updateApplicantProfile(ApplicantDTO dto) {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-
-        applyPersonalInformationData(user, applicant, dto);
-        applyDocumentSettingsData(applicant, dto);
-        userRepository.save(user);
-        applicantRepository.save(applicant);
-
-        return ApplicantDTO.getFromEntity(applicant);
-    }
-
-    /**
-     * Updates only the current user's personal information segment.
-     *
-     * @param dto the updated applicant personal information
-     * @return the updated ApplicantDTO
-     */
-    @Transactional
-    public ApplicantDTO updateApplicantPersonalInformation(ApplicantDTO dto) {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-
-        applyPersonalInformationData(user, applicant, dto);
-        userRepository.save(user);
-        applicantRepository.save(applicant);
-
-        return ApplicantDTO.getFromEntity(applicant);
-    }
-
-    /**
-     * Updates only the current user's degree/document settings segment.
-     *
-     * @param dto the updated applicant document settings
-     * @return the updated ApplicantDTO
-     */
-    public ApplicantDTO updateApplicantDocumentSettings(ApplicantDTO dto) {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-        applyDocumentSettingsData(applicant, dto);
-        applicantRepository.save(applicant);
-
-        return ApplicantDTO.getFromEntity(applicant);
-    }
-
-    /**
-     * Deletes an applicant-profile document.
-     *
-     * @param documentDictionaryId the id of the document dictionary entry to delete
-     */
-    public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-        documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant, documentDictionaryId);
-    }
-
-    /**
-     * Renames an applicant-profile document.
-     *
-     * @param documentDictionaryId the id of the document dictionary entry to rename
-     * @param newName              the new name to set
-     */
-    public void renameApplicantProfileDocument(UUID documentDictionaryId, String newName) {
-        UUID userId = currentUserService.getUserId();
-        if (userId == null) {
-            throw new InvalidParameterException("UserId must not be null.");
-        }
-
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
-        documentDictionaryService.renameApplicantOwnedDocumentDictionary(applicant, documentDictionaryId, newName);
-    }
-
-    /**
-     * Creates an Applicant for the given userId
-     *
-     * @param userId The id of the User
-     * @return the created Applicant
-     */
-    private Applicant createApplicant(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        Applicant applicant = new Applicant();
-        applicant.setUser(user);
-        return applicantRepository.save(applicant);
-    }
-
-    private Set<DocumentInformationHolderDTO> getApplicantDocumentInformation(Applicant applicant, DocumentType documentType) {
-        return documentDictionaryService
-            .getApplicantDocumentDictionaries(applicant, documentType)
-            .stream()
-            .map(DocumentInformationHolderDTO::getFromDocumentDictionary)
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Applies applicant and user data from a DTO and persists both entities.
-     */
-    private void applyPersonalInformationData(User user, Applicant applicant, ApplicantDTO dto) {
-        if (dto.user() != null) {
-            if (dto.user().firstName() != null) user.setFirstName(dto.user().firstName());
-            if (dto.user().lastName() != null) user.setLastName(dto.user().lastName());
-            if (dto.user().email() != null) user.setEmail(dto.user().email());
-            user.setGender(dto.user().gender());
-            user.setNationality(dto.user().nationality());
-            user.setBirthday(dto.user().birthday());
-            user.setPhoneNumber(dto.user().phoneNumber());
-            user.setWebsite(dto.user().website());
-            user.setLinkedinUrl(dto.user().linkedinUrl());
-        }
-
-        applicant.setStreet(dto.street());
-        applicant.setPostalCode(dto.postalCode());
-        applicant.setCity(dto.city());
-        applicant.setCountry(dto.country());
-    }
-
-    private void applyDocumentSettingsData(Applicant applicant, ApplicantDTO dto) {
-        applicant.setBachelorDegreeName(dto.bachelorDegreeName());
-        applicant.setBachelorGradeUpperLimit(dto.bachelorGradeUpperLimit());
-        applicant.setBachelorGradeLowerLimit(dto.bachelorGradeLowerLimit());
-        applicant.setBachelorGrade(dto.bachelorGrade());
-        applicant.setBachelorUniversity(dto.bachelorUniversity());
-
-        applicant.setMasterDegreeName(dto.masterDegreeName());
-        applicant.setMasterGradeUpperLimit(dto.masterGradeUpperLimit());
-        applicant.setMasterGradeLowerLimit(dto.masterGradeLowerLimit());
-        applicant.setMasterGrade(dto.masterGrade());
-        applicant.setMasterUniversity(dto.masterUniversity());
-
-        // Save operations moved to updateApplicantProfile
     }
 
     /**

@@ -1,10 +1,11 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
@@ -39,17 +40,6 @@ interface NormalizedSettingsDocumentsFormValue {
   masterGradeUpperLimit: string;
   masterGradeLowerLimit: string;
   masterGrade: string;
-}
-
-interface ApplicantProfileUploadService {
-  uploadApplicantDocuments?: (
-    _documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
-    _files?: Blob,
-  ) => Observable<DocumentInformationHolderDTO[]>;
-  uploadApplicantProfileDocuments?: (
-    _documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
-    _files?: Blob,
-  ) => Observable<DocumentInformationHolderDTO[]>;
 }
 
 @Component({
@@ -145,7 +135,8 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
-  private applicationService = inject(ApplicationResourceApiService);
+  private applicantService = inject(ApplicantResourceApiService);
+  private http = inject(HttpClient);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
@@ -265,7 +256,7 @@ export class SettingsDocumentsComponent {
         masterGrade: this.form.get('masterGrade')?.value ?? undefined,
       };
 
-      await firstValueFrom(this.applicationService.updateApplicantDocumentSettings(applicantDTO));
+      await firstValueFrom(this.applicantService.updateApplicantDocumentSettings(applicantDTO));
       await this.saveDeferredDocumentChanges();
       await this.loadProfile();
 
@@ -298,9 +289,9 @@ export class SettingsDocumentsComponent {
     try {
       this.hasInitialLimitsSet.set(false);
 
-      const profile = await firstValueFrom(this.applicationService.getApplicantProfile('body', false, { transferCache: false }));
+      const profile = await firstValueFrom(this.applicantService.getApplicantProfile('body', false, { transferCache: false }));
       const profileDocumentIds = await firstValueFrom(
-        this.applicationService.getApplicantProfileDocumentIds('body', false, { transferCache: false }),
+        this.applicantService.getApplicantProfileDocumentIds('body', false, { transferCache: false }),
       );
       this.applyProfileDocumentIds(profileDocumentIds);
 
@@ -393,7 +384,13 @@ export class SettingsDocumentsComponent {
 
   // Sorts by stable backend id so document comparisons stay insensitive to UI ordering.
   private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
-    return Array.from(docs ?? []).sort((a, b) => a.id.localeCompare(b.id));
+    return Array.from(docs ?? [])
+      .map(doc => ({
+        id: doc.id,
+        name: doc.name,
+        size: doc.size,
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id));
   }
 
   // Persists the current form/document state as the new clean baseline after a successful load or save.
@@ -449,11 +446,11 @@ export class SettingsDocumentsComponent {
     });
 
     for (const documentId of deletedIds) {
-      await firstValueFrom(this.applicationService.deleteApplicantProfileDocument(documentId));
+      await firstValueFrom(this.applicantService.deleteApplicantProfileDocument(documentId));
     }
 
     for (const document of renamedDocs) {
-      await firstValueFrom(this.applicationService.renameApplicantProfileDocument(document.id, document.newName));
+      await firstValueFrom(this.applicantService.renameApplicantProfileDocument(document.id, document.newName));
     }
   }
 
@@ -468,28 +465,22 @@ export class SettingsDocumentsComponent {
       return;
     }
 
-    const uploadApplicantProfileDocuments = this.getApplicantProfileUploadMethod();
-    const uploadResults = await Promise.all(files.map(file => firstValueFrom(uploadApplicantProfileDocuments(documentType, file))));
+    const uploadResults = await Promise.all(files.map(file => firstValueFrom(this.uploadApplicantProfileDocument(documentType, file))));
 
     const latestResult: DocumentInformationHolderDTO[] | undefined = uploadResults[uploadResults.length - 1];
     targetSignal.set(latestResult);
   }
 
-  private getApplicantProfileUploadMethod(): (
-    _documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
-    _files?: Blob,
-  ) => Observable<DocumentInformationHolderDTO[]> {
-    const service = this.applicationService as unknown as ApplicantProfileUploadService;
-
-    const uploadMethod = service.uploadApplicantDocuments ?? service.uploadApplicantProfileDocuments;
-    if (uploadMethod === undefined) {
-      throw new Error('Applicant profile upload method is not available.');
-    }
-
-    return uploadMethod.bind(this.applicationService);
-  }
-
   private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
     return document.id.startsWith('temp-');
+  }
+
+  private uploadApplicantProfileDocument(
+    documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    file: File,
+  ): Observable<DocumentInformationHolderDTO[]> {
+    const formData = new FormData();
+    formData.append('files', file);
+    return this.http.post<DocumentInformationHolderDTO[]>(`/api/applicants/profile/documents/${documentType}`, formData);
   }
 }

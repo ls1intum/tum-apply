@@ -7,7 +7,6 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,126 +34,6 @@ public class ApplicationResource {
     @Autowired
     public ApplicationResource(ApplicationService applicationService) {
         this.applicationService = applicationService;
-    }
-
-    /**
-     * Retrieves the current user's applicant profile with personal information.
-     *
-     * @return ApplicantDTO with current user and applicant data
-     */
-    @ApplicantOrAdmin
-    @GetMapping("/profile")
-    public ResponseEntity<ApplicantDTO> getApplicantProfile() {
-        log.info("GET /api/applications/profile - Retrieving applicant profile for current user");
-        ApplicantDTO profile = applicationService.getApplicantProfile();
-        return ResponseEntity.ok(profile);
-    }
-
-    /**
-     * Retrieves the current user's applicant profile documents grouped by type.
-     *
-     * @return document IDs for the applicant profile
-     */
-    @ApplicantOrAdmin
-    @GetMapping("/profile/document-ids")
-    public ResponseEntity<ApplicationDocumentIdsDTO> getApplicantProfileDocumentIds() {
-        log.info("GET /api/applications/profile/document-ids - Retrieving applicant profile document ids for current user");
-        return ResponseEntity.ok(applicationService.getDocumentDictionaryIdsOfApplicantProfile());
-    }
-
-    /**
-     * Updates the current user's applicant profile with personal information.
-     *
-     * @param applicantDTO the updated applicant data
-     * @return ApplicantDTO with updated user and applicant data
-     */
-    @ApplicantOrAdmin
-    @PutMapping("/profile")
-    public ResponseEntity<ApplicantDTO> updateApplicantProfile(@Valid @RequestBody ApplicantDTO applicantDTO) {
-        log.info("PUT /api/applications/profile - Updating applicant profile for current user");
-        ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
-        return ResponseEntity.ok(updatedProfile);
-    }
-
-    /**
-     * Updates only the current user's personal information settings.
-     *
-     * @param applicantDTO the updated applicant personal information
-     * @return ApplicantDTO with updated user and applicant data
-     */
-    @ApplicantOrAdmin
-    @PutMapping("/profile/personal-information")
-    public ResponseEntity<ApplicantDTO> updateApplicantPersonalInformation(@Valid @RequestBody ApplicantDTO applicantDTO) {
-        log.info("PUT /api/applications/profile/personal-information - Updating personal information for current user");
-        return ResponseEntity.ok(applicationService.updateApplicantPersonalInformation(applicantDTO));
-    }
-
-    /**
-     * Updates only the current user's document settings metadata.
-     *
-     * @param applicantDTO the updated applicant degree/document settings
-     * @return ApplicantDTO with updated applicant data
-     */
-    @ApplicantOrAdmin
-    @PutMapping("/profile/document-settings")
-    public ResponseEntity<ApplicantDTO> updateApplicantDocumentSettings(@Valid @RequestBody ApplicantDTO applicantDTO) {
-        log.info("PUT /api/applications/profile/document-settings - Updating document settings for current user");
-        return ResponseEntity.ok(applicationService.updateApplicantDocumentSettings(applicantDTO));
-    }
-
-    /**
-     * Uploads documents for the current applicant profile.
-     *
-     * @param documentType type of document to upload
-     * @param files        uploaded files
-     * @return updated document list for that type
-     */
-    @Operation(
-        summary = "Upload applicant profile documents",
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = @Content(
-                mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-                schema = @Schema(implementation = MultipartUploadRequest.class)
-            )
-        )
-    )
-    @ApplicantOrAdmin
-    @PostMapping("/profile/documents/{documentType}")
-    public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadApplicantProfileDocuments(
-        @PathVariable DocumentType documentType,
-        @RequestParam("files") List<MultipartFile> files
-    ) {
-        log.info("POST /api/applications/profile/documents/{} - Uploading applicant profile documents for current user", documentType);
-        return ResponseEntity.ok(applicationService.getDocumentIdsOfApplicantProfileAndType(documentType, files));
-    }
-
-    /**
-     * Deletes a document from the current applicant profile.
-     *
-     * @param documentDictionaryId id of the document dictionary entry to delete
-     * @return 204 No Content when deletion is successful
-     */
-    @ApplicantOrAdmin
-    @DeleteMapping("/profile/documents/{documentDictionaryId}")
-    public ResponseEntity<Void> deleteApplicantProfileDocument(@PathVariable UUID documentDictionaryId) {
-        log.info("DELETE /api/applications/profile/documents/{} - Deleting applicant profile document", documentDictionaryId);
-        applicationService.deleteApplicantProfileDocument(documentDictionaryId);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Renames a document associated with the current applicant profile.
-     *
-     * @param documentDictionaryId the UUID of the document to rename
-     * @param newName              the new name to assign to the document
-     * @return {@code 200 OK} if the rename operation was successful
-     */
-    @ApplicantOrAdmin
-    @PutMapping("/profile/documents/{documentDictionaryId}/name")
-    public ResponseEntity<Void> renameApplicantProfileDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
-        log.info("PUT /api/applications/profile/documents/{}/name - Renaming applicant profile document", documentDictionaryId);
-        applicationService.renameApplicantProfileDocument(documentDictionaryId, newName);
-        return ResponseEntity.ok().build();
     }
 
     /**

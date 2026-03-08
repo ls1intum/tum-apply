@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
+import { createApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createDialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
@@ -50,19 +53,14 @@ describe('Profile save isolation', () => {
     referenceDocumentDictionaryIds: [{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }],
   };
 
-  const applicationResourceServiceMock = {
-    getApplicantProfile: vi.fn(),
-    getApplicantProfileDocumentIds: vi.fn(),
-    updateApplicantPersonalInformation: vi.fn(),
-    updateApplicantDocumentSettings: vi.fn(),
-    uploadApplicantDocuments: vi.fn(),
-    deleteApplicantProfileDocument: vi.fn(),
-    renameApplicantProfileDocument: vi.fn(),
-  };
+  const applicationResourceServiceMock = createApplicantResourceApiServiceMock();
 
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
   const dialogServiceMock = createDialogServiceMock();
+  const httpClientMock = {
+    post: vi.fn(),
+  };
   const cloneValue = <T>(value: T): T => structuredClone(value);
   const createDocumentsComponent = async (): Promise<SettingsDocumentsComponent> => {
     const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
@@ -79,14 +77,18 @@ describe('Profile save isolation', () => {
     applicationResourceServiceMock.uploadApplicantDocuments.mockReturnValue(of([]));
     applicationResourceServiceMock.deleteApplicantProfileDocument.mockReturnValue(of(undefined));
     applicationResourceServiceMock.renameApplicantProfileDocument.mockReturnValue(of(undefined));
+    httpClientMock.post.mockReset();
+    httpClientMock.post.mockReturnValue(of([]));
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, TranslateModule.forRoot()],
       providers: [
-        { provide: ApplicationResourceApiService, useValue: applicationResourceServiceMock },
+        { provide: ApplicantResourceApiService, useValue: applicationResourceServiceMock },
+        { provide: HttpClient, useValue: httpClientMock },
         provideDialogServiceMock(dialogServiceMock),
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(toastServiceMock),
+        provideFontAwesomeTesting(),
       ],
     });
   });
@@ -225,5 +227,59 @@ describe('Profile save isolation', () => {
     });
 
     vi.useRealTimers();
+  });
+
+  it('preserves disabled email field when another personal information field changes', async () => {
+    const fixture = TestBed.createComponent(PersonalInformationSettingsComponent);
+    const personalComponent = fixture.componentInstance;
+    await personalComponent.loadPersonalInformation();
+    fixture.detectChanges();
+
+    const form = personalComponent.personalInfoForm();
+    form.controls.firstName.setValue('Grace');
+    fixture.detectChanges();
+
+    expect(personalComponent.data().email).toBe(baseProfile.user?.email);
+    expect(personalComponent.data().firstName).toBe('Grace');
+  });
+
+  it('uploads queued applicant documents when settings documents are saved', async () => {
+    const documentsComponent = await createDocumentsComponent();
+    const newBachelorTranscript = new File(['bachelor transcript'], 'new-bachelor.pdf', { type: 'application/pdf' });
+    const bachelorDocuments = documentsComponent.bachelorDocuments() ?? [];
+
+    documentsComponent.bachelorDocuments.set(
+      bachelorDocuments.concat([{ id: 'temp-upload-1', name: 'new-bachelor.pdf', size: newBachelorTranscript.size }]),
+    );
+    documentsComponent.onBachelorQueuedFilesChange([newBachelorTranscript]);
+
+    httpClientMock.post.mockReset();
+    httpClientMock.post.mockReturnValue(
+      of([
+        { id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 },
+        { id: 'uploaded-doc-1', name: 'new-bachelor.pdf', size: newBachelorTranscript.size },
+      ]),
+    );
+
+    await documentsComponent.saveAll();
+
+    expect(httpClientMock.post).toHaveBeenCalledWith('/api/applicants/profile/documents/BACHELOR_TRANSCRIPT', expect.any(FormData));
+    const [, requestBody] = httpClientMock.post.mock.calls[0];
+    expect((requestBody as FormData).get('files')).toBe(newBachelorTranscript);
+  });
+
+  it('renames persisted applicant documents when settings documents are saved', async () => {
+    const documentsComponent = await createDocumentsComponent();
+    const cvDocuments = documentsComponent.cvDocuments();
+    expect(cvDocuments).toBeDefined();
+    if (!cvDocuments || cvDocuments.length === 0) {
+      throw new Error('Expected initial CV document');
+    }
+
+    cvDocuments[0].name = 'cv-renamed.pdf';
+
+    await documentsComponent.saveAll();
+
+    expect(applicationResourceServiceMock.renameApplicantProfileDocument).toHaveBeenCalledWith('cv-doc-1', 'cv-renamed.pdf');
   });
 });

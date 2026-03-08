@@ -7,7 +7,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
@@ -109,7 +109,7 @@ export class PersonalInformationSettingsComponent {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-  applicationResourceService = inject(ApplicationResourceApiService);
+  applicantResourceService = inject(ApplicantResourceApiService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -163,8 +163,8 @@ export class PersonalInformationSettingsComponent {
   formEffect = effect(onCleanup => {
     const form = this.personalInfoForm();
     const data = this.data();
-    const valueSubscription = form.valueChanges.subscribe((value: Record<string, unknown>) => {
-      const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
+    const valueSubscription = form.valueChanges.subscribe(() => {
+      const normalizedValue = Object.fromEntries(Object.entries(form.getRawValue()).map(([key, val]) => [key, val ?? '']));
       const nextData: PersonalInformationData = {
         firstName: normalizedValue.firstName as string,
         lastName: normalizedValue.lastName as string,
@@ -204,7 +204,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile('body', false, { transferCache: false }));
+      const profile = await firstValueFrom(this.applicantResourceService.getApplicantProfile('body', false, { transferCache: false }));
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
@@ -284,7 +284,7 @@ export class PersonalInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      const updatedProfile = await firstValueFrom(this.applicationResourceService.updateApplicantPersonalInformation(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicantResourceService.updateApplicantPersonalInformation(applicantDTO));
       this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));

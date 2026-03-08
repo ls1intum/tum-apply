@@ -102,7 +102,7 @@ export * from './updateApplicationDTO';
 export * from './updateAssessmentDTO';
 export * from './updatePasswordDTO';
 export * from './updateUserNameDTO';
-export * from './uploadApplicantProfileDocumentsRequest';
+export * from './uploadDocumentsRequest';
 export * from './user';
 export * from './userBookingInfoDTO';
 export * from './userDTO';

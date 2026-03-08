@@ -4,6 +4,7 @@ api.base.service.ts
 api.module.ts
 api/aiResourceApi.service.ts
 api/api.ts
+api/applicantResourceApi.service.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -135,7 +136,7 @@ model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
 model/updateUserNameDTO.ts
-model/uploadApplicantProfileDocumentsRequest.ts
+model/uploadDocumentsRequest.ts
 model/user.ts
 model/userBookingInfoDTO.ts
 model/userDTO.ts

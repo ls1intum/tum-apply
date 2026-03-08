@@ -49,6 +49,121 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
+  /api/applicants/profile:
+    get:
+      tags: [applicant-resource]
+      operationId: getApplicantProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantProfile
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+  /api/applicants/profile/document-ids:
+    get:
+      tags: [applicant-resource]
+      operationId: getApplicantProfileDocumentIds
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
+  /api/applicants/profile/document-settings:
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantDocumentSettings
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+  /api/applicants/profile/documents/{documentDictionaryId}:
+    delete:
+      tags: [applicant-resource]
+      operationId: deleteApplicantProfileDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/applicants/profile/documents/{documentDictionaryId}/name:
+    put:
+      tags: [applicant-resource]
+      operationId: renameApplicantProfileDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: newName
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: OK}
+  /api/applicants/profile/documents/{documentType}:
+    post:
+      tags: [applicant-resource]
+      summary: Upload applicant profile documents
+      operationId: uploadApplicantProfileDocuments
+      parameters:
+      - name: documentType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+                uniqueItems: true
+  /api/applicants/profile/personal-information:
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantPersonalInformation
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -149,129 +264,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageApplicationOverviewDTO'}
-  /api/applications/profile:
-    get:
-      tags: [application-resource]
-      operationId: getApplicantProfile
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
-    put:
-      tags: [application-resource]
-      operationId: updateApplicantProfile
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ApplicantDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applications/profile/document-ids:
-    get:
-      tags: [application-resource]
-      operationId: getApplicantProfileDocumentIds
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
-  /api/applications/profile/document-settings:
-    put:
-      tags: [application-resource]
-      operationId: updateApplicantDocumentSettings
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ApplicantDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applications/profile/documents/{documentDictionaryId}:
-    delete:
-      tags: [application-resource]
-      operationId: deleteApplicantProfileDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/profile/documents/{documentDictionaryId}/name:
-    put:
-      tags: [application-resource]
-      operationId: renameApplicantProfileDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: newName
-        in: query
-        required: true
-        schema: {type: string}
-      responses:
-        '200': {description: OK}
-  /api/applications/profile/documents/{documentType}:
-    post:
-      tags: [application-resource]
-      summary: Upload applicant profile documents
-      operationId: uploadApplicantProfileDocuments
-      parameters:
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
-      requestBody:
-        content:
-          multipart/form-data:
-            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
-          application/json:
-            schema:
-              type: object
-              properties:
-                files:
-                  type: array
-                  items: {type: string, format: binary}
-              required: [files]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-                uniqueItems: true
-  /api/applications/profile/personal-information:
-    put:
-      tags: [application-resource]
-      operationId: updateApplicantPersonalInformation
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ApplicantDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications/withdraw/{applicationId}:
     put:
       tags: [application-resource]
