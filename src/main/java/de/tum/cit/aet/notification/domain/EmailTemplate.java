@@ -1,6 +1,7 @@
 package de.tum.cit.aet.notification.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@NoUserDataExportRequired(reason = "System template configuration is not user-personal export data")
 @Table(
     name = "email_templates",
     uniqueConstraints = @UniqueConstraint(
