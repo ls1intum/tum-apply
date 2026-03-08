@@ -776,190 +776,6 @@ function countClientExpects(sourceFilePath) {
     return null;
   }
 }
-
-/**
- * Count assertions in a test file content
- */
-function countAssertionsInContent(content) {
-  const assertThatMatches = content.match(/assertThat\s*\(/g) || [];
-  const assertEqualsMatches = content.match(/assertEquals\s*\(/g) || [];
-  const assertTrueMatches = content.match(/assertTrue\s*\(/g) || [];
-  const assertFalseMatches = content.match(/assertFalse\s*\(/g) || [];
-  const assertNullMatches = content.match(/assertNull\s*\(/g) || [];
-  const assertNotNullMatches = content.match(/assertNotNull\s*\(/g) || [];
-  const assertThrowsMatches = content.match(/assertThrows\s*\(/g) || [];
-  const verifyMatches = content.match(/verify\s*\(/g) || [];
-
-  return (
-    assertThatMatches.length +
-    assertEqualsMatches.length +
-    assertTrueMatches.length +
-    assertFalseMatches.length +
-    assertNullMatches.length +
-    assertNotNullMatches.length +
-    assertThrowsMatches.length +
-    verifyMatches.length
-  );
-}
-
-/**
- * Count assert calls in server test files for a given source file
- */
-function countServerAsserts(sourceFilePath) {
-  // e.g., de/tum/cit/aet/job/web/JobResource.java
-  const fileName = sourceFilePath.split('/').pop().replace('.java', '');
-
-  // Extract the base name without common suffixes for broader matching
-  // e.g., AdminCourseResource -> Course, CourseRepository -> Course, CourseService -> Course
-  let baseName = fileName
-    .replace(/^Admin/, '') // AdminCourseResource -> CourseResource
-    .replace(/Repository$/, '')
-    .replace(/Service$/, '')
-    .replace(/Resource$/, '')
-    .replace(/DTO$/, '')
-    .replace(/Controller$/, '');
-
-  // Also try the direct class name
-  const directName = fileName;
-
-  // Build search patterns - look for test files that might test this class
-  // 1. Direct match: CourseRequestService -> CourseRequestServiceTest, CourseRequestServiceIntegrationTest
-  // 2. Base name match: CourseRepository -> CourseIntegrationTest, CourseTest
-  // 3. Entity tests: Course.java -> CourseTest, CourseIntegrationTest
-  const testPatterns = new Set([
-    // Direct patterns
-    `${directName}Test.java`,
-    `${directName}IntegrationTest.java`,
-    `${directName}UnitTest.java`,
-    // Base name patterns (for repositories, services tested via integration tests)
-    `${baseName}Test.java`,
-    `${baseName}IntegrationTest.java`,
-    `${baseName}UnitTest.java`,
-  ]);
-
-  let totalAsserts = 0;
-  let foundTestFile = false;
-  const processedFiles = new Set();
-
-  const testDir = path.join(PROJECT_ROOT, 'src/test/java');
-
-  for (const pattern of testPatterns) {
-    const testFiles = findFilesRecursively(testDir, pattern);
-
-    for (const testFile of testFiles) {
-      // Avoid counting the same file twice
-      if (processedFiles.has(testFile)) {
-        continue;
-      }
-      processedFiles.add(testFile);
-
-      try {
-        const content = fs.readFileSync(testFile, 'utf-8');
-
-        // Check if this test file actually references the class we're looking for
-        // This avoids false matches (e.g., CourseTest matching for DiscourseService)
-        const classNamePattern = new RegExp(`\\b${directName}\\b`);
-        if (!classNamePattern.test(content)) {
-          continue;
-        }
-
-        foundTestFile = true;
-        totalAsserts += countAssertionsInContent(content);
-      } catch {
-        // Continue
-      }
-    }
-  }
-
-  // If no direct test file found, try to find any test file that imports/uses this class
-  if (!foundTestFile) {
-    const allTestFiles = findTestFilesInModule(sourceFilePath);
-    for (const testFile of allTestFiles) {
-      if (processedFiles.has(testFile)) {
-        continue;
-      }
-
-      try {
-        const content = fs.readFileSync(testFile, 'utf-8');
-
-        // Check if this test imports or references our class
-        const importPattern = new RegExp(`import.*\\.${directName};`);
-        const usagePattern = new RegExp(`\\b${directName}\\b`);
-
-        if (importPattern.test(content) || usagePattern.test(content)) {
-          processedFiles.add(testFile);
-          foundTestFile = true;
-          totalAsserts += countAssertionsInContent(content);
-        }
-      } catch {
-        // Continue
-      }
-    }
-  }
-
-  return foundTestFile ? totalAsserts : null;
-}
-
-/**
- * Find all test files in the same module as the source file
- */
-function findTestFilesInModule(sourceFilePath) {
-  // e.g., de/tum/cit/aet/job/repository/JobRepository.java
-  // -> Look in src/test/java/de/tum/cit/aet/job/
-  const parts = sourceFilePath.split('/');
-  const aetIndex = parts.indexOf('aet');
-  if (aetIndex === -1 || aetIndex + 1 >= parts.length) {
-    return [];
-  }
-
-  const moduleName = parts[aetIndex + 1]; // e.g., 'core'
-  const moduleTestDir = path.join(PROJECT_ROOT, 'src/test/java/de/tum/cit/aet', moduleName);
-
-  return findAllJavaTestFiles(moduleTestDir);
-}
-
-/**
- * Find all Java test files in a directory
- */
-function findAllJavaTestFiles(dir) {
-  const results = [];
-  try {
-    const entries = fs.readdirSync(dir, {withFileTypes: true});
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        results.push(...findAllJavaTestFiles(fullPath));
-      } else if (entry.name.endsWith('Test.java') || entry.name.endsWith('IntegrationTest.java')) {
-        results.push(fullPath);
-      }
-    }
-  } catch {
-    // Directory doesn't exist or not accessible
-  }
-  return results;
-}
-
-/**
- * Recursively find files matching a pattern
- */
-function findFilesRecursively(dir, fileName) {
-  const results = [];
-  try {
-    const entries = fs.readdirSync(dir, {withFileTypes: true});
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        results.push(...findFilesRecursively(fullPath, fileName));
-      } else if (entry.name === fileName) {
-        results.push(fullPath);
-      }
-    }
-  } catch {
-    // Directory doesn't exist or not accessible
-  }
-  return results;
-}
-
 /**
  * Build coverage table for client files
  */
@@ -1029,7 +845,7 @@ function buildClientCoverageTable(clientFiles, options) {
 /**
  * Build coverage table for server files
  */
-function buildServerCoverageTable(serverFiles, serverModules, options) {
+function buildServerCoverageTable(serverFiles) {
   if (Object.keys(serverFiles).length === 0) {
     return null;
   }
@@ -1173,7 +989,7 @@ async function main() {
   }
 
   if (!options.clientOnly) {
-    const serverTable = buildServerCoverageTable(serverFiles, categorized.serverModules, options);
+    const serverTable = buildServerCoverageTable(serverFiles);
     if (serverTable) {
       result += `#### Server\n\n${serverTable}\n`;
     }
