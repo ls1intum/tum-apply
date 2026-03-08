@@ -1,9 +1,15 @@
 <div class="relative min-w-[13.75rem] border border-border-default rounded-lg p-2.5" [class.opacity-50]="isPast()">
   <!-- Kebab Menu Button -->
   @if (!isPast()) {
-    <button class="absolute top-2 right-2 p-0.5 hover:bg-background-surface rounded transition-colors z-10" (click)="menu.toggle($event)">
-      <fa-icon icon="ellipsis-vertical" class="text-text-primary text-xs" />
-    </button>
+    <div class="absolute top-1.5 right-0.5 z-10">
+      <jhi-button
+        icon="ellipsis-vertical"
+        variant="text"
+        size="sm"
+        styleClass="!w-6 !h-6 !min-w-0 !text-text-primary"
+        (click)="menu.toggle($event)"
+      />
+    </div>
   }
 
   <!-- Menu -->
@@ -15,8 +21,8 @@
     [label]="'button.delete' | translate"
     [header]="'interview.slots.delete.confirm.header' | translate"
     [message]="'interview.slots.delete.confirm.message' | translate"
-    [severity]="'danger'"
-    [confirmIcon]="'trash'"
+    severity="danger"
+    confirmIcon="trash"
     [showOpenButton]="false"
     (confirmed)="onDelete()"
   />
@@ -62,13 +68,12 @@
       <!-- Assign Button -->
       @if (!isPast()) {
         <jhi-button
-          class="w-full"
           [fullWidth]="true"
           variant="text"
           icon="plus"
           label="button.assign"
           [shouldTranslate]="true"
-          [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all flex items-center justify-center'"
+          styleClass="h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all"
           (click)="onAssign()"
         />
       }
