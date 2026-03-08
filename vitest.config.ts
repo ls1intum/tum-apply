@@ -38,12 +38,6 @@ export default defineConfig(({ mode }) => ({
         'src/main/webapp/app/core/config/application-config.model.ts',
         'src/main/webapp/app/core/config/runtime-config.loader.ts',
       ],
-      thresholds: {
-        lines: 0.0,
-        statements: 0.0,
-        branches: 0.0,
-        functions: 0.0,
-      },
     },
   },
   define: {
