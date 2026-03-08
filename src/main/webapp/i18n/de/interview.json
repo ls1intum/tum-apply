@@ -1,9 +1,9 @@
 {
   "interview": {
     "overview": {
-      "title": "Übersicht der Interviews",
+      "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Stellen"
       },
       "loading": "Interview Prozesse werden geladen...",
       "empty": {
@@ -204,7 +204,14 @@
         "INVITED": "Eingeladen",
         "SCHEDULED": "Geplant",
         "UNCONTACTED": "Nicht kontaktiert",
-        "COMPLETED": "Abgeschlossen"
+        "COMPLETED": "Abgeschlossen",
+        "tooltip": {
+          "ALL": "Alle Bewerbende dieses Interviewprozesses",
+          "INVITED": "Bewerbende, die eine Einladung erhalten, aber noch keinen Termin gebucht haben",
+          "SCHEDULED": "Bewerbende, die erfolgreich einen Termin gebucht haben",
+          "UNCONTACTED": "Bewerbende, die dem Prozess hinzugefügt, aber noch nicht kontaktiert wurden",
+          "COMPLETED": "Bewerbende, deren Interview bereits stattgefunden hat"
+        }
       },
       "error": {
         "loadFailed": {
