@@ -59,9 +59,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/overview")
     public ResponseEntity<List<InterviewOverviewDTO>> getInterviewOverview() {
-        log.info("REST request to get all interview processes{}");
+        log.info("GET /api/interviews/overview - Fetching all interview processes");
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
-        log.info("Returning all interview processes");
+        log.info("GET /api/interviews/overview - Returning {} interview processes", overview.size());
         return ResponseEntity.ok(overview);
     }
 
@@ -78,9 +78,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/upcoming")
     public ResponseEntity<List<UpcomingInterviewDTO>> getUpcomingInterviews() {
-        log.info("REST request to get upcoming interviews");
+        log.info("GET /api/interviews/upcoming - Fetching upcoming interviews");
         List<UpcomingInterviewDTO> upcomingCalls = interviewService.getUpcomingInterviews();
-        log.info("Returning {} upcoming interviews", upcomingCalls.size());
+        log.info("GET /api/interviews/upcoming - Returning {} upcoming interviews", upcomingCalls.size());
         return ResponseEntity.ok(upcomingCalls);
     }
 
@@ -95,9 +95,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}")
     public ResponseEntity<InterviewOverviewDTO> getInterviewProcessDetails(@PathVariable UUID processId) {
-        log.info("REST request to get interview process id {}", processId);
+        log.info("GET /api/interviews/processes/{} - Fetching process details", processId);
         InterviewOverviewDTO details = interviewService.getInterviewProcessDetails(processId);
-        log.info("Returning {} interview processes", processId);
+        log.info("GET /api/interviews/processes/{} - Returning process details", processId);
         return ResponseEntity.ok(details);
     }
 
@@ -115,9 +115,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/slots/create")
     public ResponseEntity<List<InterviewSlotDTO>> createSlots(@PathVariable UUID processId, @Valid @RequestBody CreateSlotsDTO dto) {
-        log.info("REST request to create {} slots for interview process: {}", dto.slots().size(), processId);
+        log.info("POST /api/interviews/processes/{}/slots/create - Creating {} slots", processId, dto.slots().size());
         List<InterviewSlotDTO> slots = interviewService.createSlots(processId, dto);
-        log.info("Successfully created {} slots for interview process: {}", slots.size(), processId);
+        log.info("POST /api/interviews/processes/{}/slots/create - Created {} slots", processId, slots.size());
         return ResponseEntity.status(HttpStatus.CREATED).body(slots);
     }
 
@@ -164,7 +164,7 @@ public class InterviewResource {
             beforeDateTime,
             pageDTO
         );
-        log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
+        log.info("GET /api/interviews/processes/{}/slots - Returning {} slots", processId, slots.getTotalElements());
         return ResponseEntity.ok(slots);
     }
 
@@ -190,9 +190,9 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        log.info("REST request to get conflict data for process: {} on date: {}", processId, date);
+        log.info("GET /api/interviews/processes/{}/slots/conflict-data - Fetching conflict data (date={})", processId, date);
         ConflictDataDTO conflictData = interviewService.getConflictDataForDate(processId, date);
-        log.info("Returning {} slots for conflict checking", conflictData.slots().size());
+        log.info("GET /api/interviews/processes/{}/slots/conflict-data - Returning {} slots", processId, conflictData.slots().size());
         return ResponseEntity.ok(conflictData);
     }
 
@@ -217,11 +217,11 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @Valid @RequestBody AddIntervieweesDTO dto
     ) {
-        log.info("REST request to add {} applicants to interview process: {}", dto.applicationIds().size(), processId);
+        log.info("POST /api/interviews/processes/{}/interviewees - Adding {} applicants", processId, dto.applicationIds().size());
 
         List<IntervieweeDTO> result = interviewService.addApplicantsToInterview(processId, dto);
 
-        log.info("Successfully added {} interviewees to interview process: {}", result.size(), processId);
+        log.info("POST /api/interviews/processes/{}/interviewees - Added {} interviewees", processId, result.size());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -242,11 +242,11 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/interviewees")
     public ResponseEntity<List<IntervieweeDTO>> getIntervieweesByProcessId(@PathVariable UUID processId) {
-        log.info("REST request to get all interviewees for interview process: {}", processId);
+        log.info("GET /api/interviews/processes/{}/interviewees - Fetching interviewees", processId);
 
         List<IntervieweeDTO> interviewees = interviewService.getIntervieweesByProcessId(processId);
 
-        log.info("Returning {} interviewees for interview process: {}", interviewees.size(), processId);
+        log.info("GET /api/interviews/processes/{}/interviewees - Returning {} interviewees", processId, interviewees.size());
 
         return ResponseEntity.ok(interviewees);
     }
@@ -271,9 +271,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @DeleteMapping("/slots/{slotId}")
     public ResponseEntity<Void> deleteSlot(@PathVariable UUID slotId) {
-        log.info("REST request to delete slot: {}", slotId);
+        log.info("DELETE /api/interviews/slots/{} - Deleting slot", slotId);
         interviewService.deleteSlot(slotId);
-        log.info("Successfully deleted slot: {}", slotId);
+        log.info("DELETE /api/interviews/slots/{} - Deleted slot", slotId);
         return ResponseEntity.noContent().build();
     }
 
@@ -293,9 +293,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/interviewees/{intervieweeId}")
     public ResponseEntity<IntervieweeDetailDTO> getIntervieweeDetails(@PathVariable UUID processId, @PathVariable UUID intervieweeId) {
-        log.info("REST request to get interviewee details: {} in process: {}", intervieweeId, processId);
+        log.info("GET /api/interviews/processes/{}/interviewees/{} - Fetching interviewee details", processId, intervieweeId);
         IntervieweeDetailDTO details = interviewService.getIntervieweeDetails(processId, intervieweeId);
-        log.info("Returning details for interviewee: {}", intervieweeId);
+        log.info("GET /api/interviews/processes/{}/interviewees/{} - Returning details", processId, intervieweeId);
         return ResponseEntity.ok(details);
     }
 
@@ -321,9 +321,9 @@ public class InterviewResource {
         @PathVariable UUID intervieweeId,
         @Valid @RequestBody UpdateAssessmentDTO dto
     ) {
-        log.info("REST request to update assessment for interviewee: {} in process: {}", intervieweeId, processId);
+        log.info("PUT /api/interviews/processes/{}/interviewees/{}/assessment - Updating assessment", processId, intervieweeId);
         IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
-        log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
+        log.info("PUT /api/interviews/processes/{}/interviewees/{}/assessment - Updated assessment", processId, intervieweeId);
         return ResponseEntity.ok(updated);
     }
 
@@ -347,9 +347,9 @@ public class InterviewResource {
         @PathVariable UUID slotId,
         @Valid @RequestBody AssignSlotRequestDTO dto
     ) {
-        log.info("REST request to assign slot {} to application {}", slotId, dto.applicationId());
+        log.info("POST /api/interviews/slots/{}/assign - Assigning slot to application {}", slotId, dto.applicationId());
         InterviewSlotDTO result = interviewService.assignSlotToInterviewee(slotId, dto.applicationId());
-        log.info("Successfully assigned slot {} to interviewee", slotId);
+        log.info("POST /api/interviews/slots/{}/assign - Assigned slot", slotId);
         return ResponseEntity.ok(result);
     }
 
@@ -372,9 +372,9 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @RequestBody SendInvitationsRequestDTO dto
     ) {
-        log.info("REST request to send invitations for process: {}", processId);
+        log.info("POST /api/interviews/processes/{}/send-invitations - Sending invitations", processId);
         SendInvitationsResultDTO result = interviewService.sendSelfSchedulingInvitations(processId, dto);
-        log.info("Sent {} invitations for process: {}", result.sentCount(), processId);
+        log.info("POST /api/interviews/processes/{}/send-invitations - Sent {} invitations", processId, result.sentCount());
         return ResponseEntity.ok(result);
     }
 }
