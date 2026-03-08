@@ -16,4 +16,8 @@ public enum FundingType {
 
     private final String englishValue;
     private final String germanValue;
+
+    public String correctLanguageValue(String lang) {
+        return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
+    }
 }

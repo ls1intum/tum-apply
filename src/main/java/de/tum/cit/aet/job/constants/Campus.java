@@ -32,4 +32,8 @@ public enum Campus {
         }
         return LOOKUP.get(value.toUpperCase(Locale.ROOT));
     }
+
+    public String correctLanguageValue(String lang) {
+        return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
+    }
 }
