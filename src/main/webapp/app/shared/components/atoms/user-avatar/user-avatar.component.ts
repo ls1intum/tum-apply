@@ -77,8 +77,13 @@ export class UserAvatarComponent {
     return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
   }
 
-  // This is used to darken the initials and the border for better contrast against the background color.
-  // The factor determines how much darker the resulting color will be compared to the original background color.
+  /**
+   * Darkens a hex color for avatar text and border contrast.
+   *
+   * @param hex - The six-character hex color to darken.
+   * @param factor - The multiplier applied to each RGB channel to reduce brightness.
+   * @returns The darkened color as an RGB string, or a default fallback color for invalid hex input.
+   */
   private darkenHex(hex: string, factor: number): string {
     const normalized = hex.replace('#', '');
     if (normalized.length !== 6) {

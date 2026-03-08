@@ -239,7 +239,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       await component.loadAvailableUsers('abc');
 
       expect(window.clearTimeout).toHaveBeenCalledWith(123);
-      // loaderTimeout should be set again and cleared by finally block, so it's not null
+      // loaderTimeout should be set again and cleared by finally block, so it's not undefined
       expect(component.users()).toEqual((mockPageResponse.content ?? []).map(withDisplayName));
     });
 

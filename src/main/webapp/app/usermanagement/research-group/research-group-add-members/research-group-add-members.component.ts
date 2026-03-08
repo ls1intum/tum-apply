@@ -55,7 +55,7 @@ export class ResearchGroupAddMembersComponent {
 
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
-  private loaderTimeout: number | null = null;
+  private loaderTimeout: number | undefined;
 
   // Local mock users for UI testing without Keycloak/server
   private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
@@ -204,9 +204,9 @@ export class ResearchGroupAddMembersComponent {
       return;
     }
 
-    if (this.loaderTimeout !== null) {
+    if (this.loaderTimeout !== undefined) {
       clearTimeout(this.loaderTimeout);
-      this.loaderTimeout = null;
+      this.loaderTimeout = undefined;
     }
     this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
 
@@ -229,8 +229,10 @@ export class ResearchGroupAddMembersComponent {
     } finally {
       // only touch loading/timeout if this is the latest request
       if (requestId === this.latestRequestId) {
-        clearTimeout(this.loaderTimeout);
-        this.loaderTimeout = null;
+        if (this.loaderTimeout !== undefined) {
+          clearTimeout(this.loaderTimeout);
+          this.loaderTimeout = undefined;
+        }
         this.loading.set(false);
       }
     }
