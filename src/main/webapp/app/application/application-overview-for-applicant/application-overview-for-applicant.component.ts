@@ -253,4 +253,8 @@ export default class ApplicationOverviewForApplicantComponent {
       },
     });
   }
+
+  onBrowsePositions(): void {
+    void this.router.navigate(['/job-overview']);
+  }
 }
