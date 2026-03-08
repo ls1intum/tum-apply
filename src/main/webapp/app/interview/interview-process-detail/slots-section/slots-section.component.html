@@ -34,8 +34,10 @@
   <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
     <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
     <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
-    <p class="text-text-secondary" jhiTranslate="interview.detail.empty.description">
-      Create your first interview slots to get started.
+    <p class="text-text-secondary"
+      [jhiTranslate]="isClosed() ? 'interview.detail.empty.closedDescription' : 'interview.detail.empty.description'">
+      {{ isClosed() ? 'It is no longer possible to create slots for this closed process.' : 'Create your first interview
+      slots to get started.' }}
     </p>
     @if (!isClosed()) {
     <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'"

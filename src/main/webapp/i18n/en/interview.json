@@ -52,7 +52,8 @@
       },
       "empty": {
         "title": "No slots yet",
-        "description": "Create your first interview slots to get started."
+        "description": "Create your first interview slots to get started.",
+        "closedDescription": "It is no longer possible to create slots for this closed process."
       },
       "noSlotsInMonth": "No slots in {{month}}",
       "showLess": "Show less"
