@@ -29,15 +29,15 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/tsconfig": "3.9.2",
     "@docusaurus/types": "3.9.2",
-    "@tailwindcss/postcss": "4.1.18",
-    "tailwindcss": "4.1.18",
+    "@tailwindcss/postcss": "4.2.0",
+    "tailwindcss": "4.2.0",
     "typescript": "5.9.3"
   },
   "overrides": {
     "lodash": "4.17.23",
     "lodash-es": "4.17.23",
-    "qs": "6.14.2",
-    "undici": "7.21.0"
+    "qs": "6.15.0",
+    "undici": "7.22.0"
   },
   "browserslist": {
     "production": [

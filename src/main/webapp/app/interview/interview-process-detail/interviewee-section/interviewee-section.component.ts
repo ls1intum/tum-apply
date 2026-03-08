@@ -85,15 +85,36 @@ export class IntervieweeSectionComponent {
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
     const all = this.interviewees();
     return [
-      { key: 'ALL', labelKey: 'interview.interviewees.filter.ALL', count: all.length },
-      { key: 'INVITED', labelKey: 'interview.interviewees.filter.INVITED', count: all.filter(i => i.state === 'INVITED').length },
-      { key: 'SCHEDULED', labelKey: 'interview.interviewees.filter.SCHEDULED', count: all.filter(i => i.state === 'SCHEDULED').length },
+      {
+        key: 'ALL',
+        labelKey: 'interview.interviewees.filter.ALL',
+        count: all.length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.ALL',
+      },
       {
         key: 'UNCONTACTED',
         labelKey: 'interview.interviewees.filter.UNCONTACTED',
         count: all.filter(i => i.state === 'UNCONTACTED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.UNCONTACTED',
       },
-      { key: 'COMPLETED', labelKey: 'interview.interviewees.filter.COMPLETED', count: all.filter(i => i.state === 'COMPLETED').length },
+      {
+        key: 'INVITED',
+        labelKey: 'interview.interviewees.filter.INVITED',
+        count: all.filter(i => i.state === 'INVITED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.INVITED',
+      },
+      {
+        key: 'SCHEDULED',
+        labelKey: 'interview.interviewees.filter.SCHEDULED',
+        count: all.filter(i => i.state === 'SCHEDULED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.SCHEDULED',
+      },
+      {
+        key: 'COMPLETED',
+        labelKey: 'interview.interviewees.filter.COMPLETED',
+        count: all.filter(i => i.state === 'COMPLETED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.COMPLETED',
+      },
     ];
   });
 
