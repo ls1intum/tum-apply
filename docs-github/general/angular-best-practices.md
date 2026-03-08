@@ -40,7 +40,7 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 ### 2. **Avoid Inline Styles**
 
-❌ **WRONG** — Found in codebase:
+❌ **WRONG**:
 
 ```html
 <span style="font-weight: bold">Text</span>
@@ -255,7 +255,7 @@ buttonClasses = computed(() => {
 
 ### 6. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
 
-❌ **WRONG** — Found in codebase:
+❌ **WRONG**:
 
 ```html
 <i class="text-[var(--p-primary-400)]"></i> <span class="text-[var(--p-text-tertiary)]"></span>
