@@ -26,7 +26,7 @@ export interface ImageUploadError {
 export class ImageUploadButtonComponent {
   // Inputs
   config = input<ImageUploadConfig>({});
-  uploadFn = input<(_file: File) => Observable<ImageDTO>>();
+  uploadFn = input<(_: File) => Observable<ImageDTO>>();
 
   // Outputs
   imageUploaded = output<ImageDTO>();

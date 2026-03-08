@@ -316,7 +316,11 @@ export class ResearchGroupAddMembersComponent {
 
   private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
     return users.map(user => ({
-      ...user,
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      universityId: user.universityId,
       displayName: formatFullName(user.firstName, user.lastName),
     }));
   }

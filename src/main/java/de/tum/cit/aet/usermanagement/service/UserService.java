@@ -140,7 +140,6 @@ public class UserService {
      * @param userId    the Keycloak user ID
      * @param avatarUrl the new avatar URL (can be null/blank to remove avatar)
      */
-    @Transactional
     public void updateAvatar(String userId, String avatarUrl) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);

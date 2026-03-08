@@ -104,6 +104,29 @@ describe('UserAvatarComponent', () => {
     });
   });
 
+  describe('image loading', () => {
+    it('should default avatar images to eager loading', () => {
+      const fixture = TestBed.createComponent(UserAvatarComponent);
+      fixture.componentRef.setInput('fullName', 'Max Applicant');
+      fixture.componentRef.setInput('avatarUrl', '/images/profiles/avatar.jpg');
+      fixture.detectChanges();
+
+      const image = fixture.nativeElement.querySelector('img');
+      expect(image?.getAttribute('loading')).toBe('eager');
+    });
+
+    it('should allow lazy loading for list contexts', () => {
+      const fixture = TestBed.createComponent(UserAvatarComponent);
+      fixture.componentRef.setInput('fullName', 'Max Applicant');
+      fixture.componentRef.setInput('avatarUrl', '/images/profiles/avatar.jpg');
+      fixture.componentRef.setInput('loading', 'lazy');
+      fixture.detectChanges();
+
+      const image = fixture.nativeElement.querySelector('img');
+      expect(image?.getAttribute('loading')).toBe('lazy');
+    });
+  });
+
   describe('private helpers', () => {
     it('should cover initials fallback when split and filter produce no parts', () => {
       const fixture = TestBed.createComponent(UserAvatarComponent);

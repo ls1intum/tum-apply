@@ -210,6 +210,7 @@ public class InterviewService {
                     slot.getStartDateTime(),
                     slot.getEndDateTime(),
                     applicantName,
+                    applicantUser.getAvatar(),
                     slot.getInterviewProcess().getJob().getTitle(),
                     slot.getLocation(),
                     slot.getInterviewProcess().getId(),

@@ -46,7 +46,7 @@
   <!-- Templates for dynamic table -->
   <ng-template #nameTemplate let-member>
     <div class="flex items-center gap-2">
-      <jhi-user-avatar [fullName]="member.name" [avatarUrl]="member.avatar" size="lg" />
+      <jhi-user-avatar [fullName]="member.name" [avatarUrl]="member.avatar" size="lg" loading="lazy" />
       <span>
         {{ member.name }}
         @if (member.isCurrentUser) {

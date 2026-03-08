@@ -57,7 +57,7 @@
             tabindex="0"
             (click)="toggleUserSelection(user)"
           >
-            <jhi-user-avatar class="flex-shrink-0" [fullName]="user.displayName" size="lg" />
+            <jhi-user-avatar class="flex-shrink-0" [fullName]="user.displayName" size="lg" loading="lazy" />
             <div class="flex-1">
               <div class="font-medium text-text-primary">{{ user.displayName }}</div>
               <div class="text-sm text-text-secondary">{{ user.email }}</div>

@@ -54,7 +54,11 @@ describe('ResearchGroupAddMembersComponent', () => {
   };
 
   const withDisplayName = (user: KeycloakUserDTO) => ({
-    ...user,
+    email: user.email,
+    firstName: user.firstName,
+    id: user.id,
+    lastName: user.lastName,
+    universityId: user.universityId,
     displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
   });
   const withoutId = (user: KeycloakUserDTO): KeycloakUserDTO => ({

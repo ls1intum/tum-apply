@@ -29,8 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 /**
  * Integration tests for {@link de.tum.cit.aet.usermanagement.web.UserResource}.
@@ -64,7 +64,7 @@ public class UserResourceTest extends AbstractResourceTest {
     @Autowired
     KeycloakUserService keycloakUserService;
 
-    @SpyBean
+    @MockitoSpyBean
     ImageService imageService;
 
     User currentUser;

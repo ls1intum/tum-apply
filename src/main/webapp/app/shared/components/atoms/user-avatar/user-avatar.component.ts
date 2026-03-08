@@ -10,6 +10,7 @@ export class UserAvatarComponent {
   fullName = input<string | undefined>(undefined);
   avatarUrl = input<string | undefined>(undefined);
   size = input<'md' | 'lg' | 'xl'>('md');
+  loading = input<'eager' | 'lazy'>('eager');
 
   // Show initials for the current display name, fallback to "U" when missing.
   initials = computed(() => this.initialsFromFullName(this.fullName()?.trim() ?? ''));

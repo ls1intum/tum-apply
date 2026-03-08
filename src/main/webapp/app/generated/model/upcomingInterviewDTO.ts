@@ -10,6 +10,7 @@
 
 
 export interface UpcomingInterviewDTO { 
+    avatar?: string;
     endDateTime?: string;
     id?: string;
     intervieweeId?: string;
@@ -19,4 +20,3 @@ export interface UpcomingInterviewDTO {
     processId?: string;
     startDateTime?: string;
 }
-

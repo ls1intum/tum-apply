@@ -41,17 +41,28 @@ export class ProfilePictureSettingsComponent {
 
   readonly CROP_SIZE = CROP_CONTAINER_SIZE;
 
-  // Dialog + image source state used by the cropper overlay.
   cropDialogVisible = signal(false);
   selectedFile = signal<File | undefined>(undefined);
   imageLoaded = signal(false);
   cropTransform: ImageTransform = this.createDefaultTransform();
 
+  /**
+   * Resolves the display name used by the avatar fallback component.
+   * Blank names are treated as absent values.
+   *
+   * @returns the normalized full name or undefined when no usable name is available
+   */
   fullName = computed<string | undefined>(() => {
     const name = this.accountService.loadedUser()?.name.trim();
     return name === '' ? undefined : name;
   });
 
+  /**
+   * Returns the sanitized avatar URL currently stored for the signed-in user.
+   * Blank values are normalized to null so the template can fall back to initials.
+   *
+   * @returns the normalized avatar URL or null when no avatar is set
+   */
   currentProfilePictureUrl = computed<string | null>(() => this.normalizeAvatarUrl(this.accountService.loadedUser()?.avatar));
 
   private readonly accountService = inject(AccountService);
@@ -75,6 +86,12 @@ export class ProfilePictureSettingsComponent {
     this.resetCropDialog();
   }
 
+  /**
+   * Removes the persisted avatar reference for the current user and clears the
+   * cached avatar in the account state used by the application shell.
+   *
+   * @returns a promise that resolves after the removal request finishes
+   */
   async onResetPicture(): Promise<void> {
     try {
       await firstValueFrom(this.userResourceService.updateAvatar({}));
@@ -88,6 +105,8 @@ export class ProfilePictureSettingsComponent {
   /**
    * Crops the current image through the cropper library, uploads the generated JPEG
    * and updates the in-memory avatar shown in the app shell.
+   *
+   * @returns a promise that resolves after the upload flow finishes
    */
   async onSave(): Promise<void> {
     if (!this.imageCropper) return;
@@ -128,6 +147,9 @@ export class ProfilePictureSettingsComponent {
   /**
    * Validates the selected file and opens the crop dialog. The cropper library
    * handles image loading, touch gestures and crop interactions.
+   *
+   * @param file the image file selected by the user
+   * @returns void
    */
   private loadFileForCrop(file: File): void {
     if (file.size > MAX_UPLOAD_SIZE_BYTES) {
@@ -144,6 +166,12 @@ export class ProfilePictureSettingsComponent {
     this.cropDialogVisible.set(true);
   }
 
+  /**
+   * Trims avatar URLs and converts blank values to null for consistent template checks.
+   *
+   * @param avatarUrl the raw avatar URL from the account state
+   * @returns the trimmed avatar URL or null when the value is blank
+   */
   private normalizeAvatarUrl(avatarUrl: string | null | undefined): string | null {
     const normalized = avatarUrl?.trim();
     if (normalized == null || normalized === '') {
@@ -152,6 +180,11 @@ export class ProfilePictureSettingsComponent {
     return normalized;
   }
 
+  /**
+   * Restores the crop dialog to its initial state after cancel, save or load failure.
+   *
+   * @returns void
+   */
   private resetCropDialog(): void {
     this.cropDialogVisible.set(false);
     this.selectedFile.set(undefined);
@@ -159,13 +192,29 @@ export class ProfilePictureSettingsComponent {
     this.cropTransform = this.createDefaultTransform();
   }
 
+  /**
+   * Copies the cropper transform while forcing pixel-based translation values.
+   *
+   * @param transform the transform emitted by the cropper component
+   * @returns the normalized transform with pixel-based translation units
+   */
   private normalizeTransform(transform: ImageTransform): ImageTransform {
     return {
+      scale: transform.scale,
+      rotate: transform.rotate,
+      flipH: transform.flipH,
+      flipV: transform.flipV,
+      translateH: transform.translateH,
+      translateV: transform.translateV,
       translateUnit: 'px',
-      ...transform,
     };
   }
 
+  /**
+   * Creates the initial cropper transform with no rotation, scaling or translation applied.
+   *
+   * @returns the default cropper transform
+   */
   private createDefaultTransform(): ImageTransform {
     return {
       scale: 1,

@@ -1,6 +1,7 @@
 {
   "settings": {
     "header": "Settings",
+
     "tabs": {
       "general": "General",
       "notifications": "Notifications",
@@ -22,6 +23,7 @@
         "detail": "Failed to save personal information. Please try again."
       }
     },
+
     "notifications": {
       "applicant": {
         "submission": {
@@ -44,6 +46,7 @@
         }
       }
     },
+
     "profilePicture": {
       "header": "Profile Picture",
       "description": "Make your profile more personal with a photo.",
