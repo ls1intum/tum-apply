@@ -12,13 +12,6 @@
   </div>
 }
 
-<!-- Initial Loading State (only shown before initialized()) -->
-@if (!initialized() && !error()) {
-  <div class="flex justify-center items-center py-8">
-    <jhi-progress-spinner styleClass="w-12 h-12" />
-  </div>
-}
-
 @if (initialized() && !error()) {
   @if (hasAnySlots() === false) {
     <!-- Global Empty State (No slots at all) -->
