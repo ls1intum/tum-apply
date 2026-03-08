@@ -1,25 +1,21 @@
 import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
-import { DividerModule } from 'primeng/divider';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
-import { TooltipModule } from 'primeng/tooltip';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import TranslateDirective from 'app/shared/language/translate.directive';
+import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 
-import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
+import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
 import {
   GradingScaleLimitsResult,
-  detectGradingScale,
-  normalizeLimitsForGrade,
-  shouldShowGradeWarning,
+  getDetectedGradeLimitsPatch,
+  getGradeHelperText,
+  getGradeWarningText,
+  hasGradeLimits,
+  resolveGradingScaleLimits,
 } from '../../../shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
@@ -57,17 +53,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   standalone: true,
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
-  imports: [
-    DividerModule,
-    UploadButtonComponent,
-    ReactiveFormsModule,
-    StringInputComponent,
-    TranslateModule,
-    TooltipModule,
-    FontAwesomeModule,
-    TranslateDirective,
-    NumberInputComponent,
-  ],
+  imports: [DegreeDocumentSectionComponent, ReactiveFormsModule],
 })
 export default class ApplicationCreationPage2Component {
   data = model<ApplicationCreationPage2Data>();
@@ -112,42 +98,24 @@ export default class ApplicationCreationPage2Component {
 
   helperTextBachelorGrade = computed(() => {
     this.currentLang();
-    const limits = this.bachelorGradeLimits();
-    if (!limits) return '';
-
-    const scale = this.translateService.instant('entity.applicationPage2.helperText.scale') as string;
-    const gradingScale = this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
-      upperLimit: limits.upperLimit,
-      lowerLimit: limits.lowerLimit,
-    }) as string;
-
-    return `${scale}${gradingScale}`;
+    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
   });
 
   helperTextMasterGrade = computed(() => {
     this.currentLang();
-    const limits = this.masterGradeLimits();
-    if (!limits) return '';
-
-    const scale = this.translateService.instant('entity.applicationPage2.helperText.scale') as string;
-    const gradingScale = this.translateService.instant('entity.applicationPage2.helperText.gradingScale', {
-      upperLimit: limits.upperLimit,
-      lowerLimit: limits.lowerLimit,
-    }) as string;
-
-    return `${scale}${gradingScale}`;
+    return getGradeHelperText(this.translateService, this.masterGradeLimits());
   });
 
   warningTextBachelorGrade = computed(() => {
     this.currentLang();
     const grade = this.bachelorGradeValue() ?? '';
-    return shouldShowGradeWarning(grade) ? this.translateService.instant('entity.applicationPage2.warnText') : '';
+    return getGradeWarningText(this.translateService, grade);
   });
 
   warningTextMasterGrade = computed(() => {
     this.currentLang();
     const grade = this.masterGradeValue() ?? '';
-    return shouldShowGradeWarning(grade) ? this.translateService.instant('entity.applicationPage2.warnText') : '';
+    return getGradeWarningText(this.translateService, grade);
   });
 
   private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
@@ -184,34 +152,24 @@ export default class ApplicationCreationPage2Component {
 
     if (data.bachelorGrade) {
       this.lastBachelorGrade.set(data.bachelorGrade);
-
-      if (data.bachelorGradeUpperLimit && data.bachelorGradeLowerLimit) {
-        const normalized = normalizeLimitsForGrade(data.bachelorGrade, {
-          upperLimit: data.bachelorGradeUpperLimit,
-          lowerLimit: data.bachelorGradeLowerLimit,
-        });
-
-        this.bachelorGradeLimits.set(normalized);
+      const bachelorLimits = resolveGradingScaleLimits(data.bachelorGrade, {
+        upperLimit: data.bachelorGradeUpperLimit,
+        lowerLimit: data.bachelorGradeLowerLimit,
+      });
+      this.bachelorGradeLimits.set(bachelorLimits);
+      if (bachelorLimits && hasGradeLimits({ upperLimit: data.bachelorGradeUpperLimit, lowerLimit: data.bachelorGradeLowerLimit })) {
         this.bachelorLimitsManuallySet.set(true);
-      } else {
-        const bachelorLimits = detectGradingScale(data.bachelorGrade);
-        this.bachelorGradeLimits.set(bachelorLimits);
       }
     }
     if (data.masterGrade) {
       this.lastMasterGrade.set(data.masterGrade);
-
-      if (data.masterGradeUpperLimit && data.masterGradeLowerLimit) {
-        const normalized = normalizeLimitsForGrade(data.masterGrade, {
-          upperLimit: data.masterGradeUpperLimit,
-          lowerLimit: data.masterGradeLowerLimit,
-        });
-
-        this.masterGradeLimits.set(normalized);
+      const masterLimits = resolveGradingScaleLimits(data.masterGrade, {
+        upperLimit: data.masterGradeUpperLimit,
+        lowerLimit: data.masterGradeLowerLimit,
+      });
+      this.masterGradeLimits.set(masterLimits);
+      if (masterLimits && hasGradeLimits({ upperLimit: data.masterGradeUpperLimit, lowerLimit: data.masterGradeLowerLimit })) {
         this.masterLimitsManuallySet.set(true);
-      } else {
-        const masterLimits = detectGradingScale(data.masterGrade);
-        this.masterGradeLimits.set(masterLimits);
       }
     }
 
@@ -318,14 +276,13 @@ export default class ApplicationCreationPage2Component {
   private updateBachelorGradeLimits(grade: string): void {
     this.lastBachelorGrade.set(grade);
     this.bachelorLimitsManuallySet.set(false);
-
-    const limits = detectGradingScale(grade);
-    this.bachelorGradeLimits.set(limits);
+    const limits = getDetectedGradeLimitsPatch(grade);
+    this.bachelorGradeLimits.set(resolveGradingScaleLimits(grade));
 
     this.page2Form.patchValue(
       {
-        bachelorGradeUpperLimit: limits?.upperLimit ?? '',
-        bachelorGradeLowerLimit: limits?.lowerLimit ?? '',
+        bachelorGradeUpperLimit: limits.upperLimit,
+        bachelorGradeLowerLimit: limits.lowerLimit,
       },
       { emitEvent: true },
     );
@@ -334,14 +291,13 @@ export default class ApplicationCreationPage2Component {
   private updateMasterGradeLimits(grade: string): void {
     this.lastMasterGrade.set(grade);
     this.masterLimitsManuallySet.set(false);
-
-    const limits = detectGradingScale(grade);
-    this.masterGradeLimits.set(limits);
+    const limits = getDetectedGradeLimitsPatch(grade);
+    this.masterGradeLimits.set(resolveGradingScaleLimits(grade));
 
     this.page2Form.patchValue(
       {
-        masterGradeUpperLimit: limits?.upperLimit ?? '',
-        masterGradeLowerLimit: limits?.lowerLimit ?? '',
+        masterGradeUpperLimit: limits.upperLimit,
+        masterGradeLowerLimit: limits.lowerLimit,
       },
       { emitEvent: true },
     );

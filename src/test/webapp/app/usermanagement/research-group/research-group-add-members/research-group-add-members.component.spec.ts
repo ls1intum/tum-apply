@@ -54,6 +54,25 @@ describe('ResearchGroupAddMembersComponent', () => {
     totalElements: 2,
   };
 
+  const withDisplayName = (user: KeycloakUserDTO) => ({
+    email: user.email,
+    firstName: user.firstName,
+    id: user.id,
+    lastName: user.lastName,
+    universityId: user.universityId,
+    username: user.username,
+    displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+  });
+
+  const withoutId = (user: KeycloakUserDTO): KeycloakUserDTO => ({
+    email: user.email,
+    firstName: user.firstName,
+    id: undefined,
+    lastName: user.lastName,
+    universityId: user.universityId,
+    username: user.username,
+  });
+
   beforeEach(async () => {
     mockUserService = {
       getAvailableUsersForResearchGroup: vi.fn().mockReturnValue(of({ content: [], totalElements: 0 })),
@@ -125,7 +144,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('john');
 
-      expect(component.users()).toEqual(mockPageResponse.content);
+      expect(component.users()).toEqual((mockPageResponse.content ?? []).map(withDisplayName));
       expect(component.totalRecords()).toBe(mockPageResponse.totalElements);
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
@@ -190,7 +209,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     });
 
     it('should clear users when given an empty query and users exist', async () => {
-      component.users.set([mockUser1]);
+      component.users.set([withDisplayName(mockUser1)]);
       component.totalRecords.set(1);
       vi.clearAllMocks();
 
@@ -222,8 +241,8 @@ describe('ResearchGroupAddMembersComponent', () => {
       await component.loadAvailableUsers('abc');
 
       expect(window.clearTimeout).toHaveBeenCalledWith(123);
-      // loaderTimeout should be set again and cleared by finally block, so it's not null
-      expect(component.users()).toEqual(mockPageResponse.content);
+      // loaderTimeout should be set again and cleared by finally block, so it's not undefined
+      expect(component.users()).toEqual((mockPageResponse.content ?? []).map(withDisplayName));
     });
 
     it('should ignore stale requests and only apply the latest result', async () => {
@@ -253,7 +272,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       }
       await p2; // wait for the newer request to be applied
 
-      expect(component.users()).toEqual([mockUser2]);
+      expect(component.users()).toEqual([withDisplayName(mockUser2)]);
 
       // now complete the first request (older arrives later) - should be ignored
       if (firstSubscriber) {
@@ -262,7 +281,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       }
       await p1; // wait for the older request to finish (it should have no effect)
 
-      expect(component.users()).toEqual([mockUser2]);
+      expect(component.users()).toEqual([withDisplayName(mockUser2)]);
       expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
     });
 
@@ -293,7 +312,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       }
       await p2; // wait for the newer request to be applied
 
-      expect(component.users()).toEqual([mockUser2]);
+      expect(component.users()).toEqual([withDisplayName(mockUser2)]);
 
       // now complete the first request (older arrives later and errors) - should be ignored
       if (firstSubscriber) {
@@ -327,7 +346,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('alice');
 
-      expect(component.users()).toEqual([mockUsers[0]]);
+      expect(component.users()).toEqual([withDisplayName(mockUsers[0])]);
       expect(component.totalRecords()).toBe(1);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
@@ -348,7 +367,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('alice');
 
-      expect(component.users()).toEqual([mockUsers[1]]);
+      expect(component.users()).toEqual([withDisplayName(mockUsers[1])]);
       expect(component.totalRecords()).toBe(1);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
@@ -377,7 +396,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       await component.loadAvailableUsers('tum');
 
       expect(component.totalRecords()).toBe(6);
-      expect(component.users()).toEqual([mockUsers[2], mockUsers[3]]);
+      expect(component.users()).toEqual([withDisplayName(mockUsers[2]), withDisplayName(mockUsers[3])]);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
   });
@@ -476,7 +495,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     });
 
     it('should show error toast when toggling user with undefined id', () => {
-      const userWithoutId: KeycloakUserDTO = { ...mockUser1, id: undefined } as KeycloakUserDTO;
+      const userWithoutId = withoutId(mockUser1);
 
       component.toggleUserSelection(userWithoutId);
 
@@ -486,7 +505,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     });
 
     it('should return false for isUserSelected when user has no id', () => {
-      const userWithoutId: KeycloakUserDTO = { ...mockUser1, id: undefined } as KeycloakUserDTO;
+      const userWithoutId = withoutId(mockUser1);
 
       expect(component.isUserSelected(userWithoutId)).toBe(false);
     });
