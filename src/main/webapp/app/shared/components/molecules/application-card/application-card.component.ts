@@ -90,9 +90,6 @@ export class ApplicationCardComponent {
     return 'text-sm';
   });
 
-  readonly translateService = inject(TranslateService);
-  currentLang = toSignal(this.translateService.onLangChange);
-
   readonly masterSummary = computed(() => {
     const applicant = this.applicationDetails()?.applicant;
     this.currentLang();
@@ -108,4 +105,7 @@ export class ApplicationCardComponent {
       ),
     };
   });
+
+  private readonly translateService = inject(TranslateService);
+  private currentLang = toSignal(this.translateService.onLangChange);
 }
