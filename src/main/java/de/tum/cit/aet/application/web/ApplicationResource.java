@@ -124,6 +124,7 @@ public class ApplicationResource {
         @PathVariable DocumentType documentType,
         @RequestParam("files") List<MultipartFile> files
     ) {
+        log.info("POST /api/applications/profile/documents/{} - Uploading applicant profile documents for current user", documentType);
         return ResponseEntity.ok(applicationService.getDocumentIdsOfApplicantProfileAndType(documentType, files));
     }
 
@@ -136,6 +137,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @DeleteMapping("/profile/documents/{documentDictionaryId}")
     public ResponseEntity<Void> deleteApplicantProfileDocument(@PathVariable UUID documentDictionaryId) {
+        log.info("DELETE /api/applications/profile/documents/{} - Deleting applicant profile document", documentDictionaryId);
         applicationService.deleteApplicantProfileDocument(documentDictionaryId);
         return ResponseEntity.noContent().build();
     }
@@ -150,6 +152,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @PutMapping("/profile/documents/{documentDictionaryId}/name")
     public ResponseEntity<Void> renameApplicantProfileDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        log.info("PUT /api/applications/profile/documents/{}/name - Renaming applicant profile document", documentDictionaryId);
         applicationService.renameApplicantProfileDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
     }
@@ -206,6 +209,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @DeleteMapping("/documents/{documentDictionaryId}")
     public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
+        log.info("DELETE /api/applications/documents/{} - Deleting application document", documentDictionaryId);
         applicationService.deleteDocument(documentDictionaryId);
         return ResponseEntity.noContent().build();
     }
@@ -220,6 +224,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @PutMapping("/documents/{documentDictionaryId}/name")
     public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        log.info("PUT /api/applications/documents/{}/name - Renaming application document", documentDictionaryId);
         applicationService.renameDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
     }

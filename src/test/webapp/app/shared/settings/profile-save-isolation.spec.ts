@@ -8,9 +8,9 @@ import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
-import { DialogService } from 'primeng/dynamicdialog';
 
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
+import { createDialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('Profile save isolation', () => {
@@ -62,9 +62,8 @@ describe('Profile save isolation', () => {
 
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
-  const dialogServiceMock = {
-    open: vi.fn(),
-  };
+  const dialogServiceMock = createDialogServiceMock();
+  const cloneValue = <T>(value: T): T => structuredClone(value);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -80,7 +79,7 @@ describe('Profile save isolation', () => {
       imports: [ReactiveFormsModule, TranslateModule.forRoot()],
       providers: [
         { provide: ApplicationResourceApiService, useValue: applicationResourceServiceMock },
-        { provide: DialogService, useValue: dialogServiceMock },
+        provideDialogServiceMock(dialogServiceMock),
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(toastServiceMock),
       ],
@@ -88,17 +87,10 @@ describe('Profile save isolation', () => {
   });
 
   it('documents save uses the latest personal information saved in another tab', async () => {
-    const profileAfterPersonalSave: ApplicantDTO = {
-      ...baseProfile,
-      user: {
-        ...baseProfile.user,
-        firstName: 'Grace',
-      },
-    };
-    const profileAfterBothSaves: ApplicantDTO = {
-      ...profileAfterPersonalSave,
-      bachelorGrade: '1.0',
-    };
+    const profileAfterPersonalSave = cloneValue(baseProfile);
+    profileAfterPersonalSave.user!.firstName = 'Grace';
+    const profileAfterBothSaves = cloneValue(profileAfterPersonalSave);
+    profileAfterBothSaves.bachelorGrade = '1.0';
 
     applicationResourceServiceMock.getApplicantProfile.mockReset();
     applicationResourceServiceMock.getApplicantProfile
@@ -123,10 +115,9 @@ describe('Profile save isolation', () => {
     const documentsComponent = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
     await documentsComponent['loadProfile']();
 
-    personalComponent.data.set({
-      ...personalComponent.data(),
-      firstName: 'Grace',
-    });
+    const updatedPersonalData = cloneValue(personalComponent.data());
+    updatedPersonalData.firstName = 'Grace';
+    personalComponent.data.set(updatedPersonalData);
     documentsComponent.form.patchValue({
       bachelorGrade: '1.0',
     });
@@ -152,17 +143,10 @@ describe('Profile save isolation', () => {
   });
 
   it('personal information save uses the latest document settings saved in another tab', async () => {
-    const profileAfterDocumentsSave: ApplicantDTO = {
-      ...baseProfile,
-      bachelorGrade: '1.0',
-    };
-    const profileAfterBothSaves: ApplicantDTO = {
-      ...profileAfterDocumentsSave,
-      user: {
-        ...profileAfterDocumentsSave.user,
-        firstName: 'Grace',
-      },
-    };
+    const profileAfterDocumentsSave = cloneValue(baseProfile);
+    profileAfterDocumentsSave.bachelorGrade = '1.0';
+    const profileAfterBothSaves = cloneValue(profileAfterDocumentsSave);
+    profileAfterBothSaves.user!.firstName = 'Grace';
 
     applicationResourceServiceMock.getApplicantProfile.mockReset();
     applicationResourceServiceMock.getApplicantProfile
@@ -190,10 +174,9 @@ describe('Profile save isolation', () => {
     documentsComponent.form.patchValue({
       bachelorGrade: '1.0',
     });
-    personalComponent.data.set({
-      ...personalComponent.data(),
-      firstName: 'Grace',
-    });
+    const updatedPersonalData = cloneValue(personalComponent.data());
+    updatedPersonalData.firstName = 'Grace';
+    personalComponent.data.set(updatedPersonalData);
 
     await documentsComponent.saveAll();
     await personalComponent.onSave();
@@ -218,12 +201,10 @@ describe('Profile save isolation', () => {
   it('keeps stored grading scale limits when documents settings initializes', async () => {
     vi.useFakeTimers();
 
-    const profileWithManualLimits: ApplicantDTO = {
-      ...baseProfile,
-      bachelorGrade: '84%',
-      bachelorGradeUpperLimit: '100%',
-      bachelorGradeLowerLimit: '60%',
-    };
+    const profileWithManualLimits = cloneValue(baseProfile);
+    profileWithManualLimits.bachelorGrade = '84%';
+    profileWithManualLimits.bachelorGradeUpperLimit = '100%';
+    profileWithManualLimits.bachelorGradeLowerLimit = '60%';
 
     applicationResourceServiceMock.getApplicantProfile.mockReset();
     applicationResourceServiceMock.getApplicantProfile.mockReturnValue(of(profileWithManualLimits));

@@ -162,7 +162,7 @@ describe('UploadButtonComponent', () => {
 
     component.documentIds.set([doc]);
 
-    await component.renameDocument({ ...doc, name: 'newName' });
+    await component.renameDocument({ id: doc.id, name: 'newName', size: doc.size });
 
     expect(applicationService.renameDocument).toHaveBeenCalledWith('1', 'newName');
     expect(component.documentIds()).toEqual([renamedDoc]);
@@ -320,14 +320,23 @@ describe('UploadButtonComponent', () => {
 
     const queuedDocument = component.documentIds()?.[0];
     expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      throw new Error('Expected queued document');
+    }
 
-    await component.renameDocument({ ...queuedDocument!, name: 'renamed.pdf' });
+    await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
     expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
     expect(component.queuedFiles()).toHaveLength(1);
     expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
 
-    await component.deleteDictionary(component.documentIds()![0]);
+    const renamedDocument = component.documentIds()?.[0];
+    expect(renamedDocument).toBeDefined();
+    if (!renamedDocument) {
+      throw new Error('Expected renamed document');
+    }
+
+    await component.deleteDictionary(renamedDocument);
 
     expect(component.documentIds()).toEqual([]);
     expect(component.queuedFiles()).toEqual([]);
@@ -346,8 +355,11 @@ describe('UploadButtonComponent', () => {
 
     const queuedDocument = component.documentIds()?.[0];
     expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      throw new Error('Expected queued document');
+    }
 
-    await component.renameDocument({ ...queuedDocument!, name: 'renamed.pdf' });
+    await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
     const replacementFile = new File(['replacement-content'], 'renamed.pdf', { type: 'application/pdf' });
     component.pendingDuplicateFile.set(replacementFile);
