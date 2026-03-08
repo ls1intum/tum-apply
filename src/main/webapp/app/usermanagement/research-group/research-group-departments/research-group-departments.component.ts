@@ -128,8 +128,8 @@ export class ResearchGroupDepartmentsComponent {
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
-  private activeDepartment = signal<DepartmentTableRow | null>(null);
-  private activeDeleteDialog = signal<Confirmable | null>(null);
+  private activeDepartment = signal<DepartmentTableRow | undefined>(undefined);
+  private activeDeleteDialog = signal<Confirmable | undefined>(undefined);
 
   constructor() {
     void this.loadSchools();
