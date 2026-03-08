@@ -2930,7 +2930,10 @@ components:
         departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         professorName: {type: string}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
