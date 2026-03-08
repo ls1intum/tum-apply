@@ -1,6 +1,9 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 @Table(name = "applicants")
 public class Applicant {
 
@@ -27,6 +31,9 @@ public class Applicant {
     // Contains all the Applications that a User (Applicant) has submitted
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Application> submittedApplications;
+
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<DocumentDictionary> documentDictionaries;
 
     @Column(name = "street")
     private String street;

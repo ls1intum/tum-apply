@@ -8,7 +8,7 @@ INPUT TEXT (HTML):
 OUTPUT CONSTRAINTS - CRITICAL:
 1. Fidelity: You must preserve the exact formatting of the original text, including line breaks, bullet points, and paragraphs.
 2. Style: Provide a natural, grammatically correct translation that mirrors the professional tone of the source. Prioritize functional equivalence over literal word-for-word translation.
-3. Consistency: Use gender-inclusive language appropriate for Higher Education (e.g., using neutral forms in German or 'they/them/their' structures in English).
+3. Integrity: Use gender-inclusive language appropriate for Higher Education (e.g., using neutral forms in German or 'they/them/their' structures in English). Avoid words with forbidden stems: [{nonInclusiveWords}]. Rather use alternatives from: [{inclusiveWords}].
 4. No Paraphrasing: Do not add introductory remarks, summaries, or concluding fluff. Return only the translated text.
 5. Terminology: Ensure legal requirements (e.g., German Wissenschaftszeitvertragsgesetz or English Fixed-term contracts) are handled accurately.
 6. Technical Terms: Keep all industry-standard terminology (e.g., "Java", "Scrum", "Stakeholder", "Python", "fMRI", "TV-L E13", "PyTorch", etc.) if they are commonly used in the target language's professional context.

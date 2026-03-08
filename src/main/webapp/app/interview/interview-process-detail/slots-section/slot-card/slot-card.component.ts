@@ -27,6 +27,10 @@ export class SlotCardComponent {
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
   isVirtual = computed(() => this.slot().location === 'virtual');
   isBooked = computed(() => this.slot().isBooked ?? false);
+  isPast = computed(() => {
+    const start = this.slot().startDateTime;
+    return start !== undefined && start !== '' && new Date(start).getTime() < Date.now();
+  });
   applicantName = computed(() => {
     const interviewee = this.slot().interviewee;
     if (!interviewee) return '';

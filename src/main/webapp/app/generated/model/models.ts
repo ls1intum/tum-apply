@@ -34,6 +34,8 @@ export * from './department';
 export * from './departmentCreationDTO';
 export * from './departmentDTO';
 export * from './departmentShortDTO';
+export * from './document';
+export * from './documentDictionary';
 export * from './documentInformationHolderDTO';
 export * from './emailSetting';
 export * from './emailSettingDTO';

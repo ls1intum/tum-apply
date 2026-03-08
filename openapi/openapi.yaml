@@ -1236,6 +1236,14 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32}
+      - name: afterDateTime
+        in: query
+        required: false
+        schema: {type: string, format: date-time}
+      - name: beforeDateTime
+        in: query
+        required: false
+        schema: {type: string, format: date-time}
       - name: page
         in: query
         required: false
@@ -2184,6 +2192,10 @@ components:
         bachelorUniversity: {type: string}
         city: {type: string}
         country: {type: string}
+        documentDictionaries:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterGradeLowerLimit: {type: string}
@@ -2267,6 +2279,10 @@ components:
           items: {$ref: '#/components/schemas/CustomFieldAnswer'}
           uniqueItems: true
         desiredStartDate: {type: string, format: date}
+        documentDictionaries:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
         internalComments:
           type: array
           items: {$ref: '#/components/schemas/InternalComment'}
@@ -2549,7 +2565,30 @@ components:
       properties:
         departmentId: {type: string, format: uuid}
         name: {type: string}
+    Document:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        documentId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        mimeType: {type: string}
+        path: {type: string}
+        sha256Id: {type: string}
+        sizeBytes: {type: integer, format: int64}
+        uploadedBy: {$ref: '#/components/schemas/User'}
     DocumentDTO: {}
+    DocumentDictionary:
+      type: object
+      properties:
+        applicant: {$ref: '#/components/schemas/Applicant'}
+        application: {}
+        customFieldAnswer: {$ref: '#/components/schemas/CustomFieldAnswer'}
+        document: {$ref: '#/components/schemas/Document'}
+        documentDictionaryId: {type: string, format: uuid}
+        documentType:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+        name: {type: string}
     DocumentInformationHolderDTO:
       type: object
       properties:
@@ -2692,15 +2731,18 @@ components:
       type: object
       properties:
         completedCount: {type: integer, format: int64}
+        imageUrl: {type: string}
         invitedCount: {type: integer, format: int64}
+        isClosed: {type: boolean}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
+        totalSlots: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
-        totalInterviews, uncontactedCount]
+        totalInterviews, totalSlots, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
