@@ -1,6 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
+import { TooltipModule } from 'primeng/tooltip';
 
 /**
  * Generic tab definition for filter tabs.
@@ -13,6 +14,8 @@ export interface FilterTab<T extends string = string> {
   labelKey: string;
   /** Optional badge count (undefined = no badge shown) */
   count?: number;
+  /** Optional translation key for tooltip */
+  tooltipKey?: string;
 }
 
 /**
@@ -22,7 +25,7 @@ export interface FilterTab<T extends string = string> {
 @Component({
   selector: 'jhi-filter-tabs',
   standalone: true,
-  imports: [TranslateModule, TranslateDirective],
+  imports: [TranslateModule, TranslateDirective, TooltipModule],
   templateUrl: './filter-tabs.component.html',
 })
 export class FilterTabsComponent<T extends string = string> {
