@@ -481,7 +481,6 @@ Before committing code, verify:
 - [ ] Using `inject()` for dependency injection
 - [ ] Calling signals as functions: `signal()` not `signal`
 - [ ] HTTP calls use `async/await` with `firstValueFrom()`
-- [ ] Using generated API types from `app/generated/`
 
 ---
 
