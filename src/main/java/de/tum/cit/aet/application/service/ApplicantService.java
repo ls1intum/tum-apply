@@ -47,6 +47,7 @@ public class ApplicantService {
      *
      * @return the ApplicantDTO with current user and applicant data
      */
+    @Transactional
     public ApplicantDTO getApplicantProfile() {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
@@ -161,6 +162,7 @@ public class ApplicantService {
      *
      * @return an {@link ApplicationDocumentIdsDTO} containing the applicant profile documents
      */
+    @Transactional
     public ApplicationDocumentIdsDTO getApplicantProfileDocumentIds() {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {

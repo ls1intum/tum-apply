@@ -11,9 +11,11 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.dto.UserDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
@@ -33,6 +35,9 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
     @Autowired
     ApplicantRepository applicantRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     DocumentRepository documentRepository;
@@ -78,6 +83,21 @@ class ApplicantResourceTest extends AbstractResourceTest {
         void getApplicantProfileWithoutAuthReturnsForbidden() {
             Void response = api.getAndRead("/api/applicants/profile", null, Void.class, 403);
             assertThat(response).isNull();
+        }
+
+        @Test
+        void getApplicantProfileCreatesApplicantForExistingUserWithoutApplicationHistory() {
+            User userWithoutApplicant = ApplicantTestData.saveApplicant("new-applicant@test.local", userRepository);
+
+            ApplicantDTO profile = api
+                .with(JwtPostProcessors.jwtUser(userWithoutApplicant.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead("/api/applicants/profile", null, ApplicantDTO.class, 200);
+
+            assertThat(profile).isNotNull();
+            assertThat(profile.user()).isNotNull();
+            assertThat(profile.user().userId()).isEqualTo(userWithoutApplicant.getUserId());
+            assertThat(profile.user().email()).isEqualTo(userWithoutApplicant.getEmail());
+            assertThat(applicantRepository.findById(userWithoutApplicant.getUserId())).isPresent();
         }
 
         @Test
