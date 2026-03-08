@@ -64,6 +64,28 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     List<InterviewSlot> findByInterviewProcessIdInWithJob(@Param("processIds") List<UUID> processIds);
 
     /**
+     * Counts all unbooked future interview slots associated with a list of
+     * interview processes.
+     * Returns a list of object arrays where [0] is the processId and [1] is the
+     * count.
+     *
+     * @param processIds the list of interview process IDs
+     * @param now        the current time
+     * @return a list of object arrays with process ID and count
+     */
+    @Query(
+        """
+        SELECT s.interviewProcess.id, COUNT(s)
+        FROM InterviewSlot s
+        WHERE s.interviewProcess.id IN :processIds
+        AND s.isBooked = false
+        AND s.startDateTime > :now
+        GROUP BY s.interviewProcess.id
+        """
+    )
+    List<Object[]> countUnbookedFutureSlotsPerProcess(@Param("processIds") List<UUID> processIds, @Param("now") Instant now);
+
+    /**
      * Counts all interview slots associated with a specific interview process.
      * Finds all interview slots of a given professor that overlap with a specified
      * time range.
@@ -74,6 +96,18 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @return the number of slots linked to the given process
      */
     long countByInterviewProcessId(UUID processId);
+
+    /**
+     * Counts unbooked future interview slots for a specific process.
+     *
+     * @param processId the ID of the interview process
+     * @param now       the current time
+     * @return the number of available slots
+     */
+    @Query(
+        "SELECT COUNT(s) FROM InterviewSlot s WHERE s.interviewProcess.id = :processId AND s.isBooked = false AND s.startDateTime > :now"
+    )
+    long countUnbookedFutureSlotsByInterviewProcessId(@Param("processId") UUID processId, @Param("now") Instant now);
 
     /**
      * Checks if a professor has any conflicting slots within the given time range.
