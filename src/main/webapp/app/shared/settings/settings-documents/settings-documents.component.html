@@ -1,0 +1,84 @@
+<form [formGroup]="form">
+  <div class="flex justify-between items-center mb-6">
+    <div [innerHTML]="('settings.documents.description' | translate).replace(/\n/g, '<br>')"></div>
+    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!hasChanges() || saving()" (click)="saveAll()" />
+  </div>
+  <jhi-degree-document-section
+    degreeType="bachelor"
+    sectionTitleKey="settings.documents.sections.bachelor"
+    [applicationId]="applicationIdForDocuments()"
+    [(documentIds)]="bachelorDocuments"
+    [deferUpload]="true"
+    [degreeNameControl]="form.controls.bachelorDegreeName"
+    [degreeUniversityControl]="form.controls.bachelorDegreeUniversity"
+    [gradeControl]="form.controls.bachelorGrade"
+    [gradeHelperText]="helperTextBachelorGrade()"
+    [gradeWarningText]="warningTextBachelorGrade()"
+    (queuedFilesChange)="onBachelorQueuedFilesChange($event)"
+    (changeScale)="onChangeGradingScale('bachelor')"
+  />
+
+  <jhi-degree-document-section
+    degreeType="master"
+    sectionTitleKey="settings.documents.sections.master"
+    [applicationId]="applicationIdForDocuments()"
+    [(documentIds)]="masterDocuments"
+    [deferUpload]="true"
+    [degreeNameControl]="form.controls.masterDegreeName"
+    [degreeUniversityControl]="form.controls.masterDegreeUniversity"
+    [gradeControl]="form.controls.masterGrade"
+    [gradeHelperText]="helperTextMasterGrade()"
+    [gradeWarningText]="warningTextMasterGrade()"
+    (queuedFilesChange)="onMasterQueuedFilesChange($event)"
+    (changeScale)="onChangeGradingScale('master')"
+  />
+
+  <p-divider layout="horizontal"
+    ><span>{{ 'settings.documents.sections.additionalDocuments' | translate }}</span></p-divider
+  >
+
+  @if (applicationIdForDocuments(); as applicationId) {
+    <div class="flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex-1 mb-6">
+        <div>
+          <span>{{ 'entity.applicationPage3.label.curriculumVitae' | translate }}</span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </div>
+        <jhi-upload-button
+          uploadKey="entity.upload.upload_instruction.CV"
+          documentType="CV"
+          [applicationId]="applicationId"
+          [(documentIds)]="cvDocuments"
+          [allowMultiple]="false"
+          [deferUpload]="true"
+          (queuedFilesChange)="onCvQueuedFilesChange($event)"
+        />
+      </div>
+
+      <div class="flex-1">
+        <div>
+          <span>{{ 'entity.applicationPage3.label.additionalReferences' | translate }}</span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </div>
+        <jhi-upload-button
+          uploadKey="entity.upload.upload_instruction.REFERENCE"
+          documentType="REFERENCE"
+          [applicationId]="applicationId"
+          [(documentIds)]="referenceDocuments"
+          [deferUpload]="true"
+          (queuedFilesChange)="onReferenceQueuedFilesChange($event)"
+        />
+      </div>
+    </div>
+  }
+</form>
