@@ -551,6 +551,50 @@ dialogClasses = computed(() => {
 
 ---
 
+## ⚠️ **Avoid Redundant Styling**
+
+Before adding Tailwind utilities, **check if the styling is already applied** by base styles or component defaults.
+
+### **Common Redundant Patterns**
+
+```html
+<!-- ❌ WRONG - Redundant classes -->
+<p class="text-base text-text-primary">Description text</p>
+<!-- p elements are ALREADY text-base and text-text-primary by default -->
+
+<!-- ✅ CORRECT - Only override when needed -->
+<p class="text-lg">Larger description text</p>
+<!-- Only add classes when you need to CHANGE the default -->
+
+<h1 class="text-text-secondary">Subtitle-style heading</h1>
+<!-- Only override when design requires different styling -->
+```
+
+### **How to Check for Redundancy**
+
+1. **Open browser DevTools** (F12) and inspect the element
+2. **Check "Computed" tab** to see what styles are already applied
+3. **Only add classes that actually change something** from the existing state
+4. **Remove the class** and see if the design changes - if not, it's redundant
+
+### **When to Add Styling**
+
+✅ **ADD styling when:**
+
+- The design explicitly requires different styling than defaults
+- You need to override base styles for a specific reason
+- Layout or spacing needs adjustment
+
+❌ **DON'T ADD styling when:**
+
+- The element already looks correct without it
+- You're duplicating base styles
+- You're "just in case" adding classes
+
+**Keep it minimal.** Redundant classes clutter templates, hurt performance, and make maintenance harder.
+
+---
+
 ## 📚 **Related Documentation**
 
 - [Color Theming & Styling](../theming/color-theming.md) — Complete theming guide
