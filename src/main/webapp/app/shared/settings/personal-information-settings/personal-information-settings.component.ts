@@ -85,11 +85,11 @@ export class PersonalInformationSettingsComponent {
   });
 
   isValid = signal<boolean>(false);
-  loadedProfile = signal<ApplicantDTO | null>(null);
-  initialDataSnapshot = signal<PersonalInformationSnapshot | null>(null);
+  loadedProfile = signal<ApplicantDTO | undefined>(undefined);
+  initialDataSnapshot = signal<PersonalInformationSnapshot | undefined>(undefined);
   hasChanges = computed(() => {
     const initial = this.initialDataSnapshot();
-    if (initial == null) {
+    if (initial === undefined) {
       return false;
     }
     return !deepEqual(this.toSnapshot(this.data()), initial);
@@ -165,17 +165,22 @@ export class PersonalInformationSettingsComponent {
     const data = this.data();
     const valueSubscription = form.valueChanges.subscribe((value: Record<string, unknown>) => {
       const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-      const selectFields = {
+      const nextData: PersonalInformationData = {
+        firstName: normalizedValue.firstName as string,
+        lastName: normalizedValue.lastName as string,
+        email: normalizedValue.email as string,
+        phoneNumber: normalizedValue.phoneNumber as string,
         gender: data.gender,
         nationality: data.nationality,
-        country: data.country,
         dateOfBirth: data.dateOfBirth,
+        website: normalizedValue.website as string,
+        linkedIn: normalizedValue.linkedIn as string,
+        street: normalizedValue.street as string,
+        city: normalizedValue.city as string,
+        country: data.country,
+        postcode: normalizedValue.postcode as string,
       };
-      this.data.set({
-        ...this.data(),
-        ...selectFields,
-        ...normalizedValue,
-      });
+      this.data.set(nextData);
       this.isValid.set(form.valid);
     });
 
@@ -228,17 +233,15 @@ export class PersonalInformationSettingsComponent {
   }
 
   setDateOfBirth($event: string | undefined): void {
-    this.data.set({
-      ...this.data(),
-      dateOfBirth: $event ?? '',
-    });
+    const updatedData = structuredClone(this.data());
+    updatedData.dateOfBirth = $event ?? '';
+    this.data.set(updatedData);
   }
 
   updateSelect(field: keyof PersonalInformationData, value: SelectOption | undefined): void {
-    this.data.set({
-      ...this.data(),
-      [field]: value,
-    });
+    const updatedData = structuredClone(this.data());
+    updatedData[field] = value as never;
+    this.data.set(updatedData);
   }
 
   async onSave(): Promise<void> {

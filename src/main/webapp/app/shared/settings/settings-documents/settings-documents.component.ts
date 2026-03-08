@@ -293,6 +293,7 @@ export class SettingsDocumentsComponent {
     this.queuedReferenceFiles.set(files);
   }
 
+  // Loads the persisted profile + document state and resets the change-tracking baseline to that backend snapshot.
   private async loadProfile(): Promise<void> {
     try {
       this.hasInitialLimitsSet.set(false);
@@ -390,10 +391,12 @@ export class SettingsDocumentsComponent {
     };
   }
 
+  // Sorts by stable backend id so document comparisons stay insensitive to UI ordering.
   private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
     return Array.from(docs ?? []).sort((a, b) => a.id.localeCompare(b.id));
   }
 
+  // Persists the current form/document state as the new clean baseline after a successful load or save.
   private storeInitialStateSnapshot(): void {
     this.initialFormValue.set(this.normalizedFormValue());
     this.initialBachelorDocuments.set(this.normalizedDocuments(this.bachelorDocuments()));
@@ -433,6 +436,7 @@ export class SettingsDocumentsComponent {
     initialDocs: DocumentInformationHolderDTO[] | undefined,
     currentDocs: DocumentInformationHolderDTO[] | undefined,
   ): Promise<void> {
+    // Only persisted documents participate in the diff; temporary placeholders are uploaded separately afterwards.
     const initial = this.normalizedDocuments(initialDocs);
     const currentPersistedDocs = this.normalizedDocuments(currentDocs).filter(doc => !this.isTemporaryDocument(doc));
     const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
