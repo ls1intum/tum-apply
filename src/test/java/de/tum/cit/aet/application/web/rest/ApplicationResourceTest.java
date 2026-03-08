@@ -7,7 +7,6 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
@@ -24,7 +23,6 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
-import de.tum.cit.aet.usermanagement.dto.UserDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -40,6 +38,7 @@ import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,210 +119,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
         );
     }
 
-    // ===== APPLICANT PROFILE =====
-    @Nested
-    class ApplicantProfileTests {
-
-        @Test
-        void getApplicantProfileReturnsProfileWithPersonalInformation() {
-            ApplicantDTO profile = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applicants/profile", null, ApplicantDTO.class, 200);
-
-            assertThat(profile).isNotNull();
-            assertThat(profile.user()).isNotNull();
-            assertThat(profile.user().userId()).isEqualTo(applicant.getUserId());
-            assertThat(profile.user().email()).isEqualTo(applicant.getUser().getEmail());
-            assertThat(profile.user().firstName()).isEqualTo(applicant.getUser().getFirstName());
-            assertThat(profile.user().lastName()).isEqualTo(applicant.getUser().getLastName());
-            assertThat(profile.street()).isEqualTo(applicant.getStreet());
-            assertThat(profile.city()).isEqualTo(applicant.getCity());
-            assertThat(profile.country()).isEqualTo(applicant.getCountry());
-        }
-
-        @Test
-        void getApplicantProfileWithoutAuthReturnsForbidden() {
-            api.getAndRead("/api/applicants/profile", null, ApplicantDTO.class, 403);
-        }
-
-        @Test
-        void updateApplicantProfileUpdatesPersonalInformation() {
-            UserDTO updatedUserDTO = new UserDTO(
-                applicant.getUserId(),
-                "updated.email@example.com",
-                applicant.getUser().getAvatar(),
-                "UpdatedFirstName",
-                "UpdatedLastName",
-                "Other",
-                "German",
-                LocalDate.of(1995, 5, 15),
-                "+49123456789",
-                "https://updated-website.com",
-                "https://linkedin.com/in/updated",
-                "en",
-                null
-            );
-
-            ApplicantDTO updatePayload = new ApplicantDTO(
-                updatedUserDTO,
-                "Updated Street 123",
-                "80333",
-                "Munich",
-                "Germany",
-                "Computer Science",
-                "2.0",
-                "5.0",
-                "1.5",
-                "Technical University of Munich",
-                "Informatics",
-                "1.0",
-                "5.0",
-                "1.3",
-                "TUM"
-            );
-
-            ApplicantDTO updatedProfile = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applicants/profile", updatePayload, ApplicantDTO.class, 200);
-
-            assertThat(updatedProfile).isNotNull();
-            assertThat(updatedProfile.user().email()).isEqualTo("updated.email@example.com");
-            assertThat(updatedProfile.user().firstName()).isEqualTo("UpdatedFirstName");
-            assertThat(updatedProfile.user().lastName()).isEqualTo("UpdatedLastName");
-            assertThat(updatedProfile.user().gender()).isEqualTo("Other");
-            assertThat(updatedProfile.user().nationality()).isEqualTo("German");
-            assertThat(updatedProfile.street()).isEqualTo("Updated Street 123");
-            assertThat(updatedProfile.postalCode()).isEqualTo("80333");
-            assertThat(updatedProfile.city()).isEqualTo("Munich");
-            assertThat(updatedProfile.country()).isEqualTo("Germany");
-            assertThat(updatedProfile.bachelorDegreeName()).isEqualTo("Computer Science");
-            assertThat(updatedProfile.bachelorGrade()).isEqualTo("1.5");
-            assertThat(updatedProfile.masterDegreeName()).isEqualTo("Informatics");
-            assertThat(updatedProfile.masterGrade()).isEqualTo("1.3");
-
-            // Verify persistence
-            Applicant persistedApplicant = applicantRepository.findById(applicant.getUserId()).orElseThrow();
-            assertThat(persistedApplicant.getUser().getEmail()).isEqualTo("updated.email@example.com");
-            assertThat(persistedApplicant.getUser().getFirstName()).isEqualTo("UpdatedFirstName");
-            assertThat(persistedApplicant.getUser().getLastName()).isEqualTo("UpdatedLastName");
-            assertThat(persistedApplicant.getStreet()).isEqualTo("Updated Street 123");
-            assertThat(persistedApplicant.getCity()).isEqualTo("Munich");
-            assertThat(persistedApplicant.getBachelorDegreeName()).isEqualTo("Computer Science");
-            assertThat(persistedApplicant.getMasterGrade()).isEqualTo("1.3");
-        }
-
-        @Test
-        void updateApplicantProfileWithNullUserReturnsBadRequest() {
-            ApplicantDTO invalidPayload = new ApplicantDTO(
-                null,
-                "Street 123",
-                "80333",
-                "Munich",
-                "Germany",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
-
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applicants/profile", invalidPayload, ApplicantDTO.class, 400);
-        }
-
-        @Test
-        void updateApplicantProfileWithoutAuthReturnsForbidden() {
-            UserDTO userDTO = new UserDTO(
-                applicant.getUserId(),
-                applicant.getUser().getEmail(),
-                applicant.getUser().getAvatar(),
-                "FirstName",
-                "LastName",
-                "Male",
-                "German",
-                LocalDate.of(1990, 1, 1),
-                null,
-                null,
-                null,
-                "en",
-                null
-            );
-
-            ApplicantDTO updatePayload = new ApplicantDTO(
-                userDTO,
-                "Street",
-                "12345",
-                "City",
-                "Country",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
-
-            api.putAndRead("/api/applicants/profile", updatePayload, ApplicantDTO.class, 403);
-        }
-
-        @Test
-        void updateApplicantProfileWithPartialDataUpdatesOnlyProvidedFields() {
-            // Create a DTO with only some fields updated
-            UserDTO partialUserDTO = new UserDTO(
-                applicant.getUserId(),
-                applicant.getUser().getEmail(),
-                applicant.getUser().getAvatar(),
-                "NewFirstName",
-                applicant.getUser().getLastName(),
-                applicant.getUser().getGender(),
-                applicant.getUser().getNationality(),
-                applicant.getUser().getBirthday(),
-                applicant.getUser().getPhoneNumber(),
-                applicant.getUser().getWebsite(),
-                applicant.getUser().getLinkedinUrl(),
-                "en",
-                null
-            );
-
-            ApplicantDTO partialUpdate = new ApplicantDTO(
-                partialUserDTO,
-                "New Street",
-                applicant.getPostalCode(),
-                applicant.getCity(),
-                applicant.getCountry(),
-                applicant.getBachelorDegreeName(),
-                applicant.getBachelorGradeUpperLimit(),
-                applicant.getBachelorGradeLowerLimit(),
-                applicant.getBachelorGrade(),
-                applicant.getBachelorUniversity(),
-                applicant.getMasterDegreeName(),
-                applicant.getMasterGradeUpperLimit(),
-                applicant.getMasterGradeLowerLimit(),
-                applicant.getMasterGrade(),
-                applicant.getMasterUniversity()
-            );
-
-            ApplicantDTO updated = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applicants/profile", partialUpdate, ApplicantDTO.class, 200);
-
-            assertThat(updated.user().firstName()).isEqualTo("NewFirstName");
-            assertThat(updated.user().lastName()).isEqualTo(applicant.getUser().getLastName());
-            assertThat(updated.street()).isEqualTo("New Street");
-            assertThat(updated.city()).isEqualTo(applicant.getCity());
-        }
-    }
-
     // ===== GET APPLICATION BY ID =====
     @Nested
     class GetApplicationByIdTests {
@@ -356,15 +151,18 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void getApplicationByIdReturnsNotFoundWhenApplicationDoesNotExist() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applications/" + UUID.randomUUID(), null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
         void getApplicationByIdWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            api.getAndRead("/api/applications/" + application.getApplicationId(), null, ApplicationForApplicantDTO.class, 403);
+            Void response = api.getAndRead("/api/applications/" + application.getApplicationId(), null, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -393,14 +191,17 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void createApplicationWithoutAuthReturnsForbidden() {
-            api.postAndRead("/api/applications/create/" + publishedJob.getJobId(), null, ApplicationForApplicantDTO.class, 403);
+            Void response = api.postAndRead("/api/applications/create/" + publishedJob.getJobId(), null, Void.class, 403);
+            assertThat(response).isNull();
         }
 
         @Test
         void createApplicationForNonexistentJobReturnsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead("/api/applications/create/" + UUID.randomUUID(), null, ApplicationForApplicantDTO.class, 404);
+                .postAndRead("/api/applications/create/" + UUID.randomUUID(), null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
@@ -599,7 +400,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "Updated motivation"
             );
 
-            api.putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 403);
+            Void response = api.putAndRead("/api/applications", updatePayload, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -632,15 +434,18 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteApplicationNonexistentThrowsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .deleteAndRead("/api/applications/" + UUID.randomUUID(), null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
         void deleteApplicationWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            api.deleteAndRead("/api/applications/" + application.getApplicationId(), null, Void.class, 403);
+            Void response = api.deleteAndRead("/api/applications/" + application.getApplicationId(), null, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -663,15 +468,18 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void withdrawApplicationNonexistentThrowsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead("/api/applications/withdraw/" + UUID.randomUUID(), null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
         void withdrawApplicationWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            api.putAndRead("/api/applications/withdraw/" + application.getApplicationId(), null, Void.class, 403);
+            Void response = api.putAndRead("/api/applications/withdraw/" + application.getApplicationId(), null, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -738,14 +546,17 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void getApplicationPagesInvalidPaginationReturnsError() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applications/pages?pageSize=10&pageNumber=-1", null, new TypeReference<>() {}, 400);
+                .getAndRead("/api/applications/pages?pageSize=10&pageNumber=-1", null, Void.class, 400);
+
+            assertThat(response).isNull();
         }
 
         @Test
         void getApplicationPagesWithoutAuthReturnsForbidden() {
-            api.getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 403);
+            Void response = api.getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -755,15 +566,18 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void getApplicationDetailNonexistentThrowsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applications/" + UUID.randomUUID() + "/detail", null, ApplicationDetailDTO.class, 404);
+                .getAndRead("/api/applications/" + UUID.randomUUID() + "/detail", null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
         void getApplicationDetailWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            api.getAndRead("/api/applications/" + application.getApplicationId() + "/detail", null, ApplicationDetailDTO.class, 403);
+            Void response = api.getAndRead("/api/applications/" + application.getApplicationId() + "/detail", null, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -775,123 +589,27 @@ class ApplicationResourceTest extends AbstractResourceTest {
         void getDocumentIdsReturnsEmptySetForNewApplication() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
-            api
+            Map<?, ?> response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applications/getDocumentIds/" + application.getApplicationId(), null, Object.class, 200);
+                .getAndRead("/api/applications/getDocumentIds/" + application.getApplicationId(), null, Map.class, 200);
+
+            assertThat(response).isEmpty();
         }
 
         @Test
         void getDocumentIdsNonexistentThrowsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applications/getDocumentIds/" + UUID.randomUUID(), null, Object.class, 404);
+                .getAndRead("/api/applications/getDocumentIds/" + UUID.randomUUID(), null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
         void getDocumentIdsWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            api.getAndRead("/api/applications/getDocumentIds/" + application.getApplicationId(), null, Object.class, 403);
-        }
-    }
-
-    // ===== GET PROFILE DOCUMENT IDS =====
-    @Nested
-    class ProfileDocumentIdsTests {
-
-        @Test
-        void getApplicantProfileDocumentIdsReturnsGroupedDocuments() {
-            DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.BACHELOR_TRANSCRIPT,
-                "bachelor_profile.pdf"
-            );
-            DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "cv_profile.pdf"
-            );
-            DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.REFERENCE,
-                "reference_profile.pdf"
-            );
-
-            ApplicationDocumentIdsDTO dto = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applicants/profile/document-ids", null, ApplicationDocumentIdsDTO.class, 200);
-
-            assertThat(dto).isNotNull();
-            assertThat(dto.getBachelorDocumentDictionaryIds()).hasSize(1);
-            assertThat(dto.getBachelorDocumentDictionaryIds().iterator().next().getName()).isEqualTo("bachelor_profile.pdf");
-            assertThat(dto.getCvDocumentDictionaryId()).isNotNull();
-            assertThat(dto.getCvDocumentDictionaryId().getName()).isEqualTo("cv_profile.pdf");
-            assertThat(dto.getReferenceDocumentDictionaryIds()).hasSize(1);
-            assertThat(dto.getReferenceDocumentDictionaryIds().iterator().next().getName()).isEqualTo("reference_profile.pdf");
-        }
-
-        @Test
-        void getApplicantProfileDocumentIdsWithoutAuthReturnsForbidden() {
-            api.getAndRead("/api/applicants/profile/document-ids", null, ApplicationDocumentIdsDTO.class, 403);
-        }
-    }
-
-    // ===== DELETE DOCUMENT FROM PROFILE =====
-    @Nested
-    class DeleteDocumentFromProfileTests {
-
-        @Test
-        void deleteDocumentFromProfileRemovesIt() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "profile_cv.pdf"
-            );
-
-            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
-
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
-
-            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
-        }
-
-        @Test
-        void deleteDocumentFromProfileWithoutAuthReturnsForbidden() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "profile_cv.pdf"
-            );
-
-            api.deleteAndRead("/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
-        }
-
-        @Test
-        void deleteDocumentFromProfileNonexistentThrowsNotFound() {
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applicants/profile/documents/" + UUID.randomUUID(), null, Void.class, 404);
+            Void response = api.getAndRead("/api/applications/getDocumentIds/" + application.getApplicationId(), null, Void.class, 403);
+            assertThat(response).isNull();
         }
     }
 
@@ -923,9 +641,11 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromApplicationNonexistentThrowsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .deleteAndRead("/api/applications/documents/" + UUID.randomUUID(), null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
@@ -941,7 +661,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "test_cv.pdf"
             );
 
-            api.deleteAndRead("/api/applications/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
+            Void response = api.deleteAndRead("/api/applications/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
+            assertThat(response).isNull();
         }
 
         @Test
@@ -957,9 +678,11 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "test_cv.pdf"
             );
 
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .deleteAndRead("/api/applications/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 400);
+
+            assertThat(response).isNull();
         }
     }
 
@@ -997,9 +720,11 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void renameDocumentNonexistentThrowsNotFound() {
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead("/api/applications/documents/" + UUID.randomUUID() + "/name?newName=new_name.pdf", null, Void.class, 404);
+
+            assertThat(response).isNull();
         }
 
         @Test
@@ -1015,12 +740,14 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "test_cv.pdf"
             );
 
-            api.putAndRead(
+            Void response = api.putAndRead(
                 "/api/applications/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=renamed.pdf",
                 null,
                 Void.class,
                 403
             );
+
+            assertThat(response).isNull();
         }
 
         @Test
@@ -1036,7 +763,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "test_cv.pdf"
             );
 
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
                     "/api/applications/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=renamed.pdf",
@@ -1044,63 +771,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                     Void.class,
                     400
                 );
-        }
 
-        @Test
-        void renameApplicantProfileDocumentUpdatesName() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "profile_original_name.pdf"
-            );
-
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead(
-                    "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
-                    null,
-                    Void.class,
-                    200
-                );
-
-            DocumentDictionary updated = documentDictionaryRepository.findById(docDict.getDocumentDictionaryId()).orElseThrow();
-            assertThat(updated.getName()).isEqualTo("profile_new_name.pdf");
-        }
-
-        @Test
-        void renameApplicantProfileDocumentNonexistentThrowsNotFound() {
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead(
-                    "/api/applicants/profile/documents/" + UUID.randomUUID() + "/name?newName=profile_new_name.pdf",
-                    null,
-                    Void.class,
-                    404
-                );
-        }
-
-        @Test
-        void renameApplicantProfileDocumentWithoutAuthReturnsForbidden() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "profile_original_name.pdf"
-            );
-
-            api.putAndRead(
-                "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
-                null,
-                Void.class,
-                403
-            );
+            assertThat(response).isNull();
         }
     }
 
@@ -1131,31 +803,19 @@ class ApplicationResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void uploadApplicantProfileDocumentsPreservesOriginalFilename() {
-            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "cv_profile.pdf", "PDF profile content");
-
-            Set<DocumentInformationHolderDTO> uploadedDocs = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .multipartPostAndRead("/api/applicants/profile/documents/" + DocumentType.CV, List.of(file), new TypeReference<>() {}, 200);
-
-            assertThat(uploadedDocs).hasSize(1);
-            DocumentInformationHolderDTO uploadedDoc = uploadedDocs.iterator().next();
-            assertThat(uploadedDoc.getName()).isEqualTo("cv_profile.pdf");
-            assertThat(uploadedDoc.getSize()).isEqualTo("PDF profile content".getBytes().length);
-        }
-
-        @Test
         void uploadDocumentsForNonexistentApplicationThrowsNotFound() {
             MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .multipartPostAndRead(
                     "/api/applications/" + UUID.randomUUID() + "/documents/" + DocumentType.BACHELOR_TRANSCRIPT,
                     List.of(file),
-                    new TypeReference<>() {},
+                    new TypeReference<Void>() {},
                     404
                 );
+
+            assertThat(response).isNull();
         }
 
         @Test
@@ -1163,12 +823,14 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
             MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
-            api.multipartPostAndRead(
+            Void response = api.multipartPostAndRead(
                 "/api/applications/" + application.getApplicationId() + "/documents/" + DocumentType.MASTER_TRANSCRIPT,
                 List.of(file),
-                new TypeReference<>() {},
+                new TypeReference<Void>() {},
                 403
             );
+
+            assertThat(response).isNull();
         }
 
         @Test
@@ -1176,14 +838,16 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
             MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
-            api
+            Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .multipartPostAndRead(
                     "/api/applications/" + application.getApplicationId() + "/documents/" + DocumentType.MASTER_TRANSCRIPT,
                     List.of(file),
-                    new TypeReference<>() {},
+                    new TypeReference<Void>() {},
                     400
                 );
+
+            assertThat(response).isNull();
         }
     }
 }
