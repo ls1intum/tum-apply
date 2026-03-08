@@ -16,8 +16,6 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
     researchGroup: translate.instant('jobDetailPage.header.researchGroup'),
 
     jobDescription: translate.instant('jobDetailPage.sections.jobDescription'),
-
-    lang: translate.getCurrentLang(),
   };
 }
 
@@ -31,8 +29,6 @@ export function getJobPDFLabels(translate: TranslateService): Record<string, str
 
     jobPdfEnding: translate.instant('pdf.jobPdfEnding'),
     overview: translate.instant('jobDetailPage.cards.positionOverview'),
-
-    lang: translate.getCurrentLang(),
   };
 }
 
@@ -67,6 +63,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
     endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
+    lang: translate.getCurrentLang(),
   };
 }
 
