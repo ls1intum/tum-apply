@@ -229,10 +229,8 @@ export class ResearchGroupAddMembersComponent {
     } finally {
       // only touch loading/timeout if this is the latest request
       if (requestId === this.latestRequestId) {
-        if (this.loaderTimeout !== undefined) {
-          clearTimeout(this.loaderTimeout);
-          this.loaderTimeout = undefined;
-        }
+        clearTimeout(this.loaderTimeout);
+        this.loaderTimeout = undefined;
         this.loading.set(false);
       }
     }
