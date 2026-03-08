@@ -125,7 +125,16 @@ export class SlotsSectionComponent {
       const remainingCount = expanded ? 0 : Math.max(0, group.slots.length - this.MAX_VISIBLE_SLOTS);
       const showMoreLabel = expanded ? 'interview.detail.showLess' : this.getShowMoreText(remainingCount);
 
-      return { ...group, visibleSlots, expanded, remainingCount, showMoreLabel };
+      return {
+        date: group.date,
+        localDate: group.localDate,
+        slots: group.slots,
+        isHiddenPaddingDay: group.isHiddenPaddingDay,
+        visibleSlots,
+        expanded,
+        remainingCount,
+        showMoreLabel,
+      };
     });
   });
 

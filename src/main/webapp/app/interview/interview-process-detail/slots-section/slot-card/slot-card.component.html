@@ -1,17 +1,4 @@
-<div class="relative min-w-[13.75rem] border border-border-default rounded-lg p-2.5" [class.opacity-50]="isPast()">
-  <!-- Kebab Menu Button -->
-  @if (!isPast()) {
-    <div class="absolute top-1.5 right-0.5 z-10">
-      <jhi-button
-        icon="ellipsis-vertical"
-        variant="text"
-        size="sm"
-        styleClass="!w-6 !h-6 !min-w-0 !text-text-primary"
-        (click)="menu.toggle($event)"
-      />
-    </div>
-  }
-
+<div class="min-w-[13.75rem] border border-border-default rounded-lg p-2.5" [class.opacity-50]="isPast()">
   <!-- Menu -->
   <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
 
@@ -28,55 +15,68 @@
   />
 
   <!-- Card Content -->
-  <div class="flex flex-col gap-1.5 pr-5">
-    @if (isBooked()) {
-      <!-- Booked Slot: Time + Badge -->
-      <div class="flex items-center justify-between">
-        <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
-        <span
-          class="bg-positive-100 text-positive-default px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
-          jhiTranslate="interview.slots.status.booked"
-        >
-          booked
-        </span>
-      </div>
-
-      <!-- Applicant Name + Location -->
-      <div class="flex items-center justify-between gap-2">
-        <span class="text-xs text-text-primary font-medium">{{ applicantName() }}</span>
-        <div class="flex items-center gap-1 text-xs text-text-secondary">
-          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
-          <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
-            {{ isVirtual() ? 'virtual' : 'in-person' }}
+  <div class="flex gap-1.5">
+    <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+      @if (isBooked()) {
+        <!-- Booked Slot: Time + Badge -->
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
+          <span
+            class="bg-positive-100 text-positive-default px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
+            jhiTranslate="interview.slots.status.booked"
+          >
+            booked
           </span>
         </div>
-      </div>
-    }
 
-    @if (!isBooked()) {
-      <!-- Available Slot: Time + Location -->
-      <div class="flex items-center justify-between gap-2">
-        <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
-        <div class="flex items-center gap-1 text-xs text-text-secondary">
-          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
-          <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
-            {{ isVirtual() ? 'virtual' : 'in-person' }}
-          </span>
+        <!-- Applicant Name + Location -->
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs text-text-primary font-medium">{{ applicantName() }}</span>
+          <div class="flex items-center gap-1 text-xs text-text-secondary">
+            <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
+            <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
+              {{ isVirtual() ? 'virtual' : 'in-person' }}
+            </span>
+          </div>
         </div>
-      </div>
-
-      <!-- Assign Button -->
-      @if (!isPast()) {
-        <jhi-button
-          [fullWidth]="true"
-          variant="text"
-          icon="plus"
-          label="button.assign"
-          [shouldTranslate]="true"
-          styleClass="h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all"
-          (click)="onAssign()"
-        />
       }
+
+      @if (!isBooked()) {
+        <!-- Available Slot: Time + Location -->
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
+          <div class="flex items-center gap-1 text-xs text-text-secondary">
+            <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
+            <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
+              {{ isVirtual() ? 'virtual' : 'in-person' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Assign Button -->
+        @if (!isPast()) {
+          <jhi-button
+            [fullWidth]="true"
+            variant="text"
+            icon="plus"
+            label="button.assign"
+            [shouldTranslate]="true"
+            styleClass="h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all"
+            (click)="onAssign()"
+          />
+        }
+      }
+    </div>
+
+    <!-- Kebab Menu Button -->
+    @if (!isPast()) {
+      <jhi-button
+        icon="ellipsis-vertical"
+        variant="text"
+        size="sm"
+        styleClass="!w-6 !h-6 !min-w-0 !text-text-primary shrink-0"
+        (click)="menu.toggle($event)"
+      />
     }
   </div>
 </div>
