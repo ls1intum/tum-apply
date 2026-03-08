@@ -503,7 +503,7 @@ public class InterviewService {
             pageable
         );
 
-        // 5. Convert to DTOs (using rich mapping logic)
+        // 6. Convert to DTOs (using rich mapping logic)
         List<InterviewSlotDTO> slotDTOs = slotsPage
             .getContent()
             .stream()
