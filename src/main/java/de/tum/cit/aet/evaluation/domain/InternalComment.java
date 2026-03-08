@@ -2,6 +2,8 @@ package de.tum.cit.aet.evaluation.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -9,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Getter
 @Setter
 @Table(name = "internal_comments")

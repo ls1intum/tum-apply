@@ -32,6 +32,9 @@ export class TabViewComponent {
   activeTabId = input<string>();
   lazyLoad = input<boolean>(true);
   selectOnFocus = input<boolean>(true);
+  tabsClass = input<string>('');
+  tabListClass = input<string>('');
+  tabPanelsClass = input<string>('');
 
   // Outputs
   tabChange = output<string>();
@@ -41,13 +44,18 @@ export class TabViewComponent {
   // Computed current active tab id for PrimeNG binding
   readonly currentTabValue = computed(() => {
     const externalTab = this.activeTabId();
-    if (externalTab) {
+    if (externalTab !== undefined && externalTab !== '') {
       return externalTab;
     }
 
     // Default to first tab if available
     const tabs = this.tabs();
     return tabs.length > 0 ? tabs[0].id : undefined;
+  });
+
+  readonly resolvedTabsClass = computed(() => {
+    const extraClasses = this.tabsClass().trim();
+    return extraClasses === '' ? 'w-full' : `w-full ${extraClasses}`;
   });
 
   onTabChange(tabId: string | number | undefined): void {
