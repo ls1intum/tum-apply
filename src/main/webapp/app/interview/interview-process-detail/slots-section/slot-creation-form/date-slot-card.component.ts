@@ -464,16 +464,45 @@ export class DateSlotCardComponent {
    */
   selectBreak(index: number, value: number): void {
     if (value === -1) {
-      this.slotRanges.update(ranges => ranges.map((r, i) => (i === index ? { ...r, isCustomBreakMode: true } : r)));
+      this.slotRanges.update(ranges =>
+        ranges.map((range, rangeIndex) => {
+          if (rangeIndex !== index) return range;
+          return {
+            id: range.id,
+            startTimeString: range.startTimeString,
+            endTimeString: range.endTimeString,
+            startTime: range.startTime,
+            endTime: range.endTime,
+            type: range.type,
+            duration: range.duration,
+            breakDuration: range.breakDuration,
+            isCustomBreakMode: true,
+            location: range.location,
+            slots: range.slots,
+          };
+        }),
+      );
     } else {
       this.slotRanges.update(ranges =>
-        ranges.map((r, i) => {
-          if (i !== index) return r;
-          const range: SlotRange = { ...r, breakDuration: value, isCustomBreakMode: false };
-          if (range.type === 'range') {
-            this.updateRangeLogic(range, range.location);
+        ranges.map((range, rangeIndex) => {
+          if (rangeIndex !== index) return range;
+          const updatedRange: SlotRange = {
+            id: range.id,
+            startTimeString: range.startTimeString,
+            endTimeString: range.endTimeString,
+            startTime: range.startTime,
+            endTime: range.endTime,
+            type: range.type,
+            duration: range.duration,
+            breakDuration: value,
+            isCustomBreakMode: false,
+            location: range.location,
+            slots: range.slots,
+          };
+          if (updatedRange.type === 'range') {
+            this.updateRangeLogic(updatedRange, updatedRange.location);
           }
-          return range;
+          return updatedRange;
         }),
       );
     }
