@@ -51,7 +51,7 @@ export class InterviewProcessDetailComponent {
   }
 
   onSlotAssigned(): void {
-    this.intervieweeRefreshKey.update(k => k + 1);
+    this.intervieweeRefreshKey.update(currentKey => currentKey + 1);
   }
 
   private updateTabTitle(jobTitle: string): void {
