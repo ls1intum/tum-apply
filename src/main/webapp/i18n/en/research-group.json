@@ -111,7 +111,7 @@
     "members": {
       "noUsers": "No available users found.",
       "emptySearch": "Please enter at least {{minLength}} characters to search.",
-      "me": "Me",
+      "you": "You",
       "notice": "Members will be notified via email when they are added to the research group.",
       "manageMembers": "Manage Members",
       "addMembers": "Add Members",
