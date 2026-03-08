@@ -29,7 +29,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable  pagination information
      * @return a page of {@link InterviewSlot} entities
      */
-    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
+    @EntityGraph(value = "InterviewSlot.withIntervieweeDetails")
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
 
@@ -151,7 +151,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable       pagination information
      * @return a page of matching slots order by start time
      */
-    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
+    @EntityGraph(value = "InterviewSlot.withIntervieweeDetails")
     @Query(
         """
         SELECT s FROM InterviewSlot s
@@ -241,7 +241,16 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
+    @EntityGraph(
+        attributePaths = {
+            "interviewee",
+            "interviewee.application",
+            "interviewee.application.applicant",
+            "interviewee.application.applicant.user",
+            "interviewProcess",
+            "interviewProcess.job",
+        }
+    )
     Page<InterviewSlot> findUpcomingBookedSlotsForProfessor(
         @Param("professorId") UUID professorId,
         @Param("now") Instant now,
@@ -267,7 +276,16 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    @EntityGraph(value = "InterviewSlot.withIntervieweeAndApplication")
+    @EntityGraph(
+        attributePaths = {
+            "interviewee",
+            "interviewee.application",
+            "interviewee.application.applicant",
+            "interviewee.application.applicant.user",
+            "interviewProcess",
+            "interviewProcess.job",
+        }
+    )
     Page<InterviewSlot> findUpcomingBookedSlotsForResearchGroup(
         @Param("researchGroupId") UUID researchGroupId,
         @Param("now") Instant now,

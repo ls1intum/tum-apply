@@ -154,7 +154,7 @@ public class InterviewResource {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        log.info("REST request to get slots for process: {}, year: {}, month: {}, page: {}", processId, year, month, page);
+        log.info("GET /api/interviews/processes/{}/slots - Fetching slots (year={}, month={}, page={})", processId, year, month, page);
         PageDTO pageDTO = new PageDTO(size, page);
         PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(
             processId,

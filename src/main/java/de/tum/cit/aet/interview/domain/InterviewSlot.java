@@ -14,27 +14,34 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "interview_slots")
-@NamedEntityGraph(
-    name = "InterviewSlot.withIntervieweeAndApplication",
-    attributeNodes = {
-        @NamedAttributeNode(value = "interviewee", subgraph = "interviewee-subgraph"),
-        @NamedAttributeNode(value = "interviewProcess", subgraph = "process-job-subgraph"),
-    },
-    subgraphs = {
-        @NamedSubgraph(
-            name = "interviewee-subgraph",
-            attributeNodes = { @NamedAttributeNode(value = "application", subgraph = "application-subgraph") }
+@NamedEntityGraphs(
+    {
+        @NamedEntityGraph(
+            name = "InterviewSlot.withIntervieweeDetails",
+            attributeNodes = { @NamedAttributeNode(value = "interviewee", subgraph = "interviewee-subgraph") },
+            subgraphs = {
+                @NamedSubgraph(
+                    name = "interviewee-subgraph",
+                    attributeNodes = { @NamedAttributeNode(value = "application", subgraph = "application-subgraph") }
+                ),
+                @NamedSubgraph(
+                    name = "application-subgraph",
+                    attributeNodes = { @NamedAttributeNode(value = "applicant", subgraph = "applicant-subgraph") }
+                ),
+                @NamedSubgraph(name = "applicant-subgraph", attributeNodes = { @NamedAttributeNode(value = "user") }),
+            }
         ),
-        @NamedSubgraph(
-            name = "application-subgraph",
-            attributeNodes = { @NamedAttributeNode(value = "applicant", subgraph = "applicant-subgraph") }
+        @NamedEntityGraph(
+            name = "InterviewSlot.withProcessJobDetails",
+            attributeNodes = { @NamedAttributeNode(value = "interviewProcess", subgraph = "process-job-subgraph") },
+            subgraphs = {
+                @NamedSubgraph(
+                    name = "process-job-subgraph",
+                    attributeNodes = { @NamedAttributeNode(value = "job", subgraph = "job-research-group-subgraph") }
+                ),
+                @NamedSubgraph(name = "job-research-group-subgraph", attributeNodes = { @NamedAttributeNode(value = "researchGroup") }),
+            }
         ),
-        @NamedSubgraph(name = "applicant-subgraph", attributeNodes = { @NamedAttributeNode(value = "user") }),
-        @NamedSubgraph(
-            name = "process-job-subgraph",
-            attributeNodes = { @NamedAttributeNode(value = "job", subgraph = "job-research-group-subgraph") }
-        ),
-        @NamedSubgraph(name = "job-research-group-subgraph", attributeNodes = { @NamedAttributeNode(value = "researchGroup") }),
     }
 )
 @Getter
