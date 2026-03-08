@@ -145,11 +145,16 @@
         "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
         "aiScoreTitle": "Inclusivity Score",
-        "aiScoreHelper": "Your job could be more inclusive. Posts with a higher score attract more diverse applicants and get more responses.",
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
         "languageGerman": "German",
-        "translating": "Translating..."
+        "translating": "Translating...",
+        "aiScoreFeedback": {
+          "critical": "Critically low. Your posting reads as highly exclusionary and may drive away strong candidates. Rework wording and requirements to be far more inclusive.",
+          "warning": "Your job could be more inclusive. Posts with a higher score attract more diverse applicants and get more responses..",
+          "good": "Solid baseline. Your posting is already inclusive and reaches many candidates. With a few targeted refinements, it can perform even better.",
+          "excellent": "Perfect. It hardly gets better than this. Your posting is highly inclusive and appeals to a broad, diverse talent pool."
+        }
       }
     },
     "imageSection": {

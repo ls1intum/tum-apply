@@ -8,6 +8,9 @@ import { Component, computed, effect, input, signal } from '@angular/core';
 export class AiScoreRingComponent {
   score = input<number>(0);
 
+  readonly warningThreshold = 50;
+  readonly dangerThreshold = 29;
+  readonly empty = 0;
   readonly circumference = 94.2;
   readonly animatedScore = signal(0);
 
@@ -20,6 +23,20 @@ export class AiScoreRingComponent {
   });
 
   readonly strokeOffset = computed(() => this.circumference - (this.animatedScore() / 100) * this.circumference);
+
+  readonly scoreColor = computed(() => {
+    const score = this.animatedScore();
+
+    if (score <= this.dangerThreshold) {
+      return 'var(--p-danger-color)';
+    }
+
+    if (score <= this.warningThreshold) {
+      return 'var(--color-amber-200)';
+    }
+
+    return 'var(--p-primary-color)';
+  });
 
   private animationEffect = effect(onCleanup => {
     const targetScore = this.boundedScore();

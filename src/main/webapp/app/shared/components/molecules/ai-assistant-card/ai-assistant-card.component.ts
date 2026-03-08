@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
@@ -28,6 +28,36 @@ export class AiAssistantCardComponent {
   isGenerating = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
+
+  readonly warningThreshold = 65;
+  readonly dangerThreshold = 29;
+  readonly excellentThreshold = 90;
+
+  readonly boundedScore = computed(() => {
+    const value = this.score();
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+    return Math.max(0, Math.min(100, Math.round(value)));
+  });
+
+  readonly scoreFeedback = computed(() => {
+    const score = this.boundedScore();
+
+    if (score <= this.dangerThreshold) {
+      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical';
+    }
+
+    if (score <= this.warningThreshold) {
+      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.warning';
+    }
+
+    if (score >= this.excellentThreshold) {
+      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.excellent';
+    }
+
+    return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.good';
+  });
 
   generate = output();
 

@@ -145,11 +145,16 @@
         "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
         "aiScoreTitle": "Inklusivitäts-Score",
-        "aiScoreHelper": "Deine Ausschreibung könnte inklusiver sein. Beiträge mit höherem Score sprechen vielfältigere Bewerber:innen an und erhalten mehr Rückmeldungen.",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
-        "translating": "Übersetzt..."
+        "translating": "Übersetzt...",
+        "aiScoreFeedback": {
+          "critical": "Kritisch niedrig. Deine Ausschreibung wirkt stark exkludierend und wird viele passende Talente abschrecken. Überarbeite Sprache und Anforderungen dringend inklusiver.",
+          "warning": "Deine Ausschreibung könnte inklusiver sein. Beiträge mit höherem Score sprechen vielfältigere Bewerber:innen an und erhalten mehr Rückmeldungen.",
+          "good": "Solide Basis. Deine Ausschreibung ist bereits inklusiv und spricht viele Kandidat:innen an. Mit gezielten Feinjustierungen kannst du sie noch stärker machen.",
+          "excellent": "Perfekt. Besser geht es kaum. Deine Ausschreibung ist sehr inklusiv und spricht ein breites, diverses Talentfeld an."
+        }
       }
     },
     "imageSection": {
