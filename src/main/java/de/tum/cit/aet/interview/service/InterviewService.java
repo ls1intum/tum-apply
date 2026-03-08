@@ -32,6 +32,7 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -99,7 +100,13 @@ public class InterviewService {
                 Job job = ip.getJob();
                 JobState state = job != null ? job.getState() : null;
                 return (state == JobState.CLOSED || state == JobState.APPLICANT_FOUND) ? 1 : 0;
-            }).thenComparing(ip -> ip.getJob().getCreatedAt(), Comparator.reverseOrder())
+            }).thenComparing(
+                ip -> {
+                    Job job = ip.getJob();
+                    return job != null ? job.getCreatedAt() : LocalDateTime.MIN;
+                },
+                Comparator.reverseOrder()
+            )
         );
 
         // 4. Fetch all interviewees for these processes in a single query

@@ -1,5 +1,4 @@
 import { Component, computed, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
 import { TranslateDirective } from 'app/shared/language';
@@ -12,7 +11,7 @@ type ProcessStatus = 'ACTIVE' | 'CLOSED' | 'NEW';
 @Component({
   standalone: true,
   selector: 'jhi-interview-process-card',
-  imports: [CommonModule, TranslateModule, TranslateDirective, FontAwesomeModule, MessageComponent, TagComponent],
+  imports: [TranslateModule, TranslateDirective, FontAwesomeModule, MessageComponent, TagComponent],
   templateUrl: './interview-process-card.component.html',
 })
 export class InterviewProcessCardComponent {
@@ -26,6 +25,8 @@ export class InterviewProcessCardComponent {
     return this.process().isClosed ? 'CLOSED' : 'ACTIVE';
   });
 
+  isClosed = computed(() => this.processStatus() === 'CLOSED');
+
   totalSlots = computed<number>(() => {
     return this.process().totalSlots;
   });
@@ -33,9 +34,9 @@ export class InterviewProcessCardComponent {
   /**
    * Computed message key for the "not enough slots" warning
    */
-  warningMessage = computed<string | null>(() => {
-    if (this.processStatus() === 'CLOSED' || this.process().invitedCount <= this.totalSlots()) {
-      return null;
+  warningMessage = computed<string | undefined>(() => {
+    if (this.isClosed() || this.process().invitedCount <= this.totalSlots()) {
+      return undefined;
     }
 
     if (this.totalSlots() === 0) {
