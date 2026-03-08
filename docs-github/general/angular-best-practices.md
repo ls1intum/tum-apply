@@ -285,15 +285,6 @@ buttonClasses = computed(() => {
 </ng-container>
 ```
 
-**Always include `track` in `@for` loops:**
-
-```html
-<!-- Track by unique ID -->` @for (item of items(); track item.id) { }
-
-<!-- Or by index if no unique ID -->
-@for (item of items(); track $index) { }
-```
-
 ---
 
 ### 9. **Internationalization (i18n)**
