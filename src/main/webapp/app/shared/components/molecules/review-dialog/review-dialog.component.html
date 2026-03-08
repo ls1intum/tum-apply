@@ -1,7 +1,7 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-  [styleClass]="'w-[56%] max-w-[42rem] p-3 [&_.p-dialog-header]:items-start'"
+  [styleClass]="'w-[70%] max-w-[50rem] p-4 [&_.p-dialog-header]:items-start'"
   [contentStyle]="mode() === 'REJECT' ? { overflow: 'visible' } : undefined"
   [dismissableMask]="true"
   [closeOnEscape]="true"
@@ -10,7 +10,7 @@
   <!-- ───────── Header (applicant + job title) ───────── -->
   <ng-template #header class="custom-header">
     <div class="w-full flex flex-col gap-2">
-      <div class="flex items-center gap-2 -ml-3">
+      <div class="flex items-center gap-2">
         <jhi-user-avatar
           [fullName]="application()?.applicationDetailDTO?.applicant?.user?.name ?? ''"
           [avatarUrl]="application()?.applicationDetailDTO?.applicant?.user?.avatar"
@@ -19,7 +19,7 @@
         <span class="font-bold text-[1.3rem]">{{ application()?.applicationDetailDTO?.applicant?.user?.name ?? '' }}</span>
       </div>
       <div class="flex items-center gap-2 text-text-disabled">
-        <fa-icon class="text-primary" [icon]="['fas', 'briefcase']" />
+        <fa-icon class="w-[2.5rem] inline-flex justify-center shrink-0 text-primary" [icon]="['fas', 'briefcase']" />
         <span>{{ application()?.applicationDetailDTO?.jobTitle ?? '' }}</span>
       </div>
     </div>
@@ -29,7 +29,7 @@
   <ng-container [ngTemplateOutlet]="mode() === 'ACCEPT' ? acceptTemplate : rejectTemplate" />
 
   <ng-template pTemplate="footer">
-    <div class="pt-3 flex justify-end gap-2">
+    <div class="pt-4 flex justify-end gap-2">
       <jhi-button [label]="'button.cancel' | translate" variant="outlined" (click)="this.visible.set(false)" />
       @if (mode() === 'ACCEPT') {
         <jhi-button [label]="'evaluation.accept' | translate" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
@@ -53,7 +53,7 @@
       [required]="true"
     />
     -->
-    <ul class="list-none mt-6 flex flex-col gap-6">
+    <ul class="list-none mt-8 flex flex-col gap-8">
       <li class="flex items-center gap-2">
         <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
         <label class="text-[0.95rem]" jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
@@ -78,7 +78,7 @@
       [translateItems]="true"
       (selectedChange)="onSelectChange($event)"
     />
-    <ul class="list-none mt-6 flex flex-col gap-6">
+    <ul class="list-none mt-8 flex flex-col gap-8">
       <li class="flex items-center gap-2">
         <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
         <label class="text-[0.95rem]" jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>

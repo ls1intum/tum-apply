@@ -55,7 +55,6 @@ interface MembersRow {
     UserAvatarComponent,
   ],
   templateUrl: './research-group-members.component.html',
-  styleUrl: './research-group-members.component.scss',
 })
 export class ResearchGroupMembersComponent {
   members = signal<UserShortDTO[]>([]);

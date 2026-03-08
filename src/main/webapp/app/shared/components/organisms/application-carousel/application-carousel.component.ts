@@ -77,6 +77,23 @@ export class ApplicationCarouselComponent {
 
   @HostListener('document:keydown', ['$event'])
   handleGlobalKeyDown(event: KeyboardEvent): void {
+    // 1. Standard Guard Clauses
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) {
+      return;
+    }
+
+    // 2. Focus Guard
+    const active = document.activeElement as HTMLElement | null;
+    if (active) {
+      const isEditable = ['INPUT', 'TEXTAREA'].includes(active.tagName) || active.isContentEditable;
+      const isInsideEditable = !!active.closest('[contenteditable="true"]');
+
+      if (isEditable || isInsideEditable) {
+        return;
+      }
+    }
+
+    // 3. Navigation Logic
     switch (event.key) {
       case 'ArrowRight':
         event.preventDefault();

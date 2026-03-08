@@ -24,6 +24,16 @@ const DocumentType = {
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
+/**
+ * Generic PDF upload control used by applicant document flows.
+ *
+ * The component has two operating modes:
+ * - immediate upload: accepted files are sent to the backend right away
+ * - deferred upload: accepted files are represented locally and emitted to the parent for a later bulk submit
+ *
+ * Duplicate-name handling, replacement confirmation, local renaming, and size validation all live
+ * here so the surrounding pages only need to provide the document type and current document list.
+ */
 @Component({
   selector: 'jhi-upload-button',
   imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
@@ -42,11 +52,15 @@ export class UploadButtonComponent {
   markAsRequired = input<boolean>(false);
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
+  queuedFilesChange = output<File[]>();
 
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
   allowMultiple = input<boolean>(true);
+  deferUpload = input<boolean>(false);
+  queuedFilesById = signal<Map<string, File>>(new Map());
+  queuedFiles = computed(() => Array.from(this.queuedFilesById().values()));
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
@@ -96,6 +110,12 @@ export class UploadButtonComponent {
     await this.processFiles(files);
   }
 
+  /**
+   * Replaces the existing document that shares the same display name as the pending file.
+   *
+   * In deferred mode only local state is changed. In immediate mode the old server document is
+   * deleted first so the UI state and persisted state stay aligned.
+   */
   async onConfirmDuplicate(): Promise<void> {
     const pendingFile = this.pendingDuplicateFile();
     if (!pendingFile) {
@@ -105,14 +125,20 @@ export class UploadButtonComponent {
     // Find and delete the existing document with the same name
     const existingDoc = this.documentIds()?.find(doc => doc.name === pendingFile.name);
     if (existingDoc) {
-      try {
-        await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
+      if (this.deferUpload()) {
         const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
         this.documentIds.set(updatedList);
-      } catch {
-        this.toastService.showErrorKey('entity.upload.error.replace_failed');
-        this.pendingDuplicateFile.set(null);
-        return;
+        this.removeQueuedFileFor(existingDoc.id);
+      } else {
+        try {
+          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
+          const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
+          this.documentIds.set(updatedList);
+        } catch {
+          this.toastService.showErrorKey('entity.upload.error.replace_failed');
+          this.pendingDuplicateFile.set(null);
+          return;
+        }
       }
     }
 
@@ -120,6 +146,12 @@ export class UploadButtonComponent {
     this.pendingDuplicateFile.set(null);
   }
 
+  /**
+   * Handles the "replace current file" flow for single-file document types such as CV.
+   *
+   * Existing entries are cleared first, then the newly selected file is processed as a normal
+   * upload or deferred queue addition.
+   */
   async onConfirmReplacement(): Promise<void> {
     const pendingFiles = this.pendingReplacementFiles();
     if (pendingFiles.length === 0) {
@@ -128,17 +160,23 @@ export class UploadButtonComponent {
 
     // Delete all existing documents (for single-file mode replacement)
     const existingDocs = this.documentIds() ?? [];
-    for (const doc of existingDocs) {
-      try {
-        await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
-      } catch {
-        this.toastService.showErrorKey('entity.upload.error.replace_failed');
-        return;
+    if (this.deferUpload()) {
+      this.documentIds.set([]);
+      this.queuedFilesById.set(new Map());
+      this.emitQueuedFilesChange();
+    } else {
+      for (const doc of existingDocs) {
+        try {
+          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
+        } catch {
+          this.toastService.showErrorKey('entity.upload.error.replace_failed');
+          return;
+        }
       }
-    }
 
-    // Clear the document list before uploading new file
-    this.documentIds.set([]);
+      // Clear the document list before uploading new file
+      this.documentIds.set([]);
+    }
 
     await this.processFiles(pendingFiles);
     this.pendingReplacementFiles.set([]);
@@ -165,8 +203,18 @@ export class UploadButtonComponent {
     }
   }
 
+  /**
+   * Deletes a persisted server document or, in deferred mode, removes the corresponding local placeholder.
+   */
   async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const documentId = documentInfo.id;
+    if (this.deferUpload()) {
+      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+      this.documentIds.set(updatedList);
+      this.removeQueuedFileFor(documentId);
+      return;
+    }
+
     try {
       await firstValueFrom(this.applicationService.deleteDocumentFromApplication(documentId));
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
@@ -181,6 +229,11 @@ export class UploadButtonComponent {
     this.resetNativeFileInput();
   }
 
+  /**
+   * Persists an inline filename edit when possible.
+   *
+   * Deferred mode only updates local placeholder data because there is nothing on the server yet.
+   */
   async renameDocument(documentInfo: DocumentInformationHolderDTO): Promise<void> {
     const newName = documentInfo.name ?? '';
     if (!newName) {
@@ -188,14 +241,31 @@ export class UploadButtonComponent {
     }
 
     const documentId = documentInfo.id;
+    if (this.deferUpload()) {
+      const updatedDocs =
+        this.documentIds()?.map(doc =>
+          doc.id === documentId
+            ? {
+                id: doc.id,
+                name: newName,
+                size: doc.size,
+              }
+            : doc,
+        ) ?? [];
+      this.documentIds.set(updatedDocs);
+      this.renameQueuedFile(documentId, newName);
+      return;
+    }
+
     try {
       await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
       const updatedDocs =
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-                ...doc,
+                id: doc.id,
                 name: newName,
+                size: doc.size,
               }
             : doc,
         ) ?? [];
@@ -219,6 +289,16 @@ export class UploadButtonComponent {
     return existingDocs.some(doc => doc.name === filename);
   }
 
+  /**
+   * Validates incoming files and normalizes them into the component's state model.
+   *
+   * The main distinction here is:
+   * - deferred mode: create temporary `documentIds` entries and keep the real `File` objects in `queuedFiles`
+   * - immediate mode: stage files in `selectedFiles` and then call `onUpload()`
+   *
+   * Total-size validation includes both already persisted documents and newly chosen files so the UI
+   * cannot drift past the same overall limit through multiple smaller additions.
+   */
   private async processFiles(files: File[]): Promise<void> {
     const maxSizeBytes = this.maxUploadSizeInMb * 1024 * 1024;
     const maxTotalSizeMb = this.maxUploadSizeInMb; // total limit (MB) — same as per-file by design
@@ -238,7 +318,7 @@ export class UploadButtonComponent {
     }
 
     // Consider already selected files when calculating the total size
-    const selectedFile = this.selectedFiles() ?? [];
+    const selectedFile = this.deferUpload() ? this.queuedFiles() : (this.selectedFiles() ?? []);
 
     const combinedFiles = selectedFile.concat(files);
     const combinedFilesTotal = combinedFiles.reduce((sum, file) => sum + file.size, 0);
@@ -260,6 +340,26 @@ export class UploadButtonComponent {
       return;
     }
 
+    if (this.deferUpload()) {
+      const updatedQueuedFiles = new Map(this.queuedFilesById());
+      const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => {
+        const id = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        updatedQueuedFiles.set(id, file);
+        return {
+          id,
+          name: file.name,
+          size: file.size,
+        };
+      });
+      const updatedList = (this.documentIds() ?? []).concat(tempDocumentEntries);
+      this.documentIds.set(updatedList);
+      this.queuedFilesById.set(updatedQueuedFiles);
+      this.emitQueuedFilesChange();
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
+    }
+
     // Only add files if validation passes
     this.selectedFiles.set(combinedFiles);
 
@@ -268,9 +368,6 @@ export class UploadButtonComponent {
     await this.onUpload();
   }
 
-  /**
-   * Reset the native file input to allow reselection of the same file.
-   */
   private resetNativeFileInput(): void {
     // Use setTimeout to ensure DOM is updated
     setTimeout(() => {
@@ -279,5 +376,39 @@ export class UploadButtonComponent {
         nativeInput.value = '';
       }
     }, 0);
+  }
+
+  /**
+   * Keeps the deferred upload queue in sync with the placeholder row removed from `documentIds`.
+   */
+  private removeQueuedFileFor(documentId: string): void {
+    const filesById = this.queuedFilesById();
+    if (!filesById.has(documentId)) {
+      return;
+    }
+    const updated = new Map(filesById);
+    updated.delete(documentId);
+    this.queuedFilesById.set(updated);
+    this.emitQueuedFilesChange();
+  }
+
+  private renameQueuedFile(documentId: string, newName: string): void {
+    const queuedFile = this.queuedFilesById().get(documentId);
+    if (!queuedFile || queuedFile.name === newName) {
+      return;
+    }
+
+    const renamedFile = new File([queuedFile], newName, {
+      type: queuedFile.type,
+      lastModified: queuedFile.lastModified,
+    });
+    const updated = new Map(this.queuedFilesById());
+    updated.set(documentId, renamedFile);
+    this.queuedFilesById.set(updated);
+    this.emitQueuedFilesChange();
+  }
+
+  private emitQueuedFilesChange(): void {
+    this.queuedFilesChange.emit(this.queuedFiles());
   }
 }

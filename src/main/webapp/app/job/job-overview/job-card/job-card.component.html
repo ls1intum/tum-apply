@@ -7,23 +7,23 @@
   (keydown)="onKeyDown($event)"
 >
   <div
-    class="relative h-32 px-4 pb-3 bg-cover bg-center flex-shrink-0"
+    class="h-32 px-4 pb-3 bg-cover bg-center flex flex-shrink-0 items-end"
     [style.background-image]="
       headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
     "
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
-    <div class="absolute left-2 -bottom-4">
-      <div class="relative h-10 w-[15rem]">
+    <div class="-ml-2 translate-y-7">
+      <div class="grid h-10 w-[15rem]">
         <div
-          class="absolute left-0 top-1/2 -translate-y-1/2 z-1"
+          class="col-start-1 row-start-1 z-1 self-center"
           [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
           tooltipPosition="top"
         >
           <jhi-user-avatar [fullName]="professor()" [avatarUrl]="avatarUrl()" size="lg" />
         </div>
         <span
-          class="absolute left-0 top-1/2 -translate-y-1/2 z-0 rounded-pill bg-black/45 backdrop-blur-sm text-white text-xs font-medium h-6 pl-12 pr-3 leading-none inline-flex items-center w-fit max-w-full overflow-hidden"
+          class="col-start-1 row-start-1 z-0 inline-flex w-fit max-w-full items-center self-center overflow-hidden rounded-pill bg-black/30 px-3 py-1 pl-11 text-xs font-medium text-white backdrop-blur-sm"
         >
           <span class="block truncate">Prof. {{ professor() }}</span>
         </span>

@@ -29,22 +29,22 @@ export class UserAvatarComponent {
     return palette[Math.abs(hash) % palette.length];
   });
 
-  textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.55 : 0.6));
+  textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.4 : 0.6));
   borderColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.8 : 0.9));
-  textShadow = computed(() => '0 1px 0 rgba(255, 255, 255, 0.28)');
+  textShadow = computed(() => (this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)'));
   sizeClass = computed(() => {
     const size = this.size();
     if (size === 'xl') {
       return 'h-16 w-16 text-[1.2rem]';
     }
     if (size === 'lg') {
-      return 'h-11 w-11 text-[1.10rem]';
+      return 'h-10 w-10 text-[0.95rem]';
     }
-    return 'h-9 w-9 text-[0.95rem]';
+    return 'h-8 w-8 text-[0.8rem]';
   });
 
   private readonly lightAvatarPalette = ['#B5D0FA', '#BFECD7', '#FFE6A8', '#FFCACA', '#E0CFFA', '#BDEDEA', '#FCD3BE', '#F5CAE0'];
-  private readonly darkAvatarPalette = ['#ACC6EE', '#B4E3CC', '#F0D99F', '#EEBDBD', '#D6C7ED', '#AADDD9', '#EBC4B1', '#E6C0D4'];
+  private readonly darkAvatarPalette = ['#9FB6E8', '#9FD6BE', '#ebd19e', '#E5AFAF', '#C4B0E8', '#96D0CC', '#deb29c', '#DEB0C8'];
   private readonly themeService = inject(ThemeService);
 
   private hashString(value: string): number {
@@ -81,8 +81,13 @@ export class UserAvatarComponent {
     return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
   }
 
-  // This is used to darken the initials and the border for better contrast against the background color.
-  // The factor determines how much darker the resulting color will be compared to the original background color.
+  /**
+   * Darkens a hex color for avatar text and border contrast.
+   *
+   * @param hex - The six-character hex color to darken.
+   * @param factor - The multiplier applied to each RGB channel to reduce brightness.
+   * @returns The darkened color as an RGB string, or a default fallback color for invalid hex input.
+   */
   private darkenHex(hex: string, factor: number): string {
     const normalized = hex.replace('#', '');
     if (normalized.length !== 6) {

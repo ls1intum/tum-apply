@@ -4,6 +4,10 @@ import { PrimeNG } from 'primeng/config';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('ThemeService', () => {
+  const expectedPrimeThemeOptions = {
+    darkModeSelector: '.tum-apply-dark-mode',
+    cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
+  };
   const primeThemeSet = vi.fn();
   const primeNGMock = {
     theme: {
@@ -59,137 +63,163 @@ describe('ThemeService', () => {
     });
   });
 
-  it('falls back to light in getSystemTheme when matchMedia is unavailable', () => {
-    Object.defineProperty(window, 'matchMedia', {
-      configurable: true,
-      writable: true,
-      value: undefined,
+  describe('getSystemTheme', () => {
+    it('should fall back to light when matchMedia is unavailable', () => {
+      Object.defineProperty(window, 'matchMedia', {
+        configurable: true,
+        writable: true,
+        value: undefined,
+      });
+      const service = createService();
+
+      expect(service.getSystemTheme()).toBe('light');
     });
-    const service = createService();
 
-    expect(service.getSystemTheme()).toBe('light');
+    it('should return dark when system prefers dark', () => {
+      mediaQueryMatches = true;
+      installMatchMediaMock();
+      const service = createService();
+
+      expect(service.getSystemTheme()).toBe('dark');
+    });
   });
 
-  it('returns dark in getSystemTheme when system prefers dark', () => {
-    mediaQueryMatches = true;
-    installMatchMediaMock();
-    const service = createService();
+  describe('initial theme', () => {
+    it('should use system theme when sync is enabled', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'true');
+      mediaQueryMatches = true;
+      installMatchMediaMock();
 
-    expect(service.getSystemTheme()).toBe('dark');
+      const service = createService();
+
+      expect(service.theme()).toBe('dark');
+    });
+
+    it('should use stored theme when sync is disabled', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      localStorage.setItem('tumApplyTheme', 'blossom');
+
+      const service = createService();
+
+      expect(service.theme()).toBe('blossom');
+    });
+
+    it('should read the initial theme from root css classes when no valid stored theme exists', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      localStorage.setItem('tumApplyTheme', 'invalid-theme');
+      document.documentElement.classList.add('tum-apply-aquabloom');
+
+      const service = createService();
+
+      expect(service.theme()).toBe('aquabloom');
+    });
   });
 
-  it('uses system theme as initial theme when sync is enabled', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'true');
-    mediaQueryMatches = true;
-    installMatchMediaMock();
+  describe('setTheme', () => {
+    it('should toggle root classes and persist theme by default', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      const service = createService();
 
-    const service = createService();
+      service.setTheme('dark');
 
-    expect(service.theme()).toBe('dark');
+      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(true);
+      expect(document.documentElement.classList.contains('tum-apply-blossom')).toBe(false);
+      expect(document.documentElement.classList.contains('tum-apply-aquabloom')).toBe(false);
+      expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
+      expect(primeThemeSet).toHaveBeenCalledTimes(2);
+      expect(primeThemeSet).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ preset: expect.anything(), options: expectedPrimeThemeOptions }),
+      );
+      expect(primeThemeSet).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ preset: expect.anything(), options: expectedPrimeThemeOptions }),
+      );
+    });
+
+    it('should not persist when saveToStorage is false', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      localStorage.setItem('tumApplyTheme', 'dark');
+      const service = createService();
+
+      service.setTheme('light', false);
+
+      expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
+    });
   });
 
-  it('uses stored theme when sync is disabled', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    localStorage.setItem('tumApplyTheme', 'blossom');
+  describe('setupSystemThemeListener', () => {
+    it('should react to system theme changes only while sync is enabled', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'true');
+      const service = createService();
+      const setThemeSpy = vi.spyOn(service, 'setTheme');
 
-    const service = createService();
+      mediaQueryChangeListener?.({ matches: true });
+      expect(setThemeSpy).toHaveBeenCalledWith('dark', false);
+      expect(setThemeSpy).toHaveBeenCalledOnce();
 
-    expect(service.theme()).toBe('blossom');
+      service.syncWithSystem.set(false);
+      mediaQueryChangeListener?.({ matches: false });
+      expect(setThemeSpy).not.toHaveBeenCalledWith('light', false);
+      expect(setThemeSpy).toHaveBeenCalledOnce();
+    });
   });
 
-  it('reads initial theme from root css classes when no valid stored theme exists', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    localStorage.setItem('tumApplyTheme', 'invalid-theme');
-    document.documentElement.classList.add('tum-apply-aquabloom');
+  describe('toggleTheme', () => {
+    it('should switch from system sync mode to light and disable sync', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'true');
+      const service = createService();
+      const setThemeSpy = vi.spyOn(service, 'setTheme');
 
-    const service = createService();
+      service.toggleTheme();
 
-    expect(service.theme()).toBe('aquabloom');
+      expect(service.syncWithSystem()).toBe(false);
+      expect(localStorage.getItem('tumApplySyncWithSystem')).toBe('false');
+      expect(setThemeSpy).toHaveBeenCalledWith('light');
+      expect(setThemeSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should switch light to dark when sync is disabled', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      localStorage.setItem('tumApplyTheme', 'light');
+      const service = createService();
+      const setThemeSpy = vi.spyOn(service, 'setTheme');
+
+      service.toggleTheme();
+
+      expect(setThemeSpy).toHaveBeenCalledWith('dark');
+      expect(setThemeSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should delegate to setSyncWithSystem when currently dark', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      localStorage.setItem('tumApplyTheme', 'dark');
+      const service = createService();
+      const setSyncSpy = vi.spyOn(service, 'setSyncWithSystem');
+
+      service.toggleTheme();
+
+      expect(setSyncSpy).toHaveBeenCalledWith(true);
+      expect(setSyncSpy).toHaveBeenCalledOnce();
+    });
   });
 
-  it('setTheme toggles root classes and persists theme by default', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    const service = createService();
+  describe('setSyncWithSystem', () => {
+    it('should remove the stored theme and apply the system theme without persisting when enabled', () => {
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      localStorage.setItem('tumApplyTheme', 'blossom');
+      mediaQueryMatches = true;
+      installMatchMediaMock();
 
-    service.setTheme('dark');
+      const service = createService();
+      const setThemeSpy = vi.spyOn(service, 'setTheme');
 
-    expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(true);
-    expect(document.documentElement.classList.contains('tum-apply-blossom')).toBe(false);
-    expect(document.documentElement.classList.contains('tum-apply-aquabloom')).toBe(false);
-    expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
-    expect(primeThemeSet).toHaveBeenCalled();
-  });
+      service.setSyncWithSystem(true);
 
-  it('setTheme does not persist when saveToStorage is false', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    localStorage.setItem('tumApplyTheme', 'dark');
-    const service = createService();
-
-    service.setTheme('light', false);
-
-    expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
-  });
-
-  it('setupSystemThemeListener reacts to system theme changes only while sync is enabled', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'true');
-    const service = createService();
-    const setThemeSpy = vi.spyOn(service, 'setTheme');
-
-    mediaQueryChangeListener?.({ matches: true });
-    expect(setThemeSpy).toHaveBeenCalledWith('dark', false);
-
-    service.syncWithSystem.set(false);
-    mediaQueryChangeListener?.({ matches: false });
-    expect(setThemeSpy).not.toHaveBeenCalledWith('light', false);
-  });
-
-  it('toggleTheme switches from system sync mode to light and disables sync', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'true');
-    const service = createService();
-    const setThemeSpy = vi.spyOn(service, 'setTheme');
-
-    service.toggleTheme();
-
-    expect(service.syncWithSystem()).toBe(false);
-    expect(localStorage.getItem('tumApplySyncWithSystem')).toBe('false');
-    expect(setThemeSpy).toHaveBeenCalledWith('light');
-  });
-
-  it('toggleTheme switches light to dark when sync is disabled', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    localStorage.setItem('tumApplyTheme', 'light');
-    const service = createService();
-    const setThemeSpy = vi.spyOn(service, 'setTheme');
-
-    service.toggleTheme();
-
-    expect(setThemeSpy).toHaveBeenCalledWith('dark');
-  });
-
-  it('toggleTheme delegates to setSyncWithSystem when currently dark', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    localStorage.setItem('tumApplyTheme', 'dark');
-    const service = createService();
-    const setSyncSpy = vi.spyOn(service, 'setSyncWithSystem');
-
-    service.toggleTheme();
-
-    expect(setSyncSpy).toHaveBeenCalledWith(true);
-  });
-
-  it('setSyncWithSystem(true) removes stored theme and applies system theme without persisting', () => {
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    localStorage.setItem('tumApplyTheme', 'blossom');
-    mediaQueryMatches = true;
-    installMatchMediaMock();
-
-    const service = createService();
-    const setThemeSpy = vi.spyOn(service, 'setTheme');
-
-    service.setSyncWithSystem(true);
-
-    expect(localStorage.getItem('tumApplySyncWithSystem')).toBe('true');
-    expect(localStorage.getItem('tumApplyTheme')).toBeNull();
-    expect(setThemeSpy).toHaveBeenCalledWith('dark', false);
+      expect(localStorage.getItem('tumApplySyncWithSystem')).toBe('true');
+      expect(localStorage.getItem('tumApplyTheme')).toBeNull();
+      expect(setThemeSpy).toHaveBeenCalledWith('dark', false);
+      expect(setThemeSpy).toHaveBeenCalledOnce();
+    });
   });
 });

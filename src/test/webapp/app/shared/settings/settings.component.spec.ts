@@ -98,7 +98,7 @@ describe('SettingsComponent', () => {
 
   // ===== TABS =====
   describe('tabs()', () => {
-    it('should show general, notifications and personal-information tabs for applicant', () => {
+    it('should show general, notifications, personal-information and documents tabs for applicant', () => {
       accountServiceMock.user.set({
         id: 'u1',
         name: 'Test Applicant',
@@ -109,10 +109,11 @@ describe('SettingsComponent', () => {
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
       const tabs = component.tabs();
 
-      expect(tabs).toHaveLength(3);
+      expect(tabs).toHaveLength(4);
       expect(tabs[0].id).toBe('general');
       expect(tabs[1].id).toBe('notifications');
       expect(tabs[2].id).toBe('personal-information');
+      expect(tabs[3].id).toBe('documents');
     });
 
     it('should show general and notifications tabs for professor (no personal-information)', () => {
@@ -163,6 +164,7 @@ describe('SettingsComponent', () => {
       expect(tabs[0].translationKey).toBe('settings.tabs.general');
       expect(tabs[1].translationKey).toBe('settings.tabs.notifications');
       expect(tabs[2].translationKey).toBe('settings.tabs.personalInformation');
+      expect(tabs[3].translationKey).toBe('settings.tabs.documents');
     });
   });
 
@@ -184,6 +186,9 @@ describe('SettingsComponent', () => {
 
       component.onTabChange('personal-information');
       expect(component.activeTab()).toBe('personal-information');
+
+      component.onTabChange('documents');
+      expect(component.activeTab()).toBe('documents');
     });
   });
 
