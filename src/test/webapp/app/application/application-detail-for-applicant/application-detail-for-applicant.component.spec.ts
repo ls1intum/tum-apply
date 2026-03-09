@@ -313,7 +313,13 @@ describe('ApplicationDetailForApplicantComponent', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
-          applicant: { user: { email: '' }, bachelorGrade: undefined } as any,
+          applicant: {
+            user: {
+              email: '',
+              userId: '1',
+            },
+            bachelorGrade: undefined,
+          },
         }),
       );
       component.actualDetailDataExists.set(true);
@@ -326,11 +332,14 @@ describe('ApplicationDetailForApplicantComponent', () => {
       component.actualDetailData.set(
         makeDetail({
           applicant: {
-            user: { email: '' },
+            user: {
+              email: '',
+              userId: '1',
+            },
             bachelorGrade: '2.3',
             bachelorGradeUpperLimit: undefined,
             bachelorGradeLowerLimit: undefined,
-          } as any,
+          },
         }),
       );
       component.actualDetailDataExists.set(true);
@@ -344,11 +353,14 @@ describe('ApplicationDetailForApplicantComponent', () => {
       component.actualDetailData.set(
         makeDetail({
           applicant: {
-            user: { email: '' },
+            user: {
+              email: '',
+              userId: '',
+            },
             bachelorGrade: '1.7',
             bachelorGradeUpperLimit: '4.0',
             bachelorGradeLowerLimit: '1.0',
-          } as any,
+          },
         }),
       );
       component.actualDetailDataExists.set(true);
@@ -369,7 +381,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
-          applicant: { user: { email: '' }, masterGrade: undefined } as any,
+          applicant: { user: { email: '', userId: '1' }, masterGrade: undefined },
         }),
       );
       component.actualDetailDataExists.set(true);
@@ -382,11 +394,14 @@ describe('ApplicationDetailForApplicantComponent', () => {
       component.actualDetailData.set(
         makeDetail({
           applicant: {
-            user: { email: '' },
+            user: {
+              email: '',
+              userId: '1',
+            },
             masterGrade: '1.5',
             masterGradeUpperLimit: undefined,
             masterGradeLowerLimit: '1.0',
-          } as any,
+          },
         }),
       );
       component.actualDetailDataExists.set(true);
@@ -400,11 +415,14 @@ describe('ApplicationDetailForApplicantComponent', () => {
       component.actualDetailData.set(
         makeDetail({
           applicant: {
-            user: { email: '' },
+            user: {
+              email: '',
+              userId: '1',
+            },
             masterGrade: '1.0',
             masterGradeUpperLimit: '4.0',
             masterGradeLowerLimit: '1.0',
-          } as any,
+          },
         }),
       );
       component.actualDetailDataExists.set(true);
