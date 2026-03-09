@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
@@ -12,6 +12,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { normalizeOptionalString } from 'app/shared/util/util';
 import { TooltipModule } from 'primeng/tooltip';
 import { firstValueFrom } from 'rxjs';
 
@@ -36,8 +37,8 @@ const MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
   templateUrl: './profile-picture-settings.component.html',
 })
 export class ProfilePictureSettingsComponent {
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  @ViewChild(ImageCropperComponent) imageCropper?: ImageCropperComponent;
+  fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
+  imageCropper = viewChild(ImageCropperComponent);
 
   readonly CROP_SIZE = CROP_CONTAINER_SIZE;
 
@@ -63,7 +64,7 @@ export class ProfilePictureSettingsComponent {
    *
    * @returns the normalized avatar URL or null when no avatar is set
    */
-  currentProfilePictureUrl = computed<string | null>(() => this.normalizeAvatarUrl(this.accountService.loadedUser()?.avatar));
+  currentProfilePictureUrl = computed<string | null>(() => normalizeOptionalString(this.accountService.loadedUser()?.avatar));
 
   private readonly accountService = inject(AccountService);
   private readonly imageResourceService = inject(ImageResourceApiService);
@@ -71,7 +72,7 @@ export class ProfilePictureSettingsComponent {
   private readonly userResourceService = inject(UserResourceApiService);
 
   onAddPictureClick(): void {
-    this.fileInput.nativeElement.click();
+    this.fileInput().nativeElement.click();
   }
 
   onFileSelected(event: Event): void {
@@ -109,15 +110,16 @@ export class ProfilePictureSettingsComponent {
    * @returns a promise that resolves after the upload flow finishes
    */
   async onSave(): Promise<void> {
-    if (!this.imageCropper) return;
-    const cropped = await this.imageCropper.crop('blob');
+    const imageCropper = this.imageCropper();
+    if (!imageCropper) return;
+    const cropped = await imageCropper.crop('blob');
     if (!cropped) return;
     const blob = cropped.blob;
     if (!blob) return;
 
     try {
       const uploadedImage = await firstValueFrom(this.imageResourceService.uploadProfilePicture(blob));
-      const avatarUrl = this.normalizeAvatarUrl(uploadedImage.url);
+      const avatarUrl = normalizeOptionalString(uploadedImage.url);
       if (avatarUrl === null) {
         this.toastService.showErrorKey('settings.profilePicture.saveFailed');
         return;
@@ -164,20 +166,6 @@ export class ProfilePictureSettingsComponent {
     this.imageLoaded.set(false);
     this.cropTransform = this.createDefaultTransform();
     this.cropDialogVisible.set(true);
-  }
-
-  /**
-   * Trims avatar URLs and converts blank values to null for consistent template checks.
-   *
-   * @param avatarUrl the raw avatar URL from the account state
-   * @returns the trimmed avatar URL or null when the value is blank
-   */
-  private normalizeAvatarUrl(avatarUrl: string | null | undefined): string | null {
-    const normalized = avatarUrl?.trim();
-    if (normalized == null || normalized === '') {
-      return null;
-    }
-    return normalized;
   }
 
   /**

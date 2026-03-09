@@ -509,6 +509,9 @@ export const sharedLightColorScheme = {
   divider: {
     default: '{neutral.200}',
   },
+  image: {
+    hoverOverlay: '{base.black}',
+  },
   card: {
     background: '{background.50}',
     backgroundAlt: '{background.100}',

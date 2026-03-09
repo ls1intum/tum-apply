@@ -1,20 +1,17 @@
 <div class="mb-1">
   <div class="flex items-center gap-4 pb-1">
-    <div class="relative h-20 w-20 shrink-0 cursor-pointer group" (click)="onAddPictureClick()">
-      @if (currentProfilePictureUrl()) {
-        <img [src]="currentProfilePictureUrl()" class="h-20 w-20 rounded-full object-cover" alt="Profile picture" />
-      } @else {
-        <div class="h-20 w-20 rounded-full overflow-hidden">
-          <div class="origin-top-left scale-[1.25]">
-            <jhi-user-avatar [fullName]="fullName()" size="xl" />
-          </div>
+    <div class="grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full group" (click)="onAddPictureClick()">
+      <div class="col-start-1 row-start-1 h-20 w-20 overflow-hidden">
+        <div class="origin-top-left scale-[1.25]">
+          <jhi-user-avatar [fullName]="fullName()" [avatarUrl]="currentProfilePictureUrl() ?? undefined" size="xl" />
         </div>
-      }
+      </div>
 
       <div
-        class="absolute inset-0 flex items-center justify-center rounded-full bg-black/35 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style="--image-hover-overlay-soft: color-mix(in srgb, var(--color-image-hover-overlay) 30%, transparent)"
+        class="pointer-events-none col-start-1 row-start-1 z-10 flex h-full w-full items-center justify-center bg-transparent transition-colors duration-200 group-hover:bg-[var(--image-hover-overlay-soft)]"
       >
-        <fa-icon [icon]="['fas', 'pen']" class="text-white text-sm" />
+        <fa-icon [icon]="['fas', 'pen']" class="text-sm text-transparent transition-colors duration-200 group-hover:text-text-on-primary" />
       </div>
     </div>
 
@@ -64,15 +61,12 @@
   @if (selectedFile()) {
     <div class="flex flex-col items-center gap-5 py-2">
       <image-cropper
-        class="block overflow-hidden rounded-md bg-surface-ground"
+        class="block overflow-hidden rounded-md"
         [style.width.px]="CROP_SIZE"
         [style.height.px]="CROP_SIZE"
-        [style.--cropper-outline-color]="'rgba(0, 0, 0, 0.55)'"
-        [style.--cropper-overlay-color]="'rgba(255, 255, 255, 0.08)'"
-        [style.--cropper-color]="'rgba(255, 255, 255, 0.18)'"
-        [style.--cropper-border]="'2px solid rgba(255, 255, 255, 0.95)'"
-        [style.--cropper-hover-border]="'2px solid rgba(255, 255, 255, 0.95)'"
-        [style.--cropper-focus-border]="'2px solid rgba(255, 255, 255, 0.95)'"
+        [style.--cropper-outline-color]="'color-mix(in srgb, var(--color-image-hover-overlay) 60%, transparent)'"
+        [style.--cropper-color]="'transparent'"
+        [style.--cropper-focus-border]="'0.125rem solid var(--color-text-on-primary)'"
         [imageFile]="selectedFile()"
         [imageAltText]="fullName() ?? 'Profile picture'"
         cropperFrameAriaLabel="Crop profile picture"

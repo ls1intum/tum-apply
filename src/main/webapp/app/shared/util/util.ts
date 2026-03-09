@@ -118,3 +118,17 @@ export function getInitials(name: string): string {
   const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
   return firstInitial + lastInitial;
 }
+
+/**
+ * Trims an optional string and converts blank values to null.
+ *
+ * @param value - The raw optional string
+ * @returns The trimmed string or null when empty
+ */
+export function normalizeOptionalString(value: string | null | undefined): string | null {
+  const normalized = value?.trim();
+  if (normalized == null || normalized === '') {
+    return null;
+  }
+  return normalized;
+}
