@@ -18,7 +18,7 @@ export class MyComponent {
 }
 ```
 
-❌ **OLD STYLE:**
+❌ **AVOID** — Old constructor injection:
 
 ```typescript
 constructor(
@@ -130,7 +130,7 @@ doubleCount = computed(() => this.count() * 2);
 } }
 ```
 
-❌ **OLD SYNTAX** — Don't use in new code:
+❌ **AVOID** — Old structural directives:
 
 ```html
 <ng-container *ngIf="applications() as apps">
@@ -147,7 +147,7 @@ doubleCount = computed(() => this.count() * 2);
 
 ### 6. **Internationalization (i18n)**
 
-✅ **ALL user-visible text must use translation:**
+✅ **GOOD** — All user-visible text must use translation:
 
 ```html
 <!-- Simple translation -->
@@ -160,7 +160,7 @@ doubleCount = computed(() => this.count() * 2);
 <jhi-button [label]="'button.save'" [shouldTranslate]="true" />
 ```
 
-❌ **NEVER hard-code user-visible text:**
+❌ **WRONG** — Never hard-code user-visible text:
 
 ```html
 <h1>Application</h1>
@@ -207,7 +207,7 @@ export class MyComponent {
 
 ### 8. **NEVER Hard-Code Colors**
 
-✅ **CORRECT** — Use semantic color tokens:
+✅ **GOOD** — Use semantic color tokens:
 
 ```html
 <!-- Tailwind semantic tokens -->
@@ -239,7 +239,7 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 ### 9. **Avoid Inline Styles**
 
-✅ **CORRECT** — Use Tailwind classes only:
+✅ **GOOD** — Use Tailwind classes only:
 
 ```html
 <!-- Use Tailwind utility classes -->
@@ -396,7 +396,7 @@ buttonClasses = computed(() => {
 
 ### 12. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
 
-✅ **CORRECT** — Use the semantic token directly:
+✅ **GOOD** — Use the semantic token directly:
 
 ```html
 <i class="text-primary-default"></i> <span class="text-text-tertiary"></span>
@@ -447,7 +447,7 @@ buttonClasses = computed(() => {
 <div class="text-sm md:text-base lg:text-lg">...</div>
 ```
 
-❌ **CONFUSING** — Mixed breakpoints:
+❌ **WRONG** — Mixed breakpoints:
 
 ```html
 <div class="lg:gap-8 flex-col gap-4 md:flex-row md:gap-6 flex">...</div>
@@ -556,7 +556,7 @@ dialogClasses = computed(() => {
 Before adding Tailwind utilities, **check if the styling is already applied** by base styles or component defaults.
 
 ```html
-<!-- ✅ CORRECT - Only override when needed -->
+<!-- ✅ GOOD - Only override when needed -->
 <p class="text-lg">Larger description text</p>
 <!-- Only add classes when you need to CHANGE the default -->
 
