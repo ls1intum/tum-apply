@@ -46,7 +46,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
  * application status, and creation time.
  */
 export default class ApplicationOverviewForApplicantComponent {
-  loading = signal(false);
+  loading = signal(true);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
