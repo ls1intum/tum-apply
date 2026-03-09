@@ -914,12 +914,13 @@ describe('ApplicationDetailComponent', () => {
         vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.5');
 
         const applicant = {
+          user: { userId: '1' },
           bachelorDegreeName: 'Computer Science',
           bachelorUniversity: 'TU Munich',
           bachelorGrade: '2.5',
           bachelorGradeUpperLimit: '4.0',
           bachelorGradeLowerLimit: '1.0',
-        } as any;
+        };
 
         const items = component.getBachelorItems(applicant);
 
@@ -934,12 +935,13 @@ describe('ApplicationDetailComponent', () => {
         vi.spyOn(component, 'getDisplayGrade').mockReturnValue('');
 
         const applicant = {
+          user: { userId: '1' },
           bachelorDegreeName: 'Physics',
           bachelorUniversity: 'LMU',
           bachelorGrade: '85',
           bachelorGradeUpperLimit: '100',
           bachelorGradeLowerLimit: '0',
-        } as any;
+        };
 
         const items = component.getBachelorItems(applicant);
         expect(items[2].tooltipText).toBe('evaluation.details.conversionFailedTooltip');
@@ -949,12 +951,13 @@ describe('ApplicationDetailComponent', () => {
         vi.spyOn(component, 'getDisplayGrade').mockReturnValue('1.5');
 
         const applicant = {
+          user: { userId: '1' },
           bachelorDegreeName: 'Math',
           bachelorUniversity: 'KIT',
           bachelorGrade: '90',
           bachelorGradeUpperLimit: '100',
           bachelorGradeLowerLimit: '50',
-        } as any;
+        };
 
         const items = component.getBachelorItems(applicant);
         expect(items[2].value).toBe('1.5 (90)');
@@ -962,7 +965,7 @@ describe('ApplicationDetailComponent', () => {
       });
 
       it('should return items with undefined values for an applicant with no degree data', () => {
-        const applicant = {} as any;
+        const applicant = { user: { userId: '1' } };
         const items = component.getBachelorItems(applicant);
         expect(items).toHaveLength(3);
         expect(items[0].value).toBeUndefined();
@@ -980,12 +983,13 @@ describe('ApplicationDetailComponent', () => {
         vi.spyOn(component, 'getDisplayGrade').mockReturnValue('1.8');
 
         const applicant = {
+          user: { userId: '1' },
           masterDegreeName: 'Software Engineering',
           masterUniversity: 'ETH Zurich',
           masterGrade: '1.8',
           masterGradeUpperLimit: '4.0',
           masterGradeLowerLimit: '1.0',
-        } as any;
+        };
 
         const items = component.getMasterItems(applicant);
 
@@ -1000,12 +1004,13 @@ describe('ApplicationDetailComponent', () => {
         vi.spyOn(component, 'getDisplayGrade').mockReturnValue('');
 
         const applicant = {
+          user: { userId: '1' },
           masterDegreeName: 'AI',
           masterUniversity: 'TU Berlin',
           masterGrade: '75',
           masterGradeUpperLimit: '100',
           masterGradeLowerLimit: '0',
-        } as any;
+        };
 
         const items = component.getMasterItems(applicant);
         expect(items[2].tooltipText).toBe('evaluation.details.conversionFailedTooltip');
@@ -1015,12 +1020,13 @@ describe('ApplicationDetailComponent', () => {
         vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.3');
 
         const applicant = {
+          user: { userId: '1' },
           masterDegreeName: 'Data Science',
           masterUniversity: 'RWTH Aachen',
           masterGrade: '85',
           masterGradeUpperLimit: '100',
           masterGradeLowerLimit: '50',
-        } as any;
+        };
 
         const items = component.getMasterItems(applicant);
         expect(items[2].value).toBe('2.3 (85)');
@@ -1028,7 +1034,7 @@ describe('ApplicationDetailComponent', () => {
       });
 
       it('should return items with undefined values for an applicant with no degree data', () => {
-        const applicant = {} as any;
+        const applicant = { user: { userId: '1' } };
         const items = component.getMasterItems(applicant);
         expect(items).toHaveLength(3);
         expect(items[0].value).toBeUndefined();
