@@ -12,6 +12,7 @@ import TranslateDirective from '../../../language/translate.directive';
 import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
 import { AcceptDTO } from '../../../../generated/model/acceptDTO';
 import { RejectDTO } from '../../../../generated/model/rejectDTO';
+import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
 
 import ReasonEnum = RejectDTO.ReasonEnum;
 
@@ -28,9 +29,9 @@ import ReasonEnum = RejectDTO.ReasonEnum;
     NgTemplateOutlet,
     ButtonComponent,
     TranslateDirective,
+    UserAvatarComponent,
   ],
   templateUrl: './review-dialog.component.html',
-  styleUrl: './review-dialog.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class ReviewDialogComponent {

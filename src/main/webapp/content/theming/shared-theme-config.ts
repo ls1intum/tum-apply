@@ -318,14 +318,14 @@ export const sharedComponentConfig = {
   },
   multiselect: {
     root: {
-      background: '{background.surface}',
-      color: '{text.primary}',
+      background: '{background.default}',
+      color: '{text.secondary}',
     },
     overlay: {
-      background: '{background.surface}',
+      background: '{background.default}',
     },
     option: {
-      color: '{text.primary}',
+      color: '{text.secondary}',
       selectedColor: '{text.primary}',
       selectedBackground: '{background.surface}',
       focusBackground: '{primary.color}',
@@ -353,7 +353,7 @@ export const sharedComponentConfig = {
   },
   select: {
     root: {
-      placeholderColor: '{text.tertiary}',
+      placeholderColor: '{text.secondary}',
       paddingY: '0.5rem',
       color: '{text.primary}',
     },
@@ -494,7 +494,7 @@ export const sharedLightColorScheme = {
     hoverColor: '{neutral.600}',
     activeColor: '{neutral.700}',
     disabledColor: '{neutral.200}',
-    hoverColorOutlined: '{neutral.200}',
+    hoverColorOutlined: '{neutral.400}',
   },
   background: {
     default: '{background.50}', // canvas

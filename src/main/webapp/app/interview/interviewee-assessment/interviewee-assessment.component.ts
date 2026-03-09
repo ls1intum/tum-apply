@@ -6,7 +6,6 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { InterviewResourceApiService } from 'app/generated';
 import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
 import { UpdateAssessmentDTO } from 'app/generated/model/updateAssessmentDTO';
@@ -18,6 +17,7 @@ import { RatingComponent } from 'app/shared/components/atoms/rating/rating.compo
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
 import { Prose } from 'app/shared/components/atoms/prose/prose';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 /**
@@ -33,7 +33,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
     TranslateDirective,
     FontAwesomeModule,
     DividerModule,
-    ProgressSpinnerModule,
     BackButtonComponent,
     ButtonComponent,
     Section,
@@ -41,6 +40,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
     EditorComponent,
     DocumentSection,
     Prose,
+    UserAvatarComponent,
   ],
   templateUrl: './interviewee-assessment.component.html',
 })

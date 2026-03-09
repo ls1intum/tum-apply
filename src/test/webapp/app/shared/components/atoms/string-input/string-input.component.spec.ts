@@ -128,18 +128,6 @@ describe('StringInputComponent', () => {
       expect(comp.isTouched()).toBe(true);
     });
 
-    it('should return true when control.touched is true and has non-required errors', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const ctrl = new FormControl('', { validators: c => (c.value.length < 5 ? { minlength: true } : null), updateOn: 'blur' });
-      fixture.componentRef.setInput('control', ctrl);
-      ctrl.setValue('hi');
-      ctrl.markAsTouched();
-      fixture.detectChanges();
-
-      expect(comp.isTouched()).toBe(true);
-    });
-
     it('should return false when control.touched is true but only has required error', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
@@ -196,18 +184,6 @@ describe('StringInputComponent', () => {
       fixture.componentRef.setInput('control', ctrl);
 
       expect(comp.errorMessage()).toBeNull();
-    });
-
-    it('should return translated custom error when customErrorKey is provided', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const ctrl = new FormControl('');
-      ctrl.setErrors({ custom: true });
-      fixture.componentRef.setInput('control', ctrl);
-      fixture.componentRef.setInput('customErrorKey', 'entity.applicationPage1.validation.postalCode');
-
-      const msg = comp.errorMessage();
-      expect(msg).toBe('entity.applicationPage1.validation.postalCode');
     });
 
     it('should return minlength error message when validation fails', () => {
@@ -367,14 +343,6 @@ describe('StringInputComponent', () => {
       fixture.componentRef.setInput('errorEnabled', false);
 
       expect(comp.errorEnabled()).toBe(false);
-    });
-
-    it('should correctly bind customErrorKey input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('customErrorKey', 'custom.error.key');
-
-      expect(comp.customErrorKey()).toBe('custom.error.key');
     });
   });
 

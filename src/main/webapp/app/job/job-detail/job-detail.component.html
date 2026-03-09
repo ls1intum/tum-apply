@@ -37,7 +37,10 @@
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
-            <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong> {{ job.supervisingProfessor || '-' }}</span>
+            <span
+              ><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>
+              {{ job.supervisingProfessor ? 'Prof. ' + job.supervisingProfessor : '-' }}</span
+            >
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
@@ -233,7 +236,7 @@
     </div>
 
     <!-- Equal Opportunities Statement -->
-    <section class="mb-8">
+    <section class="mb-8 mt-6">
       <h2 class="section-title" jhiTranslate="jobDetailPage.equalOpportunities.title"></h2>
       <div class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere">
         <span jhiTranslate="jobDetailPage.equalOpportunities.baseText"></span>

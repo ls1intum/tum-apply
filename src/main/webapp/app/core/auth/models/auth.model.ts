@@ -14,6 +14,8 @@ export interface AuthOpenOptions {
   };
   // optional callback when user is fully authenticated
   onSuccess?: () => void;
+  // post-login redirect (e.g. back to booking page instead of home)
+  redirectUri?: string;
 }
 
 // Substates within the login flow:

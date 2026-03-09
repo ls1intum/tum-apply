@@ -3,10 +3,21 @@ package de.tum.cit.aet.utility.testdata;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
+import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Test data helpers for Application.
@@ -130,4 +141,58 @@ public final class ApplicationTestData {
     ) {
         return repo.save(newApplicationAll(job, applicant, state, desiredStartDate, projects, specialSkills, motivation));
     }
+
+    /**
+     * Creates a rejected application with all related test data and overrides its lastModifiedAt timestamp.
+     */
+    public static ApplicationWithDocs savedRejectedWithLastModified(
+        RetentionTestContext ctx,
+        LocalDateTime lastModifiedAt,
+        String fileName
+    ) {
+        Applicant applicant = ApplicantTestData.savedWithRandomEmail(ctx.applicantRepository(), ctx.userRepository());
+        Job job = JobTestData.saved(
+            ctx.jobRepository(),
+            ctx.professor(),
+            ctx.researchGroup(),
+            "Retention test job",
+            JobState.PUBLISHED,
+            null
+        );
+        Application application = savedRejected(ctx.applicationRepository(), job, applicant);
+        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+            ctx.documentRepository(),
+            ctx.documentDictionaryRepository(),
+            ctx.professor(),
+            application,
+            null,
+            DocumentType.CV,
+            fileName
+        );
+
+        ctx
+            .entityManager()
+            .createNativeQuery("UPDATE applications SET last_modified_at = :date WHERE application_id = :id")
+            .setParameter("date", lastModifiedAt)
+            .setParameter("id", application.getApplicationId())
+            .executeUpdate();
+        ctx.entityManager().flush();
+        ctx.entityManager().clear();
+
+        return new ApplicationWithDocs(application, dictionary);
+    }
+
+    public record RetentionTestContext(
+        ApplicationRepository applicationRepository,
+        ApplicantRepository applicantRepository,
+        UserRepository userRepository,
+        JobRepository jobRepository,
+        DocumentRepository documentRepository,
+        DocumentDictionaryRepository documentDictionaryRepository,
+        EntityManager entityManager,
+        User professor,
+        ResearchGroup researchGroup
+    ) {}
+
+    public record ApplicationWithDocs(Application application, DocumentDictionary dictionary) {}
 }

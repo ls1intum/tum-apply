@@ -3,6 +3,8 @@ package de.tum.cit.aet.core.domain;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -10,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 @Getter
 @Setter
 public class DocumentDictionary {

@@ -150,8 +150,8 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/professor} : Returns a paginated list of jobs created by
-     * a specific professor.
+     * {@code GET /api/jobs/research-group} : Returns a paginated list of jobs for
+     * the current user's research group.
      *
      * <p>
      * Supports optional filtering by title and job state. Sorting is supported
@@ -168,14 +168,14 @@ public class JobResource {
      *         {@link Page} of {@link CreatedJobDTO}
      */
     @ProfessorOrEmployeeOrAdmin
-    @GetMapping("/professor")
-    public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
+    @GetMapping("/research-group")
+    public ResponseEntity<Page<CreatedJobDTO>> getJobsForCurrentResearchGroup(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
         @RequestParam(required = false) String searchQuery
     ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
+        return ResponseEntity.ok(jobService.getJobsForCurrentResearchGroup(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
     }
 
     /**

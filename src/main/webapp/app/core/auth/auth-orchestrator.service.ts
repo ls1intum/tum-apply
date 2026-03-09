@@ -1,6 +1,7 @@
 import { Injectable, Injector, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
+import { Router } from '@angular/router';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { ToastMessageInput, ToastService } from 'app/service/toast-service';
 
@@ -30,6 +31,8 @@ import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep 
 export class AuthOrchestratorService {
   readonly config = inject(ApplicationConfigService);
   readonly toastService = inject(ToastService);
+  readonly router = inject(Router);
+
   // high level dialog state
   readonly isOpen = signal(false);
   readonly mode = signal<AuthFlowMode>('login');
@@ -43,6 +46,7 @@ export class AuthOrchestratorService {
   // UX state
   readonly isBusy = signal(false);
   readonly error = signal<ToastMessageInput | null>(null);
+  readonly redirectUri = signal<string | null>(null);
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
@@ -110,6 +114,7 @@ export class AuthOrchestratorService {
       this.setIfPresent(prefill.firstName, value => this.firstName.set(value));
       this.setIfPresent(prefill.lastName, value => this.lastName.set(value));
     }
+    if (opts?.redirectUri) this.redirectUri.set(opts.redirectUri);
 
     // choose sensible starting substates
     if (this.mode() === 'login') {
@@ -130,8 +135,14 @@ export class AuthOrchestratorService {
   // call after successful authentication to close and notify
   authSuccess(): void {
     this.isOpen.set(false);
+    const targetUrl = this.redirectUri();
+
     try {
       this.onSuccessCb?.();
+      if (targetUrl) {
+        const path = targetUrl.startsWith(window.location.origin) ? targetUrl.slice(window.location.origin.length) : targetUrl;
+        void this.router.navigateByUrl(path);
+      }
     } finally {
       this.onSuccessCb = undefined;
     }
@@ -205,5 +216,6 @@ export class AuthOrchestratorService {
     this.isBusy.set(false);
     this.error.set(null);
     this.cooldownUntil.set(null);
+    this.redirectUri.set(null);
   }
 }

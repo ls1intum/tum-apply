@@ -196,6 +196,36 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.adminView',
   },
   {
+    path: 'research-group/schools',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-schools/research-group-schools.component').then(
+        m => m.ResearchGroupSchoolsComponent,
+      ),
+    title: 'global.routes.researchGroup.schools',
+  },
+  {
+    path: 'research-group/departments/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-departments/department-images/department-images.component').then(
+        m => m.DepartmentImages,
+      ),
+    title: 'researchGroup.departments.images.title',
+  },
+  {
+    path: 'research-group/admin-view/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
+        m => m.ResearchGroupImagesComponent,
+      ),
+    title: 'global.routes.researchGroup.adminImages',
+  },
+  {
     path: 'research-group/templates',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
@@ -241,7 +271,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'researchGroup.memberPage',
+    title: 'researchGroup.memberHeader',
   },
   {
     path: 'research-group/members',
@@ -251,7 +281,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'researchGroup.memberPage',
+    title: 'researchGroup.memberHeader',
   },
   {
     path: 'research-group/info',
