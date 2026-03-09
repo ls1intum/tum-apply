@@ -143,7 +143,7 @@
               <!-- Nationality -->
               <span
                 class="whitespace-nowrap transition-all duration-200"
-                [class.blur-sm]="!sensitiveInfoVisible()"
+                [class.blur-[3px]]="!sensitiveInfoVisible()"
                 [class.select-none]="!sensitiveInfoVisible()"
                 >{{
                   application.applicationDetailDTO.applicant?.user?.nationality
@@ -155,7 +155,7 @@
               <span> &middot; </span>
               <span
                 class="whitespace-nowrap transition-all duration-200"
-                [class.blur-sm]="!sensitiveInfoVisible()"
+                [class.blur-[3px]]="!sensitiveInfoVisible()"
                 [class.select-none]="!sensitiveInfoVisible()"
                 >{{
                   application.applicationDetailDTO.applicant?.user?.gender
@@ -283,12 +283,9 @@
                 </jhi-sub-section>
 
                 @if (application.appliedAt) {
-                  <div class="mt-4 flex flex-col">
-                    <span class="font-semibold">
-                      <span jhiTranslate="evaluation.details.applied"></span>
-                    </span>
+                  <jhi-sub-section titleKey="evaluation.details.applied">
                     <span>{{ application.appliedAt | localizedDate }}</span>
-                  </div>
+                  </jhi-sub-section>
                 }
               </jhi-section>
             </div>
