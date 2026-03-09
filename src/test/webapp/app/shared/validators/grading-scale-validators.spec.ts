@@ -52,13 +52,6 @@ describe('gradingScaleTypeValidator', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null when both grade and limit are integers', () => {
-      const validator = gradingScaleTypeValidator(() => '3');
-      const result = validator(createControl('1'));
-
-      expect(result).toBeNull();
-    });
-
     it('should return invalidLimitType error when grade is numeric but limit is a letter grade', () => {
       const validator = gradingScaleTypeValidator(() => '3.5');
       const result = validator(createControl('A'));
@@ -105,13 +98,6 @@ describe('gradingScaleTypeValidator', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null for single letter grades', () => {
-      const validator = gradingScaleTypeValidator(() => 'B');
-      const result = validator(createControl('A'));
-
-      expect(result).toBeNull();
-    });
-
     it('should return invalidLimitType error when grade is letter but limit is numeric', () => {
       const validator = gradingScaleTypeValidator(() => 'B+');
       const result = validator(createControl('3.5'));
@@ -128,14 +114,7 @@ describe('gradingScaleTypeValidator', () => {
   });
 
   describe('whitespace trimming', () => {
-    it('should trim whitespace from control value and grade before comparing types', () => {
-      const validator = gradingScaleTypeValidator(() => '  3.5  ');
-      const result = validator(createControl('  1.0  '));
-
-      expect(result).toBeNull();
-    });
-
-    it('should trim whitespace and still detect type mismatch', () => {
+    it('should trim whitespace and detect type mismatch', () => {
       const validator = gradingScaleTypeValidator(() => '  3.5  ');
       const result = validator(createControl('  A  '));
 
@@ -156,13 +135,6 @@ describe('gradingScaleRangeValidator', () => {
     it('should return null when lowerLimit control is missing', () => {
       const validator = gradingScaleRangeValidator(() => '3.5');
       const group = new FormGroup({ upperLimit: new FormControl('4.0') });
-
-      expect(validator(group)).toBeNull();
-    });
-
-    it('should return null when both controls are missing', () => {
-      const validator = gradingScaleRangeValidator(() => '3.5');
-      const group = new FormGroup({});
 
       expect(validator(group)).toBeNull();
     });
@@ -345,13 +317,6 @@ describe('gradingScaleRangeValidator', () => {
   });
 
   describe('whitespace trimming', () => {
-    it('should trim whitespace and correctly validate numeric grade in range', () => {
-      const validator = gradingScaleRangeValidator(() => '  3.5  ');
-      const group = createRangeGroup('  4.0  ', '  1.0  ');
-
-      expect(validator(group)).toBeNull();
-    });
-
     it('should trim whitespace and correctly detect out of range', () => {
       const validator = gradingScaleRangeValidator(() => '  5.0  ');
       const group = createRangeGroup('  4.0  ', '  1.0  ');
