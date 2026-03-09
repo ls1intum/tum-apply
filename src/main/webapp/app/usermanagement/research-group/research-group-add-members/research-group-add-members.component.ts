@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormsModule } from '@angular/forms';
@@ -12,8 +13,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 const I18N_BASE = 'researchGroup.members';
+type UserListItem = KeycloakUserDTO & { displayName: string };
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
@@ -26,6 +29,7 @@ const I18N_BASE = 'researchGroup.members';
     ProgressSpinnerModule,
     CheckboxComponent,
     InfoBoxComponent,
+    UserAvatarComponent,
   ],
   templateUrl: './research-group-add-members.component.html',
 })
@@ -38,7 +42,7 @@ export class ResearchGroupAddMembersComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  users = signal<KeycloakUserDTO[]>([]);
+  users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
   userService = inject(UserResourceApiService);
@@ -52,99 +56,17 @@ export class ResearchGroupAddMembersComponent {
 
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
-  private loaderTimeout: number | null = null;
+  private loaderTimeout: number | undefined;
 
   // Local mock users for UI testing without Keycloak/server
   private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
-  private readonly MOCK_USERS: KeycloakUserDTO[] = [
-    {
-      id: '7a6b8f3a-09f4-4e9f-8d09-2e2d1a1d8a01',
-      firstName: 'Aniruddh',
-      lastName: 'Zaveri',
-      email: 'aniruddh.zaveri@tum.de',
-      universityId: 'ab12asd',
-    },
-    {
-      id: '2c9c3d14-1a5b-4a8f-9c21-4b1d9e2a3f02',
-      firstName: 'Aniruddh',
-      lastName: 'Pawar',
-      email: 'ge69hug@mytum.de',
-      universityId: 'ab12adv',
-    },
-    {
-      id: 'e4b2f1c3-5d6e-4f1a-8b9c-3d4e5f6a7b03',
-      firstName: 'Alice',
-      lastName: 'Curie',
-      email: 'alice.curie@tum.de',
-      universityId: 'ab12agf',
-    },
-    {
-      id: 'f5a6b7c8-9d0e-4f1a-8b2c-3d4e5f6a7b04',
-      firstName: 'Ben',
-      lastName: 'Schmidt',
-      email: 'ben.schmidt@mytum.de',
-      universityId: 'ab12gkl',
-    },
-    {
-      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c05',
-      firstName: 'Carla',
-      lastName: 'Nguyen',
-      email: 'carla.nguyen@tum.de',
-      universityId: 'ab12hij',
-    },
-    {
-      id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d06',
-      firstName: 'David',
-      lastName: 'Ibrahim',
-      email: 'david.ibrahim@mytum.de',
-      universityId: 'ab12klm',
-    },
-    {
-      id: 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e07',
-      firstName: 'Elena',
-      lastName: 'Rossi',
-      email: 'elena.rossi@tum.de',
-      universityId: 'ab12nop',
-    },
-    {
-      id: 'd4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f08',
-      firstName: 'Farid',
-      lastName: 'Khan',
-      email: 'farid.khan@mytum.de',
-      universityId: 'ab12qrs',
-    },
-    {
-      id: 'e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a09',
-      firstName: 'Greta',
-      lastName: 'Meyer',
-      email: 'greta.meyer@tum.de',
-      universityId: 'ab12tuv',
-    },
-    {
-      id: 'f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b10',
-      firstName: 'Hugo',
-      lastName: 'Weiss',
-      email: 'hugo.weiss@mytum.de',
-      universityId: 'ab12wxy',
-    },
-    {
-      id: '0a1b2c3d-4e5f-4a6b-8c9d-0e1f2a3b4c11',
-      firstName: 'Isabella',
-      lastName: 'Fischer',
-      email: 'isabella.fischer@tum.de',
-      universityId: 'ab12zab',
-    },
-    {
-      id: '1b2c3d4e-5f6a-4b7c-9d0e-1f2a3b4c5d12',
-      firstName: 'Jonas',
-      lastName: 'Bauer',
-      email: 'jonas.bauer@mytum.de',
-      universityId: 'ab12cde',
-    },
-  ];
+  private mockUsers = signal<KeycloakUserDTO[] | null>(null);
+  private readonly MOCK_USERS_PATH = '/content/mock/keycloak-users.json';
 
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
+
+  private http = inject(HttpClient);
 
   constructor() {
     void this.loadAvailableUsers();
@@ -187,23 +109,24 @@ export class ResearchGroupAddMembersComponent {
     }
 
     if (this.USE_MOCK_USERS) {
+      const mockUsers = await this.loadMockUsers();
       const normalizedQuery = query.toLowerCase();
       const filteredUsers = normalizedQuery
-        ? this.MOCK_USERS.filter(user =>
+        ? mockUsers.filter(user =>
             `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
           )
-        : this.MOCK_USERS;
+        : mockUsers;
 
       const startIndex = this.page() * this.pageSize();
       const endIndex = startIndex + this.pageSize();
       this.totalRecords.set(filteredUsers.length);
-      this.users.set(filteredUsers.slice(startIndex, endIndex));
+      this.users.set(this.toUserListItems(filteredUsers.slice(startIndex, endIndex)));
       return;
     }
 
-    if (this.loaderTimeout) {
+    if (this.loaderTimeout !== undefined) {
       clearTimeout(this.loaderTimeout);
-      this.loaderTimeout = null;
+      this.loaderTimeout = undefined;
     }
     this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
 
@@ -217,7 +140,7 @@ export class ResearchGroupAddMembersComponent {
         return;
       }
       this.totalRecords.set(response.totalElements ?? 0);
-      this.users.set(response.content ?? []);
+      this.users.set(this.toUserListItems(response.content ?? []));
     } catch {
       // Only show an error toast for the most recent request; stale errors shouldn't alarm the user
       if (requestId === this.latestRequestId) {
@@ -226,10 +149,8 @@ export class ResearchGroupAddMembersComponent {
     } finally {
       // only touch loading/timeout if this is the latest request
       if (requestId === this.latestRequestId) {
-        if (this.loaderTimeout) {
-          clearTimeout(this.loaderTimeout);
-          this.loaderTimeout = null;
-        }
+        clearTimeout(this.loaderTimeout);
+        this.loaderTimeout = undefined;
         this.loading.set(false);
       }
     }
@@ -244,16 +165,19 @@ export class ResearchGroupAddMembersComponent {
   }
 
   onPageChange(event: { first?: number; rows?: number }): void {
-    const pageNumber = event.first && event.rows ? event.first / event.rows : 0;
+    const first = event.first;
+    const rows = event.rows;
+    const pageNumber = first != null && rows != null && rows !== 0 ? first / rows : 0;
     this.page.set(pageNumber);
-    if (event.rows) {
-      this.pageSize.set(event.rows);
+    if (rows != null) {
+      this.pageSize.set(rows);
     }
-    void this.loadAvailableUsers(this.searchQuery() || undefined);
+    const query = this.searchQuery();
+    void this.loadAvailableUsers(query.length > 0 ? query : undefined);
   }
 
   toggleUserSelection(user: KeycloakUserDTO): void {
-    if (!user.id) {
+    if (user.id == null || user.id === '') {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
     }
@@ -285,7 +209,8 @@ export class ResearchGroupAddMembersComponent {
       this.dialogRef.close(true);
     } catch (err) {
       if (err instanceof HttpErrorResponse) {
-        const errorMessage = err.error?.message ?? '';
+        const rawMessage: unknown = err.error?.message;
+        const errorMessage = typeof rawMessage === 'string' ? rawMessage : '';
         if (err.status === 400 && errorMessage.toLowerCase().includes('already a member')) {
           this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailedAlreadyMember`);
         } else if (err.status === 400 && errorMessage.toLowerCase().includes('not have a valid universityid')) {
@@ -301,10 +226,39 @@ export class ResearchGroupAddMembersComponent {
   }
 
   isUserSelected(user: KeycloakUserDTO): boolean {
-    if (!user.id) {
+    if (user.id == null || user.id === '') {
       return false;
     }
 
     return this.selectedUsers().has(user.id);
+  }
+
+  private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
+    return users.map(user => ({
+      email: user.email,
+      firstName: user.firstName,
+      id: user.id,
+      lastName: user.lastName,
+      universityId: user.universityId,
+      username: user.username,
+      displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+    }));
+  }
+
+  private async loadMockUsers(): Promise<KeycloakUserDTO[]> {
+    const cachedUsers = this.mockUsers();
+    if (cachedUsers !== null) {
+      return cachedUsers;
+    }
+
+    try {
+      const users = await lastValueFrom(this.http.get<KeycloakUserDTO[]>(this.MOCK_USERS_PATH));
+      this.mockUsers.set(users);
+      return users;
+    } catch {
+      this.mockUsers.set([]);
+      this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
+      return [];
+    }
   }
 }

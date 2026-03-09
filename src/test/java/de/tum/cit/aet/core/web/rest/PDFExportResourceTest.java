@@ -32,9 +32,17 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,7 +84,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
     Applicant applicant;
     Applicant applicantWithWebsiteAndLinkedin;
     Job job;
-    Job jobWithNulls;
     Application application;
     Application applicationWithWebsiteAndLinkedin;
 
@@ -214,6 +221,16 @@ class PDFExportResourceTest extends AbstractResourceTest {
         return new ApplicationPDFRequest(appDto, labels);
     }
 
+    // Helper to extract text from a PDF byte array using PDFBox
+    private String extractTextFromPdf(byte[] pdfBytes) {
+        try (PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes))) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            return stripper.getText(doc);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract text from PDF", e);
+        }
+    }
+
     @Nested
     class ExportApplicationToPDF {
 
@@ -268,7 +285,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "Test",
                 "Test"
             );
-            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
+            ApplicationPDFRequest request = createApplicationPdfRequest(appWithMaster, job);
 
             byte[] result = asApplicant(applicantWithMasterNameNull).postAndReturnBytes(
                 BASE_URL + "/application/pdf",
@@ -328,6 +345,60 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 );
 
             assertValidPdf(result);
+        }
+
+        @ParameterizedTest
+        @MethodSource("jobLanguageProvider")
+        void exportJobToPDFLanguageSelection(String enDescription, String deDescription, String requestedLang, String expectedSubstring) {
+            Job jobToTest = JobTestData.savedAll(
+                jobRepository,
+                "Lang Test Job",
+                "AI",
+                "CS",
+                professor,
+                group,
+                Campus.GARCHING,
+                LocalDate.now(),
+                LocalDate.now(),
+                20,
+                3,
+                FundingType.FULLY_FUNDED,
+                enDescription,
+                deDescription,
+                JobState.PUBLISHED
+            );
+
+            Map<String, String> labels = createCompleteLabelsMap();
+            if (requestedLang != null) {
+                labels.put("lang", requestedLang);
+            }
+
+            byte[] pdf = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(BASE_URL + "/job/" + jobToTest.getJobId() + "/pdf", labels, 200, MediaType.APPLICATION_PDF);
+
+            assertValidPdf(pdf);
+            String text = extractTextFromPdf(pdf);
+            assertThat(text).contains(expectedSubstring);
+        }
+
+        static Stream<Arguments> jobLanguageProvider() {
+            return Stream.of(
+                // both present -> select en
+                Arguments.of("EN unique-en-xyz", "DE unique-de-xyz", "en", "unique-en-xyz"),
+                // both present -> select de
+                Arguments.of("EN unique-en-xyz", "DE unique-de-xyz", "de", "unique-de-xyz"),
+                // only EN present -> requested DE should fallback to EN
+                Arguments.of("EN only unique-en-only", null, "de", "unique-en-only"),
+                // only DE present -> requested EN should fallback to DE
+                Arguments.of(null, "DE only unique-de-only", "en", "unique-de-only"),
+                // de whitespace with en present -> fallback to en
+                Arguments.of("EN fallback unique-en-ws", "   ", "de", "unique-en-ws"),
+                // both empty -> '-'
+                Arguments.of("", "", null, "-"),
+                // none present -> expect '-'
+                Arguments.of(null, null, null, "-")
+            );
         }
     }
 

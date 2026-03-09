@@ -1,6 +1,6 @@
-<div class="search-filter-sort-bar">
+<div class="search-filter-sort-bar" [class.full-width]="fullWidth()">
   <div class="flex flex-row justify-between gap-2">
-    <div class="flex flex-row items-center gap-2 flex-wrap">
+    <div class="flex flex-row items-center gap-2 flex-wrap" [class.flex-1]="fullWidth()">
       <p-iconfield iconPosition="left">
         <p-inputicon>
           <fa-icon class="icon" size="sm" [icon]="['fas', 'search']" />

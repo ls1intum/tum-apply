@@ -1,5 +1,5 @@
 <!-- Confirmation Dialog for Professor -->
-@if (mode() === 'professor') {
+@if (isProfessorMode()) {
   <jhi-confirm-dialog
     #confirmDialog
     [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
@@ -13,7 +13,7 @@
 }
 
 <!-- Confirmation Dialog for Admin -->
-@if (mode() === 'admin') {
+@if (isAdminMode()) {
   <jhi-confirm-dialog
     #confirmDialog
     [header]="'researchGroup.adminView.createDialog.confirmHeader' | translate"
@@ -28,12 +28,12 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
   <!-- Information Notice -->
-  @if (mode() === 'professor') {
+  @if (isProfessorMode()) {
     <jhi-info-box severity="primary" message="onboarding.professorRequest.approvalNotice" [shouldTranslate]="true" />
   }
 
   <!-- Personal Information -->
-  @if (mode() === 'professor') {
+  @if (isProfessorMode()) {
     <div class="flex flex-col gap-4">
       <h3
         class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
@@ -97,17 +97,101 @@
       jhiTranslate="onboarding.professorRequest.sections.researchGroupInfo"
     ></h3>
 
-    @if (mode() === 'admin') {
-      <div>
-        <jhi-string-input
-          label="researchGroup.adminView.tumID.label"
-          placeholder="researchGroup.adminView.tumID.placeholder"
-          [required]="true"
-          [model]="form.get('tumID')?.value"
-          [control]="form.get('tumID') ?? undefined"
-          icon="id-card"
-          [shouldTranslate]="true"
+    @if (isAdminMode()) {
+      <div class="flex flex-col gap-3">
+        <jhi-search-filter-sort-bar
+          [searchText]="'researchGroup.adminView.professorSelect.searchPlaceholder' | translate"
+          [fullWidth]="true"
+          [showRecords]="isSearchQueryLongEnough()"
+          [totalRecords]="adminProfessorTotalCount()"
+          [singleEntity]="'researchGroup.adminView.professorSelect.singleEntity' | translate"
+          [multipleEntities]="'researchGroup.adminView.professorSelect.multipleEntities' | translate"
+          (searchOutput)="onAdminProfessorSearch($event)"
         />
+
+        @if (selectedAdminProfessor(); as selectedProfessor) {
+          <div class="rounded-lg border border-border-default p-3 bg-background-surface">
+            <div class="font-medium text-text-primary">{{ selectedProfessor.firstName }} {{ selectedProfessor.lastName }}</div>
+            <div class="text-sm text-text-secondary">{{ selectedProfessor.email }}</div>
+            <div class="text-sm text-text-secondary">{{ selectedProfessor.universityId }}</div>
+            <div class="mt-2">
+              <jhi-button
+                type="button"
+                size="xs"
+                variant="outlined"
+                severity="secondary"
+                [shouldTranslate]="true"
+                label="researchGroup.adminView.professorSelect.changeButton"
+                (click)="clearSelectedAdminProfessor()"
+              />
+            </div>
+          </div>
+        }
+
+        @if (!selectedAdminProfessor()) {
+          <div class="flex flex-col border border-border-default rounded-lg overflow-y-auto max-h-64">
+            @if (isLoadingAdminUsers()) {
+              <div class="flex items-center justify-center h-24 bg-background-default rounded-lg">
+                <jhi-progress-spinner styleClass="w-8 h-8 text-text-primary" />
+              </div>
+            }
+
+            @if (showSearchMinLengthHint()) {
+              <div class="p-4 text-sm text-center text-text-secondary">
+                {{ 'researchGroup.members.emptySearch' | translate: { minLength: MIN_ADMIN_SEARCH_LENGTH } }}
+              </div>
+            }
+
+            @if (showNoSearchResults()) {
+              <div class="p-4 text-sm text-center text-text-secondary">
+                {{ 'researchGroup.adminView.professorSelect.noResults' | translate }}
+              </div>
+            }
+
+            @if (showCandidatesList()) {
+              @for (user of adminProfessorCandidates(); track user.id) {
+                <div
+                  class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
+                  [class.bg-background-surface-alt]="selectedAdminProfessor()?.id === user.id"
+                  [class.hover:bg-background-surface]="selectedAdminProfessor()?.id !== user.id"
+                  (click)="selectAdminProfessor(user)"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div
+                    class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-default flex items-center justify-center text-text-on-primary font-semibold"
+                  >
+                    {{ user.firstName ? user.firstName.charAt(0) : '' }}{{ user.lastName ? user.lastName.charAt(0) : '' }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
+                    <div class="text-sm text-text-secondary">{{ user.email }}</div>
+                    <div class="text-sm text-text-secondary">{{ user.universityId }}</div>
+                  </div>
+                </div>
+              }
+
+              @if (hasMoreAdminProfessorCandidates()) {
+                <div class="p-3 border-t border-border-default bg-background-default">
+                  <jhi-button
+                    type="button"
+                    [fullWidth]="true"
+                    variant="outlined"
+                    severity="secondary"
+                    [shouldTranslate]="true"
+                    label="researchGroup.adminView.professorSelect.loadMore"
+                    [disabled]="isLoadingAdminUsers()"
+                    (click)="onLoadMoreAdminProfessors()"
+                  />
+                </div>
+              }
+            }
+          </div>
+        }
+
+        @if (form.get('tumID')?.invalid && form.get('tumID')?.touched && !selectedAdminProfessor()) {
+          <p class="m-0 text-sm text-status-danger" jhiTranslate="researchGroup.adminView.professorSelect.requiredError"></p>
+        }
       </div>
     }
 
@@ -255,7 +339,7 @@
       </div>
     </div>
 
-    @if (mode() === 'professor') {
+    @if (isProfessorMode()) {
       <div>
         <jhi-string-input
           label="onboarding.professorRequest.additionalNotes.label"
@@ -278,7 +362,7 @@
       variant="outlined"
       [disabled]="isSubmitting()"
     />
-    @if (mode() === 'professor') {
+    @if (isProfessorMode()) {
       <jhi-button
         type="submit"
         [disabled]="form.invalid || isSubmitting()"
@@ -288,7 +372,7 @@
         [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
       />
     }
-    @if (mode() === 'admin') {
+    @if (isAdminMode()) {
       <jhi-button
         type="submit"
         [disabled]="form.invalid || isSubmitting()"
