@@ -2467,7 +2467,10 @@ components:
             INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
-        jobLocation: {type: string}
+        jobLocation:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
@@ -3004,7 +3007,10 @@ components:
         departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         professorName: {type: string}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
@@ -3053,13 +3059,19 @@ components:
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
-        fundingType: {type: string}
+        fundingType:
+          type: string
+          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}

@@ -160,7 +160,7 @@ class JobResourceTest extends AbstractResourceTest {
 
         JobCardDTO card = page.content().getFirst();
         assertThat(card.title()).isEqualTo("Published Role");
-        assertThat(card.location()).isEqualTo("Garching");
+        assertThat(card.location().getEnglishValue()).isEqualTo("Garching");
         assertThat(card.professorName()).isEqualTo("John Doe");
         assertThat(card.avatar()).isEqualTo(professor.getAvatar());
         assertThat(card.workload()).isEqualTo(20);
@@ -565,7 +565,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
         assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
-        assertThat(returnedJob.location()).isEqualTo("Garching");
+        assertThat(returnedJob.location().getEnglishValue()).isEqualTo("Garching");
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());

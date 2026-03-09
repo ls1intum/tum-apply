@@ -189,7 +189,7 @@ describe('ApplicationPage3Component', () => {
       applicationState: 'SAVED',
       job: {
         jobId: 'id-123',
-        location: 'location',
+        location: 'GARCHING',
         professorName: 'profName',
         title: 'title',
       },

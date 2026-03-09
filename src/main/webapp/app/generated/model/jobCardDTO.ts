@@ -17,7 +17,7 @@ export interface JobCardDTO {
     departmentName?: string;
     imageUrl?: string;
     jobId: string;
-    location: string;
+    location: JobCardDTO.LocationEnum;
     professorName: string;
     relativeTimeEnglish?: string;
     relativeTimeGerman?: string;
@@ -36,6 +36,16 @@ export namespace JobCardDTO {
         Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
         JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
         Interview: 'INTERVIEW' as ApplicationStateEnum
+    };
+    export type LocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
+    export const LocationEnum = {
+        Garching: 'GARCHING' as LocationEnum,
+        GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as LocationEnum,
+        Heilbronn: 'HEILBRONN' as LocationEnum,
+        Munich: 'MUNICH' as LocationEnum,
+        Straubing: 'STRAUBING' as LocationEnum,
+        Weihenstephan: 'WEIHENSTEPHAN' as LocationEnum,
+        Singapore: 'SINGAPORE' as LocationEnum
     };
 }
 
