@@ -9,7 +9,7 @@ import { ThemeService } from 'app/service/theme.service';
 export class UserAvatarComponent {
   fullName = input<string | undefined>(undefined);
   avatarUrl = input<string | undefined>(undefined);
-  size = input<'md' | 'lg' | 'xl'>('md');
+  size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
   loading = input<'eager' | 'lazy'>('eager');
 
   // Show initials for the current display name, fallback to "U" when missing.
@@ -37,6 +37,9 @@ export class UserAvatarComponent {
   );
   sizeClass = computed(() => {
     const size = this.size();
+    if (size === 'sm') {
+      return 'h-8 w-8 text-[0.875rem]';
+    }
     if (size === 'xl') {
       return 'h-16 w-16 text-[1.6rem]';
     }
