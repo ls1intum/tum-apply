@@ -13,6 +13,7 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
+import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.Constants;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
@@ -58,6 +59,7 @@ class TechnicalStructureTest {
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
             Constants.class,
             ApplicationProperties.class,
+            ApplicantRetentionProperties.class,
             UserRetentionProperties.class
         ));
 

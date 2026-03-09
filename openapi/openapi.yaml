@@ -1079,6 +1079,23 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/research-group/job-banners/by-research-group:
+    get:
+      tags: [image-resource]
+      operationId: getResearchGroupJobBannersByResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/upload/default-job-banner:
     post:
       tags: [image-resource]
@@ -1106,6 +1123,29 @@ paths:
     post:
       tags: [image-resource]
       operationId: uploadJobBanner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/job-banner/by-research-group:
+    post:
+      tags: [image-resource]
+      operationId: uploadJobBannerForResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           multipart/form-data:
@@ -2418,7 +2458,10 @@ components:
             INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
-        jobLocation: {type: string}
+        jobLocation:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
@@ -2447,6 +2490,7 @@ components:
       properties:
         applicationDetailDTO: {$ref: '#/components/schemas/ApplicationDetailDTO'}
         appliedAt: {type: string, format: date-time}
+        averageRating: {type: number, format: double}
         jobId: {type: string, format: uuid}
         professor: {$ref: '#/components/schemas/ProfessorDTO'}
       required: [applicationDetailDTO]
@@ -2718,7 +2762,7 @@ components:
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
             INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
             INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2731,7 +2775,7 @@ components:
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
             INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
             INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2744,7 +2788,7 @@ components:
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
             INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
             INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2760,7 +2804,7 @@ components:
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
             INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
             INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2850,14 +2894,15 @@ components:
         invitedCount: {type: integer, format: int64}
         isClosed: {type: boolean}
         jobId: {type: string, format: uuid}
+        jobState: {type: string}
         jobTitle: {type: string}
         processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
         totalSlots: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
-        totalInterviews, totalSlots, uncontactedCount]
+      required: [completedCount, invitedCount, jobId, jobState, jobTitle, processId,
+        scheduledCount, totalInterviews, totalSlots, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
@@ -2951,7 +2996,10 @@ components:
         departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         professorName: {type: string}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
@@ -3000,13 +3048,19 @@ components:
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
-        fundingType: {type: string}
+        fundingType:
+          type: string
+          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}

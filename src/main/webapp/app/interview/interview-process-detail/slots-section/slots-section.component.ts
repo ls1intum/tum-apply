@@ -5,7 +5,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { InterviewResourceApiService } from 'app/generated';
@@ -71,6 +70,7 @@ export class SlotsSectionComponent {
 
   // Inputs
   processId = input.required<string>();
+  isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
   invitedCount = input(0);
 

@@ -105,3 +105,16 @@ export function extractCompleteHtmlTags(html: string): string {
 export function unescapeJsonString(str: string): string {
   return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
 }
+
+/**
+ * Returns the initials from a name string (first and last name).
+ * @param name - The full name string
+ * @returns The initials (first and last character, uppercase)
+ */
+export function getInitials(name: string): string {
+  if (!name) return '';
+  const nameParts = name.trim().split(/\s+/);
+  const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
+  const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
+  return firstInitial + lastInitial;
+}
