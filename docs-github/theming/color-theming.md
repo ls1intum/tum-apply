@@ -62,12 +62,6 @@ Maps PrimeNG CSS variables to Tailwind-compatible color tokens. This enables Tai
 
 ### 1. **Always Use Semantic Colors**
 
-❌ **NEVER use hard-coded hex values:**
-
-```html
-<div style="color: #3070b3;">...</div>
-```
-
 ✅ **Use Tailwind utility classes (PREFERRED):**
 
 ```html
@@ -84,6 +78,12 @@ Maps PrimeNG CSS variables to Tailwind-compatible color tokens. This enables Tai
   background-color: var(--p-background-default);
   border-color: var(--p-border-default);
 }
+```
+
+❌ **NEVER use hard-coded hex values:**
+
+```html
+<div style="color: #3070b3;">...</div>
 ```
 
 ### 2. **Styling Priority**
