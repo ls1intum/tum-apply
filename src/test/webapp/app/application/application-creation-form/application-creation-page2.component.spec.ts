@@ -140,6 +140,61 @@ describe('ApplicationPage2Component', () => {
     });
   });
 
+  describe('Document Validity', () => {
+    it('should set bachelorDocsValid to false when docs are undefined or empty', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+      });
+      componentInstance.bachelorDocsSetValidity(undefined);
+      expect(componentInstance.bachelorDocsValid()).toBe(false);
+
+      componentInstance.bachelorDocsSetValidity([]);
+      expect(componentInstance.bachelorDocsValid()).toBe(false);
+    });
+
+    it('should set bachelorDocsValid to true when docs are provided', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+      });
+      componentInstance.bachelorDocsSetValidity([{ id: '1', size: 1 }]);
+      expect(componentInstance.bachelorDocsValid()).toBe(true);
+    });
+
+    it('should set masterDocsValid to false when docs are undefined or empty', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+      });
+      componentInstance.masterDocsSetValidity(undefined);
+      expect(componentInstance.masterDocsValid()).toBe(false);
+
+      componentInstance.masterDocsSetValidity([]);
+      expect(componentInstance.masterDocsValid()).toBe(false);
+    });
+
+    it('should set masterDocsValid to true when docs are provided', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+      });
+      componentInstance.masterDocsSetValidity([{ id: '2', size: 2 }]);
+      expect(componentInstance.masterDocsValid()).toBe(true);
+    });
+
+    it('should emit valid=false when form fields are valid but documents are missing', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+      });
+      const validSpy = vi.fn();
+      componentInstance.valid.subscribe(validSpy);
+
+      // Form is valid but docs are missing
+      componentInstance.page2Form.updateValueAndValidity();
+
+      expect(componentInstance.page2Form.valid).toBe(true);
+      expect(componentInstance.bachelorDocsValid()).toBe(false);
+      expect(componentInstance.masterDocsValid()).toBe(false);
+    });
+  });
+
   describe('Form Behavior', () => {
     it('should not emit if form value has not changed (distinctUntilChanged)', async () => {
       const { fixture, componentInstance } = createApplicationPage2Fixture();
