@@ -16,7 +16,7 @@ describe('AiScoreRingComponent', () => {
     fixture.detectChanges();
   });
 
-  it('clamps score input to the valid 0..100 range', () => {
+  it('should clamps score input to the valid 0..100 range', () => {
     fixture.componentRef.setInput('score', 150);
     fixture.detectChanges();
     expect(component.boundedScore()).toBe(100);
@@ -26,7 +26,7 @@ describe('AiScoreRingComponent', () => {
     expect(component.boundedScore()).toBe(0);
   });
 
-  it('maps animated score to danger/warning/primary colors', () => {
+  it('should map animated score to danger/warning/primary colors', () => {
     component.animatedScore.set(10);
     expect(component.scoreColor()).toBe('var(--p-danger-color)');
 
@@ -37,7 +37,7 @@ describe('AiScoreRingComponent', () => {
     expect(component.scoreColor()).toBe('var(--p-primary-color)');
   });
 
-  it('calculates stroke offset from the animated score', () => {
+  it('should calculate stroke offset from the animated score', () => {
     component.animatedScore.set(0);
     expect(component.strokeOffset()).toBeCloseTo(component.circumference, 5);
 

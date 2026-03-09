@@ -26,7 +26,6 @@ import { MessageComponent } from 'app/shared/components/atoms/message/message.co
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
-import { GenderBiasAnalysisResponse } from 'app/generated/model/genderBiasAnalysisResponse';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApiService } from 'app/generated';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
@@ -233,16 +232,13 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Latest gender decoder result for the job description */
-  readonly jobDescriptionAnalysis = toSignal<GenderBiasAnalysisResponse | null>(
-    this.genderBiasAnalysisService.getAnalysisForField('jobDescription'),
-    {
-      initialValue: null,
-    },
-  );
+  readonly jobDescriptionAnalysis = toSignal(this.genderBiasAnalysisService.getAnalysisForField('jobDescription'), {
+    initialValue: undefined,
+  });
 
   /** Score shown in the AI sidebar */
   readonly aiScore = computed(() =>
-    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()),
+    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis() ?? null, this.jobDescriptionSignal()),
   );
 
   // ═══════════════════════════════════════════════════════════════════════════

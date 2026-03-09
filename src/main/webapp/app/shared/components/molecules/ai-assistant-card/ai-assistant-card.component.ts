@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
@@ -32,6 +32,7 @@ export class AiAssistantCardComponent {
   readonly warningThreshold = 65;
   readonly dangerThreshold = 29;
   readonly excellentThreshold = 90;
+  readonly displayedScore = signal(0);
 
   readonly boundedScore = computed(() => {
     const value = this.score();
@@ -41,8 +42,14 @@ export class AiAssistantCardComponent {
     return Math.max(0, Math.min(100, Math.round(value)));
   });
 
+  private readonly displayedScoreEffect = effect(() => {
+    if (!this.isGenerating()) {
+      this.displayedScore.set(this.boundedScore());
+    }
+  });
+
   readonly scoreFeedback = computed(() => {
-    const score = this.boundedScore();
+    const score = this.displayedScore();
 
     if (score <= this.dangerThreshold) {
       return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical';
