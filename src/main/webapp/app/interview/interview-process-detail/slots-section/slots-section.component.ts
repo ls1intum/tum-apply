@@ -65,6 +65,7 @@ export class SlotsSectionComponent {
 
   // Inputs
   processId = input.required<string>();
+  isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
   invitedCount = input(0);
 

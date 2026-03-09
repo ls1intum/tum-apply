@@ -59,6 +59,7 @@ public class GlobalExceptionHandler {
         Map.entry(EmailVerificationFailedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(AccessDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
+        Map.entry(InterviewProcessClosedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.INTERVIEW_PROCESS_CLOSED)),
         Map.entry(TooManyRequestsException.class, new ExceptionMetadata(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.TOO_MANY_REQUESTS)),
         Map.entry(MailingException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR)),
         Map.entry(InternalServerException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR)),
@@ -165,6 +166,10 @@ public class GlobalExceptionHandler {
             log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());
             return buildErrorResponse(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED, evfe, request.getRequestURI(), null);
         }
+        if (ex instanceof InterviewProcessClosedException ipce) {
+            log.info("Handled interview process closed exception - Path: {}", request.getRequestURI());
+            return buildErrorResponse(HttpStatus.FORBIDDEN, ErrorCode.INTERVIEW_PROCESS_CLOSED, ipce, request.getRequestURI(), null);
+        }
         if (ex instanceof BadRequestException bre) {
             log.info("Handled bad request exception - Path: {}", request.getRequestURI());
             return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, bre, request.getRequestURI(), null);
@@ -222,13 +227,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Builds a standardized API error response object from the given exception and metadata.
+     * Builds a standardized API error response object from the given exception and
+     * metadata.
      *
      * @param status      the HTTP status to return
      * @param code        the application-specific error code
      * @param ex          the thrown exception
      * @param path        the request URI that caused the error
-     * @param fieldErrors optional list of field-level validation errors (null if not applicable)
+     * @param fieldErrors optional list of field-level validation errors (null if
+     *                    not applicable)
      * @return a ResponseEntity containing the ApiError
      */
     private ResponseEntity<Object> buildErrorResponse(
@@ -243,7 +250,8 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Metadata record for mapping exceptions to corresponding HTTP status and error code.
+     * Metadata record for mapping exceptions to corresponding HTTP status and error
+     * code.
      *
      * @param status the HTTP status to return
      * @param code   the error code associated with the exception

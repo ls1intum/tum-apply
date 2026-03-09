@@ -15,6 +15,7 @@ export interface InterviewOverviewDTO {
     invitedCount: number;
     isClosed?: boolean;
     jobId: string;
+    jobState: string;
     jobTitle: string;
     processId: string;
     scheduledCount: number;
