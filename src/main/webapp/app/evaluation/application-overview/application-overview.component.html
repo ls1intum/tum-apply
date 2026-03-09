@@ -1,6 +1,10 @@
 <div class="page-container">
   <div class="page-header">
-    <h1 jhiTranslate="evaluation.overviewHeader">Applications - Overview</h1>
+    <h1>
+      <span jhiTranslate="sidebar.recruitment.title"></span>
+      -
+      <span jhiTranslate="evaluation.overviewHeader"></span>
+    </h1>
   </div>
 
   <jhi-search-filter-sort-bar
@@ -43,6 +47,13 @@
 
   <ng-template #appliedAtTemplate let-application>
     {{ (application.appliedAt?.toString() | localizedDate) || '-' }}
+  </ng-template>
+
+  <ng-template #nameTemplate let-application>
+    <div class="flex items-center gap-2">
+      <jhi-user-avatar [fullName]="application.name ?? ''" size="lg" />
+      <span class="truncate">{{ application.name || '-' }}</span>
+    </div>
   </ng-template>
 
   <ng-template #actionTemplate let-application>

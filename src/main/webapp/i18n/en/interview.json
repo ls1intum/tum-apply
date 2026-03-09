@@ -1,7 +1,7 @@
 {
   "interview": {
     "overview": {
-      "title": "Interviews Overview",
+      "title": "Interviews",
       "positions": {
         "title": "Positions"
       },
@@ -14,12 +14,17 @@
         "newProcess": "New Interview Process",
         "viewDetails": "View Details"
       },
+      "status": {
+        "closed": "Closed"
+      },
       "stats": {
         "completed": "Completed",
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total Interviews"
+        "totalInterviews": "Total Interviews",
+        "totalSlots": "Total Slots",
+        "booked": "Booked"
       },
       "upcoming": {
         "title": "Upcoming",
@@ -28,6 +33,12 @@
       "error": {
         "failedToLoad": "Failed to load interview processes."
       }
+    },
+    "warning": {
+      "notEnoughSlots": "{{invited}} applicants invited, but only {{slots}} slots available. Please create more slots.",
+      "notEnoughSlotsSingular": "{{invited}} applicant invited, but only {{slots}} slots available. Please create more slots.",
+      "zeroSlots": "{{invited}} applicants invited, but no slots are available. Please create new slots.",
+      "zeroSlotsSingular": "{{invited}} applicant invited, but no slots are available. Please create new slots."
     },
     "detail": {
       "error": {
@@ -41,13 +52,16 @@
       },
       "empty": {
         "title": "No slots yet",
-        "description": "Create your first interview slots to get started."
+        "closedTitle": "Process closed",
+        "description": "Create your first interview slots to get started.",
+        "closedDescription": "It is no longer possible to create slots for this closed process."
       },
       "noSlotsInMonth": "No slots in {{month}}",
       "showLess": "Show less"
     },
     "slots": {
       "addSlots": "Add Slots",
+      "notEnoughSlots": "Not enough slots for all invited interviewees available.",
       "slotsCountSingular": "slot",
       "slotsCountPlural": "slots",
       "showMoreSingular": "more slot",
@@ -169,6 +183,21 @@
           "summary": "Permission denied",
           "detail": "You don't have permission to delete this slot"
         }
+      },
+      "cancelInterview": {
+        "header": "Cancel Interview",
+        "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
+        "button": "Cancel",
+        "sendReinvite": "Re-invite applicant (Send booking link)",
+        "deleteSlot": "Delete this slot",
+        "success": {
+          "summary": "Interview cancelled",
+          "detail": "The interview has been successfully cancelled."
+        },
+        "error": {
+          "summary": "Cancellation failed",
+          "detail": "The interview could not be cancelled. Please try again or contact an admin."
+        }
       }
     },
     "interviewees": {
@@ -203,7 +232,14 @@
         "INVITED": "Invited",
         "SCHEDULED": "Scheduled",
         "UNCONTACTED": "Uncontacted",
-        "COMPLETED": "Completed"
+        "COMPLETED": "Completed",
+        "tooltip": {
+          "ALL": "All interviewees in this interview process",
+          "INVITED": "Interviewees who have received an invitation but have not booked a slot yet",
+          "SCHEDULED": "Interviewees who have successfully booked a slot",
+          "UNCONTACTED": "Interviewees who have been added to the process but have not been contacted yet",
+          "COMPLETED": "Interviewees whose interview has already taken place"
+        }
       },
       "error": {
         "loadFailed": {
@@ -299,6 +335,12 @@
           "summary": "Not Found",
           "detail": "This applicant does not exist or has been removed."
         }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Process Closed",
+        "description": "This interview process is now closed. You can no longer book interview slots."
       }
     }
   }

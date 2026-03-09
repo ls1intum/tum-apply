@@ -29,11 +29,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable  pagination information
      * @return a page of {@link InterviewSlot} entities
      */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
+    @EntityGraph(value = "InterviewSlot.withIntervieweeDetails")
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
 
@@ -64,6 +60,28 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     List<InterviewSlot> findByInterviewProcessIdInWithJob(@Param("processIds") List<UUID> processIds);
 
     /**
+     * Counts all unbooked future interview slots associated with a list of
+     * interview processes.
+     * Returns a list of object arrays where [0] is the processId and [1] is the
+     * count.
+     *
+     * @param processIds the list of interview process IDs
+     * @param now        the current time
+     * @return a list of object arrays with process ID and count
+     */
+    @Query(
+        """
+        SELECT s.interviewProcess.id, COUNT(s)
+        FROM InterviewSlot s
+        WHERE s.interviewProcess.id IN :processIds
+        AND s.isBooked = false
+        AND s.startDateTime > :now
+        GROUP BY s.interviewProcess.id
+        """
+    )
+    List<Object[]> countUnbookedFutureSlotsPerProcess(@Param("processIds") List<UUID> processIds, @Param("now") Instant now);
+
+    /**
      * Counts all interview slots associated with a specific interview process.
      * Finds all interview slots of a given professor that overlap with a specified
      * time range.
@@ -74,6 +92,18 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @return the number of slots linked to the given process
      */
     long countByInterviewProcessId(UUID processId);
+
+    /**
+     * Counts unbooked future interview slots for a specific process.
+     *
+     * @param processId the ID of the interview process
+     * @param now       the current time
+     * @return the number of available slots
+     */
+    @Query(
+        "SELECT COUNT(s) FROM InterviewSlot s WHERE s.interviewProcess.id = :processId AND s.isBooked = false AND s.startDateTime > :now"
+    )
+    long countUnbookedFutureSlotsByInterviewProcessId(@Param("processId") UUID processId, @Param("now") Instant now);
 
     /**
      * Checks if a professor has any conflicting slots within the given time range.
@@ -141,32 +171,36 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
 
     /**
-     * Finds all interview slots for a given interview process within a specific
-     * month.
-     * Results are paginated and ordered by start time.
+     * Finds interview slots for a given process, applying optional date filters.
      *
-     * @param processId  the ID of the interview process
-     * @param monthStart the start of the month (inclusive)
-     * @param monthEnd   the end of the month (exclusive)
-     * @param pageable   pagination information
-     * @return a page of {@link InterviewSlot} entities for the specified month
+     * @param processId      the ID of the interview process
+     * @param afterDateTime  if provided, only slots on or after this time are
+     *                       returned
+     * @param beforeDateTime if provided, only slots strictly before this time are
+     *                       returned
+     * @param monthStart     if provided, only slots on or after this month start
+     *                       are returned
+     * @param monthEnd       if provided, only slots strictly before this month end
+     *                       are returned
+     * @param pageable       pagination information
+     * @return a page of matching slots order by start time
      */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
+    @EntityGraph(value = "InterviewSlot.withIntervieweeDetails")
     @Query(
         """
         SELECT s FROM InterviewSlot s
         WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
+        AND (cast(:afterDateTime as timestamp) IS NULL OR s.startDateTime >= :afterDateTime)
+        AND (cast(:beforeDateTime as timestamp) IS NULL OR s.startDateTime < :beforeDateTime)
+        AND (cast(:monthStart as timestamp) IS NULL OR s.startDateTime >= :monthStart)
+        AND (cast(:monthEnd as timestamp) IS NULL OR s.startDateTime < :monthEnd)
         ORDER BY s.startDateTime
         """
     )
-    Page<InterviewSlot> findByProcessIdAndMonth(
+    Page<InterviewSlot> findSlotsWithFilters(
         @Param("processId") UUID processId,
+        @Param("afterDateTime") Instant afterDateTime,
+        @Param("beforeDateTime") Instant beforeDateTime,
         @Param("monthStart") Instant monthStart,
         @Param("monthEnd") Instant monthEnd,
         Pageable pageable
@@ -241,7 +275,16 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
+    @EntityGraph(
+        attributePaths = {
+            "interviewee",
+            "interviewee.application",
+            "interviewee.application.applicant",
+            "interviewee.application.applicant.user",
+            "interviewProcess",
+            "interviewProcess.job",
+        }
+    )
     Page<InterviewSlot> findUpcomingBookedSlotsForProfessor(
         @Param("professorId") UUID professorId,
         @Param("now") Instant now,
@@ -267,7 +310,16 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
+    @EntityGraph(
+        attributePaths = {
+            "interviewee",
+            "interviewee.application",
+            "interviewee.application.applicant",
+            "interviewee.application.applicant.user",
+            "interviewProcess",
+            "interviewProcess.job",
+        }
+    )
     Page<InterviewSlot> findUpcomingBookedSlotsForResearchGroup(
         @Param("researchGroupId") UUID researchGroupId,
         @Param("now") Instant now,

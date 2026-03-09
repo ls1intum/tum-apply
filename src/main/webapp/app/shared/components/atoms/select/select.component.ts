@@ -13,6 +13,7 @@ export type SelectOption = {
   value: string | number;
   icon?: string;
 };
+export type size = 'small' | 'large' | undefined;
 
 @Component({
   selector: 'jhi-select',
@@ -41,6 +42,7 @@ export class SelectComponent {
   showClear = input<boolean>(false);
   appendTo = input<string | undefined>(undefined);
   dataKey = input<string | undefined>(undefined);
+  size = input<size>(undefined);
   errorEnabled = input<boolean>(false);
 
   selectedChange = output<SelectOption>();

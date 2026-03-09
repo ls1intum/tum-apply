@@ -2,7 +2,6 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,6 +13,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -42,7 +42,6 @@ interface MembersRow {
     BackButtonComponent,
     ButtonComponent,
     TranslateDirective,
-    FontAwesomeModule,
     TranslateModule,
     DynamicTableComponent,
     DialogModule,
@@ -51,9 +50,9 @@ interface MembersRow {
     IconFieldModule,
     InputIconModule,
     ConfirmDialog,
+    UserAvatarComponent,
   ],
   templateUrl: './research-group-members.component.html',
-  styleUrl: './research-group-members.component.scss',
 })
 export class ResearchGroupMembersComponent {
   members = signal<UserShortDTO[]>([]);
@@ -62,6 +61,7 @@ export class ResearchGroupMembersComponent {
   total = signal<number>(0);
 
   researchGroupId = signal<string | undefined>(undefined);
+  researchGroupName = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -126,6 +126,10 @@ export class ResearchGroupMembersComponent {
   private readonly routeIdEffect = effect(() => {
     const id = this.routeId();
     this.researchGroupId.set(id);
+    this.researchGroupName.set(undefined);
+    if (id) {
+      void this.loadResearchGroupName(id);
+    }
     void this.loadMembers();
   });
 
@@ -200,5 +204,14 @@ export class ResearchGroupMembersComponent {
 
   private isCurrentUser(member: UserShortDTO): boolean {
     return member.userId === this.accountService.userId;
+  }
+
+  private async loadResearchGroupName(researchGroupId: string): Promise<void> {
+    try {
+      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      this.researchGroupName.set(researchGroup.name);
+    } catch {
+      this.researchGroupName.set(undefined);
+    }
   }
 }

@@ -1,0 +1,58 @@
+<p-divider layout="horizontal">
+  <span>{{ sectionTitleKey() | translate }}</span>
+</p-divider>
+
+<div class="flex flex-col lg:flex-row lg:gap-8">
+  <div class="w-full lg:w-1/2">
+    @if (applicationId(); as currentApplicationId) {
+      <div class="mb-6 w-full">
+        <div>
+          <span>{{ certificateLabelKey() | translate }}</span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </div>
+        <jhi-upload-button
+          [uploadKey]="uploadKey()"
+          [documentType]="documentType()"
+          [applicationId]="currentApplicationId"
+          [(documentIds)]="documentIds"
+          [deferUpload]="deferUpload()"
+          (queuedFilesChange)="queuedFilesChange.emit($event)"
+        />
+      </div>
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col">
+    <jhi-string-input
+      class="mr-4 inline-block w-full"
+      [label]="degreeNameLabelKey() | translate"
+      [required]="required()"
+      [control]="degreeNameControl()"
+    />
+
+    <jhi-string-input
+      class="mr-4 inline-block w-full"
+      [label]="degreeUniversityLabelKey() | translate"
+      [required]="required()"
+      [control]="degreeUniversityControl()"
+    />
+
+    <jhi-string-input
+      class="mr-4 inline-block w-full"
+      [label]="gradeLabelKey() | translate"
+      [required]="required()"
+      [control]="gradeControl()"
+      icon="circle-info"
+      [tooltipText]="gradeTooltipKey() | translate"
+      [helperTextLeft]="gradeHelperText()"
+      [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+      (helperTextRightClick)="changeScale.emit()"
+      [warningText]="gradeWarningText()"
+    />
+  </div>
+</div>

@@ -6,6 +6,7 @@ import { map, startWith } from 'rxjs';
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
+import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 
 @Component({
   selector: 'jhi-auth-idp-buttons',
@@ -16,6 +17,7 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 })
 export class AuthIdpButtons {
   authFacadeService = inject(AuthFacadeService);
+  authOrchestratorService = inject(AuthOrchestratorService);
   breakpointObserver = inject(BreakpointObserver);
   isRegistration = input<boolean>(false);
 
@@ -57,6 +59,6 @@ export class AuthIdpButtons {
   }));
 
   private redirectUri(): string {
-    return window.location.origin;
+    return this.authOrchestratorService.redirectUri() ?? window.location.origin;
   }
 }

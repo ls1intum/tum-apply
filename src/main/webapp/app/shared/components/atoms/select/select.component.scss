@@ -31,12 +31,25 @@
 
   .p-select {
     background: var(--p-background-default);
+
+    &:hover {
+      border-color: var(--p-neutral-hover-color-outlined);
+    }
+  }
+
+  .p-select-dropdown {
+    color: var(--p-text-secondary);
+    font-size: var(--p-select-sm-font-size);
+  }
+
+  .p-select-list-container {
+    max-height: 12rem !important;
   }
 
   // Override primeng styling of border color when clicking on select field
   .p-select:not(.p-disabled).p-focus {
     box-shadow: none;
-    border: 0.1rem solid var(--p-primary-color);
+    border-color: var(--p-border-default);
   }
 
   // Override PrimeNG positioning and size of the clear ("X") icon
@@ -66,6 +79,7 @@
 // Global styles for dropdown options (works even when appended to body)
 .p-select-overlay {
   margin-top: 0.25rem;
+  font-size: var(--p-select-sm-font-size);
   .p-select-list {
     padding: 0;
   }
@@ -79,29 +93,28 @@
   }
 
   .p-select-option {
+    margin: 0.1rem 0.25rem;
+    border-radius: 0.5rem;
     background: var(--p-background-default);
 
     &:hover {
-      background-color: var(--p-primary-color);
-      color: var(--p-text-on-primary);
+      background: var(--p-primary-hover-color-outlined);
     }
 
     &.p-focus:not(.p-select-option-selected) {
       background: var(--p-background-default);
 
       &:hover {
-        background-color: var(--p-primary-color);
-        color: var(--p-text-on-primary);
+        background: var(--p-primary-hover-color-outlined);
       }
     }
 
     &.p-select-option-selected {
-      background: var(--p-background-surface-alt);
+      background: var(--p-primary-hover-color-outlined);
       color: var(--p-text-primary);
 
       &:hover {
-        background-color: var(--p-primary-color);
-        color: var(--p-text-on-primary);
+        background: var(--p-primary-hover-color-outlined);
       }
     }
   }
