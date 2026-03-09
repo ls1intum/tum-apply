@@ -16,14 +16,14 @@ import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
+import de.tum.cit.aet.usermanagement.dto.UpdateAvatarDTO;
+import de.tum.cit.aet.usermanagement.dto.UpdatePasswordDTO;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
-import de.tum.cit.aet.usermanagement.web.UserResource.UpdateAvatarDTO;
-import de.tum.cit.aet.usermanagement.web.UserResource.UpdatePasswordDTO;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
@@ -244,6 +244,7 @@ public class UserResourceTest extends AbstractResourceTest {
 
         @Test
         void returns400WhenAvatarUrlReferencesAnotherUsersProfilePicture() {
+            imageRepository.save(ImageTestData.newProfilePicture(currentUser));
             User otherUser = UserTestData.createUserWithoutResearchGroup(userRepository, "other.user@tum.de", "Other", "User", "xy12zzz");
             ProfileImage otherUsersProfileImage = imageRepository.save(ImageTestData.newProfilePicture(otherUser));
             UpdateAvatarDTO dto = new UpdateAvatarDTO(otherUsersProfileImage.getUrl());

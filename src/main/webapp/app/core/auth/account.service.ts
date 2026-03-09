@@ -126,7 +126,7 @@ export class AccountService {
   }
 
   setAvatar(avatarUrl: string | undefined): void {
-    this.user.update(currentUser => (currentUser ? { ...currentUser, avatar: avatarUrl } : currentUser));
+    this.user.update(currentUser => (currentUser ? Object.assign({}, currentUser, { avatar: avatarUrl }) : currentUser));
   }
 
   private async getCurrentUser(): Promise<UserShortDTO | null> {

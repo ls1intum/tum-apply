@@ -9,13 +9,14 @@ import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
+import de.tum.cit.aet.usermanagement.dto.UpdateAvatarDTO;
+import de.tum.cit.aet.usermanagement.dto.UpdatePasswordDTO;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -128,8 +129,4 @@ public class UserResource {
         PagedResult<KeycloakUserDTO> usersPage = keycloakUserService.getAvailableUsersForResearchGroup(searchQuery, pageDTO);
         return ResponseEntity.ok(new PageResponseDTO<>(usersPage.content(), usersPage.total()));
     }
-
-    public record UpdatePasswordDTO(@NotBlank String newPassword) {}
-
-    public record UpdateAvatarDTO(String avatarUrl) {}
 }

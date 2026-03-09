@@ -4,6 +4,10 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+  <changeSet id="029_expand_user_avatar_column" author="celine">
+    <modifyDataType tableName="users" columnName="avatar" newDataType="VARCHAR(512)"/>
+  </changeSet>
+
   <changeSet id="030_enforce_single_profile_picture_per_user" author="celine">
     <comment>
       Enforce that each user can own at most one PROFILE_PICTURE image while allowing

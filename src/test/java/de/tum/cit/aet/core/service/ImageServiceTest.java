@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.NoProfilePictureException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -299,6 +300,24 @@ class ImageServiceTest {
             assertThat(Files.exists(existingFile)).isFalse();
             verify(imageRepository).delete(existingImage);
         }
+
+        @Test
+        void shouldStoreProfilePictureWithCanonicalExtensionEvenForLongOriginalFilename() throws IOException {
+            BufferedImage validImage = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+            byte[] imageBytes = createImageBytes(validImage);
+            String longOriginalFilename = "profile." + "a".repeat(600);
+            MultipartFile fileWithLongFilename = new MockMultipartFile("file", longOriginalFilename, "image/jpeg", imageBytes);
+
+            when(currentUserService.getUser()).thenReturn(testUser);
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.empty());
+            when(imageRepository.save(any(ProfileImage.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            ProfileImage result = imageService.uploadProfilePicture(fileWithLongFilename);
+
+            assertThat(result.getUrl()).startsWith("/images/profiles/");
+            assertThat(result.getUrl()).endsWith(".jpg");
+            assertThat(result.getUrl().length()).isLessThan(512);
+        }
     }
 
     @Nested
@@ -325,10 +344,36 @@ class ImageServiceTest {
         }
 
         @Test
-        void shouldRejectProfileImageUrlsNotOwnedByCurrentUser() {
-            String avatarUrl = "/images/profiles/other-user.jpg";
+        void shouldRejectBlankAvatarUrlWhenNoProfilePictureWasProvided() {
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+
+            assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl("   "))
+                .isInstanceOf(NoProfilePictureException.class)
+                .hasMessage("No profile picture URL was provided");
+
+            verify(imageRepository, never()).existsProfileImageByUserIdAndUrl(any(UUID.class), anyString());
+            verify(imageRepository, never()).findProfileImageByUserId(any(UUID.class));
+        }
+
+        @Test
+        void shouldRejectProfileImageUrlWhenUserHasNoStoredProfilePicture() {
+            String avatarUrl = "/images/profiles/missing.jpg";
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(imageRepository.existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl)).thenReturn(false);
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl(avatarUrl))
+                .isInstanceOf(NoProfilePictureException.class)
+                .hasMessage("No stored profile picture exists for this user");
+        }
+
+        @Test
+        void shouldRejectProfileImageUrlsNotOwnedByCurrentUser() {
+            String avatarUrl = "/images/profiles/other-user.jpg";
+            ProfileImage ownProfileImage = ImageTestData.newProfilePicture(testUser);
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(imageRepository.existsProfileImageByUserIdAndUrl(TEST_USER_ID, avatarUrl)).thenReturn(false);
+            when(imageRepository.findProfileImageByUserId(TEST_USER_ID)).thenReturn(Optional.of(ownProfileImage));
 
             assertThatThrownBy(() -> imageService.assertCurrentUserOwnsProfilePictureUrl(avatarUrl))
                 .isInstanceOf(BadRequestException.class)
