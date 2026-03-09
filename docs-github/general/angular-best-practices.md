@@ -6,7 +6,7 @@ Essential patterns and common mistakes for client development in TUMApply.
 
 ## 🔧 **TypeScript / Component Patterns**
 
-### 11. **Use `inject()` for Dependency Injection**
+### 1. **Use `inject()` for Dependency Injection**
 
 ✅ **GOOD:**
 
@@ -29,7 +29,7 @@ constructor(
 
 ---
 
-### 12. **Handle Async Operations with `async/await`**
+### 2. **Handle Async Operations with `async/await`**
 
 ✅ **GOOD:**
 
@@ -60,7 +60,7 @@ loadApplications(): void {
 
 ---
 
-### 13. **Use `computed()` for Derived State**
+### 3. **Use `computed()` for Derived State**
 
 ✅ **GOOD:**
 
@@ -84,7 +84,7 @@ get filteredApplications(): ApplicationDTO[] {
 
 ---
 
-### 14. **Use `effect()` Only for Side Effects**
+### 4. **Use `effect()` Only for Side Effects**
 
 ✅ **GOOD** — Side effects (DOM, logging, API calls):
 
@@ -118,7 +118,7 @@ doubleCount = computed(() => this.count() * 2);
 
 ## 🎯 **Angular Template Patterns**
 
-### 8. **Use Modern Control Flow (`@if`, `@for`, `@switch`)**
+### 5. **Use Modern Control Flow (`@if`, `@for`, `@switch`)**
 
 ✅ **GOOD** — Modern Angular 17+ syntax:
 
@@ -145,7 +145,7 @@ doubleCount = computed(() => this.count() * 2);
 
 ---
 
-### 9. **Internationalization (i18n)**
+### 6. **Internationalization (i18n)**
 
 ✅ **ALL user-visible text must use translation:**
 
@@ -169,7 +169,7 @@ doubleCount = computed(() => this.count() * 2);
 
 ---
 
-### 10. **Component Communication**
+### 7. **Component Communication**
 
 ✅ **GOOD** — Use signals for inputs/outputs:
 
@@ -205,7 +205,7 @@ export class MyComponent {
 
 ## 🎨 **Styling & HTML Best Practices**
 
-### 1. **NEVER Hard-Code Colors**
+### 8. **NEVER Hard-Code Colors**
 
 ❌ **WRONG**:
 
@@ -237,7 +237,7 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 ---
 
-### 2. **Avoid Inline Styles**
+### 9. **Avoid Inline Styles**
 
 ❌ **WRONG**:
 
@@ -265,7 +265,7 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 ---
 
-### 3. **Use Conditional Class Bindings Correctly**
+### 10. **Use Conditional Class Bindings Correctly**
 
 ✅ **GOOD** — Single conditional class:
 
@@ -306,7 +306,7 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 ---
 
-### 4. **Use Computed Signals for Complex Conditional Styling**
+### 11. **Use Computed Signals for Complex Conditional Styling**
 
 When you have complex conditional logic determining which classes to apply, use `computed()` to derive the class string or object.
 
@@ -394,7 +394,7 @@ buttonClasses = computed(() => {
 
 ---
 
-### 5. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
+### 12. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
 
 ❌ **WRONG**:
 
@@ -412,7 +412,7 @@ buttonClasses = computed(() => {
 
 ---
 
-### 6. **Use Custom Arbitrary Values for Specific Needs**
+### 13. **Use Custom Arbitrary Values for Specific Needs**
 
 ✅ **ACCEPTABLE** — Specific layout needs:
 
@@ -437,7 +437,7 @@ buttonClasses = computed(() => {
 
 ---
 
-### 7. **Structure Responsive Classes Consistently**
+### 14. **Structure Responsive Classes Consistently**
 
 ✅ **GOOD** — Mobile-first, ordered by breakpoint:
 
@@ -457,7 +457,7 @@ buttonClasses = computed(() => {
 
 ---
 
-### 8. **Styling PrimeNG Components**
+### 15. **Styling PrimeNG Components**
 
 PrimeNG components use `styleClass` (and variants like `dialogStyleClass`, `contentStyleClass`, etc.) to accept custom CSS classes.
 
