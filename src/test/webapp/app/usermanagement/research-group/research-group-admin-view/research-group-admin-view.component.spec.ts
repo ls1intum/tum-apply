@@ -610,9 +610,6 @@ describe('ResearchGroupAdminView', () => {
 
       const manageMembersSpy = vi.spyOn(component, 'onManageMembers');
       const manageImagesSpy = vi.spyOn(component, 'onManageImages');
-      const approveConfirmSpy = vi.spyOn(component.approveDialog(), 'confirm');
-      const denyConfirmSpy = vi.spyOn(component.denyDialog(), 'confirm');
-      const withdrawConfirmSpy = vi.spyOn(component.withdrawDialog(), 'confirm');
 
       const menuMap = component.actionMenuItems();
 
@@ -641,7 +638,6 @@ describe('ResearchGroupAdminView', () => {
 
       draftItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-<<<<<<< general/enhancement-support-visible-input-signal-in-jhi-confirm-dialog
       expect(component.showApproveDialog()).toBe(true);
       component.showApproveDialog.set(false); // Reset for next assertion
 
@@ -652,17 +648,6 @@ describe('ResearchGroupAdminView', () => {
       activeItems.find(item => item.label === 'button.withdraw')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-2');
       expect(component.showWithdrawDialog()).toBe(true);
-=======
-      expect(approveConfirmSpy).toHaveBeenCalledOnce();
-
-      draftItems.find(item => item.label === 'button.deny')?.command?.();
-      expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(denyConfirmSpy).toHaveBeenCalledOnce();
-
-      activeItems.find(item => item.label === 'button.withdraw')?.command?.();
-      expect(component.currentResearchGroupId()).toBe('rg-2');
-      expect(withdrawConfirmSpy).toHaveBeenCalledOnce();
->>>>>>> main
 
       deniedItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-3');
