@@ -207,18 +207,6 @@ export class MyComponent {
 
 ### 8. **NEVER Hard-Code Colors**
 
-❌ **WRONG**:
-
-```html
-<!-- Hard-coded Tailwind colors -->
-<div class="border-blue-300 bg-blue-50">...</div>
-<div class="text-gray-700 bg-amber-100">...</div>
-<div class="text-blue-600 hover:underline">...</div>
-
-<!-- Hard-coded colors in conditional classes -->
-<div [class]="isError ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"></div>
-```
-
 ✅ **CORRECT** — Use semantic color tokens:
 
 ```html
@@ -231,6 +219,18 @@ export class MyComponent {
 <div [class]="isError ? 'bg-negative-default text-text-on-danger' : 'bg-info-default text-text-on-info'"></div>
 ```
 
+❌ **WRONG**:
+
+```html
+<!-- Hard-coded Tailwind colors -->
+<div class="border-blue-300 bg-blue-50">...</div>
+<div class="text-gray-700 bg-amber-100">...</div>
+<div class="text-blue-600 hover:underline">...</div>
+
+<!-- Hard-coded colors in conditional classes -->
+<div [class]="isError ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"></div>
+```
+
 **Why:** Hard-coded colors break dark mode, custom themes (blossom, aquabloom), and maintainability.
 
 See [Color Theming Documentation](../theming/color-theming.md) for complete reference.
@@ -238,17 +238,6 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 ---
 
 ### 9. **Avoid Inline Styles**
-
-❌ **WRONG**:
-
-```html
-<span style="font-weight: bold">Text</span>
-
-<div style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.75rem), 1fr))">...</div>
-
-<!-- Mixing inline styles with bindings -->
-<p [style.color]="'var(--p-text-disabled)'">...</p>
-```
 
 ✅ **CORRECT** — Use Tailwind classes only:
 
@@ -261,6 +250,17 @@ See [Color Theming Documentation](../theming/color-theming.md) for complete refe
 
 <!-- Conditional styling with class binding -->
 <p [class.text-text-disabled]="isDisabled()">...</p>
+```
+
+❌ **WRONG**:
+
+```html
+<span style="font-weight: bold">Text</span>
+
+<div style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.75rem), 1fr))">...</div>
+
+<!-- Mixing inline styles with bindings -->
+<p [style.color]="'var(--p-text-disabled)'">...</p>
 ```
 
 ---
@@ -396,16 +396,16 @@ buttonClasses = computed(() => {
 
 ### 12. **Don't Mix CSS Variables with Tailwind Arbitrary Values**
 
-❌ **WRONG**:
-
-```html
-<i class="text-[var(--p-primary-400)]"></i> <span class="text-[var(--p-text-tertiary)]"></span>
-```
-
 ✅ **CORRECT** — Use the semantic token directly:
 
 ```html
 <i class="text-primary-default"></i> <span class="text-text-tertiary"></span>
+```
+
+❌ **WRONG**:
+
+```html
+<i class="text-[var(--p-primary-400)]"></i> <span class="text-[var(--p-text-tertiary)]"></span>
 ```
 
 **Why:** The semantic tokens are already mapped in `_tokens.scss`. Using arbitrary values bypasses the system.
@@ -555,19 +555,17 @@ dialogClasses = computed(() => {
 
 Before adding Tailwind utilities, **check if the styling is already applied** by base styles or component defaults.
 
-### **Common Redundant Patterns**
-
 ```html
-<!-- ❌ WRONG - Redundant classes -->
-<p class="text-base text-text-primary">Description text</p>
-<!-- p elements are ALREADY text-base and text-text-primary by default -->
-
 <!-- ✅ CORRECT - Only override when needed -->
 <p class="text-lg">Larger description text</p>
 <!-- Only add classes when you need to CHANGE the default -->
 
 <h1 class="text-text-secondary">Subtitle-style heading</h1>
 <!-- Only override when design requires different styling -->
+
+<!-- ❌ WRONG - Redundant classes -->
+<p class="text-base text-text-primary">Description text</p>
+<!-- p elements are ALREADY text-base and text-text-primary by default -->
 ```
 
 ### **How to Check for Redundancy**
