@@ -1,4 +1,4 @@
-npm run lint:fix<jhi-dialog [visible]="visible()" (visibleChange)="onVisibleChange($event)" header="interview.assign.title" width="50rem">
+<jhi-dialog [visible]="visible()" (visibleChange)="onVisibleChange($event)" header="interview.assign.title" width="50rem">
   <div class="flex flex-col gap-6">
     <!-- Section 1: Selected Slot -->
     <div class="flex flex-col gap-2">
@@ -69,7 +69,6 @@ npm run lint:fix<jhi-dialog [visible]="visible()" (visibleChange)="onVisibleChan
         [disabled]="!canAssign()"
         size="sm"
         styleClass="w-28 h-10"
-        [loading]="assignLoading()"
         (click)="assignApplicant()"
       />
     </div>
