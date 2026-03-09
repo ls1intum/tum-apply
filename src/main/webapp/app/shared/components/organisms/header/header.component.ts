@@ -28,11 +28,21 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
+import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective, MenuComponent],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    TranslateModule,
+    DynamicDialogModule,
+    TranslateDirective,
+    MenuComponent,
+    UserAvatarComponent,
+  ],
   templateUrl: './header.component.html',
   encapsulation: ViewEncapsulation.None,
 })

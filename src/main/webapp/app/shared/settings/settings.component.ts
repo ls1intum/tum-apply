@@ -11,14 +11,16 @@ import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../compone
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 import { PersonalInformationSettingsComponent } from './personal-information-settings';
+import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
 
-type SettingsTab = 'general' | 'notifications' | 'personal-information';
+type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'documents';
 @Component({
   selector: 'jhi-settings',
   imports: [
     TranslateDirective,
     EmailSettingsComponent,
     PersonalInformationSettingsComponent,
+    SettingsDocumentsComponent,
     SelectComponent,
     TabViewComponent,
     TabPanelTemplateDirective,
@@ -38,9 +40,10 @@ export class SettingsComponent {
       baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications' });
     }
 
-    // Add Personal Information tab only for applicants
+    // Add Personal Information and documents tabs only for applicants
     if (this.role() === UserShortDTO.RolesEnum.Applicant) {
       baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
+      baseTabs.push({ id: 'documents', translationKey: 'settings.tabs.documents' });
     }
 
     return baseTabs;

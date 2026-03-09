@@ -45,10 +45,19 @@
 
   <!-- Templates for dynamic table -->
   <ng-template #nameTemplate let-member>
-    {{ member.name }}
-    @if (member.isCurrentUser) {
-      <fa-icon icon="circle-user" class="current-user-icon" [title]="'researchGroup.members.me' | translate" />
-    }
+    <div class="flex items-center gap-2">
+      <jhi-user-avatar [fullName]="member.name" size="lg" />
+      <span>
+        {{ member.name }}
+        @if (member.isCurrentUser) {
+          ({{ 'researchGroup.members.you' | translate }})
+        }
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #roleTemplate let-member>
+    <span>{{ member.role }}</span>
   </ng-template>
 
   <ng-template #deleteTemplate let-member>

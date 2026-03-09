@@ -188,6 +188,23 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     )
     Page<UUID> findInactiveNonAdminUserIdsForRetention(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
+    /**
+     * Returns lower-cased university IDs that are already assigned to any research group.
+     *
+     * @param universityIds lower-cased university IDs to check
+     * @return subset of IDs that belong to users with a non-null research group
+     */
+    @Query(
+        """
+            SELECT LOWER(u.universityId)
+            FROM User u
+            WHERE u.researchGroup IS NOT NULL
+              AND u.universityId IS NOT NULL
+              AND LOWER(u.universityId) IN :universityIds
+        """
+    )
+    List<String> findAssignedUniversityIdsIn(@Param("universityIds") List<String> universityIds);
+
     @Query(
         """
             SELECT u.userId
