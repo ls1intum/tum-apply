@@ -81,9 +81,6 @@
       "master": "Master",
       "bachelor": "Bachelor"
     },
-    "privacy": {
-      "toggleTooltip": "Show/hide sensitive information"
-    },
     "details": {
       "grade": "Grade",
       "educationGradeConverted": "Grade (converted)",

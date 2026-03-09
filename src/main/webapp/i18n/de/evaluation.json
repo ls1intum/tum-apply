@@ -81,9 +81,6 @@
       "master": "Master",
       "bachelor": "Bachelor"
     },
-    "privacy": {
-      "toggleTooltip": "Sensible Informationen anzeigen/verbergen"
-    },
     "details": {
       "grade": "Note",
       "educationGradeConverted": "Abschlussnote (konvertiert)",

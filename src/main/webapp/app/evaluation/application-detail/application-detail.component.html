@@ -168,7 +168,7 @@
                 [icon]="sensitiveInfoVisible() ? 'eye-slash' : 'eye'"
                 variant="text"
                 size="sm"
-                [tooltip]="'evaluation.privacy.toggleTooltip' | translate"
+                [tooltip]="(sensitiveInfoVisible() ? 'button.hideSensitiveInfo' : 'button.showSensitiveInfo') | translate"
                 tooltipPosition="top"
                 styleClass="hover:!bg-transparent"
                 (click)="toggleSensitiveInfo()"
