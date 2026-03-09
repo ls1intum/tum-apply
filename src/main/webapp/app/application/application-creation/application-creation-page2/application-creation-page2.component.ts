@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, model, output, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -87,8 +87,14 @@ export default class ApplicationCreationPage2Component {
   hasInitialized = signal(false);
   hasInitialLimitsSet = signal(false);
 
-  bachelorDocsValid = signal<boolean>(false);
-  masterDocsValid = signal<boolean>(false);
+  bachelorDocsValid = linkedSignal(() => {
+    const docs = this.documentIdsBachelorTranscript();
+    return docs !== undefined && docs.length > 0;
+  });
+  masterDocsValid = linkedSignal(() => {
+    const docs = this.documentIdsMasterTranscript();
+    return docs !== undefined && docs.length > 0;
+  });
 
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
@@ -228,16 +234,6 @@ export default class ApplicationCreationPage2Component {
     }
 
     this.valid.emit(this.page2Form.valid && this.bachelorDocsValid() && this.masterDocsValid());
-  });
-
-  private initializeBachelorDocs = effect(() => {
-    const docs = this.documentIdsBachelorTranscript();
-    untracked(() => this.bachelorDocsSetValidity(docs));
-  });
-
-  private initializeMasterDocs = effect(() => {
-    const docs = this.documentIdsMasterTranscript();
-    untracked(() => this.masterDocsSetValidity(docs));
   });
 
   bachelorDocsSetValidity(docs: DocumentInformationHolderDTO[] | undefined): void {
