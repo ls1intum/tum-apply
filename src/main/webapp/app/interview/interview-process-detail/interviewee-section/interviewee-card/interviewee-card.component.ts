@@ -49,12 +49,7 @@ export class IntervieweeCardComponent {
   isVirtual = computed(() => this.interviewee().scheduledSlot?.location === 'virtual');
 
   // Constants
-  protected readonly IntervieweeState = {
-    UNCONTACTED: 'UNCONTACTED',
-    INVITED: 'INVITED',
-    SCHEDULED: 'SCHEDULED',
-    COMPLETED: 'COMPLETED',
-  } as const;
+  protected readonly IntervieweeState = IntervieweeDTO.StateEnum;
 
   // Services
   private readonly router = inject(Router);
