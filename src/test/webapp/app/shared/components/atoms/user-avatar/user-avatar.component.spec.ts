@@ -85,14 +85,14 @@ describe('UserAvatarComponent', () => {
       fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.sizeClass()).toBe('h-10 w-10 text-[0.95rem]');
+      expect(fixture.componentInstance.sizeClass()).toBe('h-14 w-14 text-[1.4rem]');
     });
 
     it('should use the md size class by default', () => {
       const fixture = TestBed.createComponent(UserAvatarComponent);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.sizeClass()).toBe('h-8 w-8 text-[0.8rem]');
+      expect(fixture.componentInstance.sizeClass()).toBe('h-10 w-10 text-[1rem]');
     });
 
     it('should use the xl size class when size is set to xl', () => {
@@ -100,7 +100,7 @@ describe('UserAvatarComponent', () => {
       fixture.componentRef.setInput('size', 'xl');
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.sizeClass()).toBe('h-16 w-16 text-[1.2rem]');
+      expect(fixture.componentInstance.sizeClass()).toBe('h-16 w-16 text-[1.6rem]');
     });
   });
 

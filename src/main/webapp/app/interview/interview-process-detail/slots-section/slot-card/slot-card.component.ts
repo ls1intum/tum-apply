@@ -17,6 +17,7 @@ import { formatFullName } from 'app/shared/util/name.util';
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
+  isClosed = input<boolean>(false);
 
   editSlot = output<InterviewSlotDTO>();
   deleteSlot = output<InterviewSlotDTO>();

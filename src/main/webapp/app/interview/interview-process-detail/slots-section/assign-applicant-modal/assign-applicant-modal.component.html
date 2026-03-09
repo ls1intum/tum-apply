@@ -29,11 +29,7 @@
 
       <!-- List Container / Table -->
       <div class="flex flex-col gap-2 max-h-[40vh] overflow-y-auto pr-1">
-        @if (intervieweeState() === 'loading') {
-          <div class="flex justify-center py-8">
-            <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
-          </div>
-        } @else if (intervieweeState() === 'empty') {
+        @if (intervieweeState() === 'empty') {
           <div class="text-center py-8 text-text-secondary">
             <span jhiTranslate="interview.assign.noApplicants">No invited applicants available</span>
           </div>
@@ -44,7 +40,7 @@
               <span jhiTranslate="interview.assign.allAssigned">All applicants in the interview process already have an appointment</span>
             </div>
           </div>
-        } @else {
+        } @else if (intervieweeState() === 'selectable') {
           <jhi-dynamic-table
             [data]="availableInterviewees()"
             [columns]="[{ field: 'applicant', header: '', width: '100%', template: applicantTpl }]"
@@ -73,7 +69,6 @@
         [disabled]="!canAssign()"
         size="sm"
         styleClass="w-28 h-10"
-        [loading]="assignLoading()"
         (click)="assignApplicant()"
       />
     </div>
@@ -83,7 +78,7 @@
     @let displayName = person.user?.name ?? ((person.user?.firstName ?? '') + ' ' + (person.user?.lastName ?? '')).trim();
     <div class="flex items-center gap-3 cursor-pointer" (click)="selectApplicant(person)">
       <jhi-checkbox [model]="isSelected(person)" [errorEnabled]="false" (click)="$event.stopPropagation(); selectApplicant(person)" />
-      <jhi-user-avatar [fullName]="displayName" [avatarUrl]="person.user?.avatar" size="lg" loading="lazy" />
+      <jhi-user-avatar [fullName]="displayName" [avatarUrl]="person.user?.avatar" loading="lazy" />
       <span class="font-medium text-text-primary">{{ displayName }}</span>
     </div>
   </ng-template>

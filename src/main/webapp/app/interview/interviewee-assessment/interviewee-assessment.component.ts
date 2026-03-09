@@ -6,7 +6,6 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { InterviewResourceApiService } from 'app/generated';
 import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
 import { UpdateAssessmentDTO } from 'app/generated/model/updateAssessmentDTO';
@@ -35,7 +34,6 @@ import { formatFullName } from 'app/shared/util/name.util';
     TranslateDirective,
     FontAwesomeModule,
     DividerModule,
-    ProgressSpinnerModule,
     BackButtonComponent,
     ButtonComponent,
     Section,

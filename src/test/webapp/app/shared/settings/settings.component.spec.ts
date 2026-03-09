@@ -9,8 +9,6 @@ import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingRe
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 import { UserDataExportResourceApiService } from 'app/generated';
-import { HttpHeaders } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('SettingsComponent', () => {
