@@ -96,8 +96,6 @@ describe('LocalStorageService', () => {
       jobId: 'JERR',
       timestamp: new Date().toISOString(),
     };
-    expect(() =>
-      runSilently(() => service.saveApplicationDraft(draft))
-    ).toThrowError('Failed to save application data locally.');
+    expect(() => runSilently(() => service.saveApplicationDraft(draft))).toThrowError('Failed to save application data locally.');
   });
 });
