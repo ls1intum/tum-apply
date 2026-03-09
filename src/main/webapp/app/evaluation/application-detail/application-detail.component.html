@@ -131,43 +131,48 @@
                 }
               </div>
             </div>
-            <div class="text-sm">
-              <!-- Bachelor's Degree -->
-              @if (bachelorSummary().degree || bachelorSummary().university) {
-                <span>
-                  {{ bachelorSummary().degree || '—' }}{{ bachelorSummary().university ? ', ' + bachelorSummary().university : ''
-                  }}{{ bachelorSummary().gradeInfo.displayValue ? ', ' : '' }}
-
-                  @if (bachelorSummary().gradeInfo.displayValue) {
-                    <span jhiTranslate="evaluation.details.grade"></span>:
-                    {{ bachelorSummary().gradeInfo.displayValue }}
-
-                    @if (bachelorSummary().gradeInfo.tooltipText) {
-                      <fa-icon
-                        class="icon"
-                        [icon]="['fas', 'circle-info']"
-                        [pTooltip]="bachelorSummary().gradeInfo.tooltipText"
-                        [escape]="false"
-                        tooltipPosition="top"
-                      />
-                    }
-                  }
+            <div class="text-sm flex flex-wrap items-center gap-2">
+              <!-- Start Date -->
+              @if (application.applicationDetailDTO.desiredDate) {
+                <span class="whitespace-nowrap">
+                  <span jhiTranslate="evaluation.details.start"></span>:
+                  {{ application.applicationDetailDTO.desiredDate | localizedDate }}
                 </span>
                 <span> &middot; </span>
               }
               <!-- Nationality -->
-              <span class="whitespace-nowrap">{{
-                application.applicationDetailDTO.applicant?.user?.nationality
-                  ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
-                  : '—'
-              }}</span>
-              <!-- Gender (de-emphasized) -->
+              <span
+                class="whitespace-nowrap transition-all duration-200"
+                [class.blur-sm]="!sensitiveInfoVisible()"
+                [class.select-none]="!sensitiveInfoVisible()"
+                >{{
+                  application.applicationDetailDTO.applicant?.user?.nationality
+                    ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
+                    : '—'
+                }}</span
+              >
+              <!-- Gender -->
               <span> &middot; </span>
-              <span class="whitespace-nowrap">{{
-                application.applicationDetailDTO.applicant?.user?.gender
-                  ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
-                  : '—'
-              }}</span>
+              <span
+                class="whitespace-nowrap transition-all duration-200"
+                [class.blur-sm]="!sensitiveInfoVisible()"
+                [class.select-none]="!sensitiveInfoVisible()"
+                >{{
+                  application.applicationDetailDTO.applicant?.user?.gender
+                    ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
+                    : '—'
+                }}</span
+              >
+              <!-- Privacy Toggle Button -->
+              <jhi-button
+                [icon]="sensitiveInfoVisible() ? 'eye-slash' : 'eye'"
+                variant="text"
+                size="sm"
+                [tooltip]="'evaluation.privacy.toggleTooltip' | translate"
+                tooltipPosition="top"
+                styleClass="hover:!bg-transparent"
+                (click)="toggleSensitiveInfo()"
+              />
             </div>
           </div>
         </div>
@@ -207,43 +212,86 @@
       <div class="w-full">
         <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
-            <!-- Application -->
-            <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
-              <jhi-sub-section titleKey="evaluation.details.applicationMotivation">
-                <jhi-prose [text]="application.applicationDetailDTO.motivation" />
-              </jhi-sub-section>
-
-              <jhi-sub-section titleKey="evaluation.details.applicationSkills">
-                <jhi-prose [text]="application.applicationDetailDTO.specialSkills" />
-              </jhi-sub-section>
-
-              <jhi-sub-section titleKey="evaluation.details.applicationProjects">
-                <jhi-prose [text]="application.applicationDetailDTO.projects" />
-              </jhi-sub-section>
-
-              @if (application.appliedAt || application.applicationDetailDTO.desiredDate) {
-                <jhi-sub-section titleKey="evaluation.details.applicationDates">
-                  <div class="flex flex-wrap gap-4 text-sm">
-                    @if (application.appliedAt) {
-                      <div class="flex flex-col">
-                        <span class="text-text-secondary uppercase tracking-wide text-xs">
-                          <span jhiTranslate="evaluation.details.applied"></span>
-                        </span>
-                        <span>{{ application.appliedAt | localizedDate }}</span>
-                      </div>
-                    }
-                    @if (application.applicationDetailDTO.desiredDate) {
-                      <div class="flex flex-col">
-                        <span class="text-text-secondary uppercase tracking-wide text-xs">
-                          <span jhiTranslate="evaluation.details.start"></span>
-                        </span>
-                        <span>{{ application.applicationDetailDTO.desiredDate | localizedDate }}</span>
-                      </div>
+            <!-- Education -->
+            <jhi-section titleKey="evaluation.education.title" icon="graduation-cap">
+              @if (masterSummary().degree) {
+                <jhi-sub-section titleKey="evaluation.education.master">
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium">
+                        {{ masterSummary().degree || '—' }}
+                        @if (masterSummary().gradeInfo.displayValue) {
+                          <span>({{ masterSummary().gradeInfo.displayValue }})</span>
+                          @if (masterSummary().gradeInfo.tooltipText) {
+                            <fa-icon
+                              class="icon"
+                              [icon]="['fas', 'circle-info']"
+                              [pTooltip]="masterSummary().gradeInfo.tooltipText"
+                              [escape]="false"
+                              tooltipPosition="top"
+                            />
+                          }
+                        }
+                      </span>
+                    </div>
+                    @if (masterSummary().university) {
+                      <div class="text-sm">{{ masterSummary().university }}</div>
                     }
                   </div>
                 </jhi-sub-section>
               }
+
+              <jhi-sub-section titleKey="evaluation.education.bachelor">
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium">
+                      {{ bachelorSummary().degree || '—' }}
+                      @if (bachelorSummary().gradeInfo.displayValue) {
+                        <span>({{ bachelorSummary().gradeInfo.displayValue }})</span>
+                        @if (bachelorSummary().gradeInfo.tooltipText) {
+                          <fa-icon
+                            class="icon"
+                            [icon]="['fas', 'circle-info']"
+                            [pTooltip]="bachelorSummary().gradeInfo.tooltipText"
+                            [escape]="false"
+                            tooltipPosition="top"
+                          />
+                        }
+                      }
+                    </span>
+                  </div>
+                  @if (bachelorSummary().university) {
+                    <div class="text-sm">{{ bachelorSummary().university }}</div>
+                  }
+                </div>
+              </jhi-sub-section>
             </jhi-section>
+
+            <!-- Application -->
+            <div class="mt-4">
+              <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
+                <jhi-sub-section titleKey="evaluation.details.applicationMotivation">
+                  <jhi-prose [text]="application.applicationDetailDTO.motivation" />
+                </jhi-sub-section>
+
+                <jhi-sub-section titleKey="evaluation.details.applicationSkills">
+                  <jhi-prose [text]="application.applicationDetailDTO.specialSkills" />
+                </jhi-sub-section>
+
+                <jhi-sub-section titleKey="evaluation.details.applicationProjects">
+                  <jhi-prose [text]="application.applicationDetailDTO.projects" />
+                </jhi-sub-section>
+
+                @if (application.appliedAt) {
+                  <div class="mt-4 flex flex-col">
+                    <span class="font-semibold">
+                      <span jhiTranslate="evaluation.details.applied"></span>
+                    </span>
+                    <span>{{ application.appliedAt | localizedDate }}</span>
+                  </div>
+                }
+              </jhi-section>
+            </div>
           </div>
 
           <p-divider class="block xl:hidden" />

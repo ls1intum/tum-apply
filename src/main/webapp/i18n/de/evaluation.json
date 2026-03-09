@@ -76,6 +76,14 @@
         "detail": "Fehler beim Hinzufügen des Bewerbers. Bitte versuchen Sie es später erneut oder kontaktieren Sie einen Administrator."
       }
     },
+    "education": {
+      "title": "Ausbildung",
+      "master": "Master",
+      "bachelor": "Bachelor"
+    },
+    "privacy": {
+      "toggleTooltip": "Sensible Informationen anzeigen/verbergen"
+    },
     "details": {
       "grade": "Note",
       "educationGradeConverted": "Abschlussnote (konvertiert)",
@@ -86,8 +94,8 @@
       "applicationSkills": "Fähigkeiten",
       "applicationProjects": "Projekte",
       "applicationDates": "Daten",
-      "applied": "Beworben",
-      "start": "Start",
+      "applied": "Beworben am",
+      "start": "Frühestmöglicher Eintrittstermin",
       "documentTitle": "Dokumente",
       "documentTypeBachelor": "Bachelorzeugnis",
       "documentTypeMaster": "Masterzeugnis",

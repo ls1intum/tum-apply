@@ -76,6 +76,14 @@
         "detail": "Failed to add applicant to interview process. Please try again later or contact an administrator."
       }
     },
+    "education": {
+      "title": "Education",
+      "master": "Master",
+      "bachelor": "Bachelor"
+    },
+    "privacy": {
+      "toggleTooltip": "Show/hide sensitive information"
+    },
     "details": {
       "grade": "Grade",
       "educationGradeConverted": "Grade (converted)",
@@ -86,8 +94,8 @@
       "applicationSkills": "Skills",
       "applicationProjects": "Projects",
       "applicationDates": "Dates",
-      "applied": "Applied",
-      "start": "Start",
+      "applied": "Applied at",
+      "start": "Earliest possible start date",
       "documentTitle": "Documents",
       "documentTypeBachelor": "Bachelor Transcript",
       "documentTypeMaster": "Master Transcript",
