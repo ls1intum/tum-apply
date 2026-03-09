@@ -55,7 +55,7 @@
   </div>
 
   <!-- Actions for UNCONTACTED or INVITED state -->
-  @if (interviewee().state === IntervieweeState.Uncontacted || interviewee().state === IntervieweeState.Invited) {
+  @if ((interviewee().state === IntervieweeState.Uncontacted || interviewee().state === IntervieweeState.Invited) && !isClosed()) {
     <div class="flex-shrink-0 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0">
       <jhi-button
         (click)="$event.stopPropagation(); sendInvitation.emit(interviewee())"

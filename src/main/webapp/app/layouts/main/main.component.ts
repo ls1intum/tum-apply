@@ -8,6 +8,8 @@ import { LocalStorageService } from 'app/service/localStorage.service';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
+import { LoadingService } from 'app/core/interceptor/loading.service';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -17,9 +19,10 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
+  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent, ProgressSpinnerComponent],
 })
 export default class MainComponent {
+  readonly loadingService = inject(LoadingService);
   readonly accountService = inject(AccountService);
   loggedIn = computed(() => {
     return this.accountService.signedIn();
