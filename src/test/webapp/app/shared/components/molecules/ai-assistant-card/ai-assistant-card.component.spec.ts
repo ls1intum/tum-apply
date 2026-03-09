@@ -20,28 +20,28 @@ describe('AiAssistantCardComponent', () => {
   });
 
   it('should map low scores to critical feedback', () => {
-    fixture.componentRef.setInput('score', component.dangerThreshold);
+    fixture.componentRef.setInput('score', component.DANGER_THRESHOLD);
     fixture.detectChanges();
 
     expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical');
   });
 
   it('should map medium scores to warning feedback', () => {
-    fixture.componentRef.setInput('score', component.dangerThreshold + 1);
+    fixture.componentRef.setInput('score', component.DANGER_THRESHOLD + 1);
     fixture.detectChanges();
     expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.warning');
 
-    fixture.componentRef.setInput('score', component.warningThreshold);
+    fixture.componentRef.setInput('score', component.WARNING_THRESHOLD);
     fixture.detectChanges();
     expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.warning');
   });
 
   it('should map good and excellent ranges correctly', () => {
-    fixture.componentRef.setInput('score', component.warningThreshold + 1);
+    fixture.componentRef.setInput('score', component.WARNING_THRESHOLD + 1);
     fixture.detectChanges();
     expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.good');
 
-    fixture.componentRef.setInput('score', component.excellentThreshold);
+    fixture.componentRef.setInput('score', component.EXCELLENCE_THRESHOLD);
     fixture.detectChanges();
     expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.excellent');
   });

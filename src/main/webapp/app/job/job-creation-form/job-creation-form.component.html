@@ -22,7 +22,7 @@
 
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
-    <div class="panel1-layout relative px-4 xl:px-32 2xl:px-64" [class.panel1-layout-sidebar-collapsed]="!aiSidebarVisible">
+    <div class="panel1-layout relative px-4 xl:px-32 2xl:px-64" [class.panel1-layout-sidebar-collapsed]="!aiSidebarVisible()">
       <div class="panel1-main w-full min-w-0 box-border">
         <form [formGroup]="basicInfoForm" class="w-full">
           <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
@@ -140,8 +140,8 @@
           </div>
 
           <div class="flex flex-col gap-2 mb-6">
-            <div class="relative">
-              <div class="absolute top-0 left-0 right-0 flex items-center justify-end gap-1 text-sm text-primary">
+            <div>
+              <div class="mb-2 flex items-center justify-end gap-1 text-sm text-primary">
                 <fa-icon class="text-xs" [icon]="['fas', 'custom-sparkle']" />
                 <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
               </div>
@@ -165,14 +165,14 @@
         </form>
       </div>
 
-      <aside class="ai-sidebar" [class.ai-collapsed]="!aiSidebarVisible">
+      <aside class="ai-sidebar" [class.ai-collapsed]="!aiSidebarVisible()">
         <div class="ai-header">
-          <button type="button" class="ai-toggle" (click)="aiSidebarVisible = !aiSidebarVisible">
+          <button type="button" class="ai-toggle" (click)="toggleAiSidebar()">
             <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
             <span class="ai-toggle-text text-base font-bold text-text-primary" jhiTranslate="jobCreationForm.aiSidebar.header"></span>
           </button>
 
-          @if (aiSidebarVisible) {
+          @if (aiSidebarVisible()) {
             <jhi-button
               class="shrink-0 -mt-0.5 mr-3"
               type="button"
@@ -181,12 +181,12 @@
               severity="secondary"
               size="md"
               styleClass="!rounded-full"
-              (click)="aiSidebarVisible = false"
+              (click)="closeAiSidebar()"
             />
           }
         </div>
 
-        @if (aiSidebarVisible) {
+        @if (aiSidebarVisible()) {
           <jhi-ai-assistant-card
             [score]="aiScore()"
             [isGenerating]="isGeneratingDraft()"

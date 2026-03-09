@@ -67,6 +67,27 @@ export class GenderBiasAnalysisService {
     this.firstLoads.add(fieldId);
   }
 
+  /**
+   *
+   * Calculates the compliance score of a job posting based on the gender bias analysis.
+   * * The calculation is performed in several steps:
+   * 1. If no analysis is available (or coding is 'empty'), it returns 100 if there is text, or 0 if content is empty.
+   * 2. Calculates the ratio (`inclusiveWeight`) of inclusive words to the total number of flagged words (inclusive + non-inclusive)
+   * 3. Applies a penalty factor based on the overall coding of the analysis:
+   * - 'neutral-coded': 1.0 (no penalty)
+   * - 'inclusive-coded': 0.9 (slight penalty)
+   * - 'non-inclusive-coded': 0.2 (penalty)
+   * 4. The final score is derived from the square root of (`inclusiveWeight` * factor) and scaled to a 0-100 range.
+   * * The square root is applied to soften the penalty curve and avoid overly harsh scores.
+   *
+   * TODO: Once AGG-compliance is implemented, extend to a geometric mean:
+   * - sqrt(genderScore × complianceScore)
+   * - Currently only genderScore is used.
+   *
+   * @param analysis - The result of the gender bias analysis (including identified words and overall coding).
+   * @param htmlText - The raw text of the job posting in HTML format.
+   * @returns An integer between 0 and 100 representing the inclusivity score.
+   */
   calculateScore(analysis: GenderBiasAnalysisResponse | null, htmlText: string): number {
     if (!analysis || analysis.coding === 'empty') {
       const hasContent = extractTextFromHtml(htmlText).trim().length > 0;

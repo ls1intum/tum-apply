@@ -1,60 +1,61 @@
-<div class="flex flex-col items-start gap-4 px-4 pt-4 pb-2">
-  <div class="flex w-full max-w-72 flex-col gap-4">
-    <div class="flex justify-center" [class.opacity-50]="isGenerating()">
-      <jhi-ai-score-ring [score]="displayedScore()" />
+<div class="px-4 pt-4 pb-2">
+  <div class="mx-auto flex w-full max-w-72 flex-col gap-4 lg:mx-0">
+    <div class="ai-score-block flex flex-col gap-4">
+      <div class="ai-score-ring-wrapper flex justify-center" [class.opacity-50]="isGenerating()">
+        <jhi-ai-score-ring [score]="displayedScore()" />
+      </div>
+
+      <h3
+        class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
+        jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
+      ></h3>
+
+      <p class="mt-1.5 mb-0 text-sm leading-6 text-text-tertiary text-center lg:text-left" [jhiTranslate]="scoreFeedback()"></p>
     </div>
 
-    <h3
-      class="m-0 text-base font-semibold text-text-secondary"
-      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
-    ></h3>
+    <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />
 
-    <p class="mt-1.5 mb-0 text-sm leading-6 text-text-tertiary" [jhiTranslate]="scoreFeedback()"></p>
-  </div>
-
-  <hr class="m-0 w-full max-w-72 border-0 border-t border-border-default opacity-70" />
-
-  <div class="mt-4 flex items-start gap-2">
-    <h3
-      class="m-0 text-base font-semibold text-text-secondary"
-      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
-    ></h3>
-    <fa-icon
-      class="text-primary"
-      [icon]="['fas', 'circle-info']"
-      [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
-      tooltipPosition="top"
-    />
-  </div>
-
-  <p
-    class="m-0 w-full max-w-72 text-sm leading-6 text-text-tertiary"
-    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
-  ></p>
-
-  <div class="w-full max-w-72">
-    @if (isGenerating()) {
-      <div class="flex h-10 items-start gap-2">
-        <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
-        <span
-          class="text-base font-semibold text-text-primary whitespace-nowrap"
-          jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
-        ></span>
-      </div>
-    } @else {
-      <jhi-button
-        type="button"
-        [label]="
-          isRewriteMode()
-            ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
-            : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
-        "
-        [shouldTranslate]="true"
-        severity="primary"
-        [icon]="buttonIcon()"
-        styleClass="!w-full !justify-center !whitespace-nowrap"
-        (click)="onGenerate()"
+    <div class="flex items-start justify-center gap-2 lg:justify-start">
+      <h3
+        class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
+        jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
+      ></h3>
+      <fa-icon
+        class="text-primary"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
+        tooltipPosition="top"
       />
-    }
+    </div>
+
+    <p
+      class="m-0 text-sm leading-6 text-text-tertiary text-center lg:text-left"
+      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
+    ></p>
+
+    <div>
+      @if (isGenerating()) {
+        <div class="flex h-10 items-start justify-center gap-2 lg:justify-start">
+          <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+          <span
+            class="text-base font-semibold text-text-primary whitespace-nowrap"
+            jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
+          ></span>
+        </div>
+      } @else {
+        <jhi-button
+          [label]="
+            isRewriteMode()
+              ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
+              : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
+          "
+          [shouldTranslate]="true"
+          severity="primary"
+          [icon]="buttonIcon()"
+          styleClass="!w-full !justify-center !whitespace-nowrap"
+          (click)="onGenerate()"
+        />
+      }
+    </div>
   </div>
 </div>

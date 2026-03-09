@@ -29,9 +29,9 @@ export class AiAssistantCardComponent {
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
 
-  readonly warningThreshold = 65;
-  readonly dangerThreshold = 29;
-  readonly excellentThreshold = 90;
+  readonly WARNING_THRESHOLD = 65;
+  readonly DANGER_THRESHOLD = 29;
+  readonly EXCELLENCE_THRESHOLD = 90;
   readonly displayedScore = signal(0);
 
   readonly boundedScore = computed(() => {
@@ -51,15 +51,15 @@ export class AiAssistantCardComponent {
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
 
-    if (score <= this.dangerThreshold) {
+    if (score <= this.DANGER_THRESHOLD) {
       return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical';
     }
 
-    if (score <= this.warningThreshold) {
+    if (score <= this.WARNING_THRESHOLD) {
       return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.warning';
     }
 
-    if (score >= this.excellentThreshold) {
+    if (score >= this.EXCELLENCE_THRESHOLD) {
       return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.excellent';
     }
 

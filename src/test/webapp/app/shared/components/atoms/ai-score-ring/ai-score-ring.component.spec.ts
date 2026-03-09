@@ -30,21 +30,21 @@ describe('AiScoreRingComponent', () => {
     component.animatedScore.set(10);
     expect(component.scoreColor()).toBe('var(--p-danger-color)');
 
-    component.animatedScore.set(component.warningThreshold);
+    component.animatedScore.set(component.WARNING_THRESHOLD);
     expect(component.scoreColor()).toBe('var(--color-amber-200)');
 
-    component.animatedScore.set(component.warningThreshold + 1);
+    component.animatedScore.set(component.WARNING_THRESHOLD + 1);
     expect(component.scoreColor()).toBe('var(--p-primary-color)');
   });
 
   it('should calculate stroke offset from the animated score', () => {
     component.animatedScore.set(0);
-    expect(component.strokeOffset()).toBeCloseTo(component.circumference, 5);
+    expect(component.strokeOffset()).toBeCloseTo(component.RING_CIRCUMFERENCE, 5);
 
     component.animatedScore.set(100);
     expect(component.strokeOffset()).toBeCloseTo(0, 5);
 
     component.animatedScore.set(50);
-    expect(component.strokeOffset()).toBeCloseTo(component.circumference / 2, 5);
+    expect(component.strokeOffset()).toBeCloseTo(component.RING_CIRCUMFERENCE / 2, 5);
   });
 });

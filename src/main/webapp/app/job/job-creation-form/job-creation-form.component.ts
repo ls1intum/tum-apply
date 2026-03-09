@@ -454,7 +454,7 @@ export class JobCreationFormComponent {
 
   private isAutoScrolling = false;
 
-  aiSidebarVisible = true;
+  readonly aiSidebarVisible = signal<boolean>(true);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
@@ -544,6 +544,14 @@ export class JobCreationFormComponent {
       this.jobDescriptionEditor()?.forceUpdate('');
     }
   });
+
+  toggleAiSidebar(): void {
+    this.aiSidebarVisible.update(visible => !visible);
+  }
+
+  closeAiSidebar(): void {
+    this.aiSidebarVisible.set(false);
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PUBLISH METHODS
