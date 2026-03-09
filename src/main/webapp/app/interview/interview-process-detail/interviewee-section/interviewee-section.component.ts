@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationE
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 import { SendInvitationsResultDTO } from 'app/generated/model/sendInvitationsResultDTO';
+import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -18,6 +19,7 @@ import { Section } from 'app/shared/components/atoms/section/section';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
@@ -46,6 +48,7 @@ interface ApplicantRow {
     IntervieweeCardComponent,
     DynamicTableComponent,
     ConfirmDialog,
+    UserAvatarComponent,
   ],
   templateUrl: './interviewee-section.component.html',
 })
@@ -53,7 +56,11 @@ export class IntervieweeSectionComponent {
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
+  isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
+
+  // Component Outputs
+  slotsRefresh = output();
 
   // Interviewee List State
   interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
@@ -77,6 +84,12 @@ export class IntervieweeSectionComponent {
   totalApplicants = signal(0);
   pendingResendId = signal<string | null>(null);
 
+  // Cancellation State
+  showCancelModal = signal(false);
+  selectedIntervieweeForCancel = signal<IntervieweeDTO | undefined>(undefined);
+  cancelSendReinvite = signal(false);
+  cancelDeleteSlot = signal(true);
+
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   showResendDialog = signal(false);
@@ -85,15 +98,36 @@ export class IntervieweeSectionComponent {
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
     const all = this.interviewees();
     return [
-      { key: 'ALL', labelKey: 'interview.interviewees.filter.ALL', count: all.length },
-      { key: 'INVITED', labelKey: 'interview.interviewees.filter.INVITED', count: all.filter(i => i.state === 'INVITED').length },
-      { key: 'SCHEDULED', labelKey: 'interview.interviewees.filter.SCHEDULED', count: all.filter(i => i.state === 'SCHEDULED').length },
+      {
+        key: 'ALL',
+        labelKey: 'interview.interviewees.filter.ALL',
+        count: all.length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.ALL',
+      },
       {
         key: 'UNCONTACTED',
         labelKey: 'interview.interviewees.filter.UNCONTACTED',
         count: all.filter(i => i.state === 'UNCONTACTED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.UNCONTACTED',
       },
-      { key: 'COMPLETED', labelKey: 'interview.interviewees.filter.COMPLETED', count: all.filter(i => i.state === 'COMPLETED').length },
+      {
+        key: 'INVITED',
+        labelKey: 'interview.interviewees.filter.INVITED',
+        count: all.filter(i => i.state === 'INVITED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.INVITED',
+      },
+      {
+        key: 'SCHEDULED',
+        labelKey: 'interview.interviewees.filter.SCHEDULED',
+        count: all.filter(i => i.state === 'SCHEDULED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.SCHEDULED',
+      },
+      {
+        key: 'COMPLETED',
+        labelKey: 'interview.interviewees.filter.COMPLETED',
+        count: all.filter(i => i.state === 'COMPLETED').length,
+        tooltipKey: 'interview.interviewees.filter.tooltip.COMPLETED',
+      },
     ];
   });
 
@@ -305,6 +339,51 @@ export class IntervieweeSectionComponent {
     if (id !== null && processId !== '') {
       void this.performSendInvitation(processId, id);
       this.pendingResendId.set(null);
+    }
+  }
+
+  onCancelInterview(interviewee: IntervieweeDTO): void {
+    this.selectedIntervieweeForCancel.set(interviewee);
+    this.cancelSendReinvite.set(false);
+    this.cancelDeleteSlot.set(true);
+    this.showCancelModal.set(true);
+  }
+
+  async onCancelInterviewConfirm(): Promise<void> {
+    const interviewee = this.selectedIntervieweeForCancel();
+    const processId = this.processId();
+    if (interviewee?.scheduledSlot?.id == null || processId === '') return;
+
+    try {
+      const cancelParams: CancelInterviewDTO = {
+        sendReinvite: this.cancelSendReinvite(),
+        deleteSlot: this.cancelDeleteSlot(),
+      };
+
+      await firstValueFrom(this.interviewService.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
+
+      this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
+
+      // Update the interviewee state based on whether we reinvited
+      this.interviewees.update(list =>
+        list.map(i => {
+          if (i.id === interviewee.id) {
+            return Object.assign({}, i, {
+              state: this.cancelSendReinvite() ? IntervieweeDTO.StateEnum.Invited : IntervieweeDTO.StateEnum.Uncontacted,
+              scheduledSlot: undefined,
+            });
+          }
+          return i;
+        }),
+      );
+
+      // Notify parent to refresh slots section
+      this.slotsRefresh.emit();
+    } catch {
+      this.toastService.showErrorKey('interview.slots.cancelInterview.error');
+    } finally {
+      this.showCancelModal.set(false);
+      this.selectedIntervieweeForCancel.set(undefined);
     }
   }
 

@@ -14,13 +14,16 @@ public record ApplicationEvaluationDetailDTO(
     @NotNull ApplicationDetailDTO applicationDetailDTO,
     ProfessorDTO professor,
     UUID jobId,
-    LocalDateTime appliedAt
+    LocalDateTime appliedAt,
+    Double averageRating
 ) {
     /**
-     * Creates an {@link ApplicationEvaluationDetailDTO} from the given {@link Application} entity.
+     * Creates an {@link ApplicationEvaluationDetailDTO} from the given
+     * {@link Application} entity.
      *
      * @param application the {@link Application} entity
-     * @return a new {@link ApplicationEvaluationDetailDTO} populated from the application data
+     * @return a new {@link ApplicationEvaluationDetailDTO} populated from the
+     *         application data
      */
     public static ApplicationEvaluationDetailDTO fromApplication(Application application) {
         Job job = application.getJob();
@@ -28,7 +31,18 @@ public record ApplicationEvaluationDetailDTO(
             ApplicationDetailDTO.getFromEntity(application, job),
             ProfessorDTO.fromEntity(job.getSupervisingProfessor()),
             job.getJobId(),
-            application.getAppliedAt()
+            application.getAppliedAt(),
+            null // averageRating will be set separately via withAverageRating
         );
+    }
+
+    /**
+     * Creates a new ApplicationEvaluationDetailDTO with the average rating set.
+     *
+     * @param averageRating the average rating to set
+     * @return a new DTO with the average rating
+     */
+    public ApplicationEvaluationDetailDTO withAverageRating(Double averageRating) {
+        return new ApplicationEvaluationDetailDTO(this.applicationDetailDTO, this.professor, this.jobId, this.appliedAt, averageRating);
     }
 }

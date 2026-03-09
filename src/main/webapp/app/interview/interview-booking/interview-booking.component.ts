@@ -13,6 +13,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
 import { BookingSummaryComponent } from './booking-summary/booking-summary.component';
@@ -29,6 +30,7 @@ import { BookingSummaryComponent } from './booking-summary/booking-summary.compo
     SelectableSlotCardComponent,
     BookingSummaryComponent,
     DateHeaderComponent,
+    InfoBoxComponent,
   ],
   templateUrl: './interview-booking.component.html',
 })
@@ -39,6 +41,7 @@ export class InterviewBookingComponent {
   bookingData = signal<BookingDTO | null>(null);
   loading = signal(true);
   error = signal(false);
+  isClosed = signal(false);
   selectedSlot = signal<InterviewSlotDTO | null>(null);
   currentMonthOffset = signal(0);
   currentDatePage = signal(0);
@@ -278,8 +281,12 @@ export class InterviewBookingComponent {
       }
 
       this.bookingData.set(data);
-    } catch {
-      this.error.set(true);
+    } catch (error: unknown) {
+      if (error !== null && typeof error === 'object' && 'status' in error && error.status === 403) {
+        this.isClosed.set(true);
+      } else {
+        this.error.set(true);
+      }
     } finally {
       this.loading.set(false);
     }

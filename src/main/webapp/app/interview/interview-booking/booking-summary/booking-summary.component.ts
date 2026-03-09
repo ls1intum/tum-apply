@@ -6,6 +6,7 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ProfessorDTO } from 'app/generated/model/professorDTO';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { getLocale } from 'app/shared/util/date-time.util';
 
@@ -13,7 +14,7 @@ import { getLocale } from 'app/shared/util/date-time.util';
 @Component({
   selector: 'jhi-booking-summary',
   standalone: true,
-  imports: [FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent, ConfirmDialog],
+  imports: [FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent, ConfirmDialog, UserAvatarComponent],
   templateUrl: './booking-summary.component.html',
   host: { class: 'flex flex-col h-full' },
 })

@@ -16,7 +16,7 @@ export interface ApplicationDetailDTO {
     applicationState: ApplicationDetailDTO.ApplicationStateEnum;
     desiredDate?: string;
     jobId: string;
-    jobLocation?: string;
+    jobLocation?: ApplicationDetailDTO.JobLocationEnum;
     jobTitle?: string;
     motivation?: string;
     projects?: string;
@@ -35,6 +35,16 @@ export namespace ApplicationDetailDTO {
         Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
         JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
         Interview: 'INTERVIEW' as ApplicationStateEnum
+    };
+    export type JobLocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
+    export const JobLocationEnum = {
+        Garching: 'GARCHING' as JobLocationEnum,
+        GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as JobLocationEnum,
+        Heilbronn: 'HEILBRONN' as JobLocationEnum,
+        Munich: 'MUNICH' as JobLocationEnum,
+        Straubing: 'STRAUBING' as JobLocationEnum,
+        Weihenstephan: 'WEIHENSTEPHAN' as JobLocationEnum,
+        Singapore: 'SINGAPORE' as JobLocationEnum
     };
 }
 
