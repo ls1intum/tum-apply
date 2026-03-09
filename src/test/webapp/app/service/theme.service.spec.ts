@@ -8,6 +8,7 @@ describe('ThemeService', () => {
     darkModeSelector: '.tum-apply-dark-mode',
     cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
   };
+
   const primeThemeSet = vi.fn();
   const primeNGMock = {
     theme: {

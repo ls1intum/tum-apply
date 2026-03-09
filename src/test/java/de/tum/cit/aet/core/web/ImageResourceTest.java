@@ -564,13 +564,16 @@ public class ImageResourceTest extends AbstractResourceTest {
 
         @Test
         void uploadJobBannerForResearchGroupSuccessfullyUploadsAsAdmin() throws Exception {
+            // Arrange
             MockMultipartFile validImageFile = createValidImageFile("admin-job-banner.jpg");
             String url = API_BASE_PATH + "/upload/job-banner/by-research-group?researchGroupId=" + secondResearchGroup.getResearchGroupId();
 
+            // Act
             ImageDTO result = api
                 .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
                 .multipartPostAndRead(url, List.of(validImageFile), new TypeReference<ImageDTO>() {}, 201);
 
+            // Assert
             assertThat(result).isNotNull();
             assertThat(result.imageId()).isNotNull();
             assertThat(result.imageType()).isEqualTo(ImageType.JOB_BANNER);

@@ -62,6 +62,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     universityId: user.universityId,
     displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
   });
+
   const withoutId = (user: KeycloakUserDTO): KeycloakUserDTO => ({
     email: user.email,
     firstName: user.firstName,
@@ -70,6 +71,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     universityId: user.universityId,
     username: user.username,
   });
+
   beforeEach(async () => {
     mockUserService = {
       getAvailableUsersForResearchGroup: vi.fn().mockReturnValue(of({ content: [], totalElements: 0 })),

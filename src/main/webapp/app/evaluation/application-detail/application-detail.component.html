@@ -75,14 +75,16 @@
       <!-- Footer buttons -->
       <ng-template pTemplate="footer">
         <div class="flex justify-between w-full pt-3 gap-2">
-          <jhi-button
-            [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
-            variant="outlined"
-            severity="primary"
-            (click)="onAddToInterview(false)"
-          />
           <div class="flex gap-2">
             <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+          </div>
+          <div class="flex gap-2">
+            <jhi-button
+              [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
+              variant="outlined"
+              severity="primary"
+              (click)="onAddToInterview(false)"
+            />
             <jhi-button
               [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
               severity="primary"
