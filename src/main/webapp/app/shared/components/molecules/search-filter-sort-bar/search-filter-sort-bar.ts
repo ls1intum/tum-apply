@@ -65,16 +65,14 @@ export class SearchFilterSortBar {
 
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  private readonly initializeSortDefaultsEffect = effect(
-    () => {
-      const fields = this.sortableFields();
-      if (!fields || fields.length === 0 || this.selectedSortField() !== undefined) {
-        return;
-      }
+  private readonly initializeSortDefaultsEffect = effect(() => {
+    const fields = this.sortableFields();
+    if (!fields || fields.length === 0 || this.selectedSortField() !== undefined) {
+      return;
+    }
 
-      this.selectedSortField.set(fields[0].fieldName);
-    },
-  );
+    this.selectedSortField.set(fields[0].fieldName);
+  });
 
   onSearch(): void {
     if (this.debounceTimeout) {

@@ -93,8 +93,7 @@ export abstract class BaseInputDirective<T> {
           } else {
             ctrl.enable({ emitEvent: false });
           }
-        } catch (e) {
-        }
+        } catch {}
       }
     });
   }

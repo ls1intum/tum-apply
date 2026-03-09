@@ -51,22 +51,20 @@ export class Sorting {
 
   private translateService = inject(TranslateService);
 
-  private readonly syncSortStateEffect = effect(
-    () => {
-      const fields = this.sortableFields();
-      const selectedField = this.selectedField();
-      const selectedDirection = this.selectedDirection();
+  private readonly syncSortStateEffect = effect(() => {
+    const fields = this.sortableFields();
+    const selectedField = this.selectedField();
+    const selectedDirection = this.selectedDirection();
 
-      if (selectedField !== undefined) {
-        const match = fields.find(field => field.fieldName === selectedField);
-        this.selectedOption.set(match);
-      }
+    if (selectedField !== undefined) {
+      const match = fields.find(field => field.fieldName === selectedField);
+      this.selectedOption.set(match);
+    }
 
-      if (selectedDirection) {
-        this.isAsc.set(selectedDirection === 'ASC');
-      }
-    },
-  );
+    if (selectedDirection) {
+      this.isAsc.set(selectedDirection === 'ASC');
+    }
+  });
 
   getSortIcon(): string {
     const type = this.currentOption().type;
