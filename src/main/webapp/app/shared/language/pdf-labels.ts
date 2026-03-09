@@ -63,6 +63,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
     endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
+    lang: translate.getCurrentLang(),
   };
 }
 

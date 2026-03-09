@@ -80,9 +80,11 @@
   </div>
 
   <ng-template #applicantTpl let-person>
+    @let displayName = person.user?.name ?? ((person.user?.firstName ?? '') + ' ' + (person.user?.lastName ?? '')).trim();
     <div class="flex items-center gap-3 cursor-pointer" (click)="selectApplicant(person)">
       <jhi-checkbox [model]="isSelected(person)" [errorEnabled]="false" (click)="$event.stopPropagation(); selectApplicant(person)" />
-      <span class="font-medium text-text-primary">{{ person.user?.firstName }} {{ person.user?.lastName }}</span>
+      <jhi-user-avatar [fullName]="displayName" size="lg" />
+      <span class="font-medium text-text-primary">{{ displayName }}</span>
     </div>
   </ng-template>
 </jhi-dialog>

@@ -111,7 +111,7 @@
     "members": {
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
       "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
-      "me": "Ich",
+      "you": "Du",
       "notice": "Die Mitglieder werden per E-Mail benachrichtigt, wenn sie zur Forschungsgruppe hinzugefügt werden.",
       "manageMembers": "Mitglieder verwalten",
       "addMembers": "Mitglieder hinzufügen",
@@ -201,8 +201,12 @@
           "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
         },
         "userNotFound": {
-          "summary": "Benutzer:in nicht gefunden",
-          "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+          "summary": "Person nicht gefunden",
+          "detail": "Es wurde keine Person mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+        },
+        "userAlreadyMember": {
+          "summary": "Person bereits zugeordnet",
+          "detail": "Die ausgewählte Person ist bereits Mitglied einer anderen Forschungsgruppe."
         }
       },
       "success": {
@@ -264,6 +268,15 @@
       "tumID": {
         "label": "Professor:in TUM-ID",
         "placeholder": "z.B. ab12cde"
+      },
+      "professorSelect": {
+        "searchPlaceholder": "Professoren nach Name oder E-Mail suchen...",
+        "singleEntity": "Professor:in",
+        "multipleEntities": "Professoren",
+        "noResults": "Keine verfügbaren Professor:innen gefunden.",
+        "requiredError": "Bitte wähle eine:n Professor:in aus.",
+        "loadMore": "Mehr laden",
+        "changeButton": "Auswahl ändern"
       },
       "createButton": "Forschungsgruppe erstellen",
       "createDialog": {
@@ -405,6 +418,51 @@
       "deleteDialog": {
         "header": "Department löschen",
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
+      },
+      "images": {
+        "button": "Bilder verwalten",
+        "title": "Department-Bilder verwalten",
+        "filters": {
+          "department": "Department",
+          "departmentPlaceholder": "Department wählen..."
+        },
+        "section": {
+          "inUse": "Default-Bilder in Verwendung",
+          "upload": "Default-Bilder hochladen"
+        },
+        "empty": {
+          "inUse": "Derzeit sind keine Default-Bilder in Verwendung",
+          "upload": "Noch keine Default-Bilder hochgeladen",
+          "selectDepartment": "Bitte ein Department wählen, um Default-Bilder zu verwalten"
+        },
+        "delete": {
+          "title": "Bild löschen",
+          "message": "Möchtest du dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+        },
+        "success": {
+          "imageDeleted": {
+            "summary": "Bild gelöscht",
+            "detail": "Default-Bild erfolgreich gelöscht."
+          }
+        },
+        "error": {
+          "loadDepartments": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Departments konnten nicht geladen werden. Bitte versuche es erneut."
+          },
+          "loadImages": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Default-Bilder konnten nicht geladen werden. Bitte versuche es erneut."
+          },
+          "deleteFailed": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Default-Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+          },
+          "noDepartment": {
+            "summary": "Department fehlt",
+            "detail": "Bitte zuerst ein Department wählen, bevor ein Default-Bild hochgeladen wird."
+          }
+        }
       }
     },
     "schools": {
@@ -471,6 +529,7 @@
       }
     },
     "imageLibrary": {
+      "manageButton": "Bilder verwalten",
       "title": "Bildersammlung",
       "stats": {
         "totalImages": "Bilder insgesamt",

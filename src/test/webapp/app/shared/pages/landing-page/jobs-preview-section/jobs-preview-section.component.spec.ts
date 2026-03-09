@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Router } from '@angular/router';
 import { JobsPreviewSectionComponent } from 'app/shared/pages/landing-page/jobs-preview-section/jobs-preview-section.component';
+import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
@@ -76,15 +78,13 @@ describe('JobsPreviewSectionComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/job-overview']);
   });
 
-  it('should not set header image when job.imageUrl is missing', () => {
+  it('should use the fallback header image when job.imageUrl is missing', () => {
     fixture.detectChanges();
-    const jobCardEl = fixture.nativeElement.querySelector('jhi-job-card');
-    expect(jobCardEl).toBeTruthy();
-    const header = jobCardEl.querySelector('div.relative');
-    // When there's no job image, background-image should not be set (fallback images disabled)
-    expect(header.style.backgroundImage).toBe(
-      'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80")',
-    );
+    const jobCardDebugEl = fixture.debugElement.query(By.directive(JobCardComponent));
+    expect(jobCardDebugEl).toBeTruthy();
+
+    const jobCard = jobCardDebugEl.componentInstance as JobCardComponent;
+    expect(jobCard.headerImageUrl()).toBe(component.getExampleImageUrl(0));
   });
 
   it('should handle error on load and show toast', async () => {

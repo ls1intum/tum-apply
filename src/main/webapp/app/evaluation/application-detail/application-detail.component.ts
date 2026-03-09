@@ -13,6 +13,7 @@ import { Sort } from 'app/shared/components/atoms/sorting/sorting';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
@@ -51,6 +52,7 @@ const CAROUSEL_SIZE = 7;
     SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
+    UserAvatarComponent,
     ReviewDialogComponent,
     TranslateDirective,
     Section,

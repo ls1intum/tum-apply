@@ -1,12 +1,12 @@
 <p-tabs
-  class="w-full"
+  [class]="resolvedTabsClass()"
   [value]="currentTabValue()"
   [lazy]="lazyLoad()"
   [selectOnFocus]="selectOnFocus()"
   [tabindex]="0"
   (valueChange)="onTabChange($event)"
 >
-  <p-tablist>
+  <p-tablist [class]="tabListClass()">
     @for (tab of tabs(); track tab.id) {
       <p-tab [value]="tab.id">
         @if (tab.icon) {
@@ -17,7 +17,7 @@
     }
   </p-tablist>
 
-  <p-tabpanels>
+  <p-tabpanels [class]="tabPanelsClass()">
     @for (tab of tabs(); track tab.id) {
       <p-tabpanel [value]="tab.id">
         <ng-container *ngTemplateOutlet="findTemplate(tab.id)" />
