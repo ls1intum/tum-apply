@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
@@ -28,7 +27,6 @@ import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/use
     DialogComponent,
     ButtonComponent,
     FontAwesomeModule,
-    ProgressSpinnerModule,
     CheckboxComponent,
     DynamicTableComponent,
     UserAvatarComponent,
@@ -49,20 +47,17 @@ export class AssignApplicantModalComponent {
   // Signals
   interviewees = signal<IntervieweeDTO[]>([]);
   selectedApplicantId = signal<string | null>(null);
-  loading = signal(false);
-  assignLoading = signal(false);
 
   // Filters out already scheduled, completed, and invited interviewees
   availableInterviewees = computed(() =>
     this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED' && i.state !== 'INVITED'),
   );
 
-  // Returns true if an applicant is selected and not currently assigning
-  canAssign = computed(() => this.selectedApplicantId() !== null && !this.assignLoading());
+  // Returns true if an applicant is selected
+  canAssign = computed(() => this.selectedApplicantId() !== null);
 
   // Computed state for template conditional rendering
   readonly intervieweeState = computed(() => {
-    if (this.loading()) return 'loading';
     if (this.interviewees().length === 0) return 'empty';
     if (this.availableInterviewees().length === 0) return 'allAssigned';
     return 'selectable';
@@ -102,7 +97,6 @@ export class AssignApplicantModalComponent {
     }
 
     try {
-      this.assignLoading.set(true);
       const updatedSlot = await firstValueFrom(this.interviewService.assignSlotToInterviewee(slotId, { applicationId }));
       this.toastService.showSuccessKey('interview.assign.success');
       this.applicantAssigned.emit(updatedSlot);
@@ -128,8 +122,6 @@ export class AssignApplicantModalComponent {
           this.toastService.showErrorKey('interview.assign.error.failed');
           break;
       }
-    } finally {
-      this.assignLoading.set(false);
     }
   }
 
@@ -173,14 +165,11 @@ export class AssignApplicantModalComponent {
   // Fetches all interviewees for the current interview process
   private async fetchInterviewees(): Promise<void> {
     try {
-      this.loading.set(true);
       const processId = this.processId();
       const data = await firstValueFrom(this.interviewService.getIntervieweesByProcessId(processId));
       this.interviewees.set(data);
     } catch {
       this.toastService.showErrorKey('interview.assign.error.loadFailed');
-    } finally {
-      this.loading.set(false);
     }
   }
 
