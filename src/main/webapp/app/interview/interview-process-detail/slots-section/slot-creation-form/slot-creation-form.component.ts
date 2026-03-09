@@ -79,17 +79,12 @@ export class SlotCreationFormComponent {
   });
 
   readonly duration = signal<number>(30);
-  readonly breakDuration = signal<number>(0);
 
-  // Custom Duration/Break State
+  // Custom Duration State
   readonly customDuration = signal<number | null>(null);
   readonly isCustomDurationMode = signal(false);
 
-  readonly customBreak = signal<number | null>(null);
-  readonly isCustomBreakMode = signal(false);
-
   readonly durationError = signal<string | null>(null);
-  readonly breakError = signal<string | null>(null);
   readonly showValidationErrors = signal(false);
 
   // Map date string to slots
@@ -143,14 +138,6 @@ export class SlotCreationFormComponent {
     { label: '90min', value: 90 },
   ];
 
-  readonly breakOptions = [
-    { label: '0min', value: 0 },
-    { label: '5min', value: 5 },
-    { label: '10min', value: 10 },
-    { label: '15min', value: 15 },
-    { label: '30min', value: 30 },
-  ];
-
   readonly minDate = new Date();
 
   // Dependencies
@@ -191,40 +178,6 @@ export class SlotCreationFormComponent {
 
     this.durationError.set(null);
     this.duration.set(safeValue);
-  }
-
-  /**
-   * Selects a predefined break duration.
-   * If value is -1, switches to custom break mode.
-   * @param value The break duration in minutes or -1 for custom.
-   */
-  selectBreak(value: number): void {
-    if (value === -1) {
-      this.isCustomBreakMode.set(true);
-      if (this.customBreak() === null) {
-        this.customBreak.set(this.breakDuration());
-      }
-    } else {
-      this.isCustomBreakMode.set(false);
-      this.breakError.set(null); // Clear error on preset switch
-      this.breakDuration.set(value);
-    }
-  }
-
-  /**
-   * Updates the break duration from the custom input field.
-   * @param value The new break duration in minutes.
-   */
-  onCustomBreakInput(value: number | undefined): void {
-    const safeValue = value ?? 0;
-    this.customBreak.set(safeValue);
-
-    if (safeValue < 0) {
-      this.breakError.set('interview.slots.create.validation.breakPositive');
-    } else {
-      this.breakError.set(null);
-      this.breakDuration.set(safeValue);
-    }
   }
 
   /**
