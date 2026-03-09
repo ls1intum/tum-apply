@@ -1,10 +1,12 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupRequestDTO';
+import { KeycloakUserDTO } from 'app/generated/model/keycloakUserDTO';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
@@ -14,7 +16,9 @@ import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
+import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
@@ -26,6 +30,15 @@ import TranslateDirective from '../../../language/translate.directive';
 import { formatFullName } from '../../../util/name.util';
 
 type FormMode = 'professor' | 'admin';
+
+interface SelectedAdminProfessor {
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  universityId?: string;
+  username?: string;
+}
 
 @Component({
   selector: 'jhi-professor-request-access-form',
@@ -41,18 +54,41 @@ type FormMode = 'professor' | 'admin';
     EditorComponent,
     FontAwesomeModule,
     InfoBoxComponent,
+    SearchFilterSortBar,
+    ProgressSpinnerComponent,
   ],
   templateUrl: './research-group-creation-form.component.html',
 })
 export class ResearchGroupCreationFormComponent {
   // Input to determine if this is admin mode or professor mode
   mode = computed<FormMode>(() => this.config?.data?.mode ?? 'professor');
+  isProfessorMode = computed(() => this.mode() === 'professor');
+  isAdminMode = computed(() => this.mode() === 'admin');
 
   // Form
   form: FormGroup;
 
   // Loading state
   isSubmitting = signal(false);
+  isLoadingAdminUsers = signal(false);
+
+  // Admin professor selection
+  readonly MIN_ADMIN_SEARCH_LENGTH = 3;
+  readonly ADMIN_USERS_PAGE_SIZE = 25;
+  adminProfessorSearchQuery = signal('');
+  adminProfessorCandidates = signal<KeycloakUserDTO[]>([]);
+  adminProfessorTotalCount = signal(0);
+  adminProfessorCurrentPage = signal(0);
+  hasMoreAdminProfessorCandidates = computed(() => this.adminProfessorCandidates().length < this.adminProfessorTotalCount());
+  selectedAdminProfessor = signal<SelectedAdminProfessor | undefined>(undefined);
+  isSearchQueryLongEnough = computed(() => this.adminProfessorSearchQuery().trim().length >= this.MIN_ADMIN_SEARCH_LENGTH);
+  showSearchMinLengthHint = computed(
+    () => !this.isLoadingAdminUsers() && this.adminProfessorSearchQuery().trim().length > 0 && !this.isSearchQueryLongEnough(),
+  );
+  showNoSearchResults = computed(
+    () => !this.isLoadingAdminUsers() && this.isSearchQueryLongEnough() && this.adminProfessorCandidates().length === 0,
+  );
+  showCandidatesList = computed(() => !this.isLoadingAdminUsers() && this.adminProfessorCandidates().length > 0);
 
   // School and Department data
   schools = signal<SchoolShortDTO[]>([]);
@@ -114,7 +150,14 @@ export class ResearchGroupCreationFormComponent {
   private readonly schoolService = inject(SchoolResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly userService = inject(UserResourceApiService);
+  private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
+  private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
+  private mockUsers = signal<KeycloakUserDTO[] | undefined>(undefined);
+  private readonly MOCK_USERS_PATH = '/content/mock/keycloak-users.json';
+  private readonly ADMIN_LOADER_DELAY_MS = 250;
+  private adminLoaderTimeout: number | undefined = undefined;
+  private latestAdminSearchRequestId = 0;
 
   constructor() {
     this.form = this.createForm();
@@ -179,6 +222,131 @@ export class ResearchGroupCreationFormComponent {
     this.ref?.close();
   }
 
+  async onAdminProfessorSearch(searchQuery: string): Promise<void> {
+    if (this.mode() !== 'admin') {
+      return;
+    }
+
+    const requestId = ++this.latestAdminSearchRequestId;
+
+    this.adminProfessorSearchQuery.set(searchQuery);
+    const trimmedQuery = searchQuery.trim();
+
+    if (this.adminLoaderTimeout !== undefined) {
+      clearTimeout(this.adminLoaderTimeout);
+      this.adminLoaderTimeout = undefined;
+    }
+
+    if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
+      this.adminProfessorCandidates.set([]);
+      this.adminProfessorTotalCount.set(0);
+      this.adminProfessorCurrentPage.set(0);
+      this.isLoadingAdminUsers.set(false);
+      return;
+    }
+
+    await this.loadAdminProfessorPage(trimmedQuery, 0, false, requestId);
+  }
+
+  async onLoadMoreAdminProfessors(): Promise<void> {
+    if (this.mode() !== 'admin' || this.isLoadingAdminUsers() || !this.hasMoreAdminProfessorCandidates()) {
+      return;
+    }
+
+    const trimmedQuery = this.adminProfessorSearchQuery().trim();
+    if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
+      return;
+    }
+
+    const requestId = ++this.latestAdminSearchRequestId;
+    const nextPage = this.adminProfessorCurrentPage() + 1;
+    await this.loadAdminProfessorPage(trimmedQuery, nextPage, true, requestId);
+  }
+
+  selectAdminProfessor(user: KeycloakUserDTO): void {
+    this.selectedAdminProfessor.set(user);
+    this.form.patchValue({ tumID: user.universityId ?? '' });
+    this.form.get('tumID')?.markAsTouched();
+  }
+
+  clearSelectedAdminProfessor(): void {
+    this.selectedAdminProfessor.set(undefined);
+    this.form.patchValue({ tumID: '' });
+    void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
+  }
+
+  private async loadMockUsers(): Promise<KeycloakUserDTO[]> {
+    const cachedUsers = this.mockUsers();
+    if (cachedUsers !== undefined) {
+      return cachedUsers;
+    }
+
+    try {
+      const users = await firstValueFrom(this.http.get<KeycloakUserDTO[]>(this.MOCK_USERS_PATH));
+      this.mockUsers.set(users);
+      return users;
+    } catch {
+      this.mockUsers.set([]);
+      this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      return [];
+    }
+  }
+
+  private async loadAdminProfessorPage(searchQuery: string, page: number, append: boolean, requestId: number): Promise<void> {
+    this.adminLoaderTimeout = window.setTimeout(() => {
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.isLoadingAdminUsers.set(true);
+      }
+    }, this.ADMIN_LOADER_DELAY_MS);
+
+    try {
+      if (this.USE_MOCK_USERS) {
+        const mockUsers = await this.loadMockUsers();
+        if (requestId !== this.latestAdminSearchRequestId) {
+          return;
+        }
+
+        const normalizedQuery = searchQuery.toLowerCase();
+        const filteredUsers = mockUsers.filter(user =>
+          `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
+        );
+
+        const startIndex = page * this.ADMIN_USERS_PAGE_SIZE;
+        const pageContent = filteredUsers.slice(startIndex, startIndex + this.ADMIN_USERS_PAGE_SIZE);
+        const nextCandidates = append ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
+
+        this.adminProfessorCandidates.set(nextCandidates);
+        this.adminProfessorTotalCount.set(filteredUsers.length);
+        this.adminProfessorCurrentPage.set(page);
+        return;
+      }
+
+      const response = await firstValueFrom(
+        this.userService.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
+      );
+      if (requestId !== this.latestAdminSearchRequestId) {
+        return;
+      }
+
+      const pageContent = response.content ?? [];
+      const nextCandidates = append ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
+
+      this.adminProfessorCandidates.set(nextCandidates);
+      this.adminProfessorTotalCount.set(response.totalElements ?? nextCandidates.length);
+      this.adminProfessorCurrentPage.set(page);
+    } catch {
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      }
+    } finally {
+      if (requestId === this.latestAdminSearchRequestId) {
+        clearTimeout(this.adminLoaderTimeout);
+        this.adminLoaderTimeout = undefined;
+        this.isLoadingAdminUsers.set(false);
+      }
+    }
+  }
+
   private createForm(): FormGroup {
     const isAdminMode = this.mode() === 'admin';
 
@@ -238,6 +406,12 @@ export class ResearchGroupCreationFormComponent {
         else if (error.status === 404 && errorMessage.includes('not found')) {
           const errorKey =
             this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
+          this.toastService.showErrorKey(errorKey);
+        }
+        // Check if the error is about professor already being assigned to another research group
+        else if (error.status === 400 && errorMessage.toLowerCase().includes('already a member of research group')) {
+          const errorKey =
+            this.mode() === 'admin' ? 'researchGroup.adminView.errors.userAlreadyMember' : 'onboarding.professorRequest.error';
           this.toastService.showErrorKey(errorKey);
         } else {
           const errorKey = this.mode() === 'admin' ? 'researchGroup.adminView.errors.create' : 'onboarding.professorRequest.error';

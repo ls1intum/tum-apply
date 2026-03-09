@@ -2,20 +2,25 @@ package de.tum.cit.aet.usermanagement.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.dto.ApiError;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import de.tum.cit.aet.usermanagement.web.UserResource.UpdateAvatarDTO;
 import de.tum.cit.aet.usermanagement.web.UserResource.UpdatePasswordDTO;
@@ -24,7 +29,9 @@ import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -247,6 +254,52 @@ public class UserResourceTest extends AbstractResourceTest {
 
             assertThat(error.message()).isEqualTo("Avatar URL must reference an existing profile picture owned by the current user");
             assertThat(userRepository.findById(currentUser.getUserId()).orElseThrow().getAvatar()).isNull();
+        }
+    }
+
+    @Nested
+    class GetAvailableUsersForResearchGroup {
+
+        @Test
+        void returnsAvailableUsersAndTotalCount() {
+            KeycloakUserDTO keycloakUser = new KeycloakUserDTO(
+                UUID.randomUUID(),
+                "alice.user",
+                "Alice",
+                "User",
+                "alice.user@tum.de",
+                "ab12cde"
+            );
+
+            when(keycloakUserService.getAvailableUsersForResearchGroup(eq("alice"), any())).thenReturn(
+                new PagedResult<>(List.of(keycloakUser), 1L)
+            );
+
+            PageResponseDTO<KeycloakUserDTO> result = api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_ADMIN"))
+                .getAndRead(
+                    API_BASE_PATH + "/available-for-research-group",
+                    Map.of("pageNumber", "0", "pageSize", "10", "searchQuery", "alice"),
+                    new TypeReference<PageResponseDTO<KeycloakUserDTO>>() {},
+                    200
+                );
+
+            assertThat(result.getTotalElements()).isEqualTo(1L);
+            assertThat(result.getContent()).hasSize(1);
+            assertThat(result.getContent()).extracting(KeycloakUserDTO::universityId).containsExactly("ab12cde");
+            verify(keycloakUserService, times(1)).getAvailableUsersForResearchGroup(eq("alice"), any());
+        }
+
+        @Test
+        void returnsForbiddenForApplicantRole() {
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead(
+                    API_BASE_PATH + "/available-for-research-group",
+                    Map.of("pageNumber", "0", "pageSize", "10", "searchQuery", "alice"),
+                    Void.class,
+                    403
+                );
         }
     }
 }

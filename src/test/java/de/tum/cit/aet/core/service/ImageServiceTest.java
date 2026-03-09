@@ -19,6 +19,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
@@ -56,6 +57,9 @@ class ImageServiceTest {
     private DepartmentRepository departmentRepository;
 
     @Mock
+    private ResearchGroupRepository researchGroupRepository;
+
+    @Mock
     private SchoolRepository schoolRepository;
 
     @Mock
@@ -86,6 +90,7 @@ class ImageServiceTest {
             imageRepository,
             jobRepository,
             departmentRepository,
+            researchGroupRepository,
             schoolRepository,
             currentUserService,
             tempDir.toString(),

@@ -1,9 +1,10 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import { ToastService } from 'app/service/toast-service';
@@ -38,6 +39,8 @@ const I18N_BASE = 'researchGroup.imageLibrary';
 export class ResearchGroupImagesComponent {
   readonly allImages = signal<ImageDTO[]>([]);
   readonly isLoading = signal<boolean>(true);
+  readonly selectedResearchGroupId = signal<string>('');
+  readonly selectedResearchGroupName = signal<string>('');
 
   readonly totalImages = computed(() => this.allImages().length);
 
@@ -50,8 +53,11 @@ export class ResearchGroupImagesComponent {
 
   private readonly imageService = inject(ImageResourceApiService);
   private readonly toastService = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
 
   constructor() {
+    this.selectedResearchGroupId.set(this.route.snapshot.queryParamMap.get('researchGroupId') ?? '');
+    this.selectedResearchGroupName.set(this.route.snapshot.queryParamMap.get('researchGroupName') ?? '');
     void this.loadImages();
   }
 
@@ -61,7 +67,12 @@ export class ResearchGroupImagesComponent {
   async loadImages(): Promise<void> {
     try {
       this.isLoading.set(true);
-      const images = await firstValueFrom(this.imageService.getResearchGroupJobBanners());
+      const researchGroupId = this.selectedResearchGroupId();
+      const images = await firstValueFrom(
+        researchGroupId === ''
+          ? this.imageService.getResearchGroupJobBanners()
+          : this.imageService.getResearchGroupJobBannersByResearchGroup(researchGroupId),
+      );
 
       this.allImages.set(images);
     } catch {
@@ -85,6 +96,13 @@ export class ResearchGroupImagesComponent {
   onUploadError(error: ImageUploadError): void {
     this.toastService.showErrorKey(error.errorKey);
   }
+
+  uploadImage = (file: File): Observable<ImageDTO> => {
+    const researchGroupId = this.selectedResearchGroupId();
+    return researchGroupId === ''
+      ? this.imageService.uploadJobBanner(file)
+      : this.imageService.uploadJobBannerForResearchGroup(researchGroupId, file);
+  };
 
   /**
    * Delete an image by ID
