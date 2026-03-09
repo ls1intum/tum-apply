@@ -24,7 +24,6 @@ import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicat
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
-import { getInitials } from 'app/shared/util/util';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -103,11 +102,6 @@ export class ApplicationDetailComponent {
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
-  });
-
-  readonly initials = computed<string>(() => {
-    const fullName = this.currentApplication()?.applicationDetailDTO.applicant?.user.name?.trim();
-    return getInitials(fullName ?? '');
   });
 
   isAlreadyInInterview = computed(() => {

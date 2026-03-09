@@ -7,14 +7,14 @@ import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { DividerModule } from 'primeng/divider';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { StarRatingComponent } from 'app/shared/components/atoms/star-rating/star-rating.component';
-import { getInitials } from 'app/shared/util/util';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, DividerModule, StarRatingComponent, TooltipModule],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, DividerModule, StarRatingComponent, UserAvatarComponent, TooltipModule],
   templateUrl: './application-card.component.html',
   host: {
     class: 'flex flex-col h-full',
@@ -52,11 +52,6 @@ export class ApplicationCardComponent {
     const last = parts.pop() ?? '';
     const first = parts.join(' ');
     return { first, last };
-  });
-
-  readonly initials = computed<string>(() => {
-    const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim();
-    return getInitials(fullName ?? '');
   });
 
   /**

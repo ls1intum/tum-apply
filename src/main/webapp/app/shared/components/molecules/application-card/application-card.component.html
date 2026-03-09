@@ -10,12 +10,7 @@
   @if (!placeholder()) {
     <!-- Top Section with Avatar and Details -->
     <div class="flex flex-col md:flex-row gap-4">
-      <!-- Avatar/Image Placeholder (hidden on mobile) -->
-      <div
-        class="hidden md:flex shrink-0 w-14 h-14 bg-primary text-text-on-primary rounded-full items-center justify-center overflow-hidden font-bold text-2xl"
-      >
-        {{ initials() }}
-      </div>
+      <jhi-user-avatar [fullName]="application()?.applicationDetailDTO?.applicant?.user?.name" size="xl" class="hidden md:flex shrink-0" />
 
       <!-- Content Section -->
       <div class="flex flex-col flex-1 gap-1">
