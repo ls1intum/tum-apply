@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -6,9 +6,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import {
   GradingScaleLimitsResult,
   getDetectedGradeLimitsPatch,
@@ -16,7 +16,7 @@ import {
   getGradeWarningText,
   hasGradeLimits,
   resolveGradingScaleLimits,
-} from '../../../shared/util/grading-scale.utils';
+} from 'app/shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -86,6 +86,9 @@ export default class ApplicationCreationPage2Component {
 
   hasInitialized = signal(false);
   hasInitialLimitsSet = signal(false);
+
+  bachelorDocsValid = signal<boolean>(false);
+  masterDocsValid = signal<boolean>(false);
 
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
@@ -224,8 +227,26 @@ export default class ApplicationCreationPage2Component {
       this.changed.emit(true);
     }
 
-    this.valid.emit(this.page2Form.valid);
+    this.valid.emit(this.page2Form.valid && this.bachelorDocsValid() && this.masterDocsValid());
   });
+
+  private initializeBachelorDocs = effect(() => {
+    const docs = this.documentIdsBachelorTranscript();
+    untracked(() => this.bachelorDocsSetValidity(docs));
+  });
+
+  private initializeMasterDocs = effect(() => {
+    const docs = this.documentIdsMasterTranscript();
+    untracked(() => this.masterDocsSetValidity(docs));
+  });
+
+  bachelorDocsSetValidity(docs: DocumentInformationHolderDTO[] | undefined): void {
+    this.bachelorDocsValid.set(docs !== undefined && docs.length > 0);
+  }
+
+  masterDocsSetValidity(docs: DocumentInformationHolderDTO[] | undefined): void {
+    this.masterDocsValid.set(docs !== undefined && docs.length > 0);
+  }
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
     const currentUpperLimit =

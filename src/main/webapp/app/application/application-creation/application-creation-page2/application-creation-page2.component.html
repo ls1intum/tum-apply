@@ -12,6 +12,7 @@
       [gradeHelperText]="helperTextBachelorGrade()"
       [gradeWarningText]="warningTextBachelorGrade()"
       (changeScale)="onChangeGradingScale('bachelor')"
+      (documentIdsChange)="bachelorDocsSetValidity($event)"
     />
 
     <jhi-degree-document-section
@@ -26,6 +27,7 @@
       [gradeHelperText]="helperTextMasterGrade()"
       [gradeWarningText]="warningTextMasterGrade()"
       (changeScale)="onChangeGradingScale('master')"
+      (documentIdsChange)="masterDocsSetValidity($event)"
     />
   </form>
 }
