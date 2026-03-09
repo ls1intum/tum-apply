@@ -74,7 +74,6 @@ export class SearchFilterSortBar {
 
       this.selectedSortField.set(fields[0].fieldName);
     },
-    { allowSignalWrites: true },
   );
 
   onSearch(): void {

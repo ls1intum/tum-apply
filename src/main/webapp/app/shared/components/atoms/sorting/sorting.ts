@@ -66,7 +66,6 @@ export class Sorting {
         this.isAsc.set(selectedDirection === 'ASC');
       }
     },
-    { allowSignalWrites: true },
   );
 
   getSortIcon(): string {

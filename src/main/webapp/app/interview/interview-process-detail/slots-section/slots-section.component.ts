@@ -226,7 +226,6 @@ export class SlotsSectionComponent {
       this.datesPerPage();
       this.currentDatePage.set(0);
     },
-    { allowSignalWrites: true },
   );
 
   private readonly initEffect = effect(() => {
