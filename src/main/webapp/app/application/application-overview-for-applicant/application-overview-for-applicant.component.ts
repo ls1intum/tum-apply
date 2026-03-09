@@ -16,8 +16,8 @@ import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationOverviewDTO } from '../../generated/model/applicationOverviewDTO';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
@@ -46,7 +46,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
  * application status, and creation time.
  */
 export default class ApplicationOverviewForApplicantComponent {
-  loading = signal(false);
+  loading = signal(true);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
