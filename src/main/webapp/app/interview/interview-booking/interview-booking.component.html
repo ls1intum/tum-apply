@@ -4,7 +4,18 @@
     <h1 jhiTranslate="interview.booking.title">Select your Interview Slot</h1>
   </div>
 
-  @if (error()) {
+  @if (isClosed()) {
+    <div class="p-4 max-w-3xl mx-auto mt-8 w-full">
+      <jhi-info-box variant="danger" [icon]="'ban'">
+        <div class="flex flex-col gap-1">
+          <span class="font-semibold" jhiTranslate="interview.booking.closedProcess.title">Process Closed</span>
+          <span jhiTranslate="interview.booking.closedProcess.description"
+            >This interview process is now closed. You can no longer book or change interview slots.</span
+          >
+        </div>
+      </jhi-info-box>
+    </div>
+  } @else if (error()) {
     <div class="p-4">
       <div class="font-bold text-negative-default mb-1" jhiTranslate="interview.booking.error.title">Error</div>
       <div class="text-negative-default" jhiTranslate="interview.booking.error.description">Unable to load booking data.</div>

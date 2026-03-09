@@ -3,7 +3,6 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
@@ -63,7 +62,7 @@ public class AiService {
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
-        final String locationText = UiTextFormatter.formatEnumValue(jobFormDTO.location());
+        final String locationText = jobFormDTO.location().correctLanguageValue(descriptionLanguage);
 
         return chatClient
             .prompt()

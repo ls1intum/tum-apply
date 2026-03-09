@@ -1,3 +1,4 @@
+import type { TranslateService } from '@ngx-translate/core';
 import { getGradeType, stripPercentage } from 'app/shared/util/grading-scale.utils';
 
 /**
@@ -227,4 +228,58 @@ export function displayGradeWithConversion(
   const germanGrade = convertAndFormatGermanGrade(upperLimit, lowerLimit, grade);
 
   return germanGrade ?? '';
+}
+
+export interface FormattedGrade {
+  displayValue: string;
+  wasConverted: boolean;
+  tooltipText?: string;
+}
+
+/**
+ * Formats a grade with conversion info inline utilizing the translation service.
+ * Returns converted grade with original in parentheses if conversion happened.
+ *
+ * @returns Object with displayValue, wasConverted flag, and interpolated tooltipText
+ */
+export function formatGradeWithTranslation(
+  grade: string | undefined,
+  upperLimit: string | undefined,
+  lowerLimit: string | undefined,
+  translateService: TranslateService,
+): FormattedGrade {
+  const originalGrade = grade ?? '';
+
+  if (originalGrade === '') {
+    return { displayValue: '', wasConverted: false };
+  }
+
+  if (!upperLimit || !lowerLimit) {
+    const tooltipText = translateService.instant('evaluation.details.conversionFailedTooltip');
+    return { displayValue: originalGrade, wasConverted: false, tooltipText };
+  }
+
+  const convertedGrade = displayGradeWithConversion(upperLimit, lowerLimit, grade);
+
+  const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
+  const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
+
+  const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
+  const roundedConverted = Math.floor(numericConverted * 10) / 10;
+
+  if (convertedGrade === '' || roundedOriginal === roundedConverted) {
+    const tooltipText = convertedGrade === '' ? translateService.instant('evaluation.details.conversionFailedTooltip') : undefined;
+    return { displayValue: originalGrade, wasConverted: false, tooltipText };
+  }
+
+  const tooltipText = translateService.instant('evaluation.details.converterTooltip', {
+    upperLimit,
+    lowerLimit,
+  });
+
+  return {
+    displayValue: `${convertedGrade} (${originalGrade})`,
+    wasConverted: true,
+    tooltipText,
+  };
 }
