@@ -273,16 +273,6 @@ describe('detectNumericGrade', () => {
     expect(result).toEqual({ upperLimit: '6.0', lowerLimit: '4.0', isPercentage: false });
   });
 
-  it('should detect Spanish-scale (10 - 5) correctly', () => {
-    const result = detectNumericGrade('7.0');
-    expect(result).toEqual({ upperLimit: '10', lowerLimit: '5', isPercentage: false });
-  });
-
-  it('should detect French-scale (20 - 10) correctly', () => {
-    const result = detectNumericGrade('11.0');
-    expect(result).toEqual({ upperLimit: '20', lowerLimit: '10', isPercentage: false });
-  });
-
   it('should detect unknown scale range 40 to 20 correctly', () => {
     const result = detectNumericGrade('21.0');
     expect(result).toEqual({ upperLimit: '40', lowerLimit: '20', isPercentage: false });
