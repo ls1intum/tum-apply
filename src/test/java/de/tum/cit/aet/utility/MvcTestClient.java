@@ -312,6 +312,7 @@ public class MvcTestClient {
             case 401 -> result = putUnauthorized(url, body, accepts);
             case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
+            case 409 -> result = putConflict(url, body, accepts);
             case 500 -> result = putInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -335,6 +336,7 @@ public class MvcTestClient {
             case 401 -> result = putUnauthorized(url, body, accepts);
             case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
+            case 409 -> result = putConflict(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
         return read(result, typeRef);
@@ -721,9 +723,24 @@ public class MvcTestClient {
         }
     }
 
+    /*
+     * Low-level PUT that asserts 409 Conflict and returns the MvcResult.
+     */
+    private MvcResult putConflict(String url, Object body, MediaType... accepts) {
+        try {
+            return mockMvc
+                .perform(
+                    applyDefaults(put(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
+                )
+                .andExpect(status().isConflict())
+                .andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " expected 409", e);
+        }
+    }
+
     /**
-     * Low-level DELETE that asserts 500 Internal Server Error and returns the
-     * MvcResult.
+     * Low-level DELETE that asserts 500 Internal Server Error and returns the MvcResult.
      */
     private MvcResult deleteInternalServerError(String url, Object body, MediaType... accepts) {
         try {

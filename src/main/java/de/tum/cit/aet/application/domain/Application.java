@@ -2,6 +2,9 @@ package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
@@ -17,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 @Getter
 @Setter
 @Table(name = "applications")
@@ -137,4 +141,7 @@ public class Application extends AbstractAuditingEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
+    private Set<DocumentDictionary> documentDictionaries;
 }

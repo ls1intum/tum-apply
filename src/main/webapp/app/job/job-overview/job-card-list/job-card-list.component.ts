@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { firstValueFrom, map } from 'rxjs';
@@ -56,11 +56,23 @@ export class JobCardListComponent {
 
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
-    initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
+    initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
 
   private jobService = inject(JobResourceApiService);
   private readonly toastService = inject(ToastService);
+
+  private readonly loadJobsEffect = effect(() => {
+    this.page();
+    this.pageSize();
+    this.searchQuery();
+    this.selectedFieldOfStudiesFilters();
+    this.selectedLocationFilters();
+    this.selectedSupervisorFilters();
+    this.sortBy();
+    this.sortDirection();
+    void this.loadJobs();
+  });
 
   constructor() {
     void this.loadAllFilter();
@@ -72,7 +84,6 @@ export class JobCardListComponent {
 
     this.page.set(page);
     this.pageSize.set(size);
-    void this.loadJobs();
   }
 
   onSearchEmit(searchQuery: string): void {
@@ -82,27 +93,23 @@ export class JobCardListComponent {
     if (normalizedQuery !== currentQuery) {
       this.page.set(0);
       this.searchQuery.set(normalizedQuery);
-      void this.loadJobs();
     }
   }
 
   onFilterEmit(filterChange: FilterChange): void {
+    this.page.set(0);
     if (filterChange.filterId === 'fieldOfStudies') {
-      this.page.set(0);
       const fieldOfStudyValue = filterChange.selectedValues.map(
         key => DropdownOptions.fieldsOfStudies.find(fs => fs.name === key)?.value ?? key,
       );
       this.selectedFieldOfStudiesFilters.set(fieldOfStudyValue);
-      void this.loadJobs();
     } else if (filterChange.filterId === 'location') {
-      this.page.set(0);
       const enumValues = DropdownOptions.mapLocationNames(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
-      void this.loadJobs();
     } else if (filterChange.filterId === 'supervisor') {
-      this.page.set(0);
       this.selectedSupervisorFilters.set(filterChange.selectedValues);
-      void this.loadJobs();
+    } else {
+      return;
     }
   }
 
@@ -110,7 +117,6 @@ export class JobCardListComponent {
     this.page.set(0);
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
-    void this.loadJobs();
   }
 
   async loadAllFilter(): Promise<void> {

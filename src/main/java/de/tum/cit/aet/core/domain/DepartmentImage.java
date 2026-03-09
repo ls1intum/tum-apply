@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -14,6 +15,7 @@ import lombok.Setter;
  * These images are available to all research groups within the same department.
  */
 @Entity
+@NoUserDataExportRequired(reason = "Images are exported as binary files by UserExportZipWriter")
 @Getter
 @Setter
 @DiscriminatorValue("DEFAULT_JOB_BANNER")

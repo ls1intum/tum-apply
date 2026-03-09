@@ -62,6 +62,10 @@ public class PDFExportService {
 
         if (app.jobId() != null) {
             JobDetailDTO job = jobService.getJobDetails(app.jobId());
+            // Determine job description language and content
+            String lang = labels.getOrDefault("lang", "en");
+            String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
+
             // Overview Section if no in preview
             builder
                 .setOverviewTitle(labels.get("overview"))
@@ -76,7 +80,7 @@ public class PDFExportService {
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
                 .setOverviewDescriptionTitle(labels.get("jobDescription"))
-                .setOverviewDescription(job.jobDescriptionEN());
+                .setOverviewDescription(descriptionForExport);
         }
 
         // Personal Statements Group
@@ -106,11 +110,7 @@ public class PDFExportService {
             .startInfoSection(labels.get("bachelorInfo"))
             .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
             .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
-            // .addSectionData(labels.get("upperGradeLimit"),
-            // getValue(app.applicant().bachelorGradeUpperLimit()))
-            // .addSectionData(labels.get("lowerGradeLimit"),
-            // getValue(app.applicant().bachelorGradeLowerLimit()))
-            .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
+            .addSectionData(labels.get("grade"), labels.getOrDefault("bachelorGradeDisplay", getValue(app.applicant().bachelorGrade())));
 
         // Master Section
         if (app.applicant().masterDegreeName() != null) {
@@ -118,11 +118,7 @@ public class PDFExportService {
                 .startInfoSection(labels.get("masterInfo"))
                 .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
                 .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
-                // .addSectionData(labels.get("upperGradeLimit"),
-                // getValue(app.applicant().masterGradeUpperLimit()))
-                // .addSectionData(labels.get("lowerGradeLimit"),
-                // getValue(app.applicant().masterGradeLowerLimit()))
-                .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
+                .addSectionData(labels.get("grade"), labels.getOrDefault("masterGradeDisplay", getValue(app.applicant().masterGrade())));
         }
 
         // Metadata
@@ -183,8 +179,12 @@ public class PDFExportService {
             )
         );
 
+        // Determine job description language and content
+        String lang = labels.getOrDefault("lang", "en");
+        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
+
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.jobDescriptionEN());
+        addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -245,8 +245,12 @@ public class PDFExportService {
             )
         );
 
+        // Determine job description based on requested language
+        String lang = labels.getOrDefault("lang", "en");
+        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
+
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.jobDescriptionEN());
+        addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));
@@ -431,5 +435,26 @@ public class PDFExportService {
         }
 
         return String.join(", ", parts);
+    }
+
+    /**
+     * Selects the appropriate job description based on the requested language and availability
+     *
+     * @param englishDesc   English job description
+     * @param germanDesc    German job description
+     * @param lang          requested language ("en" or "de")
+     * @return the selected job description for export or a "-" if none is available
+     */
+    private String selectJobDescriptionForLang(String englishDesc, String germanDesc, String lang) {
+        String primary = "de".equalsIgnoreCase(lang) ? germanDesc : englishDesc;
+        String secondary = "de".equalsIgnoreCase(lang) ? englishDesc : germanDesc;
+
+        if (primary != null && !primary.trim().isEmpty()) {
+            return primary;
+        } else if (secondary != null && !secondary.trim().isEmpty()) {
+            return secondary;
+        } else {
+            return "-";
+        }
     }
 }

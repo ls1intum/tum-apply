@@ -49,6 +49,121 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
+  /api/applicants/profile:
+    get:
+      tags: [applicant-resource]
+      operationId: getApplicantProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantProfile
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+  /api/applicants/profile/document-ids:
+    get:
+      tags: [applicant-resource]
+      operationId: getApplicantProfileDocumentIds
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
+  /api/applicants/profile/document-settings:
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantDocumentSettings
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+  /api/applicants/profile/documents/{documentDictionaryId}:
+    delete:
+      tags: [applicant-resource]
+      operationId: deleteApplicantProfileDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/applicants/profile/documents/{documentDictionaryId}/name:
+    put:
+      tags: [applicant-resource]
+      operationId: renameApplicantProfileDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: newName
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: OK}
+  /api/applicants/profile/documents/{documentType}:
+    post:
+      tags: [applicant-resource]
+      summary: Upload applicant profile documents
+      operationId: uploadApplicantProfileDocuments
+      parameters:
+      - name: documentType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+                uniqueItems: true
+  /api/applicants/profile/personal-information:
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantPersonalInformation
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -79,7 +194,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/delete-document/{documentDictionaryId}:
+  /api/applications/documents/{documentDictionaryId}:
     delete:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
@@ -88,6 +203,21 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/applications/documents/{documentDictionaryId}/name:
+    put:
+      tags: [application-resource]
+      operationId: renameDocument
+      parameters:
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: newName
+        in: query
+        required: true
+        schema: {type: string}
       responses:
         '200': {description: OK}
   /api/applications/getDocumentIds/{applicationId}:
@@ -134,82 +264,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageApplicationOverviewDTO'}
-  /api/applications/profile:
-    get:
-      tags: [application-resource]
-      operationId: getApplicantProfile
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
-    put:
-      tags: [application-resource]
-      operationId: updateApplicantProfile
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ApplicantDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applications/rename-document/{documentDictionaryId}:
-    put:
-      tags: [application-resource]
-      operationId: renameDocument
-      parameters:
-      - name: documentDictionaryId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: newName
-        in: query
-        required: true
-        schema: {type: string}
-      responses:
-        '200': {description: OK}
-  /api/applications/upload-documents/{applicationId}/{documentType}:
-    post:
-      tags: [application-resource]
-      summary: Upload documents
-      operationId: uploadDocuments
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
-      requestBody:
-        content:
-          multipart/form-data:
-            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
-          application/json:
-            schema:
-              type: object
-              properties:
-                files:
-                  type: array
-                  items: {type: string, format: binary}
-              required: [files]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-                uniqueItems: true
   /api/applications/withdraw/{applicationId}:
     put:
       tags: [application-resource]
@@ -297,6 +351,43 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+  /api/applications/{applicationId}/documents/{documentType}:
+    post:
+      tags: [application-resource]
+      summary: Upload documents
+      operationId: uploadDocuments
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: documentType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
+          application/json:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items: {type: string, format: binary}
+              required: [files]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+                uniqueItems: true
   /api/applications/{applicationId}/ratings:
     get:
       tags: [rating-resource]
@@ -988,6 +1079,23 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/research-group/job-banners/by-research-group:
+    get:
+      tags: [image-resource]
+      operationId: getResearchGroupJobBannersByResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/upload/default-job-banner:
     post:
       tags: [image-resource]
@@ -1015,6 +1123,29 @@ paths:
     post:
       tags: [image-resource]
       operationId: uploadJobBanner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/job-banner/by-research-group:
+    post:
+      tags: [image-resource]
+      operationId: uploadJobBannerForResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           multipart/form-data:
@@ -1236,6 +1367,14 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32}
+      - name: afterDateTime
+        in: query
+        required: false
+        schema: {type: string, format: date-time}
+      - name: beforeDateTime
+        in: query
+        required: false
+        schema: {type: string, format: date-time}
       - name: page
         in: query
         required: false
@@ -1291,6 +1430,26 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/processes/{processId}/slots/{slotId}/cancel:
+    post:
+      tags: [interview-resource]
+      operationId: cancelInterview
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CancelInterviewDTO'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/interviews/slots/{slotId}:
     delete:
       tags: [interview-resource]
@@ -1453,10 +1612,10 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JobFiltersDTO'}
-  /api/jobs/professor:
+  /api/jobs/research-group:
     get:
       tags: [job-resource]
-      operationId: getJobsByProfessor
+      operationId: getJobsForCurrentResearchGroup
       parameters:
       - name: pageSize
         in: query
@@ -1746,6 +1905,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/professors:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupProfessors
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/{id}:
     get:
       tags: [research-group-resource]
@@ -1863,6 +2034,70 @@ paths:
     post:
       tags: [school-resource]
       operationId: createSchool
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SchoolCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolShortDTO'}
+  /api/schools/admin/search:
+    get:
+      tags: [school-resource]
+      operationId: getSchoolsForAdmin
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOSchoolDTO'}
+  /api/schools/delete/{id}:
+    delete:
+      tags: [school-resource]
+      operationId: deleteSchool
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/schools/update/{id}:
+    put:
+      tags: [school-resource]
+      operationId: updateSchool
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -2088,6 +2323,10 @@ components:
         bachelorUniversity: {type: string}
         city: {type: string}
         country: {type: string}
+        documentDictionaries:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterGradeLowerLimit: {type: string}
@@ -2171,6 +2410,10 @@ components:
           items: {$ref: '#/components/schemas/CustomFieldAnswer'}
           uniqueItems: true
         desiredStartDate: {type: string, format: date}
+        documentDictionaries:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
         internalComments:
           type: array
           items: {$ref: '#/components/schemas/InternalComment'}
@@ -2343,6 +2586,12 @@ components:
         researchGroupName: {type: string}
         supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
         userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
+    CancelInterviewDTO:
+      type: object
+      properties:
+        deleteSlot: {type: boolean}
+        sendReinvite: {type: boolean}
+      required: [deleteSlot, sendReinvite]
     ConflictDataDTO:
       type: object
       properties:
@@ -2447,7 +2696,30 @@ components:
       properties:
         departmentId: {type: string, format: uuid}
         name: {type: string}
+    Document:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        documentId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        mimeType: {type: string}
+        path: {type: string}
+        sha256Id: {type: string}
+        sizeBytes: {type: integer, format: int64}
+        uploadedBy: {$ref: '#/components/schemas/User'}
     DocumentDTO: {}
+    DocumentDictionary:
+      type: object
+      properties:
+        applicant: {$ref: '#/components/schemas/Applicant'}
+        application: {}
+        customFieldAnswer: {$ref: '#/components/schemas/CustomFieldAnswer'}
+        document: {$ref: '#/components/schemas/Document'}
+        documentDictionaryId: {type: string, format: uuid}
+        documentType:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+        name: {type: string}
     DocumentInformationHolderDTO:
       type: object
       properties:
@@ -2464,8 +2736,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2476,8 +2749,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2488,8 +2762,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2503,8 +2778,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2590,15 +2866,18 @@ components:
       type: object
       properties:
         completedCount: {type: integer, format: int64}
+        imageUrl: {type: string}
         invitedCount: {type: integer, format: int64}
+        isClosed: {type: boolean}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
+        totalSlots: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
-        totalInterviews, uncontactedCount]
+        totalInterviews, totalSlots, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
@@ -2922,6 +3201,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/ResearchGroupDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOSchoolDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/SchoolDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOUserShortDTO:
       type: object
@@ -3315,4 +3601,5 @@ components:
           items:
             type: string
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
+        universityId: {type: string}
         userId: {type: string, format: uuid}
