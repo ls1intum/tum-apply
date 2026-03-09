@@ -60,3 +60,35 @@ if (typeof (globalThis as any).IntersectionObserver === 'undefined') {
   (globalThis as any).IntersectionObserver = MockIntersectionObserver;
   (globalThis as any).IntersectionObserverEntry = class {};
 }
+
+declare global {
+  function runSilently<T>(fn: () => T): T;
+}
+
+/**
+ * Silences all console output (error, warn, info) for the duration of a function.
+ */
+globalThis.runSilently = (fn: () => any): any => {
+  // 1. Setup spies for all noisy methods
+  const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+  const restore = () => {
+    errorSpy.mockRestore();
+    warnSpy.mockRestore();
+    infoSpy.mockRestore();
+  };
+
+  try {
+    const result = fn();
+    if (result instanceof Promise) {
+      return result.finally(restore);
+    }
+    restore();
+    return result;
+  } catch (error) {
+    restore();
+    throw error;
+  }
+};
