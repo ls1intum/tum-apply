@@ -57,7 +57,7 @@ export class SlotCardComponent {
         label: 'button.delete',
         icon: 'trash',
         command: () => {
-          this.deleteDialog().confirm();
+          this.showDeleteDialog.set(true);
         },
         severity: 'danger',
       });
