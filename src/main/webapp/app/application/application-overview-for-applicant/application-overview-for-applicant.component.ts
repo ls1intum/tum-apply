@@ -14,10 +14,10 @@ import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
-
-import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
+
+import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
