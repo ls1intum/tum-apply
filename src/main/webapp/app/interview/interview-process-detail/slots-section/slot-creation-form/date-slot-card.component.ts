@@ -82,6 +82,8 @@ export class DateSlotCardComponent {
   readonly slotRanges = signal<SlotRange[]>([]);
 
   readonly allSlots = computed(() => this.slotRanges().flatMap(range => range.slots));
+  readonly hasSingleSlots = computed(() => this.slotRanges().some(range => range.type === 'single' || range.type === 'scheduled'));
+  readonly hasRangeSlots = computed(() => this.slotRanges().some(range => range.type === 'range'));
 
   readonly conflictingSlotKeys = computed(() => {
     const ranges = this.slotRanges();

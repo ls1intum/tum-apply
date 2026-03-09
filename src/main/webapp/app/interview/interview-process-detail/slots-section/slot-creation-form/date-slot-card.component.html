@@ -25,33 +25,35 @@
       </div>
     </div>
     <div class="flex gap-2 items-center">
-      @if (slotRanges().length === 0) {
+      @if (!hasRangeSlots()) {
         <jhi-button
           [label]="'interview.slots.create.addSlot'"
           [shouldTranslate]="true"
           variant="outlined"
           size="xs"
           icon="plus"
-          severity="primary"
-          [pTooltip]="'interview.slots.create.singleSlotHelp' | translate"
+          [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate"
           tooltipPosition="top"
-          tooltipStyleClass="max-w-xs"
+          severity="primary"
           (click)="addSingleSlot()"
         />
+      }
+
+      @if (!hasSingleSlots()) {
         <jhi-button
           [label]="'interview.slots.create.addRange'"
           [shouldTranslate]="true"
           variant="outlined"
           size="xs"
           icon="plus"
-          severity="primary"
-          [pTooltip]="'interview.slots.create.rangeSlotHelp' | translate"
+          [pTooltip]="'interview.slots.create.addRangeTooltip' | translate"
           tooltipPosition="top"
-          tooltipStyleClass="max-w-xs"
+          severity="primary"
           (click)="addRange()"
         />
-        <div class="h-5 w-px bg-border-default mx-1"></div>
       }
+
+      <p-divider layout="vertical" styleClass="h-6 m-0 mx-1" />
       <jhi-button icon="trash" variant="text" severity="danger" size="xs" (click)="remove.emit()" />
     </div>
   </div>
