@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -30,11 +31,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final ImageService imageService;
     private static final Duration LAST_ACTIVITY_UPDATE_THRESHOLD = Duration.ofHours(24);
 
-    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository) {
+    public UserService(
+        UserRepository userRepository,
+        UserResearchGroupRoleRepository userResearchGroupRoleRepository,
+        ImageService imageService
+    ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
+        this.imageService = imageService;
     }
 
     /**
@@ -124,6 +131,24 @@ public class UserService {
             user.setLastName(normalizedLastName);
         }
 
+        userRepository.save(user);
+    }
+
+    /**
+     * Updates the user's avatar URL in the local database.
+     *
+     * @param userId    the Keycloak user ID
+     * @param avatarUrl the new avatar URL (can be null/blank to remove avatar)
+     */
+    public void updateAvatar(String userId, String avatarUrl) {
+        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);
+        if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
+            user.setAvatar(null);
+        } else {
+            imageService.assertUserOwnsProfilePictureUrl(user.getUserId(), normalizedAvatarUrl);
+            user.setAvatar(normalizedAvatarUrl);
+        }
         userRepository.save(user);
     }
 

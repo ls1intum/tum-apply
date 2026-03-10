@@ -60,7 +60,6 @@ describe('ResearchGroupAddMembersComponent', () => {
     id: user.id,
     lastName: user.lastName,
     universityId: user.universityId,
-    username: user.username,
     displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
   });
 

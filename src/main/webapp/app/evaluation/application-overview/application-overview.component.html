@@ -51,7 +51,7 @@
 
   <ng-template #nameTemplate let-application>
     <div class="flex items-center gap-2">
-      <jhi-user-avatar [fullName]="application.name ?? ''" size="lg" />
+      <jhi-user-avatar [fullName]="application.name ?? ''" [avatarUrl]="application.avatar" loading="lazy" />
       <span class="truncate">{{ application.name || '-' }}</span>
     </div>
   </ng-template>

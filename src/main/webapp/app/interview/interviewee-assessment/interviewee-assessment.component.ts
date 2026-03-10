@@ -19,6 +19,7 @@ import { DocumentSection } from 'app/shared/components/organisms/document-sectio
 import { Prose } from 'app/shared/components/atoms/prose/prose';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatFullName } from 'app/shared/util/name.util';
 
 /**
  * Assessment view for evaluating interview candidates.
@@ -63,8 +64,9 @@ export class IntervieweeAssessmentComponent {
   protected readonly applicantName = computed(() => {
     const user = this.interviewee()?.user;
     if (!user) return '';
-    return `${user.firstName} ${user.lastName}`;
+    return formatFullName(user.firstName, user.lastName);
   });
+  protected readonly applicantAvatar = computed(() => this.interviewee()?.user?.avatar);
 
   protected readonly degreeName = computed(() => {
     const applicant = this.interviewee()?.application?.applicant;

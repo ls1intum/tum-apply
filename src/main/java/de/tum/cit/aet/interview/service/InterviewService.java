@@ -212,6 +212,7 @@ public class InterviewService {
                     slot.getStartDateTime(),
                     slot.getEndDateTime(),
                     applicantName,
+                    applicantUser.getAvatar(),
                     slot.getInterviewProcess().getJob().getTitle(),
                     slot.getLocation(),
                     slot.getInterviewProcess().getId(),
@@ -1038,7 +1039,13 @@ public class InterviewService {
         if (user == null) {
             return null;
         }
-        return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new IntervieweeDTO.IntervieweeUserDTO(
+            user.getUserId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getAvatar()
+        );
     }
 
     /**

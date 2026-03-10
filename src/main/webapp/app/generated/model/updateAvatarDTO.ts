@@ -9,11 +9,7 @@
  */
 
 
-export interface IntervieweeUserDTO { 
-    avatar?: string;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    userId?: string;
+export interface UpdateAvatarDTO { 
+    avatarUrl?: string;
 }
 
