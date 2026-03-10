@@ -11,6 +11,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.dto.ApiError;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.core.service.ImageService;
@@ -24,6 +25,7 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
+import de.tum.cit.aet.usermanagement.web.UserResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
@@ -35,9 +37,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Integration tests for {@link de.tum.cit.aet.usermanagement.web.UserResource}.
@@ -71,13 +74,17 @@ public class UserResourceTest extends AbstractResourceTest {
     @Autowired
     KeycloakUserService keycloakUserService;
 
-    @MockitoSpyBean
+    @Autowired
+    UserResource userResource;
+
     ImageService imageService;
 
     User currentUser;
 
     @BeforeEach
     void setup() {
+        imageService = Mockito.mock(ImageService.class);
+        ReflectionTestUtils.setField(userResource, "imageService", imageService);
         databaseCleaner.clean();
         currentUser = UserTestData.createUserWithoutResearchGroup(userRepository, "current.user@tum.de", "Current", "User", "ab12cde");
     }
@@ -227,12 +234,16 @@ public class UserResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(API_BASE_PATH + "/avatar", dto, Void.class, 204);
 
+            verify(imageService).assertCurrentUserOwnsProfilePictureUrl(dto.avatarUrl());
             verify(userService).updateAvatar(currentUser.getUserId().toString(), dto.avatarUrl());
         }
 
         @Test
         void returns400WhenAvatarUrlIsExternal() {
             UpdateAvatarDTO dto = new UpdateAvatarDTO("https://example.com/tracker.png");
+            Mockito.doThrow(new BadRequestException("Avatar URL must reference an existing profile picture owned by the current user"))
+                .when(imageService)
+                .assertCurrentUserOwnsProfilePictureUrl(dto.avatarUrl());
 
             ApiError error = api
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
@@ -248,6 +259,9 @@ public class UserResourceTest extends AbstractResourceTest {
             User otherUser = UserTestData.createUserWithoutResearchGroup(userRepository, "other.user@tum.de", "Other", "User", "xy12zzz");
             ProfileImage otherUsersProfileImage = imageRepository.save(ImageTestData.newProfilePicture(otherUser));
             UpdateAvatarDTO dto = new UpdateAvatarDTO(otherUsersProfileImage.getUrl());
+            Mockito.doThrow(new BadRequestException("Avatar URL must reference an existing profile picture owned by the current user"))
+                .when(imageService)
+                .assertCurrentUserOwnsProfilePictureUrl(dto.avatarUrl());
 
             ApiError error = api
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
