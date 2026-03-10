@@ -7,10 +7,13 @@ import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.InternalServerException;
+import de.tum.cit.aet.core.exception.NoProfilePictureException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -26,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -193,12 +197,68 @@ public class ImageService {
     @Transactional
     public ProfileImage uploadProfilePicture(MultipartFile file) {
         User uploader = currentUserService.getUser();
+        deleteProfilePictureForUser(uploader);
         String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
 
         ProfileImage image = new ProfileImage();
         setBaseImageProperties(image, file, relativePath, uploader);
+        uploader.setAvatar(image.getUrl());
 
         return imageRepository.save(image);
+    }
+
+    /**
+     * Deletes the current user's profile picture, including any stored files.
+     */
+    @Transactional
+    public void deleteCurrentUserProfilePicture() {
+        deleteProfilePictureForUser(currentUserService.getUser());
+    }
+
+    /**
+     * Deletes the stored profile picture for the given user ID.
+     * Intended for cleanup flows such as retention processing.
+     *
+     * @param userId the user whose stored profile picture should be removed
+     */
+    @Transactional
+    public void deleteProfilePictureByUserId(UUID userId) {
+        deleteStoredProfilePictureByUserId(userId);
+    }
+
+    /**
+     * Ensures the provided avatar URL references a persisted profile picture owned by the given user.
+     *
+     * @param userId the owner that must match the stored profile picture
+     * @param avatarUrl the avatar URL to validate
+     * @throws BadRequestException when the URL is not a stored profile image of the user
+     */
+    public void assertUserOwnsProfilePictureUrl(UUID userId, String avatarUrl) {
+        String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);
+        if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
+            throw new NoProfilePictureException("No profile picture URL was provided");
+        }
+
+        if (!normalizedAvatarUrl.startsWith("/images/profiles/")) {
+            throw new BadRequestException("Avatar URL must reference an existing profile picture owned by the current user");
+        }
+
+        if (!imageRepository.existsProfileImageByUserIdAndUrl(userId, normalizedAvatarUrl)) {
+            if (imageRepository.findProfileImageByUserId(userId).isEmpty()) {
+                throw new NoProfilePictureException();
+            }
+            throw new BadRequestException("Avatar URL must reference an existing profile picture owned by the current user");
+        }
+    }
+
+    /**
+     * Ensures the provided avatar URL references a persisted profile picture owned by the current user.
+     *
+     * @param avatarUrl the avatar URL to validate
+     * @throws BadRequestException when the URL is not a stored profile image of the current user
+     */
+    public void assertCurrentUserOwnsProfilePictureUrl(String avatarUrl) {
+        assertUserOwnsProfilePictureUrl(currentUserService.getUserId(), avatarUrl);
     }
 
     /**
@@ -215,6 +275,23 @@ public class ImageService {
         image.setMimeType(file.getContentType());
         image.setSizeBytes(file.getSize());
         image.setUploadedBy(uploader);
+    }
+
+    private void deleteProfilePictureForUser(User user) {
+        user.setAvatar(null);
+        deleteStoredProfilePictureByUserId(user.getUserId());
+    }
+
+    private void deleteStoredProfilePictureByUserId(UUID userId) {
+        Optional<ProfileImage> existingImage = imageRepository.findProfileImageByUserId(userId);
+        if (existingImage.isEmpty()) {
+            return;
+        }
+
+        deleteImageFile(existingImage.get());
+        imageRepository.delete(existingImage.get());
+        // Flush the delete before a replacement upload inserts a new PROFILE_PICTURE row.
+        imageRepository.flush();
     }
 
     /**
@@ -587,21 +664,20 @@ public class ImageService {
     }
 
     private String getExtension(MultipartFile file) {
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (!StringUtils.hasText(extension)) {
-            // Fallback based on mime type
-            String mimeType = file.getContentType();
-            if (mimeType != null) {
-                if (mimeType.contains("jpeg") || mimeType.contains("jpg")) {
-                    return ".jpg";
-                }
-                if (mimeType.contains("png")) {
-                    return ".png";
-                }
-            }
-            return ".jpg";
+        String mimeType = file.getContentType();
+        if (!StringUtils.hasText(mimeType)) {
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            return StringUtils.hasText(extension) ? "." + extension.toLowerCase() : ".jpg";
         }
-        return "." + extension.toLowerCase();
+
+        return switch (mimeType.toLowerCase()) {
+            case "image/jpeg", "image/jpg" -> ".jpg";
+            case "image/png" -> ".png";
+            default -> {
+                String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+                yield StringUtils.hasText(extension) ? "." + extension.toLowerCase() : ".jpg";
+            }
+        };
     }
 
     private String getSubdirectory(ImageType imageType) {

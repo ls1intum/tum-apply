@@ -13,6 +13,7 @@ public record UpcomingInterviewDTO(
     Instant startDateTime,
     Instant endDateTime,
     String intervieweeName,
+    String avatar,
     String jobTitle,
     String location,
     UUID processId,

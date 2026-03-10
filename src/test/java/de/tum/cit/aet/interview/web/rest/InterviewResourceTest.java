@@ -166,6 +166,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         // Shared test applicant and interviewee
         testApplicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        testApplicant.getUser().setAvatar("/images/profiles/applicant-avatar.jpg");
+        userRepository.save(testApplicant.getUser());
         testApplication = ApplicationTestData.savedSent(applicationRepository, job, testApplicant);
         testInterviewee = createInterviewee(testApplication);
     }
@@ -327,6 +329,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         // Assert
         assertThat(upcoming).hasSize(1);
         assertThat(upcoming.get(0).intervieweeName()).contains(testApplicant.getUser().getFirstName());
+        assertThat(upcoming.get(0).avatar()).isEqualTo("/images/profiles/applicant-avatar.jpg");
     }
 
     @Test

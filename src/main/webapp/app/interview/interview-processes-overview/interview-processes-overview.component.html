@@ -79,8 +79,8 @@
 
               <!-- Grid for the upcoming cards within the month -->
               <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                @for (interview of monthGroup.interviews; track interview.id; let i = $index) {
-                  <jhi-upcoming-interview-card [interview]="interview" [index]="i" />
+                @for (interview of monthGroup.interviews; track interview.id) {
+                  <jhi-upcoming-interview-card [interview]="interview" />
                 }
               </div>
             </section>

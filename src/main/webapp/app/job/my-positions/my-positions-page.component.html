@@ -94,9 +94,9 @@
       </ng-template>
       <ng-template #professorTemplate let-job>
         <div class="flex items-center gap-2">
-          <jhi-user-avatar [fullName]="job.professorName ?? ''" size="lg" />
+          <jhi-user-avatar [fullName]="job.professorName ?? ''" [avatarUrl]="job.avatar" loading="lazy" />
           <span class="truncate">
-            {{ job.professorName ? (job.professorName.startsWith('Prof.') ? job.professorName : 'Prof. ' + job.professorName) : '-' }}
+            {{ job.professorName ? (job.professorName.startsWith('Prof.') ? job.professorName : job.professorName) : '-' }}
           </span>
         </div>
       </ng-template>

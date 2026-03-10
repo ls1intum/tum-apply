@@ -1160,6 +1160,24 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/profile-picture:
+    post:
+      tags: [image-resource]
+      operationId: uploadProfilePicture
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/{imageId}:
     delete:
       tags: [image-resource]
@@ -2192,6 +2210,17 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
+  /api/users/avatar:
+    put:
+      tags: [user-resource]
+      operationId: updateAvatar
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateAvatarDTO'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/users/data-export:
     post:
       tags: [user-data-export-resource]
@@ -2923,6 +2952,7 @@ components:
     IntervieweeUserDTO:
       type: object
       properties:
+        avatar: {type: string}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
@@ -2972,6 +3002,7 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INTERVIEW]
+        avatar: {type: string}
         contractDuration: {type: integer, format: int32}
         departmentName: {type: string}
         imageUrl: {type: string}
@@ -3427,6 +3458,7 @@ components:
     UpcomingInterviewDTO:
       type: object
       properties:
+        avatar: {type: string}
         endDateTime: {type: string, format: date-time}
         id: {type: string, format: uuid}
         intervieweeId: {type: string, format: uuid}
@@ -3455,6 +3487,10 @@ components:
         clearRating: {type: boolean}
         notes: {type: string}
         rating: {type: integer, format: int32, maximum: 2, minimum: -2}
+    UpdateAvatarDTO:
+      type: object
+      properties:
+        avatarUrl: {type: string}
     UpdatePasswordDTO:
       type: object
       properties:
@@ -3606,6 +3642,7 @@ components:
     UserShortDTO:
       type: object
       properties:
+        avatar: {type: string}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}

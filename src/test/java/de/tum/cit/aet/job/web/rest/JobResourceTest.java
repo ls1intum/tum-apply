@@ -162,6 +162,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(card.title()).isEqualTo("Published Role");
         assertThat(card.location().getEnglishValue()).isEqualTo("Garching");
         assertThat(card.professorName()).isEqualTo("John Doe");
+        assertThat(card.avatar()).isEqualTo(professor.getAvatar());
         assertThat(card.workload()).isEqualTo(20);
         assertThat(card.startDate()).isEqualTo(LocalDate.of(2025, 9, 1));
     }

@@ -7,6 +7,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
 
 /**
  * Card component displaying an interviewee's status and scheduled slot details.
@@ -32,8 +33,9 @@ export class IntervieweeCardComponent {
   // Computed values
   fullName = computed(() => {
     const user = this.interviewee().user;
-    return `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim();
+    return formatFullName(user?.firstName, user?.lastName);
   });
+  avatarUrl = computed(() => this.interviewee().user?.avatar);
 
   scheduledDate = computed(() => {
     const slot = this.interviewee().scheduledSlot;

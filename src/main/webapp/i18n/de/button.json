@@ -22,6 +22,8 @@
     "assign": "Zuweisen",
     "noFurtherActions": "Keine weiteren Aktionen verfügbar",
     "replace": "Ersetzen",
-    "downloadPDF": "Exportieren"
+    "downloadPDF": "Exportieren",
+    "showSensitiveInfo": "Sensible Informationen anzeigen",
+    "hideSensitiveInfo": "Sensible Informationen verbergen"
   }
 }

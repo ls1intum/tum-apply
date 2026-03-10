@@ -47,6 +47,42 @@
       }
     },
 
+    "profilePicture": {
+      "header": "Profile Picture",
+      "description": "Make your profile more personal with a photo.",
+      "saved": {
+        "summary": "Profile picture updated",
+        "detail": "Your profile picture was updated successfully."
+      },
+      "saveFailed": {
+        "summary": "Update failed",
+        "detail": "Failed to update your profile picture. Please try again."
+      },
+      "deleted": {
+        "summary": "Profile picture removed",
+        "detail": "Your profile picture was removed successfully."
+      },
+      "deleteFailed": {
+        "summary": "Deletion failed",
+        "detail": "Failed to remove your profile picture. Please try again."
+      },
+      "fileTooLarge": {
+        "summary": "File too large",
+        "detail": "Please choose an image smaller than 5 MB."
+      },
+      "invalidFileType": {
+        "summary": "Invalid file type",
+        "detail": "Please choose a JPEG, JPG, or PNG image."
+      },
+      "resetConfirm": {
+        "header": "Delete profile picture?",
+        "message": "Are you sure you want to delete your current profile picture?"
+      },
+      "cropDialog": {
+        "header": "Crop Profile Picture",
+        "rotate": "Rotate"
+      }
+    },
     "appearance": {
       "header": "Appearance",
       "theme": {

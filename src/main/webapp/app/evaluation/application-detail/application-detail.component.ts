@@ -127,6 +127,25 @@ export class ApplicationDetailComponent {
     };
   });
 
+  readonly masterSummary = computed(() => {
+    const applicant = this.currentApplicationApplicant();
+    this.currentLang();
+
+    return {
+      degree: applicant?.masterDegreeName,
+      university: applicant?.masterUniversity,
+      gradeInfo: formatGradeWithTranslation(
+        applicant?.masterGrade,
+        applicant?.masterGradeUpperLimit,
+        applicant?.masterGradeLowerLimit,
+        this.translateService,
+      ),
+    };
+  });
+
+  // Privacy toggle for sensitive information
+  readonly sensitiveInfoVisible = signal<boolean>(false);
+
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
@@ -258,6 +277,10 @@ export class ApplicationDetailComponent {
       this.updateApplications();
     }
     this.updateUrlQueryParams();
+  }
+
+  toggleSensitiveInfo(): void {
+    this.sensitiveInfoVisible.update(visible => !visible);
   }
 
   openAddToInterviewDialog(): void {
