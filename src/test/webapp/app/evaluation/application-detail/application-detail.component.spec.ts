@@ -7,7 +7,7 @@ import { ApplicationEvaluationResourceApiService } from 'app/generated/api/appli
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
+import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
@@ -60,8 +60,6 @@ describe('ApplicationDetailComponent', () => {
       getDocumentDictionaryIds: vi.fn().mockReturnValue(of(makeDocumentIds())),
     };
 
-    const translateMock = createTranslateServiceMock();
-
     const mockActivatedRoute = createActivatedRouteMock({}, {});
     q$ = mockActivatedRoute.queryParamMapSubject;
 
@@ -73,7 +71,7 @@ describe('ApplicationDetailComponent', () => {
         { provide: ApplicationResourceApiService, useValue: applicationApi },
         provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
-        provideTranslateMock(translateMock),
+        provideTranslateMock(),
         provideToastServiceMock(),
       ],
     }).compileComponents();
