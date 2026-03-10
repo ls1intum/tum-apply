@@ -30,6 +30,7 @@ export class AiAssistantCardComponent {
   isGenerating = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
+  generate = output<void>();
 
   readonly WARNING_THRESHOLD = 65;
   readonly DANGER_THRESHOLD = 29;
@@ -43,12 +44,6 @@ export class AiAssistantCardComponent {
       return 0;
     }
     return Math.max(0, Math.min(100, Math.round(value)));
-  });
-
-  private readonly displayedScoreEffect = effect(() => {
-    if (!this.isGenerating()) {
-      this.displayedScore.set(this.boundedScore());
-    }
   });
 
   readonly scoreFeedback = computed(() => {
@@ -69,7 +64,11 @@ export class AiAssistantCardComponent {
     return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.good';
   });
 
-  generate = output();
+  private readonly displayedScoreEffect = effect(() => {
+    if (!this.isGenerating()) {
+      this.displayedScore.set(this.boundedScore());
+    }
+  });
 
   onGenerate(): void {
     this.generate.emit();
