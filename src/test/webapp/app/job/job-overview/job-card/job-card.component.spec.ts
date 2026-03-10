@@ -88,5 +88,31 @@ describe('JobCardComponent', () => {
       expect(avatarComponent.fullName()).toBe('Prof. Jane Doe');
       expect(avatarComponent.avatarUrl()).toBe('/images/profiles/prof-jane.jpg');
     });
+
+    it('should render the avatar inside a card-colored frame that blends into the white card surface', () => {
+      fixture.componentRef.setInput('professor', 'Prof. Jane Doe');
+      fixture.detectChanges();
+
+      const card = fixture.debugElement.query(By.css('[role="button"]'));
+      const avatarFrame = fixture.debugElement.query(By.css('.rounded-full.bg-background-default'));
+
+      expect(card.nativeElement.className).toContain('group');
+      expect(card.nativeElement.className).toContain('bg-background-default');
+      expect(avatarFrame).toBeTruthy();
+      expect(avatarFrame.nativeElement.className).toContain('bg-background-default');
+      expect(avatarFrame.nativeElement.className).toContain('group-hover:bg-background-surface');
+      expect(avatarFrame.nativeElement.className).toContain('p-[0.125rem]');
+    });
+
+    it('should offset the name pill to avoid overlapping the avatar', () => {
+      fixture.componentRef.setInput('professor', 'Prof. Jane Doe');
+      fixture.detectChanges();
+
+      const namePill = fixture.debugElement.query(By.css('.bg-black\\/30'));
+
+      expect(namePill).toBeTruthy();
+      expect(namePill.nativeElement.className).toContain('pl-12');
+      expect(namePill.nativeElement.className).toContain('text-text-on-primary');
+    });
   });
 });
