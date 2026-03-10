@@ -64,10 +64,6 @@ export class InterviewProcessDetailComponent {
     this.slotsRefreshKey.update(k => k + 1);
   }
 
-  onSlotCancelled(): void {
-    this.slotsRefreshKey.update(k => k + 1);
-  }
-
   private updateTabTitle(jobTitle: string): void {
     this.titleService.setTitle(`Interview – ${jobTitle}`);
   }
