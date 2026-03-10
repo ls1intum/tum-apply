@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
+import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
 
 import { SlotsSectionComponent } from './slots-section/slots-section.component';
@@ -14,7 +15,7 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
 @Component({
   selector: 'jhi-interview-process-detail',
   standalone: true,
-  imports: [TranslateModule, BackButtonComponent, SlotsSectionComponent, IntervieweeSectionComponent],
+  imports: [TranslateModule, BackButtonComponent, TagComponent, SlotsSectionComponent, IntervieweeSectionComponent],
   templateUrl: './interview-process-detail.component.html',
 })
 export class InterviewProcessDetailComponent {
@@ -22,7 +23,9 @@ export class InterviewProcessDetailComponent {
   readonly safeProcessId = computed(() => this.processId() ?? '');
   jobId = signal<string | undefined>(undefined);
   jobTitle = signal<string | undefined>(undefined);
+  jobState = signal<string | undefined>(undefined);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
+  readonly isJobClosed = computed(() => this.jobState() === 'CLOSED' || this.jobState() === 'APPLICANT_FOUND');
 
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
@@ -54,7 +57,11 @@ export class InterviewProcessDetailComponent {
   }
 
   onSlotAssigned(): void {
-    this.intervieweeRefreshKey.update(k => k + 1);
+    this.intervieweeRefreshKey.update(currentKey => currentKey + 1);
+  }
+
+  onSlotCancelled(): void {
+    this.slotsRefreshKey.update(k => k + 1);
   }
 
   onSlotCancelled(): void {
@@ -74,6 +81,9 @@ export class InterviewProcessDetailComponent {
       }
       if (process.jobId) {
         this.jobId.set(process.jobId);
+      }
+      if (process.jobState) {
+        this.jobState.set(process.jobState);
       }
       this.invitedCount.set(process.invitedCount);
     } catch {

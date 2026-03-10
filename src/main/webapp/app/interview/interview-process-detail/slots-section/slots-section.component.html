@@ -1,10 +1,3 @@
-<!-- Loading State -->
-@if (loading()) {
-  <div class="flex justify-center items-center py-8">
-    <jhi-progress-spinner styleClass="w-12 h-12" />
-  </div>
-}
-
 <!-- Error State -->
 @if (error() && !loading()) {
   <div class="flex justify-center items-center py-8">
@@ -19,24 +12,32 @@
   </div>
 }
 
-<!-- Initial Loading State (only shown before initialized()) -->
-@if (!initialized() && !error()) {
-  <div class="flex justify-center items-center py-8">
-    <jhi-progress-spinner styleClass="w-12 h-12" />
-  </div>
-}
-
 @if (initialized() && !error()) {
   @if (hasAnySlots() === false) {
     <!-- Global Empty State (No slots at all) -->
     <div class="flex justify-center items-center py-12">
       <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
         <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-        <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
-        <p class="text-text-secondary" jhiTranslate="interview.detail.empty.description">
-          Create your first interview slots to get started.
+        <h3
+          class="text-xl font-semibold"
+          [jhiTranslate]="isClosed() ? 'interview.detail.empty.closedTitle' : 'interview.detail.empty.title'"
+        >
+          {{ isClosed() ? 'Process closed' : 'No slots yet' }}
+        </h3>
+        <p
+          class="text-text-secondary"
+          [jhiTranslate]="isClosed() ? 'interview.detail.empty.closedDescription' : 'interview.detail.empty.description'"
+        >
+          {{
+            isClosed()
+              ? 'It is no longer possible to create slots for this closed process.'
+              : 'Create your first interview
+      slots to get started.'
+          }}
         </p>
-        <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
+        @if (!isClosed()) {
+          <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
+        }
       </div>
     </div>
   } @else {
@@ -44,6 +45,7 @@
       <!-- Month Navigation -->
       <jhi-month-navigation
         [currentMonth]="currentMonth()"
+        [isClosed]="isClosed()"
         (previousMonth)="previousMonth()"
         (nextMonth)="nextMonth()"
         (addSlots)="openCreateSlotsModal()"
@@ -76,6 +78,7 @@
                       @for (slot of group.visibleSlots; track slot.id) {
                         <jhi-slot-card
                           [slot]="slot"
+                          [isClosed]="isClosed()"
                           (editSlot)="onEditSlot()"
                           (deleteSlot)="onDeleteSlot(slot)"
                           (assignApplicant)="onAssignApplicant(slot)"

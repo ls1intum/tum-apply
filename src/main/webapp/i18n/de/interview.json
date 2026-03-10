@@ -14,6 +14,9 @@
         "newProcess": "Neuer Interview Prozess",
         "viewDetails": "Details anzeigen"
       },
+      "status": {
+        "closed": "Geschlossen"
+      },
       "stats": {
         "completed": "Abgeschlossen",
         "scheduled": "Geplant",
@@ -49,7 +52,9 @@
       },
       "empty": {
         "title": "Noch keine Termine",
-        "description": "Erstelle deine ersten Interview Termine."
+        "closedTitle": "Prozess geschlossen",
+        "description": "Erstelle deine ersten Interview Termine.",
+        "closedDescription": "Für diesen geschlossenen Prozess können keine Termine erstellt werden."
       },
       "noSlotsInMonth": "Keine Termine in {{month}}",
       "showLess": "Weniger anzeigen"
@@ -143,15 +148,15 @@
         "noDateSelected": "Kein Datum ausgewählt",
         "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
         "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
-        "addRange": "Zeitraum",
-        "addSlot": "Einzeltermin",
+        "addRange": "Terminserie hinzufügen",
+        "addSlot": "Einzeltermin hinzufügen",
         "noSlotsYet": "Noch keine Termine",
-        "noSlotsYetDesc": "Füge einen Zeitraum oder einen einzelnen Termin hinzu, um zu beginnen",
+        "noSlotsYetDesc": "Füge eine Terminserie oder einen einzelnen Termin hinzu, um zu beginnen",
         "singleSlot": "Einzelner Termin",
-        "rangeSlot": "Zeitraum",
+        "rangeSlot": "Terminserie",
         "bookedSlot": "Gebuchter Termin",
         "singleSlotHelp": "Gib eine Startzeit ein. Die Endzeit wird basierend auf der Interviewdauer berechnet.",
-        "rangeSlotHelp": "Gib Start- und Endzeit ein. Termine werden automatisch basierend auf Dauer und Pausenzeit berechnet.",
+        "rangeSlotHelp": "Termine werden automatisch basierend auf Dauer und Pausenzeit erstellt.",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine",
@@ -330,6 +335,12 @@
           "summary": "Nicht gefunden",
           "detail": "Diese bewerbende Person existiert nicht oder wurde entfernt."
         }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Prozess geschlossen",
+        "description": "Dieser Interviewprozess ist nun geschlossen. Du kannst keine Interviewtermine mehr buchen."
       }
     }
   }

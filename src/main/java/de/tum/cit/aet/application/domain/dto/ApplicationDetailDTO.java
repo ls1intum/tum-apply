@@ -3,8 +3,8 @@ package de.tum.cit.aet.application.domain.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.dto.ApplicantForApplicationDetailDTO;
 import jakarta.validation.constraints.NotNull;
@@ -20,7 +20,7 @@ public record ApplicationDetailDTO(
     @NotNull String supervisingProfessorName,
     @NotNull String researchGroup,
     String jobTitle,
-    String jobLocation,
+    Campus jobLocation,
     LocalDate desiredDate,
     String projects,
     String specialSkills,
@@ -43,7 +43,7 @@ public record ApplicationDetailDTO(
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
             job.getResearchGroup().getName(),
             job.getTitle(),
-            UiTextFormatter.formatEnumValue(job.getLocation()),
+            job.getLocation(),
             application.getDesiredStartDate(),
             application.getProjects(),
             application.getSpecialSkills(),

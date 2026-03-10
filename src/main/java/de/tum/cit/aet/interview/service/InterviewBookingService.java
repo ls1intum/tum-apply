@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InterviewProcessClosedException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
@@ -17,6 +18,7 @@ import de.tum.cit.aet.interview.dto.UserBookingInfoDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
@@ -86,6 +88,11 @@ public class InterviewBookingService {
 
         // 4. Build response
         Job job = process.getJob();
+
+        if (job.getState() == JobState.CLOSED || job.getState() == JobState.APPLICANT_FOUND) {
+            throw new InterviewProcessClosedException("This interview process is closed because the linked job has been closed.");
+        }
+
         ProfessorDTO supervisor = ProfessorDTO.fromEntity(job.getSupervisingProfessor());
 
         // 5. Check if already booked
@@ -142,6 +149,10 @@ public class InterviewBookingService {
         IntervieweeState state = interviewService.calculateIntervieweeState(interviewee);
         if (state == IntervieweeState.UNCONTACTED) {
             throw new AccessDeniedException("You have not yet been invited to book an interview");
+        }
+
+        if (process.getJob().getState() == JobState.CLOSED || process.getJob().getState() == JobState.APPLICANT_FOUND) {
+            throw new InterviewProcessClosedException("This interview process is closed because the linked job has been closed.");
         }
 
         // 4. Check if user already has a booked slot

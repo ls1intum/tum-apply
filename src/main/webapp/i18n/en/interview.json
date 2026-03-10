@@ -14,6 +14,9 @@
         "newProcess": "New Interview Process",
         "viewDetails": "View Details"
       },
+      "status": {
+        "closed": "Closed"
+      },
       "stats": {
         "completed": "Completed",
         "scheduled": "Scheduled",
@@ -49,7 +52,9 @@
       },
       "empty": {
         "title": "No slots yet",
-        "description": "Create your first interview slots to get started."
+        "closedTitle": "Process closed",
+        "description": "Create your first interview slots to get started.",
+        "closedDescription": "It is no longer possible to create slots for this closed process."
       },
       "noSlotsInMonth": "No slots in {{month}}",
       "showLess": "Show less"
@@ -144,14 +149,14 @@
         "noDateSelected": "No Date selected",
         "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
         "sameSlotsForAllDays": "Same slots for all days",
-        "addRange": "Add Time Range",
+        "addRange": "Add Slot Series",
         "noSlotsYet": "No Slots yet",
-        "noSlotsYetDesc": "Add a time range or a single slot to get started",
+        "noSlotsYetDesc": "Add a slot series or a single slot to get started",
         "singleSlot": "Single Slot",
-        "rangeSlot": "Time Range",
+        "rangeSlot": "Slot Series",
         "bookedSlot": "Booked Slot",
-        "singleSlotHelp": "Enter a start time. The interview duration determines the end time.",
-        "rangeSlotHelp": "Enter start and end time. Slots are automatically calculated based on duration and break time.",
+        "singleSlotHelp": "Create a single slot with a start time. The interview duration determines the end time.",
+        "rangeSlotHelp": "Slots are automatically created based on duration and break time.",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
         "useForAll": "Use same location for all slots",
@@ -330,6 +335,12 @@
           "summary": "Not Found",
           "detail": "This applicant does not exist or has been removed."
         }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Process Closed",
+        "description": "This interview process is now closed. You can no longer book interview slots."
       }
     }
   }

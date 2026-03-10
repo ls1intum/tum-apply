@@ -2438,7 +2438,10 @@ components:
             INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
-        jobLocation: {type: string}
+        jobLocation:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
@@ -2467,6 +2470,7 @@ components:
       properties:
         applicationDetailDTO: {$ref: '#/components/schemas/ApplicationDetailDTO'}
         appliedAt: {type: string, format: date-time}
+        averageRating: {type: number, format: double}
         jobId: {type: string, format: uuid}
         professor: {$ref: '#/components/schemas/ProfessorDTO'}
       required: [applicationDetailDTO]
@@ -2870,14 +2874,15 @@ components:
         invitedCount: {type: integer, format: int64}
         isClosed: {type: boolean}
         jobId: {type: string, format: uuid}
+        jobState: {type: string}
         jobTitle: {type: string}
         processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
         totalSlots: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
-        totalInterviews, totalSlots, uncontactedCount]
+      required: [completedCount, invitedCount, jobId, jobState, jobTitle, processId,
+        scheduledCount, totalInterviews, totalSlots, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
@@ -2971,7 +2976,10 @@ components:
         departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         professorName: {type: string}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
@@ -3020,13 +3028,19 @@ components:
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
-        fundingType: {type: string}
+        fundingType:
+          type: string
+          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
-        location: {type: string}
+        location:
+          type: string
+          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+            SINGAPORE]
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}

@@ -2,7 +2,6 @@ package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -20,10 +19,10 @@ public record JobDetailDTO(
     @NotNull String title,
     String fieldOfStudies,
     String researchArea,
-    String location,
+    Campus location,
     Integer workload,
     Integer contractDuration,
-    String fundingType,
+    FundingType fundingType,
     String jobDescriptionEN,
     String jobDescriptionDE,
     LocalDate startDate,
@@ -35,52 +34,4 @@ public record JobDetailDTO(
     ApplicationState applicationState,
     Boolean suitableForDisabled,
     UUID imageId // Job banner image ID for PDF export
-) {
-    public JobDetailDTO(
-        @NotNull UUID jobId,
-        @NotNull String supervisingProfessorName,
-        @NotNull ResearchGroup researchGroup,
-        @NotNull String title,
-        String fieldOfStudies,
-        String researchArea,
-        Campus location,
-        Integer workload,
-        Integer contractDuration,
-        FundingType fundingType,
-        String jobDescriptionEN,
-        String jobDescriptionDE,
-        LocalDate startDate,
-        LocalDate endDate,
-        @NotNull LocalDateTime createdAt,
-        @NotNull LocalDateTime lastModifiedAt,
-        JobState state,
-        UUID applicationId,
-        ApplicationState applicationState,
-        Boolean suitableForDisabled,
-        UUID imageId
-    ) {
-        this(
-            jobId,
-            supervisingProfessorName,
-            researchGroup,
-            title,
-            fieldOfStudies,
-            researchArea,
-            UiTextFormatter.formatEnumValue(location),
-            workload,
-            contractDuration,
-            UiTextFormatter.formatEnumValue(fundingType),
-            jobDescriptionEN,
-            jobDescriptionDE,
-            startDate,
-            endDate,
-            createdAt,
-            lastModifiedAt,
-            state,
-            applicationId,
-            applicationState,
-            suitableForDisabled,
-            imageId
-        );
-    }
-}
+) {}
