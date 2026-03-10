@@ -1,7 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { convertToGermanGrade, formatGrade, convertAndFormatGermanGrade, displayGradeWithConversion } from 'app/core/util/grade-conversion';
+import {
+  convertToGermanGrade,
+  formatGrade,
+  convertAndFormatGermanGrade,
+  displayGradeWithConversion,
+  formatGradeWithTranslation,
+} from 'app/core/util/grade-conversion';
+import { createTranslateServiceMock } from 'util/translate.mock';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('grade-conversion', () => {
+  const translateService = createTranslateServiceMock();
   describe('convertToGermanGrade', () => {
     it.each([
       ['numeric grades', '1.0', '4.0', '2.0', 2.0, 0],
@@ -173,6 +182,73 @@ describe('grade-conversion', () => {
       it('should return empty string when grade type is invalid', () => {
         expect(displayGradeWithConversion('1.0', '4.0', '@#$')).toBe('');
       });
+    });
+  });
+
+  describe('formatGradeWithTranslation', () => {
+    let translateService: TranslateService;
+
+    beforeEach(() => {
+      translateService = createTranslateServiceMock() as TranslateService;
+    });
+
+    it('should return empty displayValue and wasConverted=false when grade is undefined', () => {
+      const result = formatGradeWithTranslation(undefined, '4.0', '1.0', translateService);
+      expect(result).toEqual({ displayValue: '', wasConverted: false });
+    });
+
+    it('should return empty displayValue and wasConverted=false when grade is empty string', () => {
+      const result = formatGradeWithTranslation('', '4.0', '1.0', translateService);
+      expect(result).toEqual({ displayValue: '', wasConverted: false });
+    });
+
+    it('should return original grade with conversionFailedTooltip when upperLimit is missing', () => {
+      const result = formatGradeWithTranslation('3.5', undefined, '1.0', translateService);
+      expect(result.displayValue).toBe('3.5');
+      expect(result.wasConverted).toBe(false);
+      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+    });
+
+    it('should return original grade with conversionFailedTooltip when lowerLimit is missing', () => {
+      const result = formatGradeWithTranslation('3.5', '4.0', undefined, translateService);
+      expect(result.displayValue).toBe('3.5');
+      expect(result.wasConverted).toBe(false);
+      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+    });
+
+    it('should return original grade with conversionFailedTooltip when both limits are missing', () => {
+      const result = formatGradeWithTranslation('2.0', undefined, undefined, translateService);
+      expect(result.displayValue).toBe('2.0');
+      expect(result.wasConverted).toBe(false);
+      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+    });
+
+    it('should return original grade with conversionFailedTooltip when conversion fails due to invalid grade format', () => {
+      const result = formatGradeWithTranslation('@#$', '4.0', '1.0', translateService);
+      expect(result.displayValue).toBe('@#$');
+      expect(result.wasConverted).toBe(false);
+      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
+    });
+
+    it('should return original grade with no tooltip when rounded values are equal', () => {
+      const result = formatGradeWithTranslation('2.0', '1.0', '4.0', translateService);
+      expect(result.displayValue).toBe('2.0');
+      expect(result.wasConverted).toBe(false);
+      expect(result.tooltipText).toBeUndefined();
+    });
+
+    it('should return converted grade with original in parentheses and converterTooltip when conversion differs', () => {
+      const result = formatGradeWithTranslation('75', '100', '50', translateService);
+      expect(result.displayValue).toBe('2.5 (75)');
+      expect(result.wasConverted).toBe(true);
+      expect(result.tooltipText).toBe('evaluation.details.converterTooltip');
+    });
+
+    it('should return original grade without tooltip when rounded values match (comma decimal)', () => {
+      const result = formatGradeWithTranslation('2,0', '1.0', '4.0', translateService);
+      expect(result.displayValue).toBe('2,0');
+      expect(result.wasConverted).toBe(false);
+      expect(result.tooltipText).toBeUndefined();
     });
   });
 });
