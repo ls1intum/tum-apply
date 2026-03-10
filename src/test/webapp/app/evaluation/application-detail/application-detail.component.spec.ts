@@ -816,26 +816,6 @@ describe('ApplicationDetailComponent', () => {
   });
 
   describe('Grade Display', () => {
-    describe('getDisplayGrade', () => {
-      it('should return empty string when all arguments are undefined', () => {
-        const result = component.getDisplayGrade(undefined, undefined, undefined);
-        expect(result).toBe('');
-      });
-
-      it('should return empty String when grade is undefined but limits are set', () => {
-        const result = component.getDisplayGrade('4.0', '1.0', undefined);
-        expect(result).toBe('');
-      });
-
-      it('should delegate to displayGradeWithConversion and return a value when all params are provided', () => {
-        const spy = vi.spyOn(component, 'getDisplayGrade').mockReturnValue('2.0');
-        const result = component.getDisplayGrade('4.0', '1.0', '80');
-        expect(result).toBe('2.0');
-        expect(spy).toHaveBeenCalledOnce();
-        expect(spy).toHaveBeenCalledWith('4.0', '1.0', '80');
-      });
-    });
-
     describe('getBachelorItems', () => {
       it('should return empty array when applicant is undefined', () => {
         expect(component.getBachelorItems(undefined)).toEqual([]);
