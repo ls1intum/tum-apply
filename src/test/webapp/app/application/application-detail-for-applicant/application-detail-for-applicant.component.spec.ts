@@ -309,7 +309,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   });
 
   describe('bachelorGradeDisplay', () => {
-    it('returns "-" when bachelorGrade is missing', () => {
+    it('should return "-" when bachelorGrade is missing', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
@@ -327,7 +327,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(component.bachelorGradeDisplay()).toBe('-');
     });
 
-    it('returns just the grade when one or both limits are missing', () => {
+    it('should return just the grade when one or both limits are missing', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
@@ -347,7 +347,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(component.bachelorGradeDisplay()).toBe('2.3');
     });
 
-    it('returns grade with formatted scale when both limits are present', () => {
+    it('should return grade with formatted scale when both limits are present', () => {
       const { component, translate } = setupTest(null);
 
       component.actualDetailData.set(
@@ -377,7 +377,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   });
 
   describe('masterGradeDisplay', () => {
-    it('returns "-" when masterGrade is missing', () => {
+    it('should return "-" when masterGrade is missing', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
@@ -389,7 +389,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(component.masterGradeDisplay()).toBe('-');
     });
 
-    it('returns just the grade when one or both limits are missing', () => {
+    it('should return just the grade when one or both limits are missing', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
@@ -409,7 +409,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(component.masterGradeDisplay()).toBe('1.5');
     });
 
-    it('returns grade with formatted scale when both limits are present', () => {
+    it('should return grade with formatted scale when both limits are present', () => {
       const { component, translate } = setupTest(null);
 
       component.actualDetailData.set(
