@@ -210,7 +210,7 @@ public class UserResourceTest extends AbstractResourceTest {
                 .putAndRead(API_BASE_PATH + "/avatar", dto, Void.class, 204);
 
             verify(imageService).deleteCurrentUserProfilePicture();
-            verify(userService, org.mockito.Mockito.never()).updateAvatar(anyString(), any());
+            verify(userService, Mockito.never()).updateAvatar(anyString(), any());
         }
 
         @Test
@@ -222,7 +222,7 @@ public class UserResourceTest extends AbstractResourceTest {
                 .putAndRead(API_BASE_PATH + "/avatar", dto, Void.class, 204);
 
             verify(imageService).deleteCurrentUserProfilePicture();
-            verify(userService, org.mockito.Mockito.never()).updateAvatar(anyString(), any());
+            verify(userService, Mockito.never()).updateAvatar(anyString(), any());
         }
 
         @Test
