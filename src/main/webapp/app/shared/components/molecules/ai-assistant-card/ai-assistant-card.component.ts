@@ -30,7 +30,7 @@ export class AiAssistantCardComponent {
   isGenerating = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
-  generate = output<void>();
+  generate = output();
 
   readonly WARNING_THRESHOLD = 65;
   readonly DANGER_THRESHOLD = 29;
