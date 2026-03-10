@@ -62,6 +62,10 @@ public class PDFExportService {
 
         if (app.jobId() != null) {
             JobDetailDTO job = jobService.getJobDetails(app.jobId());
+                   // Determine job description based on requested language
+        String lang = labels.getOrDefault("lang", "en");
+        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
+
 
             // Overview Section if no in preview
             builder
