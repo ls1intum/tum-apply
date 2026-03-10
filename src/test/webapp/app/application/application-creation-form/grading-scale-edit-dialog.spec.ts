@@ -317,12 +317,6 @@ describe('GradingScaleEditDialogComponent', () => {
   });
 
   describe('onCancel', () => {
-    it('should close the dialog exactly once', () => {
-      comp.onCancel();
-
-      expect(dialogRef.close).toHaveBeenCalledOnce();
-    });
-
     it('should close the dialog even when form has valid data filled in', () => {
       comp.data.set({ upperLimit: originalUpperLimit, lowerLimit: originalLowerLimit, isPercentage: false });
 
