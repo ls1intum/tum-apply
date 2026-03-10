@@ -249,7 +249,7 @@ describe('ApplicationPage2Component', () => {
       },
       job: {
         jobId: 'id-123',
-        location: 'Garching',
+        location: 'GARCHING',
         professorName: 'Pr. Test',
         title: 'Job title',
       },
