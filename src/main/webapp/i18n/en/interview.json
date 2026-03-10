@@ -181,7 +181,7 @@
         },
         "errorForbidden": {
           "summary": "Permission denied",
-          "detail": "You don't have permission to delete this slot"
+          "detail": "You do not have permission to delete this slot"
         }
       },
       "edit": {
@@ -197,7 +197,7 @@
         },
         "errorForbidden": {
           "summary": "Permission denied",
-          "detail": "You don't have permission to edit this slot"
+          "detail": "You do not have permission to edit this slot"
         }
       },
       "cancelInterview": {
@@ -272,7 +272,7 @@
         },
         "forbidden": {
           "summary": "Access denied",
-          "detail": "You don't have permission for this action"
+          "detail": "You do not have permission for this action"
         },
         "addFailed": {
           "summary": "Error",

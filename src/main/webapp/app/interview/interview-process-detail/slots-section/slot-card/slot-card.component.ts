@@ -41,7 +41,6 @@ export class SlotCardComponent {
   cancelInterview = output<InterviewSlotDTO>();
 
   // Menu items for kebab menu
-  // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => {
     const items: JhiMenuItem[] = [
       {
