@@ -176,6 +176,7 @@ public class TemplateProcessingService {
             case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContext ctx -> addDataExportContextData(dataModel, ctx);
+            case User user -> addUserData(dataModel, user);
             default -> {
                 throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
             }
