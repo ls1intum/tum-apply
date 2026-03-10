@@ -119,7 +119,7 @@ describe('ApplicationPage2Component', () => {
 
     it('should auto-detect grading scale when grade is set but limits are missing', async () => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...DEFAULT_PAGE2_FORM_DATA, bachelorGrade: '2.5', masterGrade: '3.0' },
+        data: { bachelorGrade: '2.5', masterGrade: '3.0' },
       });
 
       await new Promise(resolve => setTimeout(resolve, 150));
@@ -202,9 +202,7 @@ describe('ApplicationPage2Component', () => {
     });
 
     it('should show warning text when bachelor or master grade is unusual', async () => {
-      const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...DEFAULT_PAGE2_FORM_DATA },
-      });
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       await new Promise(resolve => setTimeout(resolve, 150));
       fixture.detectChanges();
@@ -310,7 +308,7 @@ describe('ApplicationPage2Component', () => {
   describe('onChangeGradingScale', () => {
     it('should open dialog with correct data for bachelor grading scale', async () => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
+        data: VALID_PAGE2_FORM_DATA,
       });
 
       await new Promise(resolve => setTimeout(resolve, 150));
@@ -337,7 +335,7 @@ describe('ApplicationPage2Component', () => {
 
     it('should open dialog with correct data for master grading scale', async () => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
+        data: VALID_PAGE2_FORM_DATA,
       });
 
       await new Promise(resolve => setTimeout(resolve, 150));
@@ -363,9 +361,7 @@ describe('ApplicationPage2Component', () => {
     });
 
     it('should update bachelor limits and set manuallySet flag when dialog returns a result', () => {
-      const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
-      });
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       fixture.detectChanges();
 
@@ -384,9 +380,7 @@ describe('ApplicationPage2Component', () => {
     });
 
     it('should update master limits and set manuallySet flag when dialog returns a result', () => {
-      const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
-      });
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       fixture.detectChanges();
 
@@ -406,7 +400,7 @@ describe('ApplicationPage2Component', () => {
 
     it('should not update limits when dialog is closed without a result', async () => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...DEFAULT_PAGE2_FORM_DATA, bachelorGrade: '2.5' },
+        data: { bachelorGrade: '2.5' },
       });
 
       await new Promise(resolve => setTimeout(resolve, 150));
@@ -427,7 +421,7 @@ describe('ApplicationPage2Component', () => {
 
     it('should call updateBachelorGradeLimits with empty string when bachelor grade is null', async () => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
+        data: VALID_PAGE2_FORM_DATA,
       });
 
       componentInstance.page2Form.controls.bachelorGrade.setValue(null);
@@ -440,7 +434,7 @@ describe('ApplicationPage2Component', () => {
 
     it('should call updateMasterGradeLimits with empty string when master grade is null', async () => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
+        data: VALID_PAGE2_FORM_DATA,
       });
 
       componentInstance.page2Form.controls.masterGrade.setValue(null);
@@ -452,9 +446,7 @@ describe('ApplicationPage2Component', () => {
     });
 
     it('should use empty string fallback for upper/lower limits when bachelor limit controls are null', async () => {
-      const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
-      });
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       componentInstance.page2Form.controls.bachelorGradeUpperLimit.setValue(null);
       componentInstance.page2Form.controls.bachelorGradeLowerLimit.setValue(null);
@@ -479,9 +471,7 @@ describe('ApplicationPage2Component', () => {
     });
 
     it('should use empty string fallback for upper/lower limits when master limit controls are null (covers ?.value ?? "" branch)', async () => {
-      const { componentInstance, fixture } = createApplicationPage2Fixture({
-        data: { ...VALID_PAGE2_FORM_DATA },
-      });
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       componentInstance.page2Form.controls.masterGradeUpperLimit.setValue(null);
       componentInstance.page2Form.controls.masterGradeLowerLimit.setValue(null);
