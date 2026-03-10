@@ -145,6 +145,24 @@
         "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
         "aiScoreTitle": "Inclusivity Score",
+        "aiScoreDialog": {
+          "title": "How the Inclusivity Score is calculated",
+          "tooltip": "Based on the current analysis and text content.",
+          "summary": "Calculation factors",
+          "explanation": "The score combines wording analysis, tone evaluation, and balanced weighting.",
+          "section1": {
+            "title": "Word Choice",
+            "body": "The system analyzes your text for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
+          },
+          "section2": {
+            "title": "Overall Tone",
+            "body": "A neutral tone yields the best result, while heavily biased language leads to deductions."
+          },
+          "section3": {
+            "title": "Balanced Rating",
+            "body": "The score is weighted to ensure that individual, poorly chosen words do not disproportionately affect your final result."
+          }
+        },
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
         "languageGerman": "German",

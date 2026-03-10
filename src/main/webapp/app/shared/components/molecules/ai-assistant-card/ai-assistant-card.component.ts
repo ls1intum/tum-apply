@@ -6,6 +6,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { AiScoreRingComponent } from 'app/shared/components/atoms/ai-score-ring/ai-score-ring.component';
+import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
@@ -16,6 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
     FontAwesomeModule,
     TranslateModule,
     TranslateDirective,
+    DialogModule,
     TooltipModule,
     ButtonComponent,
     ProgressSpinnerComponent,
@@ -33,6 +35,7 @@ export class AiAssistantCardComponent {
   readonly DANGER_THRESHOLD = 29;
   readonly EXCELLENCE_THRESHOLD = 90;
   readonly displayedScore = signal(0);
+  readonly scoreDialogVisible = signal(false);
 
   readonly boundedScore = computed(() => {
     const value = this.score();
@@ -70,5 +73,13 @@ export class AiAssistantCardComponent {
 
   onGenerate(): void {
     this.generate.emit();
+  }
+
+  openScoreDialog(): void {
+    this.scoreDialogVisible.set(true);
+  }
+
+  onScoreDialogVisibleChange(isVisible: boolean): void {
+    this.scoreDialogVisible.set(isVisible);
   }
 }

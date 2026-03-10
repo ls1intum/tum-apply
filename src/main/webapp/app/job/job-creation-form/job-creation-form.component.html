@@ -22,8 +22,12 @@
 
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
-    <div class="panel1-layout relative px-4 xl:px-32 2xl:px-64" [class.panel1-layout-sidebar-collapsed]="!aiSidebarVisible()">
-      <div class="panel1-main w-full min-w-0 box-border">
+    <!-- Keeps form width stable while shifting position when the AI sidebar toggles -->
+    <div class="panel1-layout" [class.sidebar-collapsed]="!aiSidebarVisible()">
+      <div
+        class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out"
+        [ngClass]="aiSidebarVisible() ? 'lg:max-w-full lg:mx-auto' : 'lg:max-w-[calc(100%-13rem)] lg:mx-auto'"
+      >
         <form [formGroup]="basicInfoForm" class="w-full">
           <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
           <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
@@ -141,7 +145,7 @@
 
           <div class="flex flex-col gap-2 mb-6">
             <div>
-              <div class="mb-2 flex items-center justify-end gap-1 text-sm text-primary">
+              <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm text-primary">
                 <fa-icon class="text-xs" [icon]="['fas', 'custom-sparkle']" />
                 <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
               </div>
@@ -165,23 +169,38 @@
         </form>
       </div>
 
-      <aside class="ai-sidebar" [class.ai-collapsed]="!aiSidebarVisible()">
-        <div class="ai-header">
-          <button type="button" class="ai-toggle" (click)="toggleAiSidebar()">
+      <!--AI Assistant sidebar-->
+      <aside
+        class="mx-auto mt-4 flex w-full max-w-[30rem] flex-col overflow-hidden rounded-md border border-border-default bg-background-default transition-colors duration-200 lg:mx-0 lg:mt-0 lg:h-full lg:w-full lg:max-w-full"
+        [ngClass]="{ 'hover:border-primary': !aiSidebarVisible(), 'cursor-pointer': !aiSidebarVisible() }"
+        (click)="!aiSidebarVisible() && toggleAiSidebar()"
+      >
+        <div class="flex items-center border-border-default" [ngClass]="{ 'border-b': aiSidebarVisible() }">
+          <!-- Header layout for expanded vs. collapsed sidebar state -->
+          <div
+            class="flex min-h-16 flex-1 items-center text-text-primary"
+            [ngClass]="{
+              'justify-start gap-3 px-5 py-3': aiSidebarVisible(),
+              'justify-center gap-2 px-4 py-4 lg:min-h-0 lg:flex-col lg:gap-1.5 lg:px-3 lg:py-6': !aiSidebarVisible(),
+            }"
+          >
             <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
-            <span class="ai-toggle-text text-base font-bold text-text-primary" jhiTranslate="jobCreationForm.aiSidebar.header"></span>
-          </button>
+            <span
+              class="text-base leading-tight font-bold text-text-primary"
+              [ngClass]="{ 'lg:[writing-mode:vertical-rl]': !aiSidebarVisible() }"
+              jhiTranslate="jobCreationForm.aiSidebar.header"
+            ></span>
+          </div>
 
           @if (aiSidebarVisible()) {
             <jhi-button
               class="shrink-0 -mt-0.5 mr-3"
-              type="button"
               icon="xmark"
               variant="text"
               severity="secondary"
               size="md"
               styleClass="!rounded-full"
-              (click)="closeAiSidebar()"
+              (click)="closeAiSidebar(); $event.stopPropagation()"
             />
           }
         </div>

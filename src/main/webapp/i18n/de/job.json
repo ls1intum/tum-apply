@@ -145,6 +145,24 @@
         "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
         "aiScoreTitle": "Inklusivitäts-Score",
+        "aiScoreDialog": {
+          "title": "Berechnung des Inklusivitäts-Scores",
+          "tooltip": "Basiert auf aktueller Analyse und Textinhalt.",
+          "summary": "Berechnungsfaktoren",
+          "explanation": "Der Score kombiniert Wortwahl, Tonalität und eine ausbalancierte Gewichtung.",
+          "section1": {
+            "title": "Wortwahl",
+            "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
+          },
+          "section2": {
+            "title": "Gesamttonalität",
+            "body": "Neutrale Formulierungen erzielen das beste Ergebnis, während einseitige Sprache zu Punktabzügen führt."
+          },
+          "section3": {
+            "title": "Faire Gewichtung",
+            "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
+          }
+        },
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
