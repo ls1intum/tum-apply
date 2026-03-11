@@ -12,7 +12,7 @@ export class DynamicTableColumn {
   type?: string;
   width!: string;
   alignCenter?: boolean;
-  template?: TemplateRef<any>;
+  template?: TemplateRef<unknown>;
 }
 
 @Component({
@@ -25,13 +25,11 @@ export class DynamicTableColumn {
 export class DynamicTableComponent {
   readonly paginator = true;
   readonly lazy = true;
-  private readonly loadingService = inject(LoadingService);
-
-  loadingInput = input<boolean | undefined>(undefined, { alias: 'loading' });
-  loading = computed(() => this.loadingInput() ?? this.loadingService.isLoading());
+  loading = input<boolean | undefined>(undefined);
+  isTableLoading = computed(() => this.loading() ?? this.loadingService.isLoading());
 
   columns = input<DynamicTableColumn[]>([]);
-  data = input<any[]>([]);
+  data = input<unknown[]>([]);
   rows = input<number>(10);
   totalRecords = input<number>(0);
   page = input<number>(0);
@@ -39,6 +37,8 @@ export class DynamicTableComponent {
   hideHeader = input<boolean>(false);
 
   lazyLoad = output<TableLazyLoadEvent>();
+
+  private readonly loadingService = inject(LoadingService);
 
   emitLazy(event: TableLazyLoadEvent): void {
     this.lazyLoad.emit(event);

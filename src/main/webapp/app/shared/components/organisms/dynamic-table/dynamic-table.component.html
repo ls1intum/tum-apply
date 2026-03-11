@@ -49,8 +49,8 @@
     </ng-template>
   </p-table>
 
-  @if (loading()) {
-    <div class="bg-background-surface/50 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
+  @if (isTableLoading()) {
+    <div class="absolute inset-0 flex items-center justify-center backdrop-blur-sm">
       <jhi-progress-spinner [styleClass]="'w-12 h-12'" [strokeWidth]="'4'" />
     </div>
   }
