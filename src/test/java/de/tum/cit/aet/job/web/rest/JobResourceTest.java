@@ -204,11 +204,7 @@ class JobResourceTest extends AbstractResourceTest {
             .findFirst()
             .orElseThrow();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.update(
-            "UPDATE jobs SET subject_area = ? WHERE job_id = ?",
-            "Environmental Science",
-            legacyJob.getJobId().toString()
-        );
+        jdbcTemplate.update("UPDATE jobs SET subject_area = ? WHERE job_id = ?", "Environmental Science", legacyJob.getJobId().toString());
 
         PageResponse<JobCardDTO> page = api.getAndRead(
             "/api/jobs/available",
