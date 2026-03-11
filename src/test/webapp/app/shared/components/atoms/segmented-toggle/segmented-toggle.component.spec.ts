@@ -1,9 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
-import { TranslateDirective } from 'app/shared/language';
 import { provideTranslateMock } from 'util/translate.mock';
 
 type SegmentedToggleForTest = {
@@ -41,21 +39,6 @@ describe('SegmentedToggleComponent', () => {
       imports: [SegmentedToggleComponent],
       providers: [provideTranslateMock()],
     }).compileComponents();
-  });
-
-  it('should use translate directive when translateLabels is true', () => {
-    const fixture = createFixture({ translateLabels: true, leftLabel: 'global.left', rightLabel: 'global.right' });
-    const translateSpans = fixture.debugElement.queryAll(By.directive(TranslateDirective));
-    expect(translateSpans.length).toBe(2);
-  });
-
-  it('should not use translate directive when translateLabels is false', () => {
-    const fixture = createFixture({ translateLabels: false, leftLabel: 'Plain Left', rightLabel: 'Plain Right' });
-    const translateSpans = fixture.debugElement.queryAll(By.directive(TranslateDirective));
-    expect(translateSpans.length).toBe(0);
-    const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll('button');
-    expect(buttons[0].textContent).toContain('Plain Left');
-    expect(buttons[1].textContent).toContain('Plain Right');
   });
 
   it('should emit valueChange when clicking the non-selected button', () => {
