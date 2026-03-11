@@ -8,6 +8,7 @@ import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/men
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange } from 'app/shared/util/date-time.util';
 import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 @Component({
   selector: 'jhi-slot-card',
@@ -27,7 +28,7 @@ export class SlotCardComponent {
 
   // Computed values
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
-  isVirtual = computed(() => this.slot().location === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
   isBooked = computed(() => this.slot().isBooked ?? false);
   isPast = computed(() => {
     const start = this.slot().startDateTime;

@@ -10,6 +10,7 @@ import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/use
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { getLocale } from 'app/shared/util/date-time.util';
 import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 /** Summary panel for interview booking. Displays job info, supervisor, selected slot details and book button. */
 @Component({
@@ -70,7 +71,7 @@ export class BookingSummaryComponent {
     })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
   });
 
-  isVirtual = computed(() => this.selectedSlot()?.location === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.selectedSlot()?.location));
 
   /** Returns date from booked appointment or selected slot. */
   displayDate = computed(() => (this.alreadyBooked() ? this.bookedDate() : this.formattedDate()));
@@ -81,7 +82,7 @@ export class BookingSummaryComponent {
   /** Returns custom location string if available, null if generic. */
   displayLocation = computed(() => {
     const location = this.alreadyBooked() ? this.bookedLocation() : this.selectedSlot()?.location;
-    return location !== undefined && location !== '' && location !== 'virtual' ? location : null;
+    return location !== undefined && location !== '' && !isVirtualLocation(location) ? location : null;
   });
 
   /** Returns translation key for virtual/in-person location. */

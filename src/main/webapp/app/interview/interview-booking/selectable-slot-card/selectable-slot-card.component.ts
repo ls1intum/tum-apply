@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 /** Selectable slot card for interview booking. Displays time, duration, and location. */
 @Component({
@@ -34,7 +35,7 @@ export class SelectableSlotCardComponent {
   });
 
   /** Checks if slot is virtual. */
-  isVirtual = computed(() => this.slot().location?.toLowerCase() === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
 
   // Services
   private readonly translateService = inject(TranslateService);

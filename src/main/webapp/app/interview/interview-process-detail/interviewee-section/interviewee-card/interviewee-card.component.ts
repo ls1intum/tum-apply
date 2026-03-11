@@ -8,6 +8,7 @@ import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/use
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 /**
  * Card component displaying an interviewee's status and scheduled slot details.
@@ -48,7 +49,7 @@ export class IntervieweeCardComponent {
   });
 
   location = computed(() => this.interviewee().scheduledSlot?.location ?? '');
-  isVirtual = computed(() => this.interviewee().scheduledSlot?.location === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.interviewee().scheduledSlot?.location));
 
   // Constants
   protected readonly IntervieweeState = IntervieweeDTO.StateEnum;
