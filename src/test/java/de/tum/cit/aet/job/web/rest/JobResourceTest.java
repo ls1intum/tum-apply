@@ -187,7 +187,7 @@ class JobResourceTest extends AbstractResourceTest {
             .findFirst()
             .orElseThrow();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.update("UPDATE jobs SET field_of_studies = ? WHERE job_id = ?", "CS", legacyJob.getJobId().toString());
+        jdbcTemplate.update("UPDATE jobs SET subject_area = ? WHERE job_id = ?", "CS", legacyJob.getJobId().toString());
 
         JobFiltersDTO filters = api.getAndRead("/api/jobs/filters", Map.of(), JobFiltersDTO.class, 200);
 
@@ -205,7 +205,7 @@ class JobResourceTest extends AbstractResourceTest {
             .orElseThrow();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.update(
-            "UPDATE jobs SET field_of_studies = ? WHERE job_id = ?",
+            "UPDATE jobs SET subject_area = ? WHERE job_id = ?",
             "Environmental Science",
             legacyJob.getJobId().toString()
         );

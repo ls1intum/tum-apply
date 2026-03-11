@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="00000000000032-1" author="codex">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+      <not>
+        <columnExists tableName="jobs" columnName="subject_area"/>
+      </not>
+    </preConditions>
+
+    <renameColumn
+      tableName="jobs"
+      oldColumnName="field_of_studies"
+      newColumnName="subject_area"
+      columnDataType="VARCHAR(255)"
+    />
+  </changeSet>
+</databaseChangeLog>

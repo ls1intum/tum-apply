@@ -50,11 +50,11 @@ public class Job extends AbstractAuditingEntity {
     private Image image;
 
     // Uses a converter instead of @Enumerated so legacy DB values remain readable.
-    @Column(name = "field_of_studies")
+    @Column(name = "subject_area")
     @Convert(converter = SubjectAreaConverter.class)
     private SubjectArea subjectArea;
 
-    @Column(name = "field_of_studies", insertable = false, updatable = false)
+    @Column(name = "subject_area", insertable = false, updatable = false)
     private String subjectAreaRaw;
 
     @Column(name = "research_area")
