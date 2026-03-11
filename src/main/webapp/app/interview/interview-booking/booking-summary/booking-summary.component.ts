@@ -9,6 +9,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { getLocale } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
 
 /** Summary panel for interview booking. Displays job info, supervisor, selected slot details and book button. */
 @Component({
@@ -41,7 +42,7 @@ export class BookingSummaryComponent {
   hasSelection = computed(() => this.selectedSlot() !== null);
   supervisorName = computed(() => {
     const s = this.supervisor();
-    return s === undefined ? '' : `${s.firstName} ${s.lastName}`;
+    return s === undefined ? '' : formatFullName(s.firstName, s.lastName);
   });
 
   /** Formats selected slot date for display. */

@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   tumApplySidebar: [
@@ -33,6 +33,7 @@ const sidebars: SidebarsConfig = {
         'professors/create-job',
         'professors/manage-jobs',
         'professors/application-review',
+        'professors/interview',
       ],
     },
   ],

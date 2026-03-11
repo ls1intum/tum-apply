@@ -58,60 +58,11 @@
       }
     </div>
 
-    <!-- Break-->
-    <div class="flex flex-col gap-1 w-full lg:w-[26rem] lg:col-start-3 lg:row-start-1">
-      <div class="flex items-center gap-2">
-        <span class="text-s font-semibold text-text-primary">{{ 'interview.slots.create.interviewBreaks' | translate }}</span>
-        <fa-icon
-          [icon]="['fas', 'circle-info']"
-          class="text-primary-default"
-          [pTooltip]="'interview.slots.create.breakTooltip' | translate"
-          tooltipPosition="top"
-        />
-      </div>
-      <div class="flex w-full items-center rounded bg-background-surface dark:bg-background-surface-alt p-1 gap-1">
-        @for (option of breakOptions; track option.value) {
-          <jhi-segment-button
-            [label]="option.label"
-            class="flex-1"
-            [active]="!isCustomBreakMode() && breakDuration() === option.value"
-            (buttonClick)="selectBreak(option.value)"
-          />
-        }
-
-        <jhi-segment-button
-          label="interview.slots.create.custom"
-          class="flex-1"
-          [shouldTranslate]="true"
-          [active]="isCustomBreakMode()"
-          (buttonClick)="selectBreak(-1)"
-        />
-      </div>
-      @if (isCustomBreakMode()) {
-        <div class="flex flex-col mt-0.5 -mb-2">
-          <div class="flex items-start gap-1">
-            <jhi-number-input
-              [model]="customBreak() ?? undefined"
-              (modelChange)="onCustomBreakInput($event)"
-              [min]="0"
-              [max]="120"
-              inputStyleClass="h-8 w-[4.25rem] text-center text-xs"
-              [errorEnabled]="false"
-            />
-            <span class="text-xs text-text-secondary mt-2">min</span>
-          </div>
-          @if (breakError()) {
-            <span class="text-xs text-negative-default mt-0.5 block">{{ breakError() | translate }}</span>
-          }
-        </div>
-      }
-    </div>
-
     <!-- Calendar-->
     <div class="flex flex-col gap-2 lg:col-start-1 lg:row-start-2">
       <h3 class="text-s font-semibold">{{ 'interview.slots.create.selectDates' | translate }}</h3>
       <div
-        class="flex justify-center [&_.p-datepicker-title]:text-text-primary [&_.p-datepicker-header]:bg-transparent [&_.p-datepicker-today>.p-datepicker-day]:bg-[var(--p-primary-hover-color-outlined)] [&_.p-datepicker-today>.p-datepicker-day]:text-text-primary [&_.p-datepicker-day:not(.p-disabled):not(.p-highlight):hover]:bg-primary-default [&_.p-datepicker-day:not(.p-disabled):not(.p-highlight):hover]:text-text-on-primary [&_.p-datepicker-month:not(.p-disabled):hover]:bg-primary-default [&_.p-datepicker-month:not(.p-disabled):hover]:text-text-on-primary [&_.p-datepicker-year:not(.p-disabled):hover]:bg-primary-default [&_.p-datepicker-year:not(.p-disabled):hover]:text-text-on-primary [&_.p-highlight]:bg-primary-default [&_.p-highlight]:text-text-on-primary [&_.p-highlight]:border-primary-default"
+        class="[&_.p-datepicker-title]:text-text-primary [&_.p-datepicker-header]:bg-transparent [&_.p-datepicker-today>.p-datepicker-day]:bg-[var(--p-primary-hover-color-outlined)] [&_.p-datepicker-today>.p-datepicker-day]:text-text-primary [&_.p-datepicker-day:not(.p-disabled):not(.p-highlight):hover]:bg-primary-default [&_.p-datepicker-day:not(.p-disabled):not(.p-highlight):hover]:text-text-on-primary [&_.p-datepicker-month:not(.p-disabled):hover]:bg-primary-default [&_.p-datepicker-month:not(.p-disabled):hover]:text-text-on-primary [&_.p-datepicker-year:not(.p-disabled):hover]:bg-primary-default [&_.p-datepicker-year:not(.p-disabled):hover]:text-text-on-primary [&_.p-highlight]:bg-primary-default [&_.p-highlight]:text-text-on-primary [&_.p-highlight]:border-primary-default"
       >
         <p-datepicker
           [inline]="true"
@@ -119,18 +70,20 @@
           [minDate]="minDate"
           [ngModel]="selectedDatesSignal()"
           (ngModelChange)="onDateSelect($event)"
-          styleClass="w-full border-0"
+          [firstDayOfWeek]="1"
+          styleClass="block w-full"
+          [panelStyle]="{ width: '100%' }"
         />
       </div>
     </div>
 
     <!-- Divider-->
-    <div class="hidden lg:block lg:col-start-2 lg:row-start-2">
+    <div class="hidden lg:block lg:col-start-2 lg:row-start-1 lg:row-span-2">
       <p-divider layout="vertical" styleClass="h-full" />
     </div>
 
     <!-- Slots List-->
-    <div class="flex flex-col gap-2 min-h-0 lg:overflow-hidden lg:col-start-3 lg:row-start-2">
+    <div class="flex flex-col gap-2 min-h-0 lg:overflow-hidden lg:col-start-3 lg:row-start-1 lg:row-span-2">
       <h3 class="text-s font-semibold">{{ 'interview.slots.create.create' | translate }}</h3>
 
       @if (sortedDates().length === 0) {
@@ -146,7 +99,6 @@
               <jhi-date-slot-card
                 [date]="date"
                 [duration]="duration()"
-                [breakDuration]="breakDuration()"
                 [existingSlots]="slotsByDate().get(dateKeys().get(date.getTime()) ?? '') || []"
                 [serverConflicts]="serverConflicts()"
                 [showApplyAll]="i === 0 && sortedDates().length > 1"

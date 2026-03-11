@@ -9,8 +9,6 @@ import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingRe
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 import { UserDataExportResourceApiService } from 'app/generated';
-import { HttpHeaders } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('SettingsComponent', () => {
@@ -217,23 +215,19 @@ describe('SettingsComponent', () => {
 
     describe('selectedTheme()', () => {
       it('should compute selectedTheme correctly based on theme service state', () => {
-        const fixture = TestBed.createComponent(SettingsComponent);
-        const component = fixture.componentInstance;
+        const component = TestBed.createComponent(SettingsComponent).componentInstance;
 
         // Case 1: Sync with system
         themeServiceMock.syncWithSystem.set(true);
-        fixture.detectChanges();
         expect(component.selectedTheme().value).toBe('system');
 
         // Case 2: Specific theme
         themeServiceMock.syncWithSystem.set(false);
         themeServiceMock.theme.set('dark');
-        fixture.detectChanges();
         expect(component.selectedTheme().value).toBe('dark');
 
         // Case 3: Fallback (unknown theme)
         themeServiceMock.theme.set('unknown' as any);
-        fixture.detectChanges();
         expect(component.selectedTheme().value).toBe('light');
       });
     });

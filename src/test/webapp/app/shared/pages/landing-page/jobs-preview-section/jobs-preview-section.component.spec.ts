@@ -31,6 +31,7 @@ describe('JobsPreviewSectionComponent', () => {
     startDate: '2025-09-01',
     applicationId: undefined,
     contractDuration: 6,
+    avatar: '/images/profiles/prof-john.jpg',
     imageUrl: undefined,
   };
 
@@ -85,6 +86,12 @@ describe('JobsPreviewSectionComponent', () => {
 
     const jobCard = jobCardDebugEl.componentInstance as JobCardComponent;
     expect(jobCard.headerImageUrl()).toBe(component.getExampleImageUrl(0));
+  });
+
+  it('should pass the professor avatar to the job card', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toContain('/images/profiles/prof-john.jpg');
   });
 
   it('should handle error on load and show toast', async () => {

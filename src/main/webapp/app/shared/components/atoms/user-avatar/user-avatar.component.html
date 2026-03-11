@@ -1,11 +1,22 @@
-<span
-  class="inline-flex shrink-0 items-center justify-center rounded-full border-[0.03125rem] border-solid border-transparent font-semibold uppercase leading-none select-none"
-  [class]="sizeClass()"
-  [attr.aria-label]="ariaLabel()"
-  [style.background-color]="backgroundColor()"
-  [style.color]="textColor()"
-  [style.border-color]="borderColor()"
-  [style.text-shadow]="textShadow()"
->
-  {{ initials() }}
-</span>
+@if (avatarUrl()) {
+  <img
+    class="inline-flex shrink-0 rounded-full border-[0.5px] border-solid border-border-default object-cover"
+    [class]="sizeClass()"
+    [src]="avatarUrl()"
+    [alt]="ariaLabel()"
+    [attr.loading]="loading()"
+  />
+} @else {
+  <span
+    class="inline-flex shrink-0 items-center justify-center rounded-full border-[0.5px] border-solid border-transparent font-semibold uppercase leading-none select-none"
+    [class]="sizeClass()"
+    role="img"
+    [attr.aria-label]="ariaLabel()"
+    [style.background-color]="backgroundColor()"
+    [style.color]="textColor()"
+    [style.border-color]="borderColor()"
+    [style.text-shadow]="textShadow()"
+  >
+    <span aria-hidden="true">{{ initials() }}</span>
+  </span>
+}
