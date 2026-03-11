@@ -67,15 +67,6 @@
 
             <div class="form-row">
               <div class="form-field">
-                <jhi-string-input
-                  [id]="'rg-defaultFieldOfStudies'"
-                  label="{{ 'researchGroup.detailView.defaultFieldOfStudies' | translate }}"
-                  [control]="form.controls.defaultFieldOfStudies"
-                  [model]="form.controls.defaultFieldOfStudies.value || ''"
-                  placeholder="{{ 'researchGroup.detailView.placeholders.defaultFieldOfStudies' | translate }}"
-                />
-              </div>
-              <div class="form-field">
                 <jhi-select
                   [label]="'researchGroup.detailView.department' | translate"
                   [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
@@ -85,6 +76,7 @@
                   (selectedChange)="onDepartmentChange($event)"
                 />
               </div>
+              <div class="form-field"></div>
             </div>
 
             <div class="form-row">

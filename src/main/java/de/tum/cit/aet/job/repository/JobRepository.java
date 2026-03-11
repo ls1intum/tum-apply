@@ -3,6 +3,7 @@ package de.tum.cit.aet.job.repository;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
@@ -67,8 +68,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * Sorting is applied manually for the computed professor name field.
      *
      * @param state          the job state (typically PUBLISHED)
-     * @param fieldOfStudies a partial match filter for multiple field of studies
-     *                       (nullable)
+     * @param subjectAreaRawValues persisted values to match for multiple subject areas (nullable)
      * @param locations      the campus locations filter (nullable)
      * @param professorNames a partial match filter for multiple professor's full
      *                       names
@@ -78,8 +78,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param sortDirection  sort direction (ASC or DESC)
      * @param userId         id of the currently logged in user (nullable)
      * @param searchQuery    string to search for job title,
-     *                       field of
-     *                       studies or supervisor name
+     *                       subject area or supervisor name
+     * @param searchSubjectAreaRawValues persisted subject-area values matching the search query
      * @param pageable       pagination information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -115,12 +115,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                  ))
         WHERE j.state = :state
           AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-          AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
+          AND (:subjectAreaRawValues IS NULL OR j.subjectAreaRaw IN :subjectAreaRawValues)
           AND (:locations IS NULL OR j.location IN :locations)
           AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
           AND (:searchQuery IS NULL OR
                    j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                   j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
+                   (:searchSubjectAreaRawValues IS NOT NULL AND j.subjectAreaRaw IN :searchSubjectAreaRawValues) OR
                    CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
               )
         ORDER BY
@@ -137,13 +137,14 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
-        @Param("fieldOfStudies") List<String> fieldOfStudies,
+        @Param("subjectAreaRawValues") List<String> subjectAreaRawValues,
         @Param("locations") List<Campus> locations,
         @Param("professorNames") List<String> professorNames,
         @Param("sortBy") String sortBy,
         @Param("sortDirection") String sortDirection,
         @Param("userId") UUID userId,
         @Param("searchQuery") String searchQuery,
+        @Param("searchSubjectAreaRawValues") List<String> searchSubjectAreaRawValues,
         Pageable pageable
     );
 
@@ -163,15 +164,14 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * professor name.
      *
      * @param state          the job state (typically PUBLISHED)
-     * @param fieldOfStudies a partial match filter for multiple field of studies
-     *                       (nullable)
+     * @param subjectAreaRawValues persisted values to match for multiple subject areas (nullable)
      * @param locations      the campus locations filter (nullable)
      * @param professorNames a partial match filter for multiple professor's full
      *                       names
      *                       (nullable)
      * @param userId         id of the currently logged in user (nullable)
-     * @param searchQuery    string to search for job title, field of
-     *                       studies or supervisor name
+     * @param searchQuery    string to search for job title, subject area or supervisor name
+     * @param searchSubjectAreaRawValues persisted subject-area values matching the search query
      * @param pageable       pagination and sorting information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -207,42 +207,43 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                    ))
           WHERE j.state = :state
             AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-            AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
+            AND (:subjectAreaRawValues IS NULL OR j.subjectAreaRaw IN :subjectAreaRawValues)
             AND (:locations IS NULL OR j.location IN :locations)
             AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
             AND (:searchQuery IS NULL OR
                    j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                   j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
+                   (:searchSubjectAreaRawValues IS NOT NULL AND j.subjectAreaRaw IN :searchSubjectAreaRawValues) OR
                    CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
             )
         """
     )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
-        @Param("fieldOfStudies") List<String> fieldOfStudies,
+        @Param("subjectAreaRawValues") List<String> subjectAreaRawValues,
         @Param("locations") List<Campus> locations,
         @Param("professorNames") List<String> professorNames,
         @Param("userId") UUID userId,
         @Param("searchQuery") String searchQuery,
+        @Param("searchSubjectAreaRawValues") List<String> searchSubjectAreaRawValues,
         Pageable pageable
     );
 
     /**
-     * Finds all available fields of study
+     * Finds all available subject areas
      *
      * @param state the job state (typically PUBLISHED)
-     * @return a List of String with all unique, available fields of study
+     * @return a list of all unique, available subject areas
      */
     @Query(
         """
-        SELECT DISTINCT j.fieldOfStudies
+        SELECT DISTINCT j.subjectArea
         FROM Job j
         WHERE j.state = :state
           AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-        ORDER BY j.fieldOfStudies ASC
+        ORDER BY j.subjectArea ASC
         """
     )
-    List<String> findAllUniqueFieldOfStudies(@Param("state") JobState state);
+    List<SubjectArea> findAllUniqueSubjectAreas(@Param("state") JobState state);
 
     /**
      * Finds all unique supervisor names

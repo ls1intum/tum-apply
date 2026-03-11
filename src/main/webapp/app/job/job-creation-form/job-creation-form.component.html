@@ -54,11 +54,11 @@
 
             <div class="flex-1">
               <jhi-select
-                [selected]="basicInfoForm.get('fieldOfStudies')?.value"
-                (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
-                [items]="translatedFieldsOfStudies()"
-                [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
-                [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
+                [selected]="basicInfoForm.get('subjectArea')?.value"
+                (selectedChange)="basicInfoForm.get('subjectArea')?.setValue($event)"
+                [items]="translatedSubjectAreas()"
+                [label]="'jobCreationForm.basicInformationSection.subjectArea.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.subjectArea.placeholder' | translate"
                 [required]="true"
                 [width]="'100%'"
                 [filter]="true"

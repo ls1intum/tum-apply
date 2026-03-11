@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public record JobDetailDTO(
     @NotNull String supervisingProfessorName,
     @NotNull ResearchGroup researchGroup,
     @NotNull String title,
-    String fieldOfStudies,
+    SubjectArea subjectArea,
     String researchArea,
     Campus location,
     Integer workload,

@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -48,8 +49,13 @@ public class Job extends AbstractAuditingEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    // Uses a converter instead of @Enumerated so legacy DB values remain readable.
     @Column(name = "field_of_studies")
-    private String fieldOfStudies;
+    @Convert(converter = SubjectAreaConverter.class)
+    private SubjectArea subjectArea;
+
+    @Column(name = "field_of_studies", insertable = false, updatable = false)
+    private String subjectAreaRaw;
 
     @Column(name = "research_area")
     private String researchArea;

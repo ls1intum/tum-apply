@@ -28,11 +28,11 @@
         "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
         "toolTipText": "Gib das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
       },
-      "fieldOfStudies": {
-        "label": "Studienfach",
-        "placeholder": "Wähle ein Studienfach..."
+      "subjectArea": {
+        "label": "Fachbereich",
+        "placeholder": "Wähle einen Fachbereich..."
       },
-      "fieldsOfStudies": {
+      "subjectAreas": {
         "AerospaceEngineering": "Luft- und Raumfahrttechnik",
         "AgriculturalEngineering": "Agrartechnik",
         "Architecture": "Architektur",
@@ -225,8 +225,8 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "fieldOfStudies": "Studienrichtung",
-        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
+        "subjectArea": "Fachbereich",
+        "subjectAreaPlaceholder": "Fachbereich suchen...",
         "location": "Standort",
         "LocationSearchPlaceholder": "Standorte suchen...",
         "supervisor": "Betreuer:in",
@@ -236,7 +236,7 @@
     "sortingOptions": {
       "startDate": "Startdatum",
       "jobTitle": "Jobtitel",
-      "fieldOfStudies": "Studienrichtung",
+      "subjectArea": "Fachbereich",
       "location": "Standort",
       "professor": "Betreuer:in (Nachname)",
       "workload": "Arbeitsaufwand"
@@ -332,7 +332,7 @@
       "researchGroup": "Forschungsgruppe"
     },
     "labels": {
-      "fieldOfStudies": "Studienrichtung",
+      "subjectArea": "Fachbereich",
       "researchArea": "Forschungsbereich",
       "workload": "Arbeitsaufwand",
       "contractDuration": "Vertragslaufzeit",

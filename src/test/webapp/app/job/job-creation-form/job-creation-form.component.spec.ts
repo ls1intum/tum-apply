@@ -41,7 +41,7 @@ function fillValidJobForm(component: JobCreationFormComponent) {
   component.basicInfoForm.patchValue({
     title: 'T',
     researchArea: 'AI',
-    fieldOfStudies: { value: 'CS' },
+    subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
     location: { value: 'MUNICH' },
     supervisingProfessor: 'Prof',
     jobDescription: '<p>This is a job description.</p>', // Muss im Form gesetzt werden
@@ -638,7 +638,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({
         title: 'My Job',
         researchArea: 'AI Research',
-        fieldOfStudies: { value: 'CS' },
+        subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescription: 'Some description',
@@ -677,13 +677,13 @@ describe('JobCreationFormComponent', () => {
     });
 
     it.each([
-      { fieldOfStudies: { value: undefined }, expected: '' },
-      { fieldOfStudies: null, expected: '' },
-    ])('should handle fieldOfStudies edge cases', ({ fieldOfStudies, expected }) => {
+      { subjectArea: { value: undefined }, expected: undefined },
+      { subjectArea: null, expected: undefined },
+    ])('should handle subjectArea edge cases', ({ subjectArea, expected }) => {
       component.basicInfoForm.patchValue({
         title: 'Job',
         researchArea: 'AI',
-        fieldOfStudies,
+        subjectArea,
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescriptionEN: '<p>Description</p>',
@@ -692,7 +692,7 @@ describe('JobCreationFormComponent', () => {
       component.jobDescriptionEN.set('<p>Description</p>');
       component.jobDescriptionDE.set('<p>Beschreibung</p>');
       const dto = getPrivate(component).createJobDTO('DRAFT');
-      expect(dto.fieldOfStudies).toBe(expected);
+      expect(dto.subjectArea).toBe(expected);
     });
   });
 
@@ -701,7 +701,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({
         title: 'Test',
         researchArea: 'Area',
-        fieldOfStudies: { value: 'CS' },
+        subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescription: '<p>Description</p>', // HTML-Inhalt für den Validator

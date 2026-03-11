@@ -650,7 +650,7 @@ describe('JobDetailComponent', () => {
       title: 'Form Job',
       jobDescriptionEN: 'Some description',
       jobDescriptionDE: 'Some description',
-      fieldOfStudies: '',
+      subjectArea: undefined as unknown as JobFormDTO.SubjectAreaEnum,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -673,7 +673,7 @@ describe('JobDetailComponent', () => {
 
     const form: JobFormDTO = {
       title: 'Form Job',
-      fieldOfStudies: '',
+      subjectArea: undefined as unknown as JobFormDTO.SubjectAreaEnum,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',

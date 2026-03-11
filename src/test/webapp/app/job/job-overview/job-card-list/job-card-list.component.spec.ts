@@ -29,7 +29,7 @@ describe('JobCardListComponent', () => {
     jobService = {
       getAllFilters: vi.fn().mockReturnValue(
         of({
-          fieldsOfStudy: ['AI', 'ML'],
+          subjectAreas: [DropdownOptions.subjectAreas[0].value, DropdownOptions.subjectAreas[1].value],
           supervisorNames: ['Prof. X'],
         }),
       ),
@@ -75,8 +75,8 @@ describe('JobCardListComponent', () => {
     await component.loadAllFilter();
 
     expect(jobService.getAllFilters).toHaveBeenCalled();
-    // allFieldOfStudies is a static list of i18n keys from DropdownOptions
-    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    // allSubjectAreas is a static list of i18n keys from DropdownOptions
+    expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
     expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
@@ -128,12 +128,12 @@ describe('JobCardListComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should handle filter changes for fieldOfStudies', async () => {
+  it('should handle filter changes for subjectArea', async () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
-    component.onFilterEmit({ filterId: 'fieldOfStudies', selectedValues: ['AI'] });
+    component.onFilterEmit({ filterId: 'subjectArea', selectedValues: [DropdownOptions.subjectAreas[0].name] });
     fixture.detectChanges();
-    expect(component.selectedFieldOfStudiesFilters()).toEqual(['AI']);
+    expect(component.selectedSubjectAreaFilters()).toEqual([DropdownOptions.subjectAreas[0].value]);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -189,12 +189,12 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle loadAllFilter when API returns null fields', async () => {
-    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, fieldsOfStudy: null, supervisorNames: null }));
+    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, subjectAreas: null, supervisorNames: null }));
 
     await component.loadAllFilter();
 
-    // allFieldOfStudies remains the static list of i18n keys
-    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    // allSubjectAreas remains the static list of i18n keys
+    expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual([]);
   });
 

@@ -166,7 +166,7 @@ describe('MyPositionsPageComponent', () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.selectedStatusFilters.set([]);
 
-      component.onFilterEmit({ filterId: 'fieldOfStudies', selectedValues: ['CS'] });
+      component.onFilterEmit({ filterId: 'subjectArea', selectedValues: ['CS'] });
 
       expect(component.selectedStatusFilters()).toEqual([]);
       expect(loadSpy).not.toHaveBeenCalled();

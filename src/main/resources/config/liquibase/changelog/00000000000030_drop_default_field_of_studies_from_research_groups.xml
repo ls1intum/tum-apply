@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="20260311-1-drop-default-field-of-studies-from-research-groups" author="codex">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="research_groups" columnName="default_field_of_studies"/>
+    </preConditions>
+
+    <dropColumn tableName="research_groups" columnName="default_field_of_studies"/>
+  </changeSet>
+</databaseChangeLog>

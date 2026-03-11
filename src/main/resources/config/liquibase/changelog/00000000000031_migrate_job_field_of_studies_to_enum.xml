@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="00000000000031-1" author="codex">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+    </preConditions>
+
+    <sql>
+      UPDATE jobs
+      SET field_of_studies = UPPER(REPLACE(REPLACE(field_of_studies, ' ', '_'), '-', '_'))
+      WHERE field_of_studies IS NOT NULL
+        AND field_of_studies NOT REGEXP '^[A-Z0-9_]+$';
+    </sql>
+
+    <sql>
+      UPDATE jobs
+      SET field_of_studies = 'COMPUTER_SCIENCE'
+      WHERE field_of_studies IN ('INFORMATICS', 'CS');
+    </sql>
+  </changeSet>
+</databaseChangeLog>

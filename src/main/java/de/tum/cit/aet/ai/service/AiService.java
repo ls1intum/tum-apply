@@ -74,7 +74,10 @@ public class AiService {
                     .param("jobDescription", input)
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
-                    .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
+                    .param(
+                        "subjectArea",
+                        jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(descriptionLanguage) : ""
+                    )
                     .param("location", locationText)
                     .param("inclusiveWords", String.join(", ", inclusive))
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))

@@ -54,7 +54,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
   return {
     supervisor: translate.instant('jobDetailPage.header.supervisor'),
     location: translate.instant('jobDetailPage.header.location'),
-    fieldsOfStudies: `${translate.instant('jobDetailPage.labels.fieldOfStudies')}:`,
+    subjectArea: `${translate.instant('jobDetailPage.labels.subjectArea')}:`,
     researchArea: `${translate.instant('jobDetailPage.labels.researchArea')}:`,
     workload: `${translate.instant('jobDetailPage.labels.workload')}:`,
     hoursPerWeek: translate.instant('jobDetailPage.units.hoursPerWeek'),

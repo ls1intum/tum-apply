@@ -37,7 +37,7 @@ export interface JobDetails {
   supervisingProfessor: string;
   researchGroup: string;
   title: string;
-  fieldOfStudies: string;
+  subjectArea?: JobFormDTO.SubjectAreaEnum;
   researchArea: string;
   location: string;
   workload: string;
@@ -516,7 +516,7 @@ export class JobDetailComponent {
       supervisingProfessor,
       researchGroup,
       title: data.title,
-      fieldOfStudies: data.fieldOfStudies ?? '',
+      subjectArea: data.subjectArea as JobFormDTO.SubjectAreaEnum | undefined,
       researchArea: data.researchArea ?? '',
       location: data.location ?? '',
       workload: data.workload?.toString() ?? '',

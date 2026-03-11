@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -34,9 +35,11 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 
 class JobResourceTest extends AbstractResourceTest {
@@ -65,6 +68,9 @@ class JobResourceTest extends AbstractResourceTest {
     @Autowired
     MvcTestClient api;
 
+    @Autowired
+    DataSource dataSource;
+
     ResearchGroup researchGroup;
     User professor;
 
@@ -83,7 +89,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobId(),
             title,
             job.getResearchArea(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             professor.getUserId(),
             job.getLocation(),
             job.getStartDate(),
@@ -173,13 +179,56 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void getAllFiltersSupportsLegacySubjectAreaValues() {
+        Job legacyJob = jobRepository
+            .findAll()
+            .stream()
+            .filter(job -> "Published Role".equals(job.getTitle()))
+            .findFirst()
+            .orElseThrow();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.update("UPDATE jobs SET field_of_studies = ? WHERE job_id = ?", "CS", legacyJob.getJobId().toString());
+
+        JobFiltersDTO filters = api.getAndRead("/api/jobs/filters", Map.of(), JobFiltersDTO.class, 200);
+
+        assertThat(filters.subjectAreas()).contains(SubjectArea.COMPUTER_SCIENCE);
+        assertThat(filters.supervisorNames()).contains("John Doe");
+    }
+
+    @Test
+    void getAvailableJobsFilterSupportsLegacySubjectAreaValues() {
+        Job legacyJob = jobRepository
+            .findAll()
+            .stream()
+            .filter(job -> "Published Role".equals(job.getTitle()))
+            .findFirst()
+            .orElseThrow();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.update(
+            "UPDATE jobs SET field_of_studies = ? WHERE job_id = ?",
+            "Environmental Science",
+            legacyJob.getJobId().toString()
+        );
+
+        PageResponse<JobCardDTO> page = api.getAndRead(
+            "/api/jobs/available",
+            Map.of("pageNumber", "0", "pageSize", "10", "subjectAreas", "ENVIRONMENTAL_SCIENCE"),
+            new TypeReference<>() {},
+            200
+        );
+
+        assertThat(page.totalElements()).isEqualTo(1);
+        assertThat(page.content()).extracting(JobCardDTO::title).containsExactly("Published Role");
+    }
+
+    @Test
     @WithMockUser(roles = "PROFESSOR")
     void createJobPersistsAndReturnsIt() {
         JobFormDTO payload = new JobFormDTO(
             null,
             "ML Engineer",
             "Machine Learning",
-            "CS",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.of(2025, 11, 1),
@@ -206,7 +255,7 @@ class JobResourceTest extends AbstractResourceTest {
             .extracting(
                 Job::getTitle,
                 Job::getResearchArea,
-                Job::getFieldOfStudies,
+                Job::getSubjectArea,
                 (Job j) -> j.getSupervisingProfessor().getUserId(),
                 Job::getLocation,
                 Job::getStartDate,
@@ -221,7 +270,7 @@ class JobResourceTest extends AbstractResourceTest {
             .containsExactly(
                 "ML Engineer",
                 "Machine Learning",
-                "CS",
+                SubjectArea.COMPUTER_SCIENCE,
                 professor.getUserId(),
                 Campus.GARCHING,
                 LocalDate.of(2025, 11, 1),
@@ -243,7 +292,7 @@ class JobResourceTest extends AbstractResourceTest {
         Map<String, Object> invalid = Map.ofEntries(
             entry("title", "Bad Job"),
             entry("researchArea", "Machine Learning"),
-            entry("fieldOfStudies", "CS"),
+            entry("subjectArea", "COMPUTER_SCIENCE"),
             entry("supervisingProfessor", professor.getUserId().toString()),
             entry("location", "GARCHING"),
             entry("startDate", "2025-11-01"),
@@ -267,7 +316,7 @@ class JobResourceTest extends AbstractResourceTest {
             null,
             "Unauthorized",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -291,7 +340,7 @@ class JobResourceTest extends AbstractResourceTest {
             null,
             "Applicant attempt",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -317,7 +366,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobId(),
             "Updated Title",
             "Updated Area",
-            "Updated Field",
+            SubjectArea.DATA_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING_HOCHBRUECK,
             LocalDate.of(2025, 12, 1),
@@ -341,7 +390,7 @@ class JobResourceTest extends AbstractResourceTest {
 
         assertThat(updatedJob.getTitle()).isEqualTo(updatedPayload.title());
         assertThat(updatedJob.getResearchArea()).isEqualTo(updatedPayload.researchArea());
-        assertThat(updatedJob.getFieldOfStudies()).isEqualTo(updatedPayload.fieldOfStudies());
+        assertThat(updatedJob.getSubjectArea()).isEqualTo(updatedPayload.subjectArea());
         assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(updatedPayload.supervisingProfessor());
         assertThat(updatedJob.getLocation()).isEqualTo(updatedPayload.location());
         assertThat(updatedJob.getStartDate()).isEqualTo(updatedPayload.startDate());
@@ -361,7 +410,7 @@ class JobResourceTest extends AbstractResourceTest {
             UUID.randomUUID(),
             "Ghost Job",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -386,7 +435,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobId(),
             "No Auth",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -459,12 +508,14 @@ class JobResourceTest extends AbstractResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void changeJobStateNonExistantJobThrowsNotFound() {
-        api.putAndRead(
-            "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
-            null,
-            JobFormDTO.class,
-            404
-        );
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead(
+                "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+                null,
+                JobFormDTO.class,
+                404
+            );
     }
 
     @Test
@@ -524,7 +575,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
-        assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
+        assertThat(returnedJob.subjectArea()).isEqualTo(job.getSubjectArea());
         assertThat(returnedJob.supervisingProfessor()).isEqualTo(job.getSupervisingProfessor().getUserId());
         assertThat(returnedJob.location()).isEqualTo(job.getLocation());
         assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
@@ -563,7 +614,7 @@ class JobResourceTest extends AbstractResourceTest {
         );
         assertThat(returnedJob.researchGroup().getResearchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
-        assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
+        assertThat(returnedJob.subjectArea()).isEqualTo(job.getSubjectArea());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
         assertThat(returnedJob.location().getEnglishValue()).isEqualTo("Garching");
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());

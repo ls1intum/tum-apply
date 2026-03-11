@@ -37,18 +37,18 @@ export class JobCardListComponent {
 
   DropdownOptions = DropdownOptions;
 
-  readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
+  readonly selectedSubjectAreaFilters = signal<JobFormDTO.SubjectAreaEnum[]>([]);
   readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
-  readonly allFieldOfStudies = this.DropdownOptions.fieldsOfStudies.map(option => option.name);
+  readonly allSubjectAreas = this.DropdownOptions.subjectAreas.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
   readonly allSupervisorNames = signal<string[]>([]);
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'jobOverviewPage.sortingOptions.startDate', fieldName: 'startDate', type: 'NUMBER' },
     { displayName: 'jobOverviewPage.sortingOptions.jobTitle', fieldName: 'title', type: 'TEXT' },
-    { displayName: 'jobOverviewPage.sortingOptions.fieldOfStudies', fieldName: 'fieldOfStudies', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.subjectArea', fieldName: 'subjectArea', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.location', fieldName: 'location', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.professor', fieldName: 'professorName', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.workload', fieldName: 'workload', type: 'NUMBER' },
@@ -66,7 +66,7 @@ export class JobCardListComponent {
     this.page();
     this.pageSize();
     this.searchQuery();
-    this.selectedFieldOfStudiesFilters();
+    this.selectedSubjectAreaFilters();
     this.selectedLocationFilters();
     this.selectedSupervisorFilters();
     this.sortBy();
@@ -98,11 +98,8 @@ export class JobCardListComponent {
 
   onFilterEmit(filterChange: FilterChange): void {
     this.page.set(0);
-    if (filterChange.filterId === 'fieldOfStudies') {
-      const fieldOfStudyValue = filterChange.selectedValues.map(
-        key => DropdownOptions.fieldsOfStudies.find(fs => fs.name === key)?.value ?? key,
-      );
-      this.selectedFieldOfStudiesFilters.set(fieldOfStudyValue);
+    if (filterChange.filterId === 'subjectArea') {
+      this.selectedSubjectAreaFilters.set(DropdownOptions.mapSubjectAreaNames(filterChange.selectedValues));
     } else if (filterChange.filterId === 'location') {
       const enumValues = DropdownOptions.mapLocationNames(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
@@ -135,7 +132,7 @@ export class JobCardListComponent {
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
-          emptyToUndef(this.selectedFieldOfStudiesFilters()),
+          emptyToUndef(this.selectedSubjectAreaFilters()),
           emptyToUndef(this.selectedLocationFilters()),
           emptyToUndef(this.selectedSupervisorFilters()),
           this.sortBy(),

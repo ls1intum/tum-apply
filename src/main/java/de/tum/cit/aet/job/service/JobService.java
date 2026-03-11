@@ -16,6 +16,7 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -161,7 +162,7 @@ public class JobService {
             job.getJobId(),
             job.getTitle(),
             job.getResearchArea(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             job.getSupervisingProfessor().getUserId(),
             job.getLocation(),
             job.getStartDate(),
@@ -203,7 +204,7 @@ public class JobService {
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
             job.getSupervisingProfessor().getResearchGroup(),
             job.getTitle(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             job.getResearchArea(),
             job.getLocation(),
             job.getWorkload(),
@@ -231,8 +232,8 @@ public class JobService {
      * @param pageDTO                pagination configuration
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sort configuration (by field and direction)
-     * @param searchQuery            string to search for job title, field of
-     *                               studies or supervisor name
+     * @param searchQuery            string to search for job title, subject area
+     *                               or supervisor name
      * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(
@@ -245,18 +246,33 @@ public class JobService {
         Pageable pageable;
 
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        List<SubjectArea> searchSubjectAreas = normalizedSearchQuery != null ? SubjectArea.search(normalizedSearchQuery) : null;
+        if (searchSubjectAreas != null && searchSubjectAreas.isEmpty()) {
+            searchSubjectAreas = null;
+        }
+        List<String> subjectAreaRawValues =
+            availableJobsFilterDTO.subjectAreas() != null ? SubjectArea.persistedValuesFor(availableJobsFilterDTO.subjectAreas()) : null;
+        if (subjectAreaRawValues != null && subjectAreaRawValues.isEmpty()) {
+            subjectAreaRawValues = null;
+        }
+        List<String> searchSubjectAreaRawValues = searchSubjectAreas != null ? SubjectArea.persistedValuesFor(searchSubjectAreas) : null;
+        if (searchSubjectAreaRawValues != null && searchSubjectAreaRawValues.isEmpty()) {
+            searchSubjectAreaRawValues = null;
+        }
+
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
+                subjectAreaRawValues,
                 availableJobsFilterDTO.locations(), // filter for campus location
                 availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
                 sortDTO.sortBy(),
                 sortDTO.direction().name(),
                 userId,
                 normalizedSearchQuery,
+                searchSubjectAreaRawValues,
                 pageable
             );
         } else {
@@ -264,26 +280,27 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                subjectAreaRawValues,
                 availableJobsFilterDTO.locations(), // optional filter for campus location
                 availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                 userId,
                 normalizedSearchQuery,
+                searchSubjectAreaRawValues,
                 pageable
             );
         }
     }
 
     /**
-     * Retrieves all unique fields of study.
+     * Retrieves all unique subject areas.
      * This is used for filter dropdown options and should not be affected by
      * current filters.
      *
-     * @return a list of all unique fields of study sorted
+     * @return a list of all unique subject areas sorted
      * alphabetically
      */
-    public List<String> getAllFieldOfStudies() {
-        return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
+    public List<SubjectArea> getAllSubjectAreas() {
+        return jobRepository.findAllUniqueSubjectAreas(JobState.PUBLISHED).stream().filter(Objects::nonNull).distinct().toList();
     }
 
     /**
@@ -336,7 +353,7 @@ public class JobService {
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
         job.setResearchArea(dto.researchArea());
-        job.setFieldOfStudies(dto.fieldOfStudies());
+        job.setSubjectArea(dto.subjectArea());
         job.setLocation(dto.location());
         job.setStartDate(dto.startDate());
         job.setEndDate(dto.endDate());

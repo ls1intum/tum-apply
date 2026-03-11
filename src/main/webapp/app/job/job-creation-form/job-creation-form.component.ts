@@ -371,10 +371,10 @@ export class JobCreationFormComponent {
   /** Signal that tracks the current UI language for dropdown translations */
   currentLang = toSignal(this.translate.onLangChange);
 
-  /** Computed: Returns localized and sorted field of study options */
-  translatedFieldsOfStudies = computed(() => {
+  /** Computed: Returns localized and sorted subject area options */
+  translatedSubjectAreas = computed(() => {
     void this.currentLang();
-    return DropdownOptions.fieldsOfStudies
+    return DropdownOptions.subjectAreas
       .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
@@ -705,7 +705,7 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
+        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTO.SubjectAreaEnum,
         supervisingProfessor: this.userId(),
         location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
@@ -880,13 +880,13 @@ export class JobCreationFormComponent {
 
   /**
    * Creates the Step 1 form group with validation rules.
-   * Required fields: title, research area, field of studies, location, supervising professor, job description
+   * Required fields: title, research area, subject area, location, supervising professor, job description
    */
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       title: ['', [Validators.required]],
       researchArea: ['', [Validators.required]],
-      fieldOfStudies: [undefined, [Validators.required]],
+      subjectArea: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [undefined, Validators.required],
       jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(5000)]],
@@ -948,7 +948,7 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
+      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTO.SubjectAreaEnum,
       supervisingProfessor: supervisingProfessorId ?? '',
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
@@ -1066,7 +1066,7 @@ export class JobCreationFormComponent {
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
       supervisingProfessor: supervisingProfessorId,
-      fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
+      subjectArea: this.findDropdownOption(DropdownOptions.subjectAreas, job?.subjectArea),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: en,
     });
@@ -1285,7 +1285,7 @@ export class JobCreationFormComponent {
         this.lastSavedData.set({
           title: lastSaved.title,
           researchArea: lastSaved.researchArea,
-          fieldOfStudies: lastSaved.fieldOfStudies,
+          subjectArea: lastSaved.subjectArea,
           supervisingProfessor: lastSaved.supervisingProfessor,
           location: lastSaved.location,
 

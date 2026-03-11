@@ -298,7 +298,6 @@ class ResearchGroupServiceTest {
                 "updated@test.com",
                 "https://updated.com",
                 "Updated description",
-                "Computer Science",
                 "Updated Street",
                 "54321",
                 "Updated City",
@@ -546,7 +545,6 @@ class ResearchGroupServiceTest {
                 "ACG",
                 "https://acg.test",
                 "Description",
-                "CS",
                 "Main St",
                 "12345",
                 "Munich"
