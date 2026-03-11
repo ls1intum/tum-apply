@@ -299,7 +299,7 @@
         },
         "failed": {
           "summary": "Zuweisung fehlgeschlagen",
-          "detail": "Fehler beim Zuweisen der bewerbenden Person. Bitte versuchen Sie es erneut."
+          "detail": "Fehler beim Zuweisen der bewerbenden Person. Bitte versuche es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
