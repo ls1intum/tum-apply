@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="20260311-1-drop-default-field-of-studies-from-research-groups" author="codex">
+  <changeSet id="20260311-1-drop-default-field-of-studies-from-research-groups" author="celine">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="research_groups" columnName="default_field_of_studies"/>
     </preConditions>
