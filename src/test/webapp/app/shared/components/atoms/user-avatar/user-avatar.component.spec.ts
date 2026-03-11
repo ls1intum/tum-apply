@@ -12,7 +12,7 @@ describe('UserAvatarComponent', () => {
     size: 'sm' | 'md' | 'lg' | 'xl';
     loading: 'eager' | 'lazy';
   }>;
-  type UserAvatarComponentTestAccess = UserAvatarComponent & {
+  type UserAvatarComponentTestAccess = {
     initialsFromFullName: (name: string) => string;
     hashString: (value: string) => number;
     darkenHex: (hex: string, factor: number) => string;
