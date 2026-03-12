@@ -45,12 +45,7 @@ const config: Config = {
     [
       'classic',
       {
-        docs: {
-          sidebarPath: './sidebars.ts',
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/ls1intum/tum-apply/tree/main/docs'
-        },
+        docs: false,
         blog: {
           showReadingTime: true,
           feedOptions: {
@@ -74,14 +69,57 @@ const config: Config = {
 
   plugins: [
     [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'applicants',
+        path: 'docs/applicants',
+        routeBasePath: 'applicants',
+        sidebarPath: './sidebar-applicants.ts',
+        editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'professors',
+        path: 'docs/professors',
+        routeBasePath: 'professors',
+        sidebarPath: './sidebar-professors.ts',
+        editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'developer',
+        path: 'docs/developer',
+        routeBasePath: 'developer',
+        sidebarPath: './sidebar-developer.ts',
+        editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'admin',
+        path: 'docs/admin',
+        routeBasePath: 'admin',
+        sidebarPath: './sidebar-admin.ts',
+        editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
+      },
+    ],
+    [
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         hashed: true,
         indexDocs: true,
         indexBlog: false,
-        docsRouteBasePath: '/docs'
-      }
-    ]
+        docsRouteBasePath: ['applicants', 'professors', 'developer', 'admin'],
+        docsPluginIdForPreferredVersion: 'applicants',
+        searchContextByPaths: ['applicants', 'professors', 'developer', 'admin'],
+        hideSearchBarWithNoSearchContext: true,
+      },
+    ],
   ],
 
   themeConfig: {
@@ -95,10 +133,24 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tumApplySidebar',
+          to: '/applicants/account-creation',
+          label: 'Applicants',
           position: 'left',
-          label: 'Documentation'
+        },
+        {
+          to: '/professors/account-creation',
+          label: 'Professors',
+          position: 'left',
+        },
+        {
+          to: '/developer/intro',
+          label: 'Developers',
+          position: 'left',
+        },
+        {
+          to: '/admin/intro',
+          label: 'Admins',
+          position: 'left',
         },
         {
           href: 'https://github.com/ls1intum/tum-apply',
