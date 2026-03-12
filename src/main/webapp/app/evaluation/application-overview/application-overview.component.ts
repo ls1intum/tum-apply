@@ -37,6 +37,7 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
   styleUrls: ['./application-overview.component.scss'],
 })
 export class ApplicationOverviewComponent {
+  loading = signal(true);
   pageData = signal<ApplicationEvaluationOverviewDTO[]>([]);
   pageSize = signal(10);
   page = signal(0);
@@ -188,6 +189,7 @@ export class ApplicationOverviewComponent {
   }
 
   async loadPage(): Promise<void> {
+    this.loading.set(true);
     try {
       const offset = this.pageSize() * this.page();
       const limit = this.pageSize();
@@ -219,6 +221,8 @@ export class ApplicationOverviewComponent {
     } catch (error) {
       console.error('Failed to load applications:', error);
       this.toastService.showErrorKey('evaluation.errors.loadApplications');
+    } finally {
+      this.loading.set(false);
     }
   }
 
