@@ -9,7 +9,7 @@
       "documents": "Documents"
     },
     "personalInformation": {
-      "description": "Update your personal information here. Your saved data are used to automatically fill out future applications.",
+      "description": "Update your personal information here. Your saved data will be used to prefill future application forms.",
       "loadFailed": {
         "summary": "Load failed",
         "detail": "Failed to load personal information. Please try again."
@@ -97,7 +97,7 @@
       }
     },
     "documents": {
-      "description": "Upload and manage your documents here. Your saved documents are used to automatically fill out future applications.",
+      "description": "Upload and manage your documents here. Your saved documents will be used to prefill future application forms.",
       "sections": {
         "bachelor": "Bachelor Studies",
         "master": "Master Studies",
