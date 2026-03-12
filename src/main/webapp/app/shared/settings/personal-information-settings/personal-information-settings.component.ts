@@ -95,7 +95,7 @@ export class PersonalInformationSettingsComponent {
     return !deepEqual(this.toSnapshot(this.data()), initial);
   });
 
-  disabledEmail = computed<boolean>(() => this.accountService.signedIn());
+  readonly disabledEmail = signal(true);
 
   readonly minDate = new Date(1900, 0, 1);
   readonly maxDate = (() => {
