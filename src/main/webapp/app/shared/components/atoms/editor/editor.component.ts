@@ -14,9 +14,9 @@ import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
+import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
-import { TranslateDirective } from 'app/shared/language';
 
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 300;
