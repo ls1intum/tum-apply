@@ -59,6 +59,7 @@ class WebConfigurerTest {
         //assertThat(container.getMimeMappings().get("abs")).isEqualTo("audio/x-mpeg");
         assertThat(container.getMimeMappings().get("html")).isEqualTo("text/html;charset=utf-8");
         assertThat(container.getMimeMappings().get("json")).isEqualTo("text/html;charset=utf-8");
+        assertThat(container.getMimeMappings().get("avif")).isEqualTo("image/avif");
         if (container.getDocumentRoot() != null) {
             Path actual = container.getDocumentRoot().toPath().toRealPath();
             Path expected = Path.of("build", "resources", "main", "static").toAbsolutePath().toRealPath();

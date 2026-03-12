@@ -40,7 +40,7 @@ export class JobsPreviewSectionComponent {
     }
   }
 
-  // No fallback images: we only show an image when the job provides one
+  // Rotate through bundled banner images when a job has no dedicated header image.
 
   goToJobOverview(): void {
     void this.router.navigate(['/job-overview']);
@@ -48,12 +48,12 @@ export class JobsPreviewSectionComponent {
 
   getExampleImageUrl(index: number): string {
     const headerImages = [
-      '/content/images/job-banner/job-banner1.png',
-      '/content/images/job-banner/job-banner2.png',
-      '/content/images/job-banner/job-banner3.png',
-      '/content/images/job-banner/job-banner4.png',
-      '/content/images/job-banner/job-banner5.png',
-      '/content/images/job-banner/job-banner6.png',
+      '/content/images/job-banner/job-banner1.avif',
+      '/content/images/job-banner/job-banner2.avif',
+      '/content/images/job-banner/job-banner3.avif',
+      '/content/images/job-banner/job-banner4.avif',
+      '/content/images/job-banner/job-banner5.avif',
+      '/content/images/job-banner/job-banner6.avif',
     ];
 
     return headerImages[index % headerImages.length];

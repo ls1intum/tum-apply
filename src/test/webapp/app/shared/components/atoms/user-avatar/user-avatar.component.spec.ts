@@ -89,11 +89,19 @@ describe('UserAvatarComponent', () => {
   });
 
   describe('sizeClass', () => {
+    it('should use the sm size class when size is set to sm', () => {
+      expect(render({ size: 'sm' }).sizeClass()).toBe('h-10 w-10 text-[1rem]');
+    });
+
+    it('should use the md size class when size is set to md', () => {
+      expect(render({ size: 'md' }).sizeClass()).toBe('h-12 w-12 text-[1.2rem]');
+    });
+
     it('should use the lg size class when size is set to lg', () => {
       expect(render({ size: 'lg' }).sizeClass()).toBe('h-14 w-14 text-[1.4rem]');
     });
 
-    it('should use the md size class by default', () => {
+    it('should use the sm size class by default', () => {
       expect(render().sizeClass()).toBe('h-10 w-10 text-[1rem]');
     });
 
