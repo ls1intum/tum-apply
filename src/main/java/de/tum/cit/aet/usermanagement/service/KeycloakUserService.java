@@ -3,7 +3,6 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.StringUtil;
-import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -76,8 +75,8 @@ public class KeycloakUserService {
         List<KeycloakUserDTO> localUsers = userRepository
             .searchAvailableUsersForResearchGroup(searchKey)
             .stream()
-            .filter(user -> isNotCurrentUser(user.getUserId()))
-            .map(this::toKeycloakUserDTOFromLocal)
+            .filter(user -> !currentUserService.isCurrentUser(user.getUserId()))
+            .map(KeycloakUserDTO::fromUser)
             .toList();
 
         // 3) Merge and deduplicate (Keycloak results take priority)
@@ -120,47 +119,9 @@ public class KeycloakUserService {
         return users
             .stream()
             .filter(KeycloakUserService::isLDAPUser)
-            .filter(user -> !excludeCurrentUser || isNotCurrentUser(UUID.fromString(user.getId())))
-            .map(this::toKeycloakUserDTO)
+            .filter(user -> !excludeCurrentUser || !currentUserService.isCurrentUser(UUID.fromString(user.getId())))
+            .map(KeycloakUserDTO::fromLdapUser)
             .toList();
-    }
-
-    /**
-     * Converts a Keycloak {@link UserRepresentation} to a {@link KeycloakUserDTO},
-     * extracting the LDAP_ID attribute as the universityId.
-     */
-    private KeycloakUserDTO toKeycloakUserDTO(UserRepresentation user) {
-        return new KeycloakUserDTO(
-            UUID.fromString(user.getId()),
-            user.getUsername(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getEmail(),
-            user.getAttributes().get("LDAP_ID").getFirst()
-        );
-    }
-
-    /**
-     * Converts a local {@link User} entity to a {@link KeycloakUserDTO}.
-     * The universityId may be null for non-TUM users.
-     */
-    private KeycloakUserDTO toKeycloakUserDTOFromLocal(User user) {
-        return new KeycloakUserDTO(
-            user.getUserId(),
-            user.getEmail(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getEmail(),
-            user.getUniversityId()
-        );
-    }
-
-    /**
-     * Checks whether the given userId does NOT belong to the currently authenticated user.
-     */
-    private boolean isNotCurrentUser(UUID userId) {
-        User currentUser = currentUserService.getUser();
-        return currentUser == null || !currentUser.getUserId().equals(userId);
     }
 
     /**
