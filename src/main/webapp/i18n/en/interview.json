@@ -279,6 +279,10 @@
         "error": {
           "summary": "Send Failed",
           "detail": "Failed to send invitation. Please try again or contact an admin."
+        },
+        "noSlots": {
+          "summary": "No Slots Available",
+          "detail": "Please create interview slots before sending invitations."
         }
       }
     },

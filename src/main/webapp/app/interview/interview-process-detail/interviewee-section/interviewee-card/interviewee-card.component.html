@@ -63,9 +63,10 @@
         [icon]="interviewee().state === IntervieweeState.Invited ? 'rotate-right' : 'paper-plane'"
         variant="outlined"
         severity="primary"
-        [disabled]="sending()"
+        [disabled]="sending() || !hasSlots()"
         [loading]="sending()"
         [fullWidth]="true"
+        [tooltip]="noSlotsTooltip()"
         [label]="
           interviewee().state === IntervieweeState.Invited
             ? 'interview.interviewees.resendInvitation'

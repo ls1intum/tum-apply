@@ -69,6 +69,7 @@ export class SlotsSectionComponent {
 
   // Outputs
   slotAssigned = output();
+  hasSlotsChange = output<boolean>();
 
   // Signals
   futureSlots = signal<InterviewSlotDTO[]>([]);
@@ -413,11 +414,15 @@ export class SlotsSectionComponent {
       const unbookedCount = unbookedResponse.content?.filter(s => !s.interviewee).length ?? 0;
 
       // 5. Batch signal writes to avoid intermediate re-renders
+      const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
+
       untracked(() => {
-        this.hasAnySlots.set((anySlotsResponse.totalElements ?? 0) > 0);
+        this.hasAnySlots.set(hasSlots);
         this.globalFutureUnbookedCount.set(unbookedCount);
         this.initialized.set(true);
       });
+
+      this.hasSlotsChange.emit(hasSlots);
 
       // 6. Load the current month's slots for the calendar view
       await this.loadMonthSlots(processId, this.currentYear(), this.currentMonthNumber(), this.currentMonthOffset(), showLoading);

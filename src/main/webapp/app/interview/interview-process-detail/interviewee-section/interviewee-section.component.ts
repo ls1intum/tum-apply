@@ -59,6 +59,7 @@ export class IntervieweeSectionComponent {
   jobTitle = input.required<string>();
   isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
+  hasSlots = input<boolean>(false);
 
   // Component Outputs
   slotsRefresh = output();
@@ -172,6 +173,9 @@ export class IntervieweeSectionComponent {
 
   allInvitedTooltip = computed(() => {
     this.currentLang(); // Dependency for reactivity
+    if (!this.hasSlots()) {
+      return this.translateService.instant('interview.interviewees.invitation.noSlots.detail');
+    }
     return this.uncontactedCount() === 0 ? this.translateService.instant('interview.interviewees.allInvited') : '';
   });
 
@@ -244,6 +248,11 @@ export class IntervieweeSectionComponent {
     const processId = this.processId();
     if (processId === '' || interviewee.id == null) return;
 
+    if (!this.hasSlots()) {
+      this.toastService.showWarnKey('interview.interviewees.invitation.noSlots');
+      return;
+    }
+
     if (interviewee.state === 'INVITED') {
       this.pendingResendId.set(interviewee.id);
       this.confirmDialog().confirm();
@@ -256,6 +265,11 @@ export class IntervieweeSectionComponent {
   async sendAllInvitations(): Promise<void> {
     const processId = this.processId();
     if (processId === '') return;
+
+    if (!this.hasSlots()) {
+      this.toastService.showWarnKey('interview.interviewees.invitation.noSlots');
+      return;
+    }
 
     try {
       this.sendingBulk.set(true);

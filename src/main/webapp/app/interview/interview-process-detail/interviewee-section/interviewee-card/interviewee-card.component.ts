@@ -25,6 +25,7 @@ export class IntervieweeCardComponent {
   processId = input.required<string>();
   sending = input<boolean>(false);
   isClosed = input<boolean>(false);
+  hasSlots = input<boolean>(false);
 
   // Outputs
   sendInvitation = output<IntervieweeDTO>();
@@ -49,6 +50,9 @@ export class IntervieweeCardComponent {
 
   location = computed(() => this.interviewee().scheduledSlot?.location ?? '');
   isVirtual = computed(() => this.interviewee().scheduledSlot?.location === 'virtual');
+  noSlotsTooltip = computed(() =>
+    !this.hasSlots() ? this.translateService.instant('interview.interviewees.invitation.noSlots.detail') : '',
+  );
 
   // Constants
   protected readonly IntervieweeState = IntervieweeDTO.StateEnum;

@@ -4,7 +4,7 @@
     @if (!isClosed()) {
       <jhi-button
         (click)="sendAllInvitations()"
-        [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
+        [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0 || !hasSlots()"
         [loading]="sendingBulk()"
         [shouldTranslate]="true"
         [tooltip]="allInvitedTooltip()"
@@ -46,6 +46,7 @@
           [processId]="processId()"
           [sending]="sendingInvitationId() === interviewee.id"
           [isClosed]="isClosed()"
+          [hasSlots]="hasSlots()"
         />
       }
     </div>

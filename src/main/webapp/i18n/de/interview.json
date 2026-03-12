@@ -279,6 +279,10 @@
         "error": {
           "summary": "Senden fehlgeschlagen",
           "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "noSlots": {
+          "summary": "Keine Termine verfügbar",
+          "detail": "Bitte erstelle Interview-Termine, bevor du Einladungen versendest."
         }
       }
     },
