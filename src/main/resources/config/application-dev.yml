@@ -104,7 +104,3 @@ user:
     batch-size: ${USER_RETENTION_BATCH_SIZE:100}
     max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:5}
 
-aet:
-  keycloak:
-    local-mock-enabled: true
-    local-mock-file-path: src/main/webapp/content/mock/keycloak-users.json

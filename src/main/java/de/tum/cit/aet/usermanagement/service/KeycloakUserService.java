@@ -8,7 +8,9 @@ import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,10 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for interacting with the Keycloak admin API and merging
+ * Keycloak (LDAP/TUM) users with locally registered users.
+ */
 @Service
 public class KeycloakUserService {
 
@@ -55,15 +61,32 @@ public class KeycloakUserService {
     }
 
     /**
-     * Retrieves Keycloak users that are eligible to be added to a research group.
-     * Excludes users already assigned to any local research group.
+     * Retrieves users eligible to be added to a research group by merging
+     * Keycloak LDAP users with locally registered (non-TUM) users.
      *
-     * @param searchKey search key for Keycloak query
-     * @param pageDTO local pagination parameters
-     * @return paginated list of available Keycloak users and the total amount before pagination
+     * @param searchKey search key for user query
+     * @param pageDTO   pagination parameters
+     * @return paginated list of available users and the total count before pagination
      */
     public PagedResult<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO) {
-        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(searchTumUsers(searchKey, true));
+        // 1) Search Keycloak for TUM/LDAP users
+        List<KeycloakUserDTO> keycloakUsers = searchTumUsers(searchKey, true);
+
+        // 2) Search local DB for available users (including non-TUM)
+        List<KeycloakUserDTO> localUsers = userRepository
+            .searchAvailableUsersForResearchGroup(searchKey)
+            .stream()
+            .filter(user -> isNotCurrentUser(user.getUserId()))
+            .map(this::toKeycloakUserDTOFromLocal)
+            .toList();
+
+        // 3) Merge and deduplicate (Keycloak results take priority)
+        List<KeycloakUserDTO> merged = mergeAndDeduplicate(keycloakUsers, localUsers);
+
+        // 4) Filter out users already assigned to a research group
+        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(merged);
+
+        // 5) Paginate
         return new PagedResult<>(paginate(pageDTO, availableUsers), availableUsers.size());
     }
 
@@ -85,10 +108,11 @@ public class KeycloakUserService {
             .findFirst();
     }
 
+    /**
+     * Searches Keycloak for LDAP-backed (TUM) users matching the given search key.
+     */
     private List<KeycloakUserDTO> searchTumUsers(String searchKey, boolean excludeCurrentUser) {
-        int firstResult = 0;
-        int maxResults = SAFETY_MAX;
-        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
         if (users == null || users.isEmpty()) {
             return List.of();
         }
@@ -96,11 +120,15 @@ public class KeycloakUserService {
         return users
             .stream()
             .filter(KeycloakUserService::isLDAPUser)
-            .filter(user -> !excludeCurrentUser || !isCurrentUser(user))
+            .filter(user -> !excludeCurrentUser || isNotCurrentUser(UUID.fromString(user.getId())))
             .map(this::toKeycloakUserDTO)
             .toList();
     }
 
+    /**
+     * Converts a Keycloak {@link UserRepresentation} to a {@link KeycloakUserDTO},
+     * extracting the LDAP_ID attribute as the universityId.
+     */
     private KeycloakUserDTO toKeycloakUserDTO(UserRepresentation user) {
         return new KeycloakUserDTO(
             UUID.fromString(user.getId()),
@@ -108,11 +136,54 @@ public class KeycloakUserService {
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),
-            user.getAttributes().get("LDAP_ID").get(0)
+            user.getAttributes().get("LDAP_ID").getFirst()
         );
     }
 
+    /**
+     * Converts a local {@link User} entity to a {@link KeycloakUserDTO}.
+     * The universityId may be null for non-TUM users.
+     */
+    private KeycloakUserDTO toKeycloakUserDTOFromLocal(User user) {
+        return new KeycloakUserDTO(
+            user.getUserId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getUniversityId()
+        );
+    }
+
+    /**
+     * Checks whether the given userId does NOT belong to the currently authenticated user.
+     */
+    private boolean isNotCurrentUser(UUID userId) {
+        User currentUser = currentUserService.getUser();
+        return currentUser == null || !currentUser.getUserId().equals(userId);
+    }
+
+    /**
+     * Merges Keycloak and local user lists, deduplicating by userId.
+     * Keycloak entries take priority since they contain richer LDAP data.
+     */
+    private List<KeycloakUserDTO> mergeAndDeduplicate(List<KeycloakUserDTO> keycloakUsers, List<KeycloakUserDTO> localUsers) {
+        Map<UUID, KeycloakUserDTO> merged = new LinkedHashMap<>();
+        for (KeycloakUserDTO user : keycloakUsers) {
+            merged.put(user.id(), user);
+        }
+        for (KeycloakUserDTO user : localUsers) {
+            merged.putIfAbsent(user.id(), user);
+        }
+        return new ArrayList<>(merged.values());
+    }
+
+    /**
+     * Filters out users that are already assigned to a research group.
+     * Uses universityId for TUM users and userId for non-TUM users.
+     */
     private List<KeycloakUserDTO> filterOutAssignedUsers(List<KeycloakUserDTO> users) {
+        // 1) Collect and check universityId-based assignments (TUM users)
         List<String> candidateUniversityIds = users
             .stream()
             .map(KeycloakUserDTO::universityId)
@@ -121,18 +192,30 @@ public class KeycloakUserService {
             .distinct()
             .toList();
 
-        if (candidateUniversityIds.isEmpty()) {
-            return users;
-        }
+        Set<String> assignedUniversityIds = candidateUniversityIds.isEmpty()
+            ? Set.of()
+            : new HashSet<>(userRepository.findAssignedUniversityIdsIn(candidateUniversityIds));
 
-        Set<String> assignedUniversityIds = new HashSet<>(userRepository.findAssignedUniversityIdsIn(candidateUniversityIds));
+        // 2) Collect and check userId-based assignments (non-TUM users)
+        List<UUID> candidateUserIds = users
+            .stream()
+            .filter(user -> user.universityId() == null || user.universityId().isBlank())
+            .map(KeycloakUserDTO::id)
+            .distinct()
+            .toList();
+
+        Set<UUID> assignedUserIds = candidateUserIds.isEmpty()
+            ? Set.of()
+            : new HashSet<>(userRepository.findAssignedUserIdsIn(candidateUserIds));
+
+        // 3) Filter out assigned users
         return users
             .stream()
             .filter(user -> {
-                if (user.universityId() == null || user.universityId().isBlank()) {
-                    return false;
+                if (user.universityId() != null && !user.universityId().isBlank()) {
+                    return !assignedUniversityIds.contains(user.universityId().toLowerCase());
                 }
-                return !assignedUniversityIds.contains(user.universityId().toLowerCase());
+                return !assignedUserIds.contains(user.id());
             })
             .toList();
     }
@@ -153,29 +236,6 @@ public class KeycloakUserService {
         }
         List<String> values = attributes.get("LDAP_ID");
         return values != null && !values.isEmpty();
-    }
-
-    private boolean isCurrentUser(UserRepresentation user) {
-        User currentUser = currentUserService.getUser();
-        if (currentUser == null) {
-            return false;
-        }
-
-        String currentUniversityId = currentUser.getUniversityId();
-        if (currentUniversityId == null || currentUniversityId.isBlank()) {
-            return false;
-        }
-
-        Map<String, List<String>> attributes = user.getAttributes();
-        if (attributes == null) {
-            return false;
-        }
-        List<String> ldapIds = attributes.get("LDAP_ID");
-        if (ldapIds == null || ldapIds.isEmpty()) {
-            return false;
-        }
-
-        return currentUniversityId.equalsIgnoreCase(ldapIds.get(0));
     }
 
     /**
@@ -226,43 +286,6 @@ public class KeycloakUserService {
                 throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
         });
-    }
-
-    /**
-     * Updates basic profile fields (firstName and lastName) of a Keycloak user.
-     * Blank or null inputs are ignored; existing values remain unchanged in that case.
-     * Names are normalized before being persisted.
-     * Only updates fields if the new value is non-blank and different from the current value.
-     *
-     * @param userId    Keycloak user ID
-     * @param firstName optional first name; ignored if null or blank
-     * @param lastName  optional last name; ignored if null or blank
-     * @return {@code true} if any field was updated, {@code false} otherwise
-     */
-    public boolean updateProfile(String userId, String firstName, String lastName) {
-        UserResource userResource = keycloak.realm(realm).users().get(userId);
-        UserRepresentation userRepresentation = userResource.toRepresentation();
-        if (userRepresentation == null) {
-            return false;
-        }
-        boolean updated = false;
-
-        String normalizedFirstName = StringUtil.normalize(firstName, false);
-        if (!normalizedFirstName.isBlank() && !normalizedFirstName.equals(userRepresentation.getFirstName())) {
-            userRepresentation.setFirstName(normalizedFirstName);
-            updated = true;
-        }
-
-        String normalizedLastName = StringUtil.normalize(lastName, false);
-        if (!normalizedLastName.isBlank() && !normalizedLastName.equals(userRepresentation.getLastName())) {
-            userRepresentation.setLastName(normalizedLastName);
-            updated = true;
-        }
-
-        if (updated) {
-            userResource.update(userRepresentation);
-        }
-        return updated;
     }
 
     /**
