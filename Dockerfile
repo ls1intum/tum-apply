@@ -87,6 +87,10 @@ RUN \
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
+ENV AET_STORAGE_ROOT=/data/docs
+ENV AET_STORAGE_IMAGE_ROOT=/data/images
+
+RUN mkdir -p /data/docs /data/images
 
 # Copy tum-apply.war to execution location
 WORKDIR /opt/tum-apply

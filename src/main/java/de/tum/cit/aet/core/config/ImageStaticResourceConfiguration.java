@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class ImageStaticResourceConfiguration implements WebMvcConfigurer {
 
-    @Value("${aet.storage.image-root:/storage/images}")
+    @Value("${aet.storage.image-root}")
     private String imageRoot;
 
     @Override
