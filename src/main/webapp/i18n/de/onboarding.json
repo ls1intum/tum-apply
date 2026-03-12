@@ -114,12 +114,12 @@
       },
       "confirmDialog": {
         "header": "Anfrage bestätigen",
-        "message": "Ihre Anfrage wird an die Administratoren zur Prüfung gesendet. Sie werden Ihre Forschungsgruppe erstellen und Sie kontaktieren, sobald sie genehmigt ist. Möchten Sie fortfahren?",
+        "message": "Deine Anfrage wird an die Administratoren zur Prüfung gesendet. Sie werden deine Forschungsgruppe erstellen und dich kontaktieren, sobald sie genehmigt ist. Möchtest du fortfahren?",
         "confirm": "Anfrage senden"
       },
       "success": {
         "summary": "Anfrage erfolgreich gesendet",
-        "detail": "Ihre Forschungsgruppen-Anfrage wurde eingereicht. Die Administratoren werden sie prüfen und Sie bald kontaktieren."
+        "detail": "Deine Forschungsgruppen-Anfrage wurde eingereicht. Die Administratoren werden sie prüfen und dich bald kontaktieren."
       },
       "error": {
         "summary": "Übermittlung fehlgeschlagen",
