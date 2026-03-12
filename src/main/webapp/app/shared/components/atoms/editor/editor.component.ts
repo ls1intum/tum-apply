@@ -16,6 +16,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
+import { TranslateDirective } from 'app/shared/language';
 
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 300;
@@ -30,6 +31,7 @@ const STANDARD_CHARACTER_BUFFER = 300;
     TranslateModule,
     TooltipModule,
     GenderBiasAnalysisDialogComponent,
+    TranslateDirective,
   ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
@@ -38,6 +40,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => extractTextFromHtml(this.htmlValue()).length);
   fieldId = input<string>('default');
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
+  height = input<string>('12.5rem');
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
