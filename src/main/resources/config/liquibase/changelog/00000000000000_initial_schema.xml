@@ -58,6 +58,7 @@
       <column name="website" type="TEXT"/>
       <column name="school" type="TEXT"/>
       <column name="description" type="LONGTEXT"/>
+      <column name="default_field_of_studies" type="TEXT"/>
       <column name="street" type="TEXT"/>
       <column name="postal_code" type="VARCHAR(10)"/>
       <column name="city" type="TEXT"/>
@@ -121,7 +122,7 @@
       <column name="research_group_id" type="CHAR(36)">
         <constraints nullable="false"/>
       </column>
-      <column name="field_of_studies" type="VARCHAR(255)"/>
+      <column name="field_of_studies" type="TEXT"/>
       <column name="research_area" type="TEXT"/>
       <column name="location" type="VARCHAR(255)">
         <constraints nullable="false"/>
