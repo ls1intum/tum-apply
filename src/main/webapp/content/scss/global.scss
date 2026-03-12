@@ -376,6 +376,11 @@ jhi-menu {
   border: 1px solid var(--p-border-default) !important;
   border-radius: 0 0 var(--border-radius-md) var(--border-radius-md) !important;
 
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+
   &:focus-within {
     border-color: var(--p-primary-color) !important;
   }
