@@ -51,6 +51,16 @@ describe('SegmentedToggleComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith('right');
   });
 
+  it('should not emit valueChange when clicking the selected button', () => {
+    const fixture = createFixture({ value: 'left' });
+    const emitSpy = vi.spyOn(fixture.componentInstance.valueChange, 'emit');
+
+    const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll('button');
+    buttons[0].click();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
   it('should not emit valueChange when disabled', () => {
     const fixture = createFixture({ value: 'left', disabled: true });
     const emitSpy = vi.spyOn(fixture.componentInstance.valueChange, 'emit');
