@@ -120,8 +120,5 @@ jhipster:
 
 # Application specific properties:
 aet:
-  storage:
-    root: ${AET_STORAGE_ROOT:/data/docs}
-    image-root: ${AET_STORAGE_IMAGE_ROOT:/data/images}
   email:
     enabled: true
