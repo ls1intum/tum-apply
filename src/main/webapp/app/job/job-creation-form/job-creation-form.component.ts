@@ -49,6 +49,7 @@ import * as DropdownOptions from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
+type DropdownSelection<T> = { value: T };
 
 /**
  * JobCreationFormComponent
@@ -421,8 +422,8 @@ export class JobCreationFormComponent {
     initialValue: this.imageForm.getRawValue(),
   });
 
-  /** Computed: Aggregates all form data into a JobFormDTO for saving */
-  currentJobData = computed<JobFormDTO>(() => {
+  /** Computed: Aggregates all form data into a draft DTO when required fields are present */
+  currentJobData = computed<JobFormDTO | undefined>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
@@ -570,7 +571,12 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      await this.performAutoSave();
+      const draftData = this.createJobDTO('DRAFT');
+      if (!draftData) {
+        return;
+      }
+      this.savingState.set('SAVING');
+      await this.performAutoSave(draftData);
     }
   }
 
@@ -688,6 +694,14 @@ export class JobCreationFormComponent {
   async generateJobApplicationDraft(): Promise<void> {
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
+    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(this.basicInfoForm.get('subjectArea')?.value);
+    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(this.basicInfoForm.get('location')?.value);
+
+    if (subjectArea === undefined || location === undefined) {
+      this.basicInfoForm.get('subjectArea')?.markAsTouched();
+      this.basicInfoForm.get('location')?.markAsTouched();
+      return;
+    }
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
@@ -705,9 +719,9 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTO.SubjectAreaEnum,
+        subjectArea,
         supervisingProfessor: this.userId(),
-        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
+        location,
 
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
@@ -925,7 +939,7 @@ export class JobCreationFormComponent {
    * @param state - The job state ('DRAFT' or 'PUBLISHED')
    * @returns The complete job form DTO
    */
-  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
+  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO | undefined {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
@@ -941,6 +955,13 @@ export class JobCreationFormComponent {
         : supervisingProfessorRaw) ??
       this.preferredSupervisingProfessorId() ??
       this.userId();
+    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea);
+    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location);
+    const fundingType = this.extractSelectedValue<JobFormDTO.FundingTypeEnum>(positionDetailsValue.fundingType);
+
+    if (subjectArea === undefined || location === undefined || supervisingProfessorId === '') {
+      return undefined;
+    }
 
     const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
     const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
@@ -948,9 +969,9 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTO.SubjectAreaEnum,
-      supervisingProfessor: supervisingProfessorId ?? '',
-      location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
+      subjectArea,
+      supervisingProfessor: supervisingProfessorId,
+      location,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
@@ -959,7 +980,7 @@ export class JobCreationFormComponent {
       endDate: positionDetailsValue.applicationDeadline ?? '',
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
-      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
+      fundingType,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
@@ -1195,11 +1216,15 @@ export class JobCreationFormComponent {
       this.jobDescriptionSignal.set(description);
 
       this.clearAutoSaveTimer();
-      this.savingState.set('SAVING');
-
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
-        void this.performAutoSave();
+        const draftData = this.createJobDTO('DRAFT');
+        if (!draftData) {
+          return;
+        }
+
+        this.savingState.set('SAVING');
+        void this.performAutoSave(draftData);
       }, 3000);
     });
   }
@@ -1219,10 +1244,9 @@ export class JobCreationFormComponent {
    * Creates job on first save, updates on subsequent saves.
    * Triggers translation after successful save if content changed.
    */
-  private async performAutoSave(): Promise<void> {
+  private async performAutoSave(currentData: JobFormDTO): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
-    const currentData = this.createJobDTO('DRAFT');
 
     try {
       let saved: JobFormDTO;
@@ -1484,5 +1508,9 @@ export class JobCreationFormComponent {
    */
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
+  }
+
+  private extractSelectedValue<T>(selection: DropdownSelection<T> | undefined | null): T | undefined {
+    return selection?.value;
   }
 }
