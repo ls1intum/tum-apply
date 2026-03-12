@@ -119,9 +119,31 @@ public class KeycloakUserService {
         return users
             .stream()
             .filter(KeycloakUserService::isLDAPUser)
-            .filter(user -> !excludeCurrentUser || !currentUserService.isCurrentUser(UUID.fromString(user.getId())))
+            .filter(user -> !excludeCurrentUser || !isCurrentLdapUser(user))
             .map(KeycloakUserDTO::fromLdapUser)
             .toList();
+    }
+
+    /**
+     * Checks whether the given LDAP user matches the currently authenticated user
+     * by comparing the LDAP_ID attribute against the current user's universityId.
+     */
+    private boolean isCurrentLdapUser(UserRepresentation user) {
+        String currentUniversityId = currentUserService.getUser().getUniversityId();
+        if (currentUniversityId == null || currentUniversityId.isBlank()) {
+            return false;
+        }
+
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) {
+            return false;
+        }
+        List<String> ldapIds = attributes.get("LDAP_ID");
+        if (ldapIds == null || ldapIds.isEmpty()) {
+            return false;
+        }
+
+        return currentUniversityId.equalsIgnoreCase(ldapIds.getFirst());
     }
 
     /**
