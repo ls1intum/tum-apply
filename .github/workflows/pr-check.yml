@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: Slashgear/action-check-pr-title@v5.0.1
         with:
-          regexp: '^`(Bugfix|Documentation|Development|General)`:\s[A-Z].*$'
+          regexp: '^`(Bugfix|Development|Documentation|Test|General)`:\s[A-Z].*$'
 
   validate-gradle-wrapper:
     name: Validate Gradle Wrapper
