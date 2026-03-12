@@ -644,7 +644,9 @@ describe('JobCreationFormComponent', () => {
       expect(draftDTO.imageId).toBe('img123');
 
       const publishedDTO = getPrivate(component).createJobDTO('PUBLISHED');
-      expect(publishedDTO).toBeDefined();
+      if (!publishedDTO) {
+        throw new Error('Expected publishable DTO to be defined');
+      }
       expect(publishedDTO.state).toBe('PUBLISHED');
     });
 
@@ -752,7 +754,9 @@ describe('JobCreationFormComponent', () => {
       expect(publishableData?.state).toBe('PUBLISHED');
 
       const currentData = component.currentJobData();
-      expect(currentData).toBeDefined();
+      if (!currentData) {
+        throw new Error('Expected current draft DTO to be defined');
+      }
       expect(currentData.state).toBe('DRAFT');
       expect(currentData.title).toBe('T');
     });
