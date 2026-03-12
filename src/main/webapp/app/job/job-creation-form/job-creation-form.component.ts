@@ -49,7 +49,9 @@ import * as DropdownOptions from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
-type DropdownSelection<T> = { value: T };
+interface DropdownSelection<T> {
+  value: T;
+}
 
 /**
  * JobCreationFormComponent

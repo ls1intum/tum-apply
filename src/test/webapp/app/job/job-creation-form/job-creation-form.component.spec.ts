@@ -79,12 +79,12 @@ function mockAllPanelTemplates(component: JobCreationFormComponent) {
 
 // Type helpers to avoid verbose casting
 type ComponentPrivate = {
-  performAutoSave: () => Promise<void>;
+  performAutoSave: (currentData: JobFormDTO) => Promise<void>;
   clearAutoSaveTimer: () => void;
   autoSaveTimer?: number;
   autoSaveInitialized: boolean;
   populateForm: (job?: JobDTO) => void;
-  createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
+  createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO | undefined;
   buildStepData: () => Step[];
   findDropdownOption: (arr: { value: string }[], val: string) => unknown;
   sendPublishDialog: () => { confirm: () => void };
@@ -100,6 +100,12 @@ type ComponentPrivate = {
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
   return component as unknown as ComponentPrivate;
+}
+
+function requireDraftDTO(component: JobCreationFormComponent): JobFormDTO {
+  const dto = getPrivate(component).createJobDTO('DRAFT');
+  expect(dto).toBeDefined();
+  return dto as JobFormDTO;
 }
 
 describe('JobCreationFormComponent', () => {
@@ -251,6 +257,7 @@ describe('JobCreationFormComponent', () => {
 
   describe('Auto-Save and Saving State', () => {
     it('should detect unsaved changes when form changes', () => {
+      fillValidJobForm(component);
       const initialData = component.currentJobData();
       component.lastSavedData.set(initialData);
       expect(component.hasUnsavedChanges()).toBe(false);
@@ -264,7 +271,8 @@ describe('JobCreationFormComponent', () => {
     it('should set savingState to FAILED when autoSave fails', async () => {
       mockJobService.updateJob = vi.fn().mockReturnValueOnce(throwError(() => new Error('fail')));
       component.jobId.set('id123');
-      await getPrivate(component).performAutoSave();
+      fillValidJobForm(component);
+      await getPrivate(component).performAutoSave(requireDraftDTO(component));
 
       expect(component.savingState()).toBe('FAILED');
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.saveFailed');
@@ -284,7 +292,8 @@ describe('JobCreationFormComponent', () => {
     it('should set jobId after creating a new job', async () => {
       mockJobService.createJob = vi.fn().mockReturnValueOnce(of({ jobId: 'abc123' }));
       component.jobId.set('');
-      await getPrivate(component).performAutoSave();
+      fillValidJobForm(component);
+      await getPrivate(component).performAutoSave(requireDraftDTO(component));
 
       expect(component.jobId()).toBe('abc123');
       expect(mockJobService.createJob).toHaveBeenCalled();
@@ -292,7 +301,8 @@ describe('JobCreationFormComponent', () => {
 
     it('should call updateJob when jobId is set in performAutoSave', async () => {
       component.jobId.set('job123');
-      await getPrivate(component).performAutoSave();
+      fillValidJobForm(component);
+      await getPrivate(component).performAutoSave(requireDraftDTO(component));
 
       expect(mockJobService.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
     });
@@ -309,19 +319,22 @@ describe('JobCreationFormComponent', () => {
 
     it('should trigger performAutoSave from setupAutoSave effect', async () => {
       vi.useFakeTimers();
-      const priv = getPrivate(component);
-      const spy = vi.spyOn(priv, 'performAutoSave').mockResolvedValue();
-      priv.autoSaveInitialized = true;
+      try {
+        const priv = getPrivate(component);
+        const spy = vi.spyOn(priv, 'performAutoSave').mockResolvedValue();
+        fillValidJobForm(component);
+        priv.autoSaveInitialized = true;
 
-      component.basicInfoForm.patchValue({ title: 'new title' });
-      fixture.detectChanges();
-      await fixture.whenStable();
+        component.basicInfoForm.patchValue({ title: 'new title' });
+        fixture.detectChanges();
 
-      vi.runAllTimers();
-      await fixture.whenStable();
+        vi.advanceTimersByTime(3000);
+        await Promise.resolve();
 
-      expect(spy).toHaveBeenCalled();
-      vi.useRealTimers();
+        expect(spy).toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 
@@ -624,13 +637,14 @@ describe('JobCreationFormComponent', () => {
       fillValidJobForm(component);
       component.imageForm.patchValue({ imageId: 'img123' });
 
-      const draftDTO = getPrivate(component).createJobDTO('DRAFT');
+      const draftDTO = requireDraftDTO(component);
       expect(draftDTO.state).toBe('DRAFT');
       expect(draftDTO.title).toBe('T');
       expect(draftDTO.researchArea).toBe('AI');
       expect(draftDTO.imageId).toBe('img123');
 
       const publishedDTO = getPrivate(component).createJobDTO('PUBLISHED');
+      expect(publishedDTO).toBeDefined();
       expect(publishedDTO.state).toBe('PUBLISHED');
     });
 
@@ -647,7 +661,7 @@ describe('JobCreationFormComponent', () => {
       component.jobDescriptionEN.set('Some description');
       component.jobDescriptionDE.set('Beschreibung');
 
-      const dto = getPrivate(component).createJobDTO('DRAFT');
+      const dto = requireDraftDTO(component);
 
       expect(dto.title).toBe('My Job');
       expect(dto.researchArea).toBe('AI Research');
@@ -656,9 +670,10 @@ describe('JobCreationFormComponent', () => {
     });
 
     it('should normalize supervisingProfessor option objects to an ID', () => {
+      fillValidJobForm(component);
       component.basicInfoForm.patchValue({ supervisingProfessor: { value: 'prof-123', name: 'Prof A' } });
 
-      const dto = getPrivate(component).createJobDTO('DRAFT');
+      const dto = requireDraftDTO(component);
 
       expect(dto.supervisingProfessor).toBe('prof-123');
     });
@@ -669,17 +684,15 @@ describe('JobCreationFormComponent', () => {
         { value: 'prof-1', name: 'Prof User' },
         { value: 'prof-2', name: 'Prof Two' },
       ]);
+      fillValidJobForm(component);
       component.basicInfoForm.patchValue({ supervisingProfessor: undefined });
 
-      const dto = getPrivate(component).createJobDTO('DRAFT');
+      const dto = requireDraftDTO(component);
 
       expect(dto.supervisingProfessor).toBe('prof-1');
     });
 
-    it.each([
-      { subjectArea: { value: undefined }, expected: undefined },
-      { subjectArea: null, expected: undefined },
-    ])('should handle subjectArea edge cases', ({ subjectArea, expected }) => {
+    it.each([{ subjectArea: { value: undefined } }, { subjectArea: null }])('should handle subjectArea edge cases', ({ subjectArea }) => {
       component.basicInfoForm.patchValue({
         title: 'Job',
         researchArea: 'AI',
@@ -691,8 +704,9 @@ describe('JobCreationFormComponent', () => {
       });
       component.jobDescriptionEN.set('<p>Description</p>');
       component.jobDescriptionDE.set('<p>Beschreibung</p>');
+
       const dto = getPrivate(component).createJobDTO('DRAFT');
-      expect(dto.subjectArea).toBe(expected);
+      expect(dto).toBeUndefined();
     });
   });
 
