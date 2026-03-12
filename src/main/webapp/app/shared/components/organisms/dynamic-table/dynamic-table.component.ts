@@ -1,8 +1,10 @@
-import { Component, TemplateRef, input, output } from '@angular/core';
+import { Component, TemplateRef, computed, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TranslateDirective } from 'app/shared/language';
+import { LoadingService } from 'app/core/interceptor/loading.service';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 
 export class DynamicTableColumn {
   field!: string;
@@ -10,22 +12,24 @@ export class DynamicTableColumn {
   type?: string;
   width!: string;
   alignCenter?: boolean;
-  template?: TemplateRef<any>;
+  template?: TemplateRef<unknown>;
 }
 
 @Component({
   selector: 'jhi-dynamic-table',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, TranslateDirective],
+  imports: [CommonModule, TableModule, ButtonModule, TranslateDirective, ProgressSpinnerComponent],
   templateUrl: './dynamic-table.component.html',
   styleUrls: ['./dynamic-table.component.scss'],
 })
 export class DynamicTableComponent {
   readonly paginator = true;
   readonly lazy = true;
+  loading = input<boolean | undefined>(undefined);
+  isTableLoading = computed(() => this.loading() ?? this.loadingService.isLoading());
 
   columns = input<DynamicTableColumn[]>([]);
-  data = input<any[]>([]);
+  data = input<unknown[]>([]);
   rows = input<number>(10);
   totalRecords = input<number>(0);
   page = input<number>(0);
@@ -33,6 +37,8 @@ export class DynamicTableComponent {
   hideHeader = input<boolean>(false);
 
   lazyLoad = output<TableLazyLoadEvent>();
+
+  private readonly loadingService = inject(LoadingService);
 
   emitLazy(event: TableLazyLoadEvent): void {
     this.lazyLoad.emit(event);
