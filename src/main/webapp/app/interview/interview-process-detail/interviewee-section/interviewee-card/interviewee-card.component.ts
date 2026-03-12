@@ -64,7 +64,7 @@ export class IntervieweeCardComponent {
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
   private readonly currentLang = toSignal(this.translateService.onLangChange.pipe(map((event: LangChangeEvent) => event.lang)), {
-    initialValue: this.translateService.currentLang,
+    initialValue: this.translateService.getCurrentLang(),
   });
   private locale = computed(() => getLocale(this.translateService));
 
