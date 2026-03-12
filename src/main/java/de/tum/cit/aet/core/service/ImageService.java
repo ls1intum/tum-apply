@@ -623,45 +623,18 @@ public class ImageService {
 
     private void deleteImageFile(Image image) {
         try {
-            Path imagePath = resolveStoredImagePath(image.getUrl());
+            String relativePath = image.getUrl().replace("/images/", "");
+            Path imagePath = imageRoot.resolve(relativePath).normalize();
+            Path normalizedRoot = imageRoot.normalize();
+
+            if (!imagePath.startsWith(normalizedRoot)) {
+                throw new IllegalStateException("Stored path lies outside storage root: " + imagePath);
+            }
+
             Files.deleteIfExists(imagePath);
-        } catch (IOException | RuntimeException e) {
+        } catch (IOException e) {
             log.error("Failed to delete image file for: {}", image.getImageId(), e);
         }
-    }
-
-    private Path resolveStoredImagePath(String storedUrl) {
-        String normalizedUrl = StringUtil.normalize(storedUrl, false);
-        if (!StringUtils.hasText(normalizedUrl)) {
-            throw new IllegalStateException("Stored image URL is empty");
-        }
-
-        String relativePath = normalizedUrl.trim();
-
-        if (relativePath.startsWith("/images/")) {
-            relativePath = relativePath.substring("/images/".length());
-        } else if (relativePath.startsWith("images/")) {
-            relativePath = relativePath.substring("images/".length());
-        } else {
-            int publicPathIndex = relativePath.indexOf("/images/");
-            if (publicPathIndex >= 0) {
-                relativePath = relativePath.substring(publicPathIndex + "/images/".length());
-            } else if (relativePath.startsWith("/")) {
-                Path absolutePath = Paths.get(relativePath).normalize();
-                Path normalizedRoot = imageRoot.normalize();
-                if (absolutePath.startsWith(normalizedRoot)) {
-                    return absolutePath;
-                }
-                throw new IllegalStateException("Stored path lies outside storage root: " + absolutePath);
-            }
-        }
-
-        Path imagePath = imageRoot.resolve(relativePath).normalize();
-        Path normalizedRoot = imageRoot.normalize();
-        if (!imagePath.startsWith(normalizedRoot)) {
-            throw new IllegalStateException("Stored path lies outside storage root: " + imagePath);
-        }
-        return imagePath;
     }
 
     private void validateImage(MultipartFile file) {
@@ -726,11 +699,18 @@ public class ImageService {
      */
     public byte[] getImageBytes(UUID imageId) {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
-        Path imagePath = resolveStoredImagePath(image.getUrl());
+
+        String relativePath = image.getUrl().replace("/images/", "");
+        Path imagePath = imageRoot.resolve(relativePath).normalize();
+        Path normalizedRoot = imageRoot.normalize();
+
+        if (!imagePath.startsWith(normalizedRoot)) {
+            throw new IllegalStateException("Image path lies outside storage root: " + imagePath);
+        }
 
         try {
             return Files.readAllBytes(imagePath);
-        } catch (IOException | RuntimeException e) {
+        } catch (IOException e) {
             throw new InternalServerException("Failed to read image file: " + imageId, e);
         }
     }

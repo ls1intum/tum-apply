@@ -658,27 +658,6 @@ class ImageServiceTest {
         }
 
         @Test
-        void shouldDeleteImageWithoutChecksForLegacyPublicUrlFormat() throws IOException {
-            // Arrange
-            Path legacyFile = tempDir.resolve("jobs/legacy-banner.jpg");
-            Files.createDirectories(legacyFile.getParent());
-            Files.write(legacyFile, new byte[] { 1, 2, 3 });
-
-            Image image = ImageTestData.newJobBanner(testUser, testResearchGroup);
-            image.setImageId(TEST_IMAGE_ID);
-            image.setUrl("https://test.example/images/jobs/legacy-banner.jpg");
-
-            when(imageRepository.findById(TEST_IMAGE_ID)).thenReturn(Optional.of(image));
-
-            // Act
-            imageService.deleteWithoutChecks(TEST_IMAGE_ID);
-
-            // Assert
-            assertThat(legacyFile).doesNotExist();
-            verify(imageRepository).delete(image);
-        }
-
-        @Test
         void shouldNotDeleteDefaultImageEvenWithoutChecks() {
             // Arrange
             Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
@@ -804,31 +783,6 @@ class ImageServiceTest {
             // Assert
             assertThat(result).isNull();
             verify(imageRepository).delete(oldImage);
-        }
-    }
-
-    @Nested
-    class GetImageBytes {
-
-        @Test
-        void shouldReadLegacyPublicUrlFormat() throws IOException {
-            // Arrange
-            byte[] expectedBytes = new byte[] { 9, 8, 7 };
-            Path legacyFile = tempDir.resolve("jobs/legacy-banner.jpg");
-            Files.createDirectories(legacyFile.getParent());
-            Files.write(legacyFile, expectedBytes);
-
-            Image image = ImageTestData.newJobBanner(testUser, testResearchGroup);
-            image.setImageId(TEST_IMAGE_ID);
-            image.setUrl("https://test.example/images/jobs/legacy-banner.jpg");
-
-            when(imageRepository.findById(TEST_IMAGE_ID)).thenReturn(Optional.of(image));
-
-            // Act
-            byte[] actualBytes = imageService.getImageBytes(TEST_IMAGE_ID);
-
-            // Assert
-            assertThat(actualBytes).isEqualTo(expectedBytes);
         }
     }
 
