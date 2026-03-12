@@ -31,12 +31,14 @@
       "REJECTED": "Rejected",
       "IN_REVIEW": "In Review",
       "INTERVIEW": "Interview",
+      "JOB_CLOSED": "Job Closed",
       "tooltips": {
         "SENT": "The application has not been opened yet",
         "ACCEPTED": "The application has been accepted",
         "REJECTED": "The application has been rejected",
         "IN_REVIEW": "The application has been opened",
-        "INTERVIEW": "The applicant has been invited to an interview"
+        "INTERVIEW": "The applicant has been invited to an interview",
+        "JOB_CLOSED": "The job position has been closed"
       }
     },
     "noApplicationsFound": "No applications found.",

@@ -31,12 +31,14 @@
       "REJECTED": "Abgelehnt",
       "IN_REVIEW": "In Bearbeitung",
       "INTERVIEW": "Interview",
+      "JOB_CLOSED": "Stelle geschlossen",
       "tooltips": {
         "SENT": "Die Bewerbung wurde noch nicht geöffnet",
         "ACCEPTED": "Die Bewerbung wurde angenommen",
         "REJECTED": "Die Bewerbung wurde abgelehnt",
         "IN_REVIEW": "Die Bewerbung wurde geöffnet",
-        "INTERVIEW": "Der Bewerber wurde zu einem Interview eingeladen"
+        "INTERVIEW": "Der Bewerber wurde zu einem Interview eingeladen",
+        "JOB_CLOSED": "Die Stelle wurde geschlossen"
       }
     },
     "noApplicationsFound": "Keine Bewerbungen gefunden.",
