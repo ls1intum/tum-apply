@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
@@ -42,15 +41,6 @@ interface GroupedUpcomingInterviews {
   templateUrl: './interview-processes-overview.component.html',
 })
 export class InterviewProcessesOverviewComponent {
-  // Constants
-  private readonly DEFAULT_DATES_PER_PAGE = 5;
-
-  // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly translateService = inject(TranslateService);
-  private readonly router = inject(Router);
-  private readonly breakpointObserver = inject(BreakpointObserver);
-
   // Signals
   interviewProcesses = signal<InterviewOverviewDTO[]>([]);
   upcomingInterviews = signal<UpcomingInterviewDTO[]>([]);
@@ -59,37 +49,7 @@ export class InterviewProcessesOverviewComponent {
   currentMonthOffset = signal(0);
   currentDatePage = signal(0);
 
-  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
-  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang());
-
-  private readonly breakpointState = toSignal(
-    this.breakpointObserver
-      .observe([
-        `(min-width: ${BREAKPOINTS.ultraWide}px)`,
-        '(min-width: 1700px)',
-        `(min-width: ${BREAKPOINTS.xl}px)`,
-        `(min-width: ${BREAKPOINTS.lg}px)`,
-      ])
-      .pipe(
-        map(result => {
-          if (result.matches) {
-            if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
-            if (result.breakpoints['(min-width: 1700px)']) return 4;
-            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
-            if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
-          }
-          return 1;
-        }),
-      ),
-    { initialValue: this.DEFAULT_DATES_PER_PAGE },
-  );
-
   // Computed
-  private readonly locale = computed(() => {
-    this.currentLangSignal();
-    return getLocale(this.translateService);
-  });
-
   datesPerPage = computed(() => this.breakpointState());
   targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
 
@@ -110,7 +70,7 @@ export class InterviewProcessesOverviewComponent {
     const grouped = new Map<string, UpcomingInterviewDTO[]>();
 
     for (const interview of interviews) {
-      if (!interview.startDateTime) continue;
+      if (interview.startDateTime == null) continue;
       const date = dayjs(interview.startDateTime);
 
       // Only show interviews for the current selected month
@@ -142,6 +102,45 @@ export class InterviewProcessesOverviewComponent {
   totalDatePages = computed(() => Math.ceil(this.groupedUpcomingInterviews().length / this.datesPerPage()));
   canGoPreviousDate = computed(() => this.currentDatePage() > 0);
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
+
+  // Constants
+  private readonly DEFAULT_DATES_PER_PAGE = 5;
+
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly translateService = inject(TranslateService);
+  private readonly router = inject(Router);
+  private readonly breakpointObserver = inject(BreakpointObserver);
+
+  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
+  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang());
+
+  private readonly breakpointState = toSignal(
+    this.breakpointObserver
+      .observe([
+        `(min-width: ${BREAKPOINTS.ultraWide}px)`,
+        '(min-width: 1700px)',
+        `(min-width: ${BREAKPOINTS.xl}px)`,
+        `(min-width: ${BREAKPOINTS.lg}px)`,
+      ])
+      .pipe(
+        map(result => {
+          if (result.matches) {
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
+            if (result.breakpoints['(min-width: 1700px)']) return 4;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
+          }
+          return 1;
+        }),
+      ),
+    { initialValue: this.DEFAULT_DATES_PER_PAGE },
+  );
+
+  private readonly locale = computed(() => {
+    this.currentLangSignal();
+    return getLocale(this.translateService);
+  });
 
   // Effects
   constructor() {
@@ -188,7 +187,7 @@ export class InterviewProcessesOverviewComponent {
 
   viewDetails(jobId: string): void {
     const process = this.interviewProcesses().find(p => p.jobId === jobId);
-    if (process?.processId) {
+    if (process?.processId != null) {
       void this.router.navigate(['/interviews', process.processId], {
         state: { jobTitle: process.jobTitle },
       });

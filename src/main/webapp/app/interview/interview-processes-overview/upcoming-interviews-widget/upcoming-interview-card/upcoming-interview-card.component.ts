@@ -11,9 +11,6 @@ import dayjs from 'dayjs/esm';
   templateUrl: './upcoming-interview-card.component.html',
 })
 export class UpcomingInterviewCardComponent {
-  // Services
-  private readonly router = inject(Router);
-
   // Inputs
   interview = input.required<UpcomingInterviewDTO>();
 
@@ -41,6 +38,10 @@ export class UpcomingInterviewCardComponent {
       this.location().toLowerCase().includes('teams'),
   );
 
+  // Services
+  private readonly router = inject(Router);
+
+  // Public Methods
   navigateToAssessment(event: Event): void {
     // Only navigate if the click was not on a link or other interactive element
     if ((event.target as HTMLElement).closest('a')) {
@@ -48,7 +49,7 @@ export class UpcomingInterviewCardComponent {
     }
 
     const i = this.interview();
-    this.router.navigate(['/interviews', 'process', i.processId, 'interviewee', i.intervieweeId, 'assessment'], {
+    void this.router.navigate(['/interviews', 'process', i.processId, 'interviewee', i.intervieweeId, 'assessment'], {
       queryParams: { from: 'overview' },
     });
   }
