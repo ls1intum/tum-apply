@@ -77,14 +77,24 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
             saveSubscription(applicant, SubjectArea.MATHEMATICS);
             saveSubscription(applicant, SubjectArea.COMPUTER_SCIENCE);
 
-            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().getAndRead(BASE_URL, null, ApplicantSubjectAreaSubscriptionDTO.class, 200);
+            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().getAndRead(
+                BASE_URL,
+                null,
+                ApplicantSubjectAreaSubscriptionDTO.class,
+                200
+            );
 
             assertThat(result.subjectAreas()).containsExactly(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
         }
 
         @Test
         void getCurrentApplicantSubscriptionsReturnsEmptyListWhenNoneExist() {
-            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().getAndRead(BASE_URL, null, ApplicantSubjectAreaSubscriptionDTO.class, 200);
+            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().getAndRead(
+                BASE_URL,
+                null,
+                ApplicantSubjectAreaSubscriptionDTO.class,
+                200
+            );
 
             assertThat(result.subjectAreas()).isEmpty();
         }
@@ -99,13 +109,20 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
                 List.of(SubjectArea.MATHEMATICS, SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS)
             );
 
-            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().putAndRead(BASE_URL, payload, ApplicantSubjectAreaSubscriptionDTO.class, 200);
+            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().putAndRead(
+                BASE_URL,
+                payload,
+                ApplicantSubjectAreaSubscriptionDTO.class,
+                200
+            );
 
             assertThat(result.subjectAreas()).containsExactly(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
 
-            List<ApplicantSubjectAreaSubscription> persisted = applicantSubjectAreaSubscriptionRepository.findAllByApplicantOrderBySubjectAreaAsc(applicant);
+            List<ApplicantSubjectAreaSubscription> persisted =
+                applicantSubjectAreaSubscriptionRepository.findAllByApplicantOrderBySubjectAreaAsc(applicant);
             assertThat(persisted).hasSize(2);
-            assertThat(persisted).extracting(ApplicantSubjectAreaSubscription::getSubjectArea)
+            assertThat(persisted)
+                .extracting(ApplicantSubjectAreaSubscription::getSubjectArea)
                 .containsExactly(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
         }
 
@@ -116,7 +133,12 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
 
             ApplicantSubjectAreaSubscriptionDTO payload = new ApplicantSubjectAreaSubscriptionDTO(List.of(SubjectArea.COMPUTER_SCIENCE));
 
-            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().putAndRead(BASE_URL, payload, ApplicantSubjectAreaSubscriptionDTO.class, 200);
+            ApplicantSubjectAreaSubscriptionDTO result = asApplicant().putAndRead(
+                BASE_URL,
+                payload,
+                ApplicantSubjectAreaSubscriptionDTO.class,
+                200
+            );
 
             assertThat(result.subjectAreas()).containsExactly(SubjectArea.COMPUTER_SCIENCE);
             assertThat(applicantSubjectAreaSubscriptionRepository.findAllByApplicantOrderBySubjectAreaAsc(applicant))
@@ -146,7 +168,12 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
         @Test
         void nonApplicantsCannotAccessEndpoint() {
             asProfessor().getAndRead(BASE_URL, null, Void.class, 403);
-            asProfessor().putAndRead(BASE_URL, new ApplicantSubjectAreaSubscriptionDTO(List.of(SubjectArea.COMPUTER_SCIENCE)), Void.class, 403);
+            asProfessor().putAndRead(
+                BASE_URL,
+                new ApplicantSubjectAreaSubscriptionDTO(List.of(SubjectArea.COMPUTER_SCIENCE)),
+                Void.class,
+                403
+            );
         }
     }
 

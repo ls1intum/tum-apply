@@ -39,9 +39,8 @@ public class ApplicantSubjectAreaSubscriptionService {
      */
     public ApplicantSubjectAreaSubscriptionDTO getCurrentApplicantSubscriptions() {
         Applicant applicant = getCurrentApplicant();
-        List<ApplicantSubjectAreaSubscription> subscriptions = applicantSubjectAreaSubscriptionRepository.findAllByApplicantOrderBySubjectAreaAsc(
-            applicant
-        );
+        List<ApplicantSubjectAreaSubscription> subscriptions =
+            applicantSubjectAreaSubscriptionRepository.findAllByApplicantOrderBySubjectAreaAsc(applicant);
         return ApplicantSubjectAreaSubscriptionDTO.fromEntities(subscriptions);
     }
 

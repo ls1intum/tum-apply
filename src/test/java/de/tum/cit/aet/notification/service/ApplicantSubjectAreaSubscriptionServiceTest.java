@@ -56,7 +56,15 @@ class ApplicantSubjectAreaSubscriptionServiceTest {
 
         lenient()
             .when(currentUserService.getCurrentUser())
-            .thenReturn(new CurrentUser(userId, "applicant@example.com", "Ada", "Lovelace", List.of(new ResearchGroupRole(UserRole.APPLICANT, null))));
+            .thenReturn(
+                new CurrentUser(
+                    userId,
+                    "applicant@example.com",
+                    "Ada",
+                    "Lovelace",
+                    List.of(new ResearchGroupRole(UserRole.APPLICANT, null))
+                )
+            );
         lenient().when(currentUserService.getUserId()).thenReturn(userId);
         lenient().when(applicantService.findOrCreateApplicant(userId)).thenReturn(applicant);
     }
@@ -91,7 +99,9 @@ class ApplicantSubjectAreaSubscriptionServiceTest {
 
     @Test
     void updateCurrentApplicantSubscriptionsRejectsNullEntry() {
-        ApplicantSubjectAreaSubscriptionDTO dto = new ApplicantSubjectAreaSubscriptionDTO(Arrays.asList(SubjectArea.COMPUTER_SCIENCE, null));
+        ApplicantSubjectAreaSubscriptionDTO dto = new ApplicantSubjectAreaSubscriptionDTO(
+            Arrays.asList(SubjectArea.COMPUTER_SCIENCE, null)
+        );
 
         assertThatThrownBy(() -> applicantSubjectAreaSubscriptionService.updateCurrentApplicantSubscriptions(dto))
             .isInstanceOf(InvalidParameterException.class)
@@ -100,8 +110,15 @@ class ApplicantSubjectAreaSubscriptionServiceTest {
 
     @Test
     void getCurrentApplicantSubscriptionsRejectsNonApplicantUsers() {
-        when(currentUserService.getCurrentUser())
-            .thenReturn(new CurrentUser(userId, "prof@example.com", "Prof", "User", List.of(new ResearchGroupRole(UserRole.PROFESSOR, UUID.randomUUID()))));
+        when(currentUserService.getCurrentUser()).thenReturn(
+            new CurrentUser(
+                userId,
+                "prof@example.com",
+                "Prof",
+                "User",
+                List.of(new ResearchGroupRole(UserRole.PROFESSOR, UUID.randomUUID()))
+            )
+        );
 
         assertThatThrownBy(() -> applicantSubjectAreaSubscriptionService.getCurrentApplicantSubscriptions())
             .isInstanceOf(AccessDeniedException.class)
