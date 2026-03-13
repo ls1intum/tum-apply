@@ -1,9 +1,8 @@
-import { Component, TemplateRef, computed, inject, input, output } from '@angular/core';
+import { Component, TemplateRef, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TranslateDirective } from 'app/shared/language';
-import { LoadingService } from 'app/core/interceptor/loading.service';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 
 export class DynamicTableColumn {
@@ -25,8 +24,7 @@ export class DynamicTableColumn {
 export class DynamicTableComponent {
   readonly paginator = true;
   readonly lazy = true;
-  loading = input<boolean | undefined>(undefined);
-  isTableLoading = computed(() => this.loading() ?? this.loadingService.isLoading());
+  loading = input<boolean>(false);
 
   columns = input<DynamicTableColumn[]>([]);
   data = input<unknown[]>([]);
@@ -37,8 +35,6 @@ export class DynamicTableComponent {
   hideHeader = input<boolean>(false);
 
   lazyLoad = output<TableLazyLoadEvent>();
-
-  private readonly loadingService = inject(LoadingService);
 
   emitLazy(event: TableLazyLoadEvent): void {
     this.lazyLoad.emit(event);
