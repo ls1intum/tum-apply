@@ -95,7 +95,7 @@ export class PersonalInformationSettingsComponent {
     return !deepEqual(this.toSnapshot(this.data()), initial);
   });
 
-  readonly disabledEmail = signal(true);
+  readonly disabledEmail = computed(() => true);
 
   readonly minDate = new Date(1900, 0, 1);
   readonly maxDate = (() => {
@@ -214,7 +214,9 @@ export class PersonalInformationSettingsComponent {
         phoneNumber: profile.user.phoneNumber ?? '',
         gender: profile.user.gender != null ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
         nationality:
-          profile.user.nationality != null ? { value: profile.user.nationality, name: `countries.${profile.user.nationality}` } : undefined,
+          profile.user.nationality != null
+            ? { value: profile.user.nationality, name: `nationalities.${profile.user.nationality}` }
+            : undefined,
         dateOfBirth: profile.user.birthday ?? '',
         website: profile.user.website ?? '',
         linkedIn: profile.user.linkedinUrl ?? '',

@@ -106,7 +106,7 @@ describe('PersonalInformationSettingsComponent', () => {
       email: 'ada@example.com',
       phoneNumber: '+491234567',
       gender: { value: 'female', name: 'genders.female' },
-      nationality: { value: 'de', name: 'countries.de' },
+      nationality: { value: 'de', name: 'nationalities.de' },
       dateOfBirth: '1990-12-10',
       website: 'https://ada.example.com',
       linkedIn: 'https://linkedin.com/in/ada',
@@ -215,7 +215,7 @@ describe('PersonalInformationSettingsComponent', () => {
     });
   });
 
-  it('should normalize null optional form values to empty strings during value changes', async () => {
+  it('should preserve undefined select values when syncing other form changes', async () => {
     const profile = createProfile();
     if (profile.user) {
       profile.user.gender = undefined;
