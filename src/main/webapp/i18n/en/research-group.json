@@ -82,12 +82,12 @@
         "RESEARCH_GROUP_APPROVED": "Research group activated"
       },
       "default": {
-        "APPLICATION_ACCEPTED": "Application accepted",
-        "APPLICATION_SENT": "Application received confirmation",
-        "APPLICATION_REJECTED-JOB_FILLED": "Application rejected - Job already filled",
-        "APPLICATION_REJECTED-JOB_OUTDATED": "Application rejected - Job outdated",
-        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
-        "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason",
+        "APPLICATION_ACCEPTED": "Application: Accepted",
+        "APPLICATION_SENT": "Application: Received Confirmation",
+        "APPLICATION_REJECTED-JOB_FILLED": "Application: Rejected - Job Already Filled",
+        "APPLICATION_REJECTED-JOB_OUTDATED": "Application: Rejected - Job Outdated",
+        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application: Rejected - Failed Requirements",
+        "APPLICATION_REJECTED-OTHER_REASON": "Application: Rejected - Other Reason",
         "INTERVIEW_INVITATION": "Interview: Invitation",
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview: Self-Scheduling Invitation",
         "INTERVIEW_CANCELLED": "Interview: Cancelled",
