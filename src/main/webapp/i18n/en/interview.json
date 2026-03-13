@@ -187,7 +187,8 @@
       "cancelInterview": {
         "header": "Cancel Interview",
         "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
-        "button": "Cancel",
+        "button": "Confirm",
+        "triggerButton": "Cancel Interview",
         "sendReinvite": "Re-invite applicant (Send booking link)",
         "deleteSlot": "Delete this slot",
         "success": {
@@ -279,6 +280,10 @@
         "error": {
           "summary": "Send Failed",
           "detail": "Failed to send invitation. Please try again or contact an admin."
+        },
+        "noSlots": {
+          "summary": "No Slots Available",
+          "detail": "No available interview slots. Please create or free up slots before sending invitations."
         }
       }
     },
