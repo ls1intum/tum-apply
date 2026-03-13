@@ -125,7 +125,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">The official guide for Applicants, Professors, Developers, and Admins using TUMApply.</p>
         <div className={styles.tileGrid}>
           {sections.map((section) => (
-            <Tile key={section.title} {...section} />
+            <Tile key={section.title} title={section.title} icon={section.icon} description={section.description} link={section.link} />
           ))}
         </div>
       </div>
