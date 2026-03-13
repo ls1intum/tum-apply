@@ -198,8 +198,19 @@
               <div class="leading-relaxed mb-4 text-sm wrap-anywhere">{{ noData() }}</div>
             }
 
-            @if (job.researchGroupEmail || job.researchGroupWebsite || job.researchGroupStreet) {
+            @if (job.researchGroupDepartment || job.researchGroupEmail || job.researchGroupWebsite || job.researchGroupStreet) {
               <div class="mt-4">
+                @if (job.researchGroupDepartment) {
+                  <div class="flex items-start gap-3 mb-3 text-sm">
+                    <fa-icon
+                      [icon]="['fas', 'building-user']"
+                      class="icon"
+                      [pTooltip]="'jobDetailPage.tooltips.department' | translate"
+                      tooltipPosition="top"
+                    />
+                    <div>{{ job.researchGroupDepartment }}</div>
+                  </div>
+                }
                 @if (job.researchGroupStreet) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'location-dot']" class="icon" />

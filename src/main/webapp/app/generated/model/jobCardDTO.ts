@@ -22,6 +22,7 @@ export interface JobCardDTO {
     relativeTimeEnglish?: string;
     relativeTimeGerman?: string;
     startDate?: string;
+    subjectArea?: string;
     title: string;
     workload?: number;
 }
@@ -48,5 +49,4 @@ export namespace JobCardDTO {
         Singapore: 'SINGAPORE' as LocationEnum
     };
 }
-
 

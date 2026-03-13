@@ -242,6 +242,7 @@
       "workload": "Workload"
     },
     "tooltips": {
+      "subjectArea": "Subject Area",
       "location": "Location",
       "supervisor": "Supervisor",
       "startDate": "Start Date"
@@ -330,6 +331,9 @@
     "cards": {
       "positionOverview": "Position Overview",
       "researchGroup": "Research Group"
+    },
+    "tooltips": {
+      "department": "Department"
     },
     "labels": {
       "subjectArea": "Subject Area",

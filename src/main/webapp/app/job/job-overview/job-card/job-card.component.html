@@ -48,8 +48,13 @@
     <!-- Info items -->
     <div class="space-y-2 mb-4 flex-shrink-0">
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon [icon]="['fas', 'building-user']" class="icon w-4" />
-        <span class="truncate">{{ departmentName() }}</span>
+        <i
+          class="pi pi-bookmark-fill text-primary text-sm w-4"
+          aria-hidden="true"
+          [pTooltip]="'jobOverviewPage.tooltips.subjectArea' | translate"
+          tooltipPosition="top"
+        ></i>
+        <span class="truncate">{{ dropDownOptions.getSubjectAreaTranslationKey(subjectArea()) | translate }}</span>
       </div>
       <div class="flex items-center gap-2 text-sm">
         <fa-icon
