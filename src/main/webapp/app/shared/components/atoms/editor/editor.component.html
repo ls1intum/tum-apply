@@ -24,7 +24,15 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()" #editorElem>
+    <div
+      class="input-wrapper"
+      [class.error]="isEmpty()"
+      contenteditable="false"
+      (focusin)="onFocus()"
+      (focusout)="onBlur()"
+      #editorElem
+      [style.height]="height()"
+    >
       <quill-editor
         class="custom-quill-editor"
         (onFocus)="onFocus()"

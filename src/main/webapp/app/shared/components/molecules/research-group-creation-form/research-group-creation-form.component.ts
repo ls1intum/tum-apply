@@ -150,11 +150,7 @@ export class ResearchGroupCreationFormComponent {
   private readonly schoolService = inject(SchoolResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly userService = inject(UserResourceApiService);
-  private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
-  private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
-  private mockUsers = signal<KeycloakUserDTO[] | undefined>(undefined);
-  private readonly MOCK_USERS_PATH = '/content/mock/keycloak-users.json';
   private readonly ADMIN_LOADER_DELAY_MS = 250;
   private adminLoaderTimeout: number | undefined = undefined;
   private latestAdminSearchRequestId = 0;
@@ -275,23 +271,6 @@ export class ResearchGroupCreationFormComponent {
     void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
   }
 
-  private async loadMockUsers(): Promise<KeycloakUserDTO[]> {
-    const cachedUsers = this.mockUsers();
-    if (cachedUsers !== undefined) {
-      return cachedUsers;
-    }
-
-    try {
-      const users = await firstValueFrom(this.http.get<KeycloakUserDTO[]>(this.MOCK_USERS_PATH));
-      this.mockUsers.set(users);
-      return users;
-    } catch {
-      this.mockUsers.set([]);
-      this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
-      return [];
-    }
-  }
-
   private async loadAdminProfessorPage(searchQuery: string, page: number, append: boolean, requestId: number): Promise<void> {
     this.adminLoaderTimeout = window.setTimeout(() => {
       if (requestId === this.latestAdminSearchRequestId) {
@@ -300,27 +279,6 @@ export class ResearchGroupCreationFormComponent {
     }, this.ADMIN_LOADER_DELAY_MS);
 
     try {
-      if (this.USE_MOCK_USERS) {
-        const mockUsers = await this.loadMockUsers();
-        if (requestId !== this.latestAdminSearchRequestId) {
-          return;
-        }
-
-        const normalizedQuery = searchQuery.toLowerCase();
-        const filteredUsers = mockUsers.filter(user =>
-          `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
-        );
-
-        const startIndex = page * this.ADMIN_USERS_PAGE_SIZE;
-        const pageContent = filteredUsers.slice(startIndex, startIndex + this.ADMIN_USERS_PAGE_SIZE);
-        const nextCandidates = append ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
-
-        this.adminProfessorCandidates.set(nextCandidates);
-        this.adminProfessorTotalCount.set(filteredUsers.length);
-        this.adminProfessorCurrentPage.set(page);
-        return;
-      }
-
       const response = await firstValueFrom(
         this.userService.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
       );

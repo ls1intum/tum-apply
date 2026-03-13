@@ -13,6 +13,7 @@ export const filterFields: FilterField[] = [
       new FilterOption('', 'ACCEPTED', 'evaluation.statusBadge.ACCEPTED'),
       new FilterOption('', 'REJECTED', 'evaluation.statusBadge.REJECTED'),
       new FilterOption('', 'INTERVIEW', 'evaluation.statusBadge.INTERVIEW'),
+      new FilterOption('', 'JOB_CLOSED', 'evaluation.statusBadge.JOB_CLOSED'),
     ],
     [],
   ),
@@ -24,6 +25,7 @@ export const availableStatusOptions: { key: string; label: string }[] = [
   { key: 'INTERVIEW', label: 'evaluation.statusBadge.INTERVIEW' },
   { key: 'ACCEPTED', label: 'evaluation.statusBadge.ACCEPTED' },
   { key: 'REJECTED', label: 'evaluation.statusBadge.REJECTED' },
+  { key: 'JOB_CLOSED', label: 'evaluation.statusBadge.JOB_CLOSED' },
 ];
 
 export const sortableFields: SortOption[] = [

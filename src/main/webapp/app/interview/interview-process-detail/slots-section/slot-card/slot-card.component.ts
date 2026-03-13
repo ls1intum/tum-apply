@@ -46,7 +46,7 @@ export class SlotCardComponent {
     const items: JhiMenuItem[] = [];
     if (this.isBooked()) {
       items.push({
-        label: 'interview.slots.cancelInterview.button',
+        label: 'interview.slots.cancelInterview.triggerButton',
         icon: 'xmark',
         command: () => {
           this.onCancelInterview();

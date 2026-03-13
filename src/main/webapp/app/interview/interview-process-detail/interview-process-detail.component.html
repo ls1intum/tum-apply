@@ -18,6 +18,7 @@
       [refreshKey]="slotsRefreshKey()"
       [isClosed]="isJobClosed()"
       (slotAssigned)="onSlotAssigned()"
+      (hasSlotsChange)="hasSlots.set($event)"
     />
   }
 
@@ -31,6 +32,7 @@
       [jobTitle]="safeJobTitle()"
       [isClosed]="isJobClosed()"
       [refreshKey]="intervieweeRefreshKey()"
+      [hasSlots]="hasSlots()"
       (slotsRefresh)="onSlotCancelled()"
     />
   }
