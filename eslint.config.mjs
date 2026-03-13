@@ -55,7 +55,6 @@ export default [
         'uploads/',
         'supporting_scripts/',
         'stub.js',
-        '.lintstagedrc.js',
         'rules/**/*.js',
         'build/resources/main/static/',
         'prebuild.mjs',

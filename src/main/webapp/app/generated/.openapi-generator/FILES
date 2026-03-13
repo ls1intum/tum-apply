@@ -135,6 +135,7 @@ model/sortObject.ts
 model/upcomingInterviewDTO.ts
 model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
+model/updateAvatarDTO.ts
 model/updatePasswordDTO.ts
 model/updateSlotLocationDTO.ts
 model/updateUserNameDTO.ts

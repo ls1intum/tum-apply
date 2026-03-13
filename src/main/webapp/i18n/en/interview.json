@@ -149,14 +149,14 @@
         "noDateSelected": "No Date selected",
         "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
         "sameSlotsForAllDays": "Same slots for all days",
-        "addRange": "Add Time Range",
+        "addRange": "Add Slot Series",
         "noSlotsYet": "No Slots yet",
-        "noSlotsYetDesc": "Add a time range or a single slot to get started",
+        "noSlotsYetDesc": "Add a slot series or a single slot to get started",
         "singleSlot": "Single Slot",
-        "rangeSlot": "Time Range",
+        "rangeSlot": "Slot Series",
         "bookedSlot": "Booked Slot",
-        "singleSlotHelp": "Enter a start time. The interview duration determines the end time.",
-        "rangeSlotHelp": "Enter start and end time. Slots are automatically calculated based on duration and break time.",
+        "singleSlotHelp": "Create a single slot with a start time. The interview duration determines the end time.",
+        "rangeSlotHelp": "Slots are automatically created based on duration and break time.",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
         "useForAll": "Use same location for all slots",
@@ -203,7 +203,8 @@
       "cancelInterview": {
         "header": "Cancel Interview",
         "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
-        "button": "Cancel",
+        "button": "Confirm",
+        "triggerButton": "Cancel Interview",
         "sendReinvite": "Re-invite applicant (Send booking link)",
         "deleteSlot": "Delete this slot",
         "success": {
@@ -295,6 +296,10 @@
         "error": {
           "summary": "Send Failed",
           "detail": "Failed to send invitation. Please try again or contact an admin."
+        },
+        "noSlots": {
+          "summary": "No Slots Available",
+          "detail": "No available interview slots. Please create or free up slots before sending invitations."
         }
       }
     },

@@ -11,6 +11,7 @@ import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
 
 export interface UserShortDTO { 
+    avatar?: string;
     email?: string;
     firstName?: string;
     lastName?: string;

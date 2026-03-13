@@ -1,10 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ThemeService } from 'app/service/theme.service';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 describe('UserAvatarComponent', () => {
+  let fixture: ComponentFixture<UserAvatarComponent>;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UserAvatarComponent],
@@ -17,12 +19,12 @@ describe('UserAvatarComponent', () => {
         },
       ],
     }).compileComponents();
+
+    fixture = TestBed.createComponent(UserAvatarComponent);
   });
 
   describe('initials', () => {
     it('should use "U" for missing, empty, and whitespace-only names', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
-
       fixture.componentRef.setInput('fullName', undefined);
       fixture.detectChanges();
       expect(fixture.componentInstance.initials()).toBe('U');
@@ -33,7 +35,6 @@ describe('UserAvatarComponent', () => {
     });
 
     it('should derive first and last initials for full names', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
       fixture.componentRef.setInput('fullName', 'Max Applicant');
       fixture.detectChanges();
 
@@ -41,7 +42,6 @@ describe('UserAvatarComponent', () => {
     });
 
     it('should derive a single initial for one-part names', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
       fixture.componentRef.setInput('fullName', 'max');
       fixture.detectChanges();
 
@@ -51,8 +51,6 @@ describe('UserAvatarComponent', () => {
 
   describe('ariaLabel', () => {
     it('should use a fallback label for missing names and the full label for present names', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
-
       fixture.componentRef.setInput('fullName', '   ');
       fixture.detectChanges();
       expect(fixture.componentInstance.ariaLabel()).toBe('User avatar');
@@ -65,8 +63,6 @@ describe('UserAvatarComponent', () => {
 
   describe('backgroundColor', () => {
     it('should use the same color for undefined and empty or whitespace-only names', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
-
       fixture.componentRef.setInput('fullName', undefined);
       fixture.detectChanges();
       const colorForUndefined = fixture.componentInstance.backgroundColor();
@@ -81,24 +77,55 @@ describe('UserAvatarComponent', () => {
 
   describe('sizeClass', () => {
     it('should use the lg size class when size is set to lg', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
       fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.sizeClass()).toBe('h-10 w-10 text-[0.95rem]');
+      expect(fixture.componentInstance.sizeClass()).toBe('h-14 w-14 text-[1.4rem]');
+    });
+
+    it('should use the md size class by default', () => {
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.sizeClass()).toBe('h-10 w-10 text-[1rem]');
+    });
+
+    it('should use the xl size class when size is set to xl', () => {
+      fixture.componentRef.setInput('size', 'xl');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.sizeClass()).toBe('h-16 w-16 text-[1.6rem]');
+    });
+  });
+
+  describe('image loading', () => {
+    it('should default avatar images to eager loading', () => {
+      fixture.componentRef.setInput('fullName', 'Max Applicant');
+      fixture.componentRef.setInput('avatarUrl', '/images/profiles/avatar.jpg');
+      fixture.detectChanges();
+
+      const image = fixture.nativeElement.querySelector('img');
+      expect(image?.getAttribute('loading')).toBe('eager');
+    });
+
+    it('should allow lazy loading for list contexts', () => {
+      fixture.componentRef.setInput('fullName', 'Max Applicant');
+      fixture.componentRef.setInput('avatarUrl', '/images/profiles/avatar.jpg');
+      fixture.componentRef.setInput('loading', 'lazy');
+      fixture.detectChanges();
+
+      const image = fixture.nativeElement.querySelector('img');
+      expect(image?.getAttribute('loading')).toBe('lazy');
     });
   });
 
   describe('private helpers', () => {
     it('should cover initials fallback when split and filter produce no parts', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
       const initialsFromFullName = (fixture.componentInstance as any).initialsFromFullName.bind(fixture.componentInstance);
 
       expect(initialsFromFullName('   ')).toBe('U');
     });
 
     it('should cover the hashString negative hash branch', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
       const hashString = (fixture.componentInstance as any).hashString.bind(fixture.componentInstance);
 
       const weirdValue = {
@@ -110,7 +137,6 @@ describe('UserAvatarComponent', () => {
     });
 
     it('should return the default dark color for invalid hex input', () => {
-      const fixture = TestBed.createComponent(UserAvatarComponent);
       const darkenHex = (fixture.componentInstance as any).darkenHex.bind(fixture.componentInstance);
 
       expect(darkenHex('#12345', 0.6)).toBe('#1f2937');

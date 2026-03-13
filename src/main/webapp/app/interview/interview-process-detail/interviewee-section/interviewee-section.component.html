@@ -4,7 +4,7 @@
     @if (!isClosed()) {
       <jhi-button
         (click)="sendAllInvitations()"
-        [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
+        [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0 || !hasSlots()"
         [loading]="sendingBulk()"
         [shouldTranslate]="true"
         [tooltip]="allInvitedTooltip()"
@@ -46,6 +46,7 @@
           [processId]="processId()"
           [sending]="sendingInvitationId() === interviewee.id"
           [isClosed]="isClosed()"
+          [hasSlots]="hasSlots()"
         />
       }
     </div>
@@ -56,7 +57,7 @@
 <ng-template #nameTemplate let-row>
   <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
     <jhi-checkbox [model]="row.selected" [errorEnabled]="false" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
-    <jhi-user-avatar [fullName]="row.name" size="lg" />
+    <jhi-user-avatar [fullName]="row.name" [avatarUrl]="row.avatar" loading="lazy" />
     <span class="font-medium text-text-primary">{{ row.name }}</span>
   </div>
 </ng-template>
@@ -116,50 +117,9 @@
 />
 
 @if (selectedIntervieweeForCancel()) {
-  <jhi-dialog
-    header="interview.slots.cancelInterview.header"
+  <jhi-cancel-interview-modal
     [visible]="showCancelModal()"
     (visibleChange)="showCancelModal.set($event)"
-    styleClass="w-[90vw] md:w-[25rem]"
-  >
-    <div class="flex flex-col gap-4 mt-2">
-      <p class="text-sm text-text-primary mb-1" jhiTranslate="interview.slots.cancelInterview.message">
-        Are you sure you want to cancel this interview?
-      </p>
-
-      <div class="flex flex-col gap-3">
-        <jhi-checkbox
-          [model]="cancelDeleteSlot()"
-          (modelChange)="cancelDeleteSlot.set($event)"
-          label="interview.slots.cancelInterview.deleteSlot"
-          inputId="deleteSlotCb"
-          [shouldTranslate]="true"
-          class="text-sm text-text-primary"
-        />
-        <jhi-checkbox
-          [model]="cancelSendReinvite()"
-          (modelChange)="cancelSendReinvite.set($event)"
-          label="interview.slots.cancelInterview.sendReinvite"
-          inputId="sendReinviteCb"
-          [shouldTranslate]="true"
-          class="text-sm text-text-primary"
-        />
-      </div>
-
-      <div class="flex justify-end gap-3 mt-4">
-        <jhi-button
-          variant="outlined"
-          label="interview.slots.create.cancel"
-          [shouldTranslate]="true"
-          (click)="showCancelModal.set(false)"
-        />
-        <jhi-button
-          severity="primary"
-          label="interview.slots.cancelInterview.button"
-          [shouldTranslate]="true"
-          (click)="onCancelInterviewConfirm()"
-        />
-      </div>
-    </div>
-  </jhi-dialog>
+    (confirmed)="onCancelInterviewConfirm($event)"
+  />
 }

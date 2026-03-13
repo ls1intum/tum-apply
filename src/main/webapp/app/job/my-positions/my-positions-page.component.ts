@@ -43,6 +43,7 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
   styleUrl: './my-positions-page.component.scss',
 })
 export class MyPositionsPageComponent {
+  loading = signal(true);
   jobs = signal<CreatedJobDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
@@ -299,6 +300,7 @@ export class MyPositionsPageComponent {
   }
 
   private async loadJobs(): Promise<void> {
+    this.loading.set(true);
     try {
       this.userId.set(this.accountService.loadedUser()?.id ?? '');
       if (this.userId() === '') {
@@ -318,6 +320,8 @@ export class MyPositionsPageComponent {
       this.totalRecords.set(pageData.totalElements ?? 0);
     } catch {
       this.toastService.showErrorKey('myPositionsPage.errors.loadJobs');
+    } finally {
+      this.loading.set(false);
     }
   }
 }

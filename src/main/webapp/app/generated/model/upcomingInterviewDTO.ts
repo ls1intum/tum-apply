@@ -10,6 +10,7 @@
 
 
 export interface UpcomingInterviewDTO { 
+    avatar?: string;
     endDateTime?: string;
     id?: string;
     intervieweeId?: string;

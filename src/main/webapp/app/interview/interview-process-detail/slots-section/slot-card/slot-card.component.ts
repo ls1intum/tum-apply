@@ -7,6 +7,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
 
 @Component({
   selector: 'jhi-slot-card',
@@ -35,7 +36,7 @@ export class SlotCardComponent {
   applicantName = computed(() => {
     const interviewee = this.slot().interviewee;
     if (!interviewee) return '';
-    return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
+    return formatFullName(interviewee.firstName, interviewee.lastName);
   });
 
   cancelInterview = output<InterviewSlotDTO>();
@@ -53,7 +54,7 @@ export class SlotCardComponent {
 
     if (this.isBooked()) {
       items.push({
-        label: 'interview.slots.cancelInterview.button',
+        label: 'interview.slots.cancelInterview.triggerButton',
         icon: 'xmark',
         command: () => this.onCancelInterview(),
         severity: 'danger',

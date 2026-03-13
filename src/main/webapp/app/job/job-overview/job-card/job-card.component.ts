@@ -31,6 +31,7 @@ export class JobCardComponent {
   researchArea = input<string>('');
   location = input<string>('');
   professor = input<string>('');
+  avatarUrl = input<string | undefined>(undefined);
   workload = input<number | undefined>(undefined);
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');

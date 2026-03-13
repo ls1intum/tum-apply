@@ -31,12 +31,14 @@
       "REJECTED": "Rejected",
       "IN_REVIEW": "In Review",
       "INTERVIEW": "Interview",
+      "JOB_CLOSED": "Job Closed",
       "tooltips": {
         "SENT": "The application has not been opened yet",
         "ACCEPTED": "The application has been accepted",
         "REJECTED": "The application has been rejected",
         "IN_REVIEW": "The application has been opened",
-        "INTERVIEW": "The applicant has been invited to an interview"
+        "INTERVIEW": "The applicant has been invited to an interview",
+        "JOB_CLOSED": "The job has been closed"
       }
     },
     "noApplicationsFound": "No applications found.",
@@ -76,6 +78,11 @@
         "detail": "Failed to add applicant to interview process. Please try again later or contact an administrator."
       }
     },
+    "education": {
+      "title": "Education",
+      "master": "Master",
+      "bachelor": "Bachelor"
+    },
     "details": {
       "grade": "Grade",
       "educationGradeConverted": "Grade (converted)",
@@ -85,9 +92,8 @@
       "applicationMotivation": "Motivation",
       "applicationSkills": "Skills",
       "applicationProjects": "Projects",
-      "applicationDates": "Dates",
-      "applied": "Applied",
-      "start": "Start",
+      "applied": "Applied at",
+      "start": "Earliest possible start date",
       "documentTitle": "Documents",
       "documentTypeBachelor": "Bachelor Transcript",
       "documentTypeMaster": "Master Transcript",

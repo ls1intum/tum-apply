@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
@@ -56,6 +57,7 @@ public class UserRetentionService {
     private final EmailSettingRepository emailSettingRepository;
     private final EmailTemplateRepository emailTemplateRepository;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
     private final InternalCommentRepository internalCommentRepository;
     private final InterviewSlotRepository interviewSlotRepository;
     private final IntervieweeRepository intervieweeRepository;
@@ -251,7 +253,7 @@ public class UserRetentionService {
         // Common data deletion/anonymization for all users
         emailSettingRepository.deleteByUser(user);
         UUID resolvedUserId = user.getUserId();
-        imageRepository.deleteProfileImageByUser(resolvedUserId);
+        imageService.deleteProfilePictureByUserId(resolvedUserId);
         userSettingRepository.deleteByUser(user);
         userResearchGroupRoleRepository.deleteByUserId(resolvedUserId);
         userRepository.deleteByUserId(resolvedUserId);

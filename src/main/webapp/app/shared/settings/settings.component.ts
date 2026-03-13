@@ -4,6 +4,7 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { DividerModule } from 'primeng/divider';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
@@ -11,6 +12,7 @@ import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../compone
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 import { PersonalInformationSettingsComponent } from './personal-information-settings';
+import { ProfilePictureSettingsComponent } from './profile-picture-settings/profile-picture-settings.component';
 import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
 
 type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'documents';
@@ -20,11 +22,13 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'docum
     TranslateDirective,
     EmailSettingsComponent,
     PersonalInformationSettingsComponent,
+    ProfilePictureSettingsComponent,
     SettingsDocumentsComponent,
     SelectComponent,
     TabViewComponent,
     TabPanelTemplateDirective,
     FontAwesomeModule,
+    DividerModule,
   ],
   templateUrl: './settings.component.html',
 })
