@@ -37,6 +37,7 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
   styleUrls: ['./application-overview.component.scss'],
 })
 export class ApplicationOverviewComponent {
+  loading = signal(true);
   pageData = signal<ApplicationEvaluationOverviewDTO[]>([]);
   pageSize = signal(10);
   page = signal(0);
@@ -80,6 +81,7 @@ export class ApplicationOverviewComponent {
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
     INTERVIEW: 'info',
+    JOB_CLOSED: 'info',
   });
 
   readonly availableStatusLabels = availableStatusOptions.map(option => option.label);
@@ -138,31 +140,28 @@ export class ApplicationOverviewComponent {
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
-    const newPage = first / rows;
-    this.page.set(newPage);
+    this.page.set(first / rows);
     this.pageSize.set(rows);
-
-    void this.loadPage();
+    this.updateUrlQueryParams();
   }
 
   loadOnSearchEmit(searchQuery: string): void {
     this.isSearchInitiatedByUser = true;
     this.page.set(0);
     this.searchQuery.set(searchQuery);
-    void this.loadPage();
+    this.updateUrlQueryParams();
   }
 
   loadOnFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterId === 'jobTitle') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
-      void this.loadPage();
     } else if (filterChange.filterId === 'status') {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
-      void this.loadPage();
     }
+    this.updateUrlQueryParams();
   }
 
   loadOnSortEmit(event: Sort): void {
@@ -172,7 +171,7 @@ export class ApplicationOverviewComponent {
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
 
-    void this.loadPage();
+    this.updateUrlQueryParams();
   }
 
   navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
@@ -188,6 +187,7 @@ export class ApplicationOverviewComponent {
   }
 
   async loadPage(): Promise<void> {
+    this.loading.set(true);
     try {
       const offset = this.pageSize() * this.page();
       const limit = this.pageSize();
@@ -214,11 +214,11 @@ export class ApplicationOverviewComponent {
         this.pageData.set(res.applications ?? []);
         this.total.set(res.totalRecords ?? 0);
       });
-
-      this.updateUrlQueryParams();
     } catch (error) {
       console.error('Failed to load applications:', error);
       this.toastService.showErrorKey('evaluation.errors.loadApplications');
+    } finally {
+      this.loading.set(false);
     }
   }
 
@@ -228,21 +228,16 @@ export class ApplicationOverviewComponent {
   }
 
   private buildQueryParams(): Params {
-    const baseParams: Params = {
+    const params: Params = {
       page: this.page(),
       pageSize: this.pageSize(),
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
     };
     if (this.searchQuery()) {
-      baseParams.search = this.searchQuery();
+      params.search = this.searchQuery();
     }
-    const filterParams: Params = {};
-
-    return {
-      ...baseParams,
-      ...filterParams,
-    };
+    return params;
   }
 
   private updateUrlQueryParams(): void {
