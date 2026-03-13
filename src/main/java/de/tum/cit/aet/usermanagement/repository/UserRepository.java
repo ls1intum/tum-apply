@@ -159,7 +159,8 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             AND (:searchQuery IS NULL OR
                  LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
                  LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-                 LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+                 LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
             )
         """
     )
@@ -221,6 +222,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             AND (:searchQuery IS NULL OR
                  LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
                  LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
                  LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
             )
         """
