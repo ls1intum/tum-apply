@@ -452,8 +452,6 @@ public class InterviewService {
         slot.setLocation(dto.location());
         interviewSlotRepository.save(slot);
 
-        log.info("Updated location of slot {} to '{}'", slotId, dto.location());
-
         // 4. If booked, notify the applicant about the location change
         if (slot.getIsBooked() && slot.getInterviewee() != null) {
             sendLocationChangedEmail(slot, slot.getInterviewee(), job);

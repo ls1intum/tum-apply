@@ -298,7 +298,6 @@ public class InterviewResource {
     public ResponseEntity<InterviewSlotDTO> updateSlotLocation(@PathVariable UUID slotId, @Valid @RequestBody UpdateSlotLocationDTO dto) {
         log.info("REST request to update location of slot: {}", slotId);
         InterviewSlotDTO result = interviewService.updateSlotLocation(slotId, dto);
-        log.info("Successfully updated location of slot: {}", slotId);
         return ResponseEntity.ok(result);
     }
 

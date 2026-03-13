@@ -84,7 +84,7 @@ public enum EmailType {
      * Notification when the location of a booked interview slot is updated
      * To: Applicant whose booked slot location was changed
      */
-    INTERVIEW_LOCATION_CHANGED("INTERVIEW_LOCATION_CHANGED", Set.of(UserRole.APPLICANT), false, false),
+    INTERVIEW_LOCATION_CHANGED("INTERVIEW_LOCATION_CHANGED", Set.of(UserRole.APPLICANT), true, false),
 
     /**
      * Invitation to self-schedule an interview slot

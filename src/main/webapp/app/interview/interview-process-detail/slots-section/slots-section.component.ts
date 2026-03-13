@@ -18,7 +18,6 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { formatDateWithWeekday, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
 
 import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
@@ -52,7 +51,6 @@ interface GroupedSlots {
     SlotCreationFormComponent,
     FontAwesomeModule,
     AssignApplicantModalComponent,
-    CheckboxComponent,
     CancelInterviewModalComponent,
     MessageComponent,
   ],
@@ -190,6 +188,23 @@ export class SlotsSectionComponent {
   notEnoughSlots = computed(() => {
     if (!this.initialized()) return false;
     return this.invitedCount() > 0 && this.globalFutureUnbookedCount() < this.invitedCount();
+  });
+
+  editSlotDate = computed(() => {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '') return '';
+    return formatDateWithWeekday(slot.startDateTime, this.locale());
+  });
+
+  editSlotTimeRange = computed(() => {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '' || slot.endDateTime === undefined || slot.endDateTime === '')
+      return '';
+    return formatTimeRange(slot.startDateTime, slot.endDateTime);
+  });
+
+  editSlotIsBooked = computed(() => {
+    return this.selectedSlotForEdit()?.isBooked ?? false;
   });
 
   // Private Signals (state + toSignal)
@@ -344,23 +359,6 @@ export class SlotsSectionComponent {
     this.editLocation.set('');
   }
 
-  editSlotDate(): string {
-    const slot = this.selectedSlotForEdit();
-    if (slot?.startDateTime === undefined || slot.startDateTime === '') return '';
-    return formatDateWithWeekday(slot.startDateTime, this.locale());
-  }
-
-  editSlotTimeRange(): string {
-    const slot = this.selectedSlotForEdit();
-    if (slot?.startDateTime === undefined || slot.startDateTime === '' || slot.endDateTime === undefined || slot.endDateTime === '')
-      return '';
-    return formatTimeRange(slot.startDateTime, slot.endDateTime);
-  }
-
-  editSlotIsBooked(): boolean {
-    return this.selectedSlotForEdit()?.isBooked ?? false;
-  }
-
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
     const slotId = slot.id;
     if (slotId === undefined) {
@@ -462,7 +460,7 @@ export class SlotsSectionComponent {
       const [anySlotsResponse, unbookedResponse] = await Promise.all([anySlotsTask, unbookedTask]);
 
       // 4. Count future unbooked slots for the "Not Enough Slots" warning
-      const unbookedCount = unbookedResponse.content?.filter(s => !s.isBooked).length ?? 0;
+      const unbookedCount = unbookedResponse.content?.filter(s => s.isBooked !== true).length ?? 0;
 
       // 5. Batch signal writes to avoid intermediate re-renders
       const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
