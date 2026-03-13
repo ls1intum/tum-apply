@@ -162,7 +162,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© 2025 Technische Universität München – Built with ❤️ by the TUMApply Team at Applied Education Technologies (AET)`
+      copyright: `© 2026 Technische Universität München – Built with ❤️ by the TUMApply Team at Applied Education Technologies (AET)`
     },
     prism: {
       theme: prismThemes.github,
