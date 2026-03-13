@@ -48,7 +48,12 @@
     <!-- Info items -->
     <div class="space-y-2 mb-4 flex-shrink-0">
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon [icon]="['fas', 'book']" class="icon w-4" [pTooltip]="'jobOverviewPage.tooltips.subjectArea' | translate" tooltipPosition="top" />
+        <fa-icon
+          [icon]="['fas', 'book']"
+          class="icon w-4"
+          [pTooltip]="'jobOverviewPage.tooltips.subjectArea' | translate"
+          tooltipPosition="top"
+        />
         <span class="truncate">{{ dropDownOptions.getSubjectAreaTranslationKey(subjectArea()) | translate }}</span>
       </div>
       <div class="flex items-center gap-2 text-sm">
