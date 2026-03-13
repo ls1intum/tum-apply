@@ -90,6 +90,8 @@
         "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund",
         "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch",
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Einladung zur Terminbuchung",
+        "INTERVIEW_CANCELLED": "Vorstellungsgespräch abgesagt",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Terminverschiebung angefragt",
         "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
         "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
       },

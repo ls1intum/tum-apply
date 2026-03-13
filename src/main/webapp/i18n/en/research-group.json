@@ -90,6 +90,8 @@
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason",
         "INTERVIEW_INVITATION": "Interview Invitation",
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Self-Scheduling Interview Invitation",
+        "INTERVIEW_CANCELLED": "Interview Cancelled",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Interview Reschedule Requested",
         "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
         "RESEARCH_GROUP_APPROVED": "Research group activated"
       },
