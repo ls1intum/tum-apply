@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="033_create_applicant_subject_area_subscriptions" author="codex">
+    <createTable tableName="applicant_subject_area_subscriptions">
+      <column name="applicant_subject_area_subscription_id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="applicant_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="subject_area" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+      tableName="applicant_subject_area_subscriptions"
+      columnNames="applicant_id, subject_area"
+      constraintName="uk_applicant_subject_area_subscription"/>
+
+    <addForeignKeyConstraint
+      baseTableName="applicant_subject_area_subscriptions"
+      baseColumnNames="applicant_id"
+      constraintName="fk_applicant_subject_area_subscription_applicant"
+      referencedTableName="applicants"
+      referencedColumnNames="user_id"
+      onDelete="CASCADE"/>
+  </changeSet>
+</databaseChangeLog>

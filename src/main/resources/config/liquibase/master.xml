@@ -42,6 +42,7 @@
   <include file="changelog/00000000000030_drop_default_field_of_studies_from_research_groups.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000031_migrate_job_field_of_studies_to_enum.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000032_rename_job_field_of_studies_to_subject_area.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000033_create_applicant_subject_area_subscriptions.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints
