@@ -152,7 +152,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     @Query(
         """
             SELECT u.userId FROM User u
-            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = 'ADMIN'
+            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
             WHERE u.researchGroup IS NULL
             AND rgr.id IS NULL
             AND u.email LIKE '%@%tum%'
@@ -215,7 +215,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     @Query(
         """
             SELECT u FROM User u
-            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = 'ADMIN'
+            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
             WHERE u.researchGroup IS NULL
             AND rgr.id IS NULL
             AND (:searchQuery IS NULL OR
