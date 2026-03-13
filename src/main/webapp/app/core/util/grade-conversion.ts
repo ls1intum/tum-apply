@@ -279,7 +279,7 @@ export function formatGradeWithTranslation(
   });
 
   return {
-    displayValue: `${convertedGrade} (` + translateService.instant('evaluation.details.converted') + `)`,
+    displayValue: `${convertedGrade} (${translateService.instant('evaluation.details.converted')})`,
     wasConverted: true,
     tooltipText,
   };
