@@ -62,7 +62,7 @@ public class AiService {
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
-        final String locationText = jobFormDTO.location().correctLanguageValue(descriptionLanguage);
+        final String locationText = jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(descriptionLanguage) : "";
 
         return chatClient
             .prompt()
