@@ -37,7 +37,7 @@
         "ACCEPTED": "Die Bewerbung wurde angenommen",
         "REJECTED": "Die Bewerbung wurde abgelehnt",
         "IN_REVIEW": "Die Bewerbung wurde geöffnet",
-        "INTERVIEW": "Der Bewerber wurde zu einem Interview eingeladen",
+        "INTERVIEW": "Bewerber:in wurde zu einem Interview eingeladen",
         "JOB_CLOSED": "Die Stelle wurde geschlossen"
       }
     },

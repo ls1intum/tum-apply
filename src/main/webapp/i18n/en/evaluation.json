@@ -38,7 +38,7 @@
         "REJECTED": "The application has been rejected",
         "IN_REVIEW": "The application has been opened",
         "INTERVIEW": "The applicant has been invited to an interview",
-        "JOB_CLOSED": "The job position has been closed"
+        "JOB_CLOSED": "The job has been closed"
       }
     },
     "noApplicationsFound": "No applications found.",

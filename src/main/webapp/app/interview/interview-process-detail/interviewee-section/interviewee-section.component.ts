@@ -2,7 +2,6 @@ import { Component, TemplateRef, computed, effect, inject, input, output, signal
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
@@ -19,7 +18,10 @@ import { Section } from 'app/shared/components/atoms/section/section';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+
+import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
@@ -41,7 +43,6 @@ interface ApplicantRow {
     FormsModule,
     TranslateModule,
     TranslateDirective,
-    CheckboxComponent,
     ButtonComponent,
     DialogComponent,
     FilterTabsComponent,
@@ -49,7 +50,9 @@ interface ApplicantRow {
     IntervieweeCardComponent,
     DynamicTableComponent,
     ConfirmDialog,
+    CheckboxComponent,
     UserAvatarComponent,
+    CancelInterviewModalComponent,
   ],
   templateUrl: './interviewee-section.component.html',
 })
@@ -89,8 +92,6 @@ export class IntervieweeSectionComponent {
   // Cancellation State
   showCancelModal = signal(false);
   selectedIntervieweeForCancel = signal<IntervieweeDTO | undefined>(undefined);
-  cancelSendReinvite = signal(false);
-  cancelDeleteSlot = signal(true);
 
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
@@ -360,38 +361,21 @@ export class IntervieweeSectionComponent {
 
   onCancelInterview(interviewee: IntervieweeDTO): void {
     this.selectedIntervieweeForCancel.set(interviewee);
-    this.cancelSendReinvite.set(false);
-    this.cancelDeleteSlot.set(true);
     this.showCancelModal.set(true);
   }
 
-  async onCancelInterviewConfirm(): Promise<void> {
+  async onCancelInterviewConfirm(cancelParams: CancelInterviewDTO): Promise<void> {
     const interviewee = this.selectedIntervieweeForCancel();
     const processId = this.processId();
     if (interviewee?.scheduledSlot?.id == null || processId === '') return;
 
     try {
-      const cancelParams: CancelInterviewDTO = {
-        sendReinvite: this.cancelSendReinvite(),
-        deleteSlot: this.cancelDeleteSlot(),
-      };
-
       await firstValueFrom(this.interviewService.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
 
-      // Update the interviewee state based on whether we reinvited
-      this.interviewees.update(list =>
-        list.map(i => {
-          if (i.id === interviewee.id) {
-            return Object.assign({}, i, {
-              state: this.cancelSendReinvite() ? IntervieweeDTO.StateEnum.Invited : IntervieweeDTO.StateEnum.Uncontacted,
-              scheduledSlot: undefined,
-            });
-          }
-          return i;
-        }),
-      );
+      // Reload interviewees from server to get accurate state
+      await this.loadInterviewees();
 
       // Notify parent to refresh slots section
       this.slotsRefresh.emit();

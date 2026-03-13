@@ -15,9 +15,9 @@ import { MessageComponent } from 'app/shared/components/atoms/message/message.co
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
-import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
+
+import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -44,8 +44,7 @@ interface GroupedSlots {
     SlotCreationFormComponent,
     FontAwesomeModule,
     AssignApplicantModalComponent,
-    DialogComponent,
-    CheckboxComponent,
+    CancelInterviewModalComponent,
     MessageComponent,
   ],
   templateUrl: './slots-section.component.html',
@@ -86,8 +85,6 @@ export class SlotsSectionComponent {
 
   showCancelModal = signal(false);
   selectedSlotForCancel = signal<InterviewSlotDTO | undefined>(undefined);
-  cancelSendReinvite = signal(false);
-  cancelDeleteSlot = signal(true);
 
   internalRefreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
@@ -332,35 +329,30 @@ export class SlotsSectionComponent {
     if (updatedSlot) {
       this.futureSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
       this.pastSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
-    } else {
-      void this.refreshSlots();
     }
+
+    void this.checkGlobalSlots(this.processId(), false);
     this.slotAssigned.emit();
   }
 
   onCancelInterview(slot: InterviewSlotDTO): void {
     this.selectedSlotForCancel.set(slot);
-    this.cancelSendReinvite.set(true);
-    this.cancelDeleteSlot.set(false);
     this.showCancelModal.set(true);
   }
 
-  async onCancelInterviewConfirm(): Promise<void> {
+  async onCancelInterviewConfirm(cancelParams: CancelInterviewDTO): Promise<void> {
     const slot = this.selectedSlotForCancel();
     if (slot?.id == null) return;
 
     try {
-      const cancelParams: CancelInterviewDTO = {
-        sendReinvite: this.cancelSendReinvite(),
-        deleteSlot: this.cancelDeleteSlot(),
-      };
-
       await firstValueFrom(this.interviewService.cancelInterview(this.processId(), slot.id, cancelParams));
 
-      // Hier rufen wir die NEUE main-Methode auf, um die Daten neu zu laden!
       await this.checkGlobalSlots(this.processId(), false);
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
+
+      // Notify parent to refresh interviewee section
+      this.slotAssigned.emit();
     } catch {
       this.toastService.showErrorKey('interview.slots.cancelInterview.error');
     } finally {
@@ -411,7 +403,7 @@ export class SlotsSectionComponent {
       const [anySlotsResponse, unbookedResponse] = await Promise.all([anySlotsTask, unbookedTask]);
 
       // 4. Count future unbooked slots for the "Not Enough Slots" warning
-      const unbookedCount = unbookedResponse.content?.filter(s => !s.interviewee).length ?? 0;
+      const unbookedCount = unbookedResponse.content?.filter(s => !s.isBooked).length ?? 0;
 
       // 5. Batch signal writes to avoid intermediate re-renders
       const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
@@ -422,7 +414,7 @@ export class SlotsSectionComponent {
         this.initialized.set(true);
       });
 
-      this.hasSlotsChange.emit(hasSlots);
+      this.hasSlotsChange.emit(hasSlots && unbookedCount > 0);
 
       // 6. Load the current month's slots for the calendar view
       await this.loadMonthSlots(processId, this.currentYear(), this.currentMonthNumber(), this.currentMonthOffset(), showLoading);

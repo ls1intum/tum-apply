@@ -185,7 +185,8 @@
         }
       },
       "cancelInterview": {
-        "button": "Absagen",
+        "button": "Bestätigen",
+        "triggerButton": "Interview absagen",
         "header": "Interview absagen",
         "message": "Möchtest du dieses Interview der bewerbenden Person wirklich absagen? Bitte wähle aus, was mit dem Termin passieren soll:",
         "sendReinvite": "Bewerbenden erneut einladen (Buchunglink schicken)",
@@ -282,7 +283,7 @@
         },
         "noSlots": {
           "summary": "Keine Termine verfügbar",
-          "detail": "Bitte erstelle Interview-Termine, bevor du Einladungen versendest."
+          "detail": "Keine verfügbaren Interview Termine. Bitte erstelle oder gib Termine frei, bevor du Einladungen versendest."
         }
       }
     },
