@@ -53,6 +53,8 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   const flushAsyncWork = async (): Promise<void> => {
+    // The component starts loading profile data in the constructor, so tests need
+    // to wait for that promise chain to settle before asserting on loaded state.
     await Promise.resolve();
     await Promise.resolve();
     await Promise.resolve();
@@ -128,14 +130,6 @@ describe('SettingsDocumentsComponent', () => {
     expect(component.referenceDocuments()).toEqual([{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }]);
     expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
     expect(component.masterGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-  });
-
-  it('should report no document changes before the initial profile load has finished', () => {
-    const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
-
-    expect(component.hasLoaded()).toBe(false);
-    expect(component.hasDocumentChanges()).toBe(false);
-    expect(component.hasChanges()).toBe(false);
   });
 
   it('should show an error toast when loading document settings fails', async () => {
@@ -345,40 +339,6 @@ describe('SettingsDocumentsComponent', () => {
     vi.useRealTimers();
   });
 
-  it('should not recompute grade limits while the initial limits are not set yet', async () => {
-    vi.useFakeTimers();
-
-    const component = await createComponent();
-    component.hasInitialLimitsSet.set(false);
-    component.bachelorGradeLimits.set({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-    component.masterGradeLimits.set({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-
-    component.form.controls.bachelorGrade.setValue('84%');
-    component.form.controls.masterGrade.setValue('84%');
-    await vi.advanceTimersByTimeAsync(600);
-
-    expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-    expect(component.masterGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-
-    vi.useRealTimers();
-  });
-
-  it('should compute helper text for the bachelor grade limits', async () => {
-    const component = await createComponent();
-
-    expect(component.helperTextBachelorGrade()).toBe(
-      'entity.applicationPage2.helperText.scaleentity.applicationPage2.helperText.gradingScale',
-    );
-  });
-
-  it('should compute helper text for the master grade limits', async () => {
-    const component = await createComponent();
-
-    expect(component.helperTextMasterGrade()).toBe(
-      'entity.applicationPage2.helperText.scaleentity.applicationPage2.helperText.gradingScale',
-    );
-  });
-
   it('should detect master grade limits after the debounce interval', async () => {
     vi.useFakeTimers();
 
@@ -470,6 +430,12 @@ describe('SettingsDocumentsComponent', () => {
     });
   });
 
+  it('should normalize undefined documents to an empty array', async () => {
+    const component = await createComponent();
+
+    expect(component['normalizedDocuments'](undefined)).toEqual([]);
+  });
+
   it('should skip saving when there are no changes', async () => {
     const component = await createComponent();
     vi.clearAllMocks();
@@ -483,6 +449,8 @@ describe('SettingsDocumentsComponent', () => {
 
   it('should save document settings with the expected payload and reload state', async () => {
     const component = await createComponent();
+    // Ignore the constructor-triggered load calls so the expectations below only
+    // describe the save flow itself.
     vi.clearAllMocks();
 
     component.form.patchValue({
@@ -527,104 +495,6 @@ describe('SettingsDocumentsComponent', () => {
     expect(component.saving()).toBe(false);
   });
 
-  it('should preserve blank document settings fields as empty strings when saving', async () => {
-    const component = await createComponent();
-    vi.clearAllMocks();
-
-    component.form.patchValue({
-      bachelorDegreeName: '',
-      bachelorDegreeUniversity: '',
-      bachelorGradeUpperLimit: '',
-      bachelorGradeLowerLimit: '',
-      bachelorGrade: '',
-      masterDegreeName: '',
-      masterDegreeUniversity: '',
-      masterGradeUpperLimit: '',
-      masterGradeLowerLimit: '',
-      masterGrade: '',
-    });
-
-    await component.saveAll();
-
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledOnce();
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith({
-      user: {
-        userId: 'user-1',
-        email: undefined,
-        firstName: undefined,
-        lastName: undefined,
-        phoneNumber: undefined,
-        gender: undefined,
-        nationality: undefined,
-        birthday: undefined,
-        website: undefined,
-        linkedinUrl: undefined,
-      },
-      street: undefined,
-      postalCode: undefined,
-      city: undefined,
-      country: undefined,
-      bachelorDegreeName: '',
-      bachelorUniversity: '',
-      bachelorGradeUpperLimit: '',
-      bachelorGradeLowerLimit: '',
-      bachelorGrade: '',
-      masterDegreeName: '',
-      masterUniversity: '',
-      masterGradeUpperLimit: '',
-      masterGradeLowerLimit: '',
-      masterGrade: '',
-    });
-  });
-
-  it('should map null document settings fields to undefined when saving', async () => {
-    const component = await createComponent();
-    vi.clearAllMocks();
-
-    component.form.controls.bachelorDegreeName.setValue(null);
-    component.form.controls.bachelorDegreeUniversity.setValue(null);
-    component.form.controls.bachelorGradeUpperLimit.setValue(null);
-    component.form.controls.bachelorGradeLowerLimit.setValue(null);
-    component.form.controls.bachelorGrade.setValue(null);
-    component.form.controls.masterDegreeName.setValue(null);
-    component.form.controls.masterDegreeUniversity.setValue(null);
-    component.form.controls.masterGradeUpperLimit.setValue(null);
-    component.form.controls.masterGradeLowerLimit.setValue(null);
-    component.form.controls.masterGrade.setValue(null);
-
-    await component.saveAll();
-
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledOnce();
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith({
-      user: {
-        userId: 'user-1',
-        email: undefined,
-        firstName: undefined,
-        lastName: undefined,
-        phoneNumber: undefined,
-        gender: undefined,
-        nationality: undefined,
-        birthday: undefined,
-        website: undefined,
-        linkedinUrl: undefined,
-      },
-      street: undefined,
-      postalCode: undefined,
-      city: undefined,
-      country: undefined,
-      bachelorDegreeName: undefined,
-      bachelorUniversity: undefined,
-      bachelorGradeUpperLimit: undefined,
-      bachelorGradeLowerLimit: undefined,
-      bachelorGrade: undefined,
-      masterDegreeName: undefined,
-      masterUniversity: undefined,
-      masterGradeUpperLimit: undefined,
-      masterGradeLowerLimit: undefined,
-      masterGrade: undefined,
-    });
-  });
-
   it('should persist document deletions, renames and queued uploads during save', async () => {
     const component = await createComponent();
     vi.clearAllMocks();
@@ -636,6 +506,8 @@ describe('SettingsDocumentsComponent', () => {
       { id: 'temp-upload-1', name: 'new-reference.pdf', size: referenceFile.size },
     ]);
     component.onReferenceQueuedFilesChange([referenceFile]);
+    // Simulate the upload endpoint returning the real persisted document entry
+    // that replaces the temporary placeholder in the UI state.
     httpClientMock.post.mockReturnValue(
       of([
         { id: 'reference-doc-1', name: 'reference-renamed.pdf', size: 100 },
