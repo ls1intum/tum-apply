@@ -175,13 +175,6 @@ export class JobCreationFormComponent {
   /** Computed: determines if the AI panel should be displayed */
   showAiPanel = computed(() => this.aiToggleSignal());
 
-  /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() =>
-    this.currentDescriptionLanguage() === 'en'
-      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
-      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
-  );
-
   /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
   jobDescriptionPlaceholder = computed(() =>
     this.currentDescriptionLanguage() === 'en'
@@ -500,34 +493,6 @@ export class JobCreationFormComponent {
     this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
     this.jobDescriptionSignal.set(targetContent);
     this.jobDescriptionEditor()?.forceUpdate(targetContent);
-  });
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AI TOGGLE EFFECT
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Effect: Manages the job description template based on AI toggle state.
-   * - When AI is disabled and editor is empty: inserts template
-   * - When AI is enabled and content equals template: clears editor
-   */
-  private aiToggleEffect = effect(() => {
-    const aiEnabled = this.aiToggleSignal();
-    const ctrl = this.basicInfoForm.get('jobDescription');
-    const current = (ctrl?.value ?? '') as string;
-    const template = this.templateText();
-
-    const isEmpty = !current || current.trim() === '' || current.trim() === '<p><br></p>';
-
-    if (!aiEnabled && isEmpty) {
-      ctrl?.setValue(template);
-      this.jobDescriptionEditor()?.forceUpdate(template);
-    }
-
-    if (aiEnabled && current === template) {
-      ctrl?.setValue('');
-      this.jobDescriptionEditor()?.forceUpdate('');
-    }
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1032,9 +997,6 @@ export class JobCreationFormComponent {
         ]);
         this.populateForm(job);
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
-
-        // prevent autosave from firing immediately after patching
-        this.autoSaveInitialized = false;
       }
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
@@ -1054,8 +1016,10 @@ export class JobCreationFormComponent {
     // Default tab EN
     this.currentDescriptionLanguage.set('en');
 
-    const en = job?.jobDescriptionEN ?? '';
-    const de = job?.jobDescriptionDE ?? '';
+    const en =
+      job?.jobDescriptionEN ?? (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') : '');
+    const de =
+      job?.jobDescriptionDE ?? (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') : '');
 
     const supervisingProfessorId = job?.supervisingProfessor ?? this.basicInfoForm.get('supervisingProfessor')?.value;
 
@@ -1073,6 +1037,9 @@ export class JobCreationFormComponent {
 
     this.jobDescriptionSignal.set(en);
     this.jobDescriptionEditor()?.forceUpdate(en);
+
+    // prevent autosave from firing immediately after patching
+    this.autoSaveInitialized = false;
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
