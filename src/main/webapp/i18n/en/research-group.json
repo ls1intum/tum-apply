@@ -88,12 +88,12 @@
         "APPLICATION_REJECTED-JOB_OUTDATED": "Application rejected - Job outdated",
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason",
-        "INTERVIEW_INVITATION": "Interview Invitation",
-        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Self-Scheduling Interview Invitation",
-        "INTERVIEW_CANCELLED": "Interview Cancelled",
-        "INTERVIEW_RESCHEDULE_REQUESTED": "Interview Reschedule Requested",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
-        "RESEARCH_GROUP_APPROVED": "Research group activated"
+        "INTERVIEW_INVITATION": "Interview: Invitation",
+        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview: Self-Scheduling Invitation",
+        "INTERVIEW_CANCELLED": "Interview: Cancelled",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Interview: Reschedule Requested",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Research Group: Member Added",
+        "RESEARCH_GROUP_APPROVED": "Research Group: Activated"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",
