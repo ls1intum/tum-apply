@@ -96,15 +96,15 @@
         "RESEARCH_GROUP_APPROVED": "Forschungsgruppe: Aktiviert"
       },
       "variables": {
-        "APPLICANT_FIRST_NAME": "Vorname Bewerbende",
-        "APPLICANT_LAST_NAME": "Nachname Bewerbende",
-        "USER_FIRST_NAME": "Vorname Nutzende",
-        "USER_LAST_NAME": "Nachname Nutzende",
+        "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
+        "APPLICANT_LAST_NAME": "Nachname Bewerber:in",
+        "USER_FIRST_NAME": "Vorname Nutzer:in",
+        "USER_LAST_NAME": "Nachname Nutzer:in",
         "SUPERVISING_PROFESSOR_FIRST_NAME": "Vorname Professor:in",
         "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
         "JOB_TITLE": "Stellen Titel",
         "RESEARCH_GROUP_NAME": "Name Forschungsgruppe",
-        "APPLICANT_GENDER": "Geschlecht Bewerbende",
+        "APPLICANT_GENDER": "Geschlecht Bewerber:in",
         "SUPERVISING_PROFESSOR_EMAIL": "E-Mail Professor:in",
         "INTERVIEW_DATE": "Datum",
         "INTERVIEW_START_TIME": "Startzeit",
@@ -113,7 +113,7 @@
         "INTERVIEW_STREAM_LINK": "Interview-Link",
         "BOOKING_LINK": "Buchungslink",
         "DOWNLOAD_LINK": "Download-Link",
-        "EXPORT_EXPIRES_DAYS": "Export-Ablaufdatum (Tage)"
+        "EXPORT_EXPIRES_DAYS": "Export-Gültigkeit (Tage)"
       }
     },
     "members": {
