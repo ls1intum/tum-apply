@@ -1,85 +1,85 @@
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatTimeRange } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
 
 @Component({
   selector: 'jhi-slot-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog],
+  imports: [TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog, MenuComponent],
   templateUrl: './slot-card.component.html',
-  host: {
-    '(document:click)': 'handleOutsideClick($event)',
-  },
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
-
-  showMenu = signal(false);
+  isClosed = input<boolean>(false);
 
   editSlot = output<InterviewSlotDTO>();
   deleteSlot = output<InterviewSlotDTO>();
   assignApplicant = output<InterviewSlotDTO>();
 
-  private readonly TIMEZONE = 'Europe/Berlin';
-  private readonly elementRef = inject(ElementRef);
+  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
 
-  handleOutsideClick(event: Event): void {
-    if (event.target && !this.elementRef.nativeElement.contains(event.target as Node)) {
-      this.showMenu.set(false);
+  // Computed values
+  timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
+  isVirtual = computed(() => this.slot().location === 'virtual');
+  isBooked = computed(() => this.slot().isBooked ?? false);
+  isPast = computed(() => {
+    const start = this.slot().startDateTime;
+    return start !== undefined && start !== '' && new Date(start).getTime() < Date.now();
+  });
+  applicantName = computed(() => {
+    const interviewee = this.slot().interviewee;
+    if (!interviewee) return '';
+    return formatFullName(interviewee.firstName, interviewee.lastName);
+  });
+
+  cancelInterview = output<InterviewSlotDTO>();
+
+  // Menu items for kebab menu
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const items: JhiMenuItem[] = [];
+    if (this.isBooked()) {
+      items.push({
+        label: 'interview.slots.cancelInterview.triggerButton',
+        icon: 'xmark',
+        command: () => {
+          this.onCancelInterview();
+        },
+        severity: 'danger',
+      });
+    } else {
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        command: () => {
+          this.deleteDialog().confirm();
+        },
+        severity: 'danger',
+      });
     }
-  }
+    return items;
+  });
 
-  formatTime(date?: string): string {
-    if (!date) {
-      return '';
-    }
-    const d = new Date(date);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  timeRange = (): string => {
-    const start = this.formatTime(this.slot().startDateTime);
-    const end = this.formatTime(this.slot().endDateTime);
-    return `${start} - ${end}`;
-  };
-
-  isVirtual = (): boolean => {
-    return this.slot().location === 'virtual';
-  };
-
-  isBooked = (): boolean => {
-    return this.slot().isBooked ?? false;
-  };
-
-  applicantName = (): string => {
-    // TODO: Will be implemented with Application.scheduledInterviewSlot relationship
-    return 'Applicant Name';
-  };
-
-  toggleMenu(): void {
-    this.showMenu.update(v => !v);
+  onCancelInterview(): void {
+    this.cancelInterview.emit(this.slot());
   }
 
   onEdit(): void {
     this.editSlot.emit(this.slot());
-    this.showMenu.set(false);
     // TODO: Open Edit Modal
   }
 
   onDelete(): void {
     this.deleteSlot.emit(this.slot());
-    this.showMenu.set(false);
-    // TODO: Open Delete Confirmation
   }
 
   onAssign(): void {
     this.assignApplicant.emit(this.slot());
-    this.showMenu.set(false);
-    // TODO: Open Assign Modal
   }
 }

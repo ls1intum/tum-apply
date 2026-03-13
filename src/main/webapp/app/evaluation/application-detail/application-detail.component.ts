@@ -2,32 +2,34 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
+import { DialogModule } from 'primeng/dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
-import SharedModule from 'app/shared/shared.module';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { InterviewResourceApiService } from 'app/generated/api/interviewResourceApi.service';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AcceptDTO } from 'app/generated/model/acceptDTO';
 import { RejectDTO } from 'app/generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
-import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
+import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
+import { TooltipModule } from 'primeng/tooltip';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
 import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
-import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
-import { LinkList } from '../../shared/components/atoms/link-list/link-list';
 import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
@@ -43,20 +45,22 @@ const CAROUSEL_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     DividerModule,
-    SharedModule,
+    DialogModule,
+    FontAwesomeModule,
     SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
+    UserAvatarComponent,
     ReviewDialogComponent,
     TranslateDirective,
     Section,
     SubSection,
-    DescriptionList,
-    LinkList,
     Prose,
     DocumentSection,
     CommentSection,
     RatingSection,
+    LocalizedDatePipe,
+    TooltipModule,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
@@ -82,12 +86,12 @@ export class ApplicationDetailComponent {
 
   allAvailableJobNames = signal<string[]>([]);
 
-  bachelorItems = signal<DescItem[]>([]);
-  masterItems = signal<DescItem[]>([]);
-
   // accept/reject dialog
   reviewDialogVisible = signal<boolean>(false);
   reviewDialogMode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
+
+  // add to interview dialog
+  addToInterviewDialogVisible = signal<boolean>(false);
 
   half = Math.floor(CAROUSEL_SIZE / 2); // Half the carousel size, used for centering
 
@@ -97,12 +101,50 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    return state !== 'ACCEPTED' && state !== 'REJECTED';
+    return state !== 'ACCEPTED' && state !== 'REJECTED' && state !== 'JOB_CLOSED';
+  });
+
+  isAlreadyInInterview = computed(() => {
+    const currentApplication = this.currentApplication();
+    return currentApplication?.applicationDetailDTO.applicationState === ApplicationStateEnum.Interview;
   });
 
   currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
-  bachelorItemsComputed = computed(() => this.getBachelorItems(this.currentApplicationApplicant()));
-  masterItemsComputed = computed(() => this.getMasterItems(this.currentApplicationApplicant()));
+
+  readonly bachelorSummary = computed(() => {
+    const applicant = this.currentApplicationApplicant();
+    this.currentLang();
+
+    return {
+      degree: applicant?.bachelorDegreeName,
+      university: applicant?.bachelorUniversity,
+      gradeInfo: formatGradeWithTranslation(
+        applicant?.bachelorGrade,
+        applicant?.bachelorGradeUpperLimit,
+        applicant?.bachelorGradeLowerLimit,
+        this.translateService,
+      ),
+    };
+  });
+
+  readonly masterSummary = computed(() => {
+    const applicant = this.currentApplicationApplicant();
+    this.currentLang();
+
+    return {
+      degree: applicant?.masterDegreeName,
+      university: applicant?.masterUniversity,
+      gradeInfo: formatGradeWithTranslation(
+        applicant?.masterGrade,
+        applicant?.masterGradeUpperLimit,
+        applicant?.masterGradeLowerLimit,
+        this.translateService,
+      ),
+    };
+  });
+
+  // Privacy toggle for sensitive information
+  readonly sensitiveInfoVisible = signal<boolean>(false);
 
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
@@ -116,11 +158,14 @@ export class ApplicationDetailComponent {
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly applicationResourceService = inject(ApplicationResourceApiService);
+  private readonly interviewResourceService = inject(InterviewResourceApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly translateService = inject(TranslateService);
   private toastService = inject(ToastService);
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  private currentLang = toSignal(this.translateService.onLangChange);
 
   private _queryParamEffect = effect(() => {
     const qp = this.qpSignal();
@@ -148,7 +193,7 @@ export class ApplicationDetailComponent {
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
-    if (id) {
+    if (id !== null && id !== '') {
       void this.loadCarousel(id);
     } else {
       // Load initial batch of applications
@@ -164,73 +209,6 @@ export class ApplicationDetailComponent {
       this.allAvailableJobNames.set([]);
       this.toastService.showErrorKey('evaluation.errors.loadJobNames');
     }
-  }
-
-  getDisplayGrade(upperLimit: string | undefined, lowerLimit: string | undefined, grade: string | undefined): string | undefined {
-    return displayGradeWithConversion(upperLimit, lowerLimit, grade);
-  }
-
-  getBachelorItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
-    if (!applicant) return [];
-    const items: DescItem[] = [
-      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
-      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
-      { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
-    ];
-
-    /* const converted = this.getGradeItem(
-      applicant.bachelorGrade,
-      applicant.bachelorGradeUpperLimit,
-      applicant.bachelorGradeLowerLimit,
-      'evaluation.details.educationGradeConverted',
-      'evaluation.details.converterTooltip',
-    );
-
-    items.push(...converted);*/
-    return items;
-  }
-
-  getMasterItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
-    if (!applicant) return [];
-    const items: DescItem[] = [
-      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
-      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
-      { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
-    ];
-
-    /* const converted = this.getGradeItem(
-      applicant.masterGrade,
-      applicant.masterGradeUpperLimit,
-      applicant.masterGradeLowerLimit,
-      'evaluation.details.educationGradeConverted',
-      'evaluation.details.converterTooltip',
-    );
-
-    items.push(...converted);*/
-    return items;
-  }
-
-  getGradeItem(
-    grade: string | undefined,
-    upperLimit: string | undefined,
-    lowerLimit: string | undefined,
-    convertedLabel: string,
-    tooltipText?: string,
-  ): DescItem[] {
-    const originalGrade = grade ?? '';
-    const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
-
-    const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
-    const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
-
-    const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
-    const roundedConverted = Math.floor(numericConverted * 10) / 10;
-
-    if (!convertedGrade || roundedOriginal === roundedConverted) {
-      return [];
-    }
-
-    return [{ labelKey: convertedLabel, value: convertedGrade, tooltipText }];
   }
 
   onSearchEmit(searchQuery: string): void {
@@ -301,6 +279,13 @@ export class ApplicationDetailComponent {
     this.updateUrlQueryParams();
   }
 
+  toggleSensitiveInfo(): void {
+    this.sensitiveInfoVisible.update(visible => !visible);
+  }
+
+  openAddToInterviewDialog(): void {
+    this.addToInterviewDialogVisible.set(true);
+  }
   openAcceptDialog(): void {
     this.reviewDialogMode.set('ACCEPT');
     this.reviewDialogVisible.set(true);
@@ -311,6 +296,49 @@ export class ApplicationDetailComponent {
     this.reviewDialogVisible.set(true);
   }
 
+  async onAddToInterview(navigate: boolean): Promise<void> {
+    const application = this.currentApplication();
+    const jobId = application?.jobId;
+    if (jobId === undefined || jobId === '' || application === undefined) {
+      this.toastService.showErrorKey('evaluation.errors.noJobId');
+      return;
+    }
+
+    try {
+      const processes = await firstValueFrom(this.interviewResourceService.getInterviewOverview());
+      const matchingProcess = processes.find(p => p.jobId === application.jobId);
+
+      if (!matchingProcess) {
+        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
+        return;
+      }
+
+      // 2. Add applicant to the found process
+      await firstValueFrom(
+        this.interviewResourceService.addApplicantsToInterview(matchingProcess.processId, {
+          applicationIds: [application.applicationDetailDTO.applicationId],
+        }),
+      );
+
+      // 3. Update local state
+      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
+      this.toastService.showSuccess({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
+      });
+      this.addToInterviewDialogVisible.set(false);
+
+      // 4. Navigate if requested
+      if (navigate) {
+        await this.router.navigate(['/interviews', matchingProcess.processId]);
+      }
+    } catch {
+      this.toastService.showError({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.error.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.error.detail'),
+      });
+    }
+  }
   async acceptApplication(acceptDTO: AcceptDTO): Promise<void> {
     const application = this.currentApplication();
 
@@ -380,6 +408,43 @@ export class ApplicationDetailComponent {
     });
   }
 
+  async onRatingUpdated(): Promise<void> {
+    const current = this.currentApplication();
+    if (!current) {
+      return;
+    }
+
+    const id = current.applicationDetailDTO.applicationId;
+
+    try {
+      // Fetch the updated application with server-calculated average rating
+      const result = await firstValueFrom(
+        this.evaluationResourceService.getApplicationsDetailsWindow(
+          id,
+          1, // windowSize = 1 to get just this application
+          this.sortBy(),
+          this.sortDirection(),
+          this.selectedStatusFilters().length ? this.selectedStatusFilters() : undefined,
+          this.selectedJobFilters().length ? this.selectedJobFilters() : undefined,
+          this.searchQuery() || undefined,
+        ),
+      );
+
+      const updated = result.applications?.[0];
+      if (!updated) {
+        return;
+      }
+
+      // Update applications array with refreshed data
+      this.applications.update(apps => apps.map(app => (app.applicationDetailDTO.applicationId === id ? updated : app)));
+
+      // Update current application
+      this.currentApplication.set(updated);
+    } catch {
+      // Silent fail - rating is already saved, this is just a UI refresh
+    }
+  }
+
   /**
    * sets the Application State of all Applications (in memory) to "REJECTED" for a specific job
    */
@@ -387,7 +452,9 @@ export class ApplicationDetailComponent {
     this.applications.update(apps =>
       apps.map(application =>
         application.jobId === jobId &&
-        (application.applicationDetailDTO.applicationState === 'SENT' || application.applicationDetailDTO.applicationState === 'IN_REVIEW')
+        (application.applicationDetailDTO.applicationState === 'SENT' ||
+          application.applicationDetailDTO.applicationState === 'IN_REVIEW' ||
+          application.applicationDetailDTO.applicationState === 'INTERVIEW')
           ? {
               ...application,
               applicationDetailDTO: {

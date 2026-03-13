@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -21,7 +20,7 @@ import { EmployeeRequestAccessFormComponent } from './employee-request-access-fo
 @Component({
   selector: 'jhi-onboarding-dialog',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TranslateModule, ButtonComponent, TranslateDirective, MessageModule],
+  imports: [ButtonModule, TranslateModule, ButtonComponent, TranslateDirective, MessageModule],
   templateUrl: './onboarding-dialog.html',
   styleUrls: ['./onboarding-dialog.scss'],
 })

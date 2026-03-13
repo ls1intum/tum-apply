@@ -3,6 +3,8 @@ package de.tum.cit.aet.job.domain;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -22,6 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Table(name = "jobs")
 public class Job extends AbstractAuditingEntity {
 
@@ -45,7 +48,6 @@ public class Job extends AbstractAuditingEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    // TODO will be an enum
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
 
@@ -69,14 +71,11 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "job_description_en")
+    private String jobDescriptionEN;
 
-    @Column(name = "tasks")
-    private String tasks;
-
-    @Column(name = "requirements")
-    private String requirements;
+    @Column(name = "job_description_de")
+    private String jobDescriptionDE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
@@ -87,6 +86,9 @@ public class Job extends AbstractAuditingEntity {
 
     @Column(name = "start_date")
     private LocalDate startDate;
+
+    @Column(name = "suitable_for_disabled")
+    private Boolean suitableForDisabled;
 
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequence ASC")

@@ -14,6 +14,8 @@ import de.tum.cit.aet.usermanagement.dto.DepartmentCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -92,9 +94,19 @@ public class DepartmentService {
      * @param pageDTO the paging parameters
      * @param filterDTO the filter parameters (searchQuery, schoolNames)
      * @param sortDTO the sorting parameters
+     * @param request the HTTP servlet request to extract schoolNames
      * @return a paged response of DepartmentDTOs
      */
-    public PageResponseDTO<DepartmentDTO> getDepartmentsForAdmin(PageDTO pageDTO, AdminDepartmentFilterDTO filterDTO, SortDTO sortDTO) {
+    public PageResponseDTO<DepartmentDTO> getDepartmentsForAdmin(
+        PageDTO pageDTO,
+        AdminDepartmentFilterDTO filterDTO,
+        SortDTO sortDTO,
+        HttpServletRequest request
+    ) {
+        String[] schoolNames = request.getParameterValues("schoolNames");
+        if (schoolNames != null) {
+            filterDTO.setSchoolNames(Arrays.asList(schoolNames));
+        }
         PageRequest pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.DEPARTMENTS_ADMIN, true);
         String normalizedSearch = StringUtil.normalizeSearchQuery(filterDTO.getSearchQuery());
 

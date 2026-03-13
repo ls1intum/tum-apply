@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import ButtonGroupComponent from 'app/shared/components/molecules/button-group/button-group.component';
 import { TranslateModule } from '@ngx-translate/core';
-import SharedModule from 'app/shared/shared.module';
 import { Component, TemplateRef, viewChild } from '@angular/core';
 
 // Test host component with real ng-templates
@@ -42,15 +41,7 @@ describe('ProgressStepperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        StepperModule,
-        ButtonGroupComponent,
-        TranslateModule.forRoot(),
-        SharedModule,
-        TestHostComponent,
-        ProgressStepperComponent,
-      ],
+      imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule.forRoot(), TestHostComponent, ProgressStepperComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);

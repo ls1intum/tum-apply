@@ -1,10 +1,15 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -15,6 +20,9 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
+import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import de.tum.cit.aet.usermanagement.web.ResearchGroupResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
@@ -26,11 +34,15 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Integration tests for {@link ResearchGroupResource}.
@@ -53,6 +65,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     UserRepository userRepository;
 
     @Autowired
+    UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+
+    @Autowired
     SchoolRepository schoolRepository;
 
     @Autowired
@@ -64,6 +79,14 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     @Autowired
     MvcTestClient api;
 
+    @Autowired
+    ResearchGroupService researchGroupService;
+
+    @Autowired
+    KeycloakUserService keycloakUserService;
+
+    private AsyncEmailSender asyncEmailSenderMock;
+
     School testSchool;
     Department testDepartment;
     ResearchGroup researchGroup;
@@ -73,6 +96,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     void setup() {
+        asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(researchGroupService, "emailSender", asyncEmailSenderMock);
         databaseCleaner.clean();
         testSchool = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
         testDepartment = DepartmentTestData.saved(departmentRepository, "Computer Science", testSchool);
@@ -399,6 +424,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             assertThat(result.name()).isEqualTo("New Research Lab");
             assertThat(result.state()).isEqualTo(ResearchGroupState.DRAFT);
             assertThat(result.abbreviation()).isEqualTo("NRL");
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+            assertThat(emailCaptor.getValue().getCustomSubject()).isEqualTo("[TEST] New Research Group Request - New Research Lab");
         }
 
         @Test
@@ -505,6 +534,12 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/employee-request", request, Void.class, 204);
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+            assertThat(emailCaptor.getValue().getCustomSubject()).isEqualTo(
+                "[TEST] Employee Research Group Access Request - employee@tum.de"
+            );
         }
 
         @Test
@@ -863,6 +898,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void createResearchGroupAsAdminWithNonExistentUserThrowsException() {
             UUID adminUserID = UUID.randomUUID();
+            when(keycloakUserService.findUserByUniversityId("nonexistent")).thenReturn(Optional.empty());
             ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
                 "Prof.",
                 "Fail",
@@ -884,6 +920,54 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
                 .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, Void.class, 404);
+        }
+
+        @Test
+        void createResearchGroupAsAdminWithNonExistentLocalUserCreatesUserFromKeycloak() {
+            UUID adminUserID = UUID.randomUUID();
+            UUID keycloakUserId = UUID.randomUUID();
+            String universityId = "kc123ab";
+
+            when(keycloakUserService.findUserByUniversityId(universityId)).thenReturn(
+                Optional.of(new KeycloakUserDTO(keycloakUserId, "kc.user", "Key", "Cloak", "key.cloak@tum.de", universityId))
+            );
+
+            ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
+                "Prof.",
+                "Key",
+                "Cloak",
+                universityId,
+                "Prof. Key Cloak",
+                "Keycloak Provisioned Lab",
+                testDepartment.getDepartmentId(),
+                "keycloak.lab@tum.de",
+                "KCL",
+                "https://kcl.tum.de",
+                "Description",
+                "CS",
+                "Street",
+                "12345",
+                "City"
+            );
+
+            ResearchGroupDTO result = api
+                .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
+                .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, ResearchGroupDTO.class, 201);
+
+            assertThat(result).isNotNull();
+            assertThat(result.name()).isEqualTo("Keycloak Provisioned Lab");
+
+            User createdUser = userRepository.findById(keycloakUserId).orElseThrow();
+            assertThat(createdUser.getUniversityId()).isEqualTo(universityId);
+            assertThat(createdUser.getEmail()).isEqualTo("key.cloak@tum.de");
+            assertThat(createdUser.getResearchGroup()).isNotNull();
+            assertThat(createdUser.getResearchGroup().getName()).isEqualTo("Keycloak Provisioned Lab");
+
+            assertThat(userResearchGroupRoleRepository.findByUserAndResearchGroup(createdUser, createdUser.getResearchGroup()))
+                .isPresent()
+                .get()
+                .extracting(role -> role.getRole().name())
+                .isEqualTo("PROFESSOR");
         }
 
         @Test

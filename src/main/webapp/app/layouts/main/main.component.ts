@@ -1,4 +1,4 @@
-import { Component, Renderer2, RendererFactory2, afterNextRender, computed, inject } from '@angular/core';
+import { Component, ElementRef, Renderer2, RendererFactory2, afterNextRender, computed, inject, viewChild } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
@@ -6,11 +6,11 @@ import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { LocalStorageService } from 'app/service/localStorage.service';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
+import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
+import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
-import { HeaderComponent } from '../../shared/components/organisms/header/header.component';
-import { OnboardingOrchestratorService } from '../../service/onboarding-orchestrator.service';
 
 @Component({
   selector: 'jhi-main',
@@ -32,6 +32,7 @@ export default class MainComponent {
   private readonly translateService = inject(TranslateService);
   private readonly rootRenderer = inject(RendererFactory2);
   private readonly onboardingOrchestratorService = inject(OnboardingOrchestratorService);
+  private readonly scrollContainer = viewChild<ElementRef<HTMLElement>>('scrollContainer');
 
   constructor() {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
@@ -41,6 +42,13 @@ export default class MainComponent {
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
     afterNextRender(() => this.onboardingOrchestratorService.hookToAuth(this.loggedIn));
+  }
+
+  onActivate(): void {
+    const container = this.scrollContainer();
+    if (container) {
+      container.nativeElement.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
   toggleSidebar(): void {

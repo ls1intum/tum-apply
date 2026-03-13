@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/applications")
 public class ApplicationResource {
@@ -84,8 +86,9 @@ public class ApplicationResource {
      * @return 204 No Content when deletion is successful
      */
     @ApplicantOrAdmin
-    @DeleteMapping("/delete-document/{documentDictionaryId}")
+    @DeleteMapping("/documents/{documentDictionaryId}")
     public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
+        log.info("DELETE /api/applications/documents/{} - Deleting application document", documentDictionaryId);
         applicationService.deleteDocument(documentDictionaryId);
         return ResponseEntity.noContent().build();
     }
@@ -98,8 +101,9 @@ public class ApplicationResource {
      * @return {@code 200 OK} if the rename operation was successful
      */
     @ApplicantOrAdmin
-    @PutMapping("/rename-document/{documentDictionaryId}")
+    @PutMapping("/documents/{documentDictionaryId}/name")
     public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
+        log.info("PUT /api/applications/documents/{}/name - Renaming application document", documentDictionaryId);
         applicationService.renameDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
     }
@@ -175,7 +179,7 @@ public class ApplicationResource {
         )
     )
     @ApplicantOrAdmin
-    @PostMapping("/upload-documents/{applicationId}/{documentType}")
+    @PostMapping("/{applicationId}/documents/{documentType}")
     public ResponseEntity<Set<DocumentInformationHolderDTO>> uploadDocuments(
         @PathVariable UUID applicationId,
         @PathVariable DocumentType documentType,

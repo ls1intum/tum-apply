@@ -1,16 +1,16 @@
 <div class="page-container">
-  <div class="page-header">
-    <h1 jhiTranslate="researchGroup.emailTemplatesHeader">Applications - Overview</h1>
+  <div class="header-container">
+    <div class="page-header">
+      <h1>
+        <span jhiTranslate="sidebar.researchgroup.title"></span>
+        -
+        <span jhiTranslate="researchGroup.emailTemplatesHeader"></span>
+      </h1>
+    </div>
+    <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
   </div>
 
   <div class="table-wrapper">
-    <div class="actions">
-      <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
-      <!-- Will be added later
-      <jhi-button label="researchGroup.emailTemplates.signature" variant="outlined" icon="pen-nib" [shouldTranslate]="true" />
-      -->
-    </div>
-
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="tableData()"
@@ -20,18 +20,22 @@
       (lazyLoad)="onTableEmit($event)"
     />
 
-    <ng-template #editTemplate let-template>
-      <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
-    </ng-template>
-    <ng-template #deleteTemplate let-template>
-      <jhi-button
-        variant="text"
-        icon="trash"
-        severity="danger"
-        [tooltip]="'button.delete' | translate"
-        [disabled]="template.isDefault"
-        (click)="delete(template.emailTemplateId)"
-      />
+    <ng-template #actionsTemplate let-template>
+      <div class="flex justify-end gap-1">
+        <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
+        @if (!isEmployee()) {
+          <jhi-confirm-dialog
+            [label]="'button.delete' | translate"
+            [header]="'researchGroup.emailTemplates.deleteTemplateModal.title' | translate"
+            [message]="'researchGroup.emailTemplates.deleteTemplateModal.message' | translate"
+            confirmIcon="trash"
+            (confirmed)="delete(template.emailTemplateId)"
+            severity="danger"
+            [tooltip]="'button.delete' | translate"
+            [iconOnly]="true"
+          />
+        }
+      </div>
     </ng-template>
   </div>
 </div>

@@ -16,3 +16,6 @@ build/resources/main/static/
 
 # Templates
 src/main/resources/templates/**
+
+# Supporting Scripts
+supporting_scripts/local-pr-coverage/local-pr-coverage.mjs

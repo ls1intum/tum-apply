@@ -14,7 +14,9 @@ import lombok.Data;
 public class UserShortDTO {
 
     private UUID userId;
+    private String universityId;
     private String email;
+    private String avatar;
     private String firstName;
     private String lastName;
     private List<UserRole> roles;
@@ -26,7 +28,9 @@ public class UserShortDTO {
 
     public UserShortDTO(User user) {
         this.userId = user.getUserId();
+        this.universityId = user.getUniversityId();
         this.email = user.getEmail();
+        this.avatar = user.getAvatar();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.roles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).toList();

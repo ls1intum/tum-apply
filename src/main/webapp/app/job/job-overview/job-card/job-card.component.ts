@@ -3,12 +3,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
+import { TranslateDirective } from 'app/shared/language';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import * as DropDownOptions from '../../dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
@@ -21,7 +22,7 @@ export const ApplicationStatusExtended = {
 @Component({
   selector: 'jhi-job-card',
   templateUrl: './job-card.component.html',
-  imports: [FontAwesomeModule, CardModule, CommonModule, SharedModule, TooltipModule, TranslateModule],
+  imports: [FontAwesomeModule, CardModule, TooltipModule, TranslateModule, TranslateDirective, LocalizedDatePipe, UserAvatarComponent],
 })
 export class JobCardComponent {
   jobId = input<string>('');
@@ -30,6 +31,7 @@ export class JobCardComponent {
   researchArea = input<string>('');
   location = input<string>('');
   professor = input<string>('');
+  avatarUrl = input<string | undefined>(undefined);
   workload = input<number | undefined>(undefined);
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');
@@ -75,5 +77,12 @@ export class JobCardComponent {
 
   onViewDetails(): void {
     void this.router.navigate([`/job/detail/${this.jobId()}`]);
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.onViewDetails();
+    }
   }
 }

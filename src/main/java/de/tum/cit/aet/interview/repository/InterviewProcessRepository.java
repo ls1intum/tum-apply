@@ -21,7 +21,8 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
         """
         SELECT ip
         FROM InterviewProcess ip
-        WHERE ip.job.supervisingProfessor.userId = :professorId
+        JOIN FETCH ip.job job
+        WHERE job.supervisingProfessor.userId = :professorId
         """
     )
     List<InterviewProcess> findAllByProfessorId(@Param("professorId") UUID professorId);
@@ -45,6 +46,22 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
         """
     )
     List<InterviewProcess> findAllByUserAccess(@Param("userId") UUID userId);
+
+    /**
+     * Find all InterviewProcesses for jobs belonging to a specific research group.
+     *
+     * @param researchGroupId the ID of the research group
+     * @return list of InterviewProcesses for the research group's jobs
+     */
+    @Query(
+        """
+        SELECT ip
+        FROM InterviewProcess ip
+        JOIN FETCH ip.job job
+        WHERE job.researchGroup.researchGroupId = :researchGroupId
+        """
+    )
+    List<InterviewProcess> findAllByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 
     /**
      * Finds an interview process by the associated job identifier.

@@ -1,9 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
-import { CommonModule } from '@angular/common';
 import { firstValueFrom, map } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
@@ -11,8 +10,8 @@ import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { emptyToUndef } from 'app/core/util/array-util.service';
+import { TranslateDirective } from 'app/shared/language';
 
-import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/model/jobCardDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
@@ -21,7 +20,7 @@ import * as DropdownOptions from '../.././dropdown-options';
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
-  imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
+  imports: [TableModule, JobCardComponent, PaginatorModule, SearchFilterSortBar, TranslateModule, TranslateDirective],
   templateUrl: './job-card-list.component.html',
 })
 export class JobCardListComponent {
@@ -57,11 +56,23 @@ export class JobCardListComponent {
 
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
-    initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
+    initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
 
   private jobService = inject(JobResourceApiService);
   private readonly toastService = inject(ToastService);
+
+  private readonly loadJobsEffect = effect(() => {
+    this.page();
+    this.pageSize();
+    this.searchQuery();
+    this.selectedFieldOfStudiesFilters();
+    this.selectedLocationFilters();
+    this.selectedSupervisorFilters();
+    this.sortBy();
+    this.sortDirection();
+    void this.loadJobs();
+  });
 
   constructor() {
     void this.loadAllFilter();
@@ -73,7 +84,6 @@ export class JobCardListComponent {
 
     this.page.set(page);
     this.pageSize.set(size);
-    void this.loadJobs();
   }
 
   onSearchEmit(searchQuery: string): void {
@@ -83,27 +93,23 @@ export class JobCardListComponent {
     if (normalizedQuery !== currentQuery) {
       this.page.set(0);
       this.searchQuery.set(normalizedQuery);
-      void this.loadJobs();
     }
   }
 
   onFilterEmit(filterChange: FilterChange): void {
+    this.page.set(0);
     if (filterChange.filterId === 'fieldOfStudies') {
-      this.page.set(0);
       const fieldOfStudyValue = filterChange.selectedValues.map(
         key => DropdownOptions.fieldsOfStudies.find(fs => fs.name === key)?.value ?? key,
       );
       this.selectedFieldOfStudiesFilters.set(fieldOfStudyValue);
-      void this.loadJobs();
     } else if (filterChange.filterId === 'location') {
-      this.page.set(0);
       const enumValues = DropdownOptions.mapLocationNames(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
-      void this.loadJobs();
     } else if (filterChange.filterId === 'supervisor') {
-      this.page.set(0);
       this.selectedSupervisorFilters.set(filterChange.selectedValues);
-      void this.loadJobs();
+    } else {
+      return;
     }
   }
 
@@ -111,7 +117,6 @@ export class JobCardListComponent {
     this.page.set(0);
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
-    void this.loadJobs();
   }
 
   async loadAllFilter(): Promise<void> {

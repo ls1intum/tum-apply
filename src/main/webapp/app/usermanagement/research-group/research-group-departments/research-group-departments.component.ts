@@ -5,6 +5,7 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { DepartmentDTO } from 'app/generated/model/models';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -15,8 +16,13 @@ import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { DepartmentEditDialogComponent } from './department-edit-dialog/department-edit-dialog.component';
+
+interface Confirmable {
+  confirm(): void;
+}
 
 interface DepartmentTableRow {
   departmentId?: string;
@@ -27,7 +33,7 @@ interface DepartmentTableRow {
 
 @Component({
   selector: 'jhi-research-group-departments.component',
-  imports: [FontAwesomeModule, TranslateModule, DynamicTableComponent, ButtonComponent, ConfirmDialog, SearchFilterSortBar],
+  imports: [FontAwesomeModule, TranslateModule, DynamicTableComponent, ButtonComponent, ConfirmDialog, SearchFilterSortBar, MenuComponent],
   templateUrl: './research-group-departments.component.html',
 })
 export class ResearchGroupDepartmentsComponent {
@@ -37,7 +43,7 @@ export class ResearchGroupDepartmentsComponent {
   searchQuery = signal<string>('');
   selectedSchoolFilters = signal<string[]>([]);
   sortBy = signal<string>('name');
-  sortDirection = signal<'ASC' | 'DESC'>('ASC');
+  sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   departments = signal<DepartmentDTO[]>([]);
   total = signal<number>(0);
@@ -87,15 +93,53 @@ export class ResearchGroupDepartmentsComponent {
     }));
   });
 
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const department = this.activeDepartment();
+    const deleteDialog = this.activeDeleteDialog();
+    if (department?.departmentId == null || deleteDialog == null) {
+      return [];
+    }
+
+    return [
+      {
+        label: `${this.translationKey}.images.button`,
+        icon: 'image',
+        severity: 'primary',
+        command: () => {
+          void this.router.navigate(['/research-group/departments/images'], {
+            queryParams: { departmentId: department.departmentId },
+          });
+        },
+      },
+      {
+        label: 'button.delete',
+        icon: 'trash',
+        severity: 'danger',
+        command() {
+          deleteDialog.confirm();
+        },
+      },
+    ];
+  });
+
   private toastService = inject(ToastService);
   private readonly departmentResourceApiService = inject(DepartmentResourceApiService);
   private readonly schoolResourceApiService = inject(SchoolResourceApiService);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
+  private activeDepartment = signal<DepartmentTableRow | undefined>(undefined);
+  private activeDeleteDialog = signal<Confirmable | undefined>(undefined);
 
   constructor() {
     void this.loadSchools();
     void this.loadDepartments();
+  }
+
+  onMenuToggle(event: Event, menu: MenuComponent, department: DepartmentTableRow, deleteDialog: Confirmable): void {
+    this.activeDepartment.set(department);
+    this.activeDeleteDialog.set(deleteDialog);
+    menu.toggle(event);
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {

@@ -1,7 +1,11 @@
 {
   "evaluation": {
-    "overviewHeader": "Applications - Overview",
-    "reviewHeader": "Applications - Review",
+    "overviewHeader": "Applications",
+    "reviewHeader": "Review",
+    "grade": "Grade",
+    "masterDegree": "Master",
+    "averageRating": "Average Rating",
+    "noRatingsYet": "No ratings yet",
     "searchFilterSortBar": {
       "searchText": "Search Applications..."
     },
@@ -26,11 +30,15 @@
       "ACCEPTED": "Approved",
       "REJECTED": "Rejected",
       "IN_REVIEW": "In Review",
+      "INTERVIEW": "Interview",
+      "JOB_CLOSED": "Job Closed",
       "tooltips": {
         "SENT": "The application has not been opened yet",
         "ACCEPTED": "The application has been accepted",
         "REJECTED": "The application has been rejected",
-        "IN_REVIEW": "The application has been opened"
+        "IN_REVIEW": "The application has been opened",
+        "INTERVIEW": "The applicant has been invited to an interview",
+        "JOB_CLOSED": "The job has been closed"
       }
     },
     "noApplicationsFound": "No applications found.",
@@ -55,28 +63,37 @@
       "otherReason": "Other reason"
     },
     "defaultAcceptMessage": "<p>Dear {{APPLICANT_FIRST_NAME}},</p><br /><p>I am pleased to inform you that you have been accepted for the <b>{{JOB_NAME}}</b> position at our research group. We were impressed by your background, motivation, and potential for contributing to our academic and applied research efforts.</p><br /><p>As a candidate, you will take responsibility for managing your research project, including defining your research direction, publishing your results, and contributing to ongoing team activities. This position requires a high level of commitment, independence, and communication.</p><br /><p>We are confident in your ability to succeed in this role and look forward to seeing your impact on the group and the broader academic community.</p><br /><p><b>Please confirm acceptance of this offer as soon as possible and contact me at <a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a> to discuss the next steps.</b></p><br /><br /><p>Best regards,<br /><br />{{PROFESSOR_FIRST_NAME}}<br /><br />{{PROFESSOR_FIRST_NAME}} {{PROFESSOR_LAST_NAME}}<br />{{RESEARCH_GROUP_NAME}}<br />Technical University of Munich<br /><a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a><br /><a href=\"{{RESEARCH_GROUP_WEBSITE}}\" target=\"_blank\">{{RESEARCH_GROUP_WEBSITE}}</a></p><br />",
+    "addToInterview": "Add to Interview",
+    "addToInterviewDialog": {
+      "header": "Add Applicant to Interview",
+      "confirmationText": "Are you sure you want to add this applicant to the interview process?",
+      "confirmAndNavigate": "Confirm & Navigate",
+      "confirmAndStay": "Confirm & Stay",
+      "success": {
+        "summary": "Success",
+        "detail": "Applicant added to interview process"
+      },
+      "error": {
+        "summary": "Error",
+        "detail": "Failed to add applicant to interview process. Please try again later or contact an administrator."
+      }
+    },
+    "education": {
+      "title": "Education",
+      "master": "Master",
+      "bachelor": "Bachelor"
+    },
     "details": {
-      "applicantTitle": "Applicant",
-      "applicantInformation": "General Information",
-      "applicantLinks": "Links",
-      "applicantName": "Name",
-      "applicantGender": "Gender",
-      "applicantNationality": "Nationality",
-      "applicantLinkedIn": "LinkedIn",
-      "applicantWebsite": "Website",
-      "educationTitle": "Education",
-      "educationBachelors": "Bachelor",
-      "educationMasters": "Master",
-      "educationDegree": "Degree",
-      "educationUniversity": "University",
-      "educationGrade": "Grade",
+      "grade": "Grade",
       "educationGradeConverted": "Grade (converted)",
-      "converterTooltip": "The grade was converted to the German system based on the <a href=\"https://www.kmk.org/fileadmin/Dateien/pdf/ZAB/Hochschulzugang_Beschluesse_der_KMK/GesNot05.pdf\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">resolution of the Kultusministerkonferenz</a>",
+      "converterTooltip": "Scale: {{upperLimit}} (best) to {{lowerLimit}} (pass)<br>Converted according to <a href=\"https://www.kmk.org/fileadmin/Dateien/pdf/ZAB/Hochschulzugang_Beschluesse_der_KMK/GesNot05.pdf\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">KMK resolution</a>",
+      "conversionFailedTooltip": "Grade was already converted / could not be converted",
       "applicationTitle": "Application",
-      "applicationDesiredStartDate": "Preferred Start Date",
       "applicationMotivation": "Motivation",
       "applicationSkills": "Skills",
       "applicationProjects": "Projects",
+      "applied": "Applied at",
+      "start": "Earliest possible start date",
       "documentTitle": "Documents",
       "documentTypeBachelor": "Bachelor Transcript",
       "documentTypeMaster": "Master Transcript",
@@ -95,6 +112,12 @@
       "commentTitle": "Comments",
       "commentDescription": "Leave internal comments to discuss the application with other reviewers or keep personal notes. These are not visible to the applicant."
     },
+    "deleteComment": {
+      "confirm": {
+        "header": "Delete Comment",
+        "message": "Are you sure you want to delete this comment? This action cannot be undone!"
+      }
+    },
     "errors": {
       "loadJobNames": {
         "summary": "Error",
@@ -103,6 +126,14 @@
       "loadApplications": {
         "summary": "Error",
         "detail": "Failed to load applications. Please try refreshing the page, or contact us if the problem continues."
+      },
+      "noJobId": {
+        "summary": "Error",
+        "detail": "Application has no Job ID"
+      },
+      "noProcessFound": {
+        "summary": "Error",
+        "detail": "No interview process found for this job"
       }
     }
   }

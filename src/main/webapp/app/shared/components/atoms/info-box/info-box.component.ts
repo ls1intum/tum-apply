@@ -1,16 +1,15 @@
 import { Component, computed, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 
 import TranslateDirective from '../../../language/translate.directive';
 
-type InfoBoxSeverity = 'primary' | 'secondary';
+type InfoBoxSeverity = 'primary' | 'secondary' | 'danger' | 'warning' | 'info';
 
 @Component({
   selector: 'jhi-info-box',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, TranslateDirective],
+  imports: [FontAwesomeModule, TranslateDirective],
   templateUrl: './info-box.component.html',
 })
 export class InfoBoxComponent {
@@ -21,8 +20,8 @@ export class InfoBoxComponent {
   message = input<string>('');
 
   /**
-   * The severity/type of the info box (matches ButtonComponent severity types).
-   * Determines the color scheme.
+   * The severity/type of the info box.
+   * Determines the color scheme and default icon.
    */
   severity = input<InfoBoxSeverity>('primary');
 
@@ -48,32 +47,41 @@ export class InfoBoxComponent {
     const iconMap: Record<InfoBoxSeverity, IconName> = {
       primary: 'info-circle',
       secondary: 'info-circle',
+      danger: 'exclamation-triangle',
+      warning: 'exclamation-circle',
+      info: 'info-circle',
     };
     return this.icon() ?? iconMap[this.severity()];
   });
 
   /**
    * Get CSS classes for the container based on severity.
-   * Uses PrimeNG color variables for consistency.
+   * Uses design token colors for consistency.
    */
   containerClasses = computed(() => {
-    const baseClasses = 'flex items-center gap-3 p-4 border-l-4 rounded';
+    const baseClasses = 'flex items-center gap-3 p-4 border-l-4 rounded-sm';
     const severityClasses: Record<InfoBoxSeverity, string> = {
-      primary: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
+      primary: 'bg-background-surface border-primary',
       secondary: 'bg-[var(--p-border-default)] border-[var(--p-text-disabled)]',
+      danger: 'bg-background-surface border-negative',
+      warning: 'bg-background-surface border-warning',
+      info: 'bg-background-surface border-primary',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });
 
   /**
    * Get CSS classes for the icon based on severity.
-   * Uses PrimeNG color variables for consistency.
+   * Uses design token colors for consistency.
    */
   iconClasses = computed(() => {
     const baseClasses = 'text-xl mt-0.5';
     const severityClasses: Record<InfoBoxSeverity, string> = {
-      primary: 'text-[var(--p-primary-color)]',
+      primary: 'text-primary',
       secondary: 'text-[var(--p-text-disabled)]',
+      danger: 'text-negative',
+      warning: 'text-warning',
+      info: 'text-primary',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });

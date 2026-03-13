@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DocumentDictionary } from './documentDictionary';
 import { InternalComment } from './internalComment';
 import { Applicant } from './applicant';
 import { ApplicationReview } from './applicationReview';
@@ -44,6 +45,7 @@ export interface Application {
     createdAt?: string;
     customFieldAnswers?: Array<CustomFieldAnswer>;
     desiredStartDate?: string;
+    documentDictionaries?: Array<DocumentDictionary>;
     internalComments?: Array<InternalComment>;
     job?: any | null;
     lastModifiedAt?: string;
@@ -53,7 +55,7 @@ export interface Application {
     state?: Application.StateEnum;
 }
 export namespace Application {
-    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
+    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
     export const StateEnum = {
         Saved: 'SAVED' as StateEnum,
         Sent: 'SENT' as StateEnum,
@@ -62,9 +64,7 @@ export namespace Application {
         Rejected: 'REJECTED' as StateEnum,
         Withdrawn: 'WITHDRAWN' as StateEnum,
         JobClosed: 'JOB_CLOSED' as StateEnum,
-        Invited: 'INVITED' as StateEnum,
-        Scheduled: 'SCHEDULED' as StateEnum,
-        Completed: 'COMPLETED' as StateEnum
+        Interview: 'INTERVIEW' as StateEnum
     };
 }
 

@@ -9,10 +9,14 @@ import { AccordionModule } from 'primeng/accordion';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { ExistingSlotDTO } from 'app/generated/model/existingSlotDTO';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { TimeInputComponent } from 'app/shared/components/atoms/time-input/time-input.component';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
+import { SegmentButtonComponent } from 'app/shared/components/atoms/segment-button/segment-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 export interface SlotRange {
@@ -23,6 +27,8 @@ export interface SlotRange {
   endTime: Date | null;
   type: 'single' | 'range' | 'scheduled';
   duration: number;
+  breakDuration: number;
+  isCustomBreakMode: boolean;
   location: string;
   slots: InterviewSlotDTO[];
 }
@@ -42,26 +48,42 @@ export interface SlotRange {
     CheckboxModule,
     TooltipModule,
     ButtonComponent,
+    NumberInputComponent,
+    SegmentButtonComponent,
     StringInputComponent,
     TimeInputComponent,
+    MessageComponent,
     FontAwesomeModule,
   ],
   templateUrl: './date-slot-card.component.html',
 })
 export class DateSlotCardComponent {
+  readonly breakOptions = [
+    { label: '0min', value: 0 },
+    { label: '5min', value: 5 },
+    { label: '10min', value: 10 },
+    { label: '15min', value: 15 },
+  ];
   readonly date = input.required<Date>();
   readonly duration = input<number>(30);
-  readonly breakDuration = input<number>(0);
   readonly existingSlots = input<InterviewSlotDTO[]>([]);
   readonly showApplyAll = input<boolean>(false);
   readonly showValidationErrors = input<boolean>(false);
+  // Server-side conflicts passed from parent (key: startDateTime-endDateTime)
+  readonly serverConflicts = input<
+    Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO; displayTime?: string }>
+  >(new Map());
+
   readonly slotsChange = output<InterviewSlotDTO[]>();
   readonly applyAll = output<boolean>();
   readonly remove = output();
 
   readonly isCollapsed = signal<boolean>(false);
   readonly slotRanges = signal<SlotRange[]>([]);
+
   readonly allSlots = computed(() => this.slotRanges().flatMap(range => range.slots));
+  readonly hasSingleSlots = computed(() => this.slotRanges().some(range => range.type === 'single' || range.type === 'scheduled'));
+  readonly hasRangeSlots = computed(() => this.slotRanges().some(range => range.type === 'range'));
 
   readonly conflictingSlotKeys = computed(() => {
     const ranges = this.slotRanges();
@@ -85,12 +107,7 @@ export class DateSlotCardComponent {
 
         // 4. Check for time overlap: (StartA < EndB) and (StartB < EndA)
         if (slot1.start < slot2.end && slot2.start < slot1.end) {
-          // 5. Mark slot1 as conflicting (if not already marked)
-          if (!conflicts.has(slot1.key)) {
-            conflicts.set(slot1.key, null);
-          }
-
-          // 6. Mark slot2 as conflicting, and store the display time of slot1
+          // 5. Mark slot2 as conflicting, and store the display time of slot1
           if (!conflicts.has(slot2.key) || conflicts.get(slot2.key) === null) {
             conflicts.set(slot2.key, slot1.display);
           }
@@ -100,13 +117,41 @@ export class DateSlotCardComponent {
     return conflicts;
   });
 
+  // Combined conflicts: intra-batch (client-side) + server conflicts
+  readonly allConflicts = computed(() => {
+    const combined = new Map<string, { type: 'BATCH_INTERNAL' | 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; displayTime?: string }>();
+
+    // Add client-side intra-batch conflicts
+    for (const [key, displayTime] of this.conflictingSlotKeys().entries()) {
+      combined.set(key, { type: 'BATCH_INTERNAL', displayTime: displayTime ?? undefined });
+    }
+
+    // Convert server conflicts to rangeId_slotIndex format
+    const serverConflictsMap = this.serverConflicts();
+    if (serverConflictsMap.size > 0) {
+      for (const range of this.slotRanges()) {
+        range.slots.forEach((slot, slotIndex) => {
+          // Normalize to ISO string to match parent's format
+          const serverKey = `${new Date(slot.startDateTime ?? '').toISOString()}-${new Date(slot.endDateTime ?? '').toISOString()}`;
+          const conflict = serverConflictsMap.get(serverKey);
+          if (conflict) {
+            const templateKey = `${range.id}_${slotIndex}`;
+            // Server conflicts take priority over batch conflicts
+            combined.set(templateKey, { type: conflict.type, displayTime: conflict.displayTime });
+          }
+        });
+      }
+    }
+
+    return combined;
+  });
+
   private lastEmittedSlots: InterviewSlotDTO[] | null = null;
 
   private readonly recalculateEffect = effect(() => {
     const newDuration = this.duration() || 30;
-    const newBreak = this.breakDuration() || 0;
     untracked(() => {
-      this.recalculateAllRanges(newDuration, newBreak);
+      this.recalculateAllRanges(newDuration);
     });
   });
 
@@ -163,6 +208,8 @@ export class DateSlotCardComponent {
       endTime: null,
       type: 'single',
       duration: this.duration() || 30,
+      breakDuration: 0,
+      isCustomBreakMode: false,
       location,
       slots: [],
     };
@@ -183,6 +230,8 @@ export class DateSlotCardComponent {
       endTime: null,
       type: 'range',
       duration: this.duration() || 30,
+      breakDuration: 0,
+      isCustomBreakMode: false,
       location,
       slots: [],
     };
@@ -214,6 +263,8 @@ export class DateSlotCardComponent {
           endTime: range.endTime,
           type: range.type,
           duration: range.duration,
+          breakDuration: range.breakDuration,
+          isCustomBreakMode: range.isCustomBreakMode,
           location: range.location,
           slots: range.slots.filter((slot, j) => j !== slotIndex),
         };
@@ -242,6 +293,8 @@ export class DateSlotCardComponent {
           endTime: r.endTime,
           type: r.type,
           duration: r.duration,
+          breakDuration: r.breakDuration,
+          isCustomBreakMode: r.isCustomBreakMode,
           location: r.location,
           slots: r.slots,
         };
@@ -306,6 +359,8 @@ export class DateSlotCardComponent {
           endTime: r.endTime,
           type: r.type,
           duration: r.duration,
+          breakDuration: r.breakDuration,
+          isCustomBreakMode: r.isCustomBreakMode,
           location: r.location,
           slots: r.slots,
         };
@@ -346,6 +401,8 @@ export class DateSlotCardComponent {
           endTime: r.endTime,
           type: r.type,
           duration: r.duration,
+          breakDuration: r.breakDuration,
+          isCustomBreakMode: r.isCustomBreakMode,
           location: r.location,
           slots: r.slots,
         };
@@ -360,12 +417,97 @@ export class DateSlotCardComponent {
           startDateTime: slot.startDateTime,
           endDateTime: slot.endDateTime,
           location: safeLocation,
-          streamLink: isVirtual ? safeLocation : undefined,
+          steamLink: isVirtual ? safeLocation : undefined,
         }));
 
         return range;
       }),
     );
+  }
+
+  /**
+   * Handles input changes for the break duration of a range.
+   * Updates the break duration and recalculates slots.
+   * @param index The index of the range.
+   * @param breakDuration The new break duration in minutes.
+   */
+  onBreakInput(index: number, breakDuration: number | undefined): void {
+    const safeBreak = breakDuration ?? 0;
+    this.slotRanges.update(ranges =>
+      ranges.map((r, i) => {
+        if (i !== index) return r;
+
+        const range: SlotRange = {
+          id: r.id,
+          startTimeString: r.startTimeString,
+          endTimeString: r.endTimeString,
+          startTime: r.startTime,
+          endTime: r.endTime,
+          type: r.type,
+          duration: r.duration,
+          breakDuration: safeBreak,
+          isCustomBreakMode: r.isCustomBreakMode,
+          location: r.location,
+          slots: r.slots,
+        };
+
+        if (range.type === 'range') {
+          this.updateRangeLogic(range, range.location);
+        }
+
+        return range;
+      }),
+    );
+  }
+
+  /**
+   * Handles break preset selection for a range.
+   * If value is -1, switches to custom mode. Otherwise sets the break duration.
+   */
+  selectBreak(index: number, value: number): void {
+    if (value === -1) {
+      this.slotRanges.update(ranges =>
+        ranges.map((range, rangeIndex) => {
+          if (rangeIndex !== index) return range;
+          return {
+            id: range.id,
+            startTimeString: range.startTimeString,
+            endTimeString: range.endTimeString,
+            startTime: range.startTime,
+            endTime: range.endTime,
+            type: range.type,
+            duration: range.duration,
+            breakDuration: range.breakDuration,
+            isCustomBreakMode: true,
+            location: range.location,
+            slots: range.slots,
+          };
+        }),
+      );
+    } else {
+      this.slotRanges.update(ranges =>
+        ranges.map((range, rangeIndex) => {
+          if (rangeIndex !== index) return range;
+          const updatedRange: SlotRange = {
+            id: range.id,
+            startTimeString: range.startTimeString,
+            endTimeString: range.endTimeString,
+            startTime: range.startTime,
+            endTime: range.endTime,
+            type: range.type,
+            duration: range.duration,
+            breakDuration: value,
+            isCustomBreakMode: false,
+            location: range.location,
+            slots: range.slots,
+          };
+          if (updatedRange.type === 'range') {
+            this.updateRangeLogic(updatedRange, updatedRange.location);
+          }
+          return updatedRange;
+        }),
+      );
+    }
   }
 
   /**
@@ -403,6 +545,8 @@ export class DateSlotCardComponent {
         endTime: range.endTime ? newEnd : null,
         type: range.type,
         duration: range.duration,
+        breakDuration: range.breakDuration,
+        isCustomBreakMode: range.isCustomBreakMode,
         location: range.location,
         slots: [],
       };
@@ -485,6 +629,8 @@ export class DateSlotCardComponent {
         endTime: end,
         type,
         duration: (end.getTime() - start.getTime()) / 60000, // Calculate duration in minutes
+        breakDuration: 0, // Initialized to 0 for single/scheduled slots
+        isCustomBreakMode: false,
         location,
         slots: [slot],
       } as SlotRange;
@@ -520,11 +666,10 @@ export class DateSlotCardComponent {
   }
 
   /**
-   * Recalculates all slot ranges when global duration or break duration changes.
+   * Recalculates all slot ranges when global duration changes.
    * @param duration The new duration in minutes.
-   * @param breakDuration The new break duration in minutes.
    */
-  private recalculateAllRanges(duration: number, breakDuration: number): void {
+  private recalculateAllRanges(duration: number): void {
     this.slotRanges.update(ranges => {
       return ranges.map(range => {
         // 1. Skip scheduled slots
@@ -541,6 +686,8 @@ export class DateSlotCardComponent {
           endTime: range.endTime,
           type: range.type,
           duration,
+          breakDuration: range.breakDuration, // Keep existing break duration
+          isCustomBreakMode: range.isCustomBreakMode,
           location: range.location,
           slots: range.slots,
         };
@@ -557,7 +704,7 @@ export class DateSlotCardComponent {
         }
         // 3. Update Ranges
         else if (newRange.type === 'range') {
-          this.generateRangeSlots(newRange, duration, breakDuration, location);
+          this.generateRangeSlots(newRange, duration, undefined, location);
         }
         return newRange;
       });
@@ -583,7 +730,7 @@ export class DateSlotCardComponent {
     }
 
     const duration = overrideDuration ?? (this.duration() || 30);
-    const breakDurationValue = overrideBreak ?? (this.breakDuration() || 0);
+    const breakDurationValue = overrideBreak ?? (range.breakDuration || 0);
     const location = overrideLocation ?? range.location;
 
     const slots: InterviewSlotDTO[] = [];

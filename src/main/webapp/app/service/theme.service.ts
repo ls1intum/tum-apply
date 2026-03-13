@@ -18,12 +18,14 @@ export class ThemeService {
   private readonly rootElement = document.documentElement;
 
   constructor() {
-    this.setTheme(this.theme());
+    const shouldSave = !this.syncWithSystem();
+    this.setTheme(this.theme(), shouldSave);
     this.setupSystemThemeListener();
   }
 
   getInitialTheme(): ThemeOption {
-    const syncWithSystem = localStorage.getItem('tumApplySyncWithSystem') === 'true';
+    const storedSync = localStorage.getItem('tumApplySyncWithSystem');
+    const syncWithSystem = storedSync === null ? true : storedSync === 'true';
 
     if (syncWithSystem) {
       return this.getSystemTheme();
@@ -48,23 +50,31 @@ export class ThemeService {
   }
 
   getInitialSyncWithSystem(): boolean {
-    return localStorage.getItem('tumApplySyncWithSystem') === 'true';
+    const stored = localStorage.getItem('tumApplySyncWithSystem');
+    return stored === null ? true : stored === 'true';
   }
 
   getSystemTheme(): 'light' | 'dark' {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return 'light';
+    }
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
   setupSystemThemeListener(): void {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return;
+    }
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', e => {
       if (this.syncWithSystem()) {
-        this.setTheme(e.matches ? 'dark' : 'light');
+        // Don't save to localStorage when syncing with system
+        this.setTheme(e.matches ? 'dark' : 'light', false);
       }
     });
   }
 
-  setTheme(theme: ThemeOption): void {
+  setTheme(theme: ThemeOption, saveToStorage = true): void {
     this.theme.set(theme);
 
     const root = this.rootElement;
@@ -92,7 +102,9 @@ export class ThemeService {
       }
     }
 
-    localStorage.setItem('tumApplyTheme', theme);
+    if (saveToStorage) {
+      localStorage.setItem('tumApplyTheme', theme);
+    }
 
     // allow one frame for styles to apply, then restore transitions
     window.requestAnimationFrame(() => {
@@ -101,10 +113,18 @@ export class ThemeService {
   }
 
   toggleTheme(): void {
-    const newTheme = this.theme() === 'dark' ? 'light' : 'dark';
-    this.syncWithSystem.set(false);
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    this.setTheme(newTheme);
+    if (this.syncWithSystem()) {
+      // Currently on system, switch to light
+      this.syncWithSystem.set(false);
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      this.setTheme('light');
+    } else if (this.theme() === 'light') {
+      // Currently on light, switch to dark
+      this.setTheme('dark');
+    } else {
+      // Currently on dark, switch back to system
+      this.setSyncWithSystem(true);
+    }
   }
 
   setSyncWithSystem(value: boolean): void {
@@ -112,8 +132,10 @@ export class ThemeService {
     localStorage.setItem('tumApplySyncWithSystem', String(value));
 
     if (value) {
+      // When enabling system sync, remove the stored theme and don't save to localStorage
+      localStorage.removeItem('tumApplyTheme');
       const systemTheme = this.getSystemTheme();
-      this.setTheme(systemTheme);
+      this.setTheme(systemTheme, false);
     }
   }
 }

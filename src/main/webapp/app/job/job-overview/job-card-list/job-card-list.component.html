@@ -40,6 +40,7 @@
           [departmentName]="job.departmentName ?? 'No Department'"
           [location]="job.location.toString()"
           [professor]="job.professorName"
+          [avatarUrl]="job.avatar"
           [workload]="job.workload || undefined"
           [startDate]="job.startDate?.toString() || undefined"
           [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"

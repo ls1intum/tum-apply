@@ -53,7 +53,7 @@ spring:
         completions-path: /v1/chat/completions
         options:
           model: openai/gpt-oss-20b
-          temperature: 0.7
+          temperature: 0.0
 springdoc:
   api-docs:
     enabled: true
@@ -97,3 +97,9 @@ management:
   health:
     ldap:
       enabled: false
+
+user:
+  retention:
+    dry-run: ${USER_RETENTION_DRY_RUN:true}
+    batch-size: ${USER_RETENTION_BATCH_SIZE:100}
+    max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:5}

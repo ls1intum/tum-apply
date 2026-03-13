@@ -14,6 +14,7 @@ import { ApplicationDetailDTO } from './applicationDetailDTO';
 export interface ApplicationEvaluationDetailDTO { 
     applicationDetailDTO: ApplicationDetailDTO;
     appliedAt?: string;
+    averageRating?: number;
     jobId?: string;
     professor?: ProfessorDTO;
 }

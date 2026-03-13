@@ -1,41 +1,34 @@
 <jhi-section [titleKey]="'interview.interviewees.title'">
   <!-- Actions Slot -->
-  <div actions class="flex gap-2 ml-auto">
-    <jhi-button
-      [label]="'interview.interviewees.add'"
-      [icon]="'plus'"
-      [severity]="'primary'"
-      size="sm"
-      [shouldTranslate]="true"
-      (click)="openAddModal()"
-    />
+  <div actions class="flex flex-wrap gap-2 lg:ml-auto items-center">
+    @if (!isClosed()) {
+      <jhi-button
+        (click)="sendAllInvitations()"
+        [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0 || !hasSlots()"
+        [loading]="sendingBulk()"
+        [shouldTranslate]="true"
+        [tooltip]="allInvitedTooltip()"
+        icon="paper-plane"
+        label="interview.interviewees.sendAllInvitations"
+        severity="primary"
+        size="sm"
+        variant="outlined"
+        styleClass="whitespace-nowrap"
+      />
+      <jhi-button
+        icon="plus"
+        label="interview.interviewees.add"
+        severity="primary"
+        size="sm"
+        [shouldTranslate]="true"
+        (click)="openAddModal()"
+        styleClass="whitespace-nowrap"
+      />
+    }
   </div>
 
   <!-- Filter Tabs -->
-  <div class="flex gap-6 mb-4 border-b border-border-default -ml-3">
-    @for (tab of filterTabs(); track tab.key) {
-      <button
-        class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px"
-        [class.border-primary-default]="activeFilter() === tab.key"
-        [class.text-primary-default]="activeFilter() === tab.key"
-        [class.border-transparent]="activeFilter() !== tab.key"
-        [class.text-text-secondary]="activeFilter() !== tab.key"
-        [class.hover:text-text-primary]="activeFilter() !== tab.key"
-        (click)="setFilter(tab.key)"
-      >
-        <span [jhiTranslate]="'interview.interviewees.filter.' + tab.key"></span>
-        <span
-          class="px-2 py-0.5 text-xs rounded-full"
-          [class.bg-primary-default]="activeFilter() === tab.key"
-          [class.text-text-on-primary]="activeFilter() === tab.key"
-          [class.bg-background-disabled]="activeFilter() !== tab.key"
-          [class.text-text-primary]="activeFilter() !== tab.key"
-        >
-          {{ tab.count }}
-        </span>
-      </button>
-    }
-  </div>
+  <jhi-filter-tabs [tabs]="filterTabs()" [activeKey]="activeFilter()" (filterChange)="setFilter($event)" class="-ml-3" />
 
   <!-- Interviewees List -->
   @if (loadingInterviewees()) {
@@ -46,7 +39,15 @@
   } @else {
     <div class="flex flex-col gap-2 -ml-3">
       @for (interviewee of filteredInterviewees(); track interviewee.id) {
-        <jhi-interviewee-card [interviewee]="interviewee" />
+        <jhi-interviewee-card
+          (sendInvitation)="sendInvitation($event)"
+          (cancelInterview)="onCancelInterview($event)"
+          [interviewee]="interviewee"
+          [processId]="processId()"
+          [sending]="sendingInvitationId() === interviewee.id"
+          [isClosed]="isClosed()"
+          [hasSlots]="hasSlots()"
+        />
       }
     </div>
   }
@@ -55,7 +56,8 @@
 <!-- Template for name column with checkbox -->
 <ng-template #nameTemplate let-row>
   <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
-    <p-checkbox [binary]="true" [ngModel]="row.selected" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
+    <jhi-checkbox [model]="row.selected" [errorEnabled]="false" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
+    <jhi-user-avatar [fullName]="row.name" [avatarUrl]="row.avatar" loading="lazy" />
     <span class="font-medium text-text-primary">{{ row.name }}</span>
   </div>
 </ng-template>
@@ -84,23 +86,40 @@
   <!-- Footer Buttons -->
   <div class="flex justify-end gap-2 pt-4 mt-4 border-t border-border-default">
     <jhi-button
-      [label]="'entity.action.cancel'"
-      [severity]="'primary'"
-      [variant]="'outlined'"
+      label="entity.action.cancel"
+      severity="primary"
+      styleClass="w-28 h-10"
       [shouldTranslate]="true"
       size="sm"
-      [styleClass]="'w-28 h-10'"
+      variant="outlined"
       (click)="closeAddModal()"
     />
     <jhi-button
-      [label]="'interview.interviewees.addSelected'"
-      [severity]="'primary'"
+      label="interview.interviewees.addSelected"
+      severity="primary"
       [disabled]="selectedCount() === 0"
       [loading]="processingAdd()"
       [shouldTranslate]="true"
       size="sm"
-      [styleClass]="'w-28 h-10'"
+      styleClass="w-28 h-10"
       (click)="addInterviewees()"
     />
   </div>
 </jhi-dialog>
+
+<jhi-confirm-dialog
+  [header]="resendConfirmation().header"
+  [message]="resendConfirmation().message"
+  [label]="resendConfirmation().label"
+  severity="primary"
+  (confirmed)="onConfirmResend()"
+  [showOpenButton]="false"
+/>
+
+@if (selectedIntervieweeForCancel()) {
+  <jhi-cancel-interview-modal
+    [visible]="showCancelModal()"
+    (visibleChange)="showCancelModal.set($event)"
+    (confirmed)="onCancelInterviewConfirm($event)"
+  />
+}

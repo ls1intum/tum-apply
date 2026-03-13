@@ -1,55 +1,42 @@
-<div class="page-container flex flex-col min-h-screen">
+<div class="page-container">
   <!-- Page Header -->
-  <div class="page-header">
-    <h1 jhiTranslate="interview.overview.title">Interviews</h1>
-  </div>
+  <header class="page-header">
+    <h1>
+      <span jhiTranslate="sidebar.recruitment.title"></span>
+      -
+      <span jhiTranslate="interview.overview.title"></span>
+    </h1>
+  </header>
 
-  <!-- Two-column Layout -->
-  <div class="flex gap-4 items-start flex-1">
-    <!-- Left Section -->
-    <div class="flex-[0_0_68%] flex flex-col">
+  <!-- Top/Bottom Layout -->
+  <div class="flex flex-col gap-8 items-stretch mt-6">
+    <!-- Top Section: Positions -->
+    <div class="w-full flex flex-col">
       <div class="flex justify-between items-center mb-4 h-10">
-        <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.positions.title">Positions</h2>
-
-        <!--
-  TODO: Re-enable this button once the create interview process functionality is implemented
-  <jhi-button
-    [label]="'interview.overview.actions.newProcess'"
-    [shouldTranslate]="true"
-    [icon]="'plus'"
-    [severity]="'primary'"
-    [size]="'sm'"
-    (click)="createNewInterviewProcess()"
-  />
--->
+        <h2 class="text-xl font-semibold text-text-primary" jhiTranslate="interview.overview.positions.title">Positions</h2>
       </div>
 
       @if (error()) {
-        <div class="flex flex-col items-center justify-center border border-border-default rounded-lg p-12">
-          <i class="pi pi-exclamation-triangle text-[var(--p-danger-500)] text-4xl mb-3"></i>
-          <p class="text-secondary-default text-sm" jhiTranslate="interview.overview.error.failedToLoad"></p>
-        </div>
-      }
-
-      <!-- Loading State -->
-      @if (loading() && !error()) {
-        <div class="flex items-center justify-center bg-background-default border border-border-default rounded-lg p-12">
-          <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
-        </div>
+        <jhi-info-box
+          message="interview.overview.error.failedToLoad"
+          [shouldTranslate]="true"
+          severity="danger"
+          icon="exclamation-triangle"
+        />
       }
 
       <!-- Empty State -->
       @if (!loading() && !error() && interviewProcesses().length === 0) {
         <div class="flex flex-col items-center justify-center bg-background-default border border-border-default rounded-lg p-12">
-          <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
+          <i class="pi pi-inbox text-text-tertiary text-5xl mb-4"></i>
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="interview.overview.empty.title">No interview processes</h3>
-          <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description"></p>
+          <p class="text-sm text-text-secondary" jhiTranslate="interview.overview.empty.description"></p>
         </div>
       }
 
-      <!-- Cards -->
+      <!-- Cards Grid -->
       @if (!loading() && !error() && interviewProcesses().length > 0) {
-        <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           @for (process of interviewProcesses(); track process.jobId) {
             <jhi-interview-process-card [process]="process" (cardClick)="viewDetails($event)" />
           }
@@ -57,21 +44,49 @@
       }
     </div>
 
-    <!-- Divider -->
-    <div class="w-px bg-[var(--p-divider-default)] self-stretch"></div>
-
-    <!-- Right Section -->
-    <div class="flex-1 flex flex-col">
+    <!-- Bottom Section: Upcoming Interviews (Calendar View) -->
+    <div class="w-full flex flex-col mt-4">
       <div class="mb-4 h-10 flex items-center">
-        <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
+        <h2 class="text-xl font-semibold text-text-primary" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
       </div>
 
-      <div
-        class="bg-[var(--p-background-surface)] border border-dashed border-[var(--p-border-default)] rounded-lg py-16 px-6 flex flex-col items-center text-center"
-      >
-        <i class="pi pi-calendar text-[var(--p-text-tertiary)] text-4xl mb-3"></i>
-        <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.upcoming.empty"></p>
-      </div>
+      <!-- Error State -->
+      @if (error()) {
+        <jhi-info-box
+          message="interview.overview.error.failedToLoad"
+          [shouldTranslate]="true"
+          severity="danger"
+          icon="exclamation-triangle"
+        />
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && !error() && upcomingInterviews().length === 0) {
+        <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="secondary" icon="calendar" />
+      }
+
+      <!-- Calendar List State -->
+      @if (!loading() && !error() && groupedUpcomingInterviews().length > 0) {
+        <div class="flex flex-col gap-6">
+          @for (monthGroup of groupedUpcomingInterviews(); track monthGroup.monthLabel) {
+            <section class="flex flex-col gap-3">
+              <!-- Reusing month-navigation styling: centered bold text, top/bottom divider -->
+              <div class="text-text-primary mb-3 mt-2 border-b border-border-default">
+                <div class="flex items-center justify-center pb-2">
+                  <h3 class="text-base font-semibold tracking-wider text-text-primary">{{ monthGroup.monthLabel }}</h3>
+                </div>
+              </div>
+
+              <!-- Grid for the upcoming cards within the month -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                @for (interview of monthGroup.interviews; track interview.id) {
+                  <jhi-upcoming-interview-card [interview]="interview" />
+                }
+              </div>
+            </section>
+          }
+        </div>
+      }
     </div>
   </div>
 </div>

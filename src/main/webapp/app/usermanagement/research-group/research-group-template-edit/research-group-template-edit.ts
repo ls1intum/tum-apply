@@ -8,9 +8,9 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 
-import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -29,7 +29,7 @@ import { UserShortDTO } from '../../../generated/model/userShortDTO';
     StringInputComponent,
     TabsModule,
     QuillEditorComponent,
-    ButtonComponent,
+    BackButtonComponent,
     SelectComponent,
     TranslateModule,
     TranslateDirective,
@@ -135,11 +135,13 @@ export class ResearchGroupTemplateEdit {
 
   readonly allowedSelectOptions = ['APPLICATION_ACCEPTED'];
 
-  readonly allSelectOptions = ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED', 'APPLICATION_SENT'];
+  readonly allSelectOptions = ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED', 'APPLICATION_SENT', 'RESEARCH_GROUP_MEMBER_ADDED'];
 
   readonly TEMPLATE_VARIABLES = [
     'APPLICANT_FIRST_NAME',
     'APPLICANT_LAST_NAME',
+    'USER_FIRST_NAME',
+    'USER_LAST_NAME',
     'SUPERVISING_PROFESSOR_FIRST_NAME',
     'SUPERVISING_PROFESSOR_LAST_NAME',
     'JOB_TITLE',
@@ -254,10 +256,6 @@ export class ResearchGroupTemplateEdit {
         body,
       },
     }));
-  }
-
-  protected navigateBack(): void {
-    void this.router.navigate(['/research-group/templates']);
   }
 
   // Replace mention labels in the Quill HTML with translated versions

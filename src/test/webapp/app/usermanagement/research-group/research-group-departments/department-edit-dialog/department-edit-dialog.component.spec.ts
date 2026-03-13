@@ -185,6 +185,18 @@ describe('DepartmentEditDialogComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.errors.createFailed');
     });
+
+    it('should ignore non-HTTP errors during creation', async () => {
+      createComponent();
+      component.form.patchValue({ name: 'New Dept', schoolId: 's1' });
+      mockDepartmentService.createDepartment.mockReturnValue(throwError(() => new Error('Unexpected')));
+
+      await component.onSubmit();
+
+      expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
+      expect(mockToastService.showSuccessKey).not.toHaveBeenCalled();
+      expect(component.isSubmitting()).toBe(false);
+    });
   });
 
   describe('Dialog Actions', () => {

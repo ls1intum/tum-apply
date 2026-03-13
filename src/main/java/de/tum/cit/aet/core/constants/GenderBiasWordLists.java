@@ -9,7 +9,7 @@ public final class GenderBiasWordLists {
 
     // ENGLISH WORD LISTS (From https://gender-decoder.katmatfield.com/about)
 
-    public static final Set<String> ENGLISH_MASCULINE = Collections.unmodifiableSet(
+    public static final Set<String> ENGLISH_NON_INCLUSIVE = Collections.unmodifiableSet(
         new HashSet<>(
             Arrays.asList(
                 "active",
@@ -65,7 +65,7 @@ public final class GenderBiasWordLists {
         )
     );
 
-    public static final Set<String> ENGLISH_FEMININE = Collections.unmodifiableSet(
+    public static final Set<String> ENGLISH_INCLUSIVE = Collections.unmodifiableSet(
         new HashSet<>(
             Arrays.asList(
                 "agree",
@@ -120,7 +120,7 @@ public final class GenderBiasWordLists {
 
     // GERMAN WORD LISTS (From gender decoder code itself)
 
-    public static final Set<String> GERMAN_MASCULINE = Collections.unmodifiableSet(
+    public static final Set<String> GERMAN_NON_INCLUSIVE = Collections.unmodifiableSet(
         new HashSet<>(
             Arrays.asList(
                 "abenteuer",
@@ -190,7 +190,7 @@ public final class GenderBiasWordLists {
         )
     );
 
-    public static final Set<String> GERMAN_FEMININE = Collections.unmodifiableSet(
+    public static final Set<String> GERMAN_INCLUSIVE = Collections.unmodifiableSet(
         new HashSet<>(
             Arrays.asList(
                 "angenehm",

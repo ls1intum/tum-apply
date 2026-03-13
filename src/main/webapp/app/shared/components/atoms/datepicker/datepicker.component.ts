@@ -3,15 +3,13 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { CommonModule } from '@angular/common';
-import { TranslateService } from '@ngx-translate/core';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
-  imports: [CommonModule, DatePickerModule, FormsModule, FontAwesomeModule, TranslateDirective, SharedModule, TooltipModule],
+  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateModule, TranslateDirective, TooltipModule],
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -27,6 +25,7 @@ export class DatePickerComponent {
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
   shouldTranslate = input<boolean>(false);
+  errorEnabled = input<boolean>(false);
 
   /**
    * Input date value in ISO format: 'YYYY-MM-DD'
@@ -65,7 +64,7 @@ export class DatePickerComponent {
    */
   effectiveMinDate = computed(() => {
     const min = this.minDate();
-    if (min && min.getHours() === 0 && min.getMinutes() === 0 && min.getSeconds() === 0 && min.getMilliseconds() === 0) {
+    if (min?.getHours() === 0 && min.getMinutes() === 0 && min.getSeconds() === 0 && min.getMilliseconds() === 0) {
       return min;
     }
     const base = min ?? new Date();

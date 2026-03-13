@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -10,13 +9,13 @@ import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TranslateDirective } from 'app/shared/language';
-import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 
 const I18N_BASE = 'researchGroup.adminView';
@@ -25,7 +24,7 @@ const I18N_BASE = 'researchGroup.adminView';
   selector: 'jhi-research-group-admin-view',
   imports: [
     ButtonComponent,
-    CommonModule,
+    MenuComponent,
     TagComponent,
     TranslateModule,
     TranslateDirective,
@@ -69,6 +68,12 @@ export class ResearchGroupAdminView {
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  readonly approveDialog = viewChild.required<ConfirmDialog>('approveDialog');
+  readonly denyDialog = viewChild.required<ConfirmDialog>('denyDialog');
+  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
+
+  currentResearchGroupId = signal<string | undefined>(undefined);
+
   readonly selectedStatusFilters = signal<('DRAFT' | 'ACTIVE' | 'DENIED')[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -104,6 +109,92 @@ export class ResearchGroupAdminView {
     { displayName: `${I18N_BASE}.tableColumn.status`, fieldName: 'state', type: 'TEXT' },
     { displayName: `${I18N_BASE}.tableColumn.requestedAt`, fieldName: 'createdAt', type: 'NUMBER' },
   ];
+
+  readonly actionMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const group of this.researchGroups()) {
+      const groupId = group.id;
+      if (!groupId) {
+        continue;
+      }
+      const items: JhiMenuItem[] = [];
+
+      if (group.status !== 'DENIED') {
+        items.push({
+          label: 'researchGroup.members.manageMembers',
+          icon: 'users',
+          severity: 'primary',
+          command: () => {
+            this.onManageMembers(groupId);
+          },
+        });
+      }
+
+      items.push({
+        label: 'researchGroup.imageLibrary.manageButton',
+        icon: 'image',
+        severity: 'primary',
+        command: () => {
+          this.onManageImages(groupId, group.researchGroup);
+        },
+      });
+
+      if (group.status === 'ACTIVE') {
+        items.push({
+          label: 'button.withdraw',
+          icon: 'withdraw',
+          severity: 'danger',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.withdrawDialog().confirm();
+          },
+        });
+      }
+
+      if (group.status === 'DRAFT') {
+        items.push({
+          label: 'button.confirm',
+          icon: 'check',
+          severity: 'success',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.approveDialog().confirm();
+          },
+        });
+        items.push({
+          label: 'button.deny',
+          icon: 'times',
+          severity: 'danger',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.denyDialog().confirm();
+          },
+        });
+      }
+
+      if (group.status === 'DENIED') {
+        items.push({
+          label: 'button.confirm',
+          icon: 'check',
+          severity: 'success',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.approveDialog().confirm();
+          },
+        });
+      }
+
+      menuMap.set(groupId, items);
+    }
+
+    return menuMap;
+  });
+
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.actionMenuItems();
+    return (group: ResearchGroupAdminDTO): JhiMenuItem[] => (group.id ? (menuMap.get(group.id) ?? []) : []);
+  });
 
   private toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
@@ -145,15 +236,7 @@ export class ResearchGroupAdminView {
   }
 
   onViewResearchGroup(researchGroupId: string): void {
-    this.dialogService.open(ResearchGroupDetailViewComponent, {
-      header: this.translate.instant('researchGroup.detailView.title'),
-      data: { researchGroupId },
-      styleClass: 'research-group-detail-dialog',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
-      closable: true,
-      draggable: false,
-      modal: true,
-    });
+    void this.router.navigate(['/research-group/detail', researchGroupId]);
   }
 
   onCreateResearchGroup(): void {
@@ -168,7 +251,7 @@ export class ResearchGroupAdminView {
     });
 
     dialogRef?.onClose.subscribe(result => {
-      if (result === true) {
+      if (result) {
         void this.loadResearchGroups();
       }
     });
@@ -176,6 +259,12 @@ export class ResearchGroupAdminView {
 
   onManageMembers(researchGroupId: string): void {
     this.router.navigate(['/research-group', researchGroupId, 'members']);
+  }
+
+  onManageImages(researchGroupId: string, researchGroupName?: string): void {
+    this.router.navigate(['/research-group/admin-view/images'], {
+      queryParams: { researchGroupId, researchGroupName: researchGroupName ?? '' },
+    });
   }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {
@@ -205,6 +294,27 @@ export class ResearchGroupAdminView {
       await this.loadResearchGroups();
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.errors.withdraw`);
+    }
+  }
+
+  onConfirmApprove(): void {
+    const researchGroupId = this.currentResearchGroupId();
+    if (researchGroupId) {
+      void this.onApproveResearchGroup(researchGroupId);
+    }
+  }
+
+  onConfirmDeny(): void {
+    const researchGroupId = this.currentResearchGroupId();
+    if (researchGroupId) {
+      void this.onDenyResearchGroup(researchGroupId);
+    }
+  }
+
+  onConfirmWithdraw(): void {
+    const researchGroupId = this.currentResearchGroupId();
+    if (researchGroupId) {
+      void this.onWithdrawResearchGroup(researchGroupId);
     }
   }
 

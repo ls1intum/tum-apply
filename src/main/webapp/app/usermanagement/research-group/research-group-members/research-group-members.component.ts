@@ -2,17 +2,18 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -20,9 +21,11 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
 interface MembersRow {
+  avatar?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -38,9 +41,9 @@ interface MembersRow {
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
+    BackButtonComponent,
     ButtonComponent,
     TranslateDirective,
-    FontAwesomeModule,
     TranslateModule,
     DynamicTableComponent,
     DialogModule,
@@ -49,9 +52,9 @@ interface MembersRow {
     IconFieldModule,
     InputIconModule,
     ConfirmDialog,
+    UserAvatarComponent,
   ],
   templateUrl: './research-group-members.component.html',
-  styleUrl: './research-group-members.component.scss',
 })
 export class ResearchGroupMembersComponent {
   members = signal<UserShortDTO[]>([]);
@@ -60,6 +63,7 @@ export class ResearchGroupMembersComponent {
   total = signal<number>(0);
 
   researchGroupId = signal<string | undefined>(undefined);
+  researchGroupName = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -78,31 +82,31 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed<MembersRow[]>(() => {
-    const currentUserAuthorities = this.accountService.userAuthorities;
-    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
-
     return this.members().map((member): MembersRow => {
       const isCurrentUser = this.isCurrentUser(member);
       let canRemove = !isCurrentUser;
 
-      if (isEmployee) {
+      if (this.isEmployee()) {
         canRemove = false;
       }
 
       return {
         email: member.email,
+        avatar: member.avatar,
         firstName: member.firstName,
         lastName: member.lastName,
         researchGroup: member.researchGroup,
         roles: member.roles,
         userId: member.userId,
-        name: `${member.firstName} ${member.lastName}`,
+        name: formatFullName(member.firstName, member.lastName),
         role: this.formatRoles(member.roles),
         isCurrentUser,
         canRemove,
       };
     });
   });
+
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false);
 
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
@@ -125,6 +129,10 @@ export class ResearchGroupMembersComponent {
   private readonly routeIdEffect = effect(() => {
     const id = this.routeId();
     this.researchGroupId.set(id);
+    this.researchGroupName.set(undefined);
+    if (id) {
+      void this.loadResearchGroupName(id);
+    }
     void this.loadMembers();
   });
 
@@ -143,14 +151,14 @@ export class ResearchGroupMembersComponent {
     try {
       await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
-        memberName: `${member.firstName} ${member.lastName}`,
+        memberName: formatFullName(member.firstName, member.lastName),
       });
 
       // Refresh the members list
       await this.loadMembers();
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
-        memberName: `${member.firstName} ${member.lastName}`,
+        memberName: formatFullName(member.firstName, member.lastName),
       });
     }
   }
@@ -176,6 +184,7 @@ export class ResearchGroupMembersComponent {
       closable: true,
       draggable: false,
       modal: true,
+      data: { researchGroupId: this.researchGroupId() },
     });
 
     ref?.onClose.subscribe((added: boolean) => {
@@ -183,10 +192,6 @@ export class ResearchGroupMembersComponent {
         void this.loadMembers();
       }
     });
-  }
-
-  goBack(): void {
-    void this.router.navigate(['/research-group-admin']);
   }
 
   /** Internal methods */
@@ -202,5 +207,14 @@ export class ResearchGroupMembersComponent {
 
   private isCurrentUser(member: UserShortDTO): boolean {
     return member.userId === this.accountService.userId;
+  }
+
+  private async loadResearchGroupName(researchGroupId: string): Promise<void> {
+    try {
+      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      this.researchGroupName.set(researchGroup.name);
+    } catch {
+      this.researchGroupName.set(undefined);
+    }
   }
 }

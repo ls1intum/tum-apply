@@ -24,69 +24,6 @@ const routes: Routes = [
       import('./shared/pages/professor-landing-page/professor-landing-page.component').then(m => m.ProfessorLandingPageComponent),
     title: 'global.routes.landingPage.professor',
   },
-  {
-    path: '',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
-    loadChildren: () => import(`./entities/entity.routes`),
-  },
-
-  // ======================================================================================
-  // Playground
-  // ======================================================================================
-  {
-    path: 'playground/badge',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
-  },
-  {
-    path: 'playground/button',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
-  },
-  {
-    path: 'playground/stepper',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
-  },
-  {
-    path: 'playground/editor',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
-  },
-  {
-    path: 'playground/docviewer',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () =>
-      import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
-  },
-  {
-    path: 'playground/rating',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/rating-playground/rating-playground').then(c => c.RatingPlayground),
-  },
-  {
-    path: 'playground/comment',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/comment-playground/comment-playground').then(c => c.CommentPlayground),
-  },
-
-  // ======================================================================================
-  // User Management
-  // ======================================================================================
-  {
-    path: 'admin',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadChildren: () => import('./admin/admin.routes'),
-  },
 
   // ======================================================================================
   // Job
@@ -101,7 +38,7 @@ const routes: Routes = [
   {
     path: 'job/create',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
     loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'global.routes.job.creation',
   },
@@ -239,6 +176,16 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.adminView',
   },
   {
+    path: 'research-group/detail/:researchGroupId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component').then(
+        m => m.ResearchGroupDetailViewComponent,
+      ),
+    title: 'researchGroup.detailView.title',
+  },
+  {
     path: 'research-group/departments',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
@@ -249,12 +196,52 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.adminView',
   },
   {
+    path: 'research-group/schools',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-schools/research-group-schools.component').then(
+        m => m.ResearchGroupSchoolsComponent,
+      ),
+    title: 'global.routes.researchGroup.schools',
+  },
+  {
+    path: 'research-group/departments/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-departments/department-images/department-images.component').then(
+        m => m.DepartmentImages,
+      ),
+    title: 'researchGroup.departments.images.title',
+  },
+  {
+    path: 'research-group/admin-view/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
+        m => m.ResearchGroupImagesComponent,
+      ),
+    title: 'global.routes.researchGroup.adminImages',
+  },
+  {
     path: 'research-group/templates',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-templates/research-group-templates').then(m => m.ResearchGroupTemplates),
     title: 'global.routes.researchGroup.templates',
+  },
+  {
+    path: 'research-group/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
+        m => m.ResearchGroupImagesComponent,
+      ),
+    title: 'global.routes.researchGroup.images',
   },
   {
     path: 'research-group/template/new',
@@ -284,7 +271,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'researchGroup.memberPage',
+    title: 'researchGroup.memberHeader',
   },
   {
     path: 'research-group/members',
@@ -294,7 +281,7 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
       ),
-    title: 'researchGroup.memberPage',
+    title: 'researchGroup.memberHeader',
   },
   {
     path: 'research-group/info',
@@ -338,7 +325,36 @@ const routes: Routes = [
         component: InterviewProcessDetailComponent,
         title: 'global.routes.interview.detail',
       },
+      {
+        path: 'process/:processId/interviewee/:intervieweeId/assessment',
+        canActivate: [UserRouteAccessService],
+        data: {
+          authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Employee],
+        },
+        loadComponent: () =>
+          import('./interview/interviewee-assessment/interviewee-assessment.component').then(m => m.IntervieweeAssessmentComponent),
+        title: 'global.routes.interview.assessment',
+      },
     ],
+  },
+  {
+    path: 'interview-booking/:processId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./interview/interview-booking/interview-booking.component').then(m => m.InterviewBookingComponent),
+    title: 'interview.booking.title',
+  },
+
+  // ======================================================================================
+  // Data Export
+  // ======================================================================================
+  {
+    path: 'data-export/download/:token',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () =>
+      import('./shared/pages/download-data-export/download-data-export.component').then(m => m.DownloadDataExportComponent),
+    title: 'global.routes.dataExport.download',
   },
 
   // ======================================================================================

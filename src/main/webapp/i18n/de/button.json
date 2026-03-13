@@ -1,5 +1,6 @@
 {
   "button": {
+    "actions": "Aktionen",
     "cancel": "Abbrechen",
     "close": "Schließen",
     "confirm": "Bestätigen",
@@ -19,9 +20,10 @@
     "publish": "Veröffentlichen",
     "chooseFile": "Datei auswählen",
     "assign": "Zuweisen",
-    "tooltip": {
-      "editDisabled": "Nur Entwürfe können bearbeitet werden"
-    },
-    "downloadPDF": "PDF exportieren"
+    "noFurtherActions": "Keine weiteren Aktionen verfügbar",
+    "replace": "Ersetzen",
+    "downloadPDF": "Exportieren",
+    "showSensitiveInfo": "Sensible Informationen anzeigen",
+    "hideSensitiveInfo": "Sensible Informationen verbergen"
   }
 }

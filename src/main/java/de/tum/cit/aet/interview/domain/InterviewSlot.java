@@ -1,6 +1,8 @@
 package de.tum.cit.aet.interview.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
@@ -13,7 +15,38 @@ import lombok.Setter;
  * Each slot can be booked by exactly one interviewee.
  */
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Table(name = "interview_slots")
+@NamedEntityGraphs(
+    {
+        @NamedEntityGraph(
+            name = "InterviewSlot.withIntervieweeDetails",
+            attributeNodes = { @NamedAttributeNode(value = "interviewee", subgraph = "interviewee-subgraph") },
+            subgraphs = {
+                @NamedSubgraph(
+                    name = "interviewee-subgraph",
+                    attributeNodes = { @NamedAttributeNode(value = "application", subgraph = "application-subgraph") }
+                ),
+                @NamedSubgraph(
+                    name = "application-subgraph",
+                    attributeNodes = { @NamedAttributeNode(value = "applicant", subgraph = "applicant-subgraph") }
+                ),
+                @NamedSubgraph(name = "applicant-subgraph", attributeNodes = { @NamedAttributeNode(value = "user") }),
+            }
+        ),
+        @NamedEntityGraph(
+            name = "InterviewSlot.withProcessJobDetails",
+            attributeNodes = { @NamedAttributeNode(value = "interviewProcess", subgraph = "process-job-subgraph") },
+            subgraphs = {
+                @NamedSubgraph(
+                    name = "process-job-subgraph",
+                    attributeNodes = { @NamedAttributeNode(value = "job", subgraph = "job-research-group-subgraph") }
+                ),
+                @NamedSubgraph(name = "job-research-group-subgraph", attributeNodes = { @NamedAttributeNode(value = "researchGroup") }),
+            }
+        ),
+    }
+)
 @Getter
 @Setter
 public class InterviewSlot extends AbstractAuditingEntity {
@@ -48,4 +81,8 @@ public class InterviewSlot extends AbstractAuditingEntity {
 
     @Column(name = "is_booked", nullable = false)
     private Boolean isBooked = false;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

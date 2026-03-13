@@ -5,6 +5,10 @@
   [pTooltip]="tooltipText() ?? '' | translate"
   tooltipPosition="top"
   [style.width]="width()"
+  [style.display]="'flex'"
+  [style.justify-content]="'center'"
+  [style.align-items]="'center'"
+  [style.text-align]="'center'"
 >
   @if (icon() && !iconRight()) {
     <fa-icon [icon]="iconProp()" class="icon left" />

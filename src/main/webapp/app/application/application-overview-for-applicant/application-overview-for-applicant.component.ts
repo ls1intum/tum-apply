@@ -6,17 +6,18 @@ import { ToastService } from 'app/service/toast-service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
-import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { TranslateDirective } from 'app/shared/language';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationOverviewDTO } from '../../generated/model/applicationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
@@ -24,13 +25,14 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
     DynamicTableComponent,
     ButtonComponent,
     BadgeModule,
-    SharedModule,
     TranslateModule,
+    TranslateDirective,
     ApplicationStateForApplicantsComponent,
     RouterModule,
     ConfirmDialogModule,
     ConfirmDialog,
     TimeAgoPipe,
+    MenuComponent,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -44,7 +46,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
  * application status, and creation time.
  */
 export default class ApplicationOverviewForApplicantComponent {
-  loading = signal(false);
+  loading = signal(true);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
@@ -66,6 +68,13 @@ export default class ApplicationOverviewForApplicantComponent {
 
   // Template reference for created column (relative time)
   readonly timeSinceCreationTemplate = viewChild.required<TemplateRef<unknown>>('timeSinceCreationTemplate');
+
+  // Confirm dialog references
+  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
+  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+
+  // Track current application ID for dialogs
+  currentApplicationId = signal<string | undefined>(undefined);
 
   // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -109,6 +118,68 @@ export default class ApplicationOverviewForApplicantComponent {
   readonly sortableFields: SortOption[] = [
     { displayName: 'entity.applicationOverview.columns.created', fieldName: 'createdAt', type: 'TEXT' },
   ];
+
+  // Computed signal that creates a map of application IDs to their menu items
+  readonly applicationMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const application of this.pageData()) {
+      if (application.applicationId === undefined) continue;
+
+      const items: JhiMenuItem[] = [];
+      const applicationId = application.applicationId;
+
+      // Edit action - only for SAVED applications
+      if (application.applicationState === 'SAVED') {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.onUpdateApplication(applicationId);
+          },
+        });
+      }
+
+      // Withdraw action - for SENT or IN_REVIEW applications
+      if (['SENT', 'IN_REVIEW'].includes(application.applicationState ?? '')) {
+        items.push({
+          label: 'button.withdraw',
+          icon: 'withdraw',
+          severity: 'danger',
+          command: () => {
+            this.currentApplicationId.set(applicationId);
+            this.withdrawDialog().confirm();
+          },
+        });
+      }
+
+      // Delete action - only for SAVED applications
+      if (application.applicationState === 'SAVED') {
+        items.push({
+          label: 'button.delete',
+          icon: 'trash',
+          severity: 'danger',
+          command: () => {
+            this.currentApplicationId.set(applicationId);
+            this.deleteDialog().confirm();
+          },
+        });
+      }
+
+      menuMap.set(applicationId, items);
+    }
+
+    return menuMap;
+  });
+
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.applicationMenuItems();
+    return (application: ApplicationOverviewDTO): JhiMenuItem[] => {
+      if (application.applicationId === undefined) return [];
+      return menuMap.get(application.applicationId) ?? [];
+    };
+  });
 
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
@@ -156,8 +227,6 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    // TODO nicer looking confirm, add dialog
-    // if (confirmDelete) {
     this.applicationService.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });
@@ -183,5 +252,9 @@ export default class ApplicationOverviewForApplicantComponent {
         console.error('Withdraw failed', err);
       },
     });
+  }
+
+  onBrowsePositions(): void {
+    void this.router.navigate(['/job-overview']);
   }
 }

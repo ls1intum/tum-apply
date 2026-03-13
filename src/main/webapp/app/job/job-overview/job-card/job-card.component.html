@@ -1,23 +1,40 @@
 <div
-  class="rounded-lg border border-border-default hover:scale-[1.02] hover:bg-background-surface transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="rounded-lg border border-border-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'jobOverviewPage.ariaLabels.viewJobDetails' | translate: { title: jobTitle() }"
   (click)="onViewDetails()"
+  (keydown)="onKeyDown($event)"
 >
   <div
-    class="relative h-32 flex items-end px-4 pb-3 bg-cover bg-center flex-shrink-0"
+    class="h-32 px-4 pb-3 bg-cover bg-center flex flex-shrink-0 items-end"
     [style.background-image]="
       headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
     "
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
-    <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
-      {{ departmentName() }}
-    </span>
+    <div class="-ml-2 translate-y-7">
+      <div class="grid h-10 w-[15rem]">
+        <div
+          class="col-start-1 row-start-1 z-1 self-center"
+          [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
+          tooltipPosition="top"
+        >
+          <jhi-user-avatar [fullName]="professor()" [avatarUrl]="avatarUrl()" loading="lazy" />
+        </div>
+        <span
+          class="col-start-1 row-start-1 z-0 inline-flex w-fit max-w-full items-center self-center overflow-hidden rounded-pill bg-black/30 px-3 py-1 pl-11 text-xs font-medium text-white backdrop-blur-sm"
+        >
+          <span class="block truncate">Prof. {{ professor() }}</span>
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- Content section -->
-  <div class="p-4 flex-1 flex flex-col">
+  <div class="p-4 pt-7 flex-1 flex flex-col">
     <!-- Job title -->
-    <h3 class="text-lg font-semibold line-clamp-2 min-h-[3.5rem] flex items-center" [title]="jobTitle()">
+    <h3 class="text-lg font-semibold line-clamp-2 leading-snug mb-2" [title]="jobTitle()">
       {{ jobTitle() }}
     </h3>
 
@@ -31,13 +48,8 @@
     <!-- Info items -->
     <div class="space-y-2 mb-4 flex-shrink-0">
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon
-          [icon]="['fas', 'user-tie']"
-          class="icon w-4"
-          [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
-          tooltipPosition="top"
-        />
-        <span class="truncate">Prof. {{ professor() }}</span>
+        <fa-icon [icon]="['fas', 'building-user']" class="icon w-4" />
+        <span class="truncate">{{ departmentName() }}</span>
       </div>
       <div class="flex items-center gap-2 text-sm">
         <fa-icon
@@ -64,12 +76,12 @@
     <!-- Tags/Badges section -->
     <div class="flex flex-wrap gap-2 mt-auto">
       @if (formattedContractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary">
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-pill border border-primary">
           {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
         </span>
       }
       @if (formattedWorkload()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary"> {{ formattedWorkload() }} </span>
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-pill border border-primary"> {{ formattedWorkload() }} </span>
       }
     </div>
   </div>

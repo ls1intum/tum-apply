@@ -1,5 +1,4 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
@@ -14,6 +13,7 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../shared/componen
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { UserAvatarComponent } from '../../shared/components/atoms/user-avatar/user-avatar.component';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
@@ -23,7 +23,6 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
   selector: 'jhi-application-overview',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     LocalizedDatePipe,
     ButtonComponent,
@@ -32,11 +31,13 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
     TranslateModule,
     TranslateDirective,
     SearchFilterSortBar,
+    UserAvatarComponent,
   ],
   templateUrl: './application-overview.component.html',
   styleUrls: ['./application-overview.component.scss'],
 })
 export class ApplicationOverviewComponent {
+  loading = signal(true);
   pageData = signal<ApplicationEvaluationOverviewDTO[]>([]);
   pageSize = signal(10);
   page = signal(0);
@@ -48,6 +49,7 @@ export class ApplicationOverviewComponent {
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
   readonly appliedAtTemplate = viewChild.required<TemplateRef<unknown>>('appliedAtTemplate');
+  readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedStatusFilters = signal<string[]>([]);
@@ -57,13 +59,13 @@ export class ApplicationOverviewComponent {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
     const appliedAtTpl = this.appliedAtTemplate();
+    const nameTpl = this.nameTemplate();
     return [
-      { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem' },
+      { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem', template: nameTpl },
       {
         field: 'state',
         header: 'evaluation.tableHeaders.status',
         width: '10rem',
-        alignCenter: true,
         template: stateTpl,
       },
       { field: 'jobName', header: 'evaluation.tableHeaders.job', width: '26rem' },
@@ -78,6 +80,8 @@ export class ApplicationOverviewComponent {
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
+    INTERVIEW: 'info',
+    JOB_CLOSED: 'info',
   });
 
   readonly availableStatusLabels = availableStatusOptions.map(option => option.label);
@@ -136,31 +140,28 @@ export class ApplicationOverviewComponent {
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
-    const newPage = first / rows;
-    this.page.set(newPage);
+    this.page.set(first / rows);
     this.pageSize.set(rows);
-
-    void this.loadPage();
+    this.updateUrlQueryParams();
   }
 
   loadOnSearchEmit(searchQuery: string): void {
     this.isSearchInitiatedByUser = true;
     this.page.set(0);
     this.searchQuery.set(searchQuery);
-    void this.loadPage();
+    this.updateUrlQueryParams();
   }
 
   loadOnFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterId === 'jobTitle') {
       this.page.set(0);
       this.selectedJobFilters.set(filterChange.selectedValues);
-      void this.loadPage();
     } else if (filterChange.filterId === 'status') {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
-      void this.loadPage();
     }
+    this.updateUrlQueryParams();
   }
 
   loadOnSortEmit(event: Sort): void {
@@ -170,11 +171,11 @@ export class ApplicationOverviewComponent {
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
 
-    void this.loadPage();
+    this.updateUrlQueryParams();
   }
 
   navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
-    const queryParams: Record<string, any> = {
+    const queryParams: Params = {
       sortBy: this.sortBy(),
       sortDirection: this.sortDirection(),
       applicationId: application.applicationId,
@@ -186,6 +187,7 @@ export class ApplicationOverviewComponent {
   }
 
   async loadPage(): Promise<void> {
+    this.loading.set(true);
     try {
       const offset = this.pageSize() * this.page();
       const limit = this.pageSize();
@@ -212,11 +214,11 @@ export class ApplicationOverviewComponent {
         this.pageData.set(res.applications ?? []);
         this.total.set(res.totalRecords ?? 0);
       });
-
-      this.updateUrlQueryParams();
     } catch (error) {
       console.error('Failed to load applications:', error);
       this.toastService.showErrorKey('evaluation.errors.loadApplications');
+    } finally {
+      this.loading.set(false);
     }
   }
 
@@ -226,21 +228,16 @@ export class ApplicationOverviewComponent {
   }
 
   private buildQueryParams(): Params {
-    const baseParams: Params = {
+    const params: Params = {
       page: this.page(),
       pageSize: this.pageSize(),
       sortBy: this.sortBy(),
       sortDir: this.sortDirection(),
     };
     if (this.searchQuery()) {
-      baseParams.search = this.searchQuery();
+      params.search = this.searchQuery();
     }
-    const filterParams: Params = {};
-
-    return {
-      ...baseParams,
-      ...filterParams,
-    };
+    return params;
   }
 
   private updateUrlQueryParams(): void {

@@ -10,7 +10,7 @@ export interface IFilterField {
 export interface IFilterOption {
   displayName: string;
   field: string;
-  translationKey: string | undefined;
+  translationKey?: string;
 }
 
 export class FilterField implements IFilterField {
@@ -77,7 +77,7 @@ export class FilterOption implements IFilterOption {
   constructor(
     public displayName: string,
     public field: string,
-    public translationKey: string | undefined = undefined,
+    public translationKey?: string | undefined,
   ) {
     this.displayName = displayName;
     this.field = field;

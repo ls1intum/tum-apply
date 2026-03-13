@@ -2,9 +2,29 @@
   "settings": {
     "header": "Einstellungen",
 
-    "notifications": {
-      "header": "Benachrichtigungen",
+    "tabs": {
+      "general": "Allgemein",
+      "notifications": "Benachrichtigungen",
+      "personalInformation": "Persönliche Informationen",
+      "documents": "Dokumente"
+    },
+    "personalInformation": {
+      "description": "Aktualisiere hier deine persönlichen Informationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
+      },
+      "saved": {
+        "summary": "Erfolgreich gespeichert",
+        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
+      }
+    },
 
+    "notifications": {
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
@@ -27,6 +47,42 @@
       }
     },
 
+    "profilePicture": {
+      "header": "Profilbild",
+      "description": "Mach dein Profil persönlicher mit einem Foto.",
+      "saved": {
+        "summary": "Profilbild aktualisiert",
+        "detail": "Dein Profilbild wurde erfolgreich aktualisiert."
+      },
+      "saveFailed": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "deleted": {
+        "summary": "Profilbild entfernt",
+        "detail": "Dein Profilbild wurde erfolgreich entfernt."
+      },
+      "deleteFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht entfernt werden. Bitte versuche es erneut."
+      },
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bitte wähle ein Bild, das kleiner als 5 MB ist."
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte wähle ein JPEG-, JPG- oder PNG-Bild."
+      },
+      "resetConfirm": {
+        "header": "Profilbild löschen?",
+        "message": "Möchtest du dein aktuelles Profilbild wirklich löschen?"
+      },
+      "cropDialog": {
+        "header": "Profilbild zuschneiden",
+        "rotate": "Drehen"
+      }
+    },
     "appearance": {
       "header": "Aussehen",
       "theme": {
@@ -40,23 +96,28 @@
         "system": "System"
       }
     },
-
-    "privacy": {
-      "header": "Datenschutz",
-      "export": {
-        "header": "Deine Daten",
-        "description": "Lade ein ZIP-Archiv mit einer Zusammenfassung deines Profils, Einstellungen und Dokumenten herunter.",
-        "button": "Exportiere meine Daten",
-        "cooldown": "Du kannst in {{seconds}}s einen neuen Export anfordern",
-        "inProgress": "Export läuft…",
-        "started": {
-          "summary": "Export gestartet",
-          "detail": "Du erhältst eine E-Mail, sobald das Archiv bereit ist."
-        },
-        "failed": {
-          "summary": "Export fehlgeschlagen",
-          "detail": "Bitte versuche es später erneut."
-        }
+    "documents": {
+      "description": "Lade hier deine Dokumente hoch und verwalte sie. Deine gespeicherten Dokumente werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
+      "sections": {
+        "bachelor": "Bachelor Studium",
+        "master": "Master Studium",
+        "additionalDocuments": "Zusätzliche Unterlagen"
+      },
+      "labels": {
+        "bachelorCertificate": "Bachelor-Zeugnis",
+        "masterCertificate": "Master-Zeugnis"
+      },
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Dokumente. Bitte versuche es erneut."
+      },
+      "saved": {
+        "summary": "Erfolgreich gespeichert",
+        "detail": "Dokumente erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Speichern der Dokumente. Bitte versuche es erneut."
       }
     }
   }

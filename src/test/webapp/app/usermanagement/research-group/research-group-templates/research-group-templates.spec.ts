@@ -192,21 +192,17 @@ describe('ResearchGroupTemplates', () => {
     });
   });
 
-  it('should hide delete column for employees', () => {
+  it('should set isEmployee to true for employees', () => {
     mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
     fixture.detectChanges();
 
-    const columns = component['columns']();
-    expect(columns).toHaveLength(3); // Name, CreatedBy, Edit
-    expect(columns.find(c => c.template === component['deleteTemplate']())).toBeUndefined();
+    expect(component['isEmployee']()).toBe(true);
   });
 
-  it('should show delete column for non-employees', () => {
+  it('should set isEmployee to false for non-employees', () => {
     mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Professor] } : u));
     fixture.detectChanges();
 
-    const columns = component['columns']();
-    expect(columns).toHaveLength(4); // Name, CreatedBy, Edit, Delete
-    expect(columns.find(c => c.template === component['deleteTemplate']())).toBeDefined();
+    expect(component['isEmployee']()).toBe(false);
   });
 });

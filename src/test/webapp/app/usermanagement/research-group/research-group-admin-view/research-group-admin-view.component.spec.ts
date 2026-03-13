@@ -80,7 +80,7 @@ describe('ResearchGroupAdminView', () => {
         provideTranslateMock(mockTranslateService),
         provideToastServiceMock(mockToastService),
         provideFontAwesomeTesting(),
-        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: Router, useValue: { navigate: vi.fn(), events: of() } },
       ],
     }).compileComponents();
 
@@ -366,17 +366,11 @@ describe('ResearchGroupAdminView', () => {
   });
 
   describe('Opening and closing dialogs', () => {
-    it('should open detail view dialog', () => {
+    it('should navigate to detail page', () => {
+      const router = TestBed.inject(Router);
       component.onViewResearchGroup('rg-123');
 
-      expect(mockDialogService.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          header: 'researchGroup.detailView.title',
-          data: { researchGroupId: 'rg-123' },
-        }),
-      );
-      expect(mockTranslateService.instant).toHaveBeenCalledWith('researchGroup.detailView.title');
+      expect(router.navigate).toHaveBeenCalledWith(['/research-group/detail', 'rg-123']);
     });
 
     it('should open create dialog and reload on success', async () => {
@@ -401,7 +395,25 @@ describe('ResearchGroupAdminView', () => {
           data: { mode: 'admin' },
         }),
       );
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
+    });
+
+    it('should reload when create dialog returns created group payload', async () => {
+      const mockDialogRef = {
+        onClose: {
+          subscribe: vi.fn((callback: (result: unknown) => void) => {
+            callback({ id: 'new-rg-id' });
+          }),
+        },
+      } as unknown as DynamicDialogRef;
+
+      mockDialogService.open.mockReturnValue(mockDialogRef);
+      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
+
+      component.onCreateResearchGroup();
+      await Promise.resolve();
+
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not reload when create dialog is cancelled', async () => {
@@ -436,6 +448,15 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
     });
+
+    it('should navigate to manage images page', () => {
+      const router = TestBed.inject(Router);
+      component.onManageImages('rg-123');
+
+      expect(router.navigate).toHaveBeenCalledWith(['/research-group/admin-view/images'], {
+        queryParams: { researchGroupId: 'rg-123', researchGroupName: '' },
+      });
+    });
   });
 
   describe('Research Group Actions', () => {
@@ -447,7 +468,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.activateResearchGroup).toHaveBeenCalledWith('rg-1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.approve');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when approving research group fails', async () => {
@@ -467,7 +488,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.denyResearchGroup).toHaveBeenCalledWith('rg-1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.deny');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when denying research group fails', async () => {
@@ -487,7 +508,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.withdrawResearchGroup).toHaveBeenCalledWith('rg-2');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.withdraw');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when withdrawing research group fails', async () => {
@@ -579,6 +600,115 @@ describe('ResearchGroupAdminView', () => {
       const deniedEl = deniedRow as Element;
       const manageButton = deniedEl.querySelector('[aria-label="researchGroup.members.manageMembers"]');
       expect(manageButton).toBeNull();
+    });
+  });
+
+  describe('Action menu and confirm dialogs', () => {
+    it('builds menu items per status and triggers confirm dialogs', async () => {
+      component.researchGroups.set([mockResearchGroup1, mockResearchGroup2, mockResearchGroup3]);
+      fixture.detectChanges();
+
+      const manageMembersSpy = vi.spyOn(component, 'onManageMembers');
+      const manageImagesSpy = vi.spyOn(component, 'onManageImages');
+      const approveConfirmSpy = vi.spyOn(component.approveDialog(), 'confirm');
+      const denyConfirmSpy = vi.spyOn(component.denyDialog(), 'confirm');
+      const withdrawConfirmSpy = vi.spyOn(component.withdrawDialog(), 'confirm');
+
+      const menuMap = component.actionMenuItems();
+
+      const draftItems = menuMap.get('rg-1') ?? [];
+      const activeItems = menuMap.get('rg-2') ?? [];
+      const deniedItems = menuMap.get('rg-3') ?? [];
+
+      expect(draftItems.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.confirm',
+        'button.deny',
+      ]);
+      expect(activeItems.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.withdraw',
+      ]);
+      expect(deniedItems.map(item => item.label)).toEqual(['researchGroup.imageLibrary.manageButton', 'button.confirm']);
+
+      draftItems.find(item => item.label === 'researchGroup.members.manageMembers')?.command?.();
+      expect(manageMembersSpy).toHaveBeenCalledWith('rg-1');
+
+      draftItems.find(item => item.label === 'researchGroup.imageLibrary.manageButton')?.command?.();
+      expect(manageImagesSpy).toHaveBeenCalledWith('rg-1', 'AI Research Lab');
+
+      draftItems.find(item => item.label === 'button.confirm')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-1');
+      expect(approveConfirmSpy).toHaveBeenCalledOnce();
+
+      draftItems.find(item => item.label === 'button.deny')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-1');
+      expect(denyConfirmSpy).toHaveBeenCalledOnce();
+
+      activeItems.find(item => item.label === 'button.withdraw')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-2');
+      expect(withdrawConfirmSpy).toHaveBeenCalledOnce();
+
+      deniedItems.find(item => item.label === 'button.confirm')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-3');
+      expect(approveConfirmSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('executes confirm handlers when currentResearchGroupId is set', () => {
+      const approveSpy = vi.spyOn(component, 'onApproveResearchGroup').mockResolvedValue(undefined);
+      const denySpy = vi.spyOn(component, 'onDenyResearchGroup').mockResolvedValue(undefined);
+      const withdrawSpy = vi.spyOn(component, 'onWithdrawResearchGroup').mockResolvedValue(undefined);
+
+      component.currentResearchGroupId.set('rg-1');
+      component.onConfirmApprove();
+      expect(approveSpy).toHaveBeenCalledWith('rg-1');
+
+      component.currentResearchGroupId.set('rg-2');
+      component.onConfirmDeny();
+      expect(denySpy).toHaveBeenCalledWith('rg-2');
+
+      component.currentResearchGroupId.set('rg-3');
+      component.onConfirmWithdraw();
+      expect(withdrawSpy).toHaveBeenCalledWith('rg-3');
+    });
+
+    it('does not execute confirm handlers when currentResearchGroupId is missing', () => {
+      const approveSpy = vi.spyOn(component, 'onApproveResearchGroup').mockResolvedValue(undefined);
+      const denySpy = vi.spyOn(component, 'onDenyResearchGroup').mockResolvedValue(undefined);
+      const withdrawSpy = vi.spyOn(component, 'onWithdrawResearchGroup').mockResolvedValue(undefined);
+
+      component.currentResearchGroupId.set(undefined);
+      component.onConfirmApprove();
+      component.onConfirmDeny();
+      component.onConfirmWithdraw();
+
+      expect(approveSpy).not.toHaveBeenCalled();
+      expect(denySpy).not.toHaveBeenCalled();
+      expect(withdrawSpy).not.toHaveBeenCalled();
+    });
+
+    it('returns empty menu items when research group id is missing', () => {
+      component.researchGroups.set([{ ...mockResearchGroup1, id: undefined }]);
+      const items = component.getMenuItems()({ ...mockResearchGroup1, id: undefined });
+      expect(items).toEqual([]);
+    });
+
+    it('returns menu items when research group id is present', () => {
+      component.researchGroups.set([mockResearchGroup2]);
+      const items = component.getMenuItems()(mockResearchGroup2);
+      expect(items.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.withdraw',
+      ]);
+    });
+
+    it('returns empty menu items when id is present but not in menu map', () => {
+      component.researchGroups.set([]);
+      const items = component.getMenuItems()(mockResearchGroup2);
+      expect(items).toEqual([]);
     });
   });
 });

@@ -4,42 +4,160 @@
  */
 
 .heroBanner {
-  padding: 8rem 0;
+  padding: 4rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/MI_building.webp");
   background-position: center top;
   background-size: cover;
+  color: white;
 }
 
-@media screen and (max-width: 996px) {
+@media screen and (max-width: 62.25rem) {
   .heroBanner {
     padding: 2rem;
   }
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.tileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 43.75rem;
+  margin: 2rem auto 0;
 }
 
+@media screen and (max-width: 37.5rem) {
+  .tileGrid {
+    grid-template-columns: 1fr;
+  }
+}
 
-.faqDetails {
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(0.25rem);
+  text-decoration: none;
+  color: white;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.tile:hover {
+  transform: translateY(-0.25rem);
+  background: rgba(255, 255, 255, 0.45);
+  color: white;
+  text-decoration: none;
+}
+
+.tileIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tileTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+}
+
+.tileDescription {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ── FAQ Section ── */
+
+.faqSection {
+  max-width: 48.75rem;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+}
+
+.faqHeading {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.faqSubtext {
+  text-align: center;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 2rem;
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.faqItem {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 0.625rem;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
   @media (prefers-reduced-motion: no-preference) {
     interpolate-size: allow-keywords;
   }
+}
 
-  &::details-content {
-    opacity: 0;
-    block-size: 0;
-    overflow-y: clip;
-    transition: content-visibility 1s allow-discrete, opacity 1s, block-size 1s;
-  }
+.faqItem:hover {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+}
 
-  &[open]::details-content {
-    opacity: 1;
-    block-size: auto;
-  }
+.faqSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+
+/* Hide default marker in all browsers */
+.faqSummary::-webkit-details-marker,
+.faqSummary::marker {
+  display: none;
+  content: '';
+}
+
+.faqChevron {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center / contain;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center / contain;
+  transition: transform 0.25s ease;
+}
+
+.faqItem[open] .faqChevron {
+  transform: rotate(180deg);
+}
+
+.faqItem::details-content {
+  opacity: 0;
+  block-size: 0;
+  overflow-y: clip;
+  transition: content-visibility 0.25s allow-discrete, opacity 0.25s, block-size 0.25s;
+}
+
+.faqItem[open]::details-content {
+  opacity: 1;
+  block-size: auto;
+}
+
+.faqAnswer {
+  padding: 0 1.25rem 1.25rem;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.6;
 }

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.repository;
 
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.domain.key.UserSettingId;
 import java.util.List;
@@ -55,4 +56,6 @@ public interface UserSettingRepository extends TumApplyJpaRepository<UserSetting
         nativeQuery = true
     )
     void upsert(@Param("userId") UUID userId, @Param("key") String key, @Param("value") String value);
+
+    void deleteByUser(User user);
 }

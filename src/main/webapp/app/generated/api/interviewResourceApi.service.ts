@@ -10,7 +10,7 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient,
+import { HttpClient, HttpParams,
          HttpResponse, HttpEvent, HttpContext 
         }       from '@angular/common/http';
 import { Observable }                                        from 'rxjs';
@@ -20,6 +20,10 @@ import { AddIntervieweesDTO } from '../model/addIntervieweesDTO';
 // @ts-ignore
 import { AssignSlotRequestDTO } from '../model/assignSlotRequestDTO';
 // @ts-ignore
+import { CancelInterviewDTO } from '../model/cancelInterviewDTO';
+// @ts-ignore
+import { ConflictDataDTO } from '../model/conflictDataDTO';
+// @ts-ignore
 import { CreateSlotsDTO } from '../model/createSlotsDTO';
 // @ts-ignore
 import { InterviewOverviewDTO } from '../model/interviewOverviewDTO';
@@ -27,6 +31,18 @@ import { InterviewOverviewDTO } from '../model/interviewOverviewDTO';
 import { InterviewSlotDTO } from '../model/interviewSlotDTO';
 // @ts-ignore
 import { IntervieweeDTO } from '../model/intervieweeDTO';
+// @ts-ignore
+import { IntervieweeDetailDTO } from '../model/intervieweeDetailDTO';
+// @ts-ignore
+import { PageResponseDTOInterviewSlotDTO } from '../model/pageResponseDTOInterviewSlotDTO';
+// @ts-ignore
+import { SendInvitationsRequestDTO } from '../model/sendInvitationsRequestDTO';
+// @ts-ignore
+import { SendInvitationsResultDTO } from '../model/sendInvitationsResultDTO';
+// @ts-ignore
+import { UpcomingInterviewDTO } from '../model/upcomingInterviewDTO';
+// @ts-ignore
+import { UpdateAssessmentDTO } from '../model/updateAssessmentDTO';
 
 // @ts-ignore
 import { BASE_PATH }                     from '../variables';
@@ -178,6 +194,75 @@ export class InterviewResourceApiService extends BaseService {
 
     /**
      * @param processId 
+     * @param slotId 
+     * @param cancelInterviewDTO 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public cancelInterview(processId: string, slotId: string, cancelInterviewDTO: CancelInterviewDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling cancelInterview.');
+        }
+        if (slotId === null || slotId === undefined) {
+            throw new Error('Required parameter slotId was null or undefined when calling cancelInterview.');
+        }
+        if (cancelInterviewDTO === null || cancelInterviewDTO === undefined) {
+            throw new Error('Required parameter cancelInterviewDTO was null or undefined when calling cancelInterview.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots/${this.configuration.encodeParam({name: "slotId", value: slotId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/cancel`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: cancelInterviewDTO,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param processId 
      * @param createSlotsDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -294,6 +379,67 @@ export class InterviewResourceApiService extends BaseService {
     }
 
     /**
+     * @param processId 
+     * @param date 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getConflictDataForDate(processId: string, date: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ConflictDataDTO>;
+    public getConflictDataForDate(processId: string, date: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ConflictDataDTO>>;
+    public getConflictDataForDate(processId: string, date: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ConflictDataDTO>>;
+    public getConflictDataForDate(processId: string, date: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling getConflictDataForDate.');
+        }
+        if (date === null || date === undefined) {
+            throw new Error('Required parameter date was null or undefined when calling getConflictDataForDate.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>date, 'date');
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots/conflict-data`;
+        return this.httpClient.request<ConflictDataDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -395,6 +541,62 @@ export class InterviewResourceApiService extends BaseService {
 
     /**
      * @param processId 
+     * @param intervieweeId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IntervieweeDetailDTO>;
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IntervieweeDetailDTO>>;
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IntervieweeDetailDTO>>;
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling getIntervieweeDetails.');
+        }
+        if (intervieweeId === null || intervieweeId === undefined) {
+            throw new Error('Required parameter intervieweeId was null or undefined when calling getIntervieweeDetails.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/interviewees/${this.configuration.encodeParam({name: "intervieweeId", value: intervieweeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        return this.httpClient.request<IntervieweeDetailDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param processId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -447,16 +649,36 @@ export class InterviewResourceApiService extends BaseService {
 
     /**
      * @param processId 
+     * @param year 
+     * @param month 
+     * @param afterDateTime 
+     * @param beforeDateTime 
+     * @param page 
+     * @param size 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getSlotsByProcessId(processId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<InterviewSlotDTO>>;
-    public getSlotsByProcessId(processId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<InterviewSlotDTO>>>;
-    public getSlotsByProcessId(processId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<InterviewSlotDTO>>>;
-    public getSlotsByProcessId(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOInterviewSlotDTO>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOInterviewSlotDTO>>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOInterviewSlotDTO>>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getSlotsByProcessId.');
         }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>year, 'year');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>month, 'month');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>afterDateTime, 'afterDateTime');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>beforeDateTime, 'beforeDateTime');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>page, 'page');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>size, 'size');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -484,9 +706,194 @@ export class InterviewResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots`;
-        return this.httpClient.request<Array<InterviewSlotDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageResponseDTOInterviewSlotDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getUpcomingInterviews(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<UpcomingInterviewDTO>>;
+    public getUpcomingInterviews(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<UpcomingInterviewDTO>>>;
+    public getUpcomingInterviews(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<UpcomingInterviewDTO>>>;
+    public getUpcomingInterviews(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/upcoming`;
+        return this.httpClient.request<Array<UpcomingInterviewDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param processId 
+     * @param sendInvitationsRequestDTO 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SendInvitationsResultDTO>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SendInvitationsResultDTO>>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SendInvitationsResultDTO>>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling sendInvitations.');
+        }
+        if (sendInvitationsRequestDTO === null || sendInvitationsRequestDTO === undefined) {
+            throw new Error('Required parameter sendInvitationsRequestDTO was null or undefined when calling sendInvitations.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/send-invitations`;
+        return this.httpClient.request<SendInvitationsResultDTO>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: sendInvitationsRequestDTO,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param processId 
+     * @param intervieweeId 
+     * @param updateAssessmentDTO 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IntervieweeDetailDTO>;
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IntervieweeDetailDTO>>;
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IntervieweeDetailDTO>>;
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling updateAssessment.');
+        }
+        if (intervieweeId === null || intervieweeId === undefined) {
+            throw new Error('Required parameter intervieweeId was null or undefined when calling updateAssessment.');
+        }
+        if (updateAssessmentDTO === null || updateAssessmentDTO === undefined) {
+            throw new Error('Required parameter updateAssessmentDTO was null or undefined when calling updateAssessment.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/interviewees/${this.configuration.encodeParam({name: "intervieweeId", value: intervieweeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/assessment`;
+        return this.httpClient.request<IntervieweeDetailDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: updateAssessmentDTO,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

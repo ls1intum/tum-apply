@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -10,6 +11,9 @@ import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,16 +31,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
-    private final KeycloakUserService keycloakUserService;
+    private final ImageService imageService;
+    private static final Duration LAST_ACTIVITY_UPDATE_THRESHOLD = Duration.ofHours(24);
 
     public UserService(
         UserRepository userRepository,
         UserResearchGroupRoleRepository userResearchGroupRoleRepository,
-        KeycloakUserService keycloakUserService
+        ImageService imageService
     ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
-        this.keycloakUserService = keycloakUserService;
+        this.imageService = imageService;
     }
 
     /**
@@ -58,14 +63,17 @@ public class UserService {
      * Upserts a user in the database and assigns the APPLICANT role.
      * - Normalizes input values (never null, may be blank)
      * - Creates a new user if missing, otherwise updates changed fields only
+     * - firstName and lastName are ONLY set during initial user creation from Keycloak values
+     * - After creation, firstName and lastName are stored in the database and not synced with Keycloak
+     * - Updates lastActivityAt if older than 24 hours
      * - Assigns the APPLICANT role when no roles are present
      * <p>
      * Note: This method does not throw if names/emails are blank; callers may validate earlier.
      *
      * @param keycloakUserId the Keycloak user ID to associate with the user
      * @param email          the user's email (can be null/blank)
-     * @param firstName      optional first name (can be null/blank)
-     * @param lastName       optional last name (can be null/blank)
+     * @param firstName      optional first name from Keycloak (only used for new users)
+     * @param lastName       optional last name from Keycloak (only used for new users)
      * @return the managed User entity
      */
     @Transactional
@@ -82,8 +90,16 @@ public class UserService {
 
         boolean updated = isNewUser;
         updated |= setIfPresentAndChanged(user::getEmail, user::setEmail, normalizedEmail);
-        updated |= setIfPresentAndChanged(user::getFirstName, user::setFirstName, normalizedFirstName);
-        updated |= setIfPresentAndChanged(user::getLastName, user::setLastName, normalizedLastName);
+        // firstName and lastName are only set on user creation (from Keycloak initial values)
+        // After that, they are managed independently in the database and not synced with Keycloak
+
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime cutoff = now.minus(LAST_ACTIVITY_UPDATE_THRESHOLD);
+
+        if (user.getLastActivityAt() == null || user.getLastActivityAt().isBefore(cutoff)) {
+            user.setLastActivityAt(now);
+            updated = true;
+        }
 
         if (updated) {
             user = userRepository.save(user);
@@ -94,7 +110,8 @@ public class UserService {
     }
 
     /**
-     * Updates the user's first and last name in both Keycloak and the local database.
+     * Updates the user's first and last name in the local database only.
+     * Names are stored independently from Keycloak and can be changed by the user.
      *
      * @param userId    the Keycloak user ID
      * @param firstName the new first name
@@ -102,15 +119,37 @@ public class UserService {
      */
     @Transactional
     public void updateNames(String userId, String firstName, String lastName) {
-        boolean updated = keycloakUserService.updateProfile(userId, firstName, lastName);
-        if (updated) {
-            User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
+        String normalizedFirstName = StringUtil.normalize(firstName, false);
+        String normalizedLastName = StringUtil.normalize(lastName, false);
 
-            userRepository.save(user);
+        if (normalizedFirstName != null && !normalizedFirstName.isBlank()) {
+            user.setFirstName(normalizedFirstName);
         }
+        if (normalizedLastName != null && !normalizedLastName.isBlank()) {
+            user.setLastName(normalizedLastName);
+        }
+
+        userRepository.save(user);
+    }
+
+    /**
+     * Updates the user's avatar URL in the local database.
+     *
+     * @param userId    the Keycloak user ID
+     * @param avatarUrl the new avatar URL (can be null/blank to remove avatar)
+     */
+    public void updateAvatar(String userId, String avatarUrl) {
+        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        String normalizedAvatarUrl = StringUtil.normalize(avatarUrl, false);
+        if (normalizedAvatarUrl == null || normalizedAvatarUrl.isBlank()) {
+            user.setAvatar(null);
+        } else {
+            imageService.assertUserOwnsProfilePictureUrl(user.getUserId(), normalizedAvatarUrl);
+            user.setAvatar(normalizedAvatarUrl);
+        }
+        userRepository.save(user);
     }
 
     /**

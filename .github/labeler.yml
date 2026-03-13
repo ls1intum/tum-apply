@@ -10,18 +10,6 @@ tests:
   - changed-files:
       - any-glob-to-any-file: src/test/**/*
 
-database:
-  - changed-files:
-      - any-glob-to-any-file: src/main/resources/config/liquibase/master.xml
-
-docker:
-  - changed-files:
-      - any-glob-to-any-file: docker/**/*
-
-config-change:
-  - changed-files:
-      - any-glob-to-any-file: src/main/resources/config/*.yml
-
 application:
   - changed-files:
       - any-glob-to-any-file: src/main/java/de/tum/cit/aet/application/**
@@ -41,3 +29,15 @@ user management:
   - changed-files:
       - any-glob-to-any-file: src/main/java/de/tum/cit/aet/usermanagement/**
       - any-glob-to-any-file: src/main/webapp/app/pages/usermanagement/**
+
+database:
+  - changed-files:
+      - any-glob-to-any-file: src/main/resources/config/liquibase/master.xml
+
+config-change:
+  - changed-files:
+      - any-glob-to-any-file: src/main/resources/config/*.yml
+
+docker:
+  - changed-files:
+      - any-glob-to-any-file: docker/**/*

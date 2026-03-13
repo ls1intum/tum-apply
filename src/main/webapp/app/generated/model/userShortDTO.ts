@@ -11,11 +11,13 @@ import { ResearchGroupShortDTO } from './researchGroupShortDTO';
 
 
 export interface UserShortDTO { 
+    avatar?: string;
     email?: string;
     firstName?: string;
     lastName?: string;
     researchGroup?: ResearchGroupShortDTO;
     roles?: Array<UserShortDTO.RolesEnum>;
+    universityId?: string;
     userId?: string;
 }
 export namespace UserShortDTO {

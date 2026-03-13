@@ -24,7 +24,15 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()" #editorElem>
+    <div
+      class="input-wrapper"
+      [class.error]="isEmpty()"
+      contenteditable="false"
+      (focusin)="onFocus()"
+      (focusout)="onBlur()"
+      #editorElem
+      [style.height]="height()"
+    >
       <quill-editor
         class="custom-quill-editor"
         (onFocus)="onFocus()"
@@ -64,7 +72,7 @@
               @if (codingDisplay(); as coding) {
                 <span
                   class="px-3 py-1 rounded text-xs break-words"
-                  [ngClass]="analysisResult()?.coding === 'masculine-coded' ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"
+                  [ngClass]="analysisResult()?.coding === 'non-inclusive-coded' ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"
                 >
                   {{ coding }}
                 </span>
@@ -99,7 +107,9 @@
         }
       </div>
       <!-- Character Count Display -->
-      <div [ngClass]="charCounterColor()">{{ characterCount() }}/{{ characterLimit() }}</div>
+      @if (characterLimit() !== undefined && characterLimit() !== null) {
+        <div [ngClass]="charCounterColor()">{{ characterCount() }}/{{ characterLimit() }}</div>
+      }
     </div>
   </div>
 </div>

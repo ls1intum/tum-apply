@@ -1,0 +1,54 @@
+<div class="flex flex-col gap-1">
+  <div class="flex items-center gap-1" [class.border-negative-default]="inputState() === 'invalid' && !isFocused()">
+    @if (control()) {
+      <p-checkbox
+        [formControl]="formControl()"
+        [binary]="true"
+        [id]="inputId()"
+        [disabled]="disabled()"
+        size="small"
+        (onChange)="onCheckboxChange($event)"
+        (onBlur)="onBlur()"
+        (onFocus)="onFocus()"
+      />
+    } @else {
+      <p-checkbox
+        [ngModel]="model()"
+        (ngModelChange)="modelChange.emit($event)"
+        [binary]="true"
+        [id]="inputId()"
+        [disabled]="disabled()"
+        size="small"
+        (onBlur)="onBlur()"
+        (onFocus)="onFocus()"
+      />
+    }
+
+    @if (label(); as label) {
+      <label class="text-text-primary ml-1" [for]="inputId()">
+        @if (shouldTranslate()) {
+          <span [jhiTranslate]="label"></span>
+        } @else {
+          {{ label }}
+        }
+        @if (required()) {
+          <span class="text-negative-default ml-0.5">*</span>
+        }
+      </label>
+    }
+
+    @if (tooltipText(); as tooltip) {
+      <fa-icon class="icon" [icon]="['fas', 'circle-info']" [pTooltip]="tooltipValue()" tooltipPosition="top" />
+    } @else if (icon(); as icon) {
+      <fa-icon class="icon" [icon]="['fas', icon]" />
+    }
+  </div>
+
+  @if (errorEnabled()) {
+    <div class="text-xs text-negative-default min-h-4">
+      @if (inputState() === 'invalid' && !isFocused()) {
+        {{ errorMessage() }}
+      }
+    </div>
+  }
+</div>

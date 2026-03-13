@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.JobOverviewData;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
@@ -20,9 +19,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PDFExportService {
@@ -30,9 +31,9 @@ public class PDFExportService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    private final ApplicationService applicationService;
     private final JobService jobService;
     private final CurrentUserService currentUserService;
+    private final ImageService imageService;
 
     private final UserRepository userRepository;
 
@@ -41,15 +42,11 @@ public class PDFExportService {
     /**
      * Exports application details to PDF
      *
-     * @param applicationId the application ID
-     * @param labels        translation labels for PDF content
+     * @param app    the ApplicationDetailDTO containing application data
+     * @param labels translation labels for PDF content
      * @return the PDF file as Resource
      */
-    public Resource exportApplicationToPDF(UUID applicationId, Map<String, String> labels) {
-        ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
-        UUID jobId = app.jobId();
-        JobDetailDTO job = jobService.getJobDetails(jobId);
-
+    public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         builder
@@ -63,21 +60,34 @@ public class PDFExportService {
             )
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
-        // Overview Section
-        builder
-            .setOverviewTitle(labels.get("overview"))
-            .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
-            .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
-            .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
-            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
-            .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
-            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
-            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
-            .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
-            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
-            .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
-            .setOverviewDescriptionTitle(labels.get("jobDescription"))
-            .setOverviewDescription(job.description());
+        if (app.jobId() != null) {
+            JobDetailDTO job = jobService.getJobDetails(app.jobId());
+            // Determine job description language and content
+            String lang = labels.getOrDefault("lang", "en");
+            String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
+
+            // Overview Section if no in preview
+            builder
+                .setOverviewTitle(labels.get("overview"))
+                .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
+                .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
+                .addOverviewItem(
+                    labels.get("location"),
+                    app.jobLocation() != null ? getValue(app.jobLocation().correctLanguageValue(lang)) : "-"
+                )
+                .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
+                .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
+                .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
+                .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
+                .addOverviewItem(
+                    labels.get("fundingType"),
+                    job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
+                )
+                .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
+                .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
+                .setOverviewDescriptionTitle(labels.get("jobDescription"))
+                .setOverviewDescription(descriptionForExport);
+        }
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -106,11 +116,7 @@ public class PDFExportService {
             .startInfoSection(labels.get("bachelorInfo"))
             .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
             .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
-            // .addSectionData(labels.get("upperGradeLimit"),
-            // getValue(app.applicant().bachelorGradeUpperLimit()))
-            // .addSectionData(labels.get("lowerGradeLimit"),
-            // getValue(app.applicant().bachelorGradeLowerLimit()))
-            .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
+            .addSectionData(labels.get("grade"), labels.getOrDefault("bachelorGradeDisplay", getValue(app.applicant().bachelorGrade())));
 
         // Master Section
         if (app.applicant().masterDegreeName() != null) {
@@ -118,11 +124,7 @@ public class PDFExportService {
                 .startInfoSection(labels.get("masterInfo"))
                 .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
                 .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
-                // .addSectionData(labels.get("upperGradeLimit"),
-                // getValue(app.applicant().masterGradeUpperLimit()))
-                // .addSectionData(labels.get("lowerGradeLimit"),
-                // getValue(app.applicant().masterGradeLowerLimit()))
-                .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
+                .addSectionData(labels.get("grade"), labels.getOrDefault("masterGradeDisplay", getValue(app.applicant().masterGrade())));
         }
 
         // Metadata
@@ -147,12 +149,26 @@ public class PDFExportService {
 
         PDFBuilder builder = new PDFBuilder(job.title());
 
+        // Add banner image if available
+        if (job.imageId() != null) {
+            try {
+                byte[] imageBytes = imageService.getImageBytes(job.imageId());
+                builder.setBannerImage(imageBytes);
+            } catch (Exception e) {
+                log.debug("Could not load banner image for job PDF export: {}", e.getMessage());
+            }
+        }
+
         builder.addHeaderItem(labels.get("jobBy") + job.supervisingProfessorName() + labels.get("forJob") + "'" + job.title() + "'");
         try {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.debug("User not needed to see job status in PDF export as it's always published for them.");
+        }
+
+        String lang = labels.getOrDefault("lang", "en");
 
         // Overview Section
         addJobOverview(
@@ -160,19 +176,20 @@ public class PDFExportService {
             labels,
             new JobOverviewData(
                 job.supervisingProfessorName(),
-                job.location(),
+                job.location() != null ? job.location().correctLanguageValue(lang) : "-",
                 job.fieldOfStudies(),
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
                 formatContractDuration(job.contractDuration(), labels.get("years")),
-                getValue(job.fundingType()),
+                job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
             )
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.description(), job.tasks(), job.requirements());
+        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
+        addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -197,6 +214,16 @@ public class PDFExportService {
     public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(jobFormDTO.title());
 
+        // Add banner image if available
+        if (jobFormDTO.imageId() != null) {
+            try {
+                byte[] imageBytes = imageService.getImageBytes(jobFormDTO.imageId());
+                builder.setBannerImage(imageBytes);
+            } catch (Exception e) {
+                log.debug("Could not load banner image for job preview PDF export: {}", e.getMessage());
+            }
+        }
+
         String supervisingProfessorName = userRepository
             .findById(jobFormDTO.supervisingProfessor())
             .map(user -> (user.getFirstName() + " " + user.getLastName()).trim())
@@ -206,25 +233,28 @@ public class PDFExportService {
             .addHeaderItem(labels.get("jobBy") + supervisingProfessorName + labels.get("forJob") + "'" + jobFormDTO.title() + "'")
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(jobFormDTO.state()));
 
+        String lang = labels.getOrDefault("lang", "en");
+
         // Overview Section
         addJobOverview(
             builder,
             labels,
             new JobOverviewData(
                 supervisingProfessorName,
-                UiTextFormatter.formatEnumValue(jobFormDTO.location()),
+                jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(lang) : "-",
                 jobFormDTO.fieldOfStudies(),
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
                 jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
-                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.description(), jobFormDTO.tasks(), jobFormDTO.requirements());
+        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
+        addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));
@@ -235,7 +265,7 @@ public class PDFExportService {
             ResearchGroup group = currentUserService.getResearchGroupIfProfessor();
             addResearchGroupSection(builder, group, labels);
         } catch (AccessDeniedException ignored) {
-            // no research group → nothing added
+            log.debug("Nothing is added if there is no research group information.");
         }
 
         return builder.build();
@@ -257,20 +287,10 @@ public class PDFExportService {
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
 
-    private void addJobDetailsSection(
-        PDFBuilder builder,
-        Map<String, String> labels,
-        String description,
-        String tasks,
-        String requirements
-    ) {
+    private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
         builder.startSectionGroup(labels.get("jobDetails"));
 
-        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(description));
-
-        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(tasks));
-
-        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(requirements));
+        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(jobDescription));
     }
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
@@ -313,13 +333,12 @@ public class PDFExportService {
     /**
      * Generates filename for application PDF
      *
-     * @param applicationId    the application ID
+     * @param jobTitle         the title of the job of the application
      * @param applicationLabel label for application used as ending of the filename
      * @return sanitized filename for the PDF
      */
-    public String generateApplicationFilename(UUID applicationId, String applicationLabel) {
-        ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
-        return sanitizeFilename(app.jobTitle()) + "_" + applicationLabel + ".pdf";
+    public String generateApplicationFilename(String jobTitle, String applicationLabel) {
+        return sanitizeFilename(jobTitle) + "_" + applicationLabel + ".pdf";
     }
 
     /**
@@ -375,7 +394,7 @@ public class PDFExportService {
         return (value != null && !value.isEmpty()) ? value : "-";
     }
 
-    private String formatDate(Object date) {
+    String formatDate(Object date) {
         if (date == null) {
             return "-";
         }
@@ -420,5 +439,26 @@ public class PDFExportService {
         }
 
         return String.join(", ", parts);
+    }
+
+    /**
+     * Selects the appropriate job description based on the requested language and availability
+     *
+     * @param englishDesc   English job description
+     * @param germanDesc    German job description
+     * @param lang          requested language ("en" or "de")
+     * @return the selected job description for export or a "-" if none is available
+     */
+    private String selectJobDescriptionForLang(String englishDesc, String germanDesc, String lang) {
+        String primary = "de".equalsIgnoreCase(lang) ? germanDesc : englishDesc;
+        String secondary = "de".equalsIgnoreCase(lang) ? englishDesc : germanDesc;
+
+        if (primary != null && !primary.trim().isEmpty()) {
+            return primary;
+        } else if (secondary != null && !secondary.trim().isEmpty()) {
+            return secondary;
+        } else {
+            return "-";
+        }
     }
 }

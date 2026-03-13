@@ -1,10 +1,13 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.USER_SETTINGS)
 @Table(name = "users")
 public class User extends AbstractAuditingEntity {
 
@@ -34,7 +38,7 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "avatar")
+    @Column(name = "avatar", length = 512)
     private String avatar;
 
     @Column(name = "first_name", nullable = false)
@@ -76,6 +80,9 @@ public class User extends AbstractAuditingEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailSetting> emailSettings = new HashSet<>();
+
+    @Column(name = "last_activity_at")
+    private LocalDateTime lastActivityAt;
 
     /**
      * Ensure defaults before persisting a new user.

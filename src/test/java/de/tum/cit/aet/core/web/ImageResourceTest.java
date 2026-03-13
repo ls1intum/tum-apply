@@ -7,6 +7,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -332,6 +333,63 @@ public class ImageResourceTest extends AbstractResourceTest {
     }
 
     @Nested
+    class GetResearchGroupJobBannersByResearchGroupTests {
+
+        @Test
+        void getResearchGroupJobBannersByResearchGroupReturnsImagesForRequestedGroup() {
+            // Act
+            List<ImageDTO> result = api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .getAndRead(
+                    API_BASE_PATH + "/research-group/job-banners/by-research-group",
+                    Map.of("researchGroupId", secondResearchGroup.getResearchGroupId().toString()),
+                    new TypeReference<List<ImageDTO>>() {},
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).imageId()).isEqualTo(secondTestImage.getImageId());
+            assertThat(result.get(0).researchGroupId()).isEqualTo(secondResearchGroup.getResearchGroupId());
+        }
+
+        @Test
+        void getResearchGroupJobBannersByResearchGroupRequiresAdminRole() {
+            api
+                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(
+                    API_BASE_PATH + "/research-group/job-banners/by-research-group",
+                    Map.of("researchGroupId", researchGroup.getResearchGroupId().toString()),
+                    Void.class,
+                    403
+                );
+        }
+
+        @Test
+        void getResearchGroupJobBannersByResearchGroupReturns404ForUnknownGroup() {
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .getAndRead(
+                    API_BASE_PATH + "/research-group/job-banners/by-research-group",
+                    Map.of("researchGroupId", UUID.randomUUID().toString()),
+                    Void.class,
+                    404
+                );
+        }
+
+        @Test
+        void getResearchGroupJobBannersByResearchGroupRequiresAuthentication() {
+            api.getAndRead(
+                API_BASE_PATH + "/research-group/job-banners/by-research-group",
+                Map.of("researchGroupId", researchGroup.getResearchGroupId().toString()),
+                Void.class,
+                401
+            );
+        }
+    }
+
+    @Nested
     class UploadJobBannerTests {
 
         @Test
@@ -498,6 +556,124 @@ public class ImageResourceTest extends AbstractResourceTest {
             assertThat(result).isNotNull();
             assertThat(result.imageId()).isNotNull();
             assertThat(result.url()).endsWith(".png"); // Should default to .png based on mime type
+        }
+    }
+
+    @Nested
+    class UploadJobBannerForResearchGroupTests {
+
+        @Test
+        void uploadJobBannerForResearchGroupSuccessfullyUploadsAsAdmin() throws Exception {
+            // Arrange
+            MockMultipartFile validImageFile = createValidImageFile("admin-job-banner.jpg");
+            String url = API_BASE_PATH + "/upload/job-banner/by-research-group?researchGroupId=" + secondResearchGroup.getResearchGroupId();
+
+            // Act
+            ImageDTO result = api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .multipartPostAndRead(url, List.of(validImageFile), new TypeReference<ImageDTO>() {}, 201);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.imageId()).isNotNull();
+            assertThat(result.imageType()).isEqualTo(ImageType.JOB_BANNER);
+            assertThat(result.uploadedById()).isEqualTo(adminUser.getUserId());
+            assertThat(result.researchGroupId()).isEqualTo(secondResearchGroup.getResearchGroupId());
+        }
+
+        @Test
+        void uploadJobBannerForResearchGroupRequiresAdminRole() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("admin-job-banner.jpg");
+            String url = API_BASE_PATH + "/upload/job-banner/by-research-group?researchGroupId=" + secondResearchGroup.getResearchGroupId();
+
+            api
+                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
+                .multipartPostAndRead(url, List.of(validImageFile), new TypeReference<ImageDTO>() {}, 403);
+        }
+
+        @Test
+        void uploadJobBannerForResearchGroupReturns404ForUnknownGroup() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("admin-job-banner.jpg");
+            String url = API_BASE_PATH + "/upload/job-banner/by-research-group?researchGroupId=" + UUID.randomUUID();
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .multipartPostAndRead(url, List.of(validImageFile), new TypeReference<ImageDTO>() {}, 404);
+        }
+
+        @Test
+        void uploadJobBannerForResearchGroupRequiresAuthentication() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("admin-job-banner.jpg");
+            String url = API_BASE_PATH + "/upload/job-banner/by-research-group?researchGroupId=" + secondResearchGroup.getResearchGroupId();
+
+            api.multipartPostAndRead(url, List.of(validImageFile), new TypeReference<ImageDTO>() {}, 401);
+        }
+    }
+
+    @Nested
+    class UploadProfilePictureTests {
+
+        @Test
+        void uploadProfilePictureSuccessfullyUploadsValidImageAndUpdatesAvatar() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("profile-picture.jpg");
+
+            ImageDTO result = api
+                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
+                .multipartPostAndRead(
+                    API_BASE_PATH + "/upload/profile-picture",
+                    List.of(validImageFile),
+                    new TypeReference<ImageDTO>() {},
+                    201
+                );
+
+            assertThat(result).isNotNull();
+            assertThat(result.imageId()).isNotNull();
+            assertThat(result.imageType()).isEqualTo(ImageType.PROFILE_PICTURE);
+            assertThat(result.uploadedById()).isEqualTo(professorUser.getUserId());
+
+            Image savedImage = imageRepository.findById(result.imageId()).orElse(null);
+            assertThat(savedImage).isInstanceOf(ProfileImage.class);
+
+            User reloadedUser = userRepository.findById(professorUser.getUserId()).orElseThrow();
+            assertThat(reloadedUser.getAvatar()).isEqualTo(result.url());
+        }
+
+        @Test
+        void uploadProfilePictureReplacesExistingProfilePictureAndUpdatesAvatar() throws Exception {
+            ProfileImage existingImage = imageRepository.save(ImageTestData.newProfilePicture(professorUser));
+            professorUser.setAvatar(existingImage.getUrl());
+            userRepository.saveAndFlush(professorUser);
+
+            MockMultipartFile replacementImageFile = createValidImageFile("profile-picture-replacement.jpg");
+
+            ImageDTO result = api
+                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
+                .multipartPostAndRead(
+                    API_BASE_PATH + "/upload/profile-picture",
+                    List.of(replacementImageFile),
+                    new TypeReference<ImageDTO>() {},
+                    201
+                );
+
+            assertThat(imageRepository.findById(existingImage.getImageId())).isEmpty();
+
+            User reloadedUser = userRepository.findById(professorUser.getUserId()).orElseThrow();
+            assertThat(reloadedUser.getAvatar()).isEqualTo(result.url());
+
+            List<Image> uploadedImages = imageRepository.findByUploaderId(professorUser.getUserId());
+            assertThat(uploadedImages.stream().filter(ProfileImage.class::isInstance)).hasSize(1);
+        }
+
+        @Test
+        void uploadProfilePictureRequiresAuthentication() throws Exception {
+            MockMultipartFile validImageFile = createValidImageFile("profile-picture.jpg");
+
+            api.multipartPostAndRead(
+                API_BASE_PATH + "/upload/profile-picture",
+                List.of(validImageFile),
+                new TypeReference<ImageDTO>() {},
+                401
+            );
         }
     }
 

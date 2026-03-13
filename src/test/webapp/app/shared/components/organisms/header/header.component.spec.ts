@@ -7,6 +7,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { User } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
@@ -18,7 +19,7 @@ import {
   createAuthDialogServiceMock,
   provideAuthDialogServiceMock,
 } from '../../../../../util/auth-dialog.service.mock';
-import { setupWindowMatchMediaMock } from 'util/theme.service.mock';
+import { setupWindowMatchMediaMock, createThemeServiceMock, provideThemeServiceMock, ThemeServiceMock } from 'util/theme.service.mock';
 
 type HeaderComponentTestInstance = Omit<HeaderComponent, 'routeAuthorities' | 'isProfessorPage'> & {
   routeAuthorities: () => UserShortDTO.RolesEnum[] | string[];
@@ -39,6 +40,7 @@ describe('HeaderComponent', () => {
   let authFacade: AuthFacadeServiceMock;
   let authDialog: AuthDialogServiceMock;
   let translate: TranslateService;
+  let themeService: ThemeServiceMock;
 
   beforeEach(async () => {
     setupWindowMatchMediaMock();
@@ -47,6 +49,7 @@ describe('HeaderComponent', () => {
     accountService = createAccountServiceMock();
     authFacade = createAuthFacadeServiceMock();
     authDialog = createAuthDialogServiceMock();
+    themeService = createThemeServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
@@ -55,6 +58,7 @@ describe('HeaderComponent', () => {
         provideAccountServiceMock(accountService),
         provideAuthFacadeServiceMock(authFacade),
         provideAuthDialogServiceMock(authDialog),
+        provideThemeServiceMock(themeService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -190,6 +194,121 @@ describe('HeaderComponent', () => {
     });
   });
 
+  describe('navigateToSettings', () => {
+    it('should navigate to settings page', () => {
+      component.navigateToSettings();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/settings']);
+    });
+  });
+
+  describe('toggleProfileMenu', () => {
+    it('should call profileMenu toggle method with event', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      fixture.detectChanges();
+
+      const mockEvent = new MouseEvent('click');
+      const menuComponent = component.profileMenu();
+      const toggleSpy = vi.spyOn(menuComponent!, 'toggle');
+
+      component.toggleProfileMenu(mockEvent);
+
+      expect(toggleSpy).toHaveBeenCalledWith(mockEvent);
+    });
+
+    it('should not throw error when profileMenu is undefined and should not change isProfileMenuOpen', () => {
+      component.isProfileMenuOpen.set(false);
+      const mockEvent = new MouseEvent('click');
+
+      vi.spyOn(component as any, 'profileMenu').mockReturnValue(undefined);
+
+      expect(() => component.toggleProfileMenu(mockEvent)).not.toThrow();
+      expect(component.isProfileMenuOpen()).toBe(false);
+    });
+
+    it('should reflect menu visibility changes in isProfileMenuOpen (simulating visibleChange)', () => {
+      component.isProfileMenuOpen.set(false);
+
+      component.isProfileMenuOpen.set(true);
+      expect(component.isProfileMenuOpen()).toBe(true);
+
+      component.isProfileMenuOpen.set(false);
+      expect(component.isProfileMenuOpen()).toBe(false);
+    });
+  });
+
+  describe('profileMenuItems', () => {
+    it('should return empty array when user is not authenticated', () => {
+      accountService.user.set(undefined);
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+
+      expect(menuItems).toEqual([]);
+    });
+
+    it('should return settings and logout menu items when user is authenticated', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+
+      expect(menuItems).toHaveLength(2);
+      expect(menuItems[0]).toMatchObject({
+        label: 'header.settings',
+        icon: 'gear',
+        severity: 'primary',
+      });
+      expect(menuItems[1]).toMatchObject({
+        label: 'header.logout',
+        icon: 'right-from-bracket',
+        severity: 'danger',
+      });
+    });
+
+    it('should trigger navigateToSettings when settings menu item command is executed', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      const navigateSpy = vi.spyOn(component, 'navigateToSettings');
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+      const settingsItem = menuItems[0];
+      settingsItem?.command?.();
+
+      expect(navigateSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should trigger logout when logout menu item command is executed', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      const logoutSpy = vi.spyOn(component, 'logout');
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+      const logoutItem = menuItems[1];
+      logoutItem?.command?.();
+
+      expect(logoutSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should reactively update when language changes', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      fixture.detectChanges();
+
+      const menuItemsBefore = component.profileMenuItems();
+      expect(menuItemsBefore).toHaveLength(2);
+
+      // Trigger language change
+      translate.use('de');
+      fixture.detectChanges();
+
+      const menuItemsAfter = component.profileMenuItems();
+      expect(menuItemsAfter).toHaveLength(2);
+      // Menu items should still have the same structure
+      expect(menuItemsAfter[0]?.label).toBe('header.settings');
+      expect(menuItemsAfter[1]?.label).toBe('header.logout');
+    });
+  });
+
   describe('login & logout', () => {
     it('should open login dialog when login is called on applicant page', () => {
       component.isProfessorPage = () => false;
@@ -296,36 +415,19 @@ describe('HeaderComponent', () => {
     });
 
     it('should enable dark mode and persist preference when currently light', () => {
-      const requestAnimationFrameSpy = vi
-        .spyOn(window, 'requestAnimationFrame')
-        .mockImplementation((callback: FrameRequestCallback): number => {
-          callback(0);
-          return 0;
-        });
-
       component.themeService.setTheme('dark');
 
-      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(true);
-      expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
-      expect(document.documentElement.classList.contains('theme-switching')).toBe(false);
-      expect(requestAnimationFrameSpy).toHaveBeenCalledOnce();
+      expect(themeService.setTheme).toHaveBeenCalledWith('dark');
+      expect(themeService.theme()).toBe('dark');
     });
 
     it('should disable dark mode and persist preference when currently dark', () => {
-      document.documentElement.classList.add('tum-apply-dark-mode');
-      const requestAnimationFrameSpy = vi
-        .spyOn(window, 'requestAnimationFrame')
-        .mockImplementation((callback: FrameRequestCallback): number => {
-          callback(0);
-          return 0;
-        });
+      themeService.theme.set('dark');
 
       component.themeService.setTheme('light');
 
-      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(false);
-      expect(localStorage.getItem('tumApplyTheme')).toBe('light');
-      expect(document.documentElement.classList.contains('theme-switching')).toBe(false);
-      expect(requestAnimationFrameSpy).toHaveBeenCalledOnce();
+      expect(themeService.setTheme).toHaveBeenCalledWith('light');
+      expect(themeService.theme()).toBe('light');
     });
   });
 });

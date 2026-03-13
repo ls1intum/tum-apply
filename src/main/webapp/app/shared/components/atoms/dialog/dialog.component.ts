@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -18,10 +18,26 @@ export class DialogComponent {
   modal = input<boolean>(true);
   draggable = input<boolean>(false);
   resizable = input<boolean>(false);
+  dismissableMask = input<boolean>(true);
+  closeOnEscape = input<boolean>(true);
+  closable = input<boolean>(true);
+  showHeader = input<boolean>(true);
+  styleClass = input<string>('');
   contentStyleClass = input<string>('');
   contentStyle = input<Record<string, string>>({});
+  style = input<Record<string, string>>({});
 
   visibleChange = output<boolean>();
+
+  mergedStyle = computed(() => {
+    const baseStyle: Record<string, string> = {
+      width: this.width(),
+      maxWidth: this.maxWidth(),
+      height: this.height(),
+      background: 'var(--p-background-default)',
+    };
+    return Object.assign({}, baseStyle, this.style());
+  });
 
   onVisibleChange(value: boolean): void {
     this.visibleChange.emit(value);

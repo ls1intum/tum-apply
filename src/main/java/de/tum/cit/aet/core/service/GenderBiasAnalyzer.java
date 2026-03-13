@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /**
- * Analyzes text for gender-coded language (masculine vs feminine stereotypes)
+ * Analyzes text for gender-coded language (non-inclusive vs inclusive
+ * stereotypes)
  */
 @Component
 public class GenderBiasAnalyzer {
@@ -16,8 +17,8 @@ public class GenderBiasAnalyzer {
 
     public GenderBiasAnalyzer() {
         wordListsByLanguage = new HashMap<>();
-        wordListsByLanguage.put("de", new WordLists(GenderBiasWordLists.GERMAN_MASCULINE, GenderBiasWordLists.GERMAN_FEMININE));
-        wordListsByLanguage.put("en", new WordLists(GenderBiasWordLists.ENGLISH_MASCULINE, GenderBiasWordLists.ENGLISH_FEMININE));
+        wordListsByLanguage.put("de", new WordLists(GenderBiasWordLists.GERMAN_NON_INCLUSIVE, GenderBiasWordLists.GERMAN_INCLUSIVE));
+        wordListsByLanguage.put("en", new WordLists(GenderBiasWordLists.ENGLISH_NON_INCLUSIVE, GenderBiasWordLists.ENGLISH_INCLUSIVE));
     }
 
     /**
@@ -25,8 +26,8 @@ public class GenderBiasAnalyzer {
      *
      * @param text     the text to analyze
      * @param language the language code (e.g., "en" or "de")
-     * @return an {@link AnalysisResult} containing counts of masculine and feminine
-     *         words and coding type
+     * @return an {@link AnalysisResult} containing counts of non-inclusive and
+     *         inclusive words and coding type
      */
     public AnalysisResult analyze(String text, String language) {
         if (text == null || text.trim().isEmpty()) {
@@ -43,15 +44,15 @@ public class GenderBiasAnalyzer {
         List<String> dehyphenWordList = deHyphenNonCodedWords(wordList);
 
         // Find coded words
-        List<String> masculineWords = findCodedWords(dehyphenWordList, lists.masculine);
-        List<String> feminineWords = findCodedWords(dehyphenWordList, lists.feminine);
+        List<String> nonInclusiveWords = findCodedWords(dehyphenWordList, lists.nonInclusive);
+        List<String> inclusiveWords = findCodedWords(dehyphenWordList, lists.Inclusive);
 
         // Assess coding
-        int masculineCount = masculineWords.size();
-        int feminineCount = feminineWords.size();
+        int masculineCount = nonInclusiveWords.size();
+        int feminineCount = inclusiveWords.size();
         String coding = assessCoding(masculineCount, feminineCount);
 
-        return new AnalysisResult(text, masculineWords, feminineWords, masculineCount, feminineCount, coding, language);
+        return new AnalysisResult(text, nonInclusiveWords, inclusiveWords, masculineCount, feminineCount, coding, language);
     }
 
     /**
@@ -80,8 +81,8 @@ public class GenderBiasAnalyzer {
         wordListsByLanguage
             .values()
             .forEach(wl -> {
-                allCodedWords.addAll(wl.masculine);
-                allCodedWords.addAll(wl.feminine);
+                allCodedWords.addAll(wl.nonInclusive);
+                allCodedWords.addAll(wl.Inclusive);
             });
 
         for (String word : wordList) {
@@ -108,19 +109,19 @@ public class GenderBiasAnalyzer {
     /**
      * Assess overall coding of the text
      */
-    private String assessCoding(int masculineCount, int feminineCount) {
-        int codingScore = feminineCount - masculineCount;
+    private String assessCoding(int nonInclusiveCount, int inclusiveCount) {
+        int codingScore = inclusiveCount - nonInclusiveCount;
 
         if (codingScore == 0) {
-            if (feminineCount > 0) {
+            if (inclusiveCount > 0) {
                 return "neutral";
             } else {
                 return "empty";
             }
         } else if (codingScore > 0) {
-            return "feminine-coded";
+            return "inclusive-coded";
         } else {
-            return "masculine-coded";
+            return "non-inclusive-coded";
         }
     }
 
@@ -128,12 +129,12 @@ public class GenderBiasAnalyzer {
 
     private static class WordLists {
 
-        final Set<String> masculine;
-        final Set<String> feminine;
+        final Set<String> nonInclusive;
+        final Set<String> Inclusive;
 
-        WordLists(Set<String> masculine, Set<String> feminine) {
-            this.masculine = masculine;
-            this.feminine = feminine;
+        WordLists(Set<String> nonInclusive, Set<String> inclusive) {
+            this.nonInclusive = nonInclusive;
+            this.Inclusive = inclusive;
         }
     }
 
@@ -142,10 +143,10 @@ public class GenderBiasAnalyzer {
      */
     public record AnalysisResult(
         String originalText,
-        List<String> masculineWords,
-        List<String> feminineWords,
-        int masculineCount,
-        int feminineCount,
+        List<String> nonInclusiveWords,
+        List<String> inclusiveWords,
+        int nonInclusiveCount,
+        int inclusiveCount,
         String coding,
         String language
     ) {}

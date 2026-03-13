@@ -1,0 +1,24 @@
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 border-b border-border-default">
+  @for (tab of tabs(); track tab.key) {
+    <button
+      type="button"
+      class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px cursor-pointer whitespace-nowrap"
+      [class]="
+        isActive(tab.key) ? 'border-primary-default text-primary-default' : 'border-transparent text-text-primary hover:text-text-primary'
+      "
+      [pTooltip]="tab.tooltipKey ? (tab.tooltipKey | translate) : ''"
+      tooltipPosition="top"
+      (click)="onTabClick(tab.key)"
+    >
+      <span [jhiTranslate]="tab.labelKey"></span>
+      @if (tab.count !== undefined) {
+        <span
+          class="px-2 py-0.5 text-xs rounded-full"
+          [class]="isActive(tab.key) ? 'bg-primary-default text-text-on-primary' : 'bg-background-disabled text-text-primary'"
+        >
+          {{ tab.count }}
+        </span>
+      }
+    </button>
+  }
+</div>

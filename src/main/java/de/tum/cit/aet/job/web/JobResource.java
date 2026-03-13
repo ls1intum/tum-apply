@@ -2,7 +2,6 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.job.constants.JobState;
@@ -88,7 +87,7 @@ public class JobResource {
      * @param jobForm the job posting data.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PostMapping("/create")
     public ResponseEntity<JobFormDTO> createJob(@RequestBody JobFormDTO jobForm) {
         JobFormDTO createdJob = jobService.createJob(jobForm);
@@ -151,8 +150,8 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/professor} : Returns a paginated list of jobs created by
-     * a specific professor.
+     * {@code GET /api/jobs/research-group} : Returns a paginated list of jobs for
+     * the current user's research group.
      *
      * <p>
      * Supports optional filtering by title and job state. Sorting is supported
@@ -169,14 +168,14 @@ public class JobResource {
      *         {@link Page} of {@link CreatedJobDTO}
      */
     @ProfessorOrEmployeeOrAdmin
-    @GetMapping("/professor")
-    public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
+    @GetMapping("/research-group")
+    public ResponseEntity<Page<CreatedJobDTO>> getJobsForCurrentResearchGroup(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute ProfessorJobsFilterDTO professorJobsFilterDTO,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
         @RequestParam(required = false) String searchQuery
     ) {
-        return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
+        return ResponseEntity.ok(jobService.getJobsForCurrentResearchGroup(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
     }
 
     /**

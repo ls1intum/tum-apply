@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@NoUserDataExportRequired(reason = "Documents are exported as binary files by UserExportZipWriter")
 @Getter
 @Setter
 @Table(name = "documents")

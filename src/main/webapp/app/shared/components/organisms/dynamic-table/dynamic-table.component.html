@@ -1,6 +1,6 @@
 <p-table
-  [value]="data()"
-  [paginator]="true"
+  [value]="loading() ? [] : data()"
+  [paginator]="!loading()"
   [totalRecords]="totalRecords()"
   [scrollable]="true"
   [first]="page() * rows()"
@@ -11,16 +11,18 @@
 >
   <!-- Header -->
   <ng-template pTemplate="header">
-    <tr>
-      @if (selectable()) {
-        <th class="selection-col">
-          <p-tableHeaderCheckbox />
-        </th>
-      }
-      @for (col of columns(); track col.field) {
-        <th [style.width]="col.width" jhiTranslate="{{ col.header }}"></th>
-      }
-    </tr>
+    @if (!hideHeader()) {
+      <tr>
+        @if (selectable()) {
+          <th class="selection-col">
+            <p-tableHeaderCheckbox />
+          </th>
+        }
+        @for (col of columns(); track col.field) {
+          <th [style.width]="col.width" jhiTranslate="{{ col.header }}"></th>
+        }
+      </tr>
+    }
   </ng-template>
 
   <!-- Body -->
@@ -43,5 +45,16 @@
         </td>
       }
     </tr>
+  </ng-template>
+
+  <!-- Empty message while loading -->
+  <ng-template pTemplate="emptymessage">
+    @if (loading()) {
+      <td [attr.colspan]="columns().length + (selectable() ? 1 : 0)">
+        <div class="flex items-center justify-center py-8">
+          <jhi-progress-spinner [styleClass]="'w-12 h-12'" [strokeWidth]="'4'" />
+        </div>
+      </td>
+    }
   </ng-template>
 </p-table>

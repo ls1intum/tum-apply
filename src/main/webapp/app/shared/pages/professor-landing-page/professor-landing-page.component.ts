@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AccountService } from 'app/core/auth/account.service';
 
 import { BannerSectionComponent } from '../landing-page/banner-section/banner-section.component';
 
@@ -22,5 +23,5 @@ import { ProfessorFaqSectionComponent } from './professor-faq-section/professor-
   styleUrl: './professor-landing-page.component.scss',
 })
 export class ProfessorLandingPageComponent {
-  // This component serves as a container for the professor landing page sections
+  accountService = inject(AccountService);
 }

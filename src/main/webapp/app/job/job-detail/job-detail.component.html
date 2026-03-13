@@ -4,7 +4,6 @@
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
   [label]="closeButtonLabel | translate"
-  variant="outlined"
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
@@ -27,11 +26,21 @@
     <!-- Header Section -->
     <div class="header-container mb-8 border-b border-divider-default">
       <div class="flex flex-col gap-4">
-        <h1 class="page-header">{{ job.title }}</h1>
+        @if (!previewData()) {
+          <div class="flex items-center gap-2">
+            <jhi-back-button />
+            <h1 class="page-header">{{ job.title }}</h1>
+          </div>
+        } @else {
+          <h1 class="page-header">{{ job.title }}</h1>
+        }
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
-            <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong> {{ job.supervisingProfessor || '-' }}</span>
+            <span
+              ><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>
+              {{ job.supervisingProfessor ? 'Prof. ' + job.supervisingProfessor : '-' }}</span
+            >
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
@@ -40,38 +49,79 @@
               {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
             >
           </div>
+          <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
+          @if (previewData()) {
+            <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
+          } @else if (job.belongsToResearchGroup) {
+            <jhi-tag class="job-state-badge" [text]="jobStateText() | translate" [color]="jobStateColor()" />
+          }
         </div>
       </div>
       <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
-        @if (rightActionButtons()) {
-          <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
-        }
-        <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
-        @if (previewData()) {
-          <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
-        } @else if (job.belongsToResearchGroup) {
-          <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
-        }
+        <div class="flex items-center gap-2">
+          @if (showPdfButtonForPreview()) {
+            <jhi-button
+              label="button.downloadPDF"
+              severity="primary"
+              variant="outlined"
+              icon="file-pdf"
+              [shouldTranslate]="true"
+              (click)="onDownloadPDF()"
+            />
+          }
+          @for (item of individualActionButtons(); track item.label) {
+            <jhi-button
+              [label]="item.label"
+              [severity]="item.severity ?? 'secondary'"
+              variant="outlined"
+              [icon]="item.icon"
+              [shouldTranslate]="true"
+              (click)="item.command?.()"
+            />
+          }
+          @if (shouldShowKebabMenu()) {
+            <jhi-button
+              severity="secondary"
+              variant="outlined"
+              icon="ellipsis-vertical"
+              label="button.actions"
+              [shouldTranslate]="true"
+              (click)="menu.toggle($event)"
+            />
+            <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
+          }
+          @if (primaryActionButton(); as primaryActionButton) {
+            <jhi-button
+              [label]="primaryActionButton.label"
+              [severity]="primaryActionButton.severity ?? 'primary'"
+              [variant]="primaryActionButton.variant"
+              [icon]="primaryActionButton.icon"
+              [disabled]="primaryActionButton.disabled ?? false"
+              [shouldTranslate]="primaryActionButton.shouldTranslate ?? true"
+              (click)="primaryActionButton.onClick()"
+            />
+          }
+        </div>
       </div>
     </div>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_25rem] gap-8">
       <!-- Left Column: Text Sections -->
-      <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-6 mb-2">
         <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.description || '-'"></div>
-        </section>
+          <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
+          @if (isProfessorOrEmployee()) {
+            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.infos.applicantLanguageInfo' | translate" />
+            <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
-        <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.tasks || '-'"></div>
-        </section>
-
-        <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.requirements || '-'"></div>
+            <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
+          } @else {
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDescriptionForCurrentLang() || '-'"></div>
+          }
         </section>
       </div>
 
@@ -185,28 +235,24 @@
       </div>
     </div>
 
+    <!-- Equal Opportunities Statement -->
+    <section class="mb-8 mt-6">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.equalOpportunities.title"></h2>
+      <div class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere">
+        <span jhiTranslate="jobDetailPage.equalOpportunities.baseText"></span>
+        @if (job.suitableForDisabled) {
+          <span class="block mt-2" jhiTranslate="jobDetailPage.equalOpportunities.suitableText"></span>
+        }
+      </div>
+    </section>
+
     <!-- Data Protection Information -->
     <section class="mb-8">
       <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
       <div
-        class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded wrap-anywhere"
+        class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere"
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>
-
-    @if (!previewData()) {
-      <section class="mt-8 pt-8 border-t border-divider-default">
-        <div class="flex justify-start">
-          <jhi-button
-            label="button.back"
-            icon="arrow-left"
-            severity="info"
-            variant="outlined"
-            (click)="onBack()"
-            [shouldTranslate]="true"
-          />
-        </div>
-      </section>
-    }
   </div>
 }

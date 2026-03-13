@@ -3,7 +3,7 @@
     "overview": {
       "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Stellen"
       },
       "loading": "Interview Prozesse werden geladen...",
       "empty": {
@@ -14,20 +14,31 @@
         "newProcess": "Neuer Interview Prozess",
         "viewDetails": "Details anzeigen"
       },
+      "status": {
+        "closed": "Geschlossen"
+      },
       "stats": {
         "completed": "Abgeschlossen",
         "scheduled": "Geplant",
         "invited": "Eingeladen",
         "uncontacted": "Nicht kontaktiert",
-        "totalInterviews": "Interviews gesamt"
+        "totalInterviews": "Interviews gesamt",
+        "totalSlots": "Anzahl Slots",
+        "booked": "Gebucht"
       },
       "upcoming": {
         "title": "Anstehend",
-        "empty": "Keine anstehenden Interviews geplant"
+        "empty": "Keine anstehenden Interviews"
       },
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
+    },
+    "warning": {
+      "notEnoughSlots": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "notEnoughSlotsSingular": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "zeroSlots": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
+      "zeroSlotsSingular": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
     },
     "detail": {
       "error": {
@@ -41,17 +52,21 @@
       },
       "empty": {
         "title": "Noch keine Termine",
-        "description": "Erstelle deine ersten Interview Termine."
+        "closedTitle": "Prozess geschlossen",
+        "description": "Erstelle deine ersten Interview Termine.",
+        "closedDescription": "Für diesen geschlossenen Prozess können keine Termine erstellt werden."
       },
       "noSlotsInMonth": "Keine Termine in {{month}}",
       "showLess": "Weniger anzeigen"
     },
     "slots": {
       "addSlots": "Termine hinzufügen",
+      "notEnoughSlots": "Nicht genügend freie Termine für alle eingeladenen Bewerbenden verfügbar.",
       "slotsCountSingular": "Termin",
       "slotsCountPlural": "Termine",
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
+      "showLess": "Weniger anzeigen",
       "error": {
         "loadFailed": {
           "summary": "Interview Termine konnten nicht geladen werden",
@@ -107,6 +122,9 @@
           "required": "Dieses Feld ist erforderlich",
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
+          "conflictSameProcess": "Konflikt mit bestehendem Termin ({{time}}) in diesem Interviewprozess",
+          "conflictBookedOther": "Konflikt mit einem gebuchten Termin ({{time}}) in einem anderen Interviewprozess",
+          "hasConflicts": "Bitte behebe alle Zeitkonflikte vor dem Speichern",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
           "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
           "breakPositive": "Pausendauer darf nicht negativ sein",
@@ -130,15 +148,15 @@
         "noDateSelected": "Kein Datum ausgewählt",
         "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
         "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
-        "addRange": "Zeitraum",
-        "addSlot": "Einzeltermin",
+        "addRange": "Terminserie hinzufügen",
+        "addSlot": "Einzeltermin hinzufügen",
         "noSlotsYet": "Noch keine Termine",
-        "noSlotsYetDesc": "Füge einen Zeitraum oder einen einzelnen Termin hinzu, um zu beginnen",
+        "noSlotsYetDesc": "Füge eine Terminserie oder einen einzelnen Termin hinzu, um zu beginnen",
         "singleSlot": "Einzelner Termin",
-        "rangeSlot": "Zeitraum",
+        "rangeSlot": "Terminserie",
         "bookedSlot": "Gebuchter Termin",
-        "addStartTime": "Startzeit hinzufügen, um diesen Termin zu erstellen",
-        "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
+        "singleSlotHelp": "Gib eine Startzeit ein. Die Endzeit wird basierend auf der Interviewdauer berechnet.",
+        "rangeSlotHelp": "Termine werden automatisch basierend auf Dauer und Pausenzeit erstellt.",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine",
@@ -165,43 +183,73 @@
           "summary": "Zugriff verweigert",
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
         }
+      },
+      "cancelInterview": {
+        "button": "Bestätigen",
+        "triggerButton": "Interview absagen",
+        "header": "Interview absagen",
+        "message": "Möchtest du dieses Interview der bewerbenden Person wirklich absagen? Bitte wähle aus, was mit dem Termin passieren soll:",
+        "sendReinvite": "Bewerbenden erneut einladen (Buchunglink schicken)",
+        "deleteSlot": "Diesen Termin-Slot löschen",
+        "success": {
+          "summary": "Interview abgesagt",
+          "detail": "Das Interview wurde erfolgreich abgesagt."
+        },
+        "error": {
+          "summary": "Absage fehlgeschlagen",
+          "detail": "Das Interview konnte nicht abgesagt werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
       }
     },
     "interviewees": {
-      "title": "Bewerber",
-      "add": "Bewerber hinzufügen",
-      "addTitle": "Bewerber hinzufügen",
-      "sendInvitations": "Einladung senden",
-      "empty": "Noch keine Bewerber hinzugefügt",
-      "emptyHint": "Klicke auf \"Bewerber hinzufügen\", um zu starten",
+      "title": "Bewerbende",
+      "add": "Bewerbende hinzufügen",
+      "addTitle": "Bewerbende hinzufügen",
+      "sendInvitation": "Einladung senden",
+      "resendInvitation": "Einladung erneut senden",
+      "resendConfirmation": {
+        "header": "Einladung erneut senden",
+        "message": "Diese bewerbende Person hat bereits eine Einladung erhalten. Möchtest du sie erneut senden?"
+      },
+      "sendAllInvitations": "Einladungen senden",
+      "allInvited": "Alle Bewerbenden wurden eingeladen",
+      "empty": "Noch keine Bewerbende hinzugefügt",
+      "emptyHint": "Klicke auf \"Bewerbende hinzufügen\", um zu starten",
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
       "selectAll": "Alle auswählen",
-      "noApplicants": "Keine Bewerber verfügbar",
+      "noApplicants": "Keine Bewerbenden verfügbar",
       "tryDifferentSearch": "Versuche einen anderen Suchbegriff",
-      "selected": "{{count}} Bewerber ausgewählt",
+      "selected": "{{count}} Bewerbende ausgewählt",
       "addSelected": "Hinzufügen",
       "tableColumns": {
-        "name": "Bewerber"
+        "name": "Bewerbende"
       },
       "addSuccess": {
-        "summary": "Bewerber hinzugefügt",
-        "detail": "{{count}} Bewerber erfolgreich hinzugefügt"
+        "summary": "Bewerbende hinzugefügt",
+        "detail": "{{count}} Bewerbende erfolgreich hinzugefügt"
       },
       "filter": {
         "ALL": "Alle",
         "INVITED": "Eingeladen",
         "SCHEDULED": "Geplant",
         "UNCONTACTED": "Nicht kontaktiert",
-        "COMPLETED": "Abgeschlossen"
+        "COMPLETED": "Abgeschlossen",
+        "tooltip": {
+          "ALL": "Alle Bewerbende dieses Interviewprozesses",
+          "INVITED": "Bewerbende, die eine Einladung erhalten, aber noch keinen Termin gebucht haben",
+          "SCHEDULED": "Bewerbende, die erfolgreich einen Termin gebucht haben",
+          "UNCONTACTED": "Bewerbende, die dem Prozess hinzugefügt, aber noch nicht kontaktiert wurden",
+          "COMPLETED": "Bewerbende, deren Interview bereits stattgefunden hat"
+        }
       },
       "error": {
         "loadFailed": {
           "summary": "Fehler",
-          "detail": "Bewerber konnten nicht geladen werden"
+          "detail": "Bewerbende konnten nicht geladen werden"
         },
         "loadApplicantsFailed": {
           "summary": "Fehler",
-          "detail": "Verfügbare Bewerber konnten nicht geladen werden"
+          "detail": "Verfügbare Bewerbende konnten nicht geladen werden"
         },
         "invalidApplications": {
           "summary": "Ungültige Bewerbungen",
@@ -213,8 +261,91 @@
         },
         "addFailed": {
           "summary": "Fehler",
-          "detail": "Bewerber konnten nicht hinzugefügt werden"
+          "detail": "Bewerbende konnten nicht hinzugefügt werden"
         }
+      },
+      "invitation": {
+        "successSingle": {
+          "summary": "Einladung gesendet",
+          "detail": "Die Einladung wurde erfolgreich gesendet"
+        },
+        "success": {
+          "summary": "Einladung gesendet",
+          "detail": "{{count}} Einladung(en) erfolgreich gesendet"
+        },
+        "partial": {
+          "summary": "{{sent}} gesendet, {{failed}} fehlgeschlagen",
+          "detail": "Fehlgeschlagen: {{emails}}. Bitte versuche erneut, die Einladungen zu senden."
+        },
+        "error": {
+          "summary": "Senden fehlgeschlagen",
+          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "noSlots": {
+          "summary": "Keine Termine verfügbar",
+          "detail": "Keine verfügbaren Interview Termine. Bitte erstelle oder gib Termine frei, bevor du Einladungen versendest."
+        }
+      }
+    },
+    "assign": {
+      "title": "Bewerbende zuweisen",
+      "selectedSlot": "Ausgewählter Termin",
+      "selectApplicant": "Bewerbende auswählen",
+      "noApplicants": "Keine eingeladenen Bewerbenden verfügbar",
+      "allAssigned": "Alle Bewerbenden im Interviewprozess haben bereits einen Termin",
+      "success": {
+        "summary": "Zuweisung erfolgreich",
+        "detail": "Die bewerbende Person wurde dem Termin zugewiesen."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Ungültige bewerbende Person",
+          "detail": "Bewerbende ist nicht in diesem Interviewprozess"
+        },
+        "failed": {
+          "summary": "Zuweisung fehlgeschlagen",
+          "detail": "Fehler beim Zuweisen der bewerbenden Person. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Verfügbare Bewerbende konnten nicht geladen werden"
+        }
+      }
+    },
+    "assessment": {
+      "title": "Interview Bewertung",
+      "back": "Zurück zur Übersicht",
+      "rating": {
+        "label": "Bewertung",
+        "info": "Bewerte das Gespräch. Dies ist für Bewerbende nicht sichtbar."
+      },
+      "notes": {
+        "label": "Interview Notiz",
+        "empty": "Noch keine Notizen hinzugefügt.",
+        "saved": {
+          "summary": "Gespeichert",
+          "detail": "Die Interview Notiz wurde erfolgreich gespeichert."
+        }
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Bewertung konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bewerbende konnte nicht geladen werden. Bitte lade die Seite neu."
+        },
+        "notFound": {
+          "summary": "Nicht gefunden",
+          "detail": "Diese bewerbende Person existiert nicht oder wurde entfernt."
+        }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Prozess geschlossen",
+        "description": "Dieser Interviewprozess ist nun geschlossen. Du kannst keine Interviewtermine mehr buchen."
       }
     }
   }

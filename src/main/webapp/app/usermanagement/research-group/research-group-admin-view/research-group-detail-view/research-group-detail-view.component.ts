@@ -1,4 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -6,21 +8,24 @@ import { DepartmentResourceApiService } from 'app/generated/api/departmentResour
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DividerModule } from 'primeng/divider';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
   imports: [
     TranslateModule,
+    TranslateDirective,
     StringInputComponent,
     SelectComponent,
+    BackButtonComponent,
     ButtonComponent,
     ReactiveFormsModule,
     DividerModule,
@@ -44,7 +49,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     street: new FormControl(''),
   });
 
-  researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
+  researchGroupId = computed(() => this.routeParamMap().get('researchGroupId') ?? undefined);
 
   isSaving = signal<boolean>(false);
   isLoading = signal<boolean>(true);
@@ -68,8 +73,10 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
-  private readonly config = inject(DynamicDialogConfig);
   private toastService = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly routeParamMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
 
   ngOnInit(): void {
     void this.loadDepartments();

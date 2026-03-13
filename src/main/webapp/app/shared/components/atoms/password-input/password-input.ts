@@ -1,5 +1,4 @@
 import { Component, forwardRef, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,7 +10,7 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({
   selector: 'jhi-password-input',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule, TranslateModule, Password],
+  imports: [FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule, TranslateModule, Password],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

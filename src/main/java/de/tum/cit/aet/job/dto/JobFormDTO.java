@@ -23,11 +23,11 @@ public record JobFormDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
-    String description,
-    String tasks,
-    String requirements,
+    String jobDescriptionEN,
+    String jobDescriptionDE,
     @NotNull JobState state,
-    UUID imageId // Optional job banner image
+    UUID imageId, // Optional job banner image
+    Boolean suitableForDisabled // Position suitable for persons with severe disabilities
 ) {
     /**
      * @param job The job entity to convert
@@ -37,6 +37,7 @@ public record JobFormDTO(
         if (job == null) {
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }
+
         return new JobFormDTO(
             job.getJobId(),
             job.getTitle(),
@@ -49,11 +50,11 @@ public record JobFormDTO(
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getDescription(),
-            job.getTasks(),
-            job.getRequirements(),
+            job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             job.getState(),
-            job.getImage() != null ? job.getImage().getImageId() : null
+            job.getImage() != null ? job.getImage().getImageId() : null,
+            job.getSuitableForDisabled()
         );
     }
 }

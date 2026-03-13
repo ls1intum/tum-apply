@@ -3,7 +3,7 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-import { ButtonColor, ButtonComponent, ButtonVariant } from '../button/button.component';
+import { ButtonColor, ButtonComponent, ButtonSize, ButtonVariant } from '../button/button.component';
 
 @Component({
   selector: 'jhi-confirm-dialog',
@@ -25,6 +25,7 @@ export class ConfirmDialog {
   tooltip = input<string | undefined>(undefined);
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
   disabled = input<boolean>(false);
+  size = input<ButtonSize>('lg');
 
   data = input<string | undefined>(undefined);
 
@@ -39,6 +40,8 @@ export class ConfirmDialog {
     this.confirmationService.confirm({
       message: this.message(),
       header: this.header(),
+      dismissableMask: true,
+      closeOnEscape: true,
       accept: () => {
         this.confirmed.emit(this.data());
       },

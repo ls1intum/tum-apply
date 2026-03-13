@@ -14,20 +14,31 @@
         "newProcess": "New Interview Process",
         "viewDetails": "View Details"
       },
+      "status": {
+        "closed": "Closed"
+      },
       "stats": {
         "completed": "Completed",
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total Interviews"
+        "totalInterviews": "Total Interviews",
+        "totalSlots": "Total Slots",
+        "booked": "Booked"
       },
       "upcoming": {
         "title": "Upcoming",
-        "empty": "No upcoming interviews scheduled"
+        "empty": "No upcoming interviews"
       },
       "error": {
         "failedToLoad": "Failed to load interview processes."
       }
+    },
+    "warning": {
+      "notEnoughSlots": "{{invited}} applicants invited, but only {{slots}} slots available. Please create more slots.",
+      "notEnoughSlotsSingular": "{{invited}} applicant invited, but only {{slots}} slots available. Please create more slots.",
+      "zeroSlots": "{{invited}} applicants invited, but no slots are available. Please create new slots.",
+      "zeroSlotsSingular": "{{invited}} applicant invited, but no slots are available. Please create new slots."
     },
     "detail": {
       "error": {
@@ -41,17 +52,21 @@
       },
       "empty": {
         "title": "No slots yet",
-        "description": "Create your first interview slots to get started."
+        "closedTitle": "Process closed",
+        "description": "Create your first interview slots to get started.",
+        "closedDescription": "It is no longer possible to create slots for this closed process."
       },
       "noSlotsInMonth": "No slots in {{month}}",
       "showLess": "Show less"
     },
     "slots": {
       "addSlots": "Add Slots",
+      "notEnoughSlots": "Not enough slots for all invited interviewees available.",
       "slotsCountSingular": "slot",
       "slotsCountPlural": "slots",
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
+      "showLess": "Show less",
       "error": {
         "loadFailed": {
           "summary": "Failed to load interview slots",
@@ -108,6 +123,9 @@
           "required": "This field is required",
           "endBeforeStart": "End time must be after start time",
           "conflict": "Time conflict with another slot",
+          "conflictSameProcess": "Conflict with an existing slot ({{time}}) in this interview process",
+          "conflictBookedOther": "Conflict with a booked slot ({{time}}) in another interview process",
+          "hasConflicts": "Please resolve all time conflicts before saving",
           "streamLinkRequired": "Meeting link is required for virtual slots",
           "durationPositive": "Duration must be at least 1 minute",
           "breakPositive": "Break duration cannot be negative",
@@ -131,14 +149,14 @@
         "noDateSelected": "No Date selected",
         "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
         "sameSlotsForAllDays": "Same slots for all days",
-        "addRange": "Add Time Range",
+        "addRange": "Add Slot Series",
         "noSlotsYet": "No Slots yet",
-        "noSlotsYetDesc": "Add a time range or a single slot to get started",
+        "noSlotsYetDesc": "Add a slot series or a single slot to get started",
         "singleSlot": "Single Slot",
-        "rangeSlot": "Time Range",
+        "rangeSlot": "Slot Series",
         "bookedSlot": "Booked Slot",
-        "addStartTime": "Add a start time to create this slot",
-        "addStartAndEndTime": "Add a start and end time to see slots in this range",
+        "singleSlotHelp": "Create a single slot with a start time. The interview duration determines the end time.",
+        "rangeSlotHelp": "Slots are automatically created based on duration and break time.",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
         "useForAll": "Use same location for all slots",
@@ -165,13 +183,36 @@
           "summary": "Permission denied",
           "detail": "You don't have permission to delete this slot"
         }
+      },
+      "cancelInterview": {
+        "header": "Cancel Interview",
+        "message": "Are you sure you want to cancel this interview? Please choose how to proceed:",
+        "button": "Confirm",
+        "triggerButton": "Cancel Interview",
+        "sendReinvite": "Re-invite applicant (Send booking link)",
+        "deleteSlot": "Delete this slot",
+        "success": {
+          "summary": "Interview cancelled",
+          "detail": "The interview has been successfully cancelled."
+        },
+        "error": {
+          "summary": "Cancellation failed",
+          "detail": "The interview could not be cancelled. Please try again or contact an admin."
+        }
       }
     },
     "interviewees": {
       "title": "Interviewees",
       "add": "Add Applicant",
       "addTitle": "Add Applicant",
-      "sendInvitations": "Send invitation",
+      "sendInvitation": "Send Invitation",
+      "resendInvitation": "Resend Invitation",
+      "resendConfirmation": {
+        "header": "Resend Invitation",
+        "message": "This applicant has already been invited. Do you want to send the invitation email again?"
+      },
+      "sendAllInvitations": "Send Invitations",
+      "allInvited": "All applicants have been invited",
       "empty": "No interviewees yet",
       "emptyHint": "Click \"Add Applicant\" to get started",
       "searchPlaceholder": "Search by name or email...",
@@ -192,7 +233,14 @@
         "INVITED": "Invited",
         "SCHEDULED": "Scheduled",
         "UNCONTACTED": "Uncontacted",
-        "COMPLETED": "Completed"
+        "COMPLETED": "Completed",
+        "tooltip": {
+          "ALL": "All interviewees in this interview process",
+          "INVITED": "Interviewees who have received an invitation but have not booked a slot yet",
+          "SCHEDULED": "Interviewees who have successfully booked a slot",
+          "UNCONTACTED": "Interviewees who have been added to the process but have not been contacted yet",
+          "COMPLETED": "Interviewees whose interview has already taken place"
+        }
       },
       "error": {
         "loadFailed": {
@@ -215,6 +263,89 @@
           "summary": "Error",
           "detail": "Failed to add applicants"
         }
+      },
+      "invitation": {
+        "successSingle": {
+          "summary": "Invitation Sent",
+          "detail": "Invitation successfully sent"
+        },
+        "success": {
+          "summary": "Invitation Sent",
+          "detail": "{{count}} invitation(s) sent successfully"
+        },
+        "partial": {
+          "summary": "{{sent}} sent, {{failed}} failed",
+          "detail": "Failed: {{emails}}. Please try sending the invitations again."
+        },
+        "error": {
+          "summary": "Send Failed",
+          "detail": "Failed to send invitation. Please try again or contact an admin."
+        },
+        "noSlots": {
+          "summary": "No Slots Available",
+          "detail": "No available interview slots. Please create or free up slots before sending invitations."
+        }
+      }
+    },
+    "assign": {
+      "title": "Assign Applicant to Slot",
+      "selectedSlot": "Selected Slot",
+      "selectApplicant": "Select Applicant",
+      "noApplicants": "No invited applicants available",
+      "allAssigned": "All applicants in the interview process already have a Slot",
+      "success": {
+        "summary": "Assignment Successful",
+        "detail": "Applicant has been assigned to the slot."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Invalid Applicant",
+          "detail": "Applicant is not in this interview process"
+        },
+        "failed": {
+          "summary": "Assignment Failed",
+          "detail": "An error occurred while assigning the applicant. Please try again."
+        },
+        "loadFailed": {
+          "summary": "Loading Failed",
+          "detail": "Failed to load available applicants"
+        }
+      }
+    },
+    "assessment": {
+      "title": "Interview Assessment",
+      "back": "Back to Overview",
+      "rating": {
+        "label": "Score",
+        "info": "Rate the interview. This is not visible to applicants."
+      },
+      "notes": {
+        "label": "Interview Note",
+        "empty": "No interview notes added yet.",
+        "saved": {
+          "summary": "Saved",
+          "detail": "Interview note saved successfully."
+        }
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Save Failed",
+          "detail": "Could not save the assessment. Please try again."
+        },
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Could not load applicant. Please reload the page."
+        },
+        "notFound": {
+          "summary": "Not Found",
+          "detail": "This applicant does not exist or has been removed."
+        }
+      }
+    },
+    "booking": {
+      "closedProcess": {
+        "title": "Process Closed",
+        "description": "This interview process is now closed. You can no longer book interview slots."
       }
     }
   }

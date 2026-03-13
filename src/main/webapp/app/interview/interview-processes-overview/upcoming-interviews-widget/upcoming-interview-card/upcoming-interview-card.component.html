@@ -1,0 +1,34 @@
+<a
+  [routerLink]="['/interviews', 'process', interview().processId, 'interviewee', interview().intervieweeId, 'assessment']"
+  [queryParams]="{ from: 'overview' }"
+  class="group grid grid-cols-[minmax(0,1fr)_auto_8.75rem] gap-4 p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary transition-colors"
+>
+  <div class="flex items-center gap-3">
+    <jhi-user-avatar class="shrink-0" [fullName]="intervieweeName()" [avatarUrl]="avatarUrl()" size="xl" />
+    <div class="flex flex-col justify-center min-w-0">
+      <span class="font-bold text-base line-clamp-2 break-words" [title]="interview().intervieweeName">{{
+        interview().intervieweeName
+      }}</span>
+      <span class="text-sm text-text-secondary leading-snug line-clamp-2 break-words" [title]="interview().jobTitle">{{
+        interview().jobTitle
+      }}</span>
+    </div>
+  </div>
+
+  <div class="border-r border-border-default"></div>
+
+  <div class="flex flex-col justify-center gap-1.5 text-sm text-text-secondary">
+    <div class="flex items-center gap-2">
+      <fa-icon icon="calendar" class="text-primary" />
+      <span>{{ interview().startDateTime | localizedDate }}</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <fa-icon icon="clock" class="text-primary" />
+      <span>{{ formattedTimeRange() }}</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <fa-icon icon="location-dot" class="text-primary" />
+      <span class="truncate" [title]="interview().location">{{ interview().location }}</span>
+    </div>
+  </div>
+</a>

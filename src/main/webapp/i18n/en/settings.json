@@ -2,9 +2,29 @@
   "settings": {
     "header": "Settings",
 
-    "notifications": {
-      "header": "Notifications",
+    "tabs": {
+      "general": "General",
+      "notifications": "Notifications",
+      "personalInformation": "Personal Information",
+      "documents": "Documents"
+    },
+    "personalInformation": {
+      "description": "Update your personal information here. Your saved data will be used to prefill future application forms.",
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load personal information. Please try again."
+      },
+      "saved": {
+        "summary": "Successfully saved",
+        "detail": "Personal information saved successfully. Changes will be applied to your next application."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to save personal information. Please try again."
+      }
+    },
 
+    "notifications": {
       "applicant": {
         "submission": {
           "title": "Application Submission",
@@ -27,6 +47,42 @@
       }
     },
 
+    "profilePicture": {
+      "header": "Profile Picture",
+      "description": "Make your profile more personal with a photo.",
+      "saved": {
+        "summary": "Profile picture updated",
+        "detail": "Your profile picture was updated successfully."
+      },
+      "saveFailed": {
+        "summary": "Update failed",
+        "detail": "Failed to update your profile picture. Please try again."
+      },
+      "deleted": {
+        "summary": "Profile picture removed",
+        "detail": "Your profile picture was removed successfully."
+      },
+      "deleteFailed": {
+        "summary": "Deletion failed",
+        "detail": "Failed to remove your profile picture. Please try again."
+      },
+      "fileTooLarge": {
+        "summary": "File too large",
+        "detail": "Please choose an image smaller than 5 MB."
+      },
+      "invalidFileType": {
+        "summary": "Invalid file type",
+        "detail": "Please choose a JPEG, JPG, or PNG image."
+      },
+      "resetConfirm": {
+        "header": "Delete profile picture?",
+        "message": "Are you sure you want to delete your current profile picture?"
+      },
+      "cropDialog": {
+        "header": "Crop Profile Picture",
+        "rotate": "Rotate"
+      }
+    },
     "appearance": {
       "header": "Appearance",
       "theme": {
@@ -40,23 +96,28 @@
         "system": "System"
       }
     },
-
-    "privacy": {
-      "header": "Privacy",
-      "export": {
-        "header": "Your data",
-        "description": "Download a ZIP archive with a summary of your profile, settings and documents.",
-        "button": "Export my data",
-        "cooldown": "You can request another export in {{seconds}}s",
-        "inProgress": "Export in progress…",
-        "started": {
-          "summary": "Export started",
-          "detail": "You will receive an email when the archive is ready."
-        },
-        "failed": {
-          "summary": "Export failed",
-          "detail": "Please try again later."
-        }
+    "documents": {
+      "description": "Upload and manage your documents here. Your saved documents will be used to prefill future application forms.",
+      "sections": {
+        "bachelor": "Bachelor Studies",
+        "master": "Master Studies",
+        "additionalDocuments": "Additional Documents"
+      },
+      "labels": {
+        "bachelorCertificate": "Bachelor Certificate",
+        "masterCertificate": "Master Certificate"
+      },
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load documents. Please try again."
+      },
+      "saved": {
+        "summary": "Successfully saved",
+        "detail": "Documents saved successfully. Changes will be applied to your next application."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to save documents. Please try again."
       }
     }
   }

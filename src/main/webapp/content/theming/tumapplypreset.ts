@@ -1,9 +1,10 @@
 import { definePreset } from '@primeuix/themes';
-import Lara from '@primeuix/themes/lara';
+import Aura from '@primeuix/themes/aura';
 
-import { sharedComponentConfig, sharedLightColorScheme } from './shared-theme-config';
+import { sharedComponentConfig, sharedLightColorScheme, sharedPrimitiveConfig } from './shared-theme-config';
 
-export const TUMApplyPreset = definePreset(Lara, {
+export const TUMApplyPreset = definePreset(Aura, {
+  primitive: sharedPrimitiveConfig,
   semantic: {
     primary: {
       50: '#f3f6fc',
@@ -139,6 +140,9 @@ export const TUMApplyPreset = definePreset(Lara, {
           disabledColor: '{primary.200}',
           hoverColorOutlined: '{primary.100}',
         },
+        secondary: {
+          ...sharedLightColorScheme.secondary,
+        },
         accent: {
           ...sharedLightColorScheme.accent,
           color: '{accent.400}',
@@ -266,6 +270,9 @@ export const TUMApplyPreset = definePreset(Lara, {
         divider: {
           default: '{neutral.700}',
         },
+        image: {
+          hoverOverlay: '{base.black}',
+        },
       },
     },
   },
@@ -313,7 +320,6 @@ export const TUMApplyPreset = definePreset(Lara, {
               background: '{danger.color}',
               borderColor: '{danger.color}',
               color: '{danger.inverseColor}',
-              hoverColor: '{base.white}',
               hoverBackground: '{danger.hoverColor}',
               activeBackground: '{danger.activeColor}',
             },

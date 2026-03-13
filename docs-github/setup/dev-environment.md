@@ -28,7 +28,7 @@ npm install
 Make sure Docker Desktop is running, then execute:
 
 ```bash
-docker compose -f src/main/docker/services.yml up -d
+docker compose -f docker/local-setup/services.yml up -d
 ```
 
 Start the server and client development servers in two separate terminals:

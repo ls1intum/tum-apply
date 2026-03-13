@@ -2,7 +2,7 @@ package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
-import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,20 +28,14 @@ public class GenderBiasAnalysisResource {
      * @param request the text to analyze
      * @return the analysis result
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping("/analyze")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeText(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze text for gender bias, language: {}", request.language());
-        // Default to English if no language specified
-        String language = request.language() != null ? request.language() : "en";
 
-        GenderBiasAnalysisResponse response = analysisService.analyzeText(request.text(), language);
+        GenderBiasAnalysisResponse response = analysisService.analyzeText(request.text(), request.language());
 
-        log.info(
-            "Gender bias analysis completed: {} biased words found, coding: {}",
-            response.biasedWords() != null ? response.biasedWords().size() : 0,
-            response.coding()
-        );
+        log.info("Gender bias analysis completed: {} biased words found, coding: {}", response.biasedWords().size(), response.coding());
 
         return ResponseEntity.ok(response);
     }
@@ -53,7 +47,7 @@ public class GenderBiasAnalysisResource {
      * @param request the HTML to analyze
      * @return the analysis result
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping("/analyze-html")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
@@ -61,14 +55,9 @@ public class GenderBiasAnalysisResource {
         // Strip HTML tags to get plain text
         String plainText = Jsoup.parse(request.text()).text();
 
-        String language = request.language() != null ? request.language() : "en";
+        GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
 
-        GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, language);
-
-        log.info(
-            "HTML gender bias analysis completed: {} biased words found",
-            response.biasedWords() != null ? response.biasedWords().size() : 0
-        );
+        log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
 
         return ResponseEntity.ok(response);
     }

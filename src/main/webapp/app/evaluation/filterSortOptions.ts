@@ -2,7 +2,6 @@ import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import { FilterField, FilterOption } from '../shared/filter';
 
-// TODO Jobs will be replaced by dynamically loaded jobs from the server
 export const filterFields: FilterField[] = [
   new FilterField('evaluation.filterOptions.job', 'job', [], []),
   new FilterField(
@@ -13,6 +12,8 @@ export const filterFields: FilterField[] = [
       new FilterOption('', 'SENT', 'evaluation.statusBadge.SENT'),
       new FilterOption('', 'ACCEPTED', 'evaluation.statusBadge.ACCEPTED'),
       new FilterOption('', 'REJECTED', 'evaluation.statusBadge.REJECTED'),
+      new FilterOption('', 'INTERVIEW', 'evaluation.statusBadge.INTERVIEW'),
+      new FilterOption('', 'JOB_CLOSED', 'evaluation.statusBadge.JOB_CLOSED'),
     ],
     [],
   ),
@@ -21,8 +22,10 @@ export const filterFields: FilterField[] = [
 export const availableStatusOptions: { key: string; label: string }[] = [
   { key: 'SENT', label: 'evaluation.statusBadge.SENT' },
   { key: 'IN_REVIEW', label: 'evaluation.statusBadge.IN_REVIEW' },
+  { key: 'INTERVIEW', label: 'evaluation.statusBadge.INTERVIEW' },
   { key: 'ACCEPTED', label: 'evaluation.statusBadge.ACCEPTED' },
   { key: 'REJECTED', label: 'evaluation.statusBadge.REJECTED' },
+  { key: 'JOB_CLOSED', label: 'evaluation.statusBadge.JOB_CLOSED' },
 ];
 
 export const sortableFields: SortOption[] = [

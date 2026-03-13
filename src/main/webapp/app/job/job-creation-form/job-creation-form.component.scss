@@ -24,7 +24,7 @@ body {
     .step-number {
       width: 1.875rem;
       height: 1.875rem;
-      border-radius: 50%;
+      border-radius: var(--border-radius-full);
       background-color: var(--p-background-disabled);
       color: var(--p-text-disabled);
       display: flex;
@@ -80,51 +80,6 @@ body {
   }
 }
 
-.form-field {
-  input,
-  textarea,
-  select {
-    width: 100%;
-    padding: 0.625rem 0.75rem;
-    border: 0.1rem solid var(--p-border-default);
-    border-radius: 0.5rem;
-    font-size: 1rem;
-
-    &:focus {
-      outline: none;
-      border-color: var(--p-primary-color);
-    }
-
-    &.invalid {
-      border-color: var(--p-danger-color);
-    }
-
-    &::placeholder {
-      color: var(--p-background-disabled);
-    }
-  }
-
-  textarea {
-    resize: vertical;
-    margin-top: 0.25rem;
-  }
-
-  .form-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0.1rem;
-    font-size: 0.9rem;
-
-    .description-helper {
-      color: var(--p-background-disabled);
-    }
-
-    .char-counter {
-    }
-  }
-}
-
 .input-with-icon {
   position: relative;
 
@@ -148,7 +103,7 @@ body {
 .data-privacy-notice {
   margin-top: 1.25rem;
   padding: 0.9375rem;
-  border-radius: 0.25rem;
+  border-radius: var(--border-radius-sm);
   font-size: 1rem;
 
   p {

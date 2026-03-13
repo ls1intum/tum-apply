@@ -112,6 +112,7 @@ describe('JobCardListComponent', () => {
     component.page.set(5);
 
     component.onSearchEmit('New query');
+    fixture.detectChanges();
 
     expect(component.page()).toBe(0);
     expect(component.searchQuery()).toBe('New query');
@@ -131,6 +132,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
     component.onFilterEmit({ filterId: 'fieldOfStudies', selectedValues: ['AI'] });
+    fixture.detectChanges();
     expect(component.selectedFieldOfStudiesFilters()).toEqual(['AI']);
     expect(spy).toHaveBeenCalled();
   });
@@ -142,6 +144,7 @@ describe('JobCardListComponent', () => {
       filterId: 'location',
       selectedValues: ['jobCreationForm.basicInformationSection.locations.Munich'],
     });
+    fixture.detectChanges();
     expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
     expect(spy).toHaveBeenCalled();
   });
@@ -150,6 +153,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
     component.onFilterEmit({ filterId: 'supervisor', selectedValues: ['Prof. X'] });
+    fixture.detectChanges();
     expect(component.selectedSupervisorFilters()).toEqual(['Prof. X']);
     expect(spy).toHaveBeenCalled();
   });
@@ -158,6 +162,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
     component.onSortEmit({ field: 'title', direction: 'ASC' });
+    fixture.detectChanges();
     expect(component.page()).toBe(0);
     expect(component.sortBy()).toBe('title');
     expect(component.sortDirection()).toBe('ASC');
@@ -168,6 +173,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
     component.loadOnTableEmit({ first: 16, rows: 8 });
+    fixture.detectChanges();
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(8);
     expect(spy).toHaveBeenCalled();
@@ -205,6 +211,7 @@ describe('JobCardListComponent', () => {
 
     component.searchQuery.set('Existing');
     component.onSearchEmit('   ');
+    fixture.detectChanges();
 
     expect(component.searchQuery()).toBe('');
     expect(spy).toHaveBeenCalled();
@@ -214,7 +221,9 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
     component.onSortEmit({ field: 'title', direction: 'ASC' });
+    fixture.detectChanges();
     component.onSortEmit({ field: 'startDate', direction: 'DESC' });
+    fixture.detectChanges();
 
     expect(component.sortBy()).toBe('startDate');
     expect(component.sortDirection()).toBe('DESC');
@@ -225,6 +234,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
     component.loadOnTableEmit({ first: 16, rows: undefined });
+    fixture.detectChanges();
     expect(component.page()).toBe(Math.floor(16 / component.pageSize()));
     expect(spy).toHaveBeenCalled();
   });
@@ -308,6 +318,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
     component.page.set(5);
     component.loadOnTableEmit({ rows: 20 });
+    fixture.detectChanges();
     expect(component.page()).toBe(0);
     expect(component.pageSize()).toBe(20);
     expect(spy).toHaveBeenCalled();

@@ -44,6 +44,26 @@ public final class ResearchGroupTestData {
     }
 
     /**
+     * Unsaved ResearchGroup with sane defaults, all optional fields set to null.
+     */
+    public static ResearchGroup newRgOptional() {
+        ResearchGroup rg = new ResearchGroup();
+        rg.setHead("Alice");
+        rg.setName("Test Group");
+        rg.setAbbreviation(null);
+        rg.setCity(null);
+        rg.setDefaultFieldOfStudies(null);
+        rg.setDescription(null);
+        rg.setEmail(null);
+        rg.setPostalCode(null);
+        rg.setStreet(null);
+        rg.setWebsite(null);
+        rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        rg.setState(ResearchGroupState.ACTIVE);
+        return rg;
+    }
+
+    /**
      * Unsaved ResearchGroup; all fields optional (null = keep default).
      */
     public static ResearchGroup newRgAll(

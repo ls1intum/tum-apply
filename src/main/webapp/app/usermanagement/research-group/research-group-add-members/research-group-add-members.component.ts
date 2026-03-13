@@ -1,8 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
@@ -10,22 +8,28 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { formatFullName } from 'app/shared/util/name.util';
 
 const I18N_BASE = 'researchGroup.members';
+type UserListItem = KeycloakUserDTO & { displayName: string };
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
   imports: [
-    CommonModule,
     TranslateModule,
     SearchFilterSortBar,
     ButtonComponent,
-    CheckboxModule,
     FormsModule,
     PaginatorModule,
-    ConfirmDialog,
+    ProgressSpinnerModule,
+    CheckboxComponent,
+    InfoBoxComponent,
+    UserAvatarComponent,
   ],
   templateUrl: './research-group-add-members.component.html',
 })
@@ -38,7 +42,7 @@ export class ResearchGroupAddMembersComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  users = signal<KeycloakUserDTO[]>([]);
+  users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
   userService = inject(UserResourceApiService);
@@ -52,7 +56,7 @@ export class ResearchGroupAddMembersComponent {
 
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
-  private loaderTimeout: number | null = null;
+  private loaderTimeout: number | undefined;
 
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
@@ -97,9 +101,9 @@ export class ResearchGroupAddMembersComponent {
       return;
     }
 
-    if (this.loaderTimeout) {
+    if (this.loaderTimeout !== undefined) {
       clearTimeout(this.loaderTimeout);
-      this.loaderTimeout = null;
+      this.loaderTimeout = undefined;
     }
     this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
 
@@ -113,7 +117,7 @@ export class ResearchGroupAddMembersComponent {
         return;
       }
       this.totalRecords.set(response.totalElements ?? 0);
-      this.users.set(response.content ?? []);
+      this.users.set(this.toUserListItems(response.content ?? []));
     } catch {
       // Only show an error toast for the most recent request; stale errors shouldn't alarm the user
       if (requestId === this.latestRequestId) {
@@ -122,10 +126,8 @@ export class ResearchGroupAddMembersComponent {
     } finally {
       // only touch loading/timeout if this is the latest request
       if (requestId === this.latestRequestId) {
-        if (this.loaderTimeout) {
-          clearTimeout(this.loaderTimeout);
-          this.loaderTimeout = null;
-        }
+        clearTimeout(this.loaderTimeout);
+        this.loaderTimeout = undefined;
         this.loading.set(false);
       }
     }
@@ -140,16 +142,19 @@ export class ResearchGroupAddMembersComponent {
   }
 
   onPageChange(event: { first?: number; rows?: number }): void {
-    const pageNumber = event.first && event.rows ? event.first / event.rows : 0;
+    const first = event.first;
+    const rows = event.rows;
+    const pageNumber = first != null && rows != null && rows !== 0 ? first / rows : 0;
     this.page.set(pageNumber);
-    if (event.rows) {
-      this.pageSize.set(event.rows);
+    if (rows != null) {
+      this.pageSize.set(rows);
     }
-    void this.loadAvailableUsers(this.searchQuery() || undefined);
+    const query = this.searchQuery();
+    void this.loadAvailableUsers(query.length > 0 ? query : undefined);
   }
 
   toggleUserSelection(user: KeycloakUserDTO): void {
-    if (!user.id) {
+    if (user.id == null || user.id === '') {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
     }
@@ -181,7 +186,8 @@ export class ResearchGroupAddMembersComponent {
       this.dialogRef.close(true);
     } catch (err) {
       if (err instanceof HttpErrorResponse) {
-        const errorMessage = err.error?.message ?? '';
+        const rawMessage: unknown = err.error?.message;
+        const errorMessage = typeof rawMessage === 'string' ? rawMessage : '';
         if (err.status === 400 && errorMessage.toLowerCase().includes('already a member')) {
           this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailedAlreadyMember`);
         } else if (err.status === 400 && errorMessage.toLowerCase().includes('not have a valid universityid')) {
@@ -197,10 +203,21 @@ export class ResearchGroupAddMembersComponent {
   }
 
   isUserSelected(user: KeycloakUserDTO): boolean {
-    if (!user.id) {
+    if (user.id == null || user.id === '') {
       return false;
     }
 
     return this.selectedUsers().has(user.id);
+  }
+
+  private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
+    return users.map(user => ({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      universityId: user.universityId,
+      displayName: formatFullName(user.firstName, user.lastName),
+    }));
   }
 }

@@ -1,6 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -20,7 +20,7 @@ import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { MessageModule } from 'primeng/message';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -48,7 +48,6 @@ const applyflow = 'entity.toast.applyFlow';
 @Component({
   selector: 'jhi-application-creation-form',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     DividerModule,
     CheckboxModule,
@@ -61,7 +60,7 @@ const applyflow = 'entity.toast.applyFlow';
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
     TranslateDirective,
-    MessageModule,
+    MessageComponent,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -92,13 +91,13 @@ export default class ApplicationCreationFormComponent {
   educationData = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
-    // bachelorGradeUpperLimit: '',
-    // bachelorGradeLowerLimit: '',
+    bachelorGradeUpperLimit: '',
+    bachelorGradeLowerLimit: '',
     bachelorGrade: '',
     masterDegreeName: '',
     masterDegreeUniversity: '',
-    // masterGradeUpperLimit: '',
-    // masterGradeLowerLimit: '',
+    masterGradeUpperLimit: '',
+    masterGradeLowerLimit: '',
     masterGrade: '',
   });
 
@@ -515,6 +514,11 @@ export default class ApplicationCreationFormComponent {
       // Clear local storage on successful server save
       this.clearLocalStorage();
 
+      // After application is sent, reload user data to update header with latest names
+      if (state === 'SENT') {
+        await this.accountService.loadUser();
+      }
+
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
         await this.router.navigate(['/application/overview']);
@@ -608,7 +612,6 @@ export default class ApplicationCreationFormComponent {
       modal: true,
     });
 
-    // TODO: maybe switch to creating the account in this component
     // Poll account state until a user is available or timeout
     const started = Date.now();
     await new Promise<void>((resolve, reject) => {
@@ -670,13 +673,13 @@ export default class ApplicationCreationFormComponent {
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
-        // bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
-        // bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
+        bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
+        bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
         masterDegreeName: p2.masterDegreeName,
         masterUniversity: p2.masterDegreeUniversity,
         masterGrade: p2.masterGrade,
-        // masterGradeUpperLimit: p2.masterGradeUpperLimit,
-        // masterGradeLowerLimit: p2.masterGradeLowerLimit,
+        masterGradeUpperLimit: p2.masterGradeUpperLimit,
+        masterGradeLowerLimit: p2.masterGradeLowerLimit,
       },
       motivation: p3.motivation,
       specialSkills: p3.skills,
@@ -755,7 +758,7 @@ export default class ApplicationCreationFormComponent {
     this.localStorageService.clearApplicationDraft(this.applicationId(), this.jobId());
   }
 
-  /* TODO
+  /*
    * `queueMicroTask` is here to fix a timing issue with the ToastService.
    * on opening the webpage directly to this component, the Toastservice is not ready to be rendered in the DOM, so it's functions are being executed, but no toast is visible
    * tried different strategies of fixing the timing issue:

@@ -1,9 +1,8 @@
 <p-fileupload
   [customUpload]="true"
-  [multiple]="true"
+  [multiple]="allowMultiple()"
   accept="application/pdf"
   mode="advanced"
-  [maxFileSize]="maxUploadSizeInMb * 1024 * 1024"
   (onClear)="onClear()"
   (onSelect)="onFileSelected($event)"
   #fileupload_component
@@ -23,7 +22,7 @@
   <ng-template #empty>
     <div class="flex justify-center flex-col gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
       <div class="flex w-full justify-center">
-        <span class="flex border items-center justify-center rounded-full border-primary size-20">
+        <span class="flex border items-center justify-center rounded-pill border-primary size-20">
           <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
         </span>
       </div>
@@ -96,7 +95,17 @@
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
                 <td class="border-r-0">
-                  <jhi-button icon="trash" severity="danger" variant="text" (click)="deleteDictionary(info)" aria-label="Remove file" />
+                  <jhi-confirm-dialog
+                    [label]="'button.delete' | translate"
+                    [header]="'entity.upload.deleteDocument.confirm.header' | translate"
+                    [message]="'entity.upload.deleteDocument.confirm.message' | translate"
+                    [severity]="'danger'"
+                    confirmIcon="trash"
+                    [iconOnly]="true"
+                    [tooltip]="'button.delete' | translate"
+                    size="sm"
+                    (confirmed)="deleteDictionary(info)"
+                  />
                 </td>
               </tr>
             }
@@ -108,31 +117,22 @@
   <ng-template #file />
 </p-fileupload>
 
-<!-- Duplicate File Confirmation Dialog -->
-<p-dialog
-  [visible]="showDuplicateDialog()"
-  (visibleChange)="showDuplicateDialog.set($event)"
-  [modal]="true"
-  [draggable]="false"
-  [closable]="false"
-  [showHeader]="false"
-  [style]="{ width: '33rem', boxShadow: 'none', border: 'none' }"
->
-  <div class="bg-[var(--p-background-default)] rounded-[var(--p-button-border-radius)] p-6">
-    <div class="flex items-center gap-2 mb-6">
-      <fa-icon icon="exclamation-triangle" class="text-[var(--p-warn-color)]" size="lg" />
-      <span class="text-[var(--p-text-primary)] text-xl font-semibold">
-        {{ 'entity.upload.duplicate.title' | translate }}
-      </span>
-    </div>
+<jhi-confirm-dialog
+  #duplicateConfirmDialog
+  [header]="'entity.upload.duplicate.title' | translate"
+  [message]="'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() }"
+  [label]="'button.replace' | translate"
+  severity="primary"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmDuplicate()"
+/>
 
-    <p class="text-[var(--p-text-primary)] text-left mb-7">
-      {{ 'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() } }}
-    </p>
-
-    <div class="flex justify-end gap-3">
-      <jhi-button [shouldTranslate]="true" label="button.cancel" variant="outlined" (click)="onDuplicateCancel()" />
-      <jhi-button [shouldTranslate]="true" label="entity.upload.duplicate.replace" (click)="onDuplicateReplace()" />
-    </div>
-  </div>
-</p-dialog>
+<jhi-confirm-dialog
+  #replacementConfirmDialog
+  [header]="'entity.upload.replacement.title' | translate"
+  [message]="'entity.upload.replacement.message' | translate"
+  [label]="'button.replace' | translate"
+  severity="primary"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmReplacement()"
+/>
