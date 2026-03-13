@@ -98,8 +98,8 @@
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerbende",
         "APPLICANT_LAST_NAME": "Nachname Bewerbende",
-        "USER_FIRST_NAME": "Vorname Nutzenden",
-        "USER_LAST_NAME": "Nachname Nutzenden",
+        "USER_FIRST_NAME": "Vorname Nutzende",
+        "USER_LAST_NAME": "Nachname Nutzende",
         "SUPERVISING_PROFESSOR_FIRST_NAME": "Vorname Professor:in",
         "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
         "JOB_TITLE": "Stellen Titel",
