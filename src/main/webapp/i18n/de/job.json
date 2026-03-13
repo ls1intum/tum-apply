@@ -242,6 +242,7 @@
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
+      "subjectArea": "Fachbereich",
       "location": "Standort",
       "supervisor": "Betreuer:in",
       "startDate": "Startdatum"
@@ -330,6 +331,9 @@
     "cards": {
       "positionOverview": "Stellenübersicht",
       "researchGroup": "Forschungsgruppe"
+    },
+    "tooltips": {
+      "department": "Fachgebiet"
     },
     "labels": {
       "subjectArea": "Fachbereich",
