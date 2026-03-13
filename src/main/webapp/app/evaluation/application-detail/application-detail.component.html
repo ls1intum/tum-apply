@@ -233,7 +233,8 @@
                             [pTooltip]="masterSummary().gradeInfo.tooltipText"
                             [escape]="false"
                             tooltipPosition="top"
-                    autoHide="false" />
+                            autoHide="false"
+                          />
                         }
                       }
                     </span>
@@ -244,25 +245,30 @@
                 </jhi-sub-section>
               }
 
-            <jhi-sub-section titleKey="evaluation.education.bachelor">
-              <div class="flex flex-col">
-                <span>
-                  {{ bachelorSummary().degree || '—' }}
-                  @if (bachelorSummary().gradeInfo.displayValue) {
-                  <span>({{ bachelorSummary().gradeInfo.displayValue }})</span>
-                  @if (bachelorSummary().gradeInfo.tooltipText) {
-                  <fa-icon class="icon" [icon]="['fas', 'circle-info']"
-                    [pTooltip]="bachelorSummary().gradeInfo.tooltipText" [escape]="false" tooltipPosition="top"
-                    autoHide="false" />
+              <jhi-sub-section titleKey="evaluation.education.bachelor">
+                <div class="flex flex-col">
+                  <span>
+                    {{ bachelorSummary().degree || '—' }}
+                    @if (bachelorSummary().gradeInfo.displayValue) {
+                      <span>({{ bachelorSummary().gradeInfo.displayValue }})</span>
+                      @if (bachelorSummary().gradeInfo.tooltipText) {
+                        <fa-icon
+                          class="icon"
+                          [icon]="['fas', 'circle-info']"
+                          [pTooltip]="bachelorSummary().gradeInfo.tooltipText"
+                          [escape]="false"
+                          tooltipPosition="top"
+                          autoHide="false"
+                        />
+                      }
+                    }
+                  </span>
+                  @if (bachelorSummary().university) {
+                    <div class="text-sm">{{ bachelorSummary().university }}</div>
                   }
-                  }
-                </span>
-                @if (bachelorSummary().university) {
-                <div class="text-sm">{{ bachelorSummary().university }}</div>
-                }
-              </div>
-            </jhi-sub-section>
-          </jhi-section>
+                </div>
+              </jhi-sub-section>
+            </jhi-section>
 
             <!-- Application -->
             <div class="mt-4">
