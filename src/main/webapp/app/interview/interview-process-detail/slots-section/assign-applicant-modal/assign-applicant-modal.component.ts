@@ -48,10 +48,8 @@ export class AssignApplicantModalComponent {
   interviewees = signal<IntervieweeDTO[]>([]);
   selectedApplicantId = signal<string | null>(null);
 
-  // Filters out already scheduled, completed, and invited interviewees
-  availableInterviewees = computed(() =>
-    this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED' && i.state !== 'INVITED'),
-  );
+  // Filters out already scheduled and completed interviewees (UNCONTACTED + INVITED are assignable)
+  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED'));
 
   // Returns true if an applicant is selected
   canAssign = computed(() => this.selectedApplicantId() !== null);
@@ -144,9 +142,9 @@ export class AssignApplicantModalComponent {
     return this.selectedApplicantId() === interviewee.applicationId;
   }
 
-  // Returns true if the interviewee already has a scheduled slot or is invited
+  // Returns true if the interviewee already has a scheduled slot
   isDisabled(interviewee: IntervieweeDTO): boolean {
-    return interviewee.state === 'SCHEDULED' || interviewee.state === 'INVITED';
+    return interviewee.state === 'SCHEDULED';
   }
 
   // Handles visibility changes from the dialog component

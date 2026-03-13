@@ -422,8 +422,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should load admin professor candidates when search query is long enough', async () => {
-      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
-
       const candidates: KeycloakUserDTO[] = [
         {
           id: '1d8e3025-cf70-4f7a-b510-e9fbe7f4f123',
@@ -451,8 +449,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should show toast when admin professor search fails', async () => {
-      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
-
       getAvailableUsersForResearchGroupMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
 
       await component.onAdminProfessorSearch('alice');
@@ -462,8 +458,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should ignore stale admin professor search responses', async () => {
-      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
-
       const firstResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
       const secondResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
 
@@ -509,8 +503,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should only show admin professor search errors for latest request', async () => {
-      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
-
       const firstResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
       const secondResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
 
@@ -545,7 +537,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
 
     it('should delay loading spinner until threshold for admin professor search', async () => {
       vi.useFakeTimers();
-      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
 
       const response = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
       getAvailableUsersForResearchGroupMock.mockReturnValue(response.asObservable());

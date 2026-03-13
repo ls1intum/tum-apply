@@ -101,7 +101,7 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    return state !== 'ACCEPTED' && state !== 'REJECTED';
+    return state !== 'ACCEPTED' && state !== 'REJECTED' && state !== 'JOB_CLOSED';
   });
 
   isAlreadyInInterview = computed(() => {
