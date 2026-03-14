@@ -53,6 +53,9 @@
         "title": "Delete Template",
         "message": "Are you sure you want to delete this template? This action cannot be undone."
       },
+      "deleteSuccess": "Template deleted successfully.",
+      "deleteDefaultDisabled": "System default templates cannot be deleted.",
+      "deleteFailed": "Failed to delete template. Please try again.",
       "signature": "Signature",
       "systemDefault": "System default",
       "tableColumns": {
@@ -76,20 +79,20 @@
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
         "APPLICATION_REJECTED": "Application rejected",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
-        "RESEARCH_GROUP_APPROVED": "Research group activated"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group"
       },
       "default": {
-        "APPLICATION_ACCEPTED": "Application accepted",
-        "APPLICATION_SENT": "Application received confirmation",
-        "APPLICATION_REJECTED-JOB_FILLED": "Application rejected - Job already filled",
-        "APPLICATION_REJECTED-JOB_OUTDATED": "Application rejected - Job outdated",
-        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
-        "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason",
-        "INTERVIEW_INVITATION": "Interview Invitation",
-        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Self-Scheduling Interview Invitation",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
-        "RESEARCH_GROUP_APPROVED": "Research group activated"
+        "APPLICATION_ACCEPTED": "Application: Accepted",
+        "APPLICATION_SENT": "Application: Received Confirmation",
+        "APPLICATION_REJECTED-JOB_FILLED": "Application: Rejected - Job Already Filled",
+        "APPLICATION_REJECTED-JOB_OUTDATED": "Application: Rejected - Job Outdated",
+        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application: Rejected - Failed Requirements",
+        "APPLICATION_REJECTED-OTHER_REASON": "Application: Rejected - Other Reason",
+        "INTERVIEW_INVITATION": "Interview: Invitation",
+        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview: Self-Scheduling Invitation",
+        "INTERVIEW_CANCELLED": "Interview: Cancelled",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Interview: Reschedule Requested",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Research Group: Member Added"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",
@@ -100,10 +103,16 @@
         "SUPERVISING_PROFESSOR_LAST_NAME": "Supervising Professor Last Name",
         "JOB_TITLE": "Job Title",
         "RESEARCH_GROUP_NAME": "Research Group Name",
+        "APPLICANT_GENDER": "Applicant Gender",
+        "SUPERVISING_PROFESSOR_EMAIL": "Supervising Professor Email",
         "INTERVIEW_DATE": "Date",
         "INTERVIEW_START_TIME": "Start Time",
         "INTERVIEW_END_TIME": "End Time",
-        "INTERVIEW_LOCATION": "Location"
+        "INTERVIEW_LOCATION": "Location",
+        "INTERVIEW_STREAM_LINK": "Interview Stream Link",
+        "BOOKING_LINK": "Booking Link",
+        "DOWNLOAD_LINK": "Download Link",
+        "EXPORT_EXPIRES_DAYS": "Export Validity (Days)"
       }
     },
     "members": {
