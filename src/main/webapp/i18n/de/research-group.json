@@ -81,7 +81,8 @@
         "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
         "APPLICATION_SENT": "Bewerbung empfangen",
         "APPLICATION_REJECTED": "Bewerbung abgelehnt",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
+        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert"
       },
       "default": {
         "APPLICATION_ACCEPTED": "Bewerbung: Angenommen",
@@ -93,6 +94,7 @@
         "INTERVIEW_INVITATION": "Vorstellungsgespräch: Einladung",
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Vorstellungsgespräch: Einladung zur Terminbuchung",
         "INTERVIEW_CANCELLED": "Vorstellungsgespräch: Abgesagt",
+        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert",
         "INTERVIEW_RESCHEDULE_REQUESTED": "Vorstellungsgespräch: Terminverschiebung angefragt",
         "RESEARCH_GROUP_MEMBER_ADDED": "Forschungsgruppe: Mitglied hinzugefügt"
       },
