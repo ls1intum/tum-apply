@@ -252,8 +252,9 @@ class EmailTemplateServiceTest {
         void shouldNotSaveWhenAllTypesExist() {
             Set<EmailType> allEmailTypes = EnumSet.allOf(EmailType.class);
             when(emailTemplateRepository.findAllEmailTypesByResearchGroup(researchGroup)).thenReturn(allEmailTypes);
-            when(emailTemplateRepository.findByResearchGroupAndTemplateNameAndEmailType(any(), any(), any()))
-                .thenReturn(Optional.of(new EmailTemplate()));
+            when(emailTemplateRepository.findByResearchGroupAndTemplateNameAndEmailType(any(), any(), any())).thenReturn(
+                Optional.of(new EmailTemplate())
+            );
 
             emailTemplateService.addMissingTemplates(researchGroup);
 
