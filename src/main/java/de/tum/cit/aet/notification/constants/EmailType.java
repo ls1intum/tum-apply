@@ -60,7 +60,7 @@ public enum EmailType {
      * When a research group request is approved
      * To: Research group owner (professor)
      */
-    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), true, false),
+    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), false, false),
     /**
      * Confirmation when applicant books their own interview slot
      * To: Applicant who booked the slot
