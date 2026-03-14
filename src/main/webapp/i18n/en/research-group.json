@@ -81,7 +81,8 @@
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
         "APPLICATION_REJECTED": "Application rejected",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
+        "INTERVIEW_LOCATION_CHANGED": "Interview location changed"
       },
       "default": {
         "APPLICATION_ACCEPTED": "Application: Accepted",
@@ -93,6 +94,7 @@
         "INTERVIEW_INVITATION": "Interview: Invitation",
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview: Self-Scheduling Invitation",
         "INTERVIEW_CANCELLED": "Interview: Cancelled",
+        "INTERVIEW_LOCATION_CHANGED": "Interview: Location Changed",
         "INTERVIEW_RESCHEDULE_REQUESTED": "Interview: Reschedule Requested",
         "RESEARCH_GROUP_MEMBER_ADDED": "Research Group: Member Added"
       },
