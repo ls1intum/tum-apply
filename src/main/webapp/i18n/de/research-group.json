@@ -55,6 +55,9 @@
         "title": "Vorlage löschen",
         "message": "Möchtest du diese Vorlage wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
       },
+      "deleteSuccess": "Vorlage erfolgreich gelöscht.",
+      "deleteDefaultDisabled": "Systemvorlagen können nicht gelöscht werden.",
+      "deleteFailed": "Vorlage konnte nicht gelöscht werden. Bitte versuche es erneut.",
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {
@@ -78,8 +81,7 @@
         "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
         "APPLICATION_SENT": "Bewerbung empfangen",
         "APPLICATION_REJECTED": "Bewerbung abgelehnt",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
-        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt"
       },
       "default": {
         "APPLICATION_ACCEPTED": "Bewerbung: Angenommen",
@@ -92,8 +94,7 @@
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Vorstellungsgespräch: Einladung zur Terminbuchung",
         "INTERVIEW_CANCELLED": "Vorstellungsgespräch: Abgesagt",
         "INTERVIEW_RESCHEDULE_REQUESTED": "Vorstellungsgespräch: Terminverschiebung angefragt",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Forschungsgruppe: Mitglied hinzugefügt",
-        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe: Aktiviert"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Forschungsgruppe: Mitglied hinzugefügt"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",

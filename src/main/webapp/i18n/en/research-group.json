@@ -55,6 +55,9 @@
         "title": "Delete Template",
         "message": "Are you sure you want to delete this template? This action cannot be undone."
       },
+      "deleteSuccess": "Template deleted successfully.",
+      "deleteDefaultDisabled": "System default templates cannot be deleted.",
+      "deleteFailed": "Failed to delete template. Please try again.",
       "signature": "Signature",
       "systemDefault": "System default",
       "tableColumns": {
@@ -78,8 +81,7 @@
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
         "APPLICATION_REJECTED": "Application rejected",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
-        "RESEARCH_GROUP_APPROVED": "Research group activated"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group"
       },
       "default": {
         "APPLICATION_ACCEPTED": "Application: Accepted",
@@ -92,8 +94,7 @@
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview: Self-Scheduling Invitation",
         "INTERVIEW_CANCELLED": "Interview: Cancelled",
         "INTERVIEW_RESCHEDULE_REQUESTED": "Interview: Reschedule Requested",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Research Group: Member Added",
-        "RESEARCH_GROUP_APPROVED": "Research Group: Activated"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Research Group: Member Added"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",
