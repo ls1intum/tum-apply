@@ -1017,14 +1017,18 @@ export class JobCreationFormComponent {
     this.currentDescriptionLanguage.set('en');
 
     const en =
-      job?.jobDescriptionEN ?? (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') : '');
+      job?.jobDescriptionEN ??
+      (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') : '');
     const de =
-      job?.jobDescriptionDE ?? (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') : '');
+      job?.jobDescriptionDE ??
+      (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') : '');
 
     const supervisingProfessorId = job?.supervisingProfessor ?? this.basicInfoForm.get('supervisingProfessor')?.value;
 
     this.jobDescriptionEN.set(en);
+    this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
+    this.lastTranslatedDE.set(de);
 
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
