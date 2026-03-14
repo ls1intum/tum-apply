@@ -997,6 +997,9 @@ export class JobCreationFormComponent {
         ]);
         this.populateForm(job);
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
+
+        // prevent autosave from firing immediately after patching
+        this.autoSaveInitialized = false;
       }
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
@@ -1041,9 +1044,6 @@ export class JobCreationFormComponent {
 
     this.jobDescriptionSignal.set(en);
     this.jobDescriptionEditor()?.forceUpdate(en);
-
-    // prevent autosave from firing immediately after patching
-    this.autoSaveInitialized = false;
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
