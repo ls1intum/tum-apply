@@ -81,7 +81,7 @@
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
         "APPLICATION_REJECTED": "Application rejected",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
         "INTERVIEW_LOCATION_CHANGED": "Interview location changed"
       },
       "default": {

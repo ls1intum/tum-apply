@@ -81,7 +81,7 @@
         "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
         "APPLICATION_SENT": "Bewerbung empfangen",
         "APPLICATION_REJECTED": "Bewerbung abgelehnt",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
         "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert"
       },
       "default": {
