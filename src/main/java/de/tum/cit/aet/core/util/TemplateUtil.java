@@ -30,33 +30,58 @@ public class TemplateUtil {
 
     /**
      * Converts a FreeMarker HTML template to a format compatible with Quill's mention plugin.
-     * Recognized variables like <code>${APPLICANT_FIRST_NAME}</code> are replaced with
-     * Quill mention HTML nodes.
+     * Recognized variables like <code>${APPLICANT_FIRST_NAME!}</code> in text nodes are replaced with
+     * Quill mention HTML nodes. FreeMarker variables inside HTML attributes (e.g. href) are preserved as-is.
      *
      * @param html the input HTML containing FreeMarker variables
      * @return the HTML with mentions rendered for Quill
      */
     public static String convertFreemarkerToQuillMentions(String html) {
         try {
-            Matcher matcher = FREEMARKER_VAR_PATTERN.matcher(html);
-            StringBuilder result = new StringBuilder();
+            Document document = Jsoup.parseBodyFragment(html);
+            document.outputSettings().prettyPrint(false);
 
-            while (matcher.find()) {
-                String variable = matcher.group(1);
-                if (!validVariables.contains(variable)) {
-                    log.warn("Unknown template variable '{}'; skipping.", variable);
-                    continue;
+            for (TextNode textNode : document.body().textNodes()) {
+                replaceFreemarkerInTextNode(textNode);
+            }
+            for (Element element : document.body().getAllElements()) {
+                for (TextNode textNode : element.textNodes()) {
+                    replaceFreemarkerInTextNode(textNode);
                 }
-                String mentionHtml = String.format(MENTION_HTML_TEMPLATE, variable, variable, variable);
-                matcher.appendReplacement(result, Matcher.quoteReplacement(mentionHtml));
             }
 
-            matcher.appendTail(result);
-            return result.toString();
+            return document.body().html();
         } catch (Exception e) {
             log.error("Failed to convert FreeMarker variables to Quill mentions.", e);
             return html;
         }
+    }
+
+    /**
+     * Replaces FreeMarker variable patterns in a single text node with Quill mention HTML.
+     */
+    private static void replaceFreemarkerInTextNode(TextNode textNode) {
+        String text = textNode.getWholeText();
+        Matcher matcher = FREEMARKER_VAR_PATTERN.matcher(text);
+        if (!matcher.find()) {
+            return;
+        }
+
+        matcher.reset();
+        StringBuilder result = new StringBuilder();
+        while (matcher.find()) {
+            String variable = matcher.group(1);
+            if (!validVariables.contains(variable)) {
+                log.warn("Unknown template variable '{}'; skipping.", variable);
+                continue;
+            }
+            String mentionHtml = String.format(MENTION_HTML_TEMPLATE, variable, variable, variable);
+            matcher.appendReplacement(result, Matcher.quoteReplacement(mentionHtml));
+        }
+        matcher.appendTail(result);
+
+        textNode.before(result.toString());
+        textNode.remove();
     }
 
     /**
