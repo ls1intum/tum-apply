@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -11,9 +12,11 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
-import { getLocale } from 'app/shared/util/date-time.util';
+import { formatDateWithWeekday, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
 import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
 
@@ -37,7 +40,11 @@ interface GroupedSlots {
   imports: [
     TranslateModule,
     TranslateDirective,
+    FormsModule,
     ButtonComponent,
+    DialogComponent,
+    MessageComponent,
+    StringInputComponent,
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
@@ -81,6 +88,11 @@ export class SlotsSectionComponent {
   expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
+  showEditDialog = signal(false);
+  selectedSlotForEdit = signal<InterviewSlotDTO | undefined>(undefined);
+  editLocation = signal('');
+  editLoading = signal(false);
+
   selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
 
   showCancelModal = signal(false);
@@ -176,6 +188,23 @@ export class SlotsSectionComponent {
   notEnoughSlots = computed(() => {
     if (!this.initialized()) return false;
     return this.invitedCount() > 0 && this.globalFutureUnbookedCount() < this.invitedCount();
+  });
+
+  editSlotDate = computed(() => {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '') return '';
+    return formatDateWithWeekday(slot.startDateTime, this.locale());
+  });
+
+  editSlotTimeRange = computed(() => {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '' || slot.endDateTime === undefined || slot.endDateTime === '')
+      return '';
+    return formatTimeRange(slot.startDateTime, slot.endDateTime);
+  });
+
+  editSlotIsBooked = computed(() => {
+    return this.selectedSlotForEdit()?.isBooked ?? false;
   });
 
   // Private Signals (state + toSignal)
@@ -291,8 +320,43 @@ export class SlotsSectionComponent {
     this.expandedDates.set(expanded);
   }
 
-  onEditSlot(): void {
-    // TODO: Open Edit Modal
+  getShowMoreText(count: number): string {
+    const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
+    return `${count} ${this.translateService.instant(key)}`;
+  }
+
+  onEditSlot(slot: InterviewSlotDTO): void {
+    this.selectedSlotForEdit.set(slot);
+    this.editLocation.set(slot.location ?? '');
+    this.showEditDialog.set(true);
+  }
+
+  async saveSlotLocation(): Promise<void> {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.id === undefined || this.editLocation().trim() === '') return;
+
+    try {
+      this.editLoading.set(true);
+      await firstValueFrom(this.interviewService.updateSlotLocation(slot.id, { location: this.editLocation().trim() }));
+      this.toastService.showSuccessKey('interview.slots.edit.success');
+      this.closeEditDialog();
+      await this.refreshSlots();
+    } catch (error: unknown) {
+      const httpError = error as { status?: number };
+      if (httpError.status === 403) {
+        this.toastService.showErrorKey('interview.slots.edit.errorForbidden');
+      } else {
+        this.toastService.showErrorKey('interview.slots.edit.error');
+      }
+    } finally {
+      this.editLoading.set(false);
+    }
+  }
+
+  closeEditDialog(): void {
+    this.showEditDialog.set(false);
+    this.selectedSlotForEdit.set(undefined);
+    this.editLocation.set('');
   }
 
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
@@ -318,7 +382,6 @@ export class SlotsSectionComponent {
       }
     }
   }
-
   onAssignApplicant(slot: InterviewSlotDTO): void {
     this.selectedSlotForAssignment.set(slot);
     this.internalRefreshKey.update(n => n + 1);
@@ -361,12 +424,6 @@ export class SlotsSectionComponent {
     }
   }
 
-  // Private methods
-  private getShowMoreText(count: number): string {
-    const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
-    return `${count} ${this.translateService.instant(key)}`;
-  }
-
   /**
    * Performs the initial data check for this interview process by firing two
    * lightweight REST calls in parallel, then loads the current month's slots.
@@ -403,7 +460,7 @@ export class SlotsSectionComponent {
       const [anySlotsResponse, unbookedResponse] = await Promise.all([anySlotsTask, unbookedTask]);
 
       // 4. Count future unbooked slots for the "Not Enough Slots" warning
-      const unbookedCount = unbookedResponse.content?.filter(s => !s.isBooked).length ?? 0;
+      const unbookedCount = unbookedResponse.content?.filter(s => s.isBooked !== true).length ?? 0;
 
       // 5. Batch signal writes to avoid intermediate re-renders
       const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
