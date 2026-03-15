@@ -103,7 +103,7 @@ export class SlotsSectionComponent {
   internalRefreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
   globalFutureUnbookedCount = signal<number>(0);
-  locationChangedTemplateId = signal<string | null>(null);
+  locationChangedTemplateId = signal<string | undefined>(undefined);
 
   // Computed
   datesPerPage = computed(() => {
@@ -605,7 +605,7 @@ export class SlotsSectionComponent {
   }
 
   private async fetchLocationChangedTemplateId(): Promise<void> {
-    if (this.locationChangedTemplateId() !== null) return;
+    if (this.locationChangedTemplateId() !== undefined) return;
 
     try {
       const res = await firstValueFrom(this.emailTemplateService.getTemplates(100, 0));
