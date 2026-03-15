@@ -10,7 +10,6 @@
     },
     "sections": {
       "jobDetails": "Job Details",
-      "description": "Description",
       "contactDetails": "Contact Details"
     },
     "metaData": {

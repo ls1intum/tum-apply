@@ -184,6 +184,24 @@
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
         }
       },
+      "edit": {
+        "title": "Ort bearbeiten",
+        "bookedInfo": "Die bewerbende Person wird per E-Mail über die Ortsänderung informiert. Du kannst die E-Mail-Vorlage ",
+        "editTemplates": "hier",
+        "editTemplatesSuffix": " anpassen.",
+        "success": {
+          "summary": "Ort aktualisiert",
+          "detail": "Der Terminort wurde erfolgreich aktualisiert."
+        },
+        "error": {
+          "summary": "Aktualisierung fehlgeschlagen",
+          "detail": "Der Ort konnte nicht aktualisiert werden. Bitte versuche es erneut."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu bearbeiten"
+        }
+      },
       "cancelInterview": {
         "button": "Bestätigen",
         "triggerButton": "Interview absagen",

@@ -1499,6 +1499,26 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/slots/{slotId}/location:
+    put:
+      tags: [interview-resource]
+      operationId: updateSlotLocation
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateSlotLocationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/interviews/upcoming:
     get:
       tags: [interview-resource]
@@ -2769,9 +2789,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2782,9 +2802,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2795,9 +2815,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2811,9 +2831,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -3496,6 +3516,11 @@ components:
       properties:
         newPassword: {type: string, minLength: 1}
       required: [newPassword]
+    UpdateSlotLocationDTO:
+      type: object
+      properties:
+        location: {type: string, minLength: 1}
+      required: [location]
     UpdateUserNameDTO:
       type: object
       properties:

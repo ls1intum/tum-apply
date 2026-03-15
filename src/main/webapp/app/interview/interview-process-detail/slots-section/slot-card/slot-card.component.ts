@@ -44,26 +44,31 @@ export class SlotCardComponent {
 
   // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => {
-    const items: JhiMenuItem[] = [];
+    const items: JhiMenuItem[] = [
+      {
+        label: 'button.edit',
+        icon: 'pencil',
+        command: () => this.onEdit(),
+        severity: 'primary',
+      },
+    ];
+
     if (this.isBooked()) {
       items.push({
         label: 'interview.slots.cancelInterview.triggerButton',
         icon: 'xmark',
-        command: () => {
-          this.onCancelInterview();
-        },
+        command: () => this.onCancelInterview(),
         severity: 'danger',
       });
     } else {
       items.push({
         label: 'button.delete',
         icon: 'trash',
-        command: () => {
-          this.deleteDialog().confirm();
-        },
+        command: () => this.deleteDialog().confirm(),
         severity: 'danger',
       });
     }
+
     return items;
   });
 
@@ -73,7 +78,6 @@ export class SlotCardComponent {
 
   onEdit(): void {
     this.editSlot.emit(this.slot());
-    // TODO: Open Edit Modal
   }
 
   onDelete(): void {
