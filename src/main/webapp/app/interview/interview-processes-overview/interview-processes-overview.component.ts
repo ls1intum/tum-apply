@@ -119,7 +119,7 @@ export class InterviewProcessesOverviewComponent {
     this.breakpointObserver
       .observe([
         `(min-width: ${BREAKPOINTS.ultraWide}px)`,
-        '(min-width: 1700px)',
+        `(min-width: ${BREAKPOINTS.xxl}px)`,
         `(min-width: ${BREAKPOINTS.xl}px)`,
         `(min-width: ${BREAKPOINTS.lg}px)`,
       ])
@@ -127,7 +127,7 @@ export class InterviewProcessesOverviewComponent {
         map(result => {
           if (result.matches) {
             if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
-            if (result.breakpoints['(min-width: 1700px)']) return 4;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xxl}px)`]) return 4;
             if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
             if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
           }
@@ -143,23 +143,23 @@ export class InterviewProcessesOverviewComponent {
   });
 
   // Effects
+  private readonly langChangeEffect = effect(() => {
+    const langEvent = this.langChangeSignal();
+    if (langEvent?.lang !== undefined) {
+      untracked(() => this.currentLangSignal.set(langEvent.lang));
+    }
+  });
+
+  private readonly resetPageEffect = effect(
+    () => {
+      this.datesPerPage();
+      untracked(() => this.currentDatePage.set(0));
+    },
+    { allowSignalWrites: true },
+  );
+
   constructor() {
     void this.loadData();
-
-    effect(() => {
-      const langEvent = this.langChangeSignal();
-      if (langEvent?.lang !== undefined) {
-        untracked(() => this.currentLangSignal.set(langEvent.lang));
-      }
-    });
-
-    effect(
-      () => {
-        this.datesPerPage();
-        untracked(() => this.currentDatePage.set(0));
-      },
-      { allowSignalWrites: true },
-    );
   }
 
   // Public Methods
