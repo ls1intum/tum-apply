@@ -28,26 +28,6 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
     List<InterviewProcess> findAllByProfessorId(@Param("professorId") UUID professorId);
 
     /**
-     * Find all InterviewProcesses for jobs where the user is a member of the
-     * research group.
-     * This covers both the supervising professor and other employees in the group.
-     *
-     * @param userId the ID of the user
-     * @return list of InterviewProcesses accessible to the user
-     */
-    @Query(
-        """
-        SELECT ip
-        FROM InterviewProcess ip
-        JOIN ip.job j
-        JOIN j.researchGroup rg
-        JOIN rg.userRoles ur
-        WHERE ur.user.userId = :userId
-        """
-    )
-    List<InterviewProcess> findAllByUserAccess(@Param("userId") UUID userId);
-
-    /**
      * Find all InterviewProcesses for jobs belonging to a specific research group.
      *
      * @param researchGroupId the ID of the research group
