@@ -18,6 +18,51 @@ const physicalInterview: UpcomingInterviewDTO = {
   location: 'Room 101',
 };
 
+const virtualInterview: UpcomingInterviewDTO = {
+  id: 'interview-virtual',
+  processId: 'process-1',
+  intervieweeId: 'interviewee-virtual',
+  intervieweeName: 'Max',
+  jobTitle: 'Dev',
+  startDateTime: '2026-03-15T09:00:00',
+  endDateTime: '2026-03-15T10:00:00',
+  location: 'https://zoom.us/j/123',
+};
+
+const interviewWithAvatar: UpcomingInterviewDTO = {
+  id: 'interview-avatar',
+  processId: 'process-1',
+  intervieweeId: 'interviewee-avatar',
+  intervieweeName: 'Max',
+  jobTitle: 'Dev',
+  startDateTime: '2026-03-15T09:00:00',
+  endDateTime: '2026-03-15T10:30:00',
+  location: 'Room 101',
+  avatar: '/img/avatar.jpg',
+};
+
+const interviewNoName: UpcomingInterviewDTO = {
+  id: 'interview-noname',
+  processId: 'process-1',
+  intervieweeId: 'interviewee-noname',
+  intervieweeName: undefined,
+  jobTitle: 'Dev',
+  startDateTime: '2026-03-15T09:00:00',
+  endDateTime: '2026-03-15T10:00:00',
+  location: 'Room 101',
+};
+
+const interviewNoLocation: UpcomingInterviewDTO = {
+  id: 'interview-noloc',
+  processId: 'process-1',
+  intervieweeId: 'interviewee-noloc',
+  intervieweeName: 'Max',
+  jobTitle: 'Dev',
+  startDateTime: '2026-03-15T09:00:00',
+  endDateTime: '2026-03-15T10:00:00',
+  location: undefined,
+};
+
 describe('UpcomingInterviewCardComponent', () => {
   let fixture: ComponentFixture<UpcomingInterviewCardComponent>;
   let component: UpcomingInterviewCardComponent;
@@ -41,108 +86,38 @@ describe('UpcomingInterviewCardComponent', () => {
   });
 
   describe('Computed Properties', () => {
-    it('should return interviewee name', () => {
-      fixture.componentRef.setInput('interview', physicalInterview);
-      fixture.detectChanges();
-
-      expect(component.intervieweeName()).toBe('Jane Smith');
-    });
-
-    it('should return empty string when interviewee name is undefined', () => {
-      const interview: UpcomingInterviewDTO = {
-        id: 'interview-2',
-        processId: 'process-1',
-        intervieweeId: 'interviewee-2',
-        intervieweeName: undefined,
-        jobTitle: 'Dev',
-        startDateTime: '2026-03-15T09:00:00',
-        endDateTime: '2026-03-15T10:00:00',
-        location: 'Room 101',
-      };
+    it.each([
+      { interview: physicalInterview, expectedName: 'Jane Smith', expectedLocation: 'Room 101' },
+      { interview: interviewNoName, expectedName: '', expectedLocation: 'Room 101' },
+      { interview: interviewNoLocation, expectedName: 'Max', expectedLocation: '' },
+    ])('should return name="$expectedName" and location="$expectedLocation"', ({ interview, expectedName, expectedLocation }) => {
       fixture.componentRef.setInput('interview', interview);
       fixture.detectChanges();
 
-      expect(component.intervieweeName()).toBe('');
+      expect(component.intervieweeName()).toBe(expectedName);
+      expect(component.location()).toBe(expectedLocation);
     });
 
     it('should return avatar URL', () => {
-      const interview: UpcomingInterviewDTO = {
-        id: 'interview-3',
-        processId: 'process-1',
-        intervieweeId: 'interviewee-3',
-        intervieweeName: 'Max',
-        jobTitle: 'Dev',
-        startDateTime: '2026-03-15T09:00:00',
-        endDateTime: '2026-03-15T10:00:00',
-        location: 'Room 101',
-        avatar: '/img/avatar.jpg',
-      };
-      fixture.componentRef.setInput('interview', interview);
+      fixture.componentRef.setInput('interview', interviewWithAvatar);
       fixture.detectChanges();
 
       expect(component.avatarUrl()).toBe('/img/avatar.jpg');
     });
 
     it('should format time range correctly', () => {
-      const interview: UpcomingInterviewDTO = {
-        id: 'interview-4',
-        processId: 'process-1',
-        intervieweeId: 'interviewee-4',
-        intervieweeName: 'Max',
-        jobTitle: 'Dev',
-        startDateTime: '2026-03-15T09:00:00',
-        endDateTime: '2026-03-15T10:30:00',
-        location: 'Room 101',
-      };
-      fixture.componentRef.setInput('interview', interview);
+      fixture.componentRef.setInput('interview', interviewWithAvatar);
       fixture.detectChanges();
 
       expect(component.formattedTimeRange()).toBe('09:00 - 10:30');
-    });
-
-    it('should return location', () => {
-      fixture.componentRef.setInput('interview', physicalInterview);
-      fixture.detectChanges();
-
-      expect(component.location()).toBe('Room 101');
-    });
-
-    it('should return empty string when location is undefined', () => {
-      const interview: UpcomingInterviewDTO = {
-        id: 'interview-5',
-        processId: 'process-1',
-        intervieweeId: 'interviewee-5',
-        intervieweeName: 'Max',
-        jobTitle: 'Dev',
-        startDateTime: '2026-03-15T09:00:00',
-        endDateTime: '2026-03-15T10:00:00',
-        location: undefined,
-      };
-      fixture.componentRef.setInput('interview', interview);
-      fixture.detectChanges();
-
-      expect(component.location()).toBe('');
     });
   });
 
   describe('Virtual Meeting Detection', () => {
     it.each([
-      { location: 'https://zoom.us/j/123', expectedVirtual: true, expectedUrl: 'https://zoom.us/j/123' },
-      { location: 'Zoom Meeting Room', expectedVirtual: true, expectedUrl: null },
-      { location: 'Microsoft Teams Call', expectedVirtual: true, expectedUrl: null },
-      { location: 'Virtual Room', expectedVirtual: true, expectedUrl: null },
-      { location: 'Room 101', expectedVirtual: false, expectedUrl: null },
-    ])('should detect "$location" as virtual=$expectedVirtual', ({ location, expectedVirtual, expectedUrl }) => {
-      const interview: UpcomingInterviewDTO = {
-        id: 'interview-virtual',
-        processId: 'process-1',
-        intervieweeId: 'interviewee-virtual',
-        intervieweeName: 'Max',
-        jobTitle: 'Dev',
-        startDateTime: '2026-03-15T09:00:00',
-        endDateTime: '2026-03-15T10:00:00',
-        location,
-      };
+      { interview: virtualInterview, expectedVirtual: true, expectedUrl: 'https://zoom.us/j/123' },
+      { interview: physicalInterview, expectedVirtual: false, expectedUrl: null },
+    ])('should detect virtual=$expectedVirtual for "$interview.location"', ({ interview, expectedVirtual, expectedUrl }) => {
       fixture.componentRef.setInput('interview', interview);
       fixture.detectChanges();
 
