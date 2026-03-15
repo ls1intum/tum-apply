@@ -264,6 +264,38 @@ export class EditorComponent extends BaseInputDirective<string> {
         return 'genderDecoder.formulationTexts.neutral';
     }
   }
+
+  public quillModules = {
+    clipboard: {
+      matchers: [
+        [Node.ELEMENT_NODE, (_node: HTMLElement, delta: { ops: any }) => {
+          delta.ops.forEach((op: any) => {
+            if (op.attributes) {
+              const oldAttrs = op.attributes;
+              const newAttrs: Record<string, unknown> = {};
+
+              // List of formatting keys we explicitly allow
+              const allowed = ['bold', 'italic', 'underline', 'link', 'list', 'header'];
+
+              allowed.forEach(key => {
+                if (oldAttrs[key] !== undefined) {
+                  newAttrs[key] = oldAttrs[key];
+                }
+              });
+
+              // Reassign the filtered object or remove attributes entirely
+              if (Object.keys(newAttrs).length > 0) {
+                op.attributes = newAttrs;
+              } else {
+                delete op.attributes;
+              }
+            }
+          });
+          return delta;
+        }]
+      ]
+    }
+  };
 }
 
 // TODO: implement placeholder text as HTML
