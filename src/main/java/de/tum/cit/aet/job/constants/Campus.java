@@ -1,10 +1,5 @@
 package de.tum.cit.aet.job.constants;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,17 +16,6 @@ public enum Campus {
 
     private final String englishValue;
     private final String germanValue;
-
-    private static final Map<String, Campus> LOOKUP = Arrays.stream(values()).collect(
-        Collectors.toUnmodifiableMap(Campus::getEnglishValue, Function.identity())
-    );
-
-    public static Campus fromValue(String value) {
-        if (value == null) {
-            return null;
-        }
-        return LOOKUP.get(value.toUpperCase(Locale.ROOT));
-    }
 
     public String correctLanguageValue(String lang) {
         return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
