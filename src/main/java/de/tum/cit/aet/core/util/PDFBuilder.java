@@ -164,7 +164,7 @@ public class PDFBuilder {
         if (currentGroup == null || currentGroup.sections.isEmpty()) {
             throw new IllegalStateException("Call startInfoSection first");
         }
-        currentGroup.sections.get(currentGroup.sections.size() - 1).setHtmlContent(htmlContent);
+        currentGroup.sections.getLast().setHtmlContent(htmlContent);
         return this;
     }
 
@@ -179,7 +179,7 @@ public class PDFBuilder {
         if (currentGroup == null || currentGroup.sections.isEmpty()) {
             throw new IllegalStateException("Call startInfoSection first");
         }
-        currentGroup.sections.get(currentGroup.sections.size() - 1).addDataRow(label, value);
+        currentGroup.sections.getLast().addDataRow(label, value);
         return this;
     }
 
@@ -418,12 +418,14 @@ public class PDFBuilder {
     private void addInfoSection(Document document, InfoSection section, PdfFont normalFont, PdfFont boldFont) {
         Div container = new Div();
 
-        Paragraph title = new Paragraph(section.title)
-            .setFont(boldFont)
-            .setMarginTop(0)
-            .setFontSize(FONT_SIZE_SECTION_TITLE)
-            .setMarginBottom(MARGIN_TITLE_BOTTOM);
-        container.add(title);
+        if (section.title != null && !section.title.isEmpty()) {
+            Paragraph title = new Paragraph(section.title)
+                .setFont(boldFont)
+                .setMarginTop(0)
+                .setFontSize(FONT_SIZE_SECTION_TITLE)
+                .setMarginBottom(MARGIN_TITLE_BOTTOM);
+            container.add(title);
+        }
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont);
@@ -515,9 +517,7 @@ public class PDFBuilder {
             List<IElement> pdfElements = HtmlConverter.convertToElements(processedHtml, props);
 
             for (IElement element : pdfElements) {
-                if (element instanceof IBlockElement) {
-                    IBlockElement blockElement = (IBlockElement) element;
-
+                if (element instanceof IBlockElement blockElement) {
                     if (blockElement instanceof Paragraph) {
                         ((Paragraph) blockElement).setFont(normalFont)
                             .setFontSize(FONT_SIZE_TEXT)
@@ -525,9 +525,7 @@ public class PDFBuilder {
                             .setMultipliedLeading(LINE_LEADING);
                         // A direct import of iText's List class is required to distinguish it from
                         // Java's List.
-                    } else if (blockElement instanceof com.itextpdf.layout.element.List) {
-                        com.itextpdf.layout.element.List list = (com.itextpdf.layout.element.List) blockElement;
-
+                    } else if (blockElement instanceof com.itextpdf.layout.element.List list) {
                         list
                             .setListSymbol(BULLET_POINT_SYMBOL)
                             .setFont(normalFont)

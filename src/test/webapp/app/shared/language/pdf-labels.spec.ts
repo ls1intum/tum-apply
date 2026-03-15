@@ -89,7 +89,7 @@ describe('PDF Labels', () => {
 
       expect(labels).toHaveProperty('application');
       expect(labels).toHaveProperty('researchGroup');
-      expect(labels).toHaveProperty('jobDescription');
+      expect(labels).toHaveProperty('jobDetails');
     });
 
     it('should return correct translation keys', () => {
@@ -140,7 +140,7 @@ describe('PDF Labels', () => {
 
         application: 'evaluation.application',
         researchGroup: 'jobDetailPage.header.researchGroup',
-        jobDescription: 'jobDetailPage.sections.jobDescription',
+        jobDetails: 'pdf.sections.jobDetails',
       });
     });
 
@@ -164,9 +164,6 @@ describe('PDF Labels', () => {
       expect(labels.lang).toBe(translate.getCurrentLang());
 
       expect(labels).toHaveProperty('jobDetails');
-      expect(labels).toHaveProperty('description');
-      expect(labels).toHaveProperty('tasksResponsibilities');
-      expect(labels).toHaveProperty('eligibilityCriteria');
 
       expect(labels).toHaveProperty('researchGroup');
       expect(labels).toHaveProperty('contactDetails');
@@ -199,9 +196,6 @@ describe('PDF Labels', () => {
         endDate: 'jobDetailPage.labels.applicationEndDate:',
 
         jobDetails: 'pdf.sections.jobDetails',
-        description: 'pdf.sections.description',
-        tasksResponsibilities: 'jobDetailPage.sections.tasksResponsibilities',
-        eligibilityCriteria: 'jobDetailPage.sections.eligibilityCriteria',
 
         researchGroup: 'jobDetailPage.cards.researchGroup',
         contactDetails: 'pdf.sections.contactDetails',
@@ -244,6 +238,7 @@ describe('PDF Labels', () => {
         'fundingType',
         'startDate',
         'endDate',
+        'jobDetails',
         'thisDocumentWasGeneratedOn',
         'byUser',
         'usingTumapply',
