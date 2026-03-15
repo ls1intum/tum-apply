@@ -111,7 +111,7 @@
     "@types/quill": "2.0.14",
     "@vitest/coverage-v8": "4.0.18",
     "angular-eslint": "21.2.0",
-    "autoprefixer": "10.4.24",
+    "autoprefixer": "10.4.27",
     "concurrently": "9.2.1",
     "eslint": "9.39.3",
     "eslint-config-prettier": "10.1.8",
