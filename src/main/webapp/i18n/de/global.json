@@ -169,7 +169,7 @@
       "success": {
         "downloadSuccess": {
           "summary": "Download erfolgreich",
-          "detail": "Ihr Datenexport wurde erfolgreich heruntergeladen."
+          "detail": "Dein Datenexport wurde erfolgreich heruntergeladen."
         }
       }
     }
