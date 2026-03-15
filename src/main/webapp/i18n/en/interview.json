@@ -82,7 +82,7 @@
       },
       "create": {
         "title": "Create Interview Slots",
-        "addSlot": "Add Slot",
+        "addSlot": "Slot",
         "removeSlot": "Remove Slot",
         "slotNumber": "Slot {{number}}",
         "date": "Date",
@@ -181,7 +181,25 @@
         },
         "errorForbidden": {
           "summary": "Permission denied",
-          "detail": "You don't have permission to delete this slot"
+          "detail": "You do not have permission to delete this slot"
+        }
+      },
+      "edit": {
+        "title": "Edit Location",
+        "bookedInfo": "The applicant will be notified about the location change via email. You can customize the email template ",
+        "editTemplates": "here",
+        "editTemplatesSuffix": ".",
+        "success": {
+          "summary": "Location updated",
+          "detail": "The slot location has been updated successfully."
+        },
+        "error": {
+          "summary": "Update failed",
+          "detail": "The location could not be updated. Please try again."
+        },
+        "errorForbidden": {
+          "summary": "Permission denied",
+          "detail": "You do not have permission to edit this slot"
         }
       },
       "cancelInterview": {
@@ -257,7 +275,7 @@
         },
         "forbidden": {
           "summary": "Access denied",
-          "detail": "You don't have permission for this action"
+          "detail": "You do not have permission for this action"
         },
         "addFailed": {
           "summary": "Error",

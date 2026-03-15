@@ -1,4 +1,4 @@
-import { Component, Signal, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, Signal, computed, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
@@ -97,8 +97,8 @@ export class JobDetailComponent {
   previewData = input<Signal<JobFormDTO | undefined>>();
   isSummaryPage = input<boolean>(false);
 
-  closeConfirmDialog = viewChild<ConfirmDialog>('closeConfirmDialog');
-  deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
+  showCloseDialog = signal(false);
+  showDeleteDialog = signal(false);
 
   userId = signal<string>('');
   jobId = signal<string>('');
@@ -179,7 +179,7 @@ export class JobDetailComponent {
         severity: this.closeButtonSeverity,
         icon: this.closeButtonIcon,
         onClick: () => {
-          this.closeConfirmDialog()?.confirm();
+          this.showCloseDialog.set(true);
         },
         disabled: false,
         shouldTranslate: true,
@@ -259,7 +259,7 @@ export class JobDetailComponent {
         icon: this.deleteButtonIcon,
         severity: this.deleteButtonSeverity,
         command: () => {
-          this.deleteConfirmDialog()?.confirm();
+          this.showDeleteDialog.set(true);
         },
       });
     }

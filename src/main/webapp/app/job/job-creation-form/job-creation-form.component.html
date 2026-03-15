@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #sendPublishDialog
   class="confirm-dialog"
   [header]="'jobCreationForm.confirmDialog.header' | translate"
   [message]="'jobCreationForm.confirmDialog.message' | translate"
@@ -7,7 +6,9 @@
   [severity]="publishButtonSeverity"
   [confirmIcon]="publishButtonIcon"
   [showOpenButton]="false"
+  [visible]="showPublishDialog()"
   (confirmed)="publishJob()"
+  (closed)="showPublishDialog.set(false)"
   [dialogStyleClass]="'confirm-dialog-lg'"
 />
 @if (!isLoading()) {
@@ -102,7 +103,6 @@
         </div>
 
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
-        <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
 
         <!-- Header row: Language switcher (left) + AI toggle (right) -->
@@ -136,7 +136,7 @@
         </div>
 
         <div class="flex flex-col gap-2 mb-6">
-          <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
+          <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="aiToggleSignal()">
             <!-- Editor -->
             <div>
               <jhi-editor
@@ -157,7 +157,7 @@
               />
             </div>
 
-            @if (showAiPanel()) {
+            @if (aiToggleSignal()) {
               <!-- Divider -->
               <p-divider layout="vertical" styleClass="mx-2 hidden lg:block custom-divider" class="custom-divider" />
 

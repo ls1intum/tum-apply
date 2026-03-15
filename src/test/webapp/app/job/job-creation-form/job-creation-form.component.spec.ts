@@ -308,18 +308,16 @@ describe('JobCreationFormComponent', () => {
       expect(priv.autoSaveTimer).toBeUndefined();
     });
 
-    it('should trigger performAutoSave from setupAutoSave effect', async () => {
-      vi.useFakeTimers();
-      const priv = getPrivate(component);
-      const spy = vi.spyOn(priv, 'performAutoSave').mockResolvedValue();
-      priv.autoSaveInitialized = true;
+    it('should trigger performAutoSave from setupAutoSave effect', () => {
+      // Ensure the auto-save initialization guard has been passed
+      getPrivate(component).autoSaveInitialized = true;
+
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+      const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
 
       component.basicInfoForm.patchValue({ title: 'new title' });
       fixture.detectChanges();
-      await fixture.whenStable();
-
-      vi.runAllTimers();
-      await fixture.whenStable();
+      vi.advanceTimersByTime(3000);
 
       expect(spy).toHaveBeenCalledOnce();
       vi.useRealTimers();
@@ -776,15 +774,14 @@ describe('JobCreationFormComponent', () => {
       });
     });
 
-    it('should call confirm() when publish button clicked', () => {
-      const confirmSpy = vi.fn();
-      getPrivate(component).sendPublishDialog = () => ({ confirm: confirmSpy });
+    it('should set showPublishDialog to true when publish button clicked', () => {
       component.basicInfoValid.set(true);
       component.positionDetailsValid.set(true);
 
       const steps = getPrivate(component).buildStepData();
       steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0].onClick();
       expect(confirmSpy).toHaveBeenCalledOnce();
+      expect(component.showPublishDialog()).toBe(true);
     });
   });
 

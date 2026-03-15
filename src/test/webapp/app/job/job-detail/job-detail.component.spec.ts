@@ -263,27 +263,23 @@ describe('JobDetailComponent', () => {
     expect(component.primaryActionButton()?.label).toBe('button.apply');
   });
 
-  it('should compute getMenuItems for DRAFT and trigger confirm()', () => {
-    const confirmSpy = vi.fn();
-    (component as unknown as { deleteConfirmDialog: () => { confirm: () => void } }).deleteConfirmDialog = () => ({ confirm: confirmSpy });
+  it('should compute getMenuItems for DRAFT and set showDeleteDialog to true', () => {
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
     const menuItems = component.menuItems();
     const deleteItem = menuItems.find((item: JhiMenuItem) => item.label === component.deleteButtonLabel);
     deleteItem?.command?.();
-    expect(confirmSpy).toHaveBeenCalled();
+    expect(component.showDeleteDialog()).toBe(true);
   });
 
-  it('should compute primaryActionButton for PUBLISHED and trigger confirm()', () => {
-    const confirmSpy = vi.fn();
-    (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
+  it('should compute primaryActionButton for PUBLISHED and set showCloseDialog to true', () => {
     // mock professor ownership
     vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.primaryActionButton();
     btn?.onClick();
-    expect(confirmSpy).toHaveBeenCalled();
+    expect(component.showCloseDialog()).toBe(true);
   });
 
   it('should return null for PUBLISHED job when user is professor but not owner', () => {

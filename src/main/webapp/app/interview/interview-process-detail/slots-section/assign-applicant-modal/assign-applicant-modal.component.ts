@@ -11,6 +11,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/date-time.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
@@ -65,6 +66,7 @@ export class AssignApplicantModalComponent {
   slotDate = computed(() => formatDateWithWeekday(this.slot().startDateTime, this.locale()));
   slotStartTime = computed(() => formatTime(this.slot().startDateTime, this.locale()));
   slotEndTime = computed(() => formatTime(this.slot().endDateTime, this.locale()));
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
 
   // Computed
   private locale = computed(() => getLocale(this.translateService));

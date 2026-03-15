@@ -88,7 +88,7 @@ public class PDFExportService {
                 )
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
-                .setOverviewDescriptionTitle(labels.get("jobDescription"))
+                .setOverviewDescriptionTitle(labels.get("jobDetails"))
                 .setOverviewDescription(descriptionForExport);
         }
 
@@ -293,7 +293,7 @@ public class PDFExportService {
     private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
         builder.startSectionGroup(labels.get("jobDetails"));
 
-        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(jobDescription));
+        builder.startInfoSection("").addSectionContent(getValue(jobDescription));
     }
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {

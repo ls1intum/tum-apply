@@ -150,10 +150,12 @@ export class JobCardListComponent {
 
   getExampleImageUrl(index: number): string {
     const headerImages = [
-      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
-      'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&q=80',
-      'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80',
+      '/content/images/job-banner/job-banner1.jpg',
+      '/content/images/job-banner/job-banner2.jpg',
+      '/content/images/job-banner/job-banner3.jpg',
+      '/content/images/job-banner/job-banner4.jpg',
+      '/content/images/job-banner/job-banner5.jpg',
+      '/content/images/job-banner/job-banner6.jpg',
     ];
 
     return headerImages[index % headerImages.length];

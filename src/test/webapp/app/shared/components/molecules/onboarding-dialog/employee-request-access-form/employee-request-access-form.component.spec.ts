@@ -107,22 +107,18 @@ describe('EmployeeRequestAccessFormComponent', () => {
   describe('onSubmit', () => {
     it('should not trigger confirm dialog when form is invalid', () => {
       component.employeeForm.patchValue({ professorName: '' });
-      const confirmDialogSpy = vi.fn();
-      component.confirmDialog = vi.fn(() => ({ confirm: confirmDialogSpy }) as any) as any;
 
       component.onSubmit();
 
-      expect(confirmDialogSpy).not.toHaveBeenCalled();
+      expect(component.showConfirmDialog()).toBe(false);
     });
 
     it('should trigger confirm dialog when form is valid', () => {
       component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-      const confirmDialogSpy = vi.fn();
-      component.confirmDialog = vi.fn(() => ({ confirm: confirmDialogSpy }) as any) as any;
 
       component.onSubmit();
 
-      expect(confirmDialogSpy).toHaveBeenCalledOnce();
+      expect(component.showConfirmDialog()).toBe(true);
     });
   });
 

@@ -8,6 +8,7 @@ import { Provider } from '@angular/core';
 export interface ActivatedRouteMock {
   paramMapSubject: BehaviorSubject<ParamMap>;
   queryParamMapSubject: BehaviorSubject<ParamMap>;
+  queryParamsSubject: BehaviorSubject<Record<string, string>>;
   urlSubject: BehaviorSubject<UrlSegment[]>;
   setParams: (params: Record<string, string>) => void;
   setQueryParams: (params: Record<string, string>) => void;
@@ -24,6 +25,7 @@ export function createActivatedRouteMock(
 ): ActivatedRouteMock {
   const paramMapSubject = new BehaviorSubject<ParamMap>(convertToParamMap(initialParams));
   const queryParamMapSubject = new BehaviorSubject<ParamMap>(convertToParamMap(initialQueryParams));
+  const queryParamsSubject = new BehaviorSubject<Record<string, string>>(initialQueryParams);
   const urlSubject = new BehaviorSubject<UrlSegment[]>(initialUrlSegments);
 
   const setParams = (params: Record<string, string>) => {
@@ -32,13 +34,14 @@ export function createActivatedRouteMock(
 
   const setQueryParams = (params: Record<string, string>) => {
     queryParamMapSubject.next(convertToParamMap(params));
+    queryParamsSubject.next(params);
   };
 
   const setUrl = (segments: UrlSegment[]) => {
     urlSubject.next(segments);
   };
 
-  return { paramMapSubject, queryParamMapSubject, urlSubject, setParams, setQueryParams, setUrl };
+  return { paramMapSubject, queryParamMapSubject, queryParamsSubject, urlSubject, setParams, setQueryParams, setUrl };
 }
 
 /**
@@ -50,6 +53,7 @@ export function provideActivatedRouteMock(mock: ActivatedRouteMock): Provider {
     useValue: {
       paramMap: mock.paramMapSubject.asObservable(),
       queryParamMap: mock.queryParamMapSubject.asObservable(),
+      queryParams: mock.queryParamsSubject.asObservable(),
       url: mock.urlSubject.asObservable(),
       get snapshot() {
         return {

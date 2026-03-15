@@ -137,6 +137,7 @@ model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
 model/updateAvatarDTO.ts
 model/updatePasswordDTO.ts
+model/updateSlotLocationDTO.ts
 model/updateUserNameDTO.ts
 model/uploadDocumentsRequest.ts
 model/user.ts
