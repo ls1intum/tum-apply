@@ -315,7 +315,7 @@ describe('JobCreationFormComponent', () => {
       const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
 
       component.basicInfoForm.patchValue({ title: 'new title' });
-      TestBed.flushEffects();
+      fixture.detectChanges();
       vi.advanceTimersByTime(3000);
 
       expect(spy).toHaveBeenCalledOnce();
