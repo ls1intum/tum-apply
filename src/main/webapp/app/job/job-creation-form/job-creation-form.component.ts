@@ -1200,9 +1200,10 @@ export class JobCreationFormComponent {
       this.jobDescriptionSignal.set(description);
 
       this.clearAutoSaveTimer();
+      this.savingState.set('SAVING');
+
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
-        this.savingState.set('SAVING');
         void this.performAutoSave();
       }, 3000);
     });
