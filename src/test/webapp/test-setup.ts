@@ -12,31 +12,6 @@ export class ZonelessTestModule {}
 
 getTestBed().initTestEnvironment([BrowserTestingModule, ZonelessTestModule], platformBrowserTesting());
 
-class MockIntersectionObserver implements IntersectionObserver {
-  readonly root = null;
-  readonly rootMargin = '';
-  readonly thresholds = [0];
-
-  constructor(
-    private readonly callback: IntersectionObserverCallback,
-    _options?: IntersectionObserverInit,
-  ) {}
-
-  disconnect(): void {}
-
-  observe(target: Element): void {
-    this.callback([{ isIntersecting: false, target } as IntersectionObserverEntry], this);
-  }
-
-  takeRecords(): IntersectionObserverEntry[] {
-    return [];
-  }
-
-  unobserve(_target: Element): void {}
-}
-
-globalThis.IntersectionObserver = MockIntersectionObserver;
-
 // Suppress JSDOM CSS parsing errors for CSS custom properties in shorthand properties
 // This is a known limitation of jsdom/cssstyle that doesn't affect test functionality
 window.addEventListener('error', event => {
