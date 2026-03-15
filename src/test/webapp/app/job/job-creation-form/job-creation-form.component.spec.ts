@@ -28,7 +28,6 @@ import {
   createResearchGroupResourceApiServiceMock,
   provideResearchGroupResourceApiServiceMock,
 } from '../../../util/research-group-resource-api.service.mock';
-import { installIntersectionObserverMock } from '../../../util/intersection-observer.mock';
 
 interface Step {
   name: string;
@@ -115,10 +114,8 @@ describe('JobCreationFormComponent', () => {
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
   let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
   let mockResearchGroupService: ReturnType<typeof createResearchGroupResourceApiServiceMock>;
-  let restoreIntersectionObserver: (() => void) | undefined;
 
   beforeEach(async () => {
-    restoreIntersectionObserver = installIntersectionObserverMock();
     mockJobService = createJobResourceApiServiceMock();
     mockJobService.getJobById.mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' }));
     mockJobService.createJob.mockReturnValue(of({ jobId: 'new123' }));
@@ -177,7 +174,6 @@ describe('JobCreationFormComponent', () => {
   afterEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
-    restoreIntersectionObserver?.();
     fixture?.destroy();
   });
 

@@ -692,14 +692,6 @@ export class JobCreationFormComponent {
   async generateJobApplicationDraft(): Promise<void> {
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
-    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(this.basicInfoForm.get('subjectArea')?.value);
-    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(this.basicInfoForm.get('location')?.value);
-
-    if (subjectArea === undefined || location === undefined) {
-      this.basicInfoForm.get('subjectArea')?.markAsTouched();
-      this.basicInfoForm.get('location')?.markAsTouched();
-      return;
-    }
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
@@ -717,9 +709,11 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        subjectArea,
+        subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(
+          this.basicInfoForm.get('subjectArea')?.value,
+        ) as JobFormDTO.SubjectAreaEnum,
         supervisingProfessor: this.userId(),
-        location,
+        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
@@ -953,7 +947,6 @@ export class JobCreationFormComponent {
         : supervisingProfessorRaw) ??
       this.preferredSupervisingProfessorId() ??
       this.userId();
-    const fundingType = this.extractSelectedValue<JobFormDTO.FundingTypeEnum>(positionDetailsValue.fundingType);
 
     const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
     const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
@@ -972,7 +965,7 @@ export class JobCreationFormComponent {
       endDate: positionDetailsValue.applicationDeadline ?? '',
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
-      fundingType,
+      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,

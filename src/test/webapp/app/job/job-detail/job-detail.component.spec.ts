@@ -658,12 +658,7 @@ describe('JobDetailComponent', () => {
 
     const result = (
       component as unknown as {
-        mapToJobDetails: (
-          d: JobFormDTO,
-          u?: ReturnType<typeof mockAccountService.loadedUser>,
-          rg?: unknown,
-          f?: boolean,
-        ) => JobDetails;
+        mapToJobDetails: (d: JobFormDTO, u?: ReturnType<typeof mockAccountService.loadedUser>, rg?: unknown, f?: boolean) => JobDetails;
       }
     ).mapToJobDetails(form, undefined, undefined, true);
 

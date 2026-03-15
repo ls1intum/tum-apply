@@ -6,7 +6,6 @@ import { StepperModule } from 'primeng/stepper';
 import ButtonGroupComponent from 'app/shared/components/molecules/button-group/button-group.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { Component, TemplateRef, viewChild } from '@angular/core';
-import { installIntersectionObserverMock } from '../../../../../util/intersection-observer.mock';
 
 // Test host component with real ng-templates
 @Component({
@@ -39,10 +38,8 @@ describe('ProgressStepperComponent', () => {
   let hostComponent: TestHostComponent;
   let fixture: ComponentFixture<TestHostComponent>;
   let component: ProgressStepperComponent;
-  let restoreIntersectionObserver: (() => void) | undefined;
 
   beforeEach(async () => {
-    restoreIntersectionObserver = installIntersectionObserverMock();
     await TestBed.configureTestingModule({
       imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule.forRoot(), TestHostComponent, ProgressStepperComponent],
     }).compileComponents();
@@ -96,10 +93,6 @@ describe('ProgressStepperComponent', () => {
 
     const stepperDebugElement = fixture.debugElement.query(de => de.componentInstance instanceof ProgressStepperComponent);
     component = stepperDebugElement.componentInstance;
-  });
-
-  afterEach(() => {
-    restoreIntersectionObserver?.();
   });
 
   describe('Component Initialization', () => {

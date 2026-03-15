@@ -20,7 +20,6 @@ import {
   provideAuthDialogServiceMock,
 } from '../../../../../util/auth-dialog.service.mock';
 import { setupWindowMatchMediaMock, createThemeServiceMock, provideThemeServiceMock, ThemeServiceMock } from 'util/theme.service.mock';
-import { installIntersectionObserverMock } from '../../../../../util/intersection-observer.mock';
 
 type HeaderComponentTestInstance = Omit<HeaderComponent, 'routeAuthorities' | 'isProfessorPage'> & {
   routeAuthorities: () => UserShortDTO.RolesEnum[] | string[];
@@ -42,10 +41,8 @@ describe('HeaderComponent', () => {
   let authDialog: AuthDialogServiceMock;
   let translate: TranslateService;
   let themeService: ThemeServiceMock;
-  let restoreIntersectionObserver: (() => void) | undefined;
 
   beforeEach(async () => {
-    restoreIntersectionObserver = installIntersectionObserverMock();
     setupWindowMatchMediaMock();
 
     router = createRouterMock();
@@ -75,7 +72,6 @@ describe('HeaderComponent', () => {
   });
 
   afterEach(() => {
-    restoreIntersectionObserver?.();
     vi.restoreAllMocks();
   });
 
