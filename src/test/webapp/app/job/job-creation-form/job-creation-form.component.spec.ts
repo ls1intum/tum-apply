@@ -315,7 +315,7 @@ describe('JobCreationFormComponent', () => {
       fixture.detectChanges();
       vi.advanceTimersByTime(3000);
 
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
       vi.useRealTimers();
     });
   });
