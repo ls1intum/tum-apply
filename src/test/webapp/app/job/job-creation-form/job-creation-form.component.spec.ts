@@ -773,15 +773,13 @@ describe('JobCreationFormComponent', () => {
       });
     });
 
-    it('should call confirm() when publish button clicked', () => {
-      const confirmSpy = vi.fn();
-      getPrivate(component).sendPublishDialog = () => ({ confirm: confirmSpy });
+    it('should set showPublishDialog to true when publish button clicked', () => {
       component.basicInfoValid.set(true);
       component.positionDetailsValid.set(true);
 
       const steps = getPrivate(component).buildStepData();
       steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0].onClick();
-      expect(confirmSpy).toHaveBeenCalled();
+      expect(component.showPublishDialog()).toBe(true);
     });
   });
 

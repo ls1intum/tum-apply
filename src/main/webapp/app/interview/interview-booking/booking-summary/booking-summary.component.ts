@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, viewChild } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -36,8 +36,8 @@ export class BookingSummaryComponent {
   // Outputs
   book = output();
 
-  // ViewChild
-  bookingConfirmationDialog = viewChild<ConfirmDialog>('bookingConfirmationDialog');
+  // Signals
+  showBookingDialog = signal(false);
 
   // Computed
   hasSelection = computed(() => this.selectedSlot() !== null);
@@ -101,6 +101,6 @@ export class BookingSummaryComponent {
   });
 
   onBook(): void {
-    this.bookingConfirmationDialog()?.confirm();
+    this.showBookingDialog.set(true);
   }
 }

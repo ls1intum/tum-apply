@@ -1368,20 +1368,14 @@ describe('ApplicationForm', () => {
         expect(freshSpy).toHaveBeenCalled();
       });
 
-      it('should call sendConfirmDialog confirm when send button is clicked', () => {
-        const confirmDialogMock = { confirm: vi.fn() };
-        mockReturnValuePrivate(vi.spyOn(comp, 'sendConfirmDialog'), confirmDialogMock);
-
-        // Re-trigger computed after spy is set up
-        fixture.detectChanges();
-
+      it('should set showSendDialog to true when send button is clicked', () => {
         const steps = comp.stepData();
         const summaryStep = steps[3];
         const sendButton = summaryStep.buttonGroupNext[0];
 
         sendButton.onClick();
 
-        expect(confirmDialogMock.confirm).toHaveBeenCalled();
+        expect(comp.showSendDialog()).toBe(true);
       });
     });
 
