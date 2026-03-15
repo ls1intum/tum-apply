@@ -1032,10 +1032,10 @@ export class JobCreationFormComponent {
         ]);
         this.populateForm(job);
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
-
-        // prevent autosave from firing immediately after patching
-        this.autoSaveInitialized = false;
       }
+
+      // prevent autosave from firing immediately after initialization
+      this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
       this.router.navigate(['/my-positions']);
