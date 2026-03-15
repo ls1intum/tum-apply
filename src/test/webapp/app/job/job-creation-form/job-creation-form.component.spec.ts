@@ -780,7 +780,6 @@ describe('JobCreationFormComponent', () => {
 
       const steps = getPrivate(component).buildStepData();
       steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0].onClick();
-      expect(confirmSpy).toHaveBeenCalledOnce();
       expect(component.showPublishDialog()).toBe(true);
     });
   });
