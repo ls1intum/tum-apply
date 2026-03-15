@@ -185,26 +185,18 @@ describe('DateSlotCardComponent', () => {
       expect(range.slots[0].location).toBe('Room 101');
     });
 
-    it('should set streamLink for virtual locations', () => {
+    it.each([
+      { location: 'https://zoom.us/meeting123', expectedStreamLink: 'https://zoom.us/meeting123', label: 'virtual' },
+      { location: 'Room 101', expectedStreamLink: undefined, label: 'physical' },
+    ])('should set streamLink to $expectedStreamLink for $label location', ({ location, expectedStreamLink }) => {
       component.addSingleSlot();
       const index = component['slotRanges']().length - 1;
       component.onStartInput(index, '09:00');
 
-      component.onLocationInput(index, 'https://zoom.us/meeting123');
+      component.onLocationInput(index, location);
 
       const range = component['slotRanges']()[index];
-      expect(range.slots[0].streamLink).toBe('https://zoom.us/meeting123');
-    });
-
-    it('should not set streamLink for physical locations', () => {
-      component.addSingleSlot();
-      const index = component['slotRanges']().length - 1;
-      component.onStartInput(index, '09:00');
-
-      component.onLocationInput(index, 'Room 101');
-
-      const range = component['slotRanges']()[index];
-      expect(range.slots[0].streamLink).toBeUndefined();
+      expect(range.slots[0].streamLink).toBe(expectedStreamLink);
     });
 
     it('should handle undefined location input', () => {
@@ -258,16 +250,13 @@ describe('DateSlotCardComponent', () => {
       expect(component['allSlots']().length).toBeGreaterThanOrEqual(2);
     });
 
-    it('should detect hasSingleSlots', () => {
-      component.addSingleSlot();
+    it.each([
+      { addMethod: 'addSingleSlot' as const, property: 'hasSingleSlots' as const, label: 'single slots' },
+      { addMethod: 'addRange' as const, property: 'hasRangeSlots' as const, label: 'range slots' },
+    ])('should detect $label via $property', ({ addMethod, property }) => {
+      component[addMethod]();
 
-      expect(component['hasSingleSlots']()).toBe(true);
-    });
-
-    it('should detect hasRangeSlots', () => {
-      component.addRange();
-
-      expect(component['hasRangeSlots']()).toBe(true);
+      expect((component as any)[property]()).toBe(true);
     });
   });
 
@@ -351,7 +340,7 @@ describe('DateSlotCardComponent', () => {
       component.onStartInput(index, '09:00');
       fixture.detectChanges();
 
-      expect(emitSpy).toHaveBeenCalled();
+      expect(emitSpy).toHaveBeenCalledOnce();
     });
   });
 });

@@ -242,10 +242,11 @@ describe('SlotCreationFormComponent', () => {
       expect(component['isSubmitting']()).toBe(false);
     });
 
-    it('should show conflict error on 409', async () => {
-      (mockInterviewService.createSlots as ReturnType<typeof vi.fn>).mockReturnValue(
-        throwError(() => new HttpErrorResponse({ status: 409 })),
-      );
+    it.each([
+      { label: 'conflict error on 409', error: () => new HttpErrorResponse({ status: 409 }), expectedKey: 'interview.slots.create.error.conflict' },
+      { label: 'generic error on other failures', error: () => new Error('fail'), expectedKey: 'interview.slots.create.error.generic' },
+    ])('should show $label', async ({ error, expectedKey }) => {
+      (mockInterviewService.createSlots as ReturnType<typeof vi.fn>).mockReturnValue(throwError(error));
 
       const date = new Date(2026, 3, 10);
       const slots: InterviewSlotDTO[] = [
@@ -259,26 +260,7 @@ describe('SlotCreationFormComponent', () => {
 
       await component.submit();
 
-      expect(toastMock.showErrorKey).toHaveBeenCalledWith('interview.slots.create.error.conflict');
-      expect(component['isSubmitting']()).toBe(false);
-    });
-
-    it('should show generic error on other failures', async () => {
-      (mockInterviewService.createSlots as ReturnType<typeof vi.fn>).mockReturnValue(throwError(() => new Error('fail')));
-
-      const date = new Date(2026, 3, 10);
-      const slots: InterviewSlotDTO[] = [
-        {
-          startDateTime: '2026-04-10T09:00:00',
-          endDateTime: '2026-04-10T09:30:00',
-          location: 'Room 1',
-        },
-      ];
-      component.updateSlotsForDate(date, slots);
-
-      await component.submit();
-
-      expect(toastMock.showErrorKey).toHaveBeenCalledWith('interview.slots.create.error.generic');
+      expect(toastMock.showErrorKey).toHaveBeenCalledWith(expectedKey);
       expect(component['isSubmitting']()).toBe(false);
     });
   });
@@ -318,43 +300,41 @@ describe('SlotCreationFormComponent', () => {
       expect(component['hasConflicts']()).toBe(true);
     });
 
-    it('should detect internal overlaps between slots', () => {
-      const overlappingSlots: InterviewSlotDTO[] = [
+    it.each([
+      {
+        label: 'overlapping slots',
+        secondStart: '2026-04-10T09:15:00',
+        secondEnd: '2026-04-10T09:45:00',
+        expectedInternal: true,
+        expectedConflicts: true,
+      },
+      {
+        label: 'non-overlapping slots',
+        secondStart: '2026-04-10T09:30:00',
+        secondEnd: '2026-04-10T10:00:00',
+        expectedInternal: false,
+        expectedConflicts: false,
+      },
+    ])('should detect internal conflicts=$expectedInternal for $label', ({ secondStart, secondEnd, expectedInternal, expectedConflicts }) => {
+      const slots: InterviewSlotDTO[] = [
         {
           startDateTime: '2026-04-10T09:00:00',
           endDateTime: '2026-04-10T09:30:00',
           location: 'Room 1',
         },
         {
-          startDateTime: '2026-04-10T09:15:00',
-          endDateTime: '2026-04-10T09:45:00',
+          startDateTime: secondStart,
+          endDateTime: secondEnd,
           location: 'Room 1',
         },
       ];
 
-      component['slotsByDate'].set(new Map([['2026-04-10', overlappingSlots]]));
+      component['slotsByDate'].set(new Map([['2026-04-10', slots]]));
 
-      expect(component['hasInternalConflicts']()).toBe(true);
-      expect(component['hasConflicts']()).toBe(true);
-    });
-
-    it('should not detect internal overlaps for non-overlapping slots', () => {
-      const nonOverlappingSlots: InterviewSlotDTO[] = [
-        {
-          startDateTime: '2026-04-10T09:00:00',
-          endDateTime: '2026-04-10T09:30:00',
-          location: 'Room 1',
-        },
-        {
-          startDateTime: '2026-04-10T09:30:00',
-          endDateTime: '2026-04-10T10:00:00',
-          location: 'Room 1',
-        },
-      ];
-
-      component['slotsByDate'].set(new Map([['2026-04-10', nonOverlappingSlots]]));
-
-      expect(component['hasInternalConflicts']()).toBe(false);
+      expect(component['hasInternalConflicts']()).toBe(expectedInternal);
+      if (expectedConflicts !== undefined) {
+        expect(component['hasConflicts']()).toBe(expectedConflicts);
+      }
     });
 
     it('should prioritize BOOKED_OTHER_PROCESS over SAME_PROCESS conflicts', () => {
