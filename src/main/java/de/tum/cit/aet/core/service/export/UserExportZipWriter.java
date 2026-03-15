@@ -44,7 +44,7 @@ public class UserExportZipWriter {
     @Value("${aet.data-export.root:${aet.storage.root:/data/docs}/exports}")
     private String dataExportRoot;
 
-    @Value("${aet.storage.image-root}")
+    @Value("${aet.storage.image-root:/storage/images}")
     private String imageRoot;
 
     /**

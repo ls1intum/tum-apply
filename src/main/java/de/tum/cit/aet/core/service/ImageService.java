@@ -65,7 +65,7 @@ public class ImageService {
         ResearchGroupRepository researchGroupRepository,
         SchoolRepository schoolRepository,
         CurrentUserService currentUserService,
-        @Value("${aet.storage.image-root}") String imageRootDir,
+        @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
         @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
         @Value("${aet.storage.max-image-width:4096}") int maxWidth, // 4096px width default
         @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4096px height default
