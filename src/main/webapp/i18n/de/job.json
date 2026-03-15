@@ -124,8 +124,7 @@
       }
     },
     "positionDetailsSection": {
-      "description": "Beschreibe Forschungsschwerpunkt, Aufgaben/Erwartungen sowie Mindestanforderungen und Wunschqualifikationen für Kandidat:innen.",
-      "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Die Übersetzung wird automatisch generiert und kann anschließend geprüft oder bearbeitet werden.<br><b>KI deaktiviert:</b> Die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
+      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Die Übersetzung wird automatisch generiert und kann anschließend geprüft oder bearbeitet werden.<br><b>KI deaktiviert:</b> Die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",

@@ -124,8 +124,7 @@
       }
     },
     "positionDetailsSection": {
-      "description": "Describe the research focus, main tasks, and expectations for the candidate. Specify minimum requirements and preferred qualifications.",
-      "languageInfo": "Please choose and write in either English or German:<br><b>AI enabled:</b> The translation is generated automatically and can then be reviewed or edited.<br><b>AI disabled:</b> The translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
+      "languageInfo": "Please choose and write the job description in either English or German:<br><b>AI enabled:</b> The translation is generated automatically and can then be reviewed or edited.<br><b>AI disabled:</b> The translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
       "jobDescription": {
         "label": "Job Description",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
