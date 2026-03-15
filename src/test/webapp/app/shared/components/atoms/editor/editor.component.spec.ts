@@ -669,12 +669,12 @@ describe('EditorComponent', () => {
         name: 'filter attributes to the allowed list',
         input: {
           ops: [
-            { insert: 'x', attributes: { bold: true, italic: false, color: 'red', unknown: 1 } },
+            { insert: 'x', attributes: { bold: true, italic: false, color: 'red', unknown: 1, align: 'center', background: '#fff' } },
             { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1, bad: 'style' } },
           ],
         },
         expected: [
-          { insert: 'x', attributes: { bold: true, italic: false } },
+          { insert: 'x', attributes: { bold: true, italic: false, align: 'center' } },
           { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1 } },
         ],
       },
@@ -682,11 +682,6 @@ describe('EditorComponent', () => {
         name: 'remove attributes when none are allowed',
         input: { ops: [{ insert: 'x', attributes: { color: 'red', style: 'foo' } }] },
         expected: [{ insert: 'x', attributes: undefined }],
-      },
-      {
-        name: 'keep align attribute and strip disallowed ones',
-        input: { ops: [{ insert: 'centered', attributes: { align: 'center', color: 'red', background: '#fff' } }] },
-        expected: [{ insert: 'centered', attributes: { align: 'center' } }],
       },
       {
         name: 'return the same if no attributes present',
