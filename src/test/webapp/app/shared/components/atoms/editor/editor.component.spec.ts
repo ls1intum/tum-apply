@@ -666,25 +666,32 @@ describe('EditorComponent', () => {
     it.each([
       {
         name: 'filter attributes to the allowed list',
-        input: { ops: [{ insert: 'x', attributes: { bold: true, italic: false, color: 'red', unknown: 1 } }, { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1, bad: 'style' } }] },
-        expected: [{ insert: 'x', attributes: { bold: true, italic: false }}, { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1 } }]
+        input: {
+          ops: [
+            { insert: 'x', attributes: { bold: true, italic: false, color: 'red', unknown: 1 } },
+            { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1, bad: 'style' } },
+          ],
+        },
+        expected: [
+          { insert: 'x', attributes: { bold: true, italic: false } },
+          { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1 } },
+        ],
       },
       {
         name: 'remove attributes when none are allowed',
         input: { ops: [{ insert: 'x', attributes: { color: 'red', style: 'foo' } }] },
-        expected: [{ insert: 'x' }]
+        expected: [{ insert: 'x', attributes: undefined }],
       },
       {
         name: 'return the same if no attributes present',
         input: { ops: [{ insert: 'plain text' }] },
-        expected: [{ insert: 'plain text' }]
-      }
+        expected: [{ insert: 'plain text' }],
+      },
     ])('should $name', ({ input, expected }) => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       const matcher = (comp as any).quillModules.clipboard.matchers[0][1] as Function;
-
       const result = matcher(document.createElement('div'), input);
 
       expect(result.ops).toEqual(expected);

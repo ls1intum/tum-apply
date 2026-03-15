@@ -121,6 +121,41 @@ export class EditorComponent extends BaseInputDirective<string> {
     return this.translateService.instant(key);
   });
 
+  public quillModules = {
+    clipboard: {
+      matchers: [
+        [
+          Node.ELEMENT_NODE,
+          (_node: HTMLElement, delta: { ops: { insert?: string | object; attributes?: Record<string, unknown> }[] }) => {
+            delta.ops.forEach(op => {
+              if (op.attributes) {
+                const oldAttrs = op.attributes;
+                const newAttrs: Record<string, unknown> = {};
+
+                // List of formatting keys we explicitly allow
+                const allowed = ['bold', 'italic', 'underline', 'link', 'list', 'header'];
+
+                for (const key of allowed) {
+                  if (Object.prototype.hasOwnProperty.call(oldAttrs, key)) {
+                    newAttrs[key] = oldAttrs[key];
+                  }
+                }
+
+                // Reassign the filtered object or remove attributes entirely
+                if (Object.keys(newAttrs).length > 0) {
+                  op.attributes = newAttrs;
+                } else {
+                  op.attributes = undefined;
+                }
+              }
+            });
+            return delta;
+          },
+        ],
+      ],
+    },
+  };
+
   protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 
   private htmlValue = signal('');
@@ -264,38 +299,6 @@ export class EditorComponent extends BaseInputDirective<string> {
         return 'genderDecoder.formulationTexts.neutral';
     }
   }
-
-  public quillModules = {
-    clipboard: {
-      matchers: [
-        [Node.ELEMENT_NODE, (_node: HTMLElement, delta: { ops: any }) => {
-          delta.ops.forEach((op: any) => {
-            if (op.attributes) {
-              const oldAttrs = op.attributes;
-              const newAttrs: Record<string, unknown> = {};
-
-              // List of formatting keys we explicitly allow
-              const allowed = ['bold', 'italic', 'underline', 'link', 'list', 'header'];
-
-              allowed.forEach(key => {
-                if (oldAttrs[key] !== undefined) {
-                  newAttrs[key] = oldAttrs[key];
-                }
-              });
-
-              // Reassign the filtered object or remove attributes entirely
-              if (Object.keys(newAttrs).length > 0) {
-                op.attributes = newAttrs;
-              } else {
-                delete op.attributes;
-              }
-            }
-          });
-          return delta;
-        }]
-      ]
-    }
-  };
 }
 
 // TODO: implement placeholder text as HTML
