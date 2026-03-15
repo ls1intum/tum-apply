@@ -19,7 +19,5 @@ public enum Campus implements LocalizedEnum {
 
     public static Campus fromValue(String value) {
         return LocalizedEnum.fromValue(Campus.class, value);
-    public String correctLanguageValue(String lang) {
-        return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
     }
 }
