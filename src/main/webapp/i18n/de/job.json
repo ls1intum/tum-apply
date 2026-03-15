@@ -124,8 +124,7 @@
       }
     },
     "positionDetailsSection": {
-      "description": "Beschreibe Forschungsschwerpunkt, Hauptaufgaben sowie Mindestanforderungen.",
-      "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
+      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
