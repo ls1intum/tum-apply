@@ -136,7 +136,7 @@
         </div>
 
         <div class="flex flex-col gap-2 mb-6">
-          <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
+          <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="aiToggleSignal()">
             <!-- Editor -->
             <div>
               <jhi-editor
@@ -157,7 +157,7 @@
               />
             </div>
 
-            @if (showAiPanel()) {
+            @if (aiToggleSignal()) {
               <!-- Divider -->
               <p-divider layout="vertical" styleClass="mx-2 hidden lg:block custom-divider" class="custom-divider" />
 

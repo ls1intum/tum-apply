@@ -166,14 +166,11 @@ export class JobCreationFormComponent {
   /** Indicates whether AI is currently generating a job description draft */
   isGeneratingDraft = signal<boolean>(false);
 
-  /** Controls visibility of the AI generation panel */
+  /** Controls visibility of the AI generation panel and AI translation invocation */
   aiToggleSignal = signal<boolean>(true);
 
   /** Tracks if the rewrite button should be shown (after first generation) */
   rewriteButtonSignal = signal<boolean>(false);
-
-  /** Computed: determines if the AI panel should be displayed */
-  showAiPanel = computed(() => this.aiToggleSignal());
 
   /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
   jobDescriptionPlaceholder = computed(() =>
@@ -997,10 +994,10 @@ export class JobCreationFormComponent {
         ]);
         this.populateForm(job);
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
-
-        // prevent autosave from firing immediately after patching
-        this.autoSaveInitialized = false;
       }
+
+      // prevent autosave from firing immediately after initialization
+      this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
       this.router.navigate(['/my-positions']);
@@ -1212,8 +1209,10 @@ export class JobCreationFormComponent {
 
       this.savingState.set('SAVED');
 
-      // fire-and-forget translation (don't block autosave UX)
-      void this.translateAndStoreOtherLanguage(currentLang, description);
+      if (this.aiToggleSignal()) {
+        // fire-and-forget translation (don't block autosave UX)
+        void this.translateAndStoreOtherLanguage(currentLang, description);
+      }
     } catch {
       this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');

@@ -124,7 +124,7 @@
       }
     },
     "positionDetailsSection": {
-      "languageInfo": "Please choose and write the job description in German or English, the other language is auto-translated and can be reviewed or edited. Switching languages is disabled during translation.",
+      "languageInfo": "Please choose and write the job description in either English or German:<br><b>AI enabled:</b> The translation is generated automatically and can then be reviewed or edited.<br><b>AI disabled:</b> The translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
       "jobDescription": {
         "label": "Job Description",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
