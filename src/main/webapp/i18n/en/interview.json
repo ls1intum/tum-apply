@@ -186,7 +186,9 @@
       },
       "edit": {
         "title": "Edit Location",
-        "bookedInfo": "The applicant will be notified about the location change via email.",
+        "bookedInfo": "The applicant will be notified about the location change via email. You can customize the email template ",
+        "editTemplates": "here",
+        "editTemplatesSuffix": ".",
         "success": {
           "summary": "Location updated",
           "detail": "The slot location has been updated successfully."
