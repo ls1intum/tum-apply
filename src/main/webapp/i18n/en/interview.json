@@ -82,7 +82,7 @@
       },
       "create": {
         "title": "Create Interview Slots",
-        "addSlot": "Add Slot",
+        "addSlot": "Slot",
         "removeSlot": "Remove Slot",
         "slotNumber": "Slot {{number}}",
         "date": "Date",
