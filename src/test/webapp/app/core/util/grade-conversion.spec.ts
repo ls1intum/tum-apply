@@ -1,4 +1,10 @@
-import { convertToGermanGrade, formatGrade, convertAndFormatGermanGrade, displayGradeWithConversion, formatGradeWithTranslation } from 'app/core/util/grade-conversion';
+import {
+  convertToGermanGrade,
+  formatGrade,
+  convertAndFormatGermanGrade,
+  displayGradeWithConversion,
+  formatGradeWithTranslation,
+} from 'app/core/util/grade-conversion';
 import { TranslateService } from '@ngx-translate/core';
 import { createTranslateServiceMock } from 'util/translate.mock';
 
