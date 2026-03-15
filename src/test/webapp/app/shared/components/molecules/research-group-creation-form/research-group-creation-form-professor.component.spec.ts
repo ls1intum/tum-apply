@@ -276,29 +276,16 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
    */
   describe('onSubmit', () => {
     it('should not submit when form is invalid', () => {
-      const mockDialog = component.confirmDialog();
-      if (mockDialog) {
-        const confirmDialogSpy = vi.spyOn(mockDialog, 'confirm');
-
-        component.onSubmit();
-
-        expect(confirmDialogSpy).not.toHaveBeenCalled();
-      } else {
-        component.onSubmit();
-        // If no dialog, just ensure no errors are thrown
-        expect(true).toBe(true);
-      }
+      component.onSubmit();
+      expect(component.showConfirmDialog()).toBe(false);
     });
 
     it('should trigger confirm dialog when form is valid', () => {
       fillValidForm();
 
-      const mockConfirmDialog = { confirm: vi.fn() } as Partial<ConfirmDialog> as ConfirmDialog;
-      vi.spyOn(component, 'confirmDialog').mockReturnValue(mockConfirmDialog);
-
       component.onSubmit();
 
-      expect(mockConfirmDialog.confirm).toHaveBeenCalledOnce();
+      expect(component.showConfirmDialog()).toBe(true);
     });
   });
 

@@ -149,7 +149,7 @@
         "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
         "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
         "addRange": "Terminserie hinzufügen",
-        "addSlot": "Einzeltermin hinzufügen",
+        "addSlot": "Termin",
         "noSlotsYet": "Noch keine Termine",
         "noSlotsYetDesc": "Füge eine Terminserie oder einen einzelnen Termin hinzu, um zu beginnen",
         "singleSlot": "Einzelner Termin",
@@ -186,7 +186,9 @@
       },
       "edit": {
         "title": "Ort bearbeiten",
-        "bookedInfo": "Die bewerbende Person wird per E-Mail über die Ortsänderung informiert.",
+        "bookedInfo": "Die bewerbende Person wird per E-Mail über die Ortsänderung informiert. Du kannst die E-Mail-Vorlage ",
+        "editTemplates": "hier",
+        "editTemplatesSuffix": " anpassen.",
         "success": {
           "summary": "Ort aktualisiert",
           "detail": "Der Terminort wurde erfolgreich aktualisiert."

@@ -83,9 +83,9 @@ export class MyPositionsPageComponent {
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
   readonly professorTemplate = viewChild.required<TemplateRef<unknown>>('professorTemplate');
 
-  readonly editPublishedDialog = viewChild.required<ConfirmDialog>('editPublishedDialog');
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
-  readonly closeDialog = viewChild.required<ConfirmDialog>('closeDialog');
+  showEditPublishedDialog = signal(false);
+  showDeleteDialog = signal(false);
+  showCloseDialog = signal(false);
 
   currentJobId = signal<string | undefined>(undefined);
 
@@ -146,7 +146,7 @@ export class MyPositionsPageComponent {
           severity: 'primary',
           command: () => {
             this.currentJobId.set(job.jobId);
-            this.editPublishedDialog().confirm();
+            this.showEditPublishedDialog.set(true);
           },
         });
       }
@@ -159,7 +159,7 @@ export class MyPositionsPageComponent {
           severity: 'danger',
           command: () => {
             this.currentJobId.set(job.jobId);
-            this.deleteDialog().confirm();
+            this.showDeleteDialog.set(true);
           },
         });
       } else if (job.state === 'PUBLISHED') {
@@ -169,7 +169,7 @@ export class MyPositionsPageComponent {
           severity: 'danger',
           command: () => {
             this.currentJobId.set(job.jobId);
-            this.closeDialog().confirm();
+            this.showCloseDialog.set(true);
           },
         });
       }
