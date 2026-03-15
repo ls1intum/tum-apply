@@ -243,7 +243,11 @@ describe('SlotCreationFormComponent', () => {
     });
 
     it.each([
-      { label: 'conflict error on 409', error: () => new HttpErrorResponse({ status: 409 }), expectedKey: 'interview.slots.create.error.conflict' },
+      {
+        label: 'conflict error on 409',
+        error: () => new HttpErrorResponse({ status: 409 }),
+        expectedKey: 'interview.slots.create.error.conflict',
+      },
       { label: 'generic error on other failures', error: () => new Error('fail'), expectedKey: 'interview.slots.create.error.generic' },
     ])('should show $label', async ({ error, expectedKey }) => {
       (mockInterviewService.createSlots as ReturnType<typeof vi.fn>).mockReturnValue(throwError(error));
@@ -315,27 +319,30 @@ describe('SlotCreationFormComponent', () => {
         expectedInternal: false,
         expectedConflicts: false,
       },
-    ])('should detect internal conflicts=$expectedInternal for $label', ({ secondStart, secondEnd, expectedInternal, expectedConflicts }) => {
-      const slots: InterviewSlotDTO[] = [
-        {
-          startDateTime: '2026-04-10T09:00:00',
-          endDateTime: '2026-04-10T09:30:00',
-          location: 'Room 1',
-        },
-        {
-          startDateTime: secondStart,
-          endDateTime: secondEnd,
-          location: 'Room 1',
-        },
-      ];
+    ])(
+      'should detect internal conflicts=$expectedInternal for $label',
+      ({ secondStart, secondEnd, expectedInternal, expectedConflicts }) => {
+        const slots: InterviewSlotDTO[] = [
+          {
+            startDateTime: '2026-04-10T09:00:00',
+            endDateTime: '2026-04-10T09:30:00',
+            location: 'Room 1',
+          },
+          {
+            startDateTime: secondStart,
+            endDateTime: secondEnd,
+            location: 'Room 1',
+          },
+        ];
 
-      component['slotsByDate'].set(new Map([['2026-04-10', slots]]));
+        component['slotsByDate'].set(new Map([['2026-04-10', slots]]));
 
-      expect(component['hasInternalConflicts']()).toBe(expectedInternal);
-      if (expectedConflicts !== undefined) {
-        expect(component['hasConflicts']()).toBe(expectedConflicts);
-      }
-    });
+        expect(component['hasInternalConflicts']()).toBe(expectedInternal);
+        if (expectedConflicts !== undefined) {
+          expect(component['hasConflicts']()).toBe(expectedConflicts);
+        }
+      },
+    );
 
     it('should prioritize BOOKED_OTHER_PROCESS over SAME_PROCESS conflicts', () => {
       const conflictDataWithBookedSlot: ConflictDataDTO = {
