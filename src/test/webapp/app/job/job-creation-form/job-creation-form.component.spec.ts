@@ -307,12 +307,15 @@ describe('JobCreationFormComponent', () => {
       expect(priv.autoSaveTimer).toBeUndefined();
     });
 
-    it('should trigger performAutoSave from setupAutoSave effect', async () => {
-      vi.useFakeTimers();
+    it('should trigger performAutoSave from setupAutoSave effect', () => {
+      // Ensure the auto-save initialization guard has been passed
+      getPrivate(component).autoSaveInitialized = true;
+
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
       const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
 
       component.basicInfoForm.patchValue({ title: 'new title' });
-      fixture.detectChanges();
+      TestBed.flushEffects();
       vi.advanceTimersByTime(3000);
 
       expect(spy).toHaveBeenCalledOnce();
