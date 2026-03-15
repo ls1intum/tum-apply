@@ -1,4 +1,4 @@
-import { Component, computed, input, output, viewChild } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/men
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange } from 'app/shared/util/date-time.util';
 import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 @Component({
   selector: 'jhi-slot-card',
@@ -23,11 +24,11 @@ export class SlotCardComponent {
   deleteSlot = output<InterviewSlotDTO>();
   assignApplicant = output<InterviewSlotDTO>();
 
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  showDeleteDialog = signal(false);
 
   // Computed values
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
-  isVirtual = computed(() => this.slot().location === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
   isBooked = computed(() => this.slot().isBooked ?? false);
   isPast = computed(() => {
     const start = this.slot().startDateTime;
@@ -63,7 +64,9 @@ export class SlotCardComponent {
       items.push({
         label: 'button.delete',
         icon: 'trash',
-        command: () => this.deleteDialog().confirm(),
+        command: () => {
+          this.showDeleteDialog.set(true);
+        },
         severity: 'danger',
       });
     }

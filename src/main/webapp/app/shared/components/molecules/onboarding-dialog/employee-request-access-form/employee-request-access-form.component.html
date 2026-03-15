@@ -1,13 +1,14 @@
 <!-- Confirmation Dialog -->
 <jhi-confirm-dialog
-  #confirmDialog
   [header]="'onboarding.employeeRequest.confirmDialog.header' | translate"
   [message]="'onboarding.employeeRequest.confirmDialog.message' | translate"
   [label]="'onboarding.employeeRequest.confirmDialog.confirm' | translate"
   severity="primary"
   confirmIcon="paper-plane"
   [showOpenButton]="false"
+  [visible]="showConfirmDialog()"
   (confirmed)="onConfirmSubmit()"
+  (closed)="showConfirmDialog.set(false)"
 />
 
 <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">

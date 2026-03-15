@@ -69,9 +69,9 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for created column (relative time)
   readonly timeSinceCreationTemplate = viewChild.required<TemplateRef<unknown>>('timeSinceCreationTemplate');
 
-  // Confirm dialog references
-  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  // Dialog visibility signals
+  showWithdrawDialog = signal(false);
+  showDeleteDialog = signal(false);
 
   // Track current application ID for dialogs
   currentApplicationId = signal<string | undefined>(undefined);
@@ -149,7 +149,7 @@ export default class ApplicationOverviewForApplicantComponent {
           severity: 'danger',
           command: () => {
             this.currentApplicationId.set(applicationId);
-            this.withdrawDialog().confirm();
+            this.showWithdrawDialog.set(true);
           },
         });
       }
@@ -162,7 +162,7 @@ export default class ApplicationOverviewForApplicantComponent {
           severity: 'danger',
           command: () => {
             this.currentApplicationId.set(applicationId);
-            this.deleteDialog().confirm();
+            this.showDeleteDialog.set(true);
           },
         });
       }

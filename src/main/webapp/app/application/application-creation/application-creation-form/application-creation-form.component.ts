@@ -115,7 +115,7 @@ export default class ApplicationCreationFormComponent {
   applicationDetailsPanel = viewChild<TemplateRef<ApplicationCreationPage3Component>>('applicationDetailsPanel');
   summaryPanel = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('summaryPanel');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
-  sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
+  showSendDialog = signal(false);
   progressStepper = viewChild<ProgressStepperComponent>(ProgressStepperComponent);
 
   title = signal<string>('');
@@ -323,7 +323,7 @@ export default class ApplicationCreationFormComponent {
             severity: this.sendButtonSeverity,
             icon: this.sendButtonIcon,
             onClick: () => {
-              this.sendConfirmDialog()?.confirm();
+              this.showSendDialog.set(true);
             },
             disabled: !allPagesValid,
             label: 'button.send',
