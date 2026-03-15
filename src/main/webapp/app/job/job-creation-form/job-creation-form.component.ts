@@ -253,8 +253,8 @@ export class JobCreationFormComponent {
   /** Template for the saving state indicator */
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
 
-  /** Reference to the publish confirmation dialog */
-  sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
+  /** Signal controlling publish confirmation dialog visibility */
+  showPublishDialog = signal(false);
 
   /** Reference to the job description rich-text editor */
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
@@ -1426,7 +1426,7 @@ export class JobCreationFormComponent {
           {
             severity: this.publishButtonSeverity,
             icon: this.publishButtonIcon,
-            onClick: () => this.sendPublishDialog()?.confirm(),
+            onClick: () => this.showPublishDialog.set(true),
             disabled: !this.allFormsValid(),
             label: 'button.publish',
             shouldTranslate: true,

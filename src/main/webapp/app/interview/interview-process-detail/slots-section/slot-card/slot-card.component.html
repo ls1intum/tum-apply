@@ -4,14 +4,15 @@
 
   <!-- Confirm Dialog -->
   <jhi-confirm-dialog
-    #deleteDialog
     [label]="'button.delete' | translate"
     [header]="'interview.slots.delete.confirm.header' | translate"
     [message]="'interview.slots.delete.confirm.message' | translate"
     severity="danger"
     confirmIcon="trash"
     [showOpenButton]="false"
+    [visible]="showDeleteDialog()"
     (confirmed)="onDelete()"
+    (closed)="showDeleteDialog.set(false)"
   />
 
   <!-- Card Content -->

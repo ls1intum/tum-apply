@@ -13,6 +13,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
@@ -87,11 +88,13 @@ export class InterviewBookingComponent {
     const slot = this.bookedSlot();
     if (slot === null) return '';
     const location = slot.location;
-    if (location !== undefined && location !== '' && location !== 'virtual') return location;
-    return this.translateService.instant(location === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
+    if (location !== undefined && location !== '' && !isVirtualLocation(location)) return location;
+    return this.translateService.instant(
+      isVirtualLocation(location) ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson',
+    );
   });
 
-  isBookedVirtual = computed(() => this.bookedSlot()?.location === 'virtual');
+  isBookedVirtual = computed(() => isVirtualLocation(this.bookedSlot()?.location));
 
   /** Groups available slots by date and sorts chronologically (slots already filtered by server). */
   groupedSlots = computed(() => {

@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #closeConfirmDialog
   class="confirm-dialog"
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
@@ -7,10 +6,11 @@
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
+  [visible]="showCloseDialog()"
   (confirmed)="onCloseJob()"
+  (closed)="showCloseDialog.set(false)"
 />
 <jhi-confirm-dialog
-  #deleteConfirmDialog
   class="confirm-dialog"
   [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
@@ -18,7 +18,9 @@
   [severity]="deleteButtonSeverity"
   [confirmIcon]="deleteButtonIcon"
   [showOpenButton]="false"
+  [visible]="showDeleteDialog()"
   (confirmed)="onDeleteJob()"
+  (closed)="showDeleteDialog.set(false)"
 />
 
 @if (jobDetails(); as job) {
