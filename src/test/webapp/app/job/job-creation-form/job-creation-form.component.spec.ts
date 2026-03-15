@@ -85,7 +85,6 @@ type ComponentPrivate = {
   autoSaveInitialized: boolean;
   populateForm: (job?: JobDTO) => void;
   createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
-  createDraftJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO | undefined;
   buildStepData: () => Step[];
   findDropdownOption: (arr: { value: string }[], val: string) => unknown;
   sendPublishDialog: () => { confirm: () => void };
@@ -372,6 +371,8 @@ describe('JobCreationFormComponent', () => {
       },
     ])('should $name', async ({ setup, expectations }) => {
       setup(component);
+      vi.mocked(mockToastService.showSuccessKey).mockClear();
+      vi.mocked(mockToastService.showErrorKey).mockClear();
       await component.publishJob();
       expectations();
     });
@@ -699,7 +700,7 @@ describe('JobCreationFormComponent', () => {
       component.jobDescriptionEN.set('<p>Description</p>');
       component.jobDescriptionDE.set('<p>Beschreibung</p>');
 
-      const dto = getPrivate(component).createDraftJobDTO('DRAFT');
+      const dto = component.currentJobData();
       expect(dto).toBeUndefined();
     });
   });
