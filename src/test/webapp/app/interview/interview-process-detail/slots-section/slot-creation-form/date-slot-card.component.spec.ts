@@ -250,13 +250,16 @@ describe('DateSlotCardComponent', () => {
       expect(component['allSlots']().length).toBeGreaterThanOrEqual(2);
     });
 
-    it.each([
-      { addMethod: 'addSingleSlot' as const, property: 'hasSingleSlots' as const, label: 'single slots' },
-      { addMethod: 'addRange' as const, property: 'hasRangeSlots' as const, label: 'range slots' },
-    ])('should detect $label via $property', ({ addMethod, property }) => {
-      component[addMethod]();
+    it('should detect hasSingleSlots', () => {
+      component.addSingleSlot();
 
-      expect((component as any)[property]()).toBe(true);
+      expect(component['hasSingleSlots']()).toBe(true);
+    });
+
+    it('should detect hasRangeSlots', () => {
+      component.addRange();
+
+      expect(component['hasRangeSlots']()).toBe(true);
     });
   });
 
