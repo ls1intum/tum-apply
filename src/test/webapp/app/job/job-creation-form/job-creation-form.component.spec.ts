@@ -239,7 +239,6 @@ describe('JobCreationFormComponent', () => {
 
   describe('Navigation', () => {
     it('should call Location.back on onBack', () => {
-      mockLocation.back.mockClear();
       component.onBack();
       expect(mockLocation.back).toHaveBeenCalledOnce();
     });
@@ -709,7 +708,7 @@ describe('JobCreationFormComponent', () => {
       component.jobDescriptionDE.set('<p>Beschreibung</p>');
 
       const dto = component.currentJobData();
-      expect(dto).toBeUndefined();
+      expect(dto.subjectArea).toBeUndefined();
     });
   });
 
@@ -780,7 +779,6 @@ describe('JobCreationFormComponent', () => {
 
     it('should handle button clicks correctly', () => {
       const steps = getPrivate(component).buildStepData();
-      mockLocation.back.mockClear();
       steps[0].buttonGroupPrev?.[0].onClick();
       expect(mockLocation.back).toHaveBeenCalledOnce();
 

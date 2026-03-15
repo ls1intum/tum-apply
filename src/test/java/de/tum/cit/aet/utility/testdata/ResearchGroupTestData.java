@@ -72,12 +72,11 @@ public final class ResearchGroupTestData {
         String description,
         String email,
         String postalCode,
-        String ignoredSchool,
+        String school,
         String street,
         String website,
         String state
     ) {
-        // ignoredSchool is kept for backward-compatible positional call sites.
         return newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state);
     }
 
@@ -142,12 +141,11 @@ public final class ResearchGroupTestData {
         String description,
         String email,
         String postalCode,
-        String ignoredSchool,
+        String school,
         String street,
         String website,
         String state
     ) {
-        // ignoredSchool is kept for backward-compatible positional call sites.
         return repo.save(newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state));
     }
 

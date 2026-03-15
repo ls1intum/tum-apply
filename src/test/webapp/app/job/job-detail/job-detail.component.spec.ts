@@ -646,11 +646,11 @@ describe('JobDetailComponent', () => {
   });
 
   it('should default supervisingProfessor and researchGroup to empty strings in form mode when user info missing', () => {
-    const form: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined } = {
+    const form: JobFormDTO = {
       title: 'Form Job',
       jobDescriptionEN: 'Some description',
       jobDescriptionDE: 'Some description',
-      subjectArea: undefined,
+      subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -659,7 +659,7 @@ describe('JobDetailComponent', () => {
     const result = (
       component as unknown as {
         mapToJobDetails: (
-          d: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined },
+          d: JobFormDTO,
           u?: ReturnType<typeof mockAccountService.loadedUser>,
           rg?: unknown,
           f?: boolean,
@@ -676,9 +676,9 @@ describe('JobDetailComponent', () => {
 
     mockAccountService.user.set(userWithoutGroup as User);
 
-    const form: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined } = {
+    const form: JobFormDTO = {
       title: 'Form Job',
-      subjectArea: undefined,
+      subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -688,9 +688,7 @@ describe('JobDetailComponent', () => {
 
     await (
       component as unknown as {
-        loadJobDetailsFromForm: (
-          f: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined },
-        ) => Promise<void>;
+        loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void>;
       }
     ).loadJobDetailsFromForm(form);
 

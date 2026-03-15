@@ -424,27 +424,11 @@ export class JobCreationFormComponent {
     initialValue: this.imageForm.getRawValue(),
   });
 
-  /** Computed: Aggregates all form data into a draft DTO when required fields are present */
-  currentJobData = computed<JobFormDTO | undefined>(() => {
+  /** Computed: Aggregates all form data into a draft DTO */
+  currentJobData = computed<JobFormDTO>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
-
-    const basicInfoValue = this.basicInfoForm.getRawValue();
-    const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
-    const supervisingProfessorId =
-      (typeof supervisingProfessorRaw === 'object' && supervisingProfessorRaw !== null
-        ? (supervisingProfessorRaw as { value?: string }).value
-        : supervisingProfessorRaw) ??
-      this.preferredSupervisingProfessorId() ??
-      this.userId();
-    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea);
-    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location);
-
-    if (subjectArea === undefined || location === undefined || supervisingProfessorId === '') {
-      return undefined;
-    }
-
     return this.createJobDTO('DRAFT');
   });
 
@@ -589,12 +573,8 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      const draftData = this.currentJobData();
-      if (!draftData) {
-        return;
-      }
       this.savingState.set('SAVING');
-      await this.performAutoSave(draftData);
+      await this.performAutoSave(this.createJobDTO('DRAFT'));
     }
   }
 
@@ -983,7 +963,7 @@ export class JobCreationFormComponent {
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
       subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea),
       supervisingProfessor: supervisingProfessorId ?? '',
-      location: this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location),
+      location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
@@ -1129,7 +1109,7 @@ export class JobCreationFormComponent {
       });
     }
 
-    this.lastSavedData.set(this.currentJobData());
+    this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
 
   /**
@@ -1230,13 +1210,8 @@ export class JobCreationFormComponent {
       this.clearAutoSaveTimer();
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
-        const draftData = this.currentJobData();
-        if (!draftData) {
-          return;
-        }
-
         this.savingState.set('SAVING');
-        void this.performAutoSave(draftData);
+        void this.performAutoSave(this.createJobDTO('DRAFT'));
       }, 3000);
     });
   }
