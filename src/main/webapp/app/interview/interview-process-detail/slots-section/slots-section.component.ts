@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
@@ -7,7 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { InterviewResourceApiService } from 'app/generated';
+import { EmailTemplateResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -52,7 +53,7 @@ interface GroupedSlots {
     FontAwesomeModule,
     AssignApplicantModalComponent,
     CancelInterviewModalComponent,
-    MessageComponent,
+    RouterLink,
   ],
   templateUrl: './slots-section.component.html',
 })
@@ -63,6 +64,7 @@ export class SlotsSectionComponent {
 
   // Services
   readonly interviewService = inject(InterviewResourceApiService);
+  readonly emailTemplateService = inject(EmailTemplateResourceApiService);
   readonly translateService = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly breakpointObserver = inject(BreakpointObserver);
@@ -101,6 +103,7 @@ export class SlotsSectionComponent {
   internalRefreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
   globalFutureUnbookedCount = signal<number>(0);
+  locationChangedTemplateId = signal<string | undefined>(undefined);
 
   // Computed
   datesPerPage = computed(() => {
@@ -261,6 +264,7 @@ export class SlotsSectionComponent {
     const id = this.processId();
     if (id !== '') {
       void this.checkGlobalSlots(id);
+      void this.fetchLocationChangedTemplateId();
     }
   });
 
@@ -598,5 +602,19 @@ export class SlotsSectionComponent {
 
   private safeDate(value?: string): number {
     return value !== undefined && value !== '' ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
+  }
+
+  private async fetchLocationChangedTemplateId(): Promise<void> {
+    if (this.locationChangedTemplateId() !== undefined) return;
+
+    try {
+      const res = await firstValueFrom(this.emailTemplateService.getTemplates(100, 0));
+      const template = res.content?.find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED');
+      if (template?.emailTemplateId) {
+        this.locationChangedTemplateId.set(template.emailTemplateId);
+      }
+    } catch {
+      // Fail silently, the link will fallback to overview
+    }
   }
 }
