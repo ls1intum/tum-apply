@@ -190,7 +190,17 @@
 
       <!-- Info for booked slots -->
       @if (editSlotIsBooked()) {
-        <jhi-message severity="info" variant="simple" message="interview.slots.edit.bookedInfo" styleClass="inline-message" />
+        <jhi-message severity="info">
+          <span jhiTranslate="interview.slots.edit.bookedInfo"></span>
+          <a
+            [routerLink]="
+              locationChangedTemplateId() ? ['/research-group/template', locationChangedTemplateId(), 'edit'] : '/research-group/templates'
+            "
+            class="text-primary hover:underline font-medium cursor-pointer"
+            jhiTranslate="interview.slots.edit.editTemplates"
+          ></a>
+          <span jhiTranslate="interview.slots.edit.editTemplatesSuffix"></span>
+        </jhi-message>
       }
 
       <!-- Actions -->
