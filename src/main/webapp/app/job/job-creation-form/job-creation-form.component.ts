@@ -429,7 +429,23 @@ export class JobCreationFormComponent {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
-    return this.canAutoSaveDraft() ? this.createJobDTO('DRAFT') : undefined;
+
+    const basicInfoValue = this.basicInfoForm.getRawValue();
+    const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
+    const supervisingProfessorId =
+      (typeof supervisingProfessorRaw === 'object' && supervisingProfessorRaw !== null
+        ? (supervisingProfessorRaw as { value?: string }).value
+        : supervisingProfessorRaw) ??
+      this.preferredSupervisingProfessorId() ??
+      this.userId();
+    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea);
+    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location);
+
+    if (subjectArea === undefined || location === undefined || supervisingProfessorId === '') {
+      return undefined;
+    }
+
+    return this.createJobDTO('DRAFT');
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -573,10 +589,10 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      if (!this.canAutoSaveDraft()) {
+      const draftData = this.currentJobData();
+      if (!draftData) {
         return;
       }
-      const draftData = this.createJobDTO('DRAFT');
       this.savingState.set('SAVING');
       await this.performAutoSave(draftData);
     }
@@ -942,10 +958,6 @@ export class JobCreationFormComponent {
    * @returns The complete job form DTO
    */
   private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
-    const requiredFields = this.resolveJobDTORequiredFields();
-    if (!requiredFields) {
-      throw new Error(`Cannot create ${state} JobFormDTO without required basic info fields.`);
-    }
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
@@ -954,6 +966,13 @@ export class JobCreationFormComponent {
     const lang = this.currentDescriptionLanguage();
     const currentText = (basicInfoValue.jobDescription ?? '').trim();
 
+    const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
+    const supervisingProfessorId =
+      (typeof supervisingProfessorRaw === 'object' && supervisingProfessorRaw !== null
+        ? (supervisingProfessorRaw as { value?: string }).value
+        : supervisingProfessorRaw) ??
+      this.preferredSupervisingProfessorId() ??
+      this.userId();
     const fundingType = this.extractSelectedValue<JobFormDTO.FundingTypeEnum>(positionDetailsValue.fundingType);
 
     const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
@@ -962,9 +981,9 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      subjectArea: requiredFields.subjectArea,
-      supervisingProfessor: requiredFields.supervisingProfessorId,
-      location: requiredFields.location,
+      subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea),
+      supervisingProfessor: supervisingProfessorId ?? '',
+      location: this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location),
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
@@ -977,40 +996,7 @@ export class JobCreationFormComponent {
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
-    };
-  }
-
-  private canAutoSaveDraft(): boolean {
-    return this.resolveJobDTORequiredFields() !== undefined;
-  }
-
-  private resolveJobDTORequiredFields():
-    | {
-        subjectArea: JobFormDTO.SubjectAreaEnum;
-        supervisingProfessorId: string;
-        location: JobFormDTO.LocationEnum;
-      }
-    | undefined {
-    const basicInfoValue = this.basicInfoForm.getRawValue();
-    const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
-    const supervisingProfessorId =
-      (typeof supervisingProfessorRaw === 'object' && supervisingProfessorRaw !== null
-        ? (supervisingProfessorRaw as { value?: string }).value
-        : supervisingProfessorRaw) ??
-      this.preferredSupervisingProfessorId() ??
-      this.userId();
-    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea);
-    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location);
-
-    if (subjectArea === undefined || location === undefined || supervisingProfessorId === '') {
-      return undefined;
-    }
-
-    return {
-      subjectArea,
-      supervisingProfessorId,
-      location,
-    };
+    } as JobFormDTO;
   }
 
   /**
@@ -1143,7 +1129,7 @@ export class JobCreationFormComponent {
       });
     }
 
-    this.lastSavedData.set(this.canAutoSaveDraft() ? this.createJobDTO('DRAFT') : undefined);
+    this.lastSavedData.set(this.currentJobData());
   }
 
   /**
@@ -1244,10 +1230,10 @@ export class JobCreationFormComponent {
       this.clearAutoSaveTimer();
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
-        if (!this.canAutoSaveDraft()) {
+        const draftData = this.currentJobData();
+        if (!draftData) {
           return;
         }
-        const draftData = this.createJobDTO('DRAFT');
 
         this.savingState.set('SAVING');
         void this.performAutoSave(draftData);

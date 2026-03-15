@@ -85,7 +85,7 @@ type ComponentPrivate = {
   autoSaveTimer?: number;
   autoSaveInitialized: boolean;
   populateForm: (job?: JobDTO) => void;
-  createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
+  createJobDTO: (state: JobFormDTO.StateEnum) => JobFormDTO;
   buildStepData: () => Step[];
   findDropdownOption: (arr: { value: string }[], val: string) => unknown;
   sendPublishDialog: () => { confirm: () => void };
@@ -196,12 +196,13 @@ describe('JobCreationFormComponent', () => {
 
     it('should initialize in create mode and populate form', async () => {
       mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('create', {})]);
+      mockImageService.getMyDefaultJobBanners.mockClear();
       const fixture2 = TestBed.createComponent(JobCreationFormComponent);
       fixture2.detectChanges();
       await fixture2.whenStable();
 
       expect(fixture2.componentInstance.mode()).toBe('create');
-      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalled();
+      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalledOnce();
     });
 
     it('should navigate to /my-positions if edit mode but no jobId', async () => {
@@ -238,8 +239,9 @@ describe('JobCreationFormComponent', () => {
 
   describe('Navigation', () => {
     it('should call Location.back on onBack', () => {
+      mockLocation.back.mockClear();
       component.onBack();
-      expect(mockLocation.back).toHaveBeenCalled();
+      expect(mockLocation.back).toHaveBeenCalledOnce();
     });
 
     it('should navigate to login when no user is loaded in init', async () => {
@@ -256,7 +258,7 @@ describe('JobCreationFormComponent', () => {
   describe('Auto-Save and Saving State', () => {
     it('should detect unsaved changes when form changes', () => {
       fillValidJobForm(component);
-      const initialData = component.currentJobData();
+      const initialData = getPrivate(component).createJobDTO('DRAFT');
       component.lastSavedData.set(initialData);
       expect(component.hasUnsavedChanges()).toBe(false);
 
@@ -294,7 +296,7 @@ describe('JobCreationFormComponent', () => {
       await getPrivate(component).performAutoSave(getPrivate(component).createJobDTO('DRAFT'));
 
       expect(component.jobId()).toBe('abc123');
-      expect(mockJobService.createJob).toHaveBeenCalled();
+      expect(mockJobService.createJob).toHaveBeenCalledOnce();
     });
 
     it('should call updateJob when jobId is set in performAutoSave', async () => {
@@ -329,7 +331,7 @@ describe('JobCreationFormComponent', () => {
         vi.advanceTimersByTime(3000);
         await Promise.resolve();
 
-        expect(spy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledOnce();
       } finally {
         vi.useRealTimers();
       }
@@ -453,9 +455,10 @@ describe('JobCreationFormComponent', () => {
         ]),
       );
 
+      mockResearchGroupService.getResearchGroupProfessors.mockClear();
       await getPrivate(component).loadSupervisingProfessors();
 
-      expect(mockResearchGroupService.getResearchGroupProfessors).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupProfessors).toHaveBeenCalledOnce();
       expect(component.supervisingProfessorOptions()).toEqual([
         { value: 'p1', name: 'Alpha Professor' },
         { value: 'p2', name: 'Beta Professor' },
@@ -627,8 +630,9 @@ describe('JobCreationFormComponent', () => {
       ];
       mockImageService.getMyDefaultJobBanners.mockReturnValueOnce(of(mockImages));
       mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
+      mockImageService.getMyDefaultJobBanners.mockClear();
       await component.loadImages();
-      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalled();
+      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalledOnce();
     });
   });
 
@@ -750,10 +754,7 @@ describe('JobCreationFormComponent', () => {
       expect(publishableData).toBeDefined();
       expect(publishableData?.state).toBe('PUBLISHED');
 
-      const currentData = component.currentJobData();
-      if (!currentData) {
-        throw new Error('Expected current draft DTO to be defined');
-      }
+      const currentData = getPrivate(component).createJobDTO('DRAFT');
       expect(currentData.state).toBe('DRAFT');
       expect(currentData.title).toBe('T');
     });
@@ -779,8 +780,9 @@ describe('JobCreationFormComponent', () => {
 
     it('should handle button clicks correctly', () => {
       const steps = getPrivate(component).buildStepData();
+      mockLocation.back.mockClear();
       steps[0].buttonGroupPrev?.[0].onClick();
-      expect(mockLocation.back).toHaveBeenCalled();
+      expect(mockLocation.back).toHaveBeenCalledOnce();
 
       steps.forEach(step => {
         step.buttonGroupPrev?.forEach(btn => expect(() => btn.onClick()).not.toThrow());
@@ -796,7 +798,7 @@ describe('JobCreationFormComponent', () => {
 
       const steps = getPrivate(component).buildStepData();
       steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0].onClick();
-      expect(confirmSpy).toHaveBeenCalled();
+      expect(confirmSpy).toHaveBeenCalledOnce();
     });
   });
 

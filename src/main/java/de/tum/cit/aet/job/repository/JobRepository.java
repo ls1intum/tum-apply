@@ -79,7 +79,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param userId         id of the currently logged in user (nullable)
      * @param searchQuery    string to search for job title,
      *                       subject area or supervisor name
-     * @param searchSubjectAreas subject areas matching the search query
+     * @param searchSubjectArea subject area matching the search query
      * @param pageable       pagination information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -120,7 +120,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
           AND (:searchQuery IS NULL OR
                    j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                   (:searchSubjectAreas IS NOT NULL AND j.subjectArea IN :searchSubjectAreas) OR
+                   (:searchSubjectArea IS NOT NULL AND j.subjectArea = :searchSubjectArea) OR
                    CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
               )
         ORDER BY
@@ -144,7 +144,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("sortDirection") String sortDirection,
         @Param("userId") UUID userId,
         @Param("searchQuery") String searchQuery,
-        @Param("searchSubjectAreas") List<SubjectArea> searchSubjectAreas,
+        @Param("searchSubjectArea") SubjectArea searchSubjectArea,
         Pageable pageable
     );
 
@@ -171,7 +171,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      *                       (nullable)
      * @param userId         id of the currently logged in user (nullable)
      * @param searchQuery    string to search for job title, subject area or supervisor name
-     * @param searchSubjectAreas subject areas matching the search query
+     * @param searchSubjectArea subject area matching the search query
      * @param pageable       pagination and sorting information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -212,7 +212,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
             AND (:searchQuery IS NULL OR
                    j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                   (:searchSubjectAreas IS NOT NULL AND j.subjectArea IN :searchSubjectAreas) OR
+                   (:searchSubjectArea IS NOT NULL AND j.subjectArea = :searchSubjectArea) OR
                    CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
             )
         """
@@ -224,7 +224,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("professorNames") List<String> professorNames,
         @Param("userId") UUID userId,
         @Param("searchQuery") String searchQuery,
-        @Param("searchSubjectAreas") List<SubjectArea> searchSubjectAreas,
+        @Param("searchSubjectArea") SubjectArea searchSubjectArea,
         Pageable pageable
     );
 
