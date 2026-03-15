@@ -103,6 +103,7 @@ export * from './updateApplicationDTO';
 export * from './updateAssessmentDTO';
 export * from './updateAvatarDTO';
 export * from './updatePasswordDTO';
+export * from './updateSlotLocationDTO';
 export * from './updateUserNameDTO';
 export * from './uploadDocumentsRequest';
 export * from './user';

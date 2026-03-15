@@ -323,8 +323,6 @@
       "jobDescription": "Stellenbeschreibung",
       "jobDescriptionEN": "Englische Stellenbeschreibung",
       "jobDescriptionDE": "Deutsche Stellenbeschreibung",
-      "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
-      "eligibilityCriteria": "Zulassungsvoraussetzungen",
       "dataProtection": "Hinweis zum Datenschutz"
     },
     "cards": {
