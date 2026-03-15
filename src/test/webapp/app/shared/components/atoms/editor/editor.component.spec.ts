@@ -1,19 +1,19 @@
-import {TestBed} from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {EditorComponent} from 'app/shared/components/atoms/editor/editor.component';
-import {provideFontAwesomeTesting} from 'util/fontawesome.testing';
-import {provideTranslateMock} from 'util/translate.mock';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {extractTextFromHtml} from 'app/shared/util/text.util';
-import {provideHttpClientMock} from 'util/http-client.mock';
+import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { extractTextFromHtml } from 'app/shared/util/text.util';
+import { provideHttpClientMock } from 'util/http-client.mock';
 import {
   createGenderBiasAnalysisServiceMock,
   GenderBiasAnalysisServiceMock,
   provideGenderBiasAnalysisServiceMock,
 } from 'util/gender-bias-analysis.service.mock';
-import {BehaviorSubject} from 'rxjs';
-import {GenderBiasAnalysisResponse} from 'app/generated';
-import {ContentChange} from 'ngx-quill';
+import { BehaviorSubject } from 'rxjs';
+import { GenderBiasAnalysisResponse } from 'app/generated';
+import { ContentChange } from 'ngx-quill';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): ContentChange {
   const plainText = extractTextFromHtml(html);
@@ -682,6 +682,11 @@ describe('EditorComponent', () => {
         name: 'remove attributes when none are allowed',
         input: { ops: [{ insert: 'x', attributes: { color: 'red', style: 'foo' } }] },
         expected: [{ insert: 'x', attributes: undefined }],
+      },
+      {
+        name: 'keep align attribute and strip disallowed ones',
+        input: { ops: [{ insert: 'centered', attributes: { align: 'center', color: 'red', background: '#fff' } }] },
+        expected: [{ insert: 'centered', attributes: { align: 'center' } }],
       },
       {
         name: 'return the same if no attributes present',

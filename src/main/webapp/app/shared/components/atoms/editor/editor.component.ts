@@ -133,7 +133,7 @@ export class EditorComponent extends BaseInputDirective<string> {
                 const newAttrs: Record<string, unknown> = {};
 
                 // List of formatting keys we explicitly allow
-                const allowed = ['bold', 'italic', 'underline', 'link', 'list', 'header'];
+                const allowed = ['bold', 'italic', 'underline', 'link', 'list', 'header', 'align'];
 
                 for (const key of allowed) {
                   if (Object.prototype.hasOwnProperty.call(oldAttrs, key)) {
