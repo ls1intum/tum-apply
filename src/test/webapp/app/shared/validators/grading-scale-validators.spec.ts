@@ -13,6 +13,10 @@ function createRangeGroup(upperValue: string, lowerValue: string): FormGroup {
   });
 }
 
+function getControl(group: FormGroup, name: string): FormControl {
+  return group.get(name) as FormControl;
+}
+
 describe('gradingScaleTypeValidator', () => {
   it.each([
     ['', '3.5'],
@@ -43,16 +47,12 @@ describe('gradingScaleTypeValidator', () => {
 
 describe('gradingScaleRangeValidator', () => {
   describe('when controls are missing from group', () => {
-    it('should return null when upperLimit control is missing', () => {
+    it.each([
+      ['upperLimit is missing', 'lowerLimit', '1.0'],
+      ['lowerLimit is missing', 'upperLimit', '4.0'],
+    ])('should return null when %s', (_label, controlName, controlValue) => {
       const validator = gradingScaleRangeValidator(() => '3.5');
-      const group = new FormGroup({ lowerLimit: new FormControl('1.0') });
-
-      expect(validator(group)).toBeNull();
-    });
-
-    it('should return null when lowerLimit control is missing', () => {
-      const validator = gradingScaleRangeValidator(() => '3.5');
-      const group = new FormGroup({ upperLimit: new FormControl('4.0') });
+      const group = new FormGroup({ [controlName]: new FormControl(controlValue) });
 
       expect(validator(group)).toBeNull();
     });
@@ -66,28 +66,19 @@ describe('gradingScaleRangeValidator', () => {
   });
 
   describe('when controls have invalidLimitType errors', () => {
-    it('should return null and clear outOfRange errors when upperLimit has invalidLimitType', () => {
+    it.each([
+      ['upperLimit', 'A', '1.0'],
+      ['lowerLimit', '4.0', 'A'],
+    ])('should return null and clear outOfRange errors when %s has invalidLimitType', (controlName, upper, lower) => {
       const validator = gradingScaleRangeValidator(() => '3.5');
-      const group = createRangeGroup('A', '1.0');
-      group.get('upperLimit')!.setErrors({ invalidLimitType: true });
+      const group = createRangeGroup(upper, lower);
+      getControl(group, controlName).setErrors({ invalidLimitType: true });
 
       const result = validator(group);
 
       expect(result).toBeNull();
-      expect(group.get('upperLimit')!.hasError('outOfRange')).toBe(false);
-      expect(group.get('lowerLimit')!.hasError('outOfRange')).toBe(false);
-    });
-
-    it('should return null and clear outOfRange errors when lowerLimit has invalidLimitType', () => {
-      const validator = gradingScaleRangeValidator(() => '3.5');
-      const group = createRangeGroup('4.0', 'A');
-      group.get('lowerLimit')!.setErrors({ invalidLimitType: true });
-
-      const result = validator(group);
-
-      expect(result).toBeNull();
-      expect(group.get('upperLimit')!.hasError('outOfRange')).toBe(false);
-      expect(group.get('lowerLimit')!.hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'upperLimit').hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'lowerLimit').hasError('outOfRange')).toBe(false);
     });
   });
 
@@ -103,8 +94,8 @@ describe('gradingScaleRangeValidator', () => {
       const result = validator(group);
 
       expect(result).toBeNull();
-      expect(group.get('upperLimit')!.hasError('outOfRange')).toBe(false);
-      expect(group.get('lowerLimit')!.hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'upperLimit').hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'lowerLimit').hasError('outOfRange')).toBe(false);
     });
   });
 
@@ -137,21 +128,21 @@ describe('gradingScaleRangeValidator', () => {
 
       validator(group);
 
-      expect(group.get('upperLimit')!.hasError('outOfRange')).toBe(hasError);
-      expect(group.get('lowerLimit')!.hasError('outOfRange')).toBe(hasError);
+      expect(getControl(group, 'upperLimit').hasError('outOfRange')).toBe(hasError);
+      expect(getControl(group, 'lowerLimit').hasError('outOfRange')).toBe(hasError);
     });
 
     it('should clear previously set outOfRange errors when grade comes back in range', () => {
       const validator = gradingScaleRangeValidator(() => '3.5');
       const group = createRangeGroup('4.0', '1.0');
-      group.get('upperLimit')!.setErrors({ outOfRange: true });
-      group.get('lowerLimit')!.setErrors({ outOfRange: true });
+      getControl(group, 'upperLimit').setErrors({ outOfRange: true });
+      getControl(group, 'lowerLimit').setErrors({ outOfRange: true });
 
       const result = validator(group);
 
       expect(result).toBeNull();
-      expect(group.get('upperLimit')!.hasError('outOfRange')).toBe(false);
-      expect(group.get('lowerLimit')!.hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'upperLimit').hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'lowerLimit').hasError('outOfRange')).toBe(false);
     });
   });
 
@@ -164,14 +155,14 @@ describe('gradingScaleRangeValidator', () => {
     it('should clear outOfRange errors on both controls for letter grades', () => {
       const validator = gradingScaleRangeValidator(() => 'Z');
       const group = createRangeGroup('A', 'F');
-      group.get('upperLimit')!.setErrors({ outOfRange: true });
-      group.get('lowerLimit')!.setErrors({ outOfRange: true });
+      getControl(group, 'upperLimit').setErrors({ outOfRange: true });
+      getControl(group, 'lowerLimit').setErrors({ outOfRange: true });
 
       const result = validator(group);
 
       expect(result).toBeNull();
-      expect(group.get('upperLimit')!.hasError('outOfRange')).toBe(false);
-      expect(group.get('lowerLimit')!.hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'upperLimit').hasError('outOfRange')).toBe(false);
+      expect(getControl(group, 'lowerLimit').hasError('outOfRange')).toBe(false);
     });
   });
 });

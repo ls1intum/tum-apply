@@ -10,7 +10,6 @@ import { createTranslateServiceMock } from 'util/translate.mock';
 import { TranslateService } from '@ngx-translate/core';
 
 describe('grade-conversion', () => {
-  const translateService = createTranslateServiceMock();
   describe('convertToGermanGrade', () => {
     it.each([
       ['numeric grades', '1.0', '4.0', '2.0', 2.0, 0],
@@ -25,46 +24,34 @@ describe('grade-conversion', () => {
     });
 
     describe('empty / whitespace inputs', () => {
-      it('should return null when upperLimit is an empty string', () => {
-        expect(convertToGermanGrade('', '4.0', '2.0')).toBeNull();
-      });
-
-      it('should return null when lowerLimit is an empty string', () => {
-        expect(convertToGermanGrade('1.0', '', '2.0')).toBeNull();
-      });
-
-      it('should return null when grade is an empty string', () => {
-        expect(convertToGermanGrade('1.0', '4.0', '')).toBeNull();
-      });
-
-      it('should return null when any input is whitespace-only', () => {
-        expect(convertToGermanGrade('   ', '4.0', '2.0')).toBeNull();
-        expect(convertToGermanGrade('1.0', '   ', '2.0')).toBeNull();
-        expect(convertToGermanGrade('1.0', '4.0', '   ')).toBeNull();
+      it.each([
+        ['upperLimit is empty', '', '4.0', '2.0'],
+        ['lowerLimit is empty', '1.0', '', '2.0'],
+        ['grade is empty', '1.0', '4.0', ''],
+        ['upperLimit is whitespace', '   ', '4.0', '2.0'],
+        ['lowerLimit is whitespace', '1.0', '   ', '2.0'],
+        ['grade is whitespace', '1.0', '4.0', '   '],
+      ])('should return null when %s', (_label, upper, lower, grade) => {
+        expect(convertToGermanGrade(upper, lower, grade)).toBeNull();
       });
     });
 
     describe('invalid grade type', () => {
-      it('should return null for a special-character grade string', () => {
-        expect(convertToGermanGrade('1.0', '4.0', '@#$')).toBeNull();
-      });
-
-      it('should return null when grade contains letters mixed with numbers', () => {
-        expect(convertToGermanGrade('1.0', '4.0', 'abc123')).toBeNull();
+      it.each([
+        ['special characters', '1.0', '4.0', '@#$'],
+        ['letters mixed with numbers', '1.0', '4.0', 'abc123'],
+      ])('should return null for %s', (_label, upper, lower, grade) => {
+        expect(convertToGermanGrade(upper, lower, grade)).toBeNull();
       });
     });
 
     describe('NaN after parsing', () => {
-      it('should return null when upperLimit parses to NaN', () => {
-        expect(convertToGermanGrade('%', '50%', '75%')).toBeNull();
-      });
-
-      it('should return null when lowerLimit parses to NaN', () => {
-        expect(convertToGermanGrade('100%', '%', '75%')).toBeNull();
-      });
-
-      it('should return null when grade parses to NaN', () => {
-        expect(convertToGermanGrade('100%', '50%', '%')).toBeNull();
+      it.each([
+        ['upperLimit parses to NaN', '%', '50%', '75%'],
+        ['lowerLimit parses to NaN', '100%', '%', '75%'],
+        ['grade parses to NaN', '100%', '50%', '%'],
+      ])('should return null when %s', (_label, upper, lower, grade) => {
+        expect(convertToGermanGrade(upper, lower, grade)).toBeNull();
       });
     });
 
@@ -81,9 +68,9 @@ describe('grade-conversion', () => {
       });
 
       it('should assign A- a value between A and B when upper limit is A+', () => {
-        const forA = convertToGermanGrade('A+', 'D', 'A')!;
-        const forAMinus = convertToGermanGrade('A+', 'D', 'A-')!;
-        const forB = convertToGermanGrade('A+', 'D', 'B')!;
+        const forA = convertToGermanGrade('A+', 'D', 'A') as number;
+        const forAMinus = convertToGermanGrade('A+', 'D', 'A-') as number;
+        const forB = convertToGermanGrade('A+', 'D', 'B') as number;
         expect(forAMinus).toBeGreaterThan(forA);
         expect(forAMinus).toBeLessThan(forB);
       });
@@ -106,32 +93,27 @@ describe('grade-conversion', () => {
       });
 
       it('should rank B+ closer to 1.0 than B when upper limit is A-', () => {
-        expect(convertToGermanGrade('A-', 'D', 'B+')).toBeLessThan(convertToGermanGrade('A-', 'D', 'B')!);
+        expect(convertToGermanGrade('A-', 'D', 'B+')).toBeLessThan(convertToGermanGrade('A-', 'D', 'B') as number);
       });
     });
 
     describe('upper limit equals lower limit', () => {
-      it('should return null for identical numeric limits', () => {
-        expect(convertToGermanGrade('3.0', '3.0', '3.0')).toBeNull();
-      });
-
-      it('should return null for identical percentage limits', () => {
-        expect(convertToGermanGrade('75%', '75%', '75%')).toBeNull();
-      });
-
-      it('should return null for identical letter limits', () => {
-        expect(convertToGermanGrade('A', 'A', 'A')).toBeNull();
+      it.each([
+        ['numeric', '3.0', '3.0', '3.0'],
+        ['percentage', '75%', '75%', '75%'],
+        ['letter', 'A', 'A', 'A'],
+      ])('should return null for identical %s limits', (_label, upper, lower, grade) => {
+        expect(convertToGermanGrade(upper, lower, grade)).toBeNull();
       });
     });
   });
 
   describe('formatGrade', () => {
-    it('should format numeric value', () => {
-      expect(formatGrade(2.345)).toBe('2.3');
-    });
-
-    it('should return null when grade is null', () => {
-      expect(formatGrade(null)).toBeNull();
+    it.each([
+      [2.345, '2.3'],
+      [null, null],
+    ])('should return %s for input %s', (input, expected) => {
+      expect(formatGrade(input)).toBe(expected);
     });
   });
 
@@ -164,24 +146,13 @@ describe('grade-conversion', () => {
       expect(displayGradeWithConversion(best, worst, achieved)).toBe(expected);
     });
 
-    describe('early exit when grade is missing', () => {
-      it('should return empty string when grade is undefined', () => {
-        expect(displayGradeWithConversion('1.0', '4.0', undefined)).toBe('');
-      });
-
-      it('should return empty string when grade is empty string', () => {
-        expect(displayGradeWithConversion('1.0', '4.0', '')).toBe('');
-      });
-    });
-
-    describe('fallback to empty string when conversion fails', () => {
-      it('should return empty string when upperLimit is undefined', () => {
-        expect(displayGradeWithConversion(undefined, '4.0', '2.0')).toBe('');
-      });
-
-      it('should return empty string when grade type is invalid', () => {
-        expect(displayGradeWithConversion('1.0', '4.0', '@#$')).toBe('');
-      });
+    it.each([
+      ['grade is undefined', '1.0', '4.0', undefined],
+      ['grade is empty string', '1.0', '4.0', ''],
+      ['upperLimit is undefined', undefined, '4.0', '2.0'],
+      ['grade type is invalid', '1.0', '4.0', '@#$'],
+    ])('should return empty string when %s', (_label, best, worst, achieved) => {
+      expect(displayGradeWithConversion(best, worst, achieved)).toBe('');
     });
   });
 
@@ -192,63 +163,35 @@ describe('grade-conversion', () => {
       translateService = createTranslateServiceMock() as TranslateService;
     });
 
-    it('should return empty displayValue and wasConverted=false when grade is undefined', () => {
-      const result = formatGradeWithTranslation(undefined, '4.0', '1.0', translateService);
+    it.each([
+      ['grade is undefined', undefined, '4.0', '1.0'],
+      ['grade is empty string', '', '4.0', '1.0'],
+    ])('should return empty displayValue and wasConverted=false when %s', (_label, grade, upper, lower) => {
+      const result = formatGradeWithTranslation(grade, upper, lower, translateService);
       expect(result).toEqual({ displayValue: '', wasConverted: false });
     });
 
-    it('should return empty displayValue and wasConverted=false when grade is empty string', () => {
-      const result = formatGradeWithTranslation('', '4.0', '1.0', translateService);
-      expect(result).toEqual({ displayValue: '', wasConverted: false });
-    });
-
-    it('should return original grade with conversionFailedTooltip when upperLimit is missing', () => {
-      const result = formatGradeWithTranslation('3.5', undefined, '1.0', translateService);
-      expect(result.displayValue).toBe('3.5');
+    it.each([
+      ['upperLimit is missing', '3.5', undefined, '1.0', '3.5'],
+      ['lowerLimit is missing', '3.5', '4.0', undefined, '3.5'],
+      ['both limits are missing', '2.0', undefined, undefined, '2.0'],
+      ['grade format is invalid', '@#$', '4.0', '1.0', '@#$'],
+    ])('should return conversionFailedTooltip when %s', (_label, grade, upper, lower, expectedDisplay) => {
+      const result = formatGradeWithTranslation(grade, upper, lower, translateService);
+      expect(result.displayValue).toBe(expectedDisplay);
       expect(result.wasConverted).toBe(false);
       expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
     });
 
-    it('should return original grade with conversionFailedTooltip when lowerLimit is missing', () => {
-      const result = formatGradeWithTranslation('3.5', '4.0', undefined, translateService);
-      expect(result.displayValue).toBe('3.5');
-      expect(result.wasConverted).toBe(false);
-      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
-    });
-
-    it('should return original grade with conversionFailedTooltip when both limits are missing', () => {
-      const result = formatGradeWithTranslation('2.0', undefined, undefined, translateService);
-      expect(result.displayValue).toBe('2.0');
-      expect(result.wasConverted).toBe(false);
-      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
-    });
-
-    it('should return original grade with conversionFailedTooltip when conversion fails due to invalid grade format', () => {
-      const result = formatGradeWithTranslation('@#$', '4.0', '1.0', translateService);
-      expect(result.displayValue).toBe('@#$');
-      expect(result.wasConverted).toBe(false);
-      expect(result.tooltipText).toBe('evaluation.details.conversionFailedTooltip');
-    });
-
-    it('should return original grade with no tooltip when rounded values are equal', () => {
-      const result = formatGradeWithTranslation('2.0', '1.0', '4.0', translateService);
-      expect(result.displayValue).toBe('2.0');
-      expect(result.wasConverted).toBe(false);
-      expect(result.tooltipText).toBeUndefined();
-    });
-
-    it('should return converted grade with original in parentheses and converterTooltip when conversion differs', () => {
-      const result = formatGradeWithTranslation('75', '100', '50', translateService);
-      expect(result.displayValue).toBe('2.5 (75)');
-      expect(result.wasConverted).toBe(true);
-      expect(result.tooltipText).toBe('evaluation.details.converterTooltip');
-    });
-
-    it('should return original grade without tooltip when rounded values match (comma decimal)', () => {
-      const result = formatGradeWithTranslation('2,0', '1.0', '4.0', translateService);
-      expect(result.displayValue).toBe('2,0');
-      expect(result.wasConverted).toBe(false);
-      expect(result.tooltipText).toBeUndefined();
+    it.each([
+      ['rounded values are equal', '2.0', '1.0', '4.0', '2.0', false, undefined],
+      ['conversion differs', '75', '100', '50', '2.5 (75)', true, 'evaluation.details.converterTooltip'],
+      ['comma decimal matches', '2,0', '1.0', '4.0', '2,0', false, undefined],
+    ])('should handle case when %s', (_label, grade, upper, lower, expectedDisplay, expectedConverted, expectedTooltip) => {
+      const result = formatGradeWithTranslation(grade, upper, lower, translateService);
+      expect(result.displayValue).toBe(expectedDisplay);
+      expect(result.wasConverted).toBe(expectedConverted);
+      expect(result.tooltipText).toBe(expectedTooltip);
     });
   });
 });
