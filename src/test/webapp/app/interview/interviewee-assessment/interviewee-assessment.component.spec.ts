@@ -27,12 +27,22 @@ const intervieweeDetail: IntervieweeDetailDTO = {
     avatar: '/img/alice.jpg',
   },
   application: {
+    applicationId: 'app-1',
+    applicationState: 'SENT',
+    jobId: 'job-1',
+    researchGroup: 'Applied Software Engineering',
+    supervisingProfessorName: 'Prof. Test',
     motivation: 'I love this role',
     specialSkills: 'Angular, TypeScript',
     projects: 'Built a CMS',
     applicant: {
       masterDegreeName: 'Computer Science',
       masterUniversity: 'TU Munich',
+      user: {
+        userId: 'user-1',
+        name: 'Alice Mueller',
+        email: 'alice@example.com',
+      },
     },
   },
   scheduledSlot: {
