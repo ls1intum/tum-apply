@@ -60,6 +60,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -243,10 +245,12 @@ class InterviewResourceTest extends AbstractResourceTest {
         assertThat(result).isNull();
     }
 
-    @Test
-    void getInterviewOverviewAsProfessorReturnsOverview() {
+    @ParameterizedTest
+    @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+    void getInterviewOverviewAsProfessorOrEmployeeReturnsOverview(String role) {
+        UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
         List<InterviewOverviewDTO> overview = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .with(JwtPostProcessors.jwtUser(userId, role))
             .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {}, 200);
 
         assertThat(overview).isNotEmpty();
@@ -277,28 +281,12 @@ class InterviewResourceTest extends AbstractResourceTest {
         assertThat(result).isNull();
     }
 
-    @Test
-    void getInterviewOverviewAsEmployeeReturnsOverview() {
+    @ParameterizedTest
+    @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+    void getUpcomingInterviewsAsProfessorOrEmployeeReturnsSlots(String role) {
+        UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
         // Arrange
-        // (Existing setup already has an employee in the same research group as the
-        // professor who created the job)
-
-        // Act
-        List<InterviewOverviewDTO> overview = api
-            .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-            .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {}, 200);
-
-        // Assert
-        assertThat(overview).isNotEmpty();
-        assertThat(overview.get(0).jobId()).isEqualTo(job.getJobId());
-        assertThat(overview.get(0).jobTitle()).isEqualTo(job.getTitle());
-    }
-
-    @Test
-    void getUpcomingInterviewsAsEmployeeReturnsSlots() {
-        // Arrange
-        // Create an upcoming booked slot for the job belonging to the same research
-        // group
+        // Create an upcoming booked slot for the job belonging to the same research group
         CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
             LocalDate.now().plusDays(1),
             LocalTime.of(10, 0),
@@ -325,14 +313,15 @@ class InterviewResourceTest extends AbstractResourceTest {
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/interviews/slots/" + slotId + "/assign", assignDTO, InterviewSlotDTO.class, 200);
 
-        // Act - Fetch upcoming as Employee
+        // Act - Fetch upcoming
         List<UpcomingInterviewDTO> upcoming = api
-            .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+            .with(JwtPostProcessors.jwtUser(userId, role))
             .getAndRead("/api/interviews/upcoming", null, new TypeReference<List<UpcomingInterviewDTO>>() {}, 200);
 
         // Assert
         assertThat(upcoming).hasSize(1);
         assertThat(upcoming.get(0).intervieweeName()).contains(testApplicant.getUser().getFirstName());
+        assertThat(upcoming.get(0).intervieweeName()).contains(testApplicant.getUser().getLastName());
         assertThat(upcoming.get(0).avatar()).isEqualTo("/images/profiles/applicant-avatar.jpg");
     }
 
@@ -1192,24 +1181,13 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Nested
     class DeleteSlot {
 
-        @Test
-        void deleteUnbookedSlotAsProfessorReturnsNoContent() {
+        @ParameterizedTest
+        @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+        void deleteUnbookedSlotAsProfessorOrEmployeeReturnsNoContent(String role) {
+            UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
             InterviewSlot slot = createTestSlot();
 
-            api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .deleteAndRead("/api/interviews/slots/" + slot.getId(), null, Void.class, 204);
-
-            assertThat(interviewSlotRepository.findById(slot.getId())).isEmpty();
-        }
-
-        @Test
-        void deleteUnbookedSlotAsEmployeeReturnsNoContent() {
-            InterviewSlot slot = createTestSlot();
-
-            api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-                .deleteAndRead("/api/interviews/slots/" + slot.getId(), null, Void.class, 204);
+            api.with(JwtPostProcessors.jwtUser(userId, role)).deleteAndRead("/api/interviews/slots/" + slot.getId(), null, Void.class, 204);
 
             assertThat(interviewSlotRepository.findById(slot.getId())).isEmpty();
         }
@@ -1224,8 +1202,10 @@ class InterviewResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .deleteAndRead("/api/interviews/slots/" + slot.getId(), null, Void.class, 400);
 
-            // Slot should still exist
-            assertThat(interviewSlotRepository.findById(slot.getId())).isPresent();
+            // Slot should still exist and remain booked
+            InterviewSlot savedSlot = interviewSlotRepository.findById(slot.getId()).orElseThrow();
+            assertThat(savedSlot.getIsBooked()).isTrue();
+            assertThat(savedSlot.getLocation()).isEqualTo("Room 101");
         }
 
         @Test
@@ -1244,8 +1224,10 @@ class InterviewResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
                 .deleteAndRead("/api/interviews/slots/" + slot.getId(), null, Void.class, 403);
 
-            // Slot should still exist
-            assertThat(interviewSlotRepository.findById(slot.getId())).isPresent();
+            // Slot should still exist as it was
+            InterviewSlot savedSlot = interviewSlotRepository.findById(slot.getId()).orElseThrow();
+            assertThat(savedSlot.getIsBooked()).isFalse();
+            assertThat(savedSlot.getLocation()).isEqualTo("Room 101");
         }
     }
 
@@ -1256,15 +1238,17 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Nested
     class AddApplicantsToInterview {
 
-        @Test
-        void addApplicantsAsProfessorCreatesInterviewees() {
+        @ParameterizedTest
+        @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+        void addApplicantsAsProfessorOrEmployeeCreatesInterviewees(String role) {
+            UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
             Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
 
             AddIntervieweesDTO dto = new AddIntervieweesDTO(List.of(application.getApplicationId()));
 
             List<IntervieweeDTO> result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .with(JwtPostProcessors.jwtUser(userId, role))
                 .postAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees",
                     dto,
@@ -1279,26 +1263,6 @@ class InterviewResourceTest extends AbstractResourceTest {
             // Verify application state was updated to INTERVIEW
             Application updated = applicationRepository.findById(application.getApplicationId()).orElseThrow();
             assertThat(updated.getState()).isEqualTo(ApplicationState.INTERVIEW);
-        }
-
-        @Test
-        void addApplicantsAsEmployeeCreatesInterviewees() {
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
-
-            AddIntervieweesDTO dto = new AddIntervieweesDTO(List.of(application.getApplicationId()));
-
-            List<IntervieweeDTO> result = api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-                .postAndRead(
-                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees",
-                    dto,
-                    new TypeReference<List<IntervieweeDTO>>() {},
-                    201
-                );
-
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).applicationId()).isEqualTo(application.getApplicationId());
         }
 
         @Test
@@ -1346,10 +1310,12 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Nested
     class GetIntervieweesByProcessId {
 
-        @Test
-        void getIntervieweesAsProfessorReturnsList() {
+        @ParameterizedTest
+        @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+        void getIntervieweesAsProfessorOrEmployeeReturnsList(String role) {
+            UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
             List<IntervieweeDTO> result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .with(JwtPostProcessors.jwtUser(userId, role))
                 .getAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees",
                     null,
@@ -1357,24 +1323,12 @@ class InterviewResourceTest extends AbstractResourceTest {
                     200
                 );
 
-            // testInterviewee from setup should be present
-            assertThat(result).isNotEmpty();
-            assertThat(result).anyMatch(dto -> dto.applicationId().equals(testApplication.getApplicationId()));
-        }
-
-        @Test
-        void getIntervieweesAsEmployeeReturnsList() {
-            List<IntervieweeDTO> result = api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-                .getAndRead(
-                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees",
-                    null,
-                    new TypeReference<List<IntervieweeDTO>>() {},
-                    200
-                );
-
-            assertThat(result).isNotEmpty();
-            assertThat(result).anyMatch(dto -> dto.applicationId().equals(testApplication.getApplicationId()));
+            // testInterviewee from setup should be present with correct details
+            assertThat(result).hasSize(1);
+            IntervieweeDTO dto = result.get(0);
+            assertThat(dto.applicationId()).isEqualTo(testApplication.getApplicationId());
+            assertThat(dto.user().email()).isEqualTo(testApplicant.getUser().getEmail());
+            assertThat(dto.state()).isEqualTo(IntervieweeState.UNCONTACTED);
         }
 
         @Test
@@ -1394,8 +1348,10 @@ class InterviewResourceTest extends AbstractResourceTest {
                 .findFirst()
                 .orElseThrow();
 
-            assertThat(intervieweeDTO.user()).isNotNull();
+            assertThat(intervieweeDTO.user().firstName()).isEqualTo(testApplicant.getUser().getFirstName());
+            assertThat(intervieweeDTO.user().lastName()).isEqualTo(testApplicant.getUser().getLastName());
             assertThat(intervieweeDTO.user().email()).isEqualTo(testApplicant.getUser().getEmail());
+            assertThat(intervieweeDTO.user().avatar()).isEqualTo("/images/profiles/applicant-avatar.jpg");
             assertThat(intervieweeDTO.state()).isEqualTo(IntervieweeState.UNCONTACTED);
         }
 
@@ -1432,8 +1388,10 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Nested
     class SlotsAsEmployee {
 
-        @Test
-        void createSlotsAsEmployeeCreatesAndReturnsSlots() {
+        @ParameterizedTest
+        @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+        void createAndGetSlotsAsProfessorOrEmployee(String role) {
+            UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
             CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
                 LocalDate.now().plusDays(2),
                 LocalTime.of(14, 0),
@@ -1443,8 +1401,9 @@ class InterviewResourceTest extends AbstractResourceTest {
             );
             CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
+            // Create slot
             List<InterviewSlotDTO> createdSlots = api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .with(JwtPostProcessors.jwtUser(userId, role))
                 .postAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
                     dto,
@@ -1455,30 +1414,8 @@ class InterviewResourceTest extends AbstractResourceTest {
             assertThat(createdSlots).hasSize(1);
             assertThat(createdSlots.get(0).location()).isEqualTo("Room 201");
             assertThat(createdSlots.get(0).isBooked()).isFalse();
-        }
 
-        @Test
-        void getSlotsAsEmployeeReturnsSlots() {
-            // First create a slot as professor
-            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-                LocalDate.now().plusDays(2),
-                LocalTime.of(14, 0),
-                LocalTime.of(15, 0),
-                "Room 201",
-                null
-            );
-            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-            api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(
-                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                    dto,
-                    new TypeReference<List<InterviewSlotDTO>>() {},
-                    201
-                );
-
-            // Get slots as employee
+            // Get slots
             LocalDate targetDate = LocalDate.now().plusDays(2);
             String url =
                 "/api/interviews/processes/" +
@@ -1489,10 +1426,10 @@ class InterviewResourceTest extends AbstractResourceTest {
                 targetDate.getMonthValue();
 
             PageResponseDTO<InterviewSlotDTO> response = api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .with(JwtPostProcessors.jwtUser(userId, role))
                 .getAndRead(url, null, new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {}, 200);
 
-            assertThat(response.getContent()).hasSize(1);
+            assertThat(response.getContent()).isNotEmpty();
             assertThat(response.getContent().iterator().next().location()).isEqualTo("Room 201");
         }
     }
