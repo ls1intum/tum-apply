@@ -61,47 +61,40 @@ describe('SlotCardComponent', () => {
   });
 
   describe('Computed Properties', () => {
-    it('should compute isBooked as false for unbooked slot', () => {
-      fixture.componentRef.setInput('slot', unbookedSlot);
+    it.each([
+      { description: 'unbooked slot', slot: unbookedSlot, expected: false },
+      { description: 'booked slot', slot: bookedSlot, expected: true },
+    ])('should compute isBooked=$expected for $description', ({ slot, expected }) => {
+      fixture.componentRef.setInput('slot', slot);
       fixture.detectChanges();
 
-      expect(component.isBooked()).toBe(false);
+      expect(component.isBooked()).toBe(expected);
     });
 
-    it('should compute isBooked as true for booked slot', () => {
-      fixture.componentRef.setInput('slot', bookedSlot);
+    it.each([
+      { description: 'past slot', slot: pastSlot, expected: true },
+      { description: 'future slot', slot: unbookedSlot, expected: false },
+    ])('should compute isPast=$expected for $description', ({ slot, expected }) => {
+      fixture.componentRef.setInput('slot', slot);
       fixture.detectChanges();
 
-      expect(component.isBooked()).toBe(true);
+      expect(component.isPast()).toBe(expected);
     });
 
-    it('should compute isPast as true for past slot', () => {
-      fixture.componentRef.setInput('slot', pastSlot);
+    it.each([
+      { description: 'booked slot with interviewee', slot: bookedSlot, expectedContains: ['Jane', 'Doe'] },
+      { description: 'unbooked slot without interviewee', slot: unbookedSlot, expectedContains: [] },
+    ])('should compute applicantName for $description', ({ slot, expectedContains }) => {
+      fixture.componentRef.setInput('slot', slot);
       fixture.detectChanges();
 
-      expect(component.isPast()).toBe(true);
-    });
-
-    it('should compute isPast as false for future slot', () => {
-      fixture.componentRef.setInput('slot', unbookedSlot);
-      fixture.detectChanges();
-
-      expect(component.isPast()).toBe(false);
-    });
-
-    it('should compute applicantName from interviewee', () => {
-      fixture.componentRef.setInput('slot', bookedSlot);
-      fixture.detectChanges();
-
-      expect(component.applicantName()).toContain('Jane');
-      expect(component.applicantName()).toContain('Doe');
-    });
-
-    it('should return empty applicantName when no interviewee', () => {
-      fixture.componentRef.setInput('slot', unbookedSlot);
-      fixture.detectChanges();
-
-      expect(component.applicantName()).toBe('');
+      if (expectedContains.length === 0) {
+        expect(component.applicantName()).toBe('');
+      } else {
+        for (const name of expectedContains) {
+          expect(component.applicantName()).toContain(name);
+        }
+      }
     });
   });
 

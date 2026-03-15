@@ -97,36 +97,26 @@ describe('IntervieweeCardComponent', () => {
       expect(component.avatarUrl()).toBe('/img/alice.jpg');
     });
 
-    it('should compute location from scheduled slot', () => {
-      fixture.componentRef.setInput('interviewee', scheduledInterviewee);
+    it.each([
+      { description: 'scheduled interviewee with slot', interviewee: scheduledInterviewee, expected: 'Room 303' },
+      { description: 'uncontacted interviewee without slot', interviewee: uncontactedInterviewee, expected: '' },
+    ])('should compute location="$expected" for $description', ({ interviewee, expected }) => {
+      fixture.componentRef.setInput('interviewee', interviewee);
       fixture.componentRef.setInput('processId', 'proc-1');
       fixture.detectChanges();
 
-      expect(component.location()).toBe('Room 303');
+      expect(component.location()).toBe(expected);
     });
 
-    it('should return empty location when no slot', () => {
-      fixture.componentRef.setInput('interviewee', uncontactedInterviewee);
+    it.each([
+      { description: 'virtual location', interviewee: virtualInterviewee, expected: true },
+      { description: 'physical location', interviewee: scheduledInterviewee, expected: false },
+    ])('should compute isVirtual=$expected for $description', ({ interviewee, expected }) => {
+      fixture.componentRef.setInput('interviewee', interviewee);
       fixture.componentRef.setInput('processId', 'proc-1');
       fixture.detectChanges();
 
-      expect(component.location()).toBe('');
-    });
-
-    it('should detect virtual location', () => {
-      fixture.componentRef.setInput('interviewee', virtualInterviewee);
-      fixture.componentRef.setInput('processId', 'proc-1');
-      fixture.detectChanges();
-
-      expect(component.isVirtual()).toBe(true);
-    });
-
-    it('should detect physical location as not virtual', () => {
-      fixture.componentRef.setInput('interviewee', scheduledInterviewee);
-      fixture.componentRef.setInput('processId', 'proc-1');
-      fixture.detectChanges();
-
-      expect(component.isVirtual()).toBe(false);
+      expect(component.isVirtual()).toBe(expected);
     });
   });
 
@@ -161,22 +151,16 @@ describe('IntervieweeCardComponent', () => {
   });
 
   describe('noSlotsTooltip', () => {
-    it('should return tooltip when hasSlots is false', () => {
+    it.each([
+      { hasSlots: false, expected: 'interview.interviewees.invitation.noSlots.detail' },
+      { hasSlots: true, expected: '' },
+    ])('should return "$expected" when hasSlots=$hasSlots', ({ hasSlots, expected }) => {
       fixture.componentRef.setInput('interviewee', uncontactedInterviewee);
       fixture.componentRef.setInput('processId', 'proc-1');
-      fixture.componentRef.setInput('hasSlots', false);
+      fixture.componentRef.setInput('hasSlots', hasSlots);
       fixture.detectChanges();
 
-      expect(component.noSlotsTooltip()).toBe('interview.interviewees.invitation.noSlots.detail');
-    });
-
-    it('should return empty string when hasSlots is true', () => {
-      fixture.componentRef.setInput('interviewee', uncontactedInterviewee);
-      fixture.componentRef.setInput('processId', 'proc-1');
-      fixture.componentRef.setInput('hasSlots', true);
-      fixture.detectChanges();
-
-      expect(component.noSlotsTooltip()).toBe('');
+      expect(component.noSlotsTooltip()).toBe(expected);
     });
   });
 });

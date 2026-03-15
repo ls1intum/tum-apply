@@ -307,65 +307,62 @@ describe('SlotsSectionComponent', () => {
   });
 
   describe('Empty State Message', () => {
-    it('should return undefined when not initialized', () => {
+    it.each([
+      {
+        description: 'not initialized',
+        initialized: false,
+        hasAnySlots: false,
+        futureSlots: [] as InterviewSlotDTO[],
+        pastSlots: [] as InterviewSlotDTO[],
+        expected: undefined,
+      },
+      {
+        description: 'no slots created',
+        initialized: true,
+        hasAnySlots: false,
+        futureSlots: [] as InterviewSlotDTO[],
+        pastSlots: [] as InterviewSlotDTO[],
+        expected: 'interview.slots.emptyState.noSlotsCreated',
+      },
+      {
+        description: 'no slots in current month',
+        initialized: true,
+        hasAnySlots: true,
+        futureSlots: [] as InterviewSlotDTO[],
+        pastSlots: [] as InterviewSlotDTO[],
+        expected: 'interview.slots.emptyState.noSlotsInMonth',
+      },
+      {
+        description: 'slots exist in current month',
+        initialized: true,
+        hasAnySlots: true,
+        futureSlots: [futureSlot],
+        pastSlots: [] as InterviewSlotDTO[],
+        expected: undefined,
+      },
+    ])('should return $expected when $description', ({ initialized, hasAnySlots, futureSlots: fs, pastSlots: ps, expected }) => {
       fixture.detectChanges();
-      component.initialized.set(false);
+      component.initialized.set(initialized);
+      component.hasAnySlots.set(hasAnySlots);
+      component.futureSlots.set(fs);
+      component.pastSlots.set(ps);
 
-      expect(component.emptyStateMessage()).toBeUndefined();
-    });
-
-    it('should return noSlotsCreated when hasAnySlots is false', () => {
-      fixture.detectChanges();
-      component.initialized.set(true);
-      component.hasAnySlots.set(false);
-
-      expect(component.emptyStateMessage()).toBe('interview.slots.emptyState.noSlotsCreated');
-    });
-
-    it('should return noSlotsInMonth when slots exist but not in current month', () => {
-      fixture.detectChanges();
-      component.initialized.set(true);
-      component.hasAnySlots.set(true);
-      component.futureSlots.set([]);
-      component.pastSlots.set([]);
-
-      expect(component.emptyStateMessage()).toBe('interview.slots.emptyState.noSlotsInMonth');
-    });
-
-    it('should return undefined when slots exist in current month', () => {
-      fixture.detectChanges();
-      component.initialized.set(true);
-      component.hasAnySlots.set(true);
-      component.futureSlots.set([futureSlot]);
-
-      expect(component.emptyStateMessage()).toBeUndefined();
+      expect(component.emptyStateMessage()).toBe(expected);
     });
   });
 
   describe('notEnoughSlots', () => {
-    it('should return true when invited count exceeds unbooked slots', () => {
+    it.each([
+      { description: 'invited exceeds unbooked', initialized: true, invitedCount: 5, unbookedCount: 2, expected: true },
+      { description: 'enough slots available', initialized: true, invitedCount: 2, unbookedCount: 5, expected: false },
+      { description: 'not initialized', initialized: false, invitedCount: 5, unbookedCount: 2, expected: false },
+    ])('should return $expected when $description', ({ initialized, invitedCount, unbookedCount, expected }) => {
       fixture.detectChanges();
-      component.initialized.set(true);
-      fixture.componentRef.setInput('invitedCount', 5);
-      component.globalFutureUnbookedCount.set(2);
+      component.initialized.set(initialized);
+      fixture.componentRef.setInput('invitedCount', invitedCount);
+      component.globalFutureUnbookedCount.set(unbookedCount);
 
-      expect(component.notEnoughSlots()).toBe(true);
-    });
-
-    it('should return false when enough slots', () => {
-      fixture.detectChanges();
-      component.initialized.set(true);
-      fixture.componentRef.setInput('invitedCount', 2);
-      component.globalFutureUnbookedCount.set(5);
-
-      expect(component.notEnoughSlots()).toBe(false);
-    });
-
-    it('should return false when not initialized', () => {
-      fixture.detectChanges();
-      component.initialized.set(false);
-
-      expect(component.notEnoughSlots()).toBe(false);
+      expect(component.notEnoughSlots()).toBe(expected);
     });
   });
 });
