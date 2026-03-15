@@ -104,7 +104,6 @@ class ResearchGroupServiceTest {
             "Test Research Group",
             "TRG",
             "Test City",
-            "Computer Science",
             "Test description",
             "test@research.com",
             "12345",
@@ -192,7 +191,6 @@ class ResearchGroupServiceTest {
             ResearchGroup otherGroup = ResearchGroupTestData.newRgAll(
                 null,
                 "Other Group",
-                null,
                 null,
                 null,
                 null,

@@ -1,8 +1,6 @@
 package de.tum.cit.aet.job.constants;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 
 @Getter
@@ -17,7 +15,7 @@ public enum SubjectArea {
     BIOTECHNOLOGY("Biotechnology", "Biotechnologie"),
     CHEMISTRY("Chemistry", "Chemie"),
     COMPUTER_ENGINEERING("Computer Engineering", "Computertechnik"),
-    COMPUTER_SCIENCE("Computer Science", "Informatik", "Informatics", "CS"),
+    COMPUTER_SCIENCE("Computer Science", "Informatik"),
     DATA_SCIENCE("Data Science", "Datenwissenschaft"),
     ECONOMICS("Economics", "Wirtschaftswissenschaften"),
     EDUCATION_TECHNOLOGY("Education Technology", "Bildungstechnologie"),
@@ -49,28 +47,10 @@ public enum SubjectArea {
 
     private final String englishValue;
     private final String germanValue;
-    private final Set<String> aliases;
 
-    SubjectArea(String englishValue, String germanValue, String... aliases) {
+    SubjectArea(String englishValue, String germanValue) {
         this.englishValue = englishValue;
         this.germanValue = germanValue;
-        this.aliases = Set.of(aliases);
-    }
-
-    private static final Map<String, SubjectArea> LOOKUP = Arrays.stream(values())
-        .flatMap(subjectArea ->
-            Stream.concat(
-                Stream.of(subjectArea.name(), subjectArea.englishValue, subjectArea.germanValue),
-                subjectArea.aliases.stream()
-            ).map(alias -> Map.entry(normalize(alias), subjectArea))
-        )
-        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first));
-
-    public static SubjectArea fromValue(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        return LOOKUP.get(normalize(value));
     }
 
     /**
@@ -87,10 +67,7 @@ public enum SubjectArea {
         String normalizedQuery = query.trim().toLowerCase(Locale.ROOT);
         return Arrays.stream(values())
             .filter(subjectArea ->
-                Stream.concat(
-                    Stream.of(subjectArea.name(), subjectArea.englishValue, subjectArea.germanValue),
-                    subjectArea.aliases.stream()
-                )
+                Arrays.stream(new String[] { subjectArea.name(), subjectArea.englishValue, subjectArea.germanValue })
                     .filter(Objects::nonNull)
                     .map(value -> value.toLowerCase(Locale.ROOT))
                     .anyMatch(value -> value.contains(normalizedQuery))
@@ -98,41 +75,7 @@ public enum SubjectArea {
             .toList();
     }
 
-    /**
-     * Returns all persisted string representations that may exist for this subject area.
-     * This includes the canonical enum name as well as historic English, German, and alias values
-     * that may still be present in older databases.
-     *
-     * @return all accepted persisted values for this subject area
-     */
-    public Set<String> persistedValues() {
-        return Stream.concat(Stream.of(name(), englishValue, germanValue), aliases.stream()).collect(Collectors.toUnmodifiableSet());
-    }
-
-    /**
-     * Expands the given subject areas into all persisted string values that should match in the database.
-     *
-     * @param subjectAreas selected subject area enums
-     * @return all canonical and legacy persisted values for the given enums
-     */
-    public static List<String> persistedValuesFor(List<SubjectArea> subjectAreas) {
-        if (subjectAreas == null || subjectAreas.isEmpty()) {
-            return List.of();
-        }
-
-        return subjectAreas
-            .stream()
-            .filter(Objects::nonNull)
-            .flatMap(subjectArea -> subjectArea.persistedValues().stream())
-            .distinct()
-            .toList();
-    }
-
     public String correctLanguageValue(String lang) {
         return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
-    }
-
-    private static String normalize(String value) {
-        return value.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_").replaceAll("^_+|_+$", "");
     }
 }

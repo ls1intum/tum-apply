@@ -68,7 +68,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * Sorting is applied manually for the computed professor name field.
      *
      * @param state          the job state (typically PUBLISHED)
-     * @param subjectAreaRawValues persisted values to match for multiple subject areas (nullable)
+     * @param subjectAreas   subject areas to match (nullable)
      * @param locations      the campus locations filter (nullable)
      * @param professorNames a partial match filter for multiple professor's full
      *                       names
@@ -79,7 +79,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param userId         id of the currently logged in user (nullable)
      * @param searchQuery    string to search for job title,
      *                       subject area or supervisor name
-     * @param searchSubjectAreaRawValues persisted subject-area values matching the search query
+     * @param searchSubjectAreas subject areas matching the search query
      * @param pageable       pagination information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -115,12 +115,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                  ))
         WHERE j.state = :state
           AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-          AND (:subjectAreaRawValues IS NULL OR j.subjectAreaRaw IN :subjectAreaRawValues)
+          AND (:subjectAreas IS NULL OR j.subjectArea IN :subjectAreas)
           AND (:locations IS NULL OR j.location IN :locations)
           AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
           AND (:searchQuery IS NULL OR
                    j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                   (:searchSubjectAreaRawValues IS NOT NULL AND j.subjectAreaRaw IN :searchSubjectAreaRawValues) OR
+                   (:searchSubjectAreas IS NOT NULL AND j.subjectArea IN :searchSubjectAreas) OR
                    CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
               )
         ORDER BY
@@ -137,14 +137,14 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
-        @Param("subjectAreaRawValues") List<String> subjectAreaRawValues,
+        @Param("subjectAreas") List<SubjectArea> subjectAreas,
         @Param("locations") List<Campus> locations,
         @Param("professorNames") List<String> professorNames,
         @Param("sortBy") String sortBy,
         @Param("sortDirection") String sortDirection,
         @Param("userId") UUID userId,
         @Param("searchQuery") String searchQuery,
-        @Param("searchSubjectAreaRawValues") List<String> searchSubjectAreaRawValues,
+        @Param("searchSubjectAreas") List<SubjectArea> searchSubjectAreas,
         Pageable pageable
     );
 
@@ -164,14 +164,14 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * professor name.
      *
      * @param state          the job state (typically PUBLISHED)
-     * @param subjectAreaRawValues persisted values to match for multiple subject areas (nullable)
+     * @param subjectAreas   subject areas to match (nullable)
      * @param locations      the campus locations filter (nullable)
      * @param professorNames a partial match filter for multiple professor's full
      *                       names
      *                       (nullable)
      * @param userId         id of the currently logged in user (nullable)
      * @param searchQuery    string to search for job title, subject area or supervisor name
-     * @param searchSubjectAreaRawValues persisted subject-area values matching the search query
+     * @param searchSubjectAreas subject areas matching the search query
      * @param pageable       pagination and sorting information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
@@ -207,24 +207,24 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                    ))
           WHERE j.state = :state
             AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-            AND (:subjectAreaRawValues IS NULL OR j.subjectAreaRaw IN :subjectAreaRawValues)
+            AND (:subjectAreas IS NULL OR j.subjectArea IN :subjectAreas)
             AND (:locations IS NULL OR j.location IN :locations)
             AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
             AND (:searchQuery IS NULL OR
                    j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                   (:searchSubjectAreaRawValues IS NOT NULL AND j.subjectAreaRaw IN :searchSubjectAreaRawValues) OR
+                   (:searchSubjectAreas IS NOT NULL AND j.subjectArea IN :searchSubjectAreas) OR
                    CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
             )
         """
     )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
-        @Param("subjectAreaRawValues") List<String> subjectAreaRawValues,
+        @Param("subjectAreas") List<SubjectArea> subjectAreas,
         @Param("locations") List<Campus> locations,
         @Param("professorNames") List<String> professorNames,
         @Param("userId") UUID userId,
         @Param("searchQuery") String searchQuery,
-        @Param("searchSubjectAreaRawValues") List<String> searchSubjectAreaRawValues,
+        @Param("searchSubjectAreas") List<SubjectArea> searchSubjectAreas,
         Pageable pageable
     );
 

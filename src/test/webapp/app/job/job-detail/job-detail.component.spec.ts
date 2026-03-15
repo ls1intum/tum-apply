@@ -646,11 +646,11 @@ describe('JobDetailComponent', () => {
   });
 
   it('should default supervisingProfessor and researchGroup to empty strings in form mode when user info missing', () => {
-    const form: JobFormDTO = {
+    const form: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined } = {
       title: 'Form Job',
       jobDescriptionEN: 'Some description',
       jobDescriptionDE: 'Some description',
-      subjectArea: undefined as unknown as JobFormDTO.SubjectAreaEnum,
+      subjectArea: undefined,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -658,7 +658,12 @@ describe('JobDetailComponent', () => {
 
     const result = (
       component as unknown as {
-        mapToJobDetails: (d: JobFormDTO, u?: ReturnType<typeof mockAccountService.loadedUser>, rg?: unknown, f?: boolean) => JobDetails;
+        mapToJobDetails: (
+          d: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined },
+          u?: ReturnType<typeof mockAccountService.loadedUser>,
+          rg?: unknown,
+          f?: boolean,
+        ) => JobDetails;
       }
     ).mapToJobDetails(form, undefined, undefined, true);
 
@@ -671,9 +676,9 @@ describe('JobDetailComponent', () => {
 
     mockAccountService.user.set(userWithoutGroup as User);
 
-    const form: JobFormDTO = {
+    const form: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined } = {
       title: 'Form Job',
-      subjectArea: undefined as unknown as JobFormDTO.SubjectAreaEnum,
+      subjectArea: undefined,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -683,7 +688,9 @@ describe('JobDetailComponent', () => {
 
     await (
       component as unknown as {
-        loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void>;
+        loadJobDetailsFromForm: (
+          f: Omit<JobFormDTO, 'subjectArea'> & { subjectArea: JobFormDTO.SubjectAreaEnum | undefined },
+        ) => Promise<void>;
       }
     ).loadJobDetailsFromForm(form);
 

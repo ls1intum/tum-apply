@@ -116,7 +116,7 @@ describe('JobCardListComponent', () => {
 
     expect(component.page()).toBe(0);
     expect(component.searchQuery()).toBe('New query');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should not reload jobs if search query is the same after trimming', async () => {
@@ -134,7 +134,7 @@ describe('JobCardListComponent', () => {
     component.onFilterEmit({ filterId: 'subjectArea', selectedValues: [DropdownOptions.subjectAreas[0].name] });
     fixture.detectChanges();
     expect(component.selectedSubjectAreaFilters()).toEqual([DropdownOptions.subjectAreas[0].value]);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle filter changes for location', async () => {
@@ -146,7 +146,7 @@ describe('JobCardListComponent', () => {
     });
     fixture.detectChanges();
     expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle filter changes for supervisor', async () => {
@@ -155,7 +155,7 @@ describe('JobCardListComponent', () => {
     component.onFilterEmit({ filterId: 'supervisor', selectedValues: ['Prof. X'] });
     fixture.detectChanges();
     expect(component.selectedSupervisorFilters()).toEqual(['Prof. X']);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle sort emit correctly', async () => {
@@ -166,7 +166,7 @@ describe('JobCardListComponent', () => {
     expect(component.page()).toBe(0);
     expect(component.sortBy()).toBe('title');
     expect(component.sortDirection()).toBe('ASC');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle table lazy load correctly', async () => {
@@ -176,7 +176,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(8);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should set empty jobs and totalRecords when API returns no content', async () => {
@@ -214,7 +214,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
 
     expect(component.searchQuery()).toBe('');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should update sort when called twice with different values', async () => {
@@ -236,7 +236,7 @@ describe('JobCardListComponent', () => {
     component.loadOnTableEmit({ first: 16, rows: undefined });
     fixture.detectChanges();
     expect(component.page()).toBe(Math.floor(16 / component.pageSize()));
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should call loadAllFilter in constructor', () => {

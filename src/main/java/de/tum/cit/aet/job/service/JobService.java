@@ -250,14 +250,9 @@ public class JobService {
         if (searchSubjectAreas != null && searchSubjectAreas.isEmpty()) {
             searchSubjectAreas = null;
         }
-        List<String> subjectAreaRawValues =
-            availableJobsFilterDTO.subjectAreas() != null ? SubjectArea.persistedValuesFor(availableJobsFilterDTO.subjectAreas()) : null;
-        if (subjectAreaRawValues != null && subjectAreaRawValues.isEmpty()) {
-            subjectAreaRawValues = null;
-        }
-        List<String> searchSubjectAreaRawValues = searchSubjectAreas != null ? SubjectArea.persistedValuesFor(searchSubjectAreas) : null;
-        if (searchSubjectAreaRawValues != null && searchSubjectAreaRawValues.isEmpty()) {
-            searchSubjectAreaRawValues = null;
+        List<SubjectArea> subjectAreas = availableJobsFilterDTO.subjectAreas();
+        if (subjectAreas != null && subjectAreas.isEmpty()) {
+            subjectAreas = null;
         }
 
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
@@ -265,14 +260,14 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                subjectAreaRawValues,
+                subjectAreas,
                 availableJobsFilterDTO.locations(), // filter for campus location
                 availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
                 sortDTO.sortBy(),
                 sortDTO.direction().name(),
                 userId,
                 normalizedSearchQuery,
-                searchSubjectAreaRawValues,
+                searchSubjectAreas,
                 pageable
             );
         } else {
@@ -280,12 +275,12 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                subjectAreaRawValues,
+                subjectAreas,
                 availableJobsFilterDTO.locations(), // optional filter for campus location
                 availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                 userId,
                 normalizedSearchQuery,
-                searchSubjectAreaRawValues,
+                searchSubjectAreas,
                 pageable
             );
         }

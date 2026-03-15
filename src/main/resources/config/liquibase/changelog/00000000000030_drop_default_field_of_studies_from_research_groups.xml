@@ -11,4 +11,33 @@
 
     <dropColumn tableName="research_groups" columnName="default_field_of_studies"/>
   </changeSet>
+
+  <changeSet id="030_migrate_job_field_of_studies_to_enum" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+    </preConditions>
+
+    <sql>
+      UPDATE jobs
+      SET field_of_studies = UPPER(REPLACE(REPLACE(field_of_studies, ' ', '_'), '-', '_'))
+      WHERE field_of_studies IS NOT NULL
+        AND field_of_studies NOT REGEXP '^[A-Z0-9_]+$';
+    </sql>
+  </changeSet>
+
+  <changeSet id="030_rename_job_field_of_studies_to_subject_area" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+      <not>
+        <columnExists tableName="jobs" columnName="subject_area"/>
+      </not>
+    </preConditions>
+
+    <renameColumn
+      tableName="jobs"
+      oldColumnName="field_of_studies"
+      newColumnName="subject_area"
+      columnDataType="VARCHAR(255)"
+    />
+  </changeSet>
 </databaseChangeLog>

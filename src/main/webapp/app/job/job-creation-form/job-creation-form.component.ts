@@ -429,7 +429,7 @@ export class JobCreationFormComponent {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
-    return this.createJobDTO('DRAFT');
+    return this.createDraftJobDTO('DRAFT');
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -573,7 +573,7 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      const draftData = this.createJobDTO('DRAFT');
+      const draftData = this.createDraftJobDTO('DRAFT');
       if (!draftData) {
         return;
       }
@@ -941,7 +941,15 @@ export class JobCreationFormComponent {
    * @param state - The job state ('DRAFT' or 'PUBLISHED')
    * @returns The complete job form DTO
    */
-  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO | undefined {
+  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
+    const dto = this.createDraftJobDTO(state);
+    if (!dto) {
+      throw new Error(`Cannot create ${state} JobFormDTO without required basic info fields.`);
+    }
+    return dto;
+  }
+
+  private createDraftJobDTO(state: JobFormDTO.StateEnum): JobFormDTO | undefined {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
@@ -1220,7 +1228,7 @@ export class JobCreationFormComponent {
       this.clearAutoSaveTimer();
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
-        const draftData = this.createJobDTO('DRAFT');
+        const draftData = this.createDraftJobDTO('DRAFT');
         if (!draftData) {
           return;
         }
@@ -1512,7 +1520,7 @@ export class JobCreationFormComponent {
     return options.find(opt => opt.value === value);
   }
 
-  private extractSelectedValue<T>(selection: DropdownSelection<T> | undefined | null): T | undefined {
+  private extractSelectedValue<T>(selection: DropdownSelection<T> | undefined): T | undefined {
     return selection?.value;
   }
 }
