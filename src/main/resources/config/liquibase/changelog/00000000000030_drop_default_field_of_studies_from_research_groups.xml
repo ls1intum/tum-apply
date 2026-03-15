@@ -40,4 +40,27 @@
       columnDataType="VARCHAR(255)"
     />
   </changeSet>
+
+  <changeSet id="030_normalize_and_map_job_subject_area_values" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="subject_area"/>
+    </preConditions>
+
+    <sql>
+      UPDATE jobs
+      SET subject_area = CASE subject_area
+        WHEN 'CS' THEN 'COMPUTER_SCIENCE'
+        WHEN 'Informatics' THEN 'COMPUTER_SCIENCE'
+        ELSE subject_area
+      END
+      WHERE subject_area IS NOT NULL;
+    </sql>
+
+    <sql>
+      UPDATE jobs
+      SET subject_area = UPPER(REPLACE(REPLACE(subject_area, ' ', '_'), '-', '_'))
+      WHERE subject_area IS NOT NULL
+        AND subject_area NOT REGEXP '^[A-Z0-9_]+$';
+    </sql>
+  </changeSet>
 </databaseChangeLog>

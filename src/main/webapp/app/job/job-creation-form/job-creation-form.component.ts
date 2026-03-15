@@ -573,8 +573,7 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      this.savingState.set('SAVING');
-      await this.performAutoSave(this.createJobDTO('DRAFT'));
+      await this.performAutoSave();
     }
   }
 
@@ -1204,7 +1203,7 @@ export class JobCreationFormComponent {
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
         this.savingState.set('SAVING');
-        void this.performAutoSave(this.createJobDTO('DRAFT'));
+        void this.performAutoSave();
       }, 3000);
     });
   }
@@ -1224,9 +1223,10 @@ export class JobCreationFormComponent {
    * Creates job on first save, updates on subsequent saves.
    * Triggers translation after successful save if content changed.
    */
-  private async performAutoSave(currentData: JobFormDTO): Promise<void> {
+  private async performAutoSave(): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
+    const currentData = this.createJobDTO('DRAFT');
 
     try {
       let saved: JobFormDTO;

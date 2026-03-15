@@ -7,6 +7,14 @@ public interface LocalizedEnum {
 
     String getGermanValue();
 
+    /**
+     * Resolves an enum constant from its enum name or one of its localized values.
+     *
+     * @param enumClass the enum type
+     * @param value the raw value to resolve
+     * @param <E> the localized enum type
+     * @return the matching enum constant, or {@code null} when no match is found
+     */
     static <E extends Enum<E> & LocalizedEnum> E fromValue(Class<E> enumClass, String value) {
         if (value == null || value.isBlank()) {
             return null;

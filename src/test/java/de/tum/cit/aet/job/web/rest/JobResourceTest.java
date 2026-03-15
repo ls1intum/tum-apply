@@ -459,14 +459,12 @@ class JobResourceTest extends AbstractResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void changeJobStateNonExistantJobThrowsNotFound() {
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(
-                "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
-                null,
-                JobFormDTO.class,
-                404
-            );
+        api.putAndRead(
+            "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+            null,
+            JobFormDTO.class,
+            404
+        );
     }
 
     @Test

@@ -72,26 +72,32 @@ export namespace JobDetailDTO {
         Closed: 'CLOSED' as StateEnum,
         ApplicantFound: 'APPLICANT_FOUND' as StateEnum
     };
-    export type SubjectAreaEnum = 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOLOGY' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING';
+    export type SubjectAreaEnum = 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING';
     export const SubjectAreaEnum = {
         AerospaceEngineering: 'AEROSPACE_ENGINEERING' as SubjectAreaEnum,
         AgriculturalEngineering: 'AGRICULTURAL_ENGINEERING' as SubjectAreaEnum,
+        AgriculturalScience: 'AGRICULTURAL_SCIENCE' as SubjectAreaEnum,
         Architecture: 'ARCHITECTURE' as SubjectAreaEnum,
         ArtHistory: 'ART_HISTORY' as SubjectAreaEnum,
         AutomotiveEngineering: 'AUTOMOTIVE_ENGINEERING' as SubjectAreaEnum,
         Bioengineering: 'BIOENGINEERING' as SubjectAreaEnum,
+        Biochemistry: 'BIOCHEMISTRY' as SubjectAreaEnum,
         Biology: 'BIOLOGY' as SubjectAreaEnum,
+        BiomedicalEngineering: 'BIOMEDICAL_ENGINEERING' as SubjectAreaEnum,
         Biotechnology: 'BIOTECHNOLOGY' as SubjectAreaEnum,
         Chemistry: 'CHEMISTRY' as SubjectAreaEnum,
         ComputerEngineering: 'COMPUTER_ENGINEERING' as SubjectAreaEnum,
         ComputerScience: 'COMPUTER_SCIENCE' as SubjectAreaEnum,
+        ComputerVision: 'COMPUTER_VISION' as SubjectAreaEnum,
         DataScience: 'DATA_SCIENCE' as SubjectAreaEnum,
         Economics: 'ECONOMICS' as SubjectAreaEnum,
         EducationTechnology: 'EDUCATION_TECHNOLOGY' as SubjectAreaEnum,
         ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as SubjectAreaEnum,
+        EnergySystems: 'ENERGY_SYSTEMS' as SubjectAreaEnum,
         EnvironmentalBiology: 'ENVIRONMENTAL_BIOLOGY' as SubjectAreaEnum,
         EnvironmentalChemistry: 'ENVIRONMENTAL_CHEMISTRY' as SubjectAreaEnum,
         EnvironmentalEngineering: 'ENVIRONMENTAL_ENGINEERING' as SubjectAreaEnum,
+        EnvironmentalLaw: 'ENVIRONMENTAL_LAW' as SubjectAreaEnum,
         EnvironmentalScience: 'ENVIRONMENTAL_SCIENCE' as SubjectAreaEnum,
         FinancialEngineering: 'FINANCIAL_ENGINEERING' as SubjectAreaEnum,
         FoodTechnology: 'FOOD_TECHNOLOGY' as SubjectAreaEnum,
@@ -99,6 +105,7 @@ export namespace JobDetailDTO {
         Geosciences: 'GEOSCIENCES' as SubjectAreaEnum,
         IndustrialEngineering: 'INDUSTRIAL_ENGINEERING' as SubjectAreaEnum,
         InformationSystems: 'INFORMATION_SYSTEMS' as SubjectAreaEnum,
+        LifeSciences: 'LIFE_SCIENCES' as SubjectAreaEnum,
         Linguistics: 'LINGUISTICS' as SubjectAreaEnum,
         MarineBiology: 'MARINE_BIOLOGY' as SubjectAreaEnum,
         MaterialsScience: 'MATERIALS_SCIENCE' as SubjectAreaEnum,
@@ -111,9 +118,9 @@ export namespace JobDetailDTO {
         Psychology: 'PSYCHOLOGY' as SubjectAreaEnum,
         SoftwareEngineering: 'SOFTWARE_ENGINEERING' as SubjectAreaEnum,
         SportsScience: 'SPORTS_SCIENCE' as SubjectAreaEnum,
+        Statistics: 'STATISTICS' as SubjectAreaEnum,
         Telecommunications: 'TELECOMMUNICATIONS' as SubjectAreaEnum,
         UrbanPlanning: 'URBAN_PLANNING' as SubjectAreaEnum
     };
 }
-
 
