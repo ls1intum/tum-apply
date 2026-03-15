@@ -3011,7 +3011,6 @@ components:
             LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS, MECHANICAL_ENGINEERING,
             MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING,
             SPORTS_SCIENCE, TELECOMMUNICATIONS, URBAN_PLANNING]
-        subjectAreaRaw: {type: string}
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
         title: {type: string}

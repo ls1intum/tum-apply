@@ -32,7 +32,6 @@ export interface Job {
     startDate?: string;
     state?: Job.StateEnum;
     subjectArea?: Job.SubjectAreaEnum;
-    subjectAreaRaw?: string;
     suitableForDisabled?: boolean;
     supervisingProfessor?: User;
     title?: string;
