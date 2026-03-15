@@ -79,7 +79,7 @@
     "@popperjs/core": "2.11.8",
     "@primeuix/styled": "0.7.4",
     "@primeuix/themes": "2.0.3",
-    "@primeuix/utils": "0.6.4",
+    "@primeuix/utils": "0.7.0",
     "dayjs": "1.11.19",
     "franc-min": "6.2.0",
     "keycloak-js": "26.2.2",
