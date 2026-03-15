@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -112,8 +112,7 @@ export class InterviewProcessesOverviewComponent {
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
 
-  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
-  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang());
+  private readonly langChange = toSignal(this.translateService.onLangChange);
 
   private readonly breakpointState = toSignal(
     this.breakpointObserver
@@ -138,25 +137,15 @@ export class InterviewProcessesOverviewComponent {
   );
 
   private readonly locale = computed(() => {
-    this.currentLangSignal();
+    this.langChange();
     return getLocale(this.translateService);
   });
 
   // Effects
-  private readonly langChangeEffect = effect(() => {
-    const langEvent = this.langChangeSignal();
-    if (langEvent?.lang !== undefined) {
-      untracked(() => this.currentLangSignal.set(langEvent.lang));
-    }
+  private readonly resetPageEffect = effect(() => {
+    this.datesPerPage();
+    this.currentDatePage.set(0);
   });
-
-  private readonly resetPageEffect = effect(
-    () => {
-      this.datesPerPage();
-      untracked(() => this.currentDatePage.set(0));
-    },
-    { allowSignalWrites: true },
-  );
 
   constructor() {
     void this.loadData();
