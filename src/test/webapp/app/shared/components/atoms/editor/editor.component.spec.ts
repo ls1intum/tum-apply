@@ -1,19 +1,19 @@
-import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
-import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { provideTranslateMock } from 'util/translate.mock';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { extractTextFromHtml } from 'app/shared/util/text.util';
-import { provideHttpClientMock } from 'util/http-client.mock';
+import {TestBed} from '@angular/core/testing';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {EditorComponent} from 'app/shared/components/atoms/editor/editor.component';
+import {provideFontAwesomeTesting} from 'util/fontawesome.testing';
+import {provideTranslateMock} from 'util/translate.mock';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {extractTextFromHtml} from 'app/shared/util/text.util';
+import {provideHttpClientMock} from 'util/http-client.mock';
 import {
-  GenderBiasAnalysisServiceMock,
   createGenderBiasAnalysisServiceMock,
+  GenderBiasAnalysisServiceMock,
   provideGenderBiasAnalysisServiceMock,
 } from 'util/gender-bias-analysis.service.mock';
-import { BehaviorSubject } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated';
-import { ContentChange } from 'ngx-quill';
+import {BehaviorSubject} from 'rxjs';
+import {GenderBiasAnalysisResponse} from 'app/generated';
+import {ContentChange} from 'ngx-quill';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): ContentChange {
   const plainText = extractTextFromHtml(html);
@@ -579,8 +579,8 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       const originalIncludes = Array.prototype.includes;
-      (Array.prototype as any).includes = function (this: any[], searchElement: any) {
-        if (this.includes === originalIncludes) {
+      const patchedIncludes = function (this: unknown[], searchElement: unknown): boolean {
+        if (this === Array.prototype) {
           return originalIncludes.call(this, searchElement);
         }
         if (this.length === 3 && searchElement === 'xyz') {
@@ -588,11 +588,12 @@ describe('EditorComponent', () => {
         }
         return originalIncludes.call(this, searchElement);
       };
+      Object.defineProperty(Array.prototype, 'includes', { value: patchedIncludes, configurable: true, writable: true });
 
       const result = comp['mapToLanguageCode']('xyz');
       expect(result).toBe('en');
 
-      Array.prototype.includes = originalIncludes;
+      Object.defineProperty(Array.prototype, 'includes', { value: originalIncludes, configurable: true, writable: true });
     });
 
     it('should fallback to currentLang when franc code is not in validCodes', () => {
@@ -691,8 +692,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      const matcher = (comp as any).quillModules.clipboard.matchers[0][1] as Function;
-      const result = matcher(document.createElement('div'), input);
+      const matcherFn = comp.quillModules.clipboard.matchers[0][1];
+      if (typeof matcherFn !== 'function') {
+        throw new Error('Expected clipboard matcher to be a function');
+      }
+      const result = matcherFn(document.createElement('div'), input);
 
       expect(result.ops).toEqual(expected);
     });
