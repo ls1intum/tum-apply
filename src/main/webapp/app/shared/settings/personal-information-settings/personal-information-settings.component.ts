@@ -95,7 +95,7 @@ export class PersonalInformationSettingsComponent {
     return !deepEqual(this.toSnapshot(this.data()), initial);
   });
 
-  readonly disabledEmail = computed(() => true);
+  readonly disabledEmail = true;
 
   readonly minDate = new Date(1900, 0, 1);
   readonly maxDate = (() => {
@@ -143,7 +143,7 @@ export class PersonalInformationSettingsComponent {
     return this.formbuilder.group({
       firstName: [currentData.firstName],
       lastName: [currentData.lastName],
-      email: [{ value: currentData.email, disabled: this.disabledEmail() }, Validators.email],
+      email: [{ value: currentData.email, disabled: this.disabledEmail }, Validators.email],
       phoneNumber: [currentData.phoneNumber],
 
       street: [currentData.street],

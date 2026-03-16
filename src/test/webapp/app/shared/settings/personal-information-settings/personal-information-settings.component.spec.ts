@@ -271,7 +271,7 @@ describe('PersonalInformationSettingsComponent', () => {
   it('should keep the email control disabled in personal information settings', async () => {
     const component = await createComponent();
 
-    expect(component.disabledEmail()).toBe(true);
+    expect(component.disabledEmail).toBe(true);
     expect(component.personalInfoForm().controls.email.disabled).toBe(true);
   });
 
