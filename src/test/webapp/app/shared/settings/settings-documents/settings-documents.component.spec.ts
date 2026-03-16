@@ -15,8 +15,8 @@ import { createHttpClientMock, provideHttpClientMock } from '../../../../util/ht
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
 
 describe('SettingsDocumentsComponent', () => {
-  type SettingsDocumentsComponentWithLoadProfile = SettingsDocumentsComponent & {
-    loadProfile: () => Promise<void>;
+  type SettingsDocumentsPrototype = {
+    loadProfile(this: SettingsDocumentsComponent): Promise<void>;
   };
 
   const createProfile = (): ApplicantDTO => ({
@@ -56,12 +56,10 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   const createComponent = async (): Promise<SettingsDocumentsComponent> => {
-    const prototype = SettingsDocumentsComponent.prototype as SettingsDocumentsComponentWithLoadProfile;
+    const prototype = SettingsDocumentsComponent.prototype as unknown as SettingsDocumentsPrototype;
     const originalLoadProfile = prototype.loadProfile;
     let loadProfilePromise: Promise<void> | undefined;
-    const loadProfileSpy = vi.spyOn(prototype, 'loadProfile').mockImplementation(function (
-      this: SettingsDocumentsComponentWithLoadProfile,
-    ) {
+    const loadProfileSpy = vi.spyOn(prototype, 'loadProfile').mockImplementation(function (this: SettingsDocumentsComponent) {
       loadProfilePromise = originalLoadProfile.call(this);
       return loadProfilePromise;
     });
