@@ -112,6 +112,7 @@ public class UserExportZipWriter {
 
         Applicant-Daten:
         - data/applicant_profile.csv
+        - data/applicant_subject_area_subscriptions.csv
         - data/applicant_documents.csv
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
@@ -153,6 +154,7 @@ public class UserExportZipWriter {
 
         Applicant data:
         - data/applicant_profile.csv
+        - data/applicant_subject_area_subscriptions.csv
         - data/applicant_documents.csv
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
@@ -220,6 +222,7 @@ public class UserExportZipWriter {
         }
 
         writeApplicantProfileCsv(zipOut, applicantData);
+        writeApplicantSubjectAreaSubscriptionsCsv(zipOut, applicantData);
         writeApplicantDocumentsCsv(zipOut, applicantData);
         writeApplicantApplicationsCsv(zipOut, applicantData);
         writeApplicantIntervieweesCsv(zipOut, applicantData);
@@ -287,6 +290,21 @@ public class UserExportZipWriter {
             "data/applicant_documents.csv",
             List.of("document_id", "name", "document_type", "mime_type", "size_bytes"),
             documentRows
+        );
+    }
+
+    private void writeApplicantSubjectAreaSubscriptionsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
+        List<List<String>> subscriptionRows = applicantData
+            .subjectAreaSubscriptions()
+            .stream()
+            .map(subjectArea -> List.of(toCsvValue(subjectArea)))
+            .toList();
+
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_subject_area_subscriptions.csv",
+            List.of("subject_area"),
+            subscriptionRows
         );
     }
 

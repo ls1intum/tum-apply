@@ -13,6 +13,7 @@ import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.notification.repository.ApplicantSubjectAreaSubscriptionRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.time.ZoneOffset;
@@ -31,6 +32,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private final DocumentDictionaryRepository documentDictionaryRepository;
     private final ApplicationRepository applicationRepository;
     private final IntervieweeRepository intervieweeRepository;
+    private final ApplicantSubjectAreaSubscriptionRepository applicantSubjectAreaSubscriptionRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
     private final RatingRepository ratingRepository;
     private final InternalCommentRepository internalCommentRepository;
@@ -79,6 +81,11 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .toList();
 
         List<IntervieweeExportDTO> interviewees = getInterviewees(userId);
+        List<de.tum.cit.aet.job.constants.SubjectArea> subjectAreaSubscriptions = applicantSubjectAreaSubscriptionRepository
+            .findAllByApplicantOrderBySubjectAreaAsc(applicant)
+            .stream()
+            .map(subscription -> subscription.getSubjectArea())
+            .toList();
 
         return new ApplicantDataExportDTO(
             applicant.getStreet(),
@@ -95,6 +102,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             applicant.getMasterGradeLowerLimit(),
             applicant.getMasterGrade(),
             applicant.getMasterUniversity(),
+            subjectAreaSubscriptions,
             documents,
             applications,
             interviewees

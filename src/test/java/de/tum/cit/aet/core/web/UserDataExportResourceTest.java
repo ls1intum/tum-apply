@@ -419,6 +419,10 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         pathByEntity.put("de.tum.cit.aet.notification.domain.EmailSetting", "data/email_settings.csv");
 
         pathByEntity.put("de.tum.cit.aet.usermanagement.domain.Applicant", "data/applicant_profile.csv");
+        pathByEntity.put(
+            "de.tum.cit.aet.notification.domain.ApplicantSubjectAreaSubscription",
+            "data/applicant_subject_area_subscriptions.csv"
+        );
         pathByEntity.put("de.tum.cit.aet.core.domain.DocumentDictionary", "data/applicant_documents.csv");
         pathByEntity.put("de.tum.cit.aet.application.domain.Application", "data/applicant_applications.csv");
         pathByEntity.put("de.tum.cit.aet.interview.domain.Interviewee", "data/applicant_interviewees.csv");

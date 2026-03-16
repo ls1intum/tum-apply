@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.dto.exportdata;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public record ApplicantDataExportDTO(
     String masterGradeLowerLimit,
     String masterGrade,
     String masterUniversity,
+    List<SubjectArea> subjectAreaSubscriptions,
     Set<DocumentExportDTO> documents,
     List<ApplicationExportDTO> applications,
     List<IntervieweeExportDTO> interviewees
