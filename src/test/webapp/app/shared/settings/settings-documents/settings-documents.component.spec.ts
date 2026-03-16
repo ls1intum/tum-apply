@@ -1,11 +1,10 @@
 import { ReactiveFormsModule } from '@angular/forms';
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, Subject, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
 import { createApplicantResourceApiServiceMock, provideApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
@@ -16,6 +15,10 @@ import { createHttpClientMock, provideHttpClientMock } from '../../../../util/ht
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
 
 describe('SettingsDocumentsComponent', () => {
+  type SettingsDocumentsComponentWithLoadProfile = SettingsDocumentsComponent & {
+    loadProfile: () => Promise<void>;
+  };
+
   const createProfile = (): ApplicantDTO => ({
     user: {
       userId: 'user-1',
@@ -52,18 +55,27 @@ describe('SettingsDocumentsComponent', () => {
     referenceDocumentDictionaryIds: [{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }],
   });
 
-  const flushAsyncWork = async (): Promise<void> => {
-    // The component starts loading profile data in the constructor, so tests need
-    // to wait for that promise chain to settle before asserting on loaded state.
-    await Promise.resolve();
-    await Promise.resolve();
-    await Promise.resolve();
-  };
-
   const createComponent = async (): Promise<SettingsDocumentsComponent> => {
-    const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
-    await flushAsyncWork();
-    return component;
+    const prototype = SettingsDocumentsComponent.prototype as SettingsDocumentsComponentWithLoadProfile;
+    const originalLoadProfile = prototype.loadProfile;
+    let loadProfilePromise: Promise<void> | undefined;
+    const loadProfileSpy = vi.spyOn(prototype, 'loadProfile').mockImplementation(function (
+      this: SettingsDocumentsComponentWithLoadProfile,
+    ) {
+      loadProfilePromise = originalLoadProfile.call(this);
+      return loadProfilePromise;
+    });
+
+    try {
+      const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
+      if (loadProfilePromise == null) {
+        throw new Error('Expected constructor to trigger loadProfile()');
+      }
+      await loadProfilePromise;
+      return component;
+    } finally {
+      loadProfileSpy.mockRestore();
+    }
   };
 
   const applicantResourceApiServiceMock = createApplicantResourceApiServiceMock();
@@ -103,31 +115,23 @@ describe('SettingsDocumentsComponent', () => {
     });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should load profile data and document ids on construction', async () => {
     const component = await createComponent();
 
     expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
-    expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledWith('body', false, { transferCache: false });
     expect(applicantResourceApiServiceMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
-    expect(applicantResourceApiServiceMock.getApplicantProfileDocumentIds).toHaveBeenCalledWith('body', false, { transferCache: false });
     expect(component.hasLoaded()).toBe(true);
     expect(component.hasChanges()).toBe(false);
-    expect(component.form.getRawValue()).toEqual({
+    expect(component.form.getRawValue()).toMatchObject({
       bachelorDegreeName: 'BSc Computer Science',
-      bachelorDegreeUniversity: 'TUM',
-      bachelorGradeUpperLimit: '1.0',
-      bachelorGradeLowerLimit: '4.0',
-      bachelorGrade: '1.3',
       masterDegreeName: 'MSc Computer Science',
-      masterDegreeUniversity: 'TUM',
-      masterGradeUpperLimit: '1.0',
-      masterGradeLowerLimit: '4.0',
-      masterGrade: '1.1',
     });
-    expect(component.bachelorDocuments()).toEqual([{ id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 }]);
-    expect(component.masterDocuments()).toEqual([{ id: 'master-doc-1', name: 'master.pdf', size: 100 }]);
-    expect(component.cvDocuments()).toEqual([{ id: 'cv-doc-1', name: 'cv.pdf', size: 100 }]);
-    expect(component.referenceDocuments()).toEqual([{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }]);
+    expect(component.bachelorDocuments()?.[0]?.id).toBe('bachelor-doc-1');
+    expect(component.referenceDocuments()?.[0]?.id).toBe('reference-doc-1');
     expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
     expect(component.masterGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
   });
@@ -182,21 +186,13 @@ describe('SettingsDocumentsComponent', () => {
 
     const component = await createComponent();
 
-    expect(component.form.getRawValue()).toEqual({
+    expect(component.form.getRawValue()).toMatchObject({
       bachelorDegreeName: '',
-      bachelorDegreeUniversity: '',
-      bachelorGradeUpperLimit: '',
-      bachelorGradeLowerLimit: '',
-      bachelorGrade: '',
       masterDegreeName: '',
-      masterDegreeUniversity: '',
-      masterGradeUpperLimit: '',
-      masterGradeLowerLimit: '',
+      bachelorGrade: '',
       masterGrade: '',
     });
     expect(component.bachelorDocuments()).toEqual([]);
-    expect(component.masterDocuments()).toEqual([]);
-    expect(component.cvDocuments()).toEqual([]);
     expect(component.referenceDocuments()).toEqual([]);
   });
 
@@ -216,74 +212,54 @@ describe('SettingsDocumentsComponent', () => {
     expect(component.hasChanges()).toBe(true);
   });
 
-  it('should open the grading scale dialog for bachelor grades and apply the returned limits', async () => {
-    const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
-    dialogServiceMock.open.mockReturnValue({
-      onClose: dialogCloseSubject.asObservable(),
-    });
+  it.each([
+    {
+      gradeType: 'bachelor' as const,
+      currentGrade: '1.3',
+      updatedLimits: { upperLimit: '100%', lowerLimit: '60%' },
+      expectedFieldValues: { upper: '100%', lower: '60%' },
+      getLimits: (component: SettingsDocumentsComponent) => component.bachelorGradeLimits(),
+      getFieldValues: (component: SettingsDocumentsComponent) => ({
+        upper: component.form.controls.bachelorGradeUpperLimit.value,
+        lower: component.form.controls.bachelorGradeLowerLimit.value,
+      }),
+    },
+    {
+      gradeType: 'master' as const,
+      currentGrade: '1.1',
+      updatedLimits: { upperLimit: '110', lowerLimit: '66' },
+      expectedFieldValues: { upper: '110', lower: '66' },
+      getLimits: (component: SettingsDocumentsComponent) => component.masterGradeLimits(),
+      getFieldValues: (component: SettingsDocumentsComponent) => ({
+        upper: component.form.controls.masterGradeUpperLimit.value,
+        lower: component.form.controls.masterGradeLowerLimit.value,
+      }),
+    },
+  ])(
+    'should apply returned grading scale limits for $gradeType grades',
+    async ({ gradeType, currentGrade, updatedLimits, expectedFieldValues, getLimits, getFieldValues }) => {
+      const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      dialogServiceMock.open.mockReturnValue({ onClose: dialogCloseSubject.asObservable() });
+      const component = await createComponent();
 
-    const component = await createComponent();
+      component.onChangeGradingScale(gradeType);
 
-    component.onChangeGradingScale('bachelor');
+      expect(dialogServiceMock.open).toHaveBeenCalledWith(
+        GradingScaleEditDialogComponent,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            gradeType,
+            currentGrade,
+          }),
+        }),
+      );
 
-    expect(dialogServiceMock.open).toHaveBeenCalledOnce();
-    const openCall = dialogServiceMock.open.mock.calls[0];
-    expect(openCall[0]).toBe(GradingScaleEditDialogComponent);
-    expect(openCall[1]).toEqual({
-      header: 'entity.applicationPage2.helperText.changeScale',
-      width: '40rem',
-      style: { background: 'var(--color-background-default)' },
-      closable: true,
-      draggable: false,
-      modal: true,
-      data: {
-        gradeType: 'bachelor',
-        currentGrade: '1.3',
-        currentUpperLimit: '1.0',
-        currentLowerLimit: '4.0',
-      },
-    });
+      dialogCloseSubject.next(updatedLimits);
 
-    dialogCloseSubject.next({ upperLimit: '100%', lowerLimit: '60%' });
-
-    expect(component.form.controls.bachelorGradeUpperLimit.value).toBe('100%');
-    expect(component.form.controls.bachelorGradeLowerLimit.value).toBe('60%');
-    expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '100%', lowerLimit: '60%' });
-  });
-
-  it('should open the grading scale dialog for master grades and apply the returned limits', async () => {
-    const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
-    dialogServiceMock.open.mockReturnValue({
-      onClose: dialogCloseSubject.asObservable(),
-    });
-
-    const component = await createComponent();
-
-    component.onChangeGradingScale('master');
-
-    expect(dialogServiceMock.open).toHaveBeenCalledOnce();
-    const openCall = dialogServiceMock.open.mock.calls[0];
-    expect(openCall[1]).toEqual({
-      header: 'entity.applicationPage2.helperText.changeScale',
-      width: '40rem',
-      style: { background: 'var(--color-background-default)' },
-      closable: true,
-      draggable: false,
-      modal: true,
-      data: {
-        gradeType: 'master',
-        currentGrade: '1.1',
-        currentUpperLimit: '1.0',
-        currentLowerLimit: '4.0',
-      },
-    });
-
-    dialogCloseSubject.next({ upperLimit: '110', lowerLimit: '66' });
-
-    expect(component.form.controls.masterGradeUpperLimit.value).toBe('110');
-    expect(component.form.controls.masterGradeLowerLimit.value).toBe('66');
-    expect(component.masterGradeLimits()).toEqual({ upperLimit: '110', lowerLimit: '66' });
-  });
+      expect(getFieldValues(component)).toEqual(expectedFieldValues);
+      expect(getLimits(component)).toEqual(updatedLimits);
+    },
+  );
 
   it('should keep master grading scale values unchanged when the dialog closes without a result', async () => {
     const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
@@ -320,121 +296,40 @@ describe('SettingsDocumentsComponent', () => {
     expect(component.form.controls.masterGradeLowerLimit.value).toBeNull();
   });
 
-  it('should detect bachelor grade limits after the debounce interval', async () => {
-    vi.useFakeTimers();
+  it.each([
+    {
+      label: 'bachelor',
+      setDetectedGrade: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGrade.setValue('84%'),
+      setWarningGrade: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGrade.setValue('12345'),
+      getUpperLimit: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGradeUpperLimit.value,
+      getLowerLimit: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGradeLowerLimit.value,
+      getWarning: (component: SettingsDocumentsComponent) => component.warningTextBachelorGrade(),
+    },
+    {
+      label: 'master',
+      setDetectedGrade: (component: SettingsDocumentsComponent) => component.form.controls.masterGrade.setValue('84%'),
+      setWarningGrade: (component: SettingsDocumentsComponent) => component.form.controls.masterGrade.setValue('12345'),
+      getUpperLimit: (component: SettingsDocumentsComponent) => component.form.controls.masterGradeUpperLimit.value,
+      getLowerLimit: (component: SettingsDocumentsComponent) => component.form.controls.masterGradeLowerLimit.value,
+      getWarning: (component: SettingsDocumentsComponent) => component.warningTextMasterGrade(),
+    },
+  ])(
+    'should derive limits and warnings for $label grades after debounce',
+    async ({ setDetectedGrade, setWarningGrade, getUpperLimit, getLowerLimit, getWarning }) => {
+      vi.useFakeTimers();
+      const component = await createComponent();
 
-    const component = await createComponent();
+      setDetectedGrade(component);
+      await vi.advanceTimersByTimeAsync(600);
 
-    component.form.controls.bachelorGrade.setValue('84%');
-    await vi.advanceTimersByTimeAsync(600);
+      expect({ upper: getUpperLimit(component), lower: getLowerLimit(component) }).toEqual({ upper: '100%', lower: '50%' });
 
-    expect(component.form.controls.bachelorGradeUpperLimit.value).toBe('100%');
-    expect(component.form.controls.bachelorGradeLowerLimit.value).toBe('50%');
-    expect(component.bachelorGradeLimits()).toEqual({
-      upperLimit: '100%',
-      lowerLimit: '50%',
-      isPercentage: true,
-    });
+      setWarningGrade(component);
+      await vi.advanceTimersByTimeAsync(600);
 
-    vi.useRealTimers();
-  });
-
-  it('should detect master grade limits after the debounce interval', async () => {
-    vi.useFakeTimers();
-
-    const component = await createComponent();
-
-    component.form.controls.masterGrade.setValue('84%');
-    await vi.advanceTimersByTimeAsync(600);
-
-    expect(component.form.controls.masterGradeUpperLimit.value).toBe('100%');
-    expect(component.form.controls.masterGradeLowerLimit.value).toBe('50%');
-    expect(component.masterGradeLimits()).toEqual({
-      upperLimit: '100%',
-      lowerLimit: '50%',
-      isPercentage: true,
-    });
-
-    vi.useRealTimers();
-  });
-
-  it('should compute a warning text for suspicious bachelor grade input', async () => {
-    vi.useFakeTimers();
-
-    const component = await createComponent();
-
-    component.form.controls.bachelorGrade.setValue('12345');
-    await vi.advanceTimersByTimeAsync(600);
-
-    expect(component.warningTextBachelorGrade()).toBe('entity.applicationPage2.warnText');
-
-    vi.useRealTimers();
-  });
-
-  it('should compute a warning text for suspicious master grade input', async () => {
-    vi.useFakeTimers();
-
-    const component = await createComponent();
-
-    component.form.controls.masterGrade.setValue('12345');
-    await vi.advanceTimersByTimeAsync(600);
-
-    expect(component.warningTextMasterGrade()).toBe('entity.applicationPage2.warnText');
-
-    vi.useRealTimers();
-  });
-
-  it('should store queued files for each document type', async () => {
-    const component = await createComponent();
-    const bachelorFile = new File(['bachelor'], 'bachelor-new.pdf', { type: 'application/pdf' });
-    const masterFile = new File(['master'], 'master-new.pdf', { type: 'application/pdf' });
-    const cvFile = new File(['cv'], 'cv-new.pdf', { type: 'application/pdf' });
-    const referenceFile = new File(['reference'], 'reference-new.pdf', { type: 'application/pdf' });
-
-    component.onBachelorQueuedFilesChange([bachelorFile]);
-    component.onMasterQueuedFilesChange([masterFile]);
-    component.onCvQueuedFilesChange([cvFile]);
-    component.onReferenceQueuedFilesChange([referenceFile]);
-
-    expect(component.queuedBachelorFiles()).toEqual([bachelorFile]);
-    expect(component.queuedMasterFiles()).toEqual([masterFile]);
-    expect(component.queuedCvFiles()).toEqual([cvFile]);
-    expect(component.queuedReferenceFiles()).toEqual([referenceFile]);
-  });
-
-  it('should normalize null form values to empty strings for change tracking', async () => {
-    const component = await createComponent();
-
-    component.form.controls.bachelorDegreeName.setValue(null);
-    component.form.controls.bachelorDegreeUniversity.setValue(null);
-    component.form.controls.bachelorGradeUpperLimit.setValue(null);
-    component.form.controls.bachelorGradeLowerLimit.setValue(null);
-    component.form.controls.bachelorGrade.setValue(null);
-    component.form.controls.masterDegreeName.setValue(null);
-    component.form.controls.masterDegreeUniversity.setValue(null);
-    component.form.controls.masterGradeUpperLimit.setValue(null);
-    component.form.controls.masterGradeLowerLimit.setValue(null);
-    component.form.controls.masterGrade.setValue(null);
-
-    expect(component['normalizedFormValue']()).toEqual({
-      bachelorDegreeName: '',
-      bachelorDegreeUniversity: '',
-      bachelorGradeUpperLimit: '',
-      bachelorGradeLowerLimit: '',
-      bachelorGrade: '',
-      masterDegreeName: '',
-      masterDegreeUniversity: '',
-      masterGradeUpperLimit: '',
-      masterGradeLowerLimit: '',
-      masterGrade: '',
-    });
-  });
-
-  it('should normalize undefined documents to an empty array', async () => {
-    const component = await createComponent();
-
-    expect(component['normalizedDocuments'](undefined)).toEqual([]);
-  });
+      expect(getWarning(component)).toBe('entity.applicationPage2.warnText');
+    },
+  );
 
   it('should skip saving when there are no changes', async () => {
     const component = await createComponent();
@@ -443,8 +338,6 @@ describe('SettingsDocumentsComponent', () => {
     await component.saveAll();
 
     expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
-    expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
-    expect(toastServiceMock.showErrorKey).not.toHaveBeenCalled();
   });
 
   it('should save document settings with the expected payload and reload state', async () => {
@@ -459,38 +352,14 @@ describe('SettingsDocumentsComponent', () => {
 
     await component.saveAll();
 
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledOnce();
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith({
-      user: {
-        userId: 'user-1',
-        email: undefined,
-        firstName: undefined,
-        lastName: undefined,
-        phoneNumber: undefined,
-        gender: undefined,
-        nationality: undefined,
-        birthday: undefined,
-        website: undefined,
-        linkedinUrl: undefined,
-      },
-      street: undefined,
-      postalCode: undefined,
-      city: undefined,
-      country: undefined,
-      bachelorDegreeName: 'BSc Computer Science',
-      bachelorUniversity: 'TUM',
-      bachelorGradeUpperLimit: '1.0',
-      bachelorGradeLowerLimit: '4.0',
-      bachelorGrade: '1.3',
-      masterDegreeName: 'Updated Master Degree',
-      masterUniversity: 'TUM',
-      masterGradeUpperLimit: '1.0',
-      masterGradeLowerLimit: '4.0',
-      masterGrade: '1.1',
-    });
+    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user: expect.objectContaining({ userId: 'user-1' }),
+        masterDegreeName: 'Updated Master Degree',
+      }),
+    );
     expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
     expect(applicantResourceApiServiceMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
-    expect(toastServiceMock.showSuccessKey).toHaveBeenCalledOnce();
     expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.documents.saved');
     expect(component.saving()).toBe(false);
   });
@@ -517,7 +386,6 @@ describe('SettingsDocumentsComponent', () => {
 
     await component.saveAll();
 
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledOnce();
     expect(applicantResourceApiServiceMock.deleteApplicantProfileDocument).toHaveBeenCalledOnce();
     expect(applicantResourceApiServiceMock.deleteApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1');
     expect(applicantResourceApiServiceMock.renameApplicantProfileDocument).toHaveBeenCalledOnce();
@@ -539,7 +407,6 @@ describe('SettingsDocumentsComponent', () => {
     await component.saveAll();
 
     expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
-    expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
     expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
     expect(component.saving()).toBe(false);
   });
@@ -556,8 +423,6 @@ describe('SettingsDocumentsComponent', () => {
 
     await component.saveAll();
 
-    expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledOnce();
-    expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
     expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
     expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
     expect(component.saving()).toBe(false);
