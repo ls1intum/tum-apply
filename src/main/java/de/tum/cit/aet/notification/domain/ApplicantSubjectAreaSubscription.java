@@ -3,7 +3,6 @@ package de.tum.cit.aet.notification.domain;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.constants.SubjectArea;
-import de.tum.cit.aet.job.domain.SubjectAreaConverter;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class ApplicantSubjectAreaSubscription {
     private Applicant applicant;
 
     /** Canonical subject-area enum value persisted for later notification matching. */
+    @Enumerated(EnumType.STRING)
     @Column(name = "subject_area", nullable = false)
-    @Convert(converter = SubjectAreaConverter.class)
     private SubjectArea subjectArea;
 }

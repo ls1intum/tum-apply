@@ -5,6 +5,7 @@ api.module.ts
 api/aiResourceApi.service.ts
 api/api.ts
 api/applicantResourceApi.service.ts
+api/applicantSubjectAreaSubscriptionResourceApi.service.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -38,6 +39,7 @@ model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
+model/applicantSubjectAreaSubscriptionDTO.ts
 model/application.ts
 model/applicationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts

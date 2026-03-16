@@ -2219,6 +2219,30 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/settings/subject-area-subscriptions:
+    get:
+      tags: [applicant-subject-area-subscription-resource]
+      operationId: getCurrentApplicantSubscriptions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantSubjectAreaSubscriptionDTO'}
+    put:
+      tags: [applicant-subject-area-subscription-resource]
+      operationId: updateCurrentApplicantSubscriptions
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantSubjectAreaSubscriptionDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantSubjectAreaSubscriptionDTO'}
   /api/users/available-for-research-group:
     get:
       tags: [user-resource]
@@ -2435,6 +2459,25 @@ components:
         masterUniversity: {type: string}
         user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
       required: [user]
+    ApplicantSubjectAreaSubscriptionDTO:
+      type: object
+      properties:
+        subjectAreas:
+          type: array
+          items:
+            type: string
+            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
+              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
+              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
+              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
+              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
+      required: [subjectAreas]
     Application:
       type: object
       properties:
