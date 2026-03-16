@@ -9,7 +9,7 @@
 
         <!-- Location -->
         <div class="flex items-center gap-2 text-sm text-text-secondary">
-          @if (slot().location === 'virtual') {
+          @if (isVirtual()) {
             <fa-icon icon="video" class="w-4 text-center" />
             <span jhiTranslate="interview.slots.location.virtual">Virtual</span>
           } @else {

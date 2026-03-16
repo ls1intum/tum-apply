@@ -55,6 +55,9 @@
         "title": "Vorlage löschen",
         "message": "Möchtest du diese Vorlage wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
       },
+      "deleteSuccess": "Vorlage erfolgreich gelöscht.",
+      "deleteDefaultDisabled": "Systemvorlagen können nicht gelöscht werden.",
+      "deleteFailed": "Vorlage konnte nicht gelöscht werden. Bitte versuche es erneut.",
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {
@@ -79,19 +82,21 @@
         "APPLICATION_SENT": "Bewerbung empfangen",
         "APPLICATION_REJECTED": "Bewerbung abgelehnt",
         "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
-        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
+        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert"
       },
       "default": {
-        "APPLICATION_ACCEPTED": "Bewerbung angenommen",
-        "APPLICATION_SENT": "Bewerbungseingang Bestätigung",
-        "APPLICATION_REJECTED-JOB_FILLED": "Bewerbung abgelehnt - Stelle bereits besetzt",
-        "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung abgelehnt - Stelle nicht mehr aktuell",
-        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
-        "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund",
-        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch",
-        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Einladung zur Terminbuchung",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
-        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
+        "APPLICATION_ACCEPTED": "Bewerbung: Angenommen",
+        "APPLICATION_SENT": "Bewerbung: Eingangsbestätigung",
+        "APPLICATION_REJECTED-JOB_FILLED": "Bewerbung: Abgelehnt - Stelle bereits besetzt",
+        "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung: Abgelehnt - Stelle nicht mehr aktuell",
+        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung: Abgelehnt - Anforderungen nicht erfüllt",
+        "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung: Abgelehnt - Anderer Grund",
+        "INTERVIEW_INVITATION": "Vorstellungsgespräch: Einladung",
+        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Vorstellungsgespräch: Einladung zur Terminbuchung",
+        "INTERVIEW_CANCELLED": "Vorstellungsgespräch: Abgesagt",
+        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Vorstellungsgespräch: Terminverschiebung angefragt",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Forschungsgruppe: Mitglied hinzugefügt"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
@@ -102,10 +107,16 @@
         "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
         "JOB_TITLE": "Stellen Titel",
         "RESEARCH_GROUP_NAME": "Name Forschungsgruppe",
+        "APPLICANT_GENDER": "Geschlecht Bewerber:in",
+        "SUPERVISING_PROFESSOR_EMAIL": "E-Mail Professor:in",
         "INTERVIEW_DATE": "Datum",
         "INTERVIEW_START_TIME": "Startzeit",
         "INTERVIEW_END_TIME": "Endzeit",
-        "INTERVIEW_LOCATION": "Ort"
+        "INTERVIEW_LOCATION": "Ort",
+        "INTERVIEW_STREAM_LINK": "Interview-Link",
+        "BOOKING_LINK": "Buchungslink",
+        "DOWNLOAD_LINK": "Download-Link",
+        "EXPORT_EXPIRES_DAYS": "Export-Gültigkeit (Tage)"
       }
     },
     "members": {

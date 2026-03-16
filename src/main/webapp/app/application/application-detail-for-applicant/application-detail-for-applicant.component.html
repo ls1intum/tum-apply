@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #withdrawConfirmDialog
   class="confirm-dialog"
   [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
   [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
@@ -7,10 +6,11 @@
   severity="danger"
   confirmIcon="withdraw"
   [showOpenButton]="false"
+  [visible]="showWithdrawDialog()"
   (confirmed)="onWithdrawApplication()"
+  (closed)="showWithdrawDialog.set(false)"
 />
 <jhi-confirm-dialog
-  #deleteConfirmDialog
   class="confirm-dialog"
   [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
   [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
@@ -18,7 +18,9 @@
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
+  [visible]="showDeleteDialog()"
   (confirmed)="onDeleteApplication()"
+  (closed)="showDeleteDialog.set(false)"
 />
 
 <div [class]="isSummaryPage() ? '' : 'page-container'">
