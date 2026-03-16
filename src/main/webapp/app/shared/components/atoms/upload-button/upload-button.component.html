@@ -118,21 +118,23 @@
 </p-fileupload>
 
 <jhi-confirm-dialog
-  #duplicateConfirmDialog
   [header]="'entity.upload.duplicate.title' | translate"
   [message]="'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() }"
   [label]="'button.replace' | translate"
   severity="primary"
   [showOpenButton]="false"
+  [visible]="showDuplicateDialog()"
   (confirmed)="onConfirmDuplicate()"
+  (closed)="showDuplicateDialog.set(false)"
 />
 
 <jhi-confirm-dialog
-  #replacementConfirmDialog
   [header]="'entity.upload.replacement.title' | translate"
   [message]="'entity.upload.replacement.message' | translate"
   [label]="'button.replace' | translate"
   severity="primary"
   [showOpenButton]="false"
+  [visible]="showReplacementDialog()"
   (confirmed)="onConfirmReplacement()"
+  (closed)="showReplacementDialog.set(false)"
 />

@@ -9,12 +9,15 @@ import { GradeType, getGradeType, isNumericInRange, setControlError } from 'app/
  */
 export function gradingScaleTypeValidator(getCurrentGrade: () => string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const limit = control.value.trim();
-    const grade = getCurrentGrade().trim();
+    const untrimmedLimit = control.value;
+    const untrimmedFirstGrade = getCurrentGrade();
 
-    if (!limit || !grade) {
+    if (!untrimmedLimit || !untrimmedFirstGrade) {
       return null;
     }
+
+    const limit = untrimmedLimit.trim();
+    const grade = untrimmedFirstGrade.trim();
 
     const gradeType = getGradeType(grade);
     const limitType = getGradeType(limit);
@@ -59,14 +62,18 @@ export function gradingScaleRangeValidator(getCurrentGrade: () => string): Valid
       return null;
     }
 
-    const upper = upperCtrl.value.trim();
-    const lower = lowerCtrl.value.trim();
-    const grade = getCurrentGrade().trim();
+    const untrimmedUpper = upperCtrl.value;
+    const untrimmedLower = lowerCtrl.value;
+    const untrimmedGrade = getCurrentGrade();
 
-    if (!upper || !lower || !grade) {
+    if (!untrimmedUpper || !untrimmedLower || !untrimmedGrade) {
       clearRangeErrors(upperCtrl, lowerCtrl);
       return null;
     }
+
+    const upper = untrimmedUpper.trim();
+    const lower = untrimmedLower.trim();
+    const grade = untrimmedGrade.trim();
 
     const type = getGradeType(grade);
     const inRange = checkGradeInRange(type, grade, upper, lower);

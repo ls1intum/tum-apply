@@ -149,7 +149,7 @@
         "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
         "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
         "addRange": "Terminserie hinzufügen",
-        "addSlot": "Einzeltermin hinzufügen",
+        "addSlot": "Termin",
         "noSlotsYet": "Noch keine Termine",
         "noSlotsYetDesc": "Füge eine Terminserie oder einen einzelnen Termin hinzu, um zu beginnen",
         "singleSlot": "Einzelner Termin",
@@ -182,6 +182,24 @@
         "errorForbidden": {
           "summary": "Zugriff verweigert",
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+        }
+      },
+      "edit": {
+        "title": "Ort bearbeiten",
+        "bookedInfo": "Die bewerbende Person wird per E-Mail über die Ortsänderung informiert. Du kannst die E-Mail-Vorlage ",
+        "editTemplates": "hier",
+        "editTemplatesSuffix": " anpassen.",
+        "success": {
+          "summary": "Ort aktualisiert",
+          "detail": "Der Terminort wurde erfolgreich aktualisiert."
+        },
+        "error": {
+          "summary": "Aktualisierung fehlgeschlagen",
+          "detail": "Der Ort konnte nicht aktualisiert werden. Bitte versuche es erneut."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu bearbeiten"
         }
       },
       "cancelInterview": {

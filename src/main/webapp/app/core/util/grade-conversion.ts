@@ -273,12 +273,13 @@ export function formatGradeWithTranslation(
   }
 
   const tooltipText = translateService.instant('evaluation.details.converterTooltip', {
+    originalGrade,
     upperLimit,
     lowerLimit,
   });
 
   return {
-    displayValue: `${convertedGrade} (${originalGrade})`,
+    displayValue: `${convertedGrade} (${translateService.instant('evaluation.details.converted')})`,
     wasConverted: true,
     tooltipText,
   };

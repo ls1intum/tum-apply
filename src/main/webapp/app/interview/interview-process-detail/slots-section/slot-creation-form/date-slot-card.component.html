@@ -25,35 +25,26 @@
       </div>
     </div>
     <div class="flex gap-2 items-center">
-      @if (!hasRangeSlots()) {
-        <jhi-button
-          [label]="'interview.slots.create.addSlot'"
-          [shouldTranslate]="true"
-          variant="outlined"
-          size="xs"
-          icon="plus"
-          [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate"
-          tooltipPosition="top"
-          severity="primary"
-          (click)="addSingleSlot()"
-        />
-      }
-
-      @if (!hasSingleSlots()) {
-        <jhi-button
-          [label]="'interview.slots.create.addRange'"
-          [shouldTranslate]="true"
-          variant="outlined"
-          size="xs"
-          icon="plus"
-          [pTooltip]="'interview.slots.create.addRangeTooltip' | translate"
-          tooltipPosition="top"
-          severity="primary"
-          (click)="addRange()"
-        />
-      }
+      <jhi-button
+        [label]="'interview.slots.create.addSlot'"
+        [shouldTranslate]="true"
+        variant="outlined"
+        size="xs"
+        icon="plus"
+        [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate"
+        tooltipPosition="top"
+        severity="primary"
+        (click)="addSingleSlot()"
+      />
 
       <p-divider layout="vertical" styleClass="h-6 m-0 mx-1" />
+
+      <!-- Future use: @if (!hasSingleSlots()) {
+      <jhi-button [label]="'interview.slots.create.addRange'" [shouldTranslate]="true" variant="outlined" size="xs"
+        icon="plus" [pTooltip]="'interview.slots.create.addRangeTooltip' | translate" tooltipPosition="top"
+        severity="primary" (click)="addRange()" />
+      } -->
+
       <jhi-button icon="trash" variant="text" severity="danger" size="xs" (click)="remove.emit()" />
     </div>
   </div>
@@ -71,22 +62,23 @@
 
           <div>
             <div class="flex flex-1 flex-col gap-0.5">
-              <!-- Row Header: Label + Delete -->
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-semibold text-text-primary">
-                    @switch (range.type) {
-                      @case ('single') {
-                        {{ 'interview.slots.create.singleSlot' | translate }}
-                      }
-                      @case ('range') {
-                        {{ 'interview.slots.create.rangeSlot' | translate }}
-                      }
-                    }
-                  </span>
-                </div>
-                <jhi-button severity="danger" variant="text" icon="trash" size="xs" (click)="removeRange(rangeIndex)" />
-              </div>
+              <!-- Previously removed header (preserved in comments)
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold text-text-primary">
+                @switch (range.type) {
+                  @case ('single') {
+                    {{ 'interview.slots.create.singleSlot' | translate }}
+                  }
+                  @case ('range') {
+                    {{ 'interview.slots.create.rangeSlot' | translate }}
+                  }
+                }
+              </span>
+            </div>
+            <jhi-button severity="danger" variant="text" icon="trash" size="xs" (click)="removeRange(rangeIndex)" />
+          </div>
+          -->
 
               <!-- Inputs (only for non-scheduled) -->
               @if (range.type !== 'scheduled') {
@@ -97,7 +89,7 @@
                   [class.border-negative-default]="range.type === 'single' && allConflicts().has(range.id + '_' + slotIndex)"
                 >
                   <!-- Row 1: Time + Break inputs -->
-                  <div class="flex flex-wrap gap-4 mb-3">
+                  <div class="flex flex-wrap gap-4 mb-3 items-end">
                     <!-- START + END TIME group -->
                     <div class="flex gap-1">
                       <!-- START TIME -->
@@ -157,6 +149,11 @@
                         </div>
                       </div>
                     }
+
+                    <!-- Individual Slot Delete (for single/range types) -->
+                    <div class="pb-1">
+                      <jhi-button severity="danger" variant="text" icon="trash" size="xs" (click)="removeRange(rangeIndex)" />
+                    </div>
 
                     <!-- BREAK (Only for Range) -->
                     @if (range.type === 'range') {

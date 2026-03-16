@@ -63,7 +63,7 @@ function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationD
 
 describe('ApplicationDetailForApplicantComponent', () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('initializes and fetches application & document IDs when param provided', async () => {
@@ -306,5 +306,135 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const labels = getApplicationPDFLabels(translate as unknown as TranslateService);
     expect(labels.application).toBe('evaluation.application');
     expect(Object.keys(labels)).toContain('grade');
+  });
+
+  describe('bachelorGradeDisplay', () => {
+    it('should return "-" when bachelorGrade is missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: {
+              email: '',
+              userId: '1',
+            },
+            bachelorGrade: undefined,
+          },
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.bachelorGradeDisplay()).toBe('-');
+    });
+
+    it('should return just the grade when one or both limits are missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: {
+              email: '',
+              userId: '1',
+            },
+            bachelorGrade: '2.3',
+            bachelorGradeUpperLimit: undefined,
+            bachelorGradeLowerLimit: undefined,
+          },
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.bachelorGradeDisplay()).toBe('2.3');
+    });
+
+    it('should return grade with formatted scale when both limits are present', () => {
+      const { component, translate } = setupTest(null);
+
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: {
+              email: '',
+              userId: '',
+            },
+            bachelorGrade: '1.7',
+            bachelorGradeUpperLimit: '4.0',
+            bachelorGradeLowerLimit: '1.0',
+          },
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      const result = component.bachelorGradeDisplay();
+
+      expect(translate.instant).toHaveBeenCalledOnce();
+      expect(translate.instant).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit: '4.0',
+        lowerLimit: '1.0',
+      });
+      expect(result).toBe('1.7 (entity.applicationPage2.helperText.gradingScale)');
+    });
+  });
+
+  describe('masterGradeDisplay', () => {
+    it('should return "-" when masterGrade is missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: { user: { email: '', userId: '1' }, masterGrade: undefined },
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.masterGradeDisplay()).toBe('-');
+    });
+
+    it('should return just the grade when one or both limits are missing', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: {
+              email: '',
+              userId: '1',
+            },
+            masterGrade: '1.5',
+            masterGradeUpperLimit: undefined,
+            masterGradeLowerLimit: '1.0',
+          },
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.masterGradeDisplay()).toBe('1.5');
+    });
+
+    it('should return grade with formatted scale when both limits are present', () => {
+      const { component, translate } = setupTest(null);
+
+      component.actualDetailData.set(
+        makeDetail({
+          applicant: {
+            user: {
+              email: '',
+              userId: '1',
+            },
+            masterGrade: '1.0',
+            masterGradeUpperLimit: '4.0',
+            masterGradeLowerLimit: '1.0',
+          },
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      const result = component.masterGradeDisplay();
+
+      expect(translate.instant).toHaveBeenCalledOnce();
+      expect(translate.instant).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit: '4.0',
+        lowerLimit: '1.0',
+      });
+      expect(result).toBe('1.0 (entity.applicationPage2.helperText.gradingScale)');
+    });
   });
 });

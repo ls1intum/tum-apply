@@ -169,21 +169,11 @@ export class JobCreationFormComponent {
   /** Indicates whether AI is currently generating a job description draft */
   isGeneratingDraft = signal<boolean>(false);
 
-  /** Controls visibility of the AI generation panel */
+  /** Controls visibility of the AI generation panel and AI translation invocation */
   aiToggleSignal = signal<boolean>(true);
 
   /** Tracks if the rewrite button should be shown (after first generation) */
   rewriteButtonSignal = signal<boolean>(false);
-
-  /** Computed: determines if the AI panel should be displayed */
-  showAiPanel = computed(() => this.aiToggleSignal());
-
-  /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() =>
-    this.currentDescriptionLanguage() === 'en'
-      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
-      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
-  );
 
   /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
   jobDescriptionPlaceholder = computed(() =>
@@ -263,8 +253,8 @@ export class JobCreationFormComponent {
   /** Template for the saving state indicator */
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
 
-  /** Reference to the publish confirmation dialog */
-  sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
+  /** Signal controlling publish confirmation dialog visibility */
+  showPublishDialog = signal(false);
 
   /** Reference to the job description rich-text editor */
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
@@ -424,8 +414,8 @@ export class JobCreationFormComponent {
     initialValue: this.imageForm.getRawValue(),
   });
 
-  /** Computed: Aggregates all form data into a draft DTO when required fields are present */
-  currentJobData = computed<JobFormDTO | undefined>(() => {
+  /** Computed: Aggregates all form data into a draft DTO */
+  currentJobData = computed<JobFormDTO>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
@@ -506,34 +496,6 @@ export class JobCreationFormComponent {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AI TOGGLE EFFECT
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Effect: Manages the job description template based on AI toggle state.
-   * - When AI is disabled and editor is empty: inserts template
-   * - When AI is enabled and content equals template: clears editor
-   */
-  private aiToggleEffect = effect(() => {
-    const aiEnabled = this.aiToggleSignal();
-    const ctrl = this.basicInfoForm.get('jobDescription');
-    const current = (ctrl?.value ?? '') as string;
-    const template = this.templateText();
-
-    const isEmpty = !current || current.trim() === '' || current.trim() === '<p><br></p>';
-
-    if (!aiEnabled && isEmpty) {
-      ctrl?.setValue(template);
-      this.jobDescriptionEditor()?.forceUpdate(template);
-    }
-
-    if (aiEnabled && current === template) {
-      ctrl?.setValue('');
-      this.jobDescriptionEditor()?.forceUpdate('');
-    }
-  });
-
-  // ═══════════════════════════════════════════════════════════════════════════
   // PUBLISH METHODS
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -573,12 +535,7 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      const draftData = this.createJobDTO('DRAFT');
-      if (!draftData) {
-        return;
-      }
-      this.savingState.set('SAVING');
-      await this.performAutoSave(draftData);
+      await this.performAutoSave();
     }
   }
 
@@ -696,14 +653,6 @@ export class JobCreationFormComponent {
   async generateJobApplicationDraft(): Promise<void> {
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
-    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(this.basicInfoForm.get('subjectArea')?.value);
-    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(this.basicInfoForm.get('location')?.value);
-
-    if (subjectArea === undefined || location === undefined) {
-      this.basicInfoForm.get('subjectArea')?.markAsTouched();
-      this.basicInfoForm.get('location')?.markAsTouched();
-      return;
-    }
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
@@ -721,9 +670,11 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        subjectArea,
+        subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(
+          this.basicInfoForm.get('subjectArea')?.value,
+        ) as JobFormDTO.SubjectAreaEnum,
         supervisingProfessor: this.userId(),
-        location,
+        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
@@ -941,7 +892,7 @@ export class JobCreationFormComponent {
    * @param state - The job state ('DRAFT' or 'PUBLISHED')
    * @returns The complete job form DTO
    */
-  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO | undefined {
+  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
@@ -957,13 +908,6 @@ export class JobCreationFormComponent {
         : supervisingProfessorRaw) ??
       this.preferredSupervisingProfessorId() ??
       this.userId();
-    const subjectArea = this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea);
-    const location = this.extractSelectedValue<JobFormDTO.LocationEnum>(basicInfoValue.location);
-    const fundingType = this.extractSelectedValue<JobFormDTO.FundingTypeEnum>(positionDetailsValue.fundingType);
-
-    if (subjectArea === undefined || location === undefined || supervisingProfessorId === '') {
-      return undefined;
-    }
 
     const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
     const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
@@ -971,9 +915,9 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      subjectArea,
-      supervisingProfessor: supervisingProfessorId,
-      location,
+      subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea),
+      supervisingProfessor: supervisingProfessorId ?? '',
+      location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
@@ -982,11 +926,11 @@ export class JobCreationFormComponent {
       endDate: positionDetailsValue.applicationDeadline ?? '',
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
-      fundingType,
+      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
-    };
+    } as JobFormDTO;
   }
 
   /**
@@ -1055,10 +999,10 @@ export class JobCreationFormComponent {
         ]);
         this.populateForm(job);
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
-
-        // prevent autosave from firing immediately after patching
-        this.autoSaveInitialized = false;
       }
+
+      // prevent autosave from firing immediately after initialization
+      this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
       this.router.navigate(['/my-positions']);
@@ -1077,13 +1021,19 @@ export class JobCreationFormComponent {
     // Default tab EN
     this.currentDescriptionLanguage.set('en');
 
-    const en = job?.jobDescriptionEN ?? '';
-    const de = job?.jobDescriptionDE ?? '';
+    const en =
+      job?.jobDescriptionEN ??
+      (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') : '');
+    const de =
+      job?.jobDescriptionDE ??
+      (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') : '');
 
     const supervisingProfessorId = job?.supervisingProfessor ?? this.basicInfoForm.get('supervisingProfessor')?.value;
 
     this.jobDescriptionEN.set(en);
+    this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
+    this.lastTranslatedDE.set(de);
 
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
@@ -1218,15 +1168,11 @@ export class JobCreationFormComponent {
       this.jobDescriptionSignal.set(description);
 
       this.clearAutoSaveTimer();
+      this.savingState.set('SAVING');
+
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
-        const draftData = this.createJobDTO('DRAFT');
-        if (!draftData) {
-          return;
-        }
-
-        this.savingState.set('SAVING');
-        void this.performAutoSave(draftData);
+        void this.performAutoSave();
       }, 3000);
     });
   }
@@ -1246,9 +1192,10 @@ export class JobCreationFormComponent {
    * Creates job on first save, updates on subsequent saves.
    * Triggers translation after successful save if content changed.
    */
-  private async performAutoSave(currentData: JobFormDTO): Promise<void> {
+  private async performAutoSave(): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
+    const currentData = this.createJobDTO('DRAFT');
 
     try {
       let saved: JobFormDTO;
@@ -1267,8 +1214,10 @@ export class JobCreationFormComponent {
 
       this.savingState.set('SAVED');
 
-      // fire-and-forget translation (don't block autosave UX)
-      void this.translateAndStoreOtherLanguage(currentLang, description);
+      if (this.aiToggleSignal()) {
+        // fire-and-forget translation (don't block autosave UX)
+        void this.translateAndStoreOtherLanguage(currentLang, description);
+      }
     } catch {
       this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');
@@ -1481,7 +1430,7 @@ export class JobCreationFormComponent {
           {
             severity: this.publishButtonSeverity,
             icon: this.publishButtonIcon,
-            onClick: () => this.sendPublishDialog()?.confirm(),
+            onClick: () => this.showPublishDialog.set(true),
             disabled: !this.allFormsValid(),
             label: 'button.publish',
             shouldTranslate: true,
@@ -1512,7 +1461,7 @@ export class JobCreationFormComponent {
     return options.find(opt => opt.value === value);
   }
 
-  private extractSelectedValue<T>(selection: DropdownSelection<T> | undefined | null): T | undefined {
+  private extractSelectedValue<T>(selection: DropdownSelection<T> | undefined): T | undefined {
     return selection?.value;
   }
 }

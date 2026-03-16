@@ -35,11 +35,9 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 
 class JobResourceTest extends AbstractResourceTest {
@@ -67,9 +65,6 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Autowired
     MvcTestClient api;
-
-    @Autowired
-    DataSource dataSource;
 
     ResearchGroup researchGroup;
     User professor;
@@ -120,7 +115,6 @@ class JobResourceTest extends AbstractResourceTest {
             "Algorithms Group",
             "ALG",
             "Munich",
-            "CS",
             "We do cool stuff",
             "alg@example.com",
             "80333",
@@ -176,45 +170,6 @@ class JobResourceTest extends AbstractResourceTest {
     @Test
     void getAvailableJobsInvalidPaginationReturnsError() {
         api.getAndRead("/api/jobs/available", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
-    }
-
-    @Test
-    void getAllFiltersSupportsLegacySubjectAreaValues() {
-        Job legacyJob = jobRepository
-            .findAll()
-            .stream()
-            .filter(job -> "Published Role".equals(job.getTitle()))
-            .findFirst()
-            .orElseThrow();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.update("UPDATE jobs SET subject_area = ? WHERE job_id = ?", "CS", legacyJob.getJobId().toString());
-
-        JobFiltersDTO filters = api.getAndRead("/api/jobs/filters", Map.of(), JobFiltersDTO.class, 200);
-
-        assertThat(filters.subjectAreas()).contains(SubjectArea.COMPUTER_SCIENCE);
-        assertThat(filters.supervisorNames()).contains("John Doe");
-    }
-
-    @Test
-    void getAvailableJobsFilterSupportsLegacySubjectAreaValues() {
-        Job legacyJob = jobRepository
-            .findAll()
-            .stream()
-            .filter(job -> "Published Role".equals(job.getTitle()))
-            .findFirst()
-            .orElseThrow();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.update("UPDATE jobs SET subject_area = ? WHERE job_id = ?", "Environmental Science", legacyJob.getJobId().toString());
-
-        PageResponse<JobCardDTO> page = api.getAndRead(
-            "/api/jobs/available",
-            Map.of("pageNumber", "0", "pageSize", "10", "subjectAreas", "ENVIRONMENTAL_SCIENCE"),
-            new TypeReference<>() {},
-            200
-        );
-
-        assertThat(page.totalElements()).isEqualTo(1);
-        assertThat(page.content()).extracting(JobCardDTO::title).containsExactly("Published Role");
     }
 
     @Test
@@ -504,14 +459,12 @@ class JobResourceTest extends AbstractResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void changeJobStateNonExistantJobThrowsNotFound() {
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(
-                "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
-                null,
-                JobFormDTO.class,
-                404
-            );
+        api.putAndRead(
+            "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+            null,
+            JobFormDTO.class,
+            404
+        );
     }
 
     @Test

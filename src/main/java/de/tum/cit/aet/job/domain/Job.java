@@ -49,13 +49,9 @@ public class Job extends AbstractAuditingEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    // Uses a converter instead of @Enumerated so legacy DB values remain readable.
+    @Enumerated(EnumType.STRING)
     @Column(name = "subject_area")
-    @Convert(converter = SubjectAreaConverter.class)
     private SubjectArea subjectArea;
-
-    @Column(name = "subject_area", insertable = false, updatable = false)
-    private String subjectAreaRaw;
 
     @Column(name = "research_area")
     private String researchArea;
