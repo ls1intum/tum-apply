@@ -300,12 +300,7 @@ public class UserExportZipWriter {
             .map(subjectArea -> List.of(toCsvValue(subjectArea)))
             .toList();
 
-        addCsvFileToZip(
-            zipOut,
-            "data/applicant_subject_area_subscriptions.csv",
-            List.of("subject_area"),
-            subscriptionRows
-        );
+        addCsvFileToZip(zipOut, "data/applicant_subject_area_subscriptions.csv", List.of("subject_area"), subscriptionRows);
     }
 
     private void writeApplicantApplicationsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
