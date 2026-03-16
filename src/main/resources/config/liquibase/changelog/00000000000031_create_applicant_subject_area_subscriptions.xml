@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="033_create_applicant_subject_area_subscriptions" author="codex">
+  <changeSet id="031_create_applicant_subject_area_subscriptions" author="celine">
     <createTable tableName="applicant_subject_area_subscriptions">
       <column name="applicant_subject_area_subscription_id" type="UUID">
         <constraints primaryKey="true" nullable="false"/>
