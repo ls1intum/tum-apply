@@ -222,10 +222,13 @@
               @if (masterSummary().degree) {
                 <jhi-sub-section titleKey="evaluation.education.master">
                   <div class="flex flex-col">
-                    <span>
-                      {{ masterSummary().degree || '—' }}
-                      @if (masterSummary().gradeInfo.displayValue) {
-                        <span>({{ masterSummary().gradeInfo.displayValue }})</span>
+                    <span>{{ masterSummary().degree || '—' }}</span>
+                    @if (masterSummary().university) {
+                      <div class="text-sm">{{ masterSummary().university }}</div>
+                    }
+                    @if (masterSummary().gradeInfo.displayValue) {
+                      <div class="text-sm">
+                        {{ 'evaluation.grade' | translate }}: {{ masterSummary().gradeInfo.displayValue }}
                         @if (masterSummary().gradeInfo.tooltipText) {
                           <fa-icon
                             class="icon"
@@ -233,12 +236,10 @@
                             [pTooltip]="masterSummary().gradeInfo.tooltipText"
                             [escape]="false"
                             tooltipPosition="top"
+                            autoHide="false"
                           />
                         }
-                      }
-                    </span>
-                    @if (masterSummary().university) {
-                      <div class="text-sm">{{ masterSummary().university }}</div>
+                      </div>
                     }
                   </div>
                 </jhi-sub-section>
@@ -246,10 +247,13 @@
 
               <jhi-sub-section titleKey="evaluation.education.bachelor">
                 <div class="flex flex-col">
-                  <span>
-                    {{ bachelorSummary().degree || '—' }}
-                    @if (bachelorSummary().gradeInfo.displayValue) {
-                      <span>({{ bachelorSummary().gradeInfo.displayValue }})</span>
+                  <span>{{ bachelorSummary().degree || '—' }}</span>
+                  @if (bachelorSummary().university) {
+                    <div class="text-sm">{{ bachelorSummary().university }}</div>
+                  }
+                  @if (bachelorSummary().gradeInfo.displayValue) {
+                    <div class="text-sm">
+                      {{ 'evaluation.grade' | translate }}: {{ bachelorSummary().gradeInfo.displayValue }}
                       @if (bachelorSummary().gradeInfo.tooltipText) {
                         <fa-icon
                           class="icon"
@@ -257,12 +261,10 @@
                           [pTooltip]="bachelorSummary().gradeInfo.tooltipText"
                           [escape]="false"
                           tooltipPosition="top"
+                          autoHide="false"
                         />
                       }
-                    }
-                  </span>
-                  @if (bachelorSummary().university) {
-                    <div class="text-sm">{{ bachelorSummary().university }}</div>
+                    </div>
                   }
                 </div>
               </jhi-sub-section>

@@ -44,6 +44,29 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
 
     /**
+     * Finds a slot by ID with job, research group, and interviewee (including
+     * applicant/user).
+     * Used when updating a booked slot to send notification emails.
+     *
+     * @param slotId the ID of the slot to find
+     * @return Optional containing the slot with all associations loaded
+     */
+    @EntityGraph(
+        attributePaths = {
+            "interviewProcess",
+            "interviewProcess.job",
+            "interviewProcess.job.researchGroup",
+            "interviewProcess.job.supervisingProfessor",
+            "interviewee",
+            "interviewee.application",
+            "interviewee.application.applicant",
+            "interviewee.application.applicant.user",
+        }
+    )
+    @Query("SELECT s FROM InterviewSlot s WHERE s.id = :slotId")
+    Optional<InterviewSlot> findByIdWithJobAndInterviewee(@Param("slotId") UUID slotId);
+
+    /**
      * Finds all slots for the given interview process ids with job data.
      *
      * @param processIds interview process ids

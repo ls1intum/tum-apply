@@ -610,9 +610,6 @@ describe('ResearchGroupAdminView', () => {
 
       const manageMembersSpy = vi.spyOn(component, 'onManageMembers');
       const manageImagesSpy = vi.spyOn(component, 'onManageImages');
-      const approveConfirmSpy = vi.spyOn(component.approveDialog(), 'confirm');
-      const denyConfirmSpy = vi.spyOn(component.denyDialog(), 'confirm');
-      const withdrawConfirmSpy = vi.spyOn(component.withdrawDialog(), 'confirm');
 
       const menuMap = component.actionMenuItems();
 
@@ -641,19 +638,20 @@ describe('ResearchGroupAdminView', () => {
 
       draftItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(approveConfirmSpy).toHaveBeenCalledOnce();
+      expect(component.showApproveDialog()).toBe(true);
+      component.showApproveDialog.set(false); // Reset for next assertion
 
       draftItems.find(item => item.label === 'button.deny')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(denyConfirmSpy).toHaveBeenCalledOnce();
+      expect(component.showDenyDialog()).toBe(true);
 
       activeItems.find(item => item.label === 'button.withdraw')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-2');
-      expect(withdrawConfirmSpy).toHaveBeenCalledOnce();
+      expect(component.showWithdrawDialog()).toBe(true);
 
       deniedItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-3');
-      expect(approveConfirmSpy).toHaveBeenCalledTimes(2);
+      expect(component.showApproveDialog()).toBe(true);
     });
 
     it('executes confirm handlers when currentResearchGroupId is set', () => {

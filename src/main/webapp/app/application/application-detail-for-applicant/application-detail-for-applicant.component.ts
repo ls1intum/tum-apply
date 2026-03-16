@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
@@ -45,8 +45,8 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
-  withdrawConfirmDialog = viewChild<ConfirmDialog>('withdrawConfirmDialog');
-  deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
+  showWithdrawDialog = signal(false);
+  showDeleteDialog = signal(false);
   // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
@@ -117,7 +117,7 @@ export default class ApplicationDetailForApplicantComponent {
         icon: 'withdraw',
         severity: 'danger',
         command: () => {
-          this.withdrawConfirmDialog()?.confirm();
+          this.showWithdrawDialog.set(true);
         },
       });
     }
@@ -129,7 +129,7 @@ export default class ApplicationDetailForApplicantComponent {
         icon: 'trash',
         severity: 'danger',
         command: () => {
-          this.deleteConfirmDialog()?.confirm();
+          this.showDeleteDialog.set(true);
         },
       });
     }

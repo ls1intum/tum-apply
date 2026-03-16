@@ -69,17 +69,15 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String ignoredLegacyField,
         String description,
         String email,
         String postalCode,
-        String ignoredSchool,
+        String school,
         String street,
         String website,
         String state
     ) {
-        // ignoredLegacyField and ignoredSchool are kept for backward-compatible positional call sites.
-        return newRgAll(head, name, abbreviation, city, ignoredLegacyField, description, email, postalCode, street, website, state);
+        return newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state);
     }
 
     /**
@@ -90,7 +88,6 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String ignoredLegacyField,
         String description,
         String email,
         String postalCode,
@@ -98,7 +95,6 @@ public final class ResearchGroupTestData {
         String website,
         String state
     ) {
-        // ignoredLegacyField is kept for backward-compatible positional call sites.
         ResearchGroup rg = newRg();
         if (head != null) rg.setHead(head);
         if (name != null) rg.setName(name);
@@ -142,19 +138,15 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String ignoredLegacyField,
         String description,
         String email,
         String postalCode,
-        String ignoredSchool,
+        String school,
         String street,
         String website,
         String state
     ) {
-        // ignoredLegacyField and ignoredSchool are kept for backward-compatible positional call sites.
-        return repo.save(
-            newRgAll(head, name, abbreviation, city, ignoredLegacyField, description, email, postalCode, street, website, state)
-        );
+        return repo.save(newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state));
     }
 
     public static ResearchGroup savedAll(
@@ -164,7 +156,6 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String ignoredLegacyField,
         String description,
         String email,
         String postalCode,
@@ -172,19 +163,7 @@ public final class ResearchGroupTestData {
         String website,
         String state
     ) {
-        ResearchGroup rg = newRgAll(
-            head,
-            name,
-            abbreviation,
-            city,
-            ignoredLegacyField,
-            description,
-            email,
-            postalCode,
-            street,
-            website,
-            state
-        );
+        ResearchGroup rg = newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state);
         rg.setDepartment(department);
         return repo.save(rg);
     }
@@ -232,13 +211,11 @@ public final class ResearchGroupTestData {
         String email,
         String website,
         String description,
-        String ignoredLegacyField,
         String street,
         String postalCode,
         String city,
         ResearchGroupState state
     ) {
-        // ignoredLegacyField is kept for backward-compatible positional call sites.
         return new ResearchGroupDTO(name, abbreviation, head, email, website, description, street, postalCode, city, departmentId, state);
     }
 

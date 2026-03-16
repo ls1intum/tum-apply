@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -7,8 +7,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import {
-  GenderBiasAnalysisServiceMock,
   createGenderBiasAnalysisServiceMock,
+  GenderBiasAnalysisServiceMock,
   provideGenderBiasAnalysisServiceMock,
 } from 'util/gender-bias-analysis.service.mock';
 import { BehaviorSubject } from 'rxjs';
@@ -579,8 +579,8 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       const originalIncludes = Array.prototype.includes;
-      (Array.prototype as any).includes = function (this: any[], searchElement: any) {
-        if (this.includes === originalIncludes) {
+      const patchedIncludes = function (this: unknown[], searchElement: unknown): boolean {
+        if (this === Array.prototype) {
           return originalIncludes.call(this, searchElement);
         }
         if (this.length === 3 && searchElement === 'xyz') {
@@ -588,11 +588,12 @@ describe('EditorComponent', () => {
         }
         return originalIncludes.call(this, searchElement);
       };
+      Object.defineProperty(Array.prototype, 'includes', { value: patchedIncludes, configurable: true, writable: true });
 
       const result = comp['mapToLanguageCode']('xyz');
       expect(result).toBe('en');
 
-      Array.prototype.includes = originalIncludes;
+      Object.defineProperty(Array.prototype, 'includes', { value: originalIncludes, configurable: true, writable: true });
     });
 
     it('should fallback to currentLang when franc code is not in validCodes', () => {
@@ -659,6 +660,45 @@ describe('EditorComponent', () => {
       await fixture.whenStable();
 
       expect(genderBiasService.triggerAnalysis).not.toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('Clipboard Text Styling', () => {
+    it.each([
+      {
+        name: 'filter attributes to the allowed list',
+        input: {
+          ops: [
+            { insert: 'x', attributes: { bold: true, italic: false, color: 'red', unknown: 1, align: 'center', background: '#fff' } },
+            { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1, bad: 'style' } },
+          ],
+        },
+        expected: [
+          { insert: 'x', attributes: { bold: true, italic: false, align: 'center' } },
+          { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1 } },
+        ],
+      },
+      {
+        name: 'remove attributes when none are allowed',
+        input: { ops: [{ insert: 'x', attributes: { color: 'red', style: 'foo' } }] },
+        expected: [{ insert: 'x', attributes: undefined }],
+      },
+      {
+        name: 'return the same if no attributes present',
+        input: { ops: [{ insert: 'plain text' }] },
+        expected: [{ insert: 'plain text' }],
+      },
+    ])('should $name', ({ input, expected }) => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
+      const matcherFn = comp.quillModules.clipboard.matchers[0][1];
+      if (typeof matcherFn !== 'function') {
+        throw new Error('Expected clipboard matcher to be a function');
+      }
+      const result = matcherFn(document.createElement('div'), input);
+
+      expect(result.ops).toEqual(expected);
     });
   });
 });

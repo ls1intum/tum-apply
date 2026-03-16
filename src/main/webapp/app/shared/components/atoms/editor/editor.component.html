@@ -38,6 +38,7 @@
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
         [ngModel]="editorValue()"
+        [modules]="quillModules"
         [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
         (onContentChanged)="textChanged($event)"
       >
