@@ -12,6 +12,17 @@
     <dropColumn tableName="research_groups" columnName="default_field_of_studies"/>
   </changeSet>
 
+  <changeSet id="030_migrate_job_field_of_studies_to_enum" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+    </preConditions>
+
+    <sql>
+      UPDATE jobs
+      SET field_of_studies = UPPER(REPLACE(REPLACE(field_of_studies, ' ', '_'), '-', '_'));
+    </sql>
+  </changeSet>
+
   <changeSet id="030_rename_job_field_of_studies_to_subject_area" author="celine">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="jobs" columnName="field_of_studies"/>
@@ -26,22 +37,5 @@
       newColumnName="subject_area"
       columnDataType="VARCHAR(255)"
     />
-  </changeSet>
-
-  <changeSet id="030_normalize_and_map_job_subject_area_values" author="celine">
-    <preConditions onFail="MARK_RAN">
-      <columnExists tableName="jobs" columnName="subject_area"/>
-    </preConditions>
-
-    <sql>
-      UPDATE jobs
-      SET subject_area = CASE
-        WHEN subject_area = 'CS' THEN 'COMPUTER_SCIENCE'
-        WHEN subject_area = 'Informatics' THEN 'COMPUTER_SCIENCE'
-        ELSE UPPER(REPLACE(REPLACE(subject_area, ' ', '_'), '-', '_'))
-      END
-      WHERE subject_area IS NOT NULL
-        AND (subject_area NOT REGEXP '^[A-Z0-9_]+$' OR subject_area IN ('CS', 'Informatics'));
-    </sql>
   </changeSet>
 </databaseChangeLog>
