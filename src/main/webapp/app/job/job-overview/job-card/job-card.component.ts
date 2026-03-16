@@ -28,7 +28,6 @@ export class JobCardComponent {
   jobId = input<string>('');
   jobTitle = input<string>('');
   subjectArea = input<string | undefined>(undefined);
-  departmentName = input<string>('');
   researchArea = input<string>('');
   location = input<string>('');
   professor = input<string>('');
