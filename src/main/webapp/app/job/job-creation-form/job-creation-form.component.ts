@@ -670,9 +670,7 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(
-          this.basicInfoForm.get('subjectArea')?.value,
-        ) as JobFormDTO.SubjectAreaEnum,
+        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTO.SubjectAreaEnum,
         supervisingProfessor: this.userId(),
         location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
@@ -915,7 +913,7 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      subjectArea: this.extractSelectedValue<JobFormDTO.SubjectAreaEnum>(basicInfoValue.subjectArea),
+      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTO.SubjectAreaEnum,
       supervisingProfessor: supervisingProfessorId ?? '',
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
