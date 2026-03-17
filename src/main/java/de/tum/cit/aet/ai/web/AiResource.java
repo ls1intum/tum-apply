@@ -77,12 +77,12 @@ public class AiResource {
      * @return a ResponseEntity containing Compliance info
      */
     @ProfessorOrEmployeeOrAdmin
-    @PutMapping(value="analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ComplianceResponseDTO> analyzeJobDescriptionForCompliance(
         @RequestBody JobFormDTO jobForm,
-        @RequestParam("lang") String descriptionLanguage) {
-        log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})",descriptionLanguage);
+        @RequestParam("lang") String descriptionLanguage
+    ) {
+        log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})", descriptionLanguage);
         return ResponseEntity.ok(aiService.analyzeJobDescription(jobForm, descriptionLanguage));
     }
-
 }

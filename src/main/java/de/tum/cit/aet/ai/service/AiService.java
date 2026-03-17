@@ -138,7 +138,7 @@ public class AiService {
         return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
-            .user( u ->
+            .user(u ->
                 u
                     .text(complianceResource)
                     .param("descriptionLanguage", descriptionLanguage)
@@ -147,6 +147,5 @@ public class AiService {
             )
             .call()
             .entity(ComplianceResponseDTO.class);
-
     }
 }
