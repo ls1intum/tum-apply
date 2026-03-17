@@ -1,6 +1,7 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -66,4 +67,22 @@ public class AiResource {
         log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
         return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, text));
     }
+
+    /**
+     * Analyzes job application in real time
+     * Detects compliance issues and gives feedback
+     *
+     * @param descriptionLanguage the language for the generated job description ("de" or "en")
+     * @param jobForm             the job form data used to build the AI prompt
+     * @return a ResponseEntity containing Compliance info
+     */
+    @ProfessorOrEmployeeOrAdmin
+    @PutMapping(value="analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ComplianceResponseDTO> analyzeJobDescriptionForCompliance(
+        @RequestBody JobFormDTO jobForm,
+        @RequestParam("lang") String descriptionLanguage) {
+        log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})",descriptionLanguage);
+        return ResponseEntity.ok(aiService.analyzeJobDescription(jobForm, descriptionLanguage));
+    }
+
 }
