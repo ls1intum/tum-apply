@@ -414,7 +414,7 @@ export class JobCreationFormComponent {
     initialValue: this.imageForm.getRawValue(),
   });
 
-  /** Computed: Aggregates all form data into a draft DTO */
+  /** Computed: Aggregates all form data into a JobFormDTO for saving */
   currentJobData = computed<JobFormDTO>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
