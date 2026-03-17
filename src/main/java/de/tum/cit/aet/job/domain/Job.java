@@ -50,7 +50,7 @@ public class Job extends AbstractAuditingEntity {
     private Image image;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "subject_area")
+    @Column(name = "subject_area", nullable = false)
     private SubjectArea subjectArea;
 
     @Column(name = "research_area")

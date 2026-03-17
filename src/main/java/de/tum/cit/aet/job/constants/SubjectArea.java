@@ -1,8 +1,14 @@
 package de.tum.cit.aet.job.constants;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum SubjectArea implements LocalizedEnum {
     AEROSPACE_ENGINEERING("Aerospace Engineering", "Luft- und Raumfahrttechnik"),
     AGRICULTURAL_ENGINEERING("Agricultural Engineering", "Agrartechnik"),
@@ -55,12 +61,25 @@ public enum SubjectArea implements LocalizedEnum {
     private final String englishValue;
     private final String germanValue;
 
-    SubjectArea(String englishValue, String germanValue) {
-        this.englishValue = englishValue;
-        this.germanValue = germanValue;
-    }
+    /**
+     * Finds all subject areas whose enum name or localized labels match the given search query.
+     *
+     * @param query user-provided search term
+     * @return matching subject areas, or an empty list if the query is blank
+     */
+    public static List<SubjectArea> search(String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
 
-    public static SubjectArea fromValue(String value) {
-        return LocalizedEnum.fromValue(SubjectArea.class, value);
+        String normalizedQuery = query.trim().toLowerCase(Locale.ROOT);
+        return Arrays.stream(values())
+            .filter(subjectArea ->
+                Arrays.stream(new String[] { subjectArea.name(), subjectArea.englishValue, subjectArea.germanValue })
+                    .filter(Objects::nonNull)
+                    .map(value -> value.toLowerCase(Locale.ROOT))
+                    .anyMatch(value -> value.contains(normalizedQuery))
+            )
+            .toList();
     }
 }

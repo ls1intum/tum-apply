@@ -18,7 +18,7 @@ public record JobDetailDTO(
     @NotNull String supervisingProfessorName,
     @NotNull ResearchGroup researchGroup,
     @NotNull String title,
-    SubjectArea subjectArea,
+    @NotNull SubjectArea subjectArea,
     String researchArea,
     Campus location,
     Integer workload,

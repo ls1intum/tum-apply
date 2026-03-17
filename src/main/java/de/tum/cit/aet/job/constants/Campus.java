@@ -16,8 +16,4 @@ public enum Campus implements LocalizedEnum {
 
     private final String englishValue;
     private final String germanValue;
-
-    public static Campus fromValue(String value) {
-        return LocalizedEnum.fromValue(Campus.class, value);
-    }
 }

@@ -27,7 +27,7 @@ export interface JobDetailDTO {
     researchGroup: ResearchGroup;
     startDate?: string;
     state?: JobDetailDTO.StateEnum;
-    subjectArea?: JobDetailDTO.SubjectAreaEnum;
+    subjectArea: JobDetailDTO.SubjectAreaEnum;
     suitableForDisabled?: boolean;
     supervisingProfessorName: string;
     title: string;
