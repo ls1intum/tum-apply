@@ -107,7 +107,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Machine Learning Lab",
             "ML",
             "Munich",
-            "Computer Science",
             "We research ML algorithms",
             "contact@ml.tum.de",
             "80333",
@@ -122,7 +121,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Other Lab",
             "OL",
             "Munich",
-            "Physics",
             "Other research",
             "contact@other.tum.de",
             "80335",
@@ -350,7 +348,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 testDepartment.getDepartmentId(),
                 "updated@ml.tum.de",
                 "https://updated.ml.tum.de",
-                "Computer Science",
                 "Updated description",
                 "Arcisstr. 21",
                 "80333",
@@ -377,7 +374,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 testDepartment.getDepartmentId(),
                 "invalid-email", // Invalid email
                 "https://ml.tum.de",
-                "Computer Science",
                 "Description",
                 "Street",
                 "80333",
@@ -410,7 +406,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "contact@newlab.tum.de",
                 "https://newlab.tum.de",
                 "Research on new topics",
-                "Engineering Science",
                 "Boltzmannstr. 3",
                 "85748",
                 "Garching"
@@ -454,7 +449,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "",
                 "",
                 "",
-                "",
                 ""
             );
 
@@ -481,7 +475,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "contact@newlab.tum.de",
                 "https://newlab.tum.de",
                 "Research on new topics",
-                "Engineering Science",
                 "Boltzmannstr. 3",
                 "85748",
                 "Garching"
@@ -661,7 +654,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Draft",
                 "draft@example.com",
                 "DL",
-                "Science",
                 "Draft research",
                 "contact@draft.tum.de",
                 "80333",
@@ -712,7 +704,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Activation",
                 "activate@example.com",
                 "DLA",
-                "Science",
                 "Activation research",
                 "contact@activate.tum.de",
                 "80333",
@@ -760,7 +751,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Denial",
                 "deny@example.com",
                 "DLD",
-                "Science",
                 "Denial research",
                 "contact@deny.tum.de",
                 "80333",
@@ -808,7 +798,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Lab for Withdrawal",
                 "LFW",
                 "Munich",
-                "Science",
                 "Withdrawal research",
                 "contact@withdraw.tum.de",
                 "80333",
@@ -844,7 +833,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Withdraw",
                 "withdraw@example.com",
                 "DLW",
-                "Science",
                 "Withdraw research",
                 "contact@withdraw.tum.de",
                 "80333",
@@ -879,7 +867,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "ACL",
                 "https://acl.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -911,7 +898,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "FL",
                 "https://fail.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -944,7 +930,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "KCL",
                 "https://kcl.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -986,7 +971,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "EX",
                 "https://exist.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -1013,7 +997,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "AL",
                 "https://group.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"

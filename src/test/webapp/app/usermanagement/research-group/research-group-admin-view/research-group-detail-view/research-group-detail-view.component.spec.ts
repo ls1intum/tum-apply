@@ -37,7 +37,6 @@ describe('ResearchGroupDetailViewComponent', () => {
     street: 'Main Street 1',
     postalCode: '12345',
     city: 'Munich',
-    defaultFieldOfStudies: 'Artificial Intelligence',
   };
 
   const mockDepartments: DepartmentDTO[] = [
@@ -89,7 +88,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         abbreviation: '',
         name: '',
         departmentId: '',
-        defaultFieldOfStudies: '',
         head: '',
         email: '',
         website: '',
@@ -179,7 +177,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: 'Main Street 1',
         postalCode: '12345',
         city: 'Munich',
-        defaultFieldOfStudies: 'Artificial Intelligence',
       });
     });
   });
@@ -249,7 +246,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: 'New Street 2',
         postalCode: '54321',
         city: 'Berlin',
-        defaultFieldOfStudies: 'Machine Learning',
       });
 
       await component.onSave();
@@ -266,7 +262,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: 'New Street 2',
         postalCode: '54321',
         city: 'Berlin',
-        defaultFieldOfStudies: 'Machine Learning',
       });
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.detailView.success.updated');
     });
@@ -356,7 +351,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         abbreviation: '',
         name: '',
         departmentId: '',
-        defaultFieldOfStudies: '',
         head: '',
         email: '',
         website: '',
@@ -381,7 +375,6 @@ describe('ResearchGroupDetailViewComponent', () => {
       street: null,
       postalCode: null,
       city: null,
-      defaultFieldOfStudies: null,
     });
 
     await component.onSave();
@@ -398,7 +391,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: '',
         postalCode: '',
         city: '',
-        defaultFieldOfStudies: '',
       }),
     );
   });

@@ -33,7 +33,7 @@ public class JobResource {
      * (PUBLISHED) job postings.
      *
      * <p>
-     * Supports filtering by title, field of studies, campus location, professor
+     * Supports filtering by title, subject area, campus location, professor
      * name, and workload.
      * Supports sorting using the {@link SortDTO} for fields such as title,
      * workload, etc.
@@ -45,8 +45,8 @@ public class JobResource {
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sorting parameter containing the field and
      *                               direction
-     * @param searchQuery            string to search for job title, field of
-     *                               studies or supervisor name
+     * @param searchQuery            string to search for job title, subject area
+     *                               or supervisor name
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link JobCardDTO}
      */
@@ -67,7 +67,7 @@ public class JobResource {
      *
      * This endpoint provides all unique filter values that can be used in the job
      * filters
-     * It returns fields of study and supervisor names from all
+     * It returns subject areas and supervisor names from all
      * published jobs
      * to populate dropdown menus and filter components on the client side.
      *
@@ -77,7 +77,7 @@ public class JobResource {
     @Public
     @GetMapping("/filters")
     public ResponseEntity<JobFiltersDTO> getAllFilters() {
-        JobFiltersDTO dto = new JobFiltersDTO(jobService.getAllFieldOfStudies(), jobService.getAllSupervisorNames());
+        JobFiltersDTO dto = new JobFiltersDTO(jobService.getAllSubjectAreas(), jobService.getAllSupervisorNames());
         return ResponseEntity.ok(dto);
     }
 

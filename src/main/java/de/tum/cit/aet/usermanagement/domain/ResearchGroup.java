@@ -50,9 +50,6 @@ public class ResearchGroup extends AbstractAuditingEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "default_field_of_studies")
-    private String defaultFieldOfStudies;
-
     @Column(name = "street")
     private String street;
 

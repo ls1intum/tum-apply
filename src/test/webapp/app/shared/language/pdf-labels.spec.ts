@@ -11,7 +11,7 @@ import { formatGradeDisplay, getApplicationPDFLabels, getJobPDFLabels } from 'ap
 function expectOverviewLabels(labels: Record<string, string>) {
   expect(labels).toHaveProperty('supervisor');
   expect(labels).toHaveProperty('location');
-  expect(labels).toHaveProperty('fieldsOfStudies');
+  expect(labels).toHaveProperty('subjectArea');
   expect(labels).toHaveProperty('researchArea');
   expect(labels).toHaveProperty('workload');
   expect(labels).toHaveProperty('hoursPerWeek');
@@ -33,7 +33,7 @@ function expectFooterLabels(labels: Record<string, string>) {
 }
 
 function expectColonLabels(labels: Record<string, string>) {
-  ['fieldsOfStudies', 'researchArea', 'workload', 'duration', 'fundingType', 'startDate', 'endDate'].forEach(key => {
+  ['subjectArea', 'researchArea', 'workload', 'duration', 'fundingType', 'startDate', 'endDate'].forEach(key => {
     expect(labels[key]).toContain(':');
   });
 }
@@ -102,7 +102,7 @@ describe('PDF Labels', () => {
 
         supervisor: 'jobDetailPage.header.supervisor',
         location: 'jobDetailPage.header.location',
-        fieldsOfStudies: 'jobDetailPage.labels.fieldOfStudies:',
+        subjectArea: 'jobDetailPage.labels.subjectArea:',
         researchArea: 'jobDetailPage.labels.researchArea:',
         workload: 'jobDetailPage.labels.workload:',
         hoursPerWeek: 'jobDetailPage.units.hoursPerWeek',
@@ -185,7 +185,7 @@ describe('PDF Labels', () => {
 
         supervisor: 'jobDetailPage.header.supervisor',
         location: 'jobDetailPage.header.location',
-        fieldsOfStudies: 'jobDetailPage.labels.fieldOfStudies:',
+        subjectArea: 'jobDetailPage.labels.subjectArea:',
         researchArea: 'jobDetailPage.labels.researchArea:',
         workload: 'jobDetailPage.labels.workload:',
         hoursPerWeek: 'jobDetailPage.units.hoursPerWeek',
@@ -229,7 +229,7 @@ describe('PDF Labels', () => {
       expectSharedLabels(appLabels, jobLabels, [
         'supervisor',
         'location',
-        'fieldsOfStudies',
+        'subjectArea',
         'researchArea',
         'workload',
         'hoursPerWeek',

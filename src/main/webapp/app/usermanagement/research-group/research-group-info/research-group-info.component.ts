@@ -70,7 +70,6 @@ export class ResearchGroupInfoComponent {
     postalCode: new FormControl(''),
     address: new FormControl(''),
     description: new FormControl(''),
-    defaultFieldOfStudies: new FormControl(''),
   });
 
   // Services
@@ -115,7 +114,6 @@ export class ResearchGroupInfoComponent {
         street: formValue.address ?? '',
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
-        defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
       };
 
       await firstValueFrom(this.researchGroupService.updateResearchGroup(researchGroupId, updateData));
@@ -190,7 +188,6 @@ export class ResearchGroupInfoComponent {
       postalCode: data?.postalCode,
       address: data?.street,
       description: data?.description,
-      defaultFieldOfStudies: data?.defaultFieldOfStudies,
     });
     this.form.updateValueAndValidity();
   }

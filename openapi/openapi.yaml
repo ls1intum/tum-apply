@@ -1544,12 +1544,24 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32, minimum: 0}
-      - name: fieldOfStudies
+      - name: subjectAreas
         in: query
         required: false
         schema:
           type: array
-          items: {type: string}
+          items:
+            type: string
+            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
+              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
+              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
+              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
+              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
       - name: locations
         in: query
         required: false
@@ -2990,7 +3002,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/CustomField'}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3010,6 +3021,19 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
         title: {type: string}
@@ -3043,7 +3067,6 @@ components:
       properties:
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3062,6 +3085,19 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
@@ -3078,7 +3114,6 @@ components:
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3098,18 +3133,43 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
+      required: [createdAt, jobId, lastModifiedAt, researchGroup, subjectArea, supervisingProfessorName,
         title]
     JobFiltersDTO:
       type: object
       properties:
-        fieldsOfStudy:
+        subjectAreas:
           type: array
-          items: {type: string}
+          items:
+            type: string
+            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
+              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
+              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
+              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
+              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
         supervisorNames:
           type: array
           items: {type: string}
@@ -3118,7 +3178,6 @@ components:
       properties:
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3136,11 +3195,24 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [fieldOfStudies, location, state, supervisingProfessor, title]
+      required: [location, state, subjectArea, supervisingProfessor, title]
     JobPreviewRequest:
       type: object
       properties:
@@ -3329,7 +3401,6 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         createdAt: {type: string, format: date-time}
-        defaultFieldOfStudies: {type: string}
         department: {$ref: '#/components/schemas/Department'}
         description: {type: string}
         email: {type: string}
@@ -3365,7 +3436,6 @@ components:
       properties:
         abbreviation: {type: string}
         city: {type: string}
-        defaultFieldOfStudies: {type: string}
         departmentId: {type: string, format: uuid}
         description: {type: string}
         email: {type: string, format: email}
@@ -3393,7 +3463,6 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         contactEmail: {type: string}
-        defaultFieldOfStudies: {type: string}
         departmentId: {type: string, format: uuid}
         description: {type: string}
         firstName: {type: string}
