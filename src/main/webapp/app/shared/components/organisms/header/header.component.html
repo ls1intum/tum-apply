@@ -4,7 +4,11 @@
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
 >
-  <a href="/" (click)="onLogoClick($event)" class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0">
+  <a
+    href="/"
+    (click)="onLogoClick($event)"
+    class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0"
+  >
     <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     <span>TUMApply</span>
     @if (isProfessorPage()) {
