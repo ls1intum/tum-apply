@@ -138,7 +138,7 @@
             <div class="info-list">
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.subjectArea"></span>
-                <span class="value">{{ dropDownOptions.getSubjectAreaTranslationKey(job.subjectArea) | translate }}</span>
+                <span class="value">{{ (dropDownOptions.getSubjectAreaTranslationKey(job.subjectArea) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
