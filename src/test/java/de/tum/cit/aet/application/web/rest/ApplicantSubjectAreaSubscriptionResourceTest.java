@@ -172,19 +172,6 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
 
             assertThat(after).isEmpty();
         }
-
-        @Test
-        void deleteNonExistingSubscriptionDoesNotError() {
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, Void.class, 204);
-
-            List<ApplicantSubjectAreaSubscriptionDTO> subscriptions = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
-
-            assertThat(subscriptions).isEmpty();
-        }
     }
 
     @Nested

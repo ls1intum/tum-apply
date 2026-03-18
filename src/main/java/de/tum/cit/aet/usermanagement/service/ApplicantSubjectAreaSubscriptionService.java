@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
  * Service for managing applicant subject area subscriptions.
  * Handles loading, adding, and removing individual subject area subscriptions.
  */
-@Slf4j
 @Service
 public class ApplicantSubjectAreaSubscriptionService {
 
@@ -59,7 +58,7 @@ public class ApplicantSubjectAreaSubscriptionService {
     public ApplicantSubjectAreaSubscriptionDTO addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
 
-        // Check if subscription already exists
+        // 1. Check if subscription already exists
         if (subscriptionRepository.existsByApplicantUserIdAndSubjectArea(userId, subjectArea)) {
             ApplicantSubjectAreaSubscription existing = subscriptionRepository
                 .findByApplicantUserId(userId)
@@ -70,9 +69,8 @@ public class ApplicantSubjectAreaSubscriptionService {
             return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(existing);
         }
 
-        // Get applicant and save subscription
+        // 2. Get applicant and save subscription
         Applicant applicant = applicantRepository.findById(userId).orElseThrow();
-
         ApplicantSubjectAreaSubscription subscription = new ApplicantSubjectAreaSubscription(applicant, subjectArea);
         subscriptionRepository.save(subscription);
 
