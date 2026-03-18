@@ -1,7 +1,5 @@
 package de.tum.cit.aet.usermanagement.domain;
 
-import de.tum.cit.aet.core.domain.export.ExportedUserData;
-import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +31,6 @@ import lombok.Setter;
     name = "applicant_subject_area_subscriptions",
     uniqueConstraints = @UniqueConstraint(name = "uc_applicant_subject_area", columnNames = { "user_id", "subject_area" })
 )
-@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 public class ApplicantSubjectAreaSubscription {
 
     @Id
