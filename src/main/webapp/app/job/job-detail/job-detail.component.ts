@@ -474,7 +474,7 @@ export class JobDetailComponent {
     user?: ReturnType<AccountService['loadedUser']>,
     researchGroupDetails?: {
       department?: {
-        name?: string;
+        name: string;
       };
       description?: string;
       email?: string;
@@ -510,8 +510,7 @@ export class JobDetailComponent {
     const endDate = data.endDate as string;
 
     const researchGroupDescription = researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : '');
-    const researchGroupDepartment =
-      researchGroupDetails?.department?.name ?? (!isForm ? (jobDetailDTO.researchGroup.department?.name ?? '') : '');
+    const researchGroupDepartment = researchGroupDetails?.department?.name ?? (!isForm ? (jobDetailDTO.researchGroup.department?.name ?? '') : '');
     const researchGroupEmail = researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : '');
     const researchGroupWebsite = researchGroupDetails?.website ?? (!isForm ? (jobDetailDTO.researchGroup.website ?? '') : '');
     const researchGroupStreet = researchGroupDetails?.street ?? (!isForm ? (jobDetailDTO.researchGroup.street ?? '') : '');

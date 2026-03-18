@@ -204,12 +204,7 @@
               <div class="mt-4">
                 @if (job.researchGroupDepartment) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
-                    <fa-icon
-                      [icon]="['fas', 'building-user']"
-                      class="icon"
-                      [pTooltip]="'jobDetailPage.tooltips.department' | translate"
-                      tooltipPosition="top"
-                    />
+                    <fa-icon [icon]="['fas', 'building-user']" class="icon" />
                     <div>{{ job.researchGroupDepartment }}</div>
                   </div>
                 }

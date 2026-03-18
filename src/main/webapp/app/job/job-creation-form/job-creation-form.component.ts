@@ -49,9 +49,6 @@ import * as DropdownOptions from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
-interface DropdownSelection<T> {
-  value: T;
-}
 
 /**
  * JobCreationFormComponent
@@ -414,7 +411,7 @@ export class JobCreationFormComponent {
     initialValue: this.imageForm.getRawValue(),
   });
 
-  /** Computed: Aggregates all form data into a draft DTO */
+  /** Computed: Aggregates all form data into a JobFormDTO for saving */
   currentJobData = computed<JobFormDTO>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
@@ -1457,9 +1454,5 @@ export class JobCreationFormComponent {
    */
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
-  }
-
-  private extractSelectedValue<T>(selection: DropdownSelection<T> | undefined): T | undefined {
-    return selection?.value;
   }
 }

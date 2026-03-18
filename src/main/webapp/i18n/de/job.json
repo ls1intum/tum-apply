@@ -337,9 +337,6 @@
       "positionOverview": "Stellenübersicht",
       "researchGroup": "Forschungsgruppe"
     },
-    "tooltips": {
-      "department": "Fachgebiet"
-    },
     "labels": {
       "subjectArea": "Fachbereich",
       "researchArea": "Forschungsbereich",

@@ -22,7 +22,7 @@ export interface JobCardDTO {
     relativeTimeEnglish?: string;
     relativeTimeGerman?: string;
     startDate?: string;
-    subjectArea?: JobCardDTO.SubjectAreaEnum;
+    subjectArea: JobCardDTO.SubjectAreaEnum;
     title: string;
     workload?: number;
 }

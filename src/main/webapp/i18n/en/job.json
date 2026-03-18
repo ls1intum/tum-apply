@@ -337,9 +337,6 @@
       "positionOverview": "Position Overview",
       "researchGroup": "Research Group"
     },
-    "tooltips": {
-      "department": "Department"
-    },
     "labels": {
       "subjectArea": "Subject Area",
       "researchArea": "Research Area",
