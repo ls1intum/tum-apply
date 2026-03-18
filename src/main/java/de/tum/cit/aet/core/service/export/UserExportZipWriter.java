@@ -223,6 +223,7 @@ public class UserExportZipWriter {
         writeApplicantDocumentsCsv(zipOut, applicantData);
         writeApplicantApplicationsCsv(zipOut, applicantData);
         writeApplicantIntervieweesCsv(zipOut, applicantData);
+        writeApplicantSubjectAreaSubscriptionsCsv(zipOut, applicantData);
     }
 
     private void writeApplicantProfileCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
@@ -337,6 +338,16 @@ public class UserExportZipWriter {
             .toList();
 
         addCsvFileToZip(zipOut, "data/applicant_interviewees.csv", List.of("job_title", "last_invited"), intervieweeRows);
+    }
+
+    private void writeApplicantSubjectAreaSubscriptionsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
+        List<List<String>> subscriptionRows = applicantData
+            .subjectAreaSubscriptions()
+            .stream()
+            .map(subscription -> List.of(toCsvValue(subscription)))
+            .toList();
+
+        addCsvFileToZip(zipOut, "data/applicant_subject_area_subscriptions.csv", List.of("subject_area"), subscriptionRows);
     }
 
     private void writeStaffCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {

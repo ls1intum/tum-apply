@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service for managing applicant subject area subscriptions.
@@ -82,6 +83,7 @@ public class ApplicantSubjectAreaSubscriptionService {
      *
      * @param subjectArea the subject area to unsubscribe from
      */
+    @Transactional
     public void removeSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
         subscriptionRepository.deleteByApplicantUserIdAndSubjectArea(userId, subjectArea);

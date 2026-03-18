@@ -15,6 +15,7 @@ import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscriptionRepository;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private final ApplicationReviewRepository applicationReviewRepository;
     private final RatingRepository ratingRepository;
     private final InternalCommentRepository internalCommentRepository;
+    private final ApplicantSubjectAreaSubscriptionRepository subscriptionRepository;
 
     @Override
     public void contribute(ExportContext context, UserDataExportBuilder builder) {
@@ -79,6 +81,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .toList();
 
         List<IntervieweeExportDTO> interviewees = getInterviewees(userId);
+        List<String> subjectAreaSubscriptions = getSubjectAreaSubscriptions(userId);
 
         return new ApplicantDataExportDTO(
             applicant.getStreet(),
@@ -97,7 +100,8 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             applicant.getMasterUniversity(),
             documents,
             applications,
-            interviewees
+            interviewees,
+            subjectAreaSubscriptions
         );
     }
 
@@ -141,6 +145,14 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .map(interviewee ->
                 new IntervieweeExportDTO(interviewee.getInterviewProcess().getJob().getTitle(), interviewee.getLastInvited())
             )
+            .toList();
+    }
+
+    private List<String> getSubjectAreaSubscriptions(UUID userId) {
+        return subscriptionRepository
+            .findByApplicantUserId(userId)
+            .stream()
+            .map(subscription -> subscription.getSubjectArea().name())
             .toList();
     }
 }
