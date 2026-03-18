@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { User } from './user';
+import { ApplicantSubjectAreaSubscription } from './applicantSubjectAreaSubscription';
 import { DocumentDictionary } from './documentDictionary';
 import { Application } from './application';
 
@@ -28,6 +29,7 @@ export interface Applicant {
     masterUniversity?: string;
     postalCode?: string;
     street?: string;
+    subjectAreaSubscriptions?: Array<ApplicantSubjectAreaSubscription>;
     submittedApplications?: Array<Application>;
     user?: User;
     userId?: string;

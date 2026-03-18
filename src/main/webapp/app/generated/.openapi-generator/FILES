@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/actuatorApi.service.ts
 api/aiResourceApi.service.ts
 api/api.ts
 api/applicantResourceApi.service.ts
@@ -38,6 +39,8 @@ model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
+model/applicantSubjectAreaSubscription.ts
+model/applicantSubjectAreaSubscriptionDTO.ts
 model/application.ts
 model/applicationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts
@@ -97,6 +100,7 @@ model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/jobPreviewRequest.ts
 model/keycloakUserDTO.ts
+model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts

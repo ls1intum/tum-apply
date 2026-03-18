@@ -35,6 +35,9 @@ public class Applicant {
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<DocumentDictionary> documentDictionaries;
 
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<ApplicantSubjectAreaSubscription> subjectAreaSubscriptions;
+
     @Column(name = "street")
     private String street;
 
