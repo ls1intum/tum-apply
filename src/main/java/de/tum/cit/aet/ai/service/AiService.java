@@ -133,6 +133,16 @@ public class AiService {
         return translated;
     }
 
+    /**
+     * Analyzes the job description using the compliance prompt
+     * Passes the selected description language, the job description text,
+     * and optionally the job title to the AI model.
+     *
+     * @param jobFormDTO the job form data containing language-specific job descriptions
+     * @param descriptionLanguage the analysis language, expected to be `de` or `en`
+     * @return structured compliance analysis as a `ComplianceResponseDTO`
+     */
+
     public ComplianceResponseDTO analyzeJobDescription(JobFormDTO jobFormDTO, String descriptionLanguage) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         return chatClient

@@ -69,13 +69,14 @@ public class AiResource {
     }
 
     /**
-     * Analyzes job application in real time
-     * Detects compliance issues and gives feedback
+     * Analyzes the job description in real time for compliance violations
+     * and provides corresponding feedback.
      *
-     * @param descriptionLanguage the language for the generated job description ("de" or "en")
-     * @param jobForm             the job form data used to build the AI prompt
-     * @return a ResponseEntity containing Compliance info
+     * @param jobForm the job form data used as the basis for the analysis
+     * @param descriptionLanguage the language of the job description, `de` or `en`
+     * @return a ResponseEntity containing detected compliance findings
      */
+
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ComplianceResponseDTO> analyzeJobDescriptionForCompliance(
