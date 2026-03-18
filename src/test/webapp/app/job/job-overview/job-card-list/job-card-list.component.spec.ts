@@ -250,6 +250,7 @@ describe('JobCardListComponent', () => {
         title: 'A',
         professorName: 'P1',
         location: LocationEnum.Heilbronn,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
         departmentName: 'D1',
       },
       {
@@ -257,6 +258,7 @@ describe('JobCardListComponent', () => {
         title: 'B',
         professorName: 'P2',
         location: LocationEnum.Heilbronn,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
         departmentName: 'D2',
       },
     ]);
@@ -273,6 +275,7 @@ describe('JobCardListComponent', () => {
         title: 'A',
         professorName: 'P1',
         location: LocationEnum.Heilbronn,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
         applicationState: undefined,
         departmentName: 'D1',
       },
@@ -292,6 +295,7 @@ describe('JobCardListComponent', () => {
         title: 'A',
         professorName: 'P1',
         location: LocationEnum.Garching,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
         relativeTimeEnglish: '2 days ago',
         relativeTimeGerman: 'vor 2 Tagen',
         departmentName: 'D1',
