@@ -67,20 +67,6 @@
 
             <div class="form-row">
               <div class="form-field">
-                <jhi-select
-                  [label]="'researchGroup.detailView.department' | translate"
-                  [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
-                  [items]="departmentOptions()"
-                  [required]="true"
-                  [selected]="selectedDepartmentOption()"
-                  (selectedChange)="onDepartmentChange($event)"
-                />
-              </div>
-              <div class="form-field"></div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
                 <jhi-string-input
                   [id]="'rg-website'"
                   label="{{ 'researchGroup.detailView.website' | translate }}"
@@ -99,6 +85,20 @@
                   placeholder="{{ 'researchGroup.detailView.placeholders.email' | translate }}"
                 />
               </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-select
+                  [label]="'researchGroup.detailView.department' | translate"
+                  [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
+                  [items]="departmentOptions()"
+                  [required]="true"
+                  [selected]="selectedDepartmentOption()"
+                  (selectedChange)="onDepartmentChange($event)"
+                />
+              </div>
+              <div class="form-field"></div>
             </div>
 
             <!-- Address section -->

@@ -3206,7 +3206,7 @@ components:
         supervisingProfessorName: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
+      required: [createdAt, jobId, lastModifiedAt, researchGroup, subjectArea, supervisingProfessorName,
         title]
     JobFiltersDTO:
       type: object

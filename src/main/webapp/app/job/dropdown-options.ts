@@ -90,13 +90,14 @@ export function mapSubjectAreaNames(translationKeys: string[]): JobFormDTO.Subje
 
 /**
  * Generic resolver to convert a raw value to its i18n translation key using a provided map.
- * - Returns '-' when value is null/undefined.
+ * - Returns an empty string when value is null/undefined/blank.
  * - Normalizes input via toEnumString before lookup.
  * - Falls back to normalized value if no mapping exists.
  */
 function getTranslationKey(value: string | undefined, valueToNameMap: Map<string, string>): string {
-  if (value == null) return '-';
+  if (value == null || value.trim() === '') return '';
   const normalized = toEnumString(value);
+  if (normalized === '') return '';
   return valueToNameMap.get(normalized) ?? normalized;
 }
 

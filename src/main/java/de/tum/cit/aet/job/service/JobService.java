@@ -246,7 +246,10 @@ public class JobService {
         Pageable pageable;
 
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
-        SubjectArea searchSubjectArea = normalizedSearchQuery != null ? SubjectArea.fromValue(normalizedSearchQuery) : null;
+        List<SubjectArea> searchSubjectAreas = normalizedSearchQuery != null ? SubjectArea.search(normalizedSearchQuery) : null;
+        if (searchSubjectAreas != null && searchSubjectAreas.isEmpty()) {
+            searchSubjectAreas = null;
+        }
         List<SubjectArea> subjectAreas = availableJobsFilterDTO.subjectAreas();
         if (subjectAreas != null && subjectAreas.isEmpty()) {
             subjectAreas = null;
@@ -264,7 +267,7 @@ public class JobService {
                 sortDTO.direction().name(),
                 userId,
                 normalizedSearchQuery,
-                searchSubjectArea,
+                searchSubjectAreas,
                 pageable
             );
         } else {
@@ -277,7 +280,7 @@ public class JobService {
                 availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                 userId,
                 normalizedSearchQuery,
-                searchSubjectArea,
+                searchSubjectAreas,
                 pageable
             );
         }
@@ -292,7 +295,7 @@ public class JobService {
      * alphabetically
      */
     public List<SubjectArea> getAllSubjectAreas() {
-        return jobRepository.findAllUniqueSubjectAreas(JobState.PUBLISHED).stream().filter(Objects::nonNull).distinct().toList();
+        return jobRepository.findAllUniqueSubjectAreas(JobState.PUBLISHED);
     }
 
     /**

@@ -627,6 +627,7 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: '',
       workload: 15 as unknown as number,
       contractDuration: 9 as unknown as number,
+      subjectArea: 'COMPUTER_SCIENCE',
     };
 
     const user = mockAccountService.loadedUser();
