@@ -15,7 +15,7 @@ import { TooltipModule } from 'primeng/tooltip';
 })
 export class GenderBiasAnalysisDialogComponent {
   visible = input.required<boolean>();
-  result = input<GenderBiasAnalysisResponse | null>(null);
+  result = input<GenderBiasAnalysisResponse | undefined>(undefined);
 
   visibleChange = output<boolean>();
   closeDialog = output();

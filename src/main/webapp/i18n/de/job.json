@@ -131,7 +131,7 @@
       "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
-        "aiLabel": "KI schreibt und verbessert diesen Text für dich.",
+        "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Stelle.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
@@ -169,8 +169,8 @@
         "translating": "Übersetzt...",
         "aiScoreFeedback": {
           "critical": "Kritisch niedrig. Deine Ausschreibung wirkt stark exkludierend und wird viele passende Talente abschrecken. Überarbeite Sprache und Anforderungen dringend inklusiver.",
-          "warning": "Deine Ausschreibung könnte inklusiver sein. Beiträge mit höherem Score sprechen vielfältigere Bewerber:innen an und erhalten mehr Rückmeldungen.",
-          "good": "Solide Basis. Deine Ausschreibung ist bereits inklusiv und spricht viele Kandidat:innen an. Mit gezielten Feinjustierungen kannst du sie noch stärker machen.",
+          "warning": "Deine Ausschreibung könnte inklusiver sein. Beiträge mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
+          "good": "Solide Basis. Deine Ausschreibung ist bereits inklusiv und spricht viele Bewerbende an. Mit gezielten Feinjustierungen kannst du sie noch stärker machen.",
           "excellent": "Perfekt. Besser geht es kaum. Deine Ausschreibung ist sehr inklusiv und spricht ein breites, diverses Talentfeld an."
         }
       }

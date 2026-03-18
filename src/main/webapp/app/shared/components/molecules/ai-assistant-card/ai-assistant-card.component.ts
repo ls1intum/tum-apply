@@ -6,7 +6,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { AiScoreRingComponent } from 'app/shared/components/atoms/ai-score-ring/ai-score-ring.component';
-import { DialogModule } from 'primeng/dialog';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
@@ -17,7 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
     FontAwesomeModule,
     TranslateModule,
     TranslateDirective,
-    DialogModule,
+    DialogComponent,
     TooltipModule,
     ButtonComponent,
     ProgressSpinnerComponent,

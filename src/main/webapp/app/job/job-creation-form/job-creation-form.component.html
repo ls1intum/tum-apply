@@ -22,13 +22,9 @@
 
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
-    <!-- Keeps form width stable while shifting position when the AI sidebar toggles -->
-    <div class="panel1-layout" [class.sidebar-collapsed]="!aiSidebarVisible()">
-      <div
-        class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out"
-        [ngClass]="aiSidebarVisible() ? 'lg:max-w-full lg:mx-auto' : 'lg:max-w-[calc(100%-13rem)] lg:mx-auto'"
-      >
-        <form [formGroup]="basicInfoForm" class="w-full">
+    <div class="panel1-layout" [class.panel1-layout-with-sidebar]="aiToggleSignal()">
+      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto">
+        <form [formGroup]="basicInfoForm" class="mx-auto w-full max-w-5xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
           <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
           <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
           <div class="flex flex-col">
@@ -110,8 +106,7 @@
           <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
           <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
 
-          <!-- Header row: Language switcher (left) + AI toggle (right) -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 mb-3">
+          <div class="mt-3 mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
               <jhi-segmented-toggle
                 [value]="segmentValueForLang(currentDescriptionLanguage())"
@@ -134,7 +129,7 @@
               }
             </div>
 
-            <div class="flex items-center gap-2 sm:justify-end">
+            <div class="flex items-center gap-2 sm:ml-auto sm:justify-end">
               <jhi-toggle-switch [(model)]="aiToggleSignal" class="flex" />
               <label
                 class="text-sm whitespace-nowrap"
@@ -145,7 +140,7 @@
 
           <div class="flex flex-col gap-2 mb-6">
             <div>
-              <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm text-primary">
+              <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm" [class.lg:grid-cols-[1fr_auto_220px]]="aiToggleSignal()">
                 <fa-icon class="text-xs" [icon]="['fas', 'custom-sparkle']" />
                 <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
               </div>
@@ -169,51 +164,31 @@
         </form>
       </div>
 
+
+      @if(aiToggleSignal()) {
       <!--AI Assistant sidebar-->
+        <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
       <aside
-        class="mx-auto mt-4 flex w-full max-w-[30rem] flex-col overflow-hidden rounded-md border border-border-default bg-background-default transition-colors duration-200 lg:mx-0 lg:mt-0 lg:h-full lg:w-full lg:max-w-full"
-        [ngClass]="{ 'hover:border-primary': !aiSidebarVisible(), 'cursor-pointer': !aiSidebarVisible() }"
-        (click)="!aiSidebarVisible() && toggleAiSidebar()"
+        class="mx-auto mt-4 flex w-full max-w-[52rem] flex-col overflow-hidden bg-background-default lg:mx-0 lg:mt-0 lg:h-full lg:w-full lg:max-w-full"
       >
-        <div class="flex items-center border-border-default" [ngClass]="{ 'border-b': aiSidebarVisible() }">
-          <!-- Header layout for expanded vs. collapsed sidebar state -->
-          <div
-            class="flex min-h-16 flex-1 items-center text-text-primary"
-            [ngClass]="{
-              'justify-start gap-3 px-5 py-3': aiSidebarVisible(),
-              'justify-center gap-2 px-4 py-4 lg:min-h-0 lg:flex-col lg:gap-1.5 lg:px-3 lg:py-6': !aiSidebarVisible(),
-            }"
-          >
+        <div class="flex items-center">
+          <div class="flex min-h-16 flex-1 items-center justify-start gap-3 px-5 py-3 text-text-primary">
             <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
             <span
               class="text-base leading-tight font-bold text-text-primary"
-              [ngClass]="{ 'lg:[writing-mode:vertical-rl]': !aiSidebarVisible() }"
               jhiTranslate="jobCreationForm.aiSidebar.header"
             ></span>
           </div>
-
-          @if (aiSidebarVisible()) {
-            <jhi-button
-              class="shrink-0 -mt-0.5 mr-3"
-              icon="xmark"
-              variant="text"
-              severity="secondary"
-              size="md"
-              styleClass="!rounded-full"
-              (click)="closeAiSidebar(); $event.stopPropagation()"
-            />
-          }
         </div>
 
-        @if (aiSidebarVisible()) {
-          <jhi-ai-assistant-card
-            [score]="aiScore()"
-            [isGenerating]="isGeneratingDraft()"
-            [isRewriteMode]="rewriteButtonSignal()"
-            (generate)="generateJobApplicationDraft()"
-          />
-        }
+        <jhi-ai-assistant-card
+          [score]="aiScore()"
+          [isGenerating]="isGeneratingDraft()"
+          [isRewriteMode]="rewriteButtonSignal()"
+          (generate)="generateJobApplicationDraft()"
+        />
       </aside>
+      }
     </div>
   </ng-template>
 

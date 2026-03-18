@@ -51,13 +51,13 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly fieldIdChanges$ = toObservable(this.fieldId);
 
   readonly analysisResult = toSignal(this.fieldIdChanges$.pipe(switchMap(fieldId => this.genderBiasService.getAnalysisForField(fieldId))), {
-    initialValue: null,
+    initialValue: undefined,
   });
 
   showAnalysisModal = signal(false);
 
   readonly shouldShowButton = computed(() => {
-    return this.showGenderDecoderButton() && this.analysisResult() !== null;
+    return this.showGenderDecoderButton() && this.analysisResult() !== undefined;
   });
 
   // Check if error message should be displayed

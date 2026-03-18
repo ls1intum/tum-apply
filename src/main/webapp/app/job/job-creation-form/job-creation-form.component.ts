@@ -238,7 +238,7 @@ export class JobCreationFormComponent {
 
   /** Score shown in the AI sidebar */
   readonly aiScore = computed(() =>
-    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis() ?? null, this.jobDescriptionSignal()),
+    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()),
   );
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -454,8 +454,6 @@ export class JobCreationFormComponent {
 
   private isAutoScrolling = false;
 
-  readonly aiSidebarVisible = signal<boolean>(true);
-
   // ═══════════════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
   // ═══════════════════════════════════════════════════════════════════════════
@@ -544,14 +542,6 @@ export class JobCreationFormComponent {
       this.jobDescriptionEditor()?.forceUpdate('');
     }
   });
-
-  toggleAiSidebar(): void {
-    this.aiSidebarVisible.update(visible => !visible);
-  }
-
-  closeAiSidebar(): void {
-    this.aiSidebarVisible.set(false);
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PUBLISH METHODS

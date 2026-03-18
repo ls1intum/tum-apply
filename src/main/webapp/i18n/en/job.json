@@ -131,7 +131,7 @@
       "languageInfo": "Please choose and write in German or English, the other language is auto-translated and can be reviewed or edited. Switching languages is disabled during translation.",
       "jobDescription": {
         "label": "Job Description",
-        "aiLabel": "AI writes and improves this text for you.",
+        "aiLabel": "AI writes, improves and translates for you.",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Use the template above to structure your job description clearly for applicants.",
@@ -169,7 +169,7 @@
         "translating": "Translating...",
         "aiScoreFeedback": {
           "critical": "Critically low. Your posting reads as highly exclusionary and may drive away strong candidates. Rework wording and requirements to be far more inclusive.",
-          "warning": "Your job could be more inclusive. Posts with a higher score attract more diverse applicants and get more responses..",
+          "warning": "Your job could be more inclusive. Posts with a higher score attract more diverse applicants and get more responses.",
           "good": "Solid baseline. Your posting is already inclusive and reaches many candidates. With a few targeted refinements, it can perform even better.",
           "excellent": "Perfect. It hardly gets better than this. Your posting is highly inclusive and appeals to a broad, diverse talent pool."
         }

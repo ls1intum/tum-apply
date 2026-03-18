@@ -31,20 +31,27 @@ input:disabled {
 }
 .panel1-layout {
   @media (min-width: bp.$lg) {
-    display: grid;
     height: calc(100vh - 19.5rem);
     min-height: 30rem;
     align-items: stretch;
     overflow: hidden;
-    column-gap: 6rem;
-    padding-inline-start: clamp(1rem, 3vw, 2.5rem);
-    grid-template-columns: minmax(0, 1fr) 18rem;
+    padding-inline: clamp(1rem, 3vw, 2.5rem);
   }
+}
 
-  &.sidebar-collapsed {
-    @media (min-width: bp.$lg) {
-      grid-template-columns: minmax(0, 1fr) 5rem;
-    }
+.panel1-layout-with-sidebar {
+  @media (min-width: bp.$lg) {
+    display: grid;
+    column-gap: 0.75rem;
+    padding-inline-end: 0;
+    grid-template-columns: minmax(0, 1fr) 1px 18rem;
+  }
+}
+
+.panel1-divider {
+  @media (min-width: bp.$lg) {
+    height: 100%;
+    background-color: var(--p-divider-border-color);
   }
 }
 
@@ -52,6 +59,6 @@ input:disabled {
   @media (min-width: bp.$lg) {
     height: 100%;
     overflow-y: auto;
-    padding-right: 1.25rem;
+    padding-right: 0.75rem;
   }
 }
