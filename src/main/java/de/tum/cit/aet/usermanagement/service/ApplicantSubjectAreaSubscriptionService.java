@@ -10,7 +10,6 @@ import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscription
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +55,7 @@ public class ApplicantSubjectAreaSubscriptionService {
      * @param subjectArea the subject area to subscribe to
      * @return the created subscription DTO
      */
+    @Transactional
     public ApplicantSubjectAreaSubscriptionDTO addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
 

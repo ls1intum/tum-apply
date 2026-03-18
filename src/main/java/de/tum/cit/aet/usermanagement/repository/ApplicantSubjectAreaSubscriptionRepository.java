@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Repository for {@link ApplicantSubjectAreaSubscription}
@@ -32,7 +31,6 @@ public interface ApplicantSubjectAreaSubscriptionRepository extends TumApplyJpaR
      * @param subjectArea the subject area to unsubscribe from
      */
     @Modifying
-    @Transactional
     @Query(
         """
             DELETE FROM ApplicantSubjectAreaSubscription a
