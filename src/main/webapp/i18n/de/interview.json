@@ -149,7 +149,7 @@
         "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
         "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
         "addRange": "Terminserie hinzufügen",
-        "addSlot": "Einzeltermin hinzufügen",
+        "addSlot": "Termin",
         "noSlotsYet": "Noch keine Termine",
         "noSlotsYetDesc": "Füge eine Terminserie oder einen einzelnen Termin hinzu, um zu beginnen",
         "singleSlot": "Einzelner Termin",
@@ -184,8 +184,27 @@
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
         }
       },
+      "edit": {
+        "title": "Ort bearbeiten",
+        "bookedInfo": "Die bewerbende Person wird per E-Mail über die Ortsänderung informiert. Du kannst die E-Mail-Vorlage ",
+        "editTemplates": "hier",
+        "editTemplatesSuffix": " anpassen.",
+        "success": {
+          "summary": "Ort aktualisiert",
+          "detail": "Der Terminort wurde erfolgreich aktualisiert."
+        },
+        "error": {
+          "summary": "Aktualisierung fehlgeschlagen",
+          "detail": "Der Ort konnte nicht aktualisiert werden. Bitte versuche es erneut."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu bearbeiten"
+        }
+      },
       "cancelInterview": {
-        "button": "Absagen",
+        "button": "Bestätigen",
+        "triggerButton": "Interview absagen",
         "header": "Interview absagen",
         "message": "Möchtest du dieses Interview der bewerbenden Person wirklich absagen? Bitte wähle aus, was mit dem Termin passieren soll:",
         "sendReinvite": "Bewerbenden erneut einladen (Buchunglink schicken)",
@@ -279,6 +298,10 @@
         "error": {
           "summary": "Senden fehlgeschlagen",
           "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "noSlots": {
+          "summary": "Keine Termine verfügbar",
+          "detail": "Keine verfügbaren Interview Termine. Bitte erstelle oder gib Termine frei, bevor du Einladungen versendest."
         }
       }
     },
@@ -299,7 +322,7 @@
         },
         "failed": {
           "summary": "Zuweisung fehlgeschlagen",
-          "detail": "Fehler beim Zuweisen der bewerbenden Person. Bitte versuchen Sie es erneut."
+          "detail": "Fehler beim Zuweisen der bewerbenden Person. Bitte versuche es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",

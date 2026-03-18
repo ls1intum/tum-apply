@@ -63,9 +63,10 @@
         [icon]="interviewee().state === IntervieweeState.Invited ? 'rotate-right' : 'paper-plane'"
         variant="outlined"
         severity="primary"
-        [disabled]="sending()"
+        [disabled]="sending() || !hasSlots()"
         [loading]="sending()"
         [fullWidth]="true"
+        [tooltip]="noSlotsTooltip()"
         [label]="
           interviewee().state === IntervieweeState.Invited
             ? 'interview.interviewees.resendInvitation'
@@ -81,11 +82,11 @@
     <div class="flex-shrink-0 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0">
       <jhi-button
         (click)="onCancelInterview($event)"
-        label="interview.slots.cancelInterview.button"
+        label="interview.slots.cancelInterview.triggerButton"
         [shouldTranslate]="true"
         icon="xmark"
         variant="outlined"
-        severity="primary"
+        severity="danger"
         [fullWidth]="true"
         styleClass="lg:w-auto w-full justify-center"
       />

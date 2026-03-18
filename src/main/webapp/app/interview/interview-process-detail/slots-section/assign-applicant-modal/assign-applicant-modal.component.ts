@@ -11,6 +11,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/date-time.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
@@ -48,10 +49,8 @@ export class AssignApplicantModalComponent {
   interviewees = signal<IntervieweeDTO[]>([]);
   selectedApplicantId = signal<string | null>(null);
 
-  // Filters out already scheduled, completed, and invited interviewees
-  availableInterviewees = computed(() =>
-    this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED' && i.state !== 'INVITED'),
-  );
+  // Filters out already scheduled and completed interviewees (UNCONTACTED + INVITED are assignable)
+  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED'));
 
   // Returns true if an applicant is selected
   canAssign = computed(() => this.selectedApplicantId() !== null);
@@ -67,6 +66,7 @@ export class AssignApplicantModalComponent {
   slotDate = computed(() => formatDateWithWeekday(this.slot().startDateTime, this.locale()));
   slotStartTime = computed(() => formatTime(this.slot().startDateTime, this.locale()));
   slotEndTime = computed(() => formatTime(this.slot().endDateTime, this.locale()));
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
 
   // Computed
   private locale = computed(() => getLocale(this.translateService));
@@ -144,9 +144,9 @@ export class AssignApplicantModalComponent {
     return this.selectedApplicantId() === interviewee.applicationId;
   }
 
-  // Returns true if the interviewee already has a scheduled slot or is invited
+  // Returns true if the interviewee already has a scheduled slot
   isDisabled(interviewee: IntervieweeDTO): boolean {
-    return interviewee.state === 'SCHEDULED' || interviewee.state === 'INVITED';
+    return interviewee.state === 'SCHEDULED';
   }
 
   // Handles visibility changes from the dialog component

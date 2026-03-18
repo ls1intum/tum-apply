@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -27,7 +27,7 @@ export class EmployeeRequestAccessFormComponent {
   isSubmitting = signal(false);
 
   // Template references
-  confirmDialog = viewChild<ConfirmDialog>('confirmDialog');
+  showConfirmDialog = signal(false);
 
   // Services
   private readonly fb = inject(FormBuilder);
@@ -44,7 +44,7 @@ export class EmployeeRequestAccessFormComponent {
 
   onSubmit(): void {
     if (this.employeeForm.valid) {
-      this.confirmDialog()?.confirm();
+      this.showConfirmDialog.set(true);
     }
   }
 

@@ -3,6 +3,7 @@ package de.tum.cit.aet.utility.testdata;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -24,7 +25,7 @@ public final class JobTestData {
         Job j = new Job();
         j.setTitle(title != null ? title : "Default Title");
         j.setResearchArea("ML");
-        j.setFieldOfStudies("CS");
+        j.setSubjectArea(SubjectArea.COMPUTER_SCIENCE);
         j.setLocation(Campus.GARCHING);
         j.setWorkload(20);
         j.setContractDuration(3);
@@ -43,7 +44,7 @@ public final class JobTestData {
         Job j = new Job();
         j.setTitle("Default Title");
         j.setResearchArea(null);
-        j.setFieldOfStudies(null);
+        j.setSubjectArea(null);
         j.setLocation(null);
         j.setWorkload(null);
         j.setContractDuration(null);
@@ -61,7 +62,7 @@ public final class JobTestData {
     public static Job newJobAll(
         String title,
         String researchArea,
-        String fieldOfStudies,
+        SubjectArea subjectArea,
         User supervisingProfessor,
         ResearchGroup researchGroup,
         Campus location,
@@ -76,7 +77,7 @@ public final class JobTestData {
     ) {
         Job j = newJob(supervisingProfessor, researchGroup, title, state, startDate);
         if (researchArea != null) j.setResearchArea(researchArea);
-        if (fieldOfStudies != null) j.setFieldOfStudies(fieldOfStudies);
+        if (subjectArea != null) j.setSubjectArea(subjectArea);
         if (location != null) j.setLocation(location);
         if (endDate != null) j.setEndDate(endDate);
         if (workload != null) j.setWorkload(workload);
@@ -101,7 +102,7 @@ public final class JobTestData {
         JobRepository repo,
         String title,
         String researchArea,
-        String fieldOfStudies,
+        SubjectArea subjectArea,
         User supervisingProfessor,
         ResearchGroup researchGroup,
         Campus location,
@@ -118,7 +119,7 @@ public final class JobTestData {
             newJobAll(
                 title,
                 researchArea,
-                fieldOfStudies,
+                subjectArea,
                 supervisingProfessor,
                 researchGroup,
                 location,
