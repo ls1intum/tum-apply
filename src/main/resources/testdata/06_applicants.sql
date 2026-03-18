@@ -477,10 +477,10 @@ VALUES (
     );
 
 -- Subject area subscriptions for Max Applicant
-DELETE FROM applicant_subject_area_subscriptions
+DELETE FROM TUMApply.applicant_subject_area_subscriptions
 WHERE user_id = '00000000-0000-0000-0000-000000000103';
 
-INSERT INTO applicant_subject_area_subscriptions (
+INSERT INTO TUMApply.applicant_subject_area_subscriptions (
     subscription_id,
     user_id,
     subject_area

@@ -82,7 +82,6 @@ public class ApplicantSubjectAreaSubscriptionService {
      *
      * @param subjectArea the subject area to unsubscribe from
      */
-    @Transactional
     public void removeSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
         subscriptionRepository.deleteByApplicantUserIdAndSubjectArea(userId, subjectArea);

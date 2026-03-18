@@ -5,9 +5,6 @@ import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.ApplicantSubjectAreaSubscription;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,19 +22,11 @@ public interface ApplicantSubjectAreaSubscriptionRepository extends TumApplyJpaR
 
     /**
      * Deletes a specific subject area subscription for an applicant.
-     * Uses @Modifying because it performs a delete operation.
      *
      * @param userId the applicant's user ID
      * @param subjectArea the subject area to unsubscribe from
      */
-    @Modifying
-    @Query(
-        """
-            DELETE FROM ApplicantSubjectAreaSubscription a
-            WHERE a.applicant.userId = :userId AND a.subjectArea = :subjectArea
-        """
-    )
-    void deleteByApplicantUserIdAndSubjectArea(@Param("userId") UUID userId, @Param("subjectArea") SubjectArea subjectArea);
+    void deleteByApplicantUserIdAndSubjectArea(UUID userId, SubjectArea subjectArea);
 
     /**
      * Checks if an applicant is subscribed to a specific subject area.
