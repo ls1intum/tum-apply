@@ -1,8 +1,8 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.SubjectArea;
-import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ApplicantSubjectAreaSubscription;
 import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
