@@ -59,8 +59,10 @@ public class ApplicantSubjectAreaSubscriptionService {
         UUID userId = currentUserService.getUserId();
 
         return subscriptionRepository
+            // Check if a subscription already exists.
             .findByApplicantUserIdAndSubjectArea(userId, subjectArea)
             .map(ApplicantSubjectAreaSubscriptionDTO::getFromEntity)
+            // If not, create a new subscription.
             .orElseGet(() -> {
                 Applicant applicant = applicantService.findOrCreateApplicant(userId);
                 ApplicantSubjectAreaSubscription subscription = new ApplicantSubjectAreaSubscription(applicant, subjectArea);
