@@ -115,6 +115,7 @@ public class UserExportZipWriter {
         - data/applicant_documents.csv
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
+        - data/applicant_subject_area_subscriptions.csv
 
         Staff-Daten:
         - data/staff_supervised_jobs.csv
@@ -156,6 +157,7 @@ public class UserExportZipWriter {
         - data/applicant_documents.csv
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
+        - data/applicant_subject_area_subscriptions.csv
 
         Staff data:
         - data/staff_supervised_jobs.csv

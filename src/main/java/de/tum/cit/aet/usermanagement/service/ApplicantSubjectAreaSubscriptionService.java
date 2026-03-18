@@ -9,6 +9,7 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscriptionRepository;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,23 +59,24 @@ public class ApplicantSubjectAreaSubscriptionService {
     public ApplicantSubjectAreaSubscriptionDTO addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
 
-        // 1. Check if subscription already exists
-        if (subscriptionRepository.existsByApplicantUserIdAndSubjectArea(userId, subjectArea)) {
-            ApplicantSubjectAreaSubscription existing = subscriptionRepository
-                .findByApplicantUserId(userId)
-                .stream()
-                .filter(s -> s.getSubjectArea() == subjectArea)
-                .findFirst()
-                .orElseThrow();
-            return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(existing);
-        }
+        return subscriptionRepository
+            .findByApplicantUserIdAndSubjectArea(userId, subjectArea)
+            .map(ApplicantSubjectAreaSubscriptionDTO::getFromEntity)
+            .orElseGet(() -> createSubscription(userId, subjectArea));
+    }
 
-        // 2. Get or create applicant and save subscription
+    private ApplicantSubjectAreaSubscriptionDTO createSubscription(UUID userId, SubjectArea subjectArea) {
         Applicant applicant = applicantService.findOrCreateApplicant(userId);
         ApplicantSubjectAreaSubscription subscription = new ApplicantSubjectAreaSubscription(applicant, subjectArea);
-        subscriptionRepository.save(subscription);
-
-        return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(subscription);
+        try {
+            subscriptionRepository.saveAndFlush(subscription);
+            return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(subscription);
+        } catch (DataIntegrityViolationException ex) {
+            return subscriptionRepository
+                .findByApplicantUserIdAndSubjectArea(userId, subjectArea)
+                .map(ApplicantSubjectAreaSubscriptionDTO::getFromEntity)
+                .orElseThrow(() -> ex);
+        }
     }
 
     /**
@@ -82,6 +84,7 @@ public class ApplicantSubjectAreaSubscriptionService {
      *
      * @param subjectArea the subject area to unsubscribe from
      */
+    @Transactional
     public void removeSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
         subscriptionRepository.deleteByApplicantUserIdAndSubjectArea(userId, subjectArea);

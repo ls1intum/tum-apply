@@ -8,7 +8,6 @@ import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscriptionRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
@@ -24,9 +23,6 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
 
     @Autowired
     ApplicantRepository applicantRepository;
-
-    @Autowired
-    ApplicantSubjectAreaSubscriptionRepository subscriptionRepository;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -111,7 +107,7 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
         }
 
         @Test
-        void postSubscriptionTwiceDontCreateDuplicates() {
+        void postSubscriptionTwiceDoesNotCreateDuplicates() {
             // Add subscription twice
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -213,11 +209,11 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
                 .deleteAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, Void.class, 204);
 
             // Verify only Mathematics remains
-            List<ApplicantSubjectAreaSubscriptionDTO> final_result = api
+            List<ApplicantSubjectAreaSubscriptionDTO> finalResult = api
                 .with(JwtPostProcessors.jwtUser(userId, "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
-            assertThat(final_result)
+            assertThat(finalResult)
                 .hasSize(1)
                 .extracting(ApplicantSubjectAreaSubscriptionDTO::subjectArea)
                 .contains(SubjectArea.MATHEMATICS);
