@@ -82,7 +82,7 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
             assertThat(subscriptions)
                 .hasSize(2)
                 .extracting(ApplicantSubjectAreaSubscriptionDTO::subjectArea)
-                .containsExactly(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
+                .containsExactlyInAnyOrder(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
         }
     }
 

@@ -2,14 +2,13 @@ package de.tum.cit.aet.usermanagement.service;
 
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ApplicantSubjectAreaSubscription;
 import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
-import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscriptionRepository;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplicantSubjectAreaSubscriptionService {
 
     private final ApplicantSubjectAreaSubscriptionRepository subscriptionRepository;
-    private final ApplicantRepository applicantRepository;
+    private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
 
     public ApplicantSubjectAreaSubscriptionService(
         ApplicantSubjectAreaSubscriptionRepository subscriptionRepository,
-        ApplicantRepository applicantRepository,
+        ApplicantService applicantService,
         CurrentUserService currentUserService
     ) {
         this.subscriptionRepository = subscriptionRepository;
-        this.applicantRepository = applicantRepository;
+        this.applicantService = applicantService;
         this.currentUserService = currentUserService;
     }
 
@@ -45,7 +44,7 @@ public class ApplicantSubjectAreaSubscriptionService {
             .findByApplicantUserId(userId)
             .stream()
             .map(ApplicantSubjectAreaSubscriptionDTO::getFromEntity)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**
@@ -70,8 +69,8 @@ public class ApplicantSubjectAreaSubscriptionService {
             return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(existing);
         }
 
-        // 2. Get applicant and save subscription
-        Applicant applicant = applicantRepository.findById(userId).orElseThrow();
+        // 2. Get or create applicant and save subscription
+        Applicant applicant = applicantService.findOrCreateApplicant(userId);
         ApplicantSubjectAreaSubscription subscription = new ApplicantSubjectAreaSubscription(applicant, subjectArea);
         subscriptionRepository.save(subscription);
 
