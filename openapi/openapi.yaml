@@ -3074,7 +3074,7 @@ components:
             TELECOMMUNICATIONS, URBAN_PLANNING]
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [jobId, location, professorName, title]
+      required: [jobId, location, professorName, subjectArea, title]
     JobDTO:
       type: object
       properties:
