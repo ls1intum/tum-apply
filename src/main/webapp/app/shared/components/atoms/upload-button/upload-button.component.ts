@@ -69,8 +69,8 @@ export class UploadButtonComponent {
   // Replacement dialog state (for single file mode)
   pendingReplacementFiles = signal<File[]>([]);
 
-  duplicateConfirmDialog = viewChild<ConfirmDialog>('duplicateConfirmDialog');
-  replacementConfirmDialog = viewChild<ConfirmDialog>('replacementConfirmDialog');
+  showDuplicateDialog = signal(false);
+  showReplacementDialog = signal(false);
 
   private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
@@ -82,7 +82,7 @@ export class UploadButtonComponent {
     // For single-file mode, check if document already exists
     if (!this.allowMultiple() && (this.documentIds()?.length ?? 0) > 0) {
       this.pendingReplacementFiles.set(files);
-      this.replacementConfirmDialog()?.confirm();
+      this.showReplacementDialog.set(true);
       this.fileUploadComponent()?.clear();
       this.resetNativeFileInput();
       return;
@@ -95,10 +95,7 @@ export class UploadButtonComponent {
         this.pendingDuplicateFile.set(file);
         this.duplicateFileName.set(file.name);
 
-        // Use setTimeout to ensure signal updates before dialog shows
-        setTimeout(() => {
-          this.duplicateConfirmDialog()?.confirm();
-        }, 0);
+        this.showDuplicateDialog.set(true);
 
         this.fileUploadComponent()?.clear();
         this.resetNativeFileInput();

@@ -152,13 +152,12 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     @Query(
         """
             SELECT u.userId FROM User u
-            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = 'ADMIN'
+            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
             WHERE u.researchGroup IS NULL
             AND rgr.id IS NULL
             AND u.email LIKE '%@%tum%'
             AND (:searchQuery IS NULL OR
-                 LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
-                 LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
                  LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
             )
         """
@@ -204,6 +203,36 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
     )
     List<String> findAssignedUniversityIdsIn(@Param("universityIds") List<String> universityIds);
+
+    /**
+     * Searches for users available to be added to a research group, including non-TUM users.
+     * Excludes users already assigned to a research group and users with an ADMIN role.
+     *
+     * @param searchQuery optional search query to filter by name or email
+     * @return list of users matching the criteria
+     */
+    @Query(
+        """
+            SELECT u FROM User u
+            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
+            WHERE u.researchGroup IS NULL
+            AND rgr.id IS NULL
+            AND (:searchQuery IS NULL OR
+                 LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+            )
+        """
+    )
+    List<User> searchAvailableUsersForResearchGroup(@Param("searchQuery") String searchQuery);
+
+    /**
+     * Returns user IDs that are already assigned to any research group.
+     *
+     * @param userIds user IDs to check
+     * @return subset of IDs that belong to users with a non-null research group
+     */
+    @Query("SELECT u.userId FROM User u WHERE u.researchGroup IS NOT NULL AND u.userId IN :userIds")
+    List<UUID> findAssignedUserIdsIn(@Param("userIds") List<UUID> userIds);
 
     @Query(
         """

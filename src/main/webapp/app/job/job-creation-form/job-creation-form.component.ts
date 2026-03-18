@@ -166,21 +166,11 @@ export class JobCreationFormComponent {
   /** Indicates whether AI is currently generating a job description draft */
   isGeneratingDraft = signal<boolean>(false);
 
-  /** Controls visibility of the AI generation panel */
+  /** Controls visibility of the AI generation panel and AI translation invocation */
   aiToggleSignal = signal<boolean>(true);
 
   /** Tracks if the rewrite button should be shown (after first generation) */
   rewriteButtonSignal = signal<boolean>(false);
-
-  /** Computed: determines if the AI panel should be displayed */
-  showAiPanel = computed(() => this.aiToggleSignal());
-
-  /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() =>
-    this.currentDescriptionLanguage() === 'en'
-      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
-      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
-  );
 
   /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
   jobDescriptionPlaceholder = computed(() =>
@@ -260,8 +250,8 @@ export class JobCreationFormComponent {
   /** Template for the saving state indicator */
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
 
-  /** Reference to the publish confirmation dialog */
-  sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
+  /** Signal controlling publish confirmation dialog visibility */
+  showPublishDialog = signal(false);
 
   /** Reference to the job description rich-text editor */
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
@@ -371,10 +361,10 @@ export class JobCreationFormComponent {
   /** Signal that tracks the current UI language for dropdown translations */
   currentLang = toSignal(this.translate.onLangChange);
 
-  /** Computed: Returns localized and sorted field of study options */
-  translatedFieldsOfStudies = computed(() => {
+  /** Computed: Returns localized and sorted subject area options */
+  translatedSubjectAreas = computed(() => {
     void this.currentLang();
-    return DropdownOptions.fieldsOfStudies
+    return DropdownOptions.subjectAreas
       .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
@@ -500,34 +490,6 @@ export class JobCreationFormComponent {
     this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
     this.jobDescriptionSignal.set(targetContent);
     this.jobDescriptionEditor()?.forceUpdate(targetContent);
-  });
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AI TOGGLE EFFECT
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Effect: Manages the job description template based on AI toggle state.
-   * - When AI is disabled and editor is empty: inserts template
-   * - When AI is enabled and content equals template: clears editor
-   */
-  private aiToggleEffect = effect(() => {
-    const aiEnabled = this.aiToggleSignal();
-    const ctrl = this.basicInfoForm.get('jobDescription');
-    const current = (ctrl?.value ?? '') as string;
-    const template = this.templateText();
-
-    const isEmpty = !current || current.trim() === '' || current.trim() === '<p><br></p>';
-
-    if (!aiEnabled && isEmpty) {
-      ctrl?.setValue(template);
-      this.jobDescriptionEditor()?.forceUpdate(template);
-    }
-
-    if (aiEnabled && current === template) {
-      ctrl?.setValue('');
-      this.jobDescriptionEditor()?.forceUpdate('');
-    }
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -705,7 +667,7 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
+        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTO.SubjectAreaEnum,
         supervisingProfessor: this.userId(),
         location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
@@ -880,13 +842,13 @@ export class JobCreationFormComponent {
 
   /**
    * Creates the Step 1 form group with validation rules.
-   * Required fields: title, research area, field of studies, location, supervising professor, job description
+   * Required fields: title, research area, subject area, location, supervising professor, job description
    */
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       title: ['', [Validators.required]],
       researchArea: ['', [Validators.required]],
-      fieldOfStudies: [undefined, [Validators.required]],
+      subjectArea: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [undefined, Validators.required],
       jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(5000)]],
@@ -948,7 +910,7 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
+      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTO.SubjectAreaEnum,
       supervisingProfessor: supervisingProfessorId ?? '',
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
@@ -963,7 +925,7 @@ export class JobCreationFormComponent {
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
-    };
+    } as JobFormDTO;
   }
 
   /**
@@ -1032,10 +994,10 @@ export class JobCreationFormComponent {
         ]);
         this.populateForm(job);
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
-
-        // prevent autosave from firing immediately after patching
-        this.autoSaveInitialized = false;
       }
+
+      // prevent autosave from firing immediately after initialization
+      this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
       this.router.navigate(['/my-positions']);
@@ -1054,19 +1016,25 @@ export class JobCreationFormComponent {
     // Default tab EN
     this.currentDescriptionLanguage.set('en');
 
-    const en = job?.jobDescriptionEN ?? '';
-    const de = job?.jobDescriptionDE ?? '';
+    const en =
+      job?.jobDescriptionEN ??
+      (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') : '');
+    const de =
+      job?.jobDescriptionDE ??
+      (job === undefined ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') : '');
 
     const supervisingProfessorId = job?.supervisingProfessor ?? this.basicInfoForm.get('supervisingProfessor')?.value;
 
     this.jobDescriptionEN.set(en);
+    this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
+    this.lastTranslatedDE.set(de);
 
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
       supervisingProfessor: supervisingProfessorId,
-      fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
+      subjectArea: this.findDropdownOption(DropdownOptions.subjectAreas, job?.subjectArea),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: en,
     });
@@ -1241,8 +1209,10 @@ export class JobCreationFormComponent {
 
       this.savingState.set('SAVED');
 
-      // fire-and-forget translation (don't block autosave UX)
-      void this.translateAndStoreOtherLanguage(currentLang, description);
+      if (this.aiToggleSignal()) {
+        // fire-and-forget translation (don't block autosave UX)
+        void this.translateAndStoreOtherLanguage(currentLang, description);
+      }
     } catch {
       this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');
@@ -1285,7 +1255,7 @@ export class JobCreationFormComponent {
         this.lastSavedData.set({
           title: lastSaved.title,
           researchArea: lastSaved.researchArea,
-          fieldOfStudies: lastSaved.fieldOfStudies,
+          subjectArea: lastSaved.subjectArea,
           supervisingProfessor: lastSaved.supervisingProfessor,
           location: lastSaved.location,
 
@@ -1455,7 +1425,7 @@ export class JobCreationFormComponent {
           {
             severity: this.publishButtonSeverity,
             icon: this.publishButtonIcon,
-            onClick: () => this.sendPublishDialog()?.confirm(),
+            onClick: () => this.showPublishDialog.set(true),
             disabled: !this.allFormsValid(),
             label: 'button.publish',
             shouldTranslate: true,

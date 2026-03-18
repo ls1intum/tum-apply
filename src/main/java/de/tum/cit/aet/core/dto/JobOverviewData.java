@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public record JobOverviewData(
     String supervisor,
     String location,
-    String fieldsOfStudies,
+    String subjectArea,
     String researchArea,
     String workload,
     String duration,

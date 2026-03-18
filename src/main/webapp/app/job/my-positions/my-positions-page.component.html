@@ -1,35 +1,38 @@
 <!-- Confirm Dialogs -->
 <jhi-confirm-dialog
-  #editPublishedDialog
   [label]="'button.edit' | translate"
   [header]="'myPositionsPage.confirmDialog.editJobHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.editJobMessage' | translate"
   severity="primary"
   confirmIcon="pencil"
   [showOpenButton]="false"
+  [visible]="showEditPublishedDialog()"
   (confirmed)="onConfirmEdit()"
+  (closed)="showEditPublishedDialog.set(false)"
 />
 
 <jhi-confirm-dialog
-  #deleteDialog
   [label]="'button.delete' | translate"
   [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
+  [visible]="showDeleteDialog()"
   (confirmed)="onConfirmDelete()"
+  (closed)="showDeleteDialog.set(false)"
 />
 
 <jhi-confirm-dialog
-  #closeDialog
   [label]="'button.close' | translate"
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
   severity="danger"
   confirmIcon="xmark"
   [showOpenButton]="false"
+  [visible]="showCloseDialog()"
   (confirmed)="onConfirmClose()"
+  (closed)="showCloseDialog.set(false)"
 />
 
 <div class="page-container">
@@ -77,6 +80,7 @@
           [totalRecords]="totalRecords()"
           [page]="page()"
           [rows]="pageSize()"
+          [loading]="loading()"
           [selectable]="false"
           (lazyLoad)="loadOnTableEmit($event)"
         />

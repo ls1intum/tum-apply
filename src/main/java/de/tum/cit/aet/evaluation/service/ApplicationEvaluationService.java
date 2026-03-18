@@ -69,7 +69,8 @@ public class ApplicationEvaluationService {
         ApplicationState.IN_REVIEW,
         ApplicationState.ACCEPTED,
         ApplicationState.REJECTED,
-        ApplicationState.INTERVIEW
+        ApplicationState.INTERVIEW,
+        ApplicationState.JOB_CLOSED
     );
 
     private static final Set<ApplicationState> REVIEW_STATES = Set.of(

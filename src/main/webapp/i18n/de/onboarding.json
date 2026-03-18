@@ -9,7 +9,7 @@
     },
     "email": {
       "subject": "Anfrage: Zugriff zu Lehrstuhl / Professur in TUMApply",
-      "body": "=== WICHTIGE HINWEISE ===\n- Bitte ändere den Betreff dieser E-Mail nicht.\n- Fülle bitte alle notwendigen Felder unten aus.\n- Die optionalen Felder müssen nicht zwingend ausgefüllt werden.\n- Bitte sende diese E-Mail von deiner offiziellen TUM E-Mail-Adresse aus.\n=== WICHTIGE HINWEISE ===\n\n\n\n=== Notwendig ===\n\nPersönliche Informationen:\n- Titel (Prof./Dr./…): \n- Vorname: \n- Nachname: \n- TUM-ID (z. B. ab12cde): \n\nAngaben zum Lehrstuhl / zur Professur:\n- Leitung (Titel, Vor- und Nachname): \n- Name: \n\n\n=== Optional ===\n\nAngaben zum Lehrstuhl / zur Professur:\n- Abkürzung: \n- Kontakt E-Mail: \n- Webseite: \n- School: \n- Beschreibung: \n- Standard-Studienfach: \n- Adresse:\n  - Straße und Hausnummer: \n  - Postleitzahl: \n  - Stadt: "
+      "body": "=== WICHTIGE HINWEISE ===\n- Bitte ändere den Betreff dieser E-Mail nicht.\n- Fülle bitte alle notwendigen Felder unten aus.\n- Die optionalen Felder müssen nicht zwingend ausgefüllt werden.\n- Bitte sende diese E-Mail von deiner offiziellen TUM E-Mail-Adresse aus.\n=== WICHTIGE HINWEISE ===\n\n\n\n=== Notwendig ===\n\nPersönliche Informationen:\n- Titel (Prof./Dr./…): \n- Vorname: \n- Nachname: \n- TUM-ID (z. B. ab12cde): \n\nAngaben zum Lehrstuhl / zur Professur:\n- Leitung (Titel, Vor- und Nachname): \n- Name: \n\n\n=== Optional ===\n\nAngaben zum Lehrstuhl / zur Professur:\n- Abkürzung: \n- Kontakt E-Mail: \n- Webseite: \n- School: \n- Beschreibung: \n- Adresse:\n  - Straße und Hausnummer: \n  - Postleitzahl: \n  - Stadt: "
     },
     "employeeRequest": {
       "dialogTitle": "Zugang als Mitarbeiter:in anfragen",
@@ -96,10 +96,6 @@
         "label": "Beschreibung",
         "placeholder": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte deiner Gruppe."
       },
-      "researchGroupFieldOfStudies": {
-        "label": "Studienrichtung",
-        "placeholder": "z.B. Computer Science"
-      },
       "researchGroupStreetAndNumber": {
         "label": "Straße und Hausnummer",
         "placeholder": "z.B. Musterstraße 123"
@@ -118,12 +114,12 @@
       },
       "confirmDialog": {
         "header": "Anfrage bestätigen",
-        "message": "Ihre Anfrage wird an die Administratoren zur Prüfung gesendet. Sie werden Ihre Forschungsgruppe erstellen und Sie kontaktieren, sobald sie genehmigt ist. Möchten Sie fortfahren?",
+        "message": "Deine Anfrage wird an die Administratoren zur Prüfung gesendet. Sie werden deine Forschungsgruppe erstellen und dich kontaktieren, sobald sie genehmigt ist. Möchtest du fortfahren?",
         "confirm": "Anfrage senden"
       },
       "success": {
         "summary": "Anfrage erfolgreich gesendet",
-        "detail": "Ihre Forschungsgruppen-Anfrage wurde eingereicht. Die Administratoren werden sie prüfen und Sie bald kontaktieren."
+        "detail": "Deine Forschungsgruppen-Anfrage wurde eingereicht. Die Administratoren werden sie prüfen und dich bald kontaktieren."
       },
       "error": {
         "summary": "Übermittlung fehlgeschlagen",

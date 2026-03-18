@@ -104,7 +104,6 @@ class ResearchGroupServiceTest {
             "Test Research Group",
             "TRG",
             "Test City",
-            "Computer Science",
             "Test description",
             "test@research.com",
             "12345",
@@ -192,7 +191,6 @@ class ResearchGroupServiceTest {
             ResearchGroup otherGroup = ResearchGroupTestData.newRgAll(
                 null,
                 "Other Group",
-                null,
                 null,
                 null,
                 null,
@@ -298,7 +296,6 @@ class ResearchGroupServiceTest {
                 "updated@test.com",
                 "https://updated.com",
                 "Updated description",
-                "Computer Science",
                 "Updated Street",
                 "54321",
                 "Updated City",
@@ -525,64 +522,8 @@ class ResearchGroupServiceTest {
     class CreateResearchGroupAsAdmin {
 
         @Test
-        void shouldCreateResearchGroupAsAdminUsingLocalMockFallbackWhenKeycloakHasNoResult() {
+        void shouldThrowEntityNotFoundWhenKeycloakHasNoResult() {
             // Arrange
-            ReflectionTestUtils.setField(researchGroupService, "keycloakLocalMockEnabled", true);
-            ReflectionTestUtils.setField(
-                researchGroupService,
-                "keycloakLocalMockFilePath",
-                "src/main/webapp/content/mock/keycloak-users.json"
-            );
-
-            ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
-                "Prof.",
-                "Any",
-                "User",
-                "aa00boa",
-                "Prof. Annika Mueller",
-                "Admin Created Group",
-                TEST_DEPARTMENT_ID,
-                "admin-created@test.com",
-                "ACG",
-                "https://acg.test",
-                "Description",
-                "CS",
-                "Main St",
-                "12345",
-                "Munich"
-            );
-
-            when(researchGroupRepository.existsByNameIgnoreCase("Admin Created Group")).thenReturn(false);
-            when(userRepository.findByUniversityIdIgnoreCase("aa00boa")).thenReturn(Optional.empty());
-            when(keycloakUserService.findUserByUniversityId("aa00boa")).thenReturn(Optional.empty());
-            when(departmentRepository.findByIdElseThrow(TEST_DEPARTMENT_ID)).thenReturn(testDepartment);
-            when(researchGroupRepository.save(any(ResearchGroup.class))).thenAnswer(invocation -> invocation.getArgument(0));
-            when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(any(User.class), any(ResearchGroup.class))).thenReturn(
-                Optional.empty()
-            );
-            when(userResearchGroupRoleRepository.findAllByUser(any(User.class))).thenReturn(Set.of());
-
-            // Act
-            ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
-
-            // Assert
-            assertThat(created.getState()).isEqualTo(ResearchGroupState.ACTIVE);
-
-            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-            verify(userRepository, atLeastOnce()).save(userCaptor.capture());
-            assertThat(userCaptor.getAllValues()).anySatisfy(savedProfessor -> {
-                assertThat(savedProfessor.getUniversityId()).isEqualTo("aa00boa");
-                assertThat(savedProfessor.getFirstName()).isEqualTo("Annika");
-                assertThat(savedProfessor.getLastName()).isEqualTo("Mueller");
-            });
-        }
-
-        @Test
-        void shouldThrowEntityNotFoundWhenFallbackIsDisabledAndKeycloakHasNoResult() {
-            // Arrange
-            ReflectionTestUtils.setField(researchGroupService, "keycloakLocalMockEnabled", false);
-
             ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Admin Group", TEST_DEPARTMENT_ID);
 
             when(researchGroupRepository.existsByNameIgnoreCase("Admin Group")).thenReturn(false);

@@ -39,7 +39,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
     departmentId: new FormControl('', [Validators.required]),
-    defaultFieldOfStudies: new FormControl(''),
     head: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.pattern(/.+\..{2,}$/)]),
     website: new FormControl(''),
@@ -123,7 +122,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         street: formValue.street ?? '',
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
-        defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
         departmentId: formValue.departmentId ?? undefined,
       };
 
@@ -159,7 +157,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     this.form.patchValue({
       abbreviation: data?.abbreviation ?? '',
       name: data?.name ?? '',
-      defaultFieldOfStudies: data?.defaultFieldOfStudies ?? '',
       head: data?.head ?? '',
       email: data?.email ?? '',
       website: data?.website ?? '',

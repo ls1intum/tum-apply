@@ -207,7 +207,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         assertThat(updated.getFilePath()).startsWith(exportRootConfig);
         assertThat(updated.getDownloadToken()).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
-        Path zipPath = Paths.get(updated.getFilePath());
+        Path zipPath = Path.of(updated.getFilePath());
         assertThat(Files.exists(zipPath)).isTrue();
 
         Set<String> entries = readZipEntries(zipPath);
@@ -322,7 +322,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         userDataExportService.processPendingDataExports();
 
         DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
-        Set<String> entries = readZipEntries(Paths.get(updated.getFilePath()));
+        Set<String> entries = readZipEntries(Path.of(updated.getFilePath()));
 
         String expectedEntry = "documents/uploaded/" + document.getDocumentId() + ".pdf";
         assertThat(entries).contains(expectedEntry);
@@ -463,7 +463,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     private void cleanExportRoot() {
-        Path root = Paths.get(exportRootConfig).toAbsolutePath().normalize();
+        Path root = Path.of(exportRootConfig).toAbsolutePath().normalize();
         if (Files.exists(root)) {
             try (Stream<Path> stream = Files.walk(root)) {
                 stream
@@ -510,7 +510,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         userDataExportService.processPendingDataExports();
 
         DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
-        return Paths.get(updated.getFilePath());
+        return Path.of(updated.getFilePath());
     }
 
     private String readZipEntryAsString(Path zipPath, String entryName) throws Exception {
