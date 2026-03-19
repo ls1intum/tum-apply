@@ -26,15 +26,16 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobService {
@@ -138,7 +139,6 @@ public class JobService {
      *
      * @param jobId the ID of the job to delete
      */
-    @Transactional
     public void deleteJob(UUID jobId) {
         assertCanManageJob(jobId);
 
@@ -149,7 +149,9 @@ public class JobService {
         if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                log.error("Failed to delete image {} while deleting job {}", job.getImage().getImageId(), jobId, e);
+            }
         }
 
         jobRepository.deleteById(jobId);
@@ -415,7 +417,6 @@ public class JobService {
      * @param toLang         the target language ("de" or "en")
      * @param translatedText the translated job description text
      */
-    @Transactional
     public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
         Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         if ("de".equalsIgnoreCase(toLang)) {
