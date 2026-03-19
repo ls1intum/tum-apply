@@ -85,7 +85,7 @@ describe('PersonalInformationSettingsComponent', () => {
   });
 
   describe('loading profile', () => {
-    it('loads and maps the applicant profile on construction', async () => {
+    it('should load and map the applicant profile on construction', async () => {
       const component = await createComponent();
 
       expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
@@ -124,7 +124,7 @@ describe('PersonalInformationSettingsComponent', () => {
       expect(component.hasChanges()).toBe(false);
     });
 
-    it('shows an error toast when loading personal information fails', async () => {
+    it('should show an error toast when loading personal information fails', async () => {
       applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(throwError(() => new Error('load failed')));
 
       const component = await createComponent();
@@ -135,7 +135,7 @@ describe('PersonalInformationSettingsComponent', () => {
       expect(component.loadedProfile()).toBeUndefined();
     });
 
-    it('maps missing optional profile fields to undefined or empty strings', async () => {
+    it('should map missing optional profile fields to undefined or empty strings', async () => {
       const profile = createProfile();
       if (profile.user) {
         profile.user.firstName = undefined;
@@ -191,7 +191,7 @@ describe('PersonalInformationSettingsComponent', () => {
   });
 
   describe('option lists', () => {
-    it('translates and sorts country and nationality options', async () => {
+    it('should translate and sort country and nationality options', async () => {
       instantMock.mockImplementation((key: string | string[]) => {
         if (Array.isArray(key)) {
           return key.join(',');
@@ -223,13 +223,8 @@ describe('PersonalInformationSettingsComponent', () => {
   });
 
   describe('form behavior', () => {
-    it('updates date and select fields and tracks unsaved changes', async () => {
+    it('should update date and select fields', async () => {
       const component = await createComponent();
-      const updatedData: PersonalInformationData = structuredClone(component.data());
-
-      updatedData.city = 'Berlin';
-      component.data.set(updatedData);
-      expect(component.hasChanges()).toBe(true);
 
       component.setDateOfBirth('1991-01-01');
       expect(component.data().dateOfBirth).toBe('1991-01-01');
@@ -245,8 +240,26 @@ describe('PersonalInformationSettingsComponent', () => {
     });
   });
 
+  describe('change tracking', () => {
+    it('should mark the component as changed when data differs from the initial snapshot', async () => {
+      const component = await createComponent();
+      expect(component.hasChanges()).toBe(false);
+
+      const originalData: PersonalInformationData = structuredClone(component.data());
+      const updatedData: PersonalInformationData = structuredClone(component.data());
+      updatedData.city = 'Berlin';
+      component.data.set(updatedData);
+
+      expect(component.hasChanges()).toBe(true);
+
+      component.data.set(originalData);
+
+      expect(component.hasChanges()).toBe(false);
+    });
+  });
+
   describe('saving', () => {
-    it('saves personal information with the expected payload and resets change tracking', async () => {
+    it('should save personal information with the expected payload and reset change tracking', async () => {
       const updatedProfile = createProfile();
       if (updatedProfile.user) {
         updatedProfile.user.firstName = 'Grace';
@@ -334,7 +347,7 @@ describe('PersonalInformationSettingsComponent', () => {
       expect(component.hasChanges()).toBe(false);
     });
 
-    it('maps blank first name, last name and city to undefined when saving', async () => {
+    it('should map blank first name, last name and city to undefined when saving', async () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
@@ -377,7 +390,7 @@ describe('PersonalInformationSettingsComponent', () => {
       });
     });
 
-    it('shows an error toast when saving personal information fails', async () => {
+    it('should show an error toast when saving personal information fails', async () => {
       applicantResourceApiServiceMock.updateApplicantPersonalInformation.mockReturnValue(throwError(() => new Error('save failed')));
 
       const component = await createComponent();
@@ -393,7 +406,7 @@ describe('PersonalInformationSettingsComponent', () => {
   });
 
   describe('cancel behavior', () => {
-    it('reloads personal information on cancel', async () => {
+    it('should reload personal information on cancel', async () => {
       const component = await createComponent();
       const loadPersonalInformationSpy = vi.spyOn(component, 'loadPersonalInformation').mockResolvedValue();
 
