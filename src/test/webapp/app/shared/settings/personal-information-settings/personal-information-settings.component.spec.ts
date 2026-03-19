@@ -8,10 +8,7 @@ import { PersonalInformationData, PersonalInformationSettingsComponent } from 'a
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
-import {
-  createApplicantResourceApiServiceMock,
-  provideApplicantResourceApiServiceMock,
-} from 'util/applicant-resource-api.service.mock';
+import { createApplicantResourceApiServiceMock, provideApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('PersonalInformationSettingsComponent', () => {
