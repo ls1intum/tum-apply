@@ -1,35 +1,38 @@
 <div class="page-container">
   <jhi-confirm-dialog
-    #approveDialog
     [label]="'button.confirm' | translate"
     [header]="'researchGroup.adminView.confirmDialog.header' | translate"
     [message]="'researchGroup.adminView.confirmDialog.message' | translate"
     severity="success"
     confirmIcon="check"
     [showOpenButton]="false"
+    [visible]="showApproveDialog()"
     (confirmed)="onConfirmApprove()"
+    (closed)="showApproveDialog.set(false)"
   />
 
   <jhi-confirm-dialog
-    #denyDialog
     [label]="'button.deny' | translate"
     [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
     [message]="'researchGroup.adminView.denyConfirmDialog.message' | translate"
     severity="danger"
     confirmIcon="times"
     [showOpenButton]="false"
+    [visible]="showDenyDialog()"
     (confirmed)="onConfirmDeny()"
+    (closed)="showDenyDialog.set(false)"
   />
 
   <jhi-confirm-dialog
-    #withdrawDialog
     [label]="'button.withdraw' | translate"
     [header]="'researchGroup.adminView.withdrawConfirmDialog.header' | translate"
     [message]="'researchGroup.adminView.withdrawConfirmDialog.message' | translate"
     severity="danger"
     confirmIcon="withdraw"
     [showOpenButton]="false"
+    [visible]="showWithdrawDialog()"
     (confirmed)="onConfirmWithdraw()"
+    (closed)="showWithdrawDialog.set(false)"
   />
   <div class="header-container">
     <div class="page-header">

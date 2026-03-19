@@ -71,15 +71,24 @@ public class PDFExportService {
                 .setOverviewTitle(labels.get("overview"))
                 .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
                 .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
-                .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
-                .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
+                .addOverviewItem(
+                    labels.get("location"),
+                    app.jobLocation() != null ? getValue(app.jobLocation().correctLanguageValue(lang)) : "-"
+                )
+                .addOverviewItem(
+                    labels.get("subjectArea"),
+                    job.subjectArea() != null ? getValue(job.subjectArea().correctLanguageValue(lang)) : "-"
+                )
                 .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
                 .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
                 .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
-                .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
+                .addOverviewItem(
+                    labels.get("fundingType"),
+                    job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
+                )
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
-                .setOverviewDescriptionTitle(labels.get("jobDescription"))
+                .setOverviewDescriptionTitle(labels.get("jobDetails"))
                 .setOverviewDescription(descriptionForExport);
         }
 
@@ -162,28 +171,27 @@ public class PDFExportService {
             log.debug("User not needed to see job status in PDF export as it's always published for them.");
         }
 
+        String lang = labels.getOrDefault("lang", "en");
+
         // Overview Section
         addJobOverview(
             builder,
             labels,
             new JobOverviewData(
                 job.supervisingProfessorName(),
-                job.location(),
-                job.fieldOfStudies(),
+                job.location() != null ? job.location().correctLanguageValue(lang) : "-",
+                job.subjectArea() != null ? job.subjectArea().correctLanguageValue(lang) : "-",
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
                 formatContractDuration(job.contractDuration(), labels.get("years")),
-                getValue(job.fundingType()),
+                job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
             )
         );
 
-        // Determine job description language and content
-        String lang = labels.getOrDefault("lang", "en");
-        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
-
         // Job Details Section
+        String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
         addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Research Group Section
@@ -228,28 +236,27 @@ public class PDFExportService {
             .addHeaderItem(labels.get("jobBy") + supervisingProfessorName + labels.get("forJob") + "'" + jobFormDTO.title() + "'")
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(jobFormDTO.state()));
 
+        String lang = labels.getOrDefault("lang", "en");
+
         // Overview Section
         addJobOverview(
             builder,
             labels,
             new JobOverviewData(
                 supervisingProfessorName,
-                UiTextFormatter.formatEnumValue(jobFormDTO.location()),
-                jobFormDTO.fieldOfStudies(),
+                jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(lang) : "-",
+                jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(lang) : "-",
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
                 jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
-                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )
         );
 
-        // Determine job description based on requested language
-        String lang = labels.getOrDefault("lang", "en");
-        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
-
         // Job Details Section
+        String descriptionForExport = selectJobDescriptionForLang(jobFormDTO.jobDescriptionEN(), jobFormDTO.jobDescriptionDE(), lang);
         addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Metadata
@@ -274,7 +281,7 @@ public class PDFExportService {
             .setOverviewTitle(labels.get("overview"))
             .addOverviewItem(labels.get("supervisor"), getValue(data.supervisor()))
             .addOverviewItem(labels.get("location"), getValue(data.location()))
-            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(data.fieldsOfStudies()))
+            .addOverviewItem(labels.get("subjectArea"), getValue(data.subjectArea()))
             .addOverviewItem(labels.get("researchArea"), getValue(data.researchArea()))
             .addOverviewItem(labels.get("workload"), getValue(data.workload()))
             .addOverviewItem(labels.get("duration"), getValue(data.duration()))
@@ -286,7 +293,7 @@ public class PDFExportService {
     private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
         builder.startSectionGroup(labels.get("jobDetails"));
 
-        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(jobDescription));
+        builder.startInfoSection("").addSectionContent(getValue(jobDescription));
     }
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {

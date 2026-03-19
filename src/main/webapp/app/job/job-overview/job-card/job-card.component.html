@@ -1,5 +1,5 @@
 <div
-  class="rounded-lg border border-border-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="group rounded-lg border border-border-default bg-background-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
   tabindex="0"
   role="button"
   [attr.aria-label]="'jobOverviewPage.ariaLabels.viewJobDetails' | translate: { title: jobTitle() }"
@@ -13,17 +13,19 @@
     "
     [style.background-color]="headerImageUrl() ? 'transparent' : 'var(--p-secondary-color)'"
   >
-    <div class="-ml-2 translate-y-7">
+    <div class="-ml-2 translate-y-[1.6rem]">
       <div class="grid h-10 w-[15rem]">
         <div
           class="col-start-1 row-start-1 z-1 self-center"
           [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
           tooltipPosition="top"
         >
-          <jhi-user-avatar [fullName]="professor()" size="lg" />
+          <div class="inline-flex rounded-full bg-background-default p-[0.125rem] transition-colors group-hover:bg-background-surface">
+            <jhi-user-avatar [fullName]="professor()" [avatarUrl]="avatarUrl()" size="sm" loading="lazy" />
+          </div>
         </div>
         <span
-          class="col-start-1 row-start-1 z-0 inline-flex w-fit max-w-full items-center self-center overflow-hidden rounded-pill bg-black/30 px-3 py-1 pl-11 text-xs font-medium text-white backdrop-blur-sm"
+          class="col-start-1 row-start-1 z-0 inline-flex w-fit max-w-full items-center self-center overflow-hidden rounded-pill bg-black/30 px-3 py-1 pl-12 text-xs font-medium text-text-on-primary backdrop-blur-sm"
         >
           <span class="block truncate">Prof. {{ professor() }}</span>
         </span>

@@ -5,10 +5,10 @@ sidebar_label: Create Job
 import Image, {ImageSize} from "../../src/components/Image/Image";
 
 import creationStep1 from './images/create-job/job-creation-form-1.png';
-import creationStep2_1 from './images/create-job/job-creation-form-2_1.png';
-import creationStep2_2 from './images/create-job/job-creation-form-2_2.png';
-import creationStep3_1 from './images/create-job/job-creation-form-4_1.png';
-import creationStep3_2 from './images/create-job/job-creation-form-4_2.png';
+import creationStep2 from './images/create-job/job-creation-form-2.png';
+import creationStep3 from './images/create-job/job-creation-form-3.png';
+import creationStep4_1 from './images/create-job/job-creation-form-4_1.png';
+import creationStep4_2 from './images/create-job/job-creation-form-4_2.png';
 
 # Create Positions
 
@@ -33,36 +33,45 @@ This is the **comprehensive creation interface** for developing new doctorate po
 </div>
 
 **Step 1: Basic Information**
-- **Required Fields** (marked with red asterisks): Job Title, Research Area, Field of Studies, Location
-- **Supervising Professor**: Auto-filled with currently logged-in user's details
-- **Timeline Configuration**: Application Deadline, Job Start date, workload in hours / week (up to 40 hours / week), contract duration in years (up to 6 years)
-- **Validation System**: Users can **only** navigate to the next step using the **"Next"** button after completing all required fields
+- **Position Overview**: Job Title, Research Area, Field of Studies, Location, and Supervising Professor. Required fields are marked with red asterisks.
+- **Job Description**: Rich-text editor for a comprehensive research project explanation. Includes formatting tools for professional presentation (Tasks & Responsibilities, Eligibility Criteria).
+- **TUMApply AI Assistant**: Toggle "Enable AI" to open the AI panel. Easily generate or rewrite the job description based on inputs or rough bullet points.
+- **Multilingual Support**: Write the description in either German or English; the system translates it automatically.
+- **Validation System**: Users can only proceed using the **"Next"** button after completing required fields.
 
+### Step 2: Employment Terms
 
-### Step 2: Position Details
-
-<Image src={creationStep2_1} alt="Job Creation Form Step 2 Section 1" size={ImageSize.large}/>
-<Image src={creationStep2_2} alt="Job Creation Form Step 2 Section 2" size={ImageSize.large}/>
+<Image src={creationStep2} alt="Job Creation Form Step 2" size={ImageSize.large}/>
 <div style={{textAlign: 'center'}}>
-  <em>Job Creation Form Step 2: Position Details</em>
+  <em>Job Creation Form Step 2: Employment Terms</em>
 </div>
 
-**Step 2: Position Details**
-- **Job Description**: Rich-text editor for comprehensive research project explanation
-- **Eligibility Criteria**: Academic qualifications, skills, and experience prerequisites
-- **Tasks & Responsibilities**: Detailed breakdown of expected duties and activities
-- **Formatting Tools**: Advanced text editing capabilities for professional presentation
+**Step 2: Employment Terms**
+- **Timeline Configuration**: Set the Application Deadline and targeted Start Date.
+- **Workload & Duration**: Define workload in hours/week (up to 40) and contract duration in years (up to 6).
+- **Funding & Extras**: Specify Funding Type and indicate whether the position is suitable for persons with disabilities.
 
+### Step 3: Banner Image
 
-### Step 3: Review Job Details
-
-<Image src={creationStep3_1} alt="Job Creation Form Step 3 Section 1" size={ImageSize.large}/>
-<Image src={creationStep3_2} alt="Job Creation Form Step 3 Section 2" size={ImageSize.large}/>
+<Image src={creationStep3} alt="Job Creation Form Step 3" size={ImageSize.large}/>
 <div style={{textAlign: 'center'}}>
-  <em>Job Creation Form Step 3: Review</em>
+  <em>Job Creation Form Step 3: Banner Image Selection</em>
 </div>
 
-**Step 3: Review Job Details**
+**Step 3: Banner Image**
+- **Default Images**: Pick from default banner images provided by the system.
+- **Image Collection**: Use or upload custom images specific to your research group.
+- **Upload Capability**: Accepted formats include JPG, JPEG, and PNG (recommended 16:9 ratio, max 5MB).
+
+### Step 4: Review & Publish
+
+<Image src={creationStep4_1} alt="Job Creation Form Step 4 Section 1" size={ImageSize.large}/>
+<Image src={creationStep4_2} alt="Job Creation Form Step 4 Section 2" size={ImageSize.large}/>
+<div style={{textAlign: 'center'}}>
+  <em>Job Creation Form Step 4: Review</em>
+</div>
+
+**Step 4: Review Job Details**
 - **Final Review**: Comprehensive preview of complete position before publication
 - **Data Protection Compliance**: Mandatory checkbox for Data Privacy Terms agreement
 - **Publication Options**: Option to publish immediately using **"Publish"** button or press **"Back"** to edit any mistakes
@@ -89,27 +98,19 @@ This document outlines key steps for creating and publishing doctorate positions
 1. Navigate to **"My positions"** from the sidebar menu
 2. Click the **"Create Position"** button located at the top right
 3. **Complete Step 1 - Basic Information**:
-- Enter all required fields marked with red asterisks
-- Enter any optional fields as needed
-4. **Complete Step 2 - Position Details**:
-- Write comprehensive project description using the rich-text editor
-- Define specific key tasks and responsibilities expected of the candidate
-- List detailed eligibility criteria including academic qualifications and preferred skills
-- Use formatting tools to enhance readability and professional presentation
-5. **Complete Step 3 - Review Job Details**:
-- Preview the complete position as it will appear to applicants
-- Confirm mandatory data privacy terms and conditions
-- Make any necessary edits by navigating back to previous steps
-6. **Finalize the position**:
+- Fill out position overview details such as title, area, and location.
+- Provide the job description manually or use the **TUMApply AI Assistant** to automatically draft or rewrite the description.
+4. **Complete Step 2 - Employment Terms**:
+- Enter timeline dates (start date, deadline).
+- Define workload, contract duration, and funding type.
+- Indicate equal opportunities suitability.
+5. **Complete Step 3 - Banner Image**:
+- Select an image from the default gallery or your research group's uploads.
+- Alternatively, upload a new banner image.
+6. **Complete Step 4 - Review Job Details**:
+- Preview the complete position as it will appear to applicants.
+- Ensure all information and translations are accurate.
+- Make any necessary edits by navigating back to previous steps.
+7. **Finalize the position**:
 - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
 - Positions that are saved as drafts are not visible to applicants
-
-**Video**:
-<iframe
-  src="https://live.rbg.tum.de/w/artemisintro/61937?video_only=1&t=0"
-  title="How to create a position"
-  allowFullScreen="1"
-  frameBorder="0"
-  width="600"
-  height="350">
-</iframe>

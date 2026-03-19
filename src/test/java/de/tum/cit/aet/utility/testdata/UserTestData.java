@@ -227,7 +227,6 @@ public final class UserTestData {
             "Prof. Smith",
             "other" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
             "OTH",
-            "CS",
             "Other research",
             "other@example.com",
             "80333",

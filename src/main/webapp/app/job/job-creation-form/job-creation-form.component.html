@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #sendPublishDialog
   class="confirm-dialog"
   [header]="'jobCreationForm.confirmDialog.header' | translate"
   [message]="'jobCreationForm.confirmDialog.message' | translate"
@@ -7,7 +6,9 @@
   [severity]="publishButtonSeverity"
   [confirmIcon]="publishButtonIcon"
   [showOpenButton]="false"
+  [visible]="showPublishDialog()"
   (confirmed)="publishJob()"
+  (closed)="showPublishDialog.set(false)"
   [dialogStyleClass]="'confirm-dialog-lg'"
 />
 @if (!isLoading()) {
@@ -55,11 +56,11 @@
 
               <div class="flex-1">
                 <jhi-select
-                  [selected]="basicInfoForm.get('fieldOfStudies')?.value"
-                  (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
-                  [items]="translatedFieldsOfStudies()"
-                  [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
-                  [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
+                  [selected]="basicInfoForm.get('subjectArea')?.value"
+                  (selectedChange)="basicInfoForm.get('subjectArea')?.setValue($event)"
+                  [items]="translatedSubjectAreas()"
+                  [label]="'jobCreationForm.basicInformationSection.subjectArea.label' | translate"
+                  [placeholder]="'jobCreationForm.basicInformationSection.subjectArea.placeholder' | translate"
                   [required]="true"
                   [width]="'100%'"
                   [filter]="true"
@@ -103,7 +104,6 @@
           </div>
 
           <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
-          <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
           <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
 
           <div class="mt-3 mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -139,26 +139,33 @@
           </div>
 
           <div class="flex flex-col gap-2 mb-6">
-            <div>
-              <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm" [class.lg:grid-cols-[1fr_auto_220px]]="aiToggleSignal()">
-                <fa-icon class="text-xs" [icon]="['fas', 'custom-sparkle']" />
-                <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
+            <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="aiToggleSignal()">
+              <!-- Editor -->
+              <div>
+                <div
+                  class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm"
+                  [class.lg:grid-cols-[1fr_auto_220px]]="aiToggleSignal()"
+                >
+                  <fa-icon class="text-xs" [icon]="['fas', 'custom-sparkle']" />
+                  <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
+                </div>
+                <jhi-editor
+                  #jobDescriptionEditor
+                  fieldId="jobDescription"
+                  label="jobCreationForm.positionDetailsSection.jobDescription.label"
+                  [placeholder]="jobDescriptionPlaceholder()"
+                  helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+                  tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
+                  [required]="true"
+                  [characterLimit]="5000"
+                  [model]="jobDescriptionSignal()"
+                  [control]="basicInfoForm.get('jobDescription') ?? undefined"
+                  icon="circle-info"
+                  [shouldTranslate]="true"
+                  [showGenderDecoderButton]="true"
+                  height="20rem"
+                />
               </div>
-              <jhi-editor
-                #jobDescriptionEditor
-                fieldId="jobDescription"
-                label="jobCreationForm.positionDetailsSection.jobDescription.label"
-                [placeholder]="jobDescriptionPlaceholder()"
-                helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
-                tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
-                [required]="true"
-                [characterLimit]="5000"
-                [model]="jobDescriptionSignal()"
-                [control]="basicInfoForm.get('jobDescription') ?? undefined"
-                icon="circle-info"
-                [shouldTranslate]="true"
-                [showGenderDecoderButton]="true"
-              />
             </div>
           </div>
         </form>

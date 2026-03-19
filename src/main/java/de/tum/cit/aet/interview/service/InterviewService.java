@@ -22,6 +22,7 @@ import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.*;
 import de.tum.cit.aet.interview.dto.CancelInterviewDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeState;
+import de.tum.cit.aet.interview.dto.IntervieweeStateCounts;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
@@ -40,7 +41,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,31 +111,21 @@ public class InterviewService {
             )
         );
 
-        // 4. Fetch all interviewees for these processes in a single query
+        // 4. Fetch aggregated state counts via JPQL (counts COMPLETED/SCHEDULED/INVITED/UNCONTACTED per process)
         List<UUID> processIds = interviewProcesses.stream().map(InterviewProcess::getId).toList();
-        List<Interviewee> allInterviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(processIds);
+        Instant now = Instant.now();
+        Map<UUID, IntervieweeStateCounts> countsPerProcess = intervieweeRepository
+            .countStatesByProcessIds(processIds, now)
+            .stream()
+            .collect(Collectors.toMap(IntervieweeStateCounts::processId, c -> c));
 
         // Fetch unbooked future slots per process
-        List<Object[]> slotCountsRaw = interviewSlotRepository.countUnbookedFutureSlotsPerProcess(processIds, Instant.now());
+        List<Object[]> slotCountsRaw = interviewSlotRepository.countUnbookedFutureSlotsPerProcess(processIds, now);
         Map<UUID, Long> slotsPerProcess = slotCountsRaw
             .stream()
             .collect(Collectors.toMap(result -> (UUID) result[0], result -> (Long) result[1]));
 
-        // 5. Group interviewees by process ID and calculate state counts
-        Map<UUID, Map<IntervieweeState, Long>> countsPerProcess = allInterviewees
-            .stream()
-            .collect(
-                Collectors.groupingBy(
-                    interviewee -> interviewee.getInterviewProcess().getId(),
-                    Collectors.groupingBy(
-                        this::calculateIntervieweeState,
-                        () -> new EnumMap<>(IntervieweeState.class),
-                        Collectors.counting()
-                    )
-                )
-            );
-
-        // 6. Transform each interview process into a DTO with statistical data
+        // 5. Transform each interview process into a DTO with statistical data
         return interviewProcesses
             .stream()
             .map(interviewProcess -> {
@@ -143,21 +133,17 @@ public class InterviewService {
                 UUID jobId = job.getJobId();
                 UUID processId = interviewProcess.getId();
 
-                // Get the state counts for this process (or an empty map if no data exists)
-                Map<IntervieweeState, Long> stateCounts = countsPerProcess.getOrDefault(processId, Collections.emptyMap());
-
-                // Count interviewees by state
-                long completedCount = stateCounts.getOrDefault(IntervieweeState.COMPLETED, 0L);
-                long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
-                long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
-                long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
+                // Get the pre-aggregated state counts (or zeros if no interviewees exist)
+                IntervieweeStateCounts counts = countsPerProcess.getOrDefault(
+                    processId,
+                    new IntervieweeStateCounts(processId, 0L, 0L, 0L, 0L)
+                );
 
                 // Get total unbooked future slots
                 long totalSlots = slotsPerProcess.getOrDefault(processId, 0L);
 
-                // Calculate total number of all interviewees in this interview process
-                // Only count interviewees who have a decided slot (SCHEDULED or COMPLETED)
-                long totalInterviews = completedCount + scheduledCount;
+                // Total interviews = SCHEDULED + COMPLETED
+                long totalInterviews = counts.completedCount() + counts.scheduledCount();
 
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
@@ -165,10 +151,10 @@ public class InterviewService {
                     interviewProcess.getId(),
                     job.getTitle(),
                     job.getImage() != null ? job.getImage().getUrl() : null,
-                    completedCount,
-                    scheduledCount,
-                    invitedCount,
-                    uncontactedCount,
+                    counts.completedCount(),
+                    counts.scheduledCount(),
+                    counts.invitedCount(),
+                    counts.uncontactedCount(),
                     totalInterviews,
                     totalSlots,
                     job.getState().getValue(),
@@ -212,6 +198,7 @@ public class InterviewService {
                     slot.getStartDateTime(),
                     slot.getEndDateTime(),
                     applicantName,
+                    applicantUser.getAvatar(),
                     slot.getInterviewProcess().getJob().getTitle(),
                     slot.getLocation(),
                     slot.getInterviewProcess().getId(),
@@ -240,32 +227,27 @@ public class InterviewService {
         Job job = interviewProcess.getJob();
         verifyResearchGroupAccess(job);
 
-        // 3. Fetch interviewees for this process and calculate state counts
-        List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(List.of(processId));
-
-        Map<IntervieweeState, Long> stateCounts = new EnumMap<>(IntervieweeState.class);
-        for (Interviewee interviewee : interviewees) {
-            IntervieweeState state = calculateIntervieweeState(interviewee);
-            stateCounts.merge(state, 1L, Long::sum);
-        }
+        // 3. Fetch aggregated state counts via JPQL
+        Instant now = Instant.now();
+        IntervieweeStateCounts counts = intervieweeRepository
+            .countStatesByProcessIds(List.of(processId), now)
+            .stream()
+            .findFirst()
+            .orElse(new IntervieweeStateCounts(processId, 0L, 0L, 0L, 0L));
 
         // 4. Calculate stats
-        long completedCount = stateCounts.getOrDefault(IntervieweeState.COMPLETED, 0L);
-        long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
-        long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
-        long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
-        long totalInterviews = completedCount + scheduledCount;
-        long totalSlots = interviewSlotRepository.countUnbookedFutureSlotsByInterviewProcessId(processId, Instant.now());
+        long totalInterviews = counts.completedCount() + counts.scheduledCount();
+        long totalSlots = interviewSlotRepository.countUnbookedFutureSlotsByInterviewProcessId(processId, now);
 
         return new InterviewOverviewDTO(
             job.getJobId(),
             interviewProcess.getId(),
             job.getTitle(),
             job.getImage() != null ? job.getImage().getUrl() : null,
-            completedCount,
-            scheduledCount,
-            invitedCount,
-            uncontactedCount,
+            counts.completedCount(),
+            counts.scheduledCount(),
+            counts.invitedCount(),
+            counts.uncontactedCount(),
             totalInterviews,
             totalSlots,
             job.getState().getValue(),
@@ -423,6 +405,59 @@ public class InterviewService {
 
         // 5. Delete the slot
         interviewSlotRepository.delete(slot);
+    }
+
+    /**
+     * Updates the location of an interview slot.
+     * Works for both booked and unbooked slots.
+     * If the slot is booked, sends a notification email to the applicant.
+     *
+     * @param slotId the ID of the slot to update
+     * @param dto    the update data containing the new location
+     * @return the updated slot as DTO
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public InterviewSlotDTO updateSlotLocation(UUID slotId, UpdateSlotLocationDTO dto) {
+        // 1. Load the slot
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJobAndInterviewee(slotId)
+            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
+
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
+        Job job = slot.getInterviewProcess().getJob();
+        verifyResearchGroupAccess(job);
+
+        // 3. Update location
+        slot.setLocation(dto.location());
+        interviewSlotRepository.save(slot);
+
+        // 4. If booked, notify the applicant about the location change
+        if (slot.getIsBooked() && slot.getInterviewee() != null) {
+            sendLocationChangedEmail(slot, slot.getInterviewee(), job);
+        }
+
+        // 5. Return updated DTO
+        return InterviewSlotDTO.fromEntity(slot);
+    }
+
+    private void sendLocationChangedEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
+        User applicant = interviewee.getApplication().getApplicant().getUser();
+
+        String icsContent = icsCalendarService.generateIcsContent(slot, job);
+        String icsFileName = icsCalendarService.generateFileName(slot);
+
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(EmailType.INTERVIEW_LOCATION_CHANGED)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(slot)
+            .icsContent(icsContent)
+            .icsFileName(icsFileName)
+            .build();
+        asyncEmailSender.sendAsync(email);
     }
 
     /**
@@ -1038,7 +1073,13 @@ public class InterviewService {
         if (user == null) {
             return null;
         }
-        return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new IntervieweeDTO.IntervieweeUserDTO(
+            user.getUserId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getAvatar()
+        );
     }
 
     /**

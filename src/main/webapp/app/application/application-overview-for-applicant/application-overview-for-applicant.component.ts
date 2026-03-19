@@ -14,10 +14,10 @@ import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationOverviewDTO } from '../../generated/model/applicationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
@@ -46,7 +46,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
  * application status, and creation time.
  */
 export default class ApplicationOverviewForApplicantComponent {
-  loading = signal(false);
+  loading = signal(true);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
@@ -69,9 +69,9 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for created column (relative time)
   readonly timeSinceCreationTemplate = viewChild.required<TemplateRef<unknown>>('timeSinceCreationTemplate');
 
-  // Confirm dialog references
-  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  // Dialog visibility signals
+  showWithdrawDialog = signal(false);
+  showDeleteDialog = signal(false);
 
   // Track current application ID for dialogs
   currentApplicationId = signal<string | undefined>(undefined);
@@ -149,7 +149,7 @@ export default class ApplicationOverviewForApplicantComponent {
           severity: 'danger',
           command: () => {
             this.currentApplicationId.set(applicationId);
-            this.withdrawDialog().confirm();
+            this.showWithdrawDialog.set(true);
           },
         });
       }
@@ -162,7 +162,7 @@ export default class ApplicationOverviewForApplicantComponent {
           severity: 'danger',
           command: () => {
             this.currentApplicationId.set(applicationId);
-            this.deleteDialog().confirm();
+            this.showDeleteDialog.set(true);
           },
         });
       }

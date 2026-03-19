@@ -22,6 +22,8 @@
     "assign": "Assign",
     "noFurtherActions": "No further actions available",
     "replace": "Replace",
-    "downloadPDF": "Export"
+    "downloadPDF": "Export",
+    "showSensitiveInfo": "Show sensitive information",
+    "hideSensitiveInfo": "Hide sensitive information"
   }
 }

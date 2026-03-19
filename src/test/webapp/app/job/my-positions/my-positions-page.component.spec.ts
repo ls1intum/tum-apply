@@ -166,7 +166,7 @@ describe('MyPositionsPageComponent', () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.selectedStatusFilters.set([]);
 
-      component.onFilterEmit({ filterId: 'fieldOfStudies', selectedValues: ['CS'] });
+      component.onFilterEmit({ filterId: 'subjectArea', selectedValues: ['CS'] });
 
       expect(component.selectedStatusFilters()).toEqual([]);
       expect(loadSpy).not.toHaveBeenCalled();
@@ -443,49 +443,34 @@ describe('MyPositionsPageComponent', () => {
       expect(editSpy).toHaveBeenCalledWith('1');
     });
 
-    it('should confirm edit for published jobs', () => {
-      const confirmSpy = vi.fn();
-      Object.defineProperty(component, 'editPublishedDialog', {
-        value: () => ({ confirm: confirmSpy }),
-      });
+    it('should set showEditPublishedDialog to true for published jobs', () => {
       component.jobs.set([{ jobId: '2', state: 'PUBLISHED', title: 'Published' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('2') ?? [];
       items[0]?.command?.();
 
       expect(component.currentJobId()).toBe('2');
-      expect(confirmSpy).toHaveBeenCalledOnce();
-      expect(confirmSpy).toHaveBeenCalledWith();
+      expect(component.showEditPublishedDialog()).toBe(true);
     });
 
-    it('should confirm delete for draft jobs', () => {
-      const confirmSpy = vi.fn();
-      Object.defineProperty(component, 'deleteDialog', {
-        value: () => ({ confirm: confirmSpy }),
-      });
+    it('should set showDeleteDialog to true for draft jobs', () => {
       component.jobs.set([{ jobId: '4', state: 'DRAFT', title: 'Draft' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('4') ?? [];
       items[1]?.command?.();
 
       expect(component.currentJobId()).toBe('4');
-      expect(confirmSpy).toHaveBeenCalledOnce();
-      expect(confirmSpy).toHaveBeenCalledWith();
+      expect(component.showDeleteDialog()).toBe(true);
     });
 
-    it('should confirm close for published jobs', () => {
-      const confirmSpy = vi.fn();
-      Object.defineProperty(component, 'closeDialog', {
-        value: () => ({ confirm: confirmSpy }),
-      });
+    it('should set showCloseDialog to true for published jobs', () => {
       component.jobs.set([{ jobId: '5', state: 'PUBLISHED', title: 'Published' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('5') ?? [];
       items[1]?.command?.();
 
       expect(component.currentJobId()).toBe('5');
-      expect(confirmSpy).toHaveBeenCalledOnce();
-      expect(confirmSpy).toHaveBeenCalledWith();
+      expect(component.showCloseDialog()).toBe(true);
     });
 
     it('should build edit/close menu items for published jobs', () => {

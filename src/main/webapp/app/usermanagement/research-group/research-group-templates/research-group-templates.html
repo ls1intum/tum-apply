@@ -31,8 +31,9 @@
             confirmIcon="trash"
             (confirmed)="delete(template.emailTemplateId)"
             severity="danger"
-            [tooltip]="'button.delete' | translate"
+            [tooltip]="(template.isDefault ? 'researchGroup.emailTemplates.deleteDefaultDisabled' : 'button.delete') | translate"
             [iconOnly]="true"
+            [disabled]="template.isDefault"
           />
         }
       </div>

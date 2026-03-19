@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public record JobFormDTO(
     UUID jobId,
     @NotNull String title,
     String researchArea,
-    @NotNull String fieldOfStudies,
+    @NotNull SubjectArea subjectArea,
     @NotNull UUID supervisingProfessor,
     @NotNull Campus location,
     LocalDate startDate,
@@ -42,7 +43,7 @@ public record JobFormDTO(
             job.getJobId(),
             job.getTitle(),
             job.getResearchArea(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             job.getSupervisingProfessor().getUserId(),
             job.getLocation(),
             job.getStartDate(),

@@ -1,24 +1,26 @@
 <!-- Confirm Dialogs -->
 <jhi-confirm-dialog
-  #withdrawDialog
   [label]="'button.withdraw' | translate"
   [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
   [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
   severity="danger"
   confirmIcon="withdraw"
   [showOpenButton]="false"
+  [visible]="showWithdrawDialog()"
   (confirmed)="currentApplicationId() && onWithdrawApplication(currentApplicationId()!)"
+  (closed)="showWithdrawDialog.set(false)"
 />
 
 <jhi-confirm-dialog
-  #deleteDialog
   [label]="'button.delete' | translate"
   [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
   [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
+  [visible]="showDeleteDialog()"
   (confirmed)="currentApplicationId() && onDeleteApplication(currentApplicationId()!)"
+  (closed)="showDeleteDialog.set(false)"
 />
 
 <div class="page-container">
@@ -32,6 +34,7 @@
       [data]="pageData()"
       [totalRecords]="total()"
       [rows]="pageSize()"
+      [loading]="loading()"
       [selectable]="true"
       (lazyLoad)="loadPage($event)"
     />

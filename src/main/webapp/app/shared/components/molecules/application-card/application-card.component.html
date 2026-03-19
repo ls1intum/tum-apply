@@ -10,7 +10,13 @@
   @if (!placeholder()) {
     <!-- Top Section with Avatar and Details -->
     <div class="flex flex-col md:flex-row gap-4">
-      <jhi-user-avatar [fullName]="application()?.applicationDetailDTO?.applicant?.user?.name" size="xl" class="hidden md:flex shrink-0" />
+      <jhi-user-avatar
+        [fullName]="application()?.applicationDetailDTO?.applicant?.user?.name"
+        [avatarUrl]="application()?.applicationDetailDTO?.applicant?.user?.avatar"
+        size="lg"
+        loading="lazy"
+        class="hidden md:flex shrink-0"
+      />
 
       <!-- Content Section -->
       <div class="flex flex-col flex-1 gap-1">
@@ -51,6 +57,7 @@
                 [pTooltip]="masterSummary().gradeInfo.tooltipText"
                 [escape]="false"
                 tooltipPosition="top"
+                autoHide="false"
               />
             }
           }

@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -83,7 +84,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobId(),
             title,
             job.getResearchArea(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             professor.getUserId(),
             job.getLocation(),
             job.getStartDate(),
@@ -114,7 +115,6 @@ class JobResourceTest extends AbstractResourceTest {
             "Algorithms Group",
             "ALG",
             "Munich",
-            "CS",
             "We do cool stuff",
             "alg@example.com",
             "80333",
@@ -160,8 +160,9 @@ class JobResourceTest extends AbstractResourceTest {
 
         JobCardDTO card = page.content().getFirst();
         assertThat(card.title()).isEqualTo("Published Role");
-        assertThat(card.location()).isEqualTo("Garching");
+        assertThat(card.location().getEnglishValue()).isEqualTo("Garching");
         assertThat(card.professorName()).isEqualTo("John Doe");
+        assertThat(card.avatar()).isEqualTo(professor.getAvatar());
         assertThat(card.workload()).isEqualTo(20);
         assertThat(card.startDate()).isEqualTo(LocalDate.of(2025, 9, 1));
     }
@@ -178,7 +179,7 @@ class JobResourceTest extends AbstractResourceTest {
             null,
             "ML Engineer",
             "Machine Learning",
-            "CS",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.of(2025, 11, 1),
@@ -205,7 +206,7 @@ class JobResourceTest extends AbstractResourceTest {
             .extracting(
                 Job::getTitle,
                 Job::getResearchArea,
-                Job::getFieldOfStudies,
+                Job::getSubjectArea,
                 (Job j) -> j.getSupervisingProfessor().getUserId(),
                 Job::getLocation,
                 Job::getStartDate,
@@ -220,7 +221,7 @@ class JobResourceTest extends AbstractResourceTest {
             .containsExactly(
                 "ML Engineer",
                 "Machine Learning",
-                "CS",
+                SubjectArea.COMPUTER_SCIENCE,
                 professor.getUserId(),
                 Campus.GARCHING,
                 LocalDate.of(2025, 11, 1),
@@ -242,7 +243,7 @@ class JobResourceTest extends AbstractResourceTest {
         Map<String, Object> invalid = Map.ofEntries(
             entry("title", "Bad Job"),
             entry("researchArea", "Machine Learning"),
-            entry("fieldOfStudies", "CS"),
+            entry("subjectArea", "COMPUTER_SCIENCE"),
             entry("supervisingProfessor", professor.getUserId().toString()),
             entry("location", "GARCHING"),
             entry("startDate", "2025-11-01"),
@@ -266,7 +267,7 @@ class JobResourceTest extends AbstractResourceTest {
             null,
             "Unauthorized",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -290,7 +291,7 @@ class JobResourceTest extends AbstractResourceTest {
             null,
             "Applicant attempt",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -316,7 +317,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobId(),
             "Updated Title",
             "Updated Area",
-            "Updated Field",
+            SubjectArea.DATA_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING_HOCHBRUECK,
             LocalDate.of(2025, 12, 1),
@@ -340,7 +341,7 @@ class JobResourceTest extends AbstractResourceTest {
 
         assertThat(updatedJob.getTitle()).isEqualTo(updatedPayload.title());
         assertThat(updatedJob.getResearchArea()).isEqualTo(updatedPayload.researchArea());
-        assertThat(updatedJob.getFieldOfStudies()).isEqualTo(updatedPayload.fieldOfStudies());
+        assertThat(updatedJob.getSubjectArea()).isEqualTo(updatedPayload.subjectArea());
         assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(updatedPayload.supervisingProfessor());
         assertThat(updatedJob.getLocation()).isEqualTo(updatedPayload.location());
         assertThat(updatedJob.getStartDate()).isEqualTo(updatedPayload.startDate());
@@ -360,7 +361,7 @@ class JobResourceTest extends AbstractResourceTest {
             UUID.randomUUID(),
             "Ghost Job",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -385,7 +386,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobId(),
             "No Auth",
             "Area",
-            "Field",
+            SubjectArea.COMPUTER_SCIENCE,
             professor.getUserId(),
             Campus.GARCHING,
             LocalDate.now(),
@@ -523,7 +524,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
-        assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
+        assertThat(returnedJob.subjectArea()).isEqualTo(job.getSubjectArea());
         assertThat(returnedJob.supervisingProfessor()).isEqualTo(job.getSupervisingProfessor().getUserId());
         assertThat(returnedJob.location()).isEqualTo(job.getLocation());
         assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
@@ -562,9 +563,9 @@ class JobResourceTest extends AbstractResourceTest {
         );
         assertThat(returnedJob.researchGroup().getResearchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
-        assertThat(returnedJob.fieldOfStudies()).isEqualTo(job.getFieldOfStudies());
+        assertThat(returnedJob.subjectArea()).isEqualTo(job.getSubjectArea());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
-        assertThat(returnedJob.location()).isEqualTo("Garching");
+        assertThat(returnedJob.location().getEnglishValue()).isEqualTo("Garching");
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());

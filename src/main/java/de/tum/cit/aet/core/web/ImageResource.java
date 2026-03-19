@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.web;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
@@ -159,6 +160,20 @@ public class ImageResource {
             researchGroupId
         );
         Image image = imageService.uploadJobBannerForResearchGroup(researchGroupId, file);
+        return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
+    }
+
+    /**
+     * Upload a profile picture for the current user.
+     *
+     * @param file the image file
+     * @return the uploaded image DTO
+     */
+    @Authenticated
+    @PostMapping(value = "/upload/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageDTO> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
+        log.info("POST /api/images/upload/profile-picture filename={}", file.getOriginalFilename());
+        Image image = imageService.uploadProfilePicture(file);
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 

@@ -11,6 +11,7 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.dto.JobPreviewRequest;
@@ -147,7 +148,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("supervisor", "Supervisor");
         labels.put("researchGroup", "Research Group");
         labels.put("location", "Location");
-        labels.put("fieldsOfStudies", "Fields of Studies");
+        labels.put("subjectArea", "Subject Area");
         labels.put("researchArea", "Research Area");
         labels.put("workload", "Workload");
         labels.put("hoursPerWeek", " hours/week");
@@ -354,7 +355,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 jobRepository,
                 "Lang Test Job",
                 "AI",
-                "CS",
+                SubjectArea.COMPUTER_SCIENCE,
                 professor,
                 group,
                 Campus.GARCHING,
@@ -411,7 +412,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 UUID.randomUUID(),
                 "Software Engineer",
                 "AI Research",
-                "Computer Science",
+                SubjectArea.COMPUTER_SCIENCE,
                 professor.getUserId(),
                 Campus.GARCHING,
                 null,
@@ -475,7 +476,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 UUID.randomUUID(),
                 "Test Job",
                 "AI",
-                "CS",
+                SubjectArea.COMPUTER_SCIENCE,
                 userWithoutRG.getUserId(),
                 Campus.GARCHING,
                 LocalDate.now(),

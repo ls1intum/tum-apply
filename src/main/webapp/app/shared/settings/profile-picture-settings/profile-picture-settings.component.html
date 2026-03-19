@@ -1,0 +1,95 @@
+<div class="mb-1">
+  <div class="flex items-center gap-4 pb-1">
+    <div class="grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full group" (click)="onAddPictureClick()">
+      <div class="col-start-1 row-start-1 h-20 w-20 overflow-hidden">
+        <div class="origin-top-left scale-[1.25]">
+          <jhi-user-avatar [fullName]="fullName()" [avatarUrl]="currentProfilePictureUrl() ?? undefined" size="xl" />
+        </div>
+      </div>
+
+      <div
+        style="--image-hover-overlay-soft: color-mix(in srgb, var(--color-image-hover-overlay) 30%, transparent)"
+        class="pointer-events-none col-start-1 row-start-1 z-10 flex h-full w-full items-center justify-center bg-transparent transition-colors duration-200 group-hover:bg-[var(--image-hover-overlay-soft)]"
+      >
+        <fa-icon [icon]="['fas', 'pen']" class="text-sm text-transparent transition-colors duration-200 group-hover:text-text-on-primary" />
+      </div>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h2 class="mb-1 text-lg font-semibold" jhiTranslate="settings.profilePicture.header">Profile Picture</h2>
+          <p class="text-text-secondary" jhiTranslate="settings.profilePicture.description"></p>
+        </div>
+        <div class="flex items-center gap-1">
+          <jhi-confirm-dialog
+            #resetPictureDialog
+            [showOpenButton]="false"
+            [label]="'button.delete' | translate"
+            [header]="'settings.profilePicture.resetConfirm.header' | translate"
+            [message]="'settings.profilePicture.resetConfirm.message' | translate"
+            confirmIcon="trash"
+            severity="danger"
+            (confirmed)="onResetPicture()"
+          />
+          <jhi-button icon="pen" variant="text" severity="primary" [tooltip]="'button.edit' | translate" (click)="onAddPictureClick()" />
+          <jhi-button
+            icon="trash"
+            variant="text"
+            severity="danger"
+            [tooltip]="'button.remove' | translate"
+            [disabled]="!currentProfilePictureUrl()"
+            (click)="resetPictureDialog.confirm()"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input #fileInput type="file" accept="image/jpeg,image/jpg,image/png" class="hidden" (change)="onFileSelected($event)" />
+</div>
+
+<jhi-dialog
+  [visible]="cropDialogVisible()"
+  (visibleChange)="$event ? cropDialogVisible.set(true) : onCancel()"
+  header="settings.profilePicture.cropDialog.header"
+  [shouldTranslateHeader]="true"
+  width="460px"
+  [closable]="true"
+  [dismissableMask]="false"
+>
+  @if (selectedFile()) {
+    <div class="flex flex-col items-center gap-5 py-2">
+      <image-cropper
+        class="block overflow-hidden rounded-md"
+        [style.width.px]="CROP_SIZE"
+        [style.height.px]="CROP_SIZE"
+        [style.--cropper-outline-color]="'color-mix(in srgb, var(--color-image-hover-overlay) 70%, transparent)'"
+        [style.--cropper-color]="'transparent'"
+        [style.--cropper-focus-border]="'0.125rem solid var(--color-text-on-primary)'"
+        [imageFile]="selectedFile()"
+        [imageAltText]="fullName() ?? 'Profile picture'"
+        cropperFrameAriaLabel="Crop profile picture"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1"
+        [roundCropper]="true"
+        [allowMoveImage]="true"
+        [format]="'jpeg'"
+        [output]="'blob'"
+        [autoCrop]="false"
+        [imageQuality]="90"
+        [resizeToWidth]="300"
+        [resizeToHeight]="300"
+        [transform]="cropTransform"
+        (transformChange)="onTransformChange($event)"
+        (imageLoaded)="onImageLoaded()"
+        (loadImageFailed)="onLoadImageFailed()"
+      />
+
+      <div class="flex justify-end gap-2 pt-1" [style.width.px]="CROP_SIZE">
+        <jhi-button [label]="'button.cancel'" [shouldTranslate]="true" variant="outlined" severity="secondary" (click)="onCancel()" />
+        <jhi-button [label]="'button.save'" [shouldTranslate]="true" icon="save" (click)="onSave()" />
+      </div>
+    </div>
+  }
+</jhi-dialog>
