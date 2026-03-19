@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,7 @@ public class JobService {
      * @param dto the job details used to create the job
      * @return the created job as a {@link JobFormDTO}
      */
+    @Transactional
     public JobFormDTO createJob(JobFormDTO dto) {
         Job job = new Job();
         return updateJobEntity(job, dto);
@@ -65,6 +67,7 @@ public class JobService {
      * @param dto   the {@link JobFormDTO} containing updated job details
      * @return the updated job as a {@link JobFormDTO}
      */
+    @Transactional
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
         Job job = assertCanManageJob(jobId);
         return updateJobEntity(job, dto);
@@ -86,6 +89,7 @@ public class JobService {
      *                                          rejected
      * @return the updated job as a {@link JobFormDTO}
      */
+    @Transactional
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = assertCanManageJob(jobId);
         job.setState(targetState);
@@ -134,6 +138,7 @@ public class JobService {
      *
      * @param jobId the ID of the job to delete
      */
+    @Transactional
     public void deleteJob(UUID jobId) {
         assertCanManageJob(jobId);
 
@@ -410,6 +415,7 @@ public class JobService {
      * @param toLang         the target language ("de" or "en")
      * @param translatedText the translated job description text
      */
+    @Transactional
     public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
         Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         if ("de".equalsIgnoreCase(toLang)) {
