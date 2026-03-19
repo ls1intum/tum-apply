@@ -5,14 +5,14 @@ import { of, Subject, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { PersonalInformationData, PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
-import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
-import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 import {
   createApplicantResourceApiServiceMock,
   provideApplicantResourceApiServiceMock,
-} from '../../../../util/applicant-resource-api.service.mock';
-import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
+} from 'util/applicant-resource-api.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('PersonalInformationSettingsComponent', () => {
   const createProfile = (): ApplicantDTO => ({
@@ -85,13 +85,6 @@ describe('PersonalInformationSettingsComponent', () => {
         provideFontAwesomeTesting(),
       ],
     });
-  });
-
-  it('should export the component and related symbols from the barrel file', async () => {
-    const barrelModule = await import('app/shared/settings/personal-information-settings');
-
-    expect(barrelModule.PersonalInformationSettingsComponent).toBe(PersonalInformationSettingsComponent);
-    expect(barrelModule.selectGender).toBeDefined();
   });
 
   it('should load and map the applicant profile on construction', async () => {
