@@ -31,7 +31,7 @@ describe('AiScoreRingComponent', () => {
     expect(component.scoreColor()).toBe('var(--p-danger-color)');
 
     component.animatedScore.set(component.WARNING_THRESHOLD);
-    expect(component.scoreColor()).toBe('var(--color-amber-200)');
+    expect(component.scoreColor()).toBe('var(--p-warn-color)');
 
     component.animatedScore.set(component.WARNING_THRESHOLD + 1);
     expect(component.scoreColor()).toBe('var(--p-primary-color)');
