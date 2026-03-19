@@ -31,7 +31,7 @@ export class AiScoreRingComponent {
     }
 
     if (score <= this.WARNING_THRESHOLD) {
-      return 'var(--color-amber-200)';
+      return 'var(--p-warn-color)';
     }
 
     return 'var(--p-primary-color)';
