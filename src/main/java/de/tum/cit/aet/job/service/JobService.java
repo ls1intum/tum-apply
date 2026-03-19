@@ -55,7 +55,6 @@ public class JobService {
      * @param dto the job details used to create the job
      * @return the created job as a {@link JobFormDTO}
      */
-    @Transactional
     public JobFormDTO createJob(JobFormDTO dto) {
         Job job = new Job();
         return updateJobEntity(job, dto);
