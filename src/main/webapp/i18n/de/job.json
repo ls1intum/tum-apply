@@ -6,11 +6,24 @@
         "edit": "Aktuelle Doktorandenstelle bearbeiten"
       },
       "steps": {
-        "basicInfo": "Grundlegende Informationen",
-        "employmentTerms": "Arbeitsbedingungen",
-        "imageSelection": "Bannerbild",
-        "additionalInfo": "Zusätzliche Informationen",
-        "summary": "Zusammenfassung"
+        "basicInfo": {
+          "name": "Grundlegende Informationen",
+          "description": "Gib die wichtigsten Details der Stelle an und füge eine klare Beschreibung hinzu."
+        },
+        "employmentTerms": {
+          "name": "Arbeitsbedingungen",
+          "description": "Gib die Angaben zu den Arbeitsbedingungen an."
+        },
+        "imageSelection": {
+          "name": "Bannerbild",
+          "description": "Wähle ein optionales Bannerbild für die Stellenkarte aus Standardbildern oder aus der Bildersammlung deiner Forschungsgruppe."
+        },
+        "additionalInfo": {
+          "name": "Zusätzliche Informationen"
+        },
+        "summary": {
+          "name": "Zusammenfassung"
+        }
       },
       "basicInfo": {
         "section1": "Übersicht",
@@ -18,7 +31,6 @@
       }
     },
     "basicInformationSection": {
-      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende:r Professor:in.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
@@ -154,7 +166,6 @@
       }
     },
     "imageSection": {
-      "description": "Wähle ein optionales Bannerbild aus, das in deiner Stellenkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe.",
       "defaultImages": "Standardbilder",
       "orDivider": "oder",
       "researchGroupImages": "Bildersammlung",
