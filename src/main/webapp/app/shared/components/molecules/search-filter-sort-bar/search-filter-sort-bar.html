@@ -129,13 +129,11 @@
     ></div>
     @if (hasActiveFilters()) {
       <span class="text-xs">-</span>
-      <button
-        type="button"
+      <jhi-button
         class="text-xs text-primary-default cursor-pointer hover:underline"
         (click)="clearAllFilter(); $event.stopPropagation()"
-      >
-        {{ 'entity.filters.resetFilter' | translate }}
-      </button>
+        [label]="'entity.filters.resetFilter' | translate"
+      />
     }
   </div>
   <span class="ml-auto">

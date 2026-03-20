@@ -17,6 +17,7 @@ import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 300;
@@ -32,6 +33,7 @@ const STANDARD_CHARACTER_BUFFER = 300;
     TooltipModule,
     GenderBiasAnalysisDialogComponent,
     TranslateDirective,
+    ButtonComponent,
   ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',

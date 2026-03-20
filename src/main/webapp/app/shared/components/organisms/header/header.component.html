@@ -15,13 +15,12 @@
   <div class="flex items-center gap-1 flex-shrink-0">
     <div class="flex items-center gap-1 mr-2">
       @for (language of languages; track language; let isLast = $last) {
-        <button
+        <jhi-button
           (click)="toggleLanguage(language)"
-          class="text-primary-default cursor-pointer hover:underline"
-          [class.font-bold]="currentLanguage() === language"
-        >
-          {{ language.toUpperCase() }}
-        </button>
+          [styleClass]="'!text-primary-default !cursor-pointer hover:!underline' + (currentLanguage() === language ? ' !font-bold' : '')"
+          [label]="language.toUpperCase()"
+          variant="text"
+          />
         @if (!isLast) {
           <span class="text-primary-default">|</span>
         }
@@ -69,6 +68,14 @@
         styleClass="font-bold"
       />
     } @else {
+      <jhi-button
+        styleClass="flex py-1 px-2 items-center gap-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
+        (click)="toggleProfileMenu($event)"
+        [ariaLabel]="'header.profileMenu' | translate"
+        [aria-expanded]="isProfileMenuOpen()"
+        aria-haspopup="menu"
+
+        />
       <button
         class="flex py-1 px-2 items-center gap-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
         type="button"

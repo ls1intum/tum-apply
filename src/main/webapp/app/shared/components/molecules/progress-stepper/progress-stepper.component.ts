@@ -17,7 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 
-import { Button } from '../../atoms/button/button.component';
+import {Button, ButtonComponent} from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
 
 /**
@@ -40,7 +40,7 @@ export type StepData = {
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, TranslateDirective, TooltipModule],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, TranslateDirective, TooltipModule, ButtonComponent],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,

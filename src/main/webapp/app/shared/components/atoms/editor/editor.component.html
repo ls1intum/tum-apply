@@ -79,17 +79,16 @@
                 </span>
               }
               @if (shouldShowButton()) {
-                <button
-                  type="button"
-                  class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
-                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: white;'"
-                  (click)="onGenderDecoderClick()"
+                <jhi-button
+                  label="?"
+                  severity="primary"
+                  variant="outlined"
+                  styleClass="!flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
+                  [disabled]="!analysisResult()"
                   [pTooltip]="'genderDecoder.openAnaylsis' | translate"
                   tooltipPosition="top"
-                  [disabled]="!analysisResult()"
-                >
-                  ?
-                </button>
+                  (click)="onGenderDecoderClick()"
+                />
               }
             </span>
           }
