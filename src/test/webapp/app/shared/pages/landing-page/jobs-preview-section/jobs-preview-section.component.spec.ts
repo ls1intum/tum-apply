@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { JobsPreviewSectionComponent } from 'app/shared/pages/landing-page/jobs-preview-section/jobs-preview-section.component';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -24,13 +25,14 @@ describe('JobsPreviewSectionComponent', () => {
   const mockJob = {
     jobId: 'job1',
     title: 'Job 1',
-    fieldOfStudies: 'CS',
+    subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
     location: 'Garching',
     professorName: 'Prof. John',
     workload: 20,
     startDate: '2025-09-01',
     applicationId: undefined,
     contractDuration: 6,
+    avatar: '/images/profiles/prof-john.jpg',
     imageUrl: undefined,
   };
 
@@ -85,6 +87,12 @@ describe('JobsPreviewSectionComponent', () => {
 
     const jobCard = jobCardDebugEl.componentInstance as JobCardComponent;
     expect(jobCard.headerImageUrl()).toBe(component.getExampleImageUrl(0));
+  });
+
+  it('should pass the professor avatar to the job card', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toContain('/images/profiles/prof-john.jpg');
   });
 
   it('should handle error on load and show toast', async () => {

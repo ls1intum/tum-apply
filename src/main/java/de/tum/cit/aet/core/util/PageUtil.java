@@ -23,7 +23,7 @@ public class PageUtil {
         /**
          * Sortable columns used in available job listings.
          */
-        AVAILABLE_JOBS(Set.of("title", "fieldOfStudies", "location", "professorName", "workload", "startDate")),
+        AVAILABLE_JOBS(Set.of("title", "subjectArea", "location", "professorName", "workload", "startDate")),
         /**
          * Sortable columns used in job listings by professors.
          */
@@ -32,20 +32,7 @@ public class PageUtil {
         /**
          * Sortable columns used in research group listings.
          */
-        RESEARCH_GROUPS(
-            Set.of(
-                "head",
-                "name",
-                "abbreviation",
-                "email",
-                "website",
-                "description",
-                "defaultFieldOfStudies",
-                "street",
-                "postalCode",
-                "city"
-            )
-        ),
+        RESEARCH_GROUPS(Set.of("head", "name", "abbreviation", "email", "website", "description", "street", "postalCode", "city")),
 
         /**
          * Sortable columns used in admin research group listings.

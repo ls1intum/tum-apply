@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +13,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { formatFullName } from 'app/shared/util/name.util';
 
 const I18N_BASE = 'researchGroup.members';
 type UserListItem = KeycloakUserDTO & { displayName: string };
@@ -58,15 +58,8 @@ export class ResearchGroupAddMembersComponent {
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | undefined;
 
-  // Local mock users for UI testing without Keycloak/server
-  private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
-  private mockUsers = signal<KeycloakUserDTO[] | null>(null);
-  private readonly MOCK_USERS_PATH = '/content/mock/keycloak-users.json';
-
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
-
-  private http = inject(HttpClient);
 
   constructor() {
     void this.loadAvailableUsers();
@@ -105,22 +98,6 @@ export class ResearchGroupAddMembersComponent {
     }
 
     if (query !== '' && query.length < this.MIN_SEARCH_LENGTH) {
-      return;
-    }
-
-    if (this.USE_MOCK_USERS) {
-      const mockUsers = await this.loadMockUsers();
-      const normalizedQuery = query.toLowerCase();
-      const filteredUsers = normalizedQuery
-        ? mockUsers.filter(user =>
-            `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
-          )
-        : mockUsers;
-
-      const startIndex = this.page() * this.pageSize();
-      const endIndex = startIndex + this.pageSize();
-      this.totalRecords.set(filteredUsers.length);
-      this.users.set(this.toUserListItems(filteredUsers.slice(startIndex, endIndex)));
       return;
     }
 
@@ -235,30 +212,12 @@ export class ResearchGroupAddMembersComponent {
 
   private toUserListItems(users: KeycloakUserDTO[]): UserListItem[] {
     return users.map(user => ({
-      email: user.email,
-      firstName: user.firstName,
       id: user.id,
+      firstName: user.firstName,
       lastName: user.lastName,
+      email: user.email,
       universityId: user.universityId,
-      username: user.username,
-      displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+      displayName: formatFullName(user.firstName, user.lastName),
     }));
-  }
-
-  private async loadMockUsers(): Promise<KeycloakUserDTO[]> {
-    const cachedUsers = this.mockUsers();
-    if (cachedUsers !== null) {
-      return cachedUsers;
-    }
-
-    try {
-      const users = await lastValueFrom(this.http.get<KeycloakUserDTO[]>(this.MOCK_USERS_PATH));
-      this.mockUsers.set(users);
-      return users;
-    } catch {
-      this.mockUsers.set([]);
-      this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
-      return [];
-    }
   }
 }

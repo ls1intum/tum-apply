@@ -1160,6 +1160,24 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/profile-picture:
+    post:
+      tags: [image-resource]
+      operationId: uploadProfilePicture
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/{imageId}:
     delete:
       tags: [image-resource]
@@ -1481,6 +1499,26 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/slots/{slotId}/location:
+    put:
+      tags: [interview-resource]
+      operationId: updateSlotLocation
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateSlotLocationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/interviews/upcoming:
     get:
       tags: [interview-resource]
@@ -1506,12 +1544,24 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32, minimum: 0}
-      - name: fieldOfStudies
+      - name: subjectAreas
         in: query
         required: false
         schema:
           type: array
-          items: {type: string}
+          items:
+            type: string
+            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
+              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
+              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
+              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
+              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
       - name: locations
         in: query
         required: false
@@ -2192,6 +2242,17 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
+  /api/users/avatar:
+    put:
+      tags: [user-resource]
+      operationId: updateAvatar
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateAvatarDTO'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/users/data-export:
     post:
       tags: [user-data-export-resource]
@@ -2740,9 +2801,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2753,9 +2814,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2766,9 +2827,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2782,9 +2843,9 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
-            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
+            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2923,6 +2984,7 @@ components:
     IntervieweeUserDTO:
       type: object
       properties:
+        avatar: {type: string}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
@@ -2940,7 +3002,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/CustomField'}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -2960,6 +3021,19 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
         title: {type: string}
@@ -2972,6 +3046,7 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INTERVIEW]
+        avatar: {type: string}
         contractDuration: {type: integer, format: int32}
         departmentName: {type: string}
         imageUrl: {type: string}
@@ -2992,7 +3067,6 @@ components:
       properties:
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3011,6 +3085,19 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
@@ -3027,7 +3114,6 @@ components:
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3047,18 +3133,43 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
+      required: [createdAt, jobId, lastModifiedAt, researchGroup, subjectArea, supervisingProfessorName,
         title]
     JobFiltersDTO:
       type: object
       properties:
-        fieldsOfStudy:
+        subjectAreas:
           type: array
-          items: {type: string}
+          items:
+            type: string
+            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
+              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
+              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
+              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
+              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
         supervisorNames:
           type: array
           items: {type: string}
@@ -3067,7 +3178,6 @@ components:
       properties:
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
-        fieldOfStudies: {type: string}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
@@ -3085,11 +3195,24 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [fieldOfStudies, location, state, supervisingProfessor, title]
+      required: [location, state, subjectArea, supervisingProfessor, title]
     JobPreviewRequest:
       type: object
       properties:
@@ -3278,7 +3401,6 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         createdAt: {type: string, format: date-time}
-        defaultFieldOfStudies: {type: string}
         department: {$ref: '#/components/schemas/Department'}
         description: {type: string}
         email: {type: string}
@@ -3314,7 +3436,6 @@ components:
       properties:
         abbreviation: {type: string}
         city: {type: string}
-        defaultFieldOfStudies: {type: string}
         departmentId: {type: string, format: uuid}
         description: {type: string}
         email: {type: string, format: email}
@@ -3342,7 +3463,6 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         contactEmail: {type: string}
-        defaultFieldOfStudies: {type: string}
         departmentId: {type: string, format: uuid}
         description: {type: string}
         firstName: {type: string}
@@ -3427,6 +3547,7 @@ components:
     UpcomingInterviewDTO:
       type: object
       properties:
+        avatar: {type: string}
         endDateTime: {type: string, format: date-time}
         id: {type: string, format: uuid}
         intervieweeId: {type: string, format: uuid}
@@ -3455,11 +3576,20 @@ components:
         clearRating: {type: boolean}
         notes: {type: string}
         rating: {type: integer, format: int32, maximum: 2, minimum: -2}
+    UpdateAvatarDTO:
+      type: object
+      properties:
+        avatarUrl: {type: string}
     UpdatePasswordDTO:
       type: object
       properties:
         newPassword: {type: string, minLength: 1}
       required: [newPassword]
+    UpdateSlotLocationDTO:
+      type: object
+      properties:
+        location: {type: string, minLength: 1}
+      required: [location]
     UpdateUserNameDTO:
       type: object
       properties:
@@ -3606,6 +3736,7 @@ components:
     UserShortDTO:
       type: object
       properties:
+        avatar: {type: string}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}

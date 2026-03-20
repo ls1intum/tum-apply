@@ -87,7 +87,6 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             "Algorithms Group",
             "ALG",
             "Munich",
-            "CS",
             "We do cool stuff",
             "alg@example.com",
             "80333",

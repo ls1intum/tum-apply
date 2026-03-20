@@ -93,9 +93,9 @@ export class ResearchGroupTemplates {
   async delete(templateId: string): Promise<void> {
     try {
       await firstValueFrom(this.emailTemplateService.deleteTemplate(templateId));
-      this.toastService.showSuccess({ detail: 'Successfully deleted template' });
+      this.toastService.showSuccess({ detail: this.translate.instant(`${this.translationKey}.deleteSuccess`) });
     } catch {
-      this.toastService.showError({ detail: 'Failed to delete template' });
+      this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.deleteFailed`) });
     } finally {
       void this.loadPage();
     }

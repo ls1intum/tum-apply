@@ -28,7 +28,6 @@ public record ResearchGroupRequestDTO(
     String contactEmail,
     String website,
     String description,
-    String defaultFieldOfStudies,
 
     // Optional Address Information
     String street,

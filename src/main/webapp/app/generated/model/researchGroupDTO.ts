@@ -12,7 +12,6 @@
 export interface ResearchGroupDTO { 
     abbreviation?: string;
     city?: string;
-    defaultFieldOfStudies?: string;
     departmentId?: string;
     description?: string;
     email?: string;

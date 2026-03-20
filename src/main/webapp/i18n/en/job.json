@@ -18,7 +18,7 @@
       }
     },
     "basicInformationSection": {
-      "description": "Provide the key details about the doctoral position, such as title, field of study, and supervising professor.",
+      "description": "Provide the key details about the doctoral position, such as title, subject area, and supervising professor.",
       "jobTitle": {
         "label": "Job Title",
         "placeholder": "e.g. Doctoral Position in Robotics"
@@ -28,29 +28,35 @@
         "placeholder": "e.g. Machine Learning, Human-Computer Interaction",
         "toolTipText": "Specify the main Research Area the doctoral position focuses on."
       },
-      "fieldOfStudies": {
-        "label": "Field Of Studies",
-        "placeholder": "Select a Field of Studies..."
+      "subjectArea": {
+        "label": "Subject Area",
+        "placeholder": "Select a Subject Area..."
       },
-      "fieldsOfStudies": {
+      "subjectAreas": {
         "AerospaceEngineering": "Aerospace Engineering",
         "AgriculturalEngineering": "Agricultural Engineering",
+        "AgriculturalScience": "Agricultural Science",
         "Architecture": "Architecture",
         "ArtHistory": "Art History",
         "AutomotiveEngineering": "Automotive Engineering",
         "Bioengineering": "Bioengineering",
+        "Biochemistry": "Biochemistry",
         "Biology": "Biology",
+        "BiomedicalEngineering": "Biomedical Engineering",
         "Biotechnology": "Biotechnology",
         "Chemistry": "Chemistry",
         "ComputerEngineering": "Computer Engineering",
         "ComputerScience": "Computer Science",
+        "ComputerVision": "Computer Vision",
         "DataScience": "Data Science",
         "Economics": "Economics",
         "EducationTechnology": "Education Technology",
         "ElectricalEngineering": "Electrical Engineering",
+        "EnergySystems": "Energy Systems",
         "EnvironmentalBiology": "Environmental Biology",
         "EnvironmentalChemistry": "Environmental Chemistry",
         "EnvironmentalEngineering": "Environmental Engineering",
+        "EnvironmentalLaw": "Environmental Law",
         "EnvironmentalScience": "Environmental Science",
         "FinancialEngineering": "Financial Engineering",
         "FoodTechnology": "Food Technology",
@@ -58,6 +64,7 @@
         "Geosciences": "Geosciences",
         "IndustrialEngineering": "Industrial Engineering",
         "InformationSystems": "Information Systems",
+        "LifeSciences": "Life Sciences",
         "Linguistics": "Linguistics",
         "MarineBiology": "Marine Biology",
         "MaterialsScience": "Materials Science",
@@ -70,6 +77,7 @@
         "Psychology": "Psychology",
         "SoftwareEngineering": "Software Engineering",
         "SportsScience": "Sports Science",
+        "Statistics": "Statistics",
         "Telecommunications": "Telecommunications",
         "UrbanPlanning": "Urban Planning"
       },
@@ -124,8 +132,7 @@
       }
     },
     "positionDetailsSection": {
-      "description": "Describe the research focus, main tasks, and expectations for the candidate. Specify minimum requirements and preferred qualifications.",
-      "languageInfo": "Please choose and write in German or English, the other language is auto-translated and can be reviewed or edited. Switching languages is disabled during translation.",
+      "languageInfo": "Please choose and write the job description in either English or German:<br><b>AI enabled:</b> The translation is generated automatically and can then be reviewed or edited.<br><b>AI disabled:</b> The translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
       "jobDescription": {
         "label": "Job Description",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
@@ -225,8 +232,8 @@
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {
-        "fieldOfStudies": "Field of Studies",
-        "fieldOfStudiesPlaceholder": "Search Field of Studies...",
+        "subjectArea": "Subject Area",
+        "subjectAreaPlaceholder": "Search Subject Area...",
         "location": "Location",
         "LocationSearchPlaceholder": "Search Locations...",
         "supervisor": "Supervisor",
@@ -236,7 +243,7 @@
     "sortingOptions": {
       "startDate": "Start Date",
       "jobTitle": "Job Title",
-      "fieldOfStudies": "Field of Studies",
+      "subjectArea": "Subject Area",
       "location": "Location",
       "professor": "Supervisor (Last name)",
       "workload": "Workload"
@@ -323,8 +330,6 @@
       "jobDescription": "Job Details",
       "jobDescriptionEN": "English Job Details",
       "jobDescriptionDE": "German Job Details",
-      "tasksResponsibilities": "Tasks & Responsibilities",
-      "eligibilityCriteria": "Eligibility Criteria",
       "dataProtection": "Data Protection Information"
     },
     "cards": {
@@ -332,7 +337,7 @@
       "researchGroup": "Research Group"
     },
     "labels": {
-      "fieldOfStudies": "Field of Studies",
+      "subjectArea": "Subject Area",
       "researchArea": "Research Area",
       "workload": "Workload",
       "contractDuration": "Contract Duration",

@@ -18,6 +18,7 @@ import { MessageComponent } from 'app/shared/components/atoms/message/message.co
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { SegmentButtonComponent } from 'app/shared/components/atoms/segment-button/segment-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 export interface SlotRange {
   id: string;
@@ -162,6 +163,10 @@ export class DateSlotCardComponent {
         return;
       }
       this.initializeRangesFromSlots(slots);
+      // Ensure at least one slot is present for new dates
+      if (this.slotRanges().length === 0) {
+        this.addSingleSlot();
+      }
     });
   });
 
@@ -174,24 +179,6 @@ export class DateSlotCardComponent {
    */
   toggleCollapse(): void {
     this.isCollapsed.update(isCollapsed => !isCollapsed);
-  }
-
-  isVirtualLocation(location: string | undefined | null): boolean {
-    if (location === undefined || location === null || location === '') return false;
-    const trimmed = location.trim().toLowerCase();
-
-    // Regex to detect URLs (http, https, www, or common domains)
-    const urlPattern = /^(https?:\/\/)?\S+\.[a-z]{2,}\S*$/i;
-
-    // Specific check for common video conferencing tools even if the URL pattern might miss some edge cases
-    const isVideoTool =
-      trimmed.includes('zoom.') || trimmed.includes('meet.google') || trimmed.includes('teams.microsoft') || trimmed.includes('webex.');
-
-    return urlPattern.test(trimmed) || isVideoTool;
-  }
-
-  getLocationType(location: string): 'in-person' | 'virtual' {
-    return this.isVirtualLocation(location) ? 'virtual' : 'in-person';
   }
 
   /**
@@ -411,13 +398,13 @@ export class DateSlotCardComponent {
         range.location = safeLocation;
 
         // 3. Update the location in the generated slots
-        const isVirtual = this.isVirtualLocation(safeLocation);
+        const isVirtual = isVirtualLocation(safeLocation);
         range.slots = range.slots.map(slot => ({
           id: slot.id,
           startDateTime: slot.startDateTime,
           endDateTime: slot.endDateTime,
           location: safeLocation,
-          steamLink: isVirtual ? safeLocation : undefined,
+          streamLink: isVirtual ? safeLocation : undefined,
         }));
 
         return range;
@@ -594,12 +581,12 @@ export class DateSlotCardComponent {
    * @returns A new InterviewSlotDTO.
    */
   private createSlotDTO(start: Date, end: Date, location: string): InterviewSlotDTO {
-    const locationType = this.getLocationType(location);
+    const isVirtual = isVirtualLocation(location);
     return {
       startDateTime: start.toISOString(),
       endDateTime: end.toISOString(),
       location,
-      streamLink: locationType === 'virtual' ? location : undefined,
+      streamLink: isVirtual ? location : undefined,
     } as InterviewSlotDTO;
   }
 

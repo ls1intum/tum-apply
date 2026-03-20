@@ -133,7 +133,7 @@ public class UserExportZipWriter {
 
         Hinweise:
         - Nicht jede Datei ist in jedem Export enthalten.
-        - Welche CSV-Dateien vorhanden sind, haengt von Ihren Rollen und Daten im System ab.
+        - Welche CSV-Dateien vorhanden sind, haengt von deinen Rollen und Daten im System ab.
         - CSV-Dateien koennen direkt in Excel, LibreOffice Calc oder ähnlichen Programmen geöffnet werden.
         """;
     }

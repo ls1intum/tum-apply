@@ -1,23 +1,27 @@
 import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { InterviewResourceApiService } from 'app/generated';
+import { EmailTemplateResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
-import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
-import { getLocale } from 'app/shared/util/date-time.util';
-import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
+import { formatDateWithWeekday, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
 import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
+
+import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -37,16 +41,19 @@ interface GroupedSlots {
   imports: [
     TranslateModule,
     TranslateDirective,
+    FormsModule,
     ButtonComponent,
+    DialogComponent,
+    MessageComponent,
+    StringInputComponent,
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
     SlotCreationFormComponent,
     FontAwesomeModule,
     AssignApplicantModalComponent,
-    DialogComponent,
-    CheckboxComponent,
-    MessageComponent,
+    CancelInterviewModalComponent,
+    RouterLink,
   ],
   templateUrl: './slots-section.component.html',
 })
@@ -57,6 +64,7 @@ export class SlotsSectionComponent {
 
   // Services
   readonly interviewService = inject(InterviewResourceApiService);
+  readonly emailTemplateService = inject(EmailTemplateResourceApiService);
   readonly translateService = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly breakpointObserver = inject(BreakpointObserver);
@@ -69,6 +77,7 @@ export class SlotsSectionComponent {
 
   // Outputs
   slotAssigned = output();
+  hasSlotsChange = output<boolean>();
 
   // Signals
   futureSlots = signal<InterviewSlotDTO[]>([]);
@@ -81,16 +90,20 @@ export class SlotsSectionComponent {
   expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
+  showEditDialog = signal(false);
+  selectedSlotForEdit = signal<InterviewSlotDTO | undefined>(undefined);
+  editLocation = signal('');
+  editLoading = signal(false);
+
   selectedSlotForAssignment = signal<InterviewSlotDTO | undefined>(undefined);
 
   showCancelModal = signal(false);
   selectedSlotForCancel = signal<InterviewSlotDTO | undefined>(undefined);
-  cancelSendReinvite = signal(false);
-  cancelDeleteSlot = signal(true);
 
   internalRefreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
   globalFutureUnbookedCount = signal<number>(0);
+  locationChangedTemplateId = signal<string | undefined>(undefined);
 
   // Computed
   datesPerPage = computed(() => {
@@ -180,6 +193,23 @@ export class SlotsSectionComponent {
     return this.invitedCount() > 0 && this.globalFutureUnbookedCount() < this.invitedCount();
   });
 
+  editSlotDate = computed(() => {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '') return '';
+    return formatDateWithWeekday(slot.startDateTime, this.locale());
+  });
+
+  editSlotTimeRange = computed(() => {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.startDateTime === undefined || slot.startDateTime === '' || slot.endDateTime === undefined || slot.endDateTime === '')
+      return '';
+    return formatTimeRange(slot.startDateTime, slot.endDateTime);
+  });
+
+  editSlotIsBooked = computed(() => {
+    return this.selectedSlotForEdit()?.isBooked ?? false;
+  });
+
   // Private Signals (state + toSignal)
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang());
@@ -231,6 +261,7 @@ export class SlotsSectionComponent {
     const id = this.processId();
     if (id !== '') {
       void this.checkGlobalSlots(id);
+      void this.fetchLocationChangedTemplateId();
     }
   });
 
@@ -290,8 +321,43 @@ export class SlotsSectionComponent {
     this.expandedDates.set(expanded);
   }
 
-  onEditSlot(): void {
-    // TODO: Open Edit Modal
+  getShowMoreText(count: number): string {
+    const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
+    return `${count} ${this.translateService.instant(key)}`;
+  }
+
+  onEditSlot(slot: InterviewSlotDTO): void {
+    this.selectedSlotForEdit.set(slot);
+    this.editLocation.set(slot.location ?? '');
+    this.showEditDialog.set(true);
+  }
+
+  async saveSlotLocation(): Promise<void> {
+    const slot = this.selectedSlotForEdit();
+    if (slot?.id === undefined || this.editLocation().trim() === '') return;
+
+    try {
+      this.editLoading.set(true);
+      await firstValueFrom(this.interviewService.updateSlotLocation(slot.id, { location: this.editLocation().trim() }));
+      this.toastService.showSuccessKey('interview.slots.edit.success');
+      this.closeEditDialog();
+      await this.refreshSlots();
+    } catch (error: unknown) {
+      const httpError = error as { status?: number };
+      if (httpError.status === 403) {
+        this.toastService.showErrorKey('interview.slots.edit.errorForbidden');
+      } else {
+        this.toastService.showErrorKey('interview.slots.edit.error');
+      }
+    } finally {
+      this.editLoading.set(false);
+    }
+  }
+
+  closeEditDialog(): void {
+    this.showEditDialog.set(false);
+    this.selectedSlotForEdit.set(undefined);
+    this.editLocation.set('');
   }
 
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
@@ -317,7 +383,6 @@ export class SlotsSectionComponent {
       }
     }
   }
-
   onAssignApplicant(slot: InterviewSlotDTO): void {
     this.selectedSlotForAssignment.set(slot);
     this.internalRefreshKey.update(n => n + 1);
@@ -328,47 +393,36 @@ export class SlotsSectionComponent {
     if (updatedSlot) {
       this.futureSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
       this.pastSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
-    } else {
-      void this.refreshSlots();
     }
+
+    void this.checkGlobalSlots(this.processId(), false);
     this.slotAssigned.emit();
   }
 
   onCancelInterview(slot: InterviewSlotDTO): void {
     this.selectedSlotForCancel.set(slot);
-    this.cancelSendReinvite.set(true);
-    this.cancelDeleteSlot.set(false);
     this.showCancelModal.set(true);
   }
 
-  async onCancelInterviewConfirm(): Promise<void> {
+  async onCancelInterviewConfirm(cancelParams: CancelInterviewDTO): Promise<void> {
     const slot = this.selectedSlotForCancel();
     if (slot?.id == null) return;
 
     try {
-      const cancelParams: CancelInterviewDTO = {
-        sendReinvite: this.cancelSendReinvite(),
-        deleteSlot: this.cancelDeleteSlot(),
-      };
-
       await firstValueFrom(this.interviewService.cancelInterview(this.processId(), slot.id, cancelParams));
 
-      // Hier rufen wir die NEUE main-Methode auf, um die Daten neu zu laden!
       await this.checkGlobalSlots(this.processId(), false);
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
+
+      // Notify parent to refresh interviewee section
+      this.slotAssigned.emit();
     } catch {
       this.toastService.showErrorKey('interview.slots.cancelInterview.error');
     } finally {
       this.showCancelModal.set(false);
       this.selectedSlotForCancel.set(undefined);
     }
-  }
-
-  // Private methods
-  private getShowMoreText(count: number): string {
-    const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
-    return `${count} ${this.translateService.instant(key)}`;
   }
 
   /**
@@ -407,14 +461,18 @@ export class SlotsSectionComponent {
       const [anySlotsResponse, unbookedResponse] = await Promise.all([anySlotsTask, unbookedTask]);
 
       // 4. Count future unbooked slots for the "Not Enough Slots" warning
-      const unbookedCount = unbookedResponse.content?.filter(s => !s.interviewee).length ?? 0;
+      const unbookedCount = unbookedResponse.content?.filter(s => s.isBooked !== true).length ?? 0;
 
       // 5. Batch signal writes to avoid intermediate re-renders
+      const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
+
       untracked(() => {
-        this.hasAnySlots.set((anySlotsResponse.totalElements ?? 0) > 0);
+        this.hasAnySlots.set(hasSlots);
         this.globalFutureUnbookedCount.set(unbookedCount);
         this.initialized.set(true);
       });
+
+      this.hasSlotsChange.emit(hasSlots && unbookedCount > 0);
 
       // 6. Load the current month's slots for the calendar view
       await this.loadMonthSlots(processId, this.currentYear(), this.currentMonthNumber(), this.currentMonthOffset(), showLoading);
@@ -541,5 +599,19 @@ export class SlotsSectionComponent {
 
   private safeDate(value?: string): number {
     return value !== undefined && value !== '' ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
+  }
+
+  private async fetchLocationChangedTemplateId(): Promise<void> {
+    if (this.locationChangedTemplateId() !== undefined) return;
+
+    try {
+      const res = await firstValueFrom(this.emailTemplateService.getTemplates(100, 0));
+      const template = res.content?.find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED');
+      if (template?.emailTemplateId) {
+        this.locationChangedTemplateId.set(template.emailTemplateId);
+      }
+    } catch {
+      // Fail silently, the link will fallback to overview
+    }
   }
 }

@@ -8,7 +8,9 @@ import { ThemeService } from 'app/service/theme.service';
 })
 export class UserAvatarComponent {
   fullName = input<string | undefined>(undefined);
-  size = input<'md' | 'lg' | 'xl'>('md');
+  avatarUrl = input<string | undefined>(undefined);
+  size = input<'sm' | 'md' | 'lg' | 'xl'>('sm');
+  loading = input<'eager' | 'lazy'>('eager');
 
   // Show initials for the current display name, fallback to "U" when missing.
   initials = computed(() => this.initialsFromFullName(this.fullName()?.trim() ?? ''));
@@ -28,18 +30,23 @@ export class UserAvatarComponent {
     return palette[Math.abs(hash) % palette.length];
   });
 
-  textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.4 : 0.6));
+  textColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.5 : 0.6));
   borderColor = computed(() => this.darkenHex(this.backgroundColor(), this.themeService.theme() === 'dark' ? 0.8 : 0.9));
-  textShadow = computed(() => (this.themeService.theme() === 'dark' ? '0 1px 0 rgba(0, 0, 0, 0.25)' : '0 1px 0 rgba(255, 255, 255, 0.28)'));
+  textShadow = computed(() =>
+    this.themeService.theme() === 'dark' ? '0 1px 0 rgba(255, 255, 255, 0.20)' : '0 1px 0 rgba(255, 255, 255, 0.28)',
+  );
   sizeClass = computed(() => {
     const size = this.size();
+    if (size === 'md') {
+      return 'h-12 w-12 text-[1.2rem]';
+    }
     if (size === 'xl') {
-      return 'h-14 w-14 text-2xl';
+      return 'h-16 w-16 text-[1.6rem]';
     }
     if (size === 'lg') {
-      return 'h-10 w-10 text-[0.95rem]';
+      return 'h-14 w-14 text-[1.4rem]';
     }
-    return 'h-8 w-8 text-[0.8rem]';
+    return 'h-10 w-10 text-[1rem]';
   });
 
   private readonly lightAvatarPalette = ['#B5D0FA', '#BFECD7', '#FFE6A8', '#FFCACA', '#E0CFFA', '#BDEDEA', '#FCD3BE', '#F5CAE0'];

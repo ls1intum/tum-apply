@@ -18,7 +18,7 @@ You are an EXECUTIVE EDITOR. If the input is long, MERGE and DISTILL information
 
 ---
 ### 3. METADATA
-Metadata: {title}, {researchArea}, {fieldOfStudies}, {location}
+Metadata: {title}, {researchArea}, {subjectArea}, {location}
 NEVER output PLACEHOLDER text or template variables
 If NOTHING is provided give a reasonable generic answer.
 

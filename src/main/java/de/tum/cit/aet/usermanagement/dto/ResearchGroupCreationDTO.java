@@ -18,7 +18,6 @@ public record ResearchGroupCreationDTO(
     String abbreviation,
     String website,
     String description,
-    String defaultFieldOfStudies,
     String street,
     String postalCode,
     String city,
