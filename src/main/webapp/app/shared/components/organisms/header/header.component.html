@@ -68,14 +68,6 @@
         styleClass="font-bold"
       />
     } @else {
-      <jhi-button
-        styleClass="flex py-1 px-2 items-center gap-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
-        (click)="toggleProfileMenu($event)"
-        [ariaLabel]="'header.profileMenu' | translate"
-        [aria-expanded]="isProfileMenuOpen()"
-        aria-haspopup="menu"
-
-        />
       <button
         class="flex py-1 px-2 items-center gap-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
         type="button"
