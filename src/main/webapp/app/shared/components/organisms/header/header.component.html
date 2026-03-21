@@ -15,13 +15,12 @@
   <div class="flex items-center gap-1 flex-shrink-0">
     <div class="flex items-center gap-1 mr-2">
       @for (language of languages; track language; let isLast = $last) {
-        <button
+        <jhi-button
           (click)="toggleLanguage(language)"
-          class="text-primary-default cursor-pointer hover:underline"
-          [class.font-bold]="currentLanguage() === language"
-        >
-          {{ language.toUpperCase() }}
-        </button>
+          [styleClass]="'!text-primary-default !cursor-pointer hover:!underline' + (currentLanguage() === language ? ' !font-bold' : '')"
+          [label]="language.toUpperCase()"
+          variant="text"
+        />
         @if (!isLast) {
           <span class="text-primary-default">|</span>
         }

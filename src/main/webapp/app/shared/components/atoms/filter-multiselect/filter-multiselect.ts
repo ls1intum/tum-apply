@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 // Interface for filter options which can be passed to the filter component
 export interface Filter {
@@ -23,7 +24,7 @@ export interface FilterChange {
 
 @Component({
   selector: 'jhi-filter-multiselect',
-  imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
+  imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule, ButtonComponent],
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,

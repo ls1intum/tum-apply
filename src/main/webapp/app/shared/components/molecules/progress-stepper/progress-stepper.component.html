@@ -17,18 +17,21 @@
   <!-- Step bars indicator -->
   <div class="flex gap-2">
     @for (step of steps(); track $index) {
-      <button
+      <jhi-button
         type="button"
+        variant="text"
+        [fullWidth]="true"
+        [styleClass]="
+          '!h-2 !min-h-0 !rounded-full !p-0 !transition-all !duration-300 !ease-in-out !border-0 ' +
+          ($index + 1 <= currentStep() ? '!bg-primary' : '!bg-background-surface-alt') +
+          (step?.disabled ? ' !opacity-50' : ' !cursor-pointer')
+        "
         (click)="goToStep($index + 1)"
         [disabled]="step?.disabled ?? false"
-        [pTooltip]="step.shouldTranslate ? (step.name | translate) : step.name"
+        [tooltip]="step.shouldTranslate ? (step.name | translate) : step.name"
         tooltipPosition="top"
-        class="flex-1 h-2 rounded-full transition-all duration-300 ease-in-out"
-        [class.bg-primary]="$index + 1 <= currentStep()"
-        [class.bg-background-surface-alt]="$index + 1 > currentStep()"
-        [class.opacity-50]="step?.disabled"
-        [class.cursor-pointer]="!step?.disabled"
-      ></button>
+        class="flex-1"
+      />
     }
   </div>
 </div>

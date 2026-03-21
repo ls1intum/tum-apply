@@ -58,9 +58,13 @@
               </p-divider>
 
               <p-divider align="right">
-                <button type="button" class="divider-text clear-button" (click)="clearAll(); $event.stopPropagation()">
-                  {{ 'entity.filters.clearAll' | translate }}
-                </button>
+                <jhi-button
+                  [label]="'entity.filters.clearAll'"
+                  [shouldTranslate]="true"
+                  variant="text"
+                  styleClass="divider-text clear-button"
+                  (click)="clearAll(); $event.stopPropagation()"
+                />
               </p-divider>
             </div>
             @for (option of selectedOptions(); track option.value; let i = $index) {
