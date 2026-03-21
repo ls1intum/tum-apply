@@ -38,12 +38,4 @@
       columnDataType="VARCHAR(255)"
     />
   </changeSet>
-
-  <changeSet id="030_make_subject_area_nullable" author="celine">
-    <preConditions onFail="MARK_RAN">
-      <columnExists tableName="jobs" columnName="subject_area"/>
-    </preConditions>
-
-    <dropNotNullConstraint tableName="jobs" columnName="subject_area" columnDataType="VARCHAR(255)"/>
-  </changeSet>
 </databaseChangeLog>
