@@ -152,8 +152,9 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
         return subscriptionRepository
             .findByApplicantUserId(userId)
             .stream()
-            .sorted((left, right) -> left.getSubjectArea().compareTo(right.getSubjectArea()))
-            .map(subscription -> subscription.getSubjectArea().name())
+            .map(subscription -> subscription.getSubjectArea())
+            .sorted()
+            .map(Enum::name)
             .toList();
     }
 }
