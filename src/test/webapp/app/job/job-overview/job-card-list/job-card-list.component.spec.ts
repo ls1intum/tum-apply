@@ -100,7 +100,7 @@ describe('JobCardListComponent', () => {
   it('should handle error when loading jobs', async () => {
     jobService.getAvailableJobs.mockReturnValueOnce(throwError(() => new Error('fail')));
 
-    await component.loadJobs();
+    await runSilently(() => component.loadJobs());
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadJobs');
   });

@@ -250,13 +250,10 @@ export class SlotsSectionComponent {
     }
   });
 
-  private readonly pageSizeChangeEffect = effect(
-    () => {
-      this.datesPerPage();
-      this.currentDatePage.set(0);
-    },
-    { allowSignalWrites: true },
-  );
+  private readonly pageSizeChangeEffect = effect(() => {
+    this.datesPerPage();
+    this.currentDatePage.set(0);
+  });
 
   private readonly initEffect = effect(() => {
     this.refreshKey(); // track external refresh key
