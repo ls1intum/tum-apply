@@ -24,10 +24,10 @@
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
     <div class="panel1-layout lg:!gap-x-6" [class.panel1-layout-with-sidebar]="aiToggleSignal()">
-      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto lg:!overflow-y-hidden lg:!pr-0">
+      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto">
         <form
           [formGroup]="basicInfoForm"
-          class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:h-full lg:overflow-y-auto lg:overflow-x-hidden lg:px-8 lg:pr-5 xl:px-10"
+          class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:px-8 lg:pr-5 xl:px-10"
         >
           <div class="grid items-start gap-4">
             <div>
@@ -179,7 +179,7 @@
         <!--AI Assistant sidebar-->
         <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
         <aside
-          class="mx-auto mt-4 flex w-full max-w-[52rem] flex-col overflow-hidden bg-background-default lg:mx-0 lg:mt-0 lg:h-full lg:w-full lg:max-w-full"
+          class="mx-auto mt-4 flex w-full max-w-[52rem] flex-col overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >
           <div class="flex items-center">
             <div class="flex min-h-16 flex-1 items-center justify-start gap-3 px-5 py-3 text-text-primary">
