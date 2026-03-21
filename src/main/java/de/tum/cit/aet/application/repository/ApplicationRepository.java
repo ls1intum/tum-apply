@@ -63,7 +63,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                     j.subjectArea,
                     j.supervisingProfessor.avatar,
-                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
@@ -82,8 +81,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.applicant ap
             LEFT JOIN a.job j
-            LEFT JOIN j.researchGroup rg
-            LEFT JOIN rg.department d
             LEFT JOIN j.image i
         WHERE a.applicationId = :id
         """
@@ -132,7 +129,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
                     j.subjectArea,
                     j.supervisingProfessor.avatar,
-                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
@@ -151,8 +147,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.job j
             LEFT JOIN a.applicant ap
-            LEFT JOIN j.researchGroup rg
-            LEFT JOIN rg.department d
             LEFT JOIN j.image i
             WHERE ap.user.userId = :userId AND j.jobId = :jobId
         """
