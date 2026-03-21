@@ -10,9 +10,15 @@
   [showHeader]="showHeader()"
   [styleClass]="styleClass()"
   [style]="mergedStyle()"
-  [header]="shouldTranslateHeader() ? (header() | translate) : header()"
+  [header]="useCustomHeader() ? '' : shouldTranslateHeader() ? (header() | translate) : header()"
   [contentStyleClass]="contentStyleClass()"
   [contentStyle]="contentStyle()"
+  [appendTo]="appendTo()"
 >
+  @if (useCustomHeader()) {
+    <ng-template pTemplate="header">
+      <ng-content select="[dialog-header]" />
+    </ng-template>
+  }
   <ng-content />
 </p-dialog>

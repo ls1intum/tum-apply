@@ -1,123 +1,7 @@
-/* app.component.scss */
+@use '../../../content/scss/breakpoints' as bp;
 
 .confirm-dialog {
   display: none;
-}
-
-// Base styles
-body {
-  background-color: var(--p-background-surface);
-
-  line-height: 1.6;
-}
-
-// Stepper
-.stepper {
-  display: flex;
-  align-items: center;
-  margin: 1.875rem 0;
-
-  .step {
-    display: flex;
-    align-items: center;
-
-    .step-number {
-      width: 1.875rem;
-      height: 1.875rem;
-      border-radius: var(--border-radius-full);
-      background-color: var(--p-background-disabled);
-      color: var(--p-text-disabled);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 0.625rem;
-    }
-
-    .step-label {
-      font-size: 1rem;
-      color: var(--p-text-disabled);
-    }
-
-    &.active,
-    &.completed {
-      .step-number {
-        background-color: var(--p-primary-color);
-        color: var(--p-text-on-primary);
-      }
-
-      .step-label {
-        font-weight: bold;
-      }
-    }
-
-    &.completed {
-      .step-number {
-        background-color: var(--p-primary-color);
-      }
-    }
-  }
-
-  .step-connector {
-    flex: 1;
-    height: 0.125rem;
-    background-color: var(--p-text-disabled);
-    margin: 0 0.625rem;
-  }
-}
-
-// Form styles
-.form-step {
-  h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.625rem;
-  }
-
-  p {
-    color: var(--p-text-disabled);
-    font-size: 1rem;
-    margin-bottom: 1.25rem;
-  }
-}
-
-.input-with-icon {
-  position: relative;
-
-  .icon-input-wrapper {
-    margin-top: 0.25rem;
-    display: flex;
-    align-items: center;
-
-    input {
-      padding-left: 2.25rem;
-    }
-
-    .ng-fa-icon.input-icon {
-      position: absolute;
-      left: 0.75rem;
-      color: var(--p-text-disabled);
-    }
-  }
-}
-
-.data-privacy-notice {
-  margin-top: 1.25rem;
-  padding: 0.9375rem;
-  border-radius: var(--border-radius-sm);
-  font-size: 1rem;
-
-  p {
-    margin: 0;
-    color: var(--p-text-disabled);
-  }
-}
-
-// Form actions
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-  padding-top: 1rem;
 }
 
 input:disabled {
@@ -145,20 +29,30 @@ input:disabled {
     color: inherit;
   }
 }
-
-// Info banner using primary color
-.info-banner {
-  background-color: var(--p-primary-50, #eff6ff);
-  color: var(--p-primary-800, #1e40af);
+.panel1-layout {
+  @media (min-width: bp.$lg) {
+    padding-inline: clamp(1rem, 3vw, 2.5rem);
+  }
 }
 
-.upload-area {
-  &:hover {
-    border-color: var(--p-primary-color);
-    background-color: var(--p-primary-50, #eff6ff);
+.panel1-layout-with-sidebar {
+  @media (min-width: bp.$lg) {
+    display: grid;
+    column-gap: 0.75rem;
+    padding-inline-end: 0;
+    grid-template-columns: minmax(0, 1fr) 1px 18rem;
   }
+}
 
-  .upload-arrow {
-    color: var(--p-primary-color);
+.panel1-divider {
+  @media (min-width: bp.$lg) {
+    height: 100%;
+    background-color: var(--p-divider-border-color);
+  }
+}
+
+.panel1-main {
+  @media (min-width: bp.$lg) {
+    padding-right: 0.5rem;
   }
 }

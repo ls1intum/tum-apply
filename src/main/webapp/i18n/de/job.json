@@ -131,10 +131,14 @@
         "PartiallyFunded": "Teilweise finanziert"
       }
     },
+    "aiSidebar": {
+      "header": "KI-Assistent"
+    },
     "positionDetailsSection": {
-      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Die Übersetzung wird automatisch generiert und kann anschließend geprüft oder bearbeitet werden.<br><b>KI deaktiviert:</b> Die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
+      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Der KI-Assistent hilft dir beim Erstellen deiner Stellenbeschreibung und die Übersetzung wird automatisch generiert.<br><b>KI deaktiviert:</b> Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
       "jobDescription": {
         "label": "Stellenbeschreibung",
+        "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Stelle.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
@@ -147,10 +151,35 @@
         "aiHelperText": "Gib die wichtigsten Informationen an und TUMApply KI schreibt es für dich.",
         "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
+        "aiScoreTitle": "Inklusivitäts-Score",
+        "aiScoreDialog": {
+          "title": "Berechnung des Inklusivitäts-Scores",
+          "tooltip": "Basiert auf aktueller Analyse und Textinhalt.",
+          "summary": "Berechnungsfaktoren",
+          "explanation": "Der Score kombiniert Wortwahl, Tonalität und eine ausbalancierte Gewichtung.",
+          "section1": {
+            "title": "Wortwahl",
+            "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
+          },
+          "section2": {
+            "title": "Gesamteindruck",
+            "body": "Neutrale Formulierungen erzielen das beste Ergebnis, während einseitige Sprache zu Punktabzügen führt."
+          },
+          "section3": {
+            "title": "Faire Gewichtung",
+            "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
+          }
+        },
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
-        "translating": "Übersetzt..."
+        "translating": "Übersetzt...",
+        "aiScoreFeedback": {
+          "critical": "Deine Ausschreibung kann auf viele passende Talente exkludierend wirken. Überarbeite Sprache und Anforderungen gezielt inklusiver.",
+          "warning": "Deine Ausschreibung könnte inklusiver sein. Stellenanzeigen mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
+          "good": "Das ist schon eine gute Grundlage. Deine Ausschreibung ist bereits inklusiv und spricht viele Bewerbende an. Mit gezielten Feinjustierungen kannst du sie noch stärker machen.",
+          "excellent": "Richtig stark! Deine Ausschreibung ist sehr einladend formuliert und spricht eine breite Vielfalt an Bewerbenden an."
+        }
       }
     },
     "imageSection": {
