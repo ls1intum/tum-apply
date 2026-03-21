@@ -9,10 +9,10 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 /**

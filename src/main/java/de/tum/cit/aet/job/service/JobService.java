@@ -144,8 +144,7 @@ public class JobService {
         if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
-            } catch (Exception _) {
-            }
+            } catch (Exception _) {}
         }
 
         jobRepository.deleteById(jobId);
