@@ -135,7 +135,7 @@
       "header": "KI-Assistent"
     },
     "positionDetailsSection": {
-      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Die Übersetzung wird automatisch generiert und kann anschließend geprüft oder bearbeitet werden.<br><b>KI deaktiviert:</b> Die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
+      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Der KI-Assistent hilft dir beim Erstellen deiner Stellenbeschreibung und die Übersetzung wird automatisch generiert.<br><b>KI deaktiviert:</b> Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",

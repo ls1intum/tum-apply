@@ -45,10 +45,10 @@
 
     <div>
       @if (isGenerating()) {
-        <div class="flex h-10 items-start justify-center gap-2 lg:justify-start">
+        <div class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-default px-3 h-10">
           <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
           <span
-            class="text-base font-semibold text-text-primary whitespace-nowrap"
+            class="text-sm font-semibold text-text-primary whitespace-nowrap"
             jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
           ></span>
         </div>

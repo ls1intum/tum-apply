@@ -146,10 +146,12 @@
             <div class="grid gap-4 items-start">
               <!-- Editor -->
               <div>
-                <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm">
-                  <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
-                  <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
-                </div>
+                @if (aiToggleSignal()) {
+                  <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm">
+                    <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
+                    <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
+                  </div>
+                }
                 <jhi-editor
                   #jobDescriptionEditor
                   fieldId="jobDescription"
