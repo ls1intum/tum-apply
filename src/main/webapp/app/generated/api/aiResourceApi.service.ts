@@ -94,7 +94,7 @@ export class AiResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/ai/analyzeJobDescription`;
-        return this.httpClient.request<ComplianceResponseDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<ComplianceResponseDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: jobFormDTO,
