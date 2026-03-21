@@ -30,13 +30,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobService {
@@ -147,8 +144,7 @@ public class JobService {
         if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
-            } catch (Exception e) {
-                log.error("Failed to delete image {} while deleting job {}", job.getImage().getImageId(), jobId, e);
+            } catch (Exception _) {
             }
         }
 
@@ -349,9 +345,6 @@ public class JobService {
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
         JobState oldState = job.getState();
 
-        // Capture old image before any modifications
-        Image oldImage = job.getImage();
-
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
@@ -367,6 +360,9 @@ public class JobService {
         job.setJobDescriptionDE(dto.jobDescriptionDE());
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
+
+        // Capture old image before any modifications
+        Image oldImage = job.getImage();
 
         // Update image reference (read-only lookup from imageRepository)
         if (dto.imageId() != null) {
@@ -398,18 +394,6 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
-    }
-
-    /**
-     * Returns the supervising professor's user ID for a given job ID.
-     *
-     * @param jobId the job ID
-     * @return the supervising professor's user ID
-     */
-    public UUID getSupervisingProfessorUserId(UUID jobId) {
-        return jobRepository
-            .findSupervisingProfessorUserIdByJobId(jobId)
-            .orElseThrow(() -> new EntityNotFoundException("User for job with Id '" + jobId + "' does not exist"));
     }
 
     /**
