@@ -475,3 +475,25 @@ VALUES (
         '2.0',
         'TUM'
     );
+
+-- Subject area subscriptions for Max Applicant
+DELETE FROM TUMApply.applicant_subject_area_subscriptions
+WHERE user_id = '00000000-0000-0000-0000-000000000103';
+
+INSERT INTO TUMApply.applicant_subject_area_subscriptions (
+    user_id,
+    subject_area
+)
+VALUES
+    (
+        '00000000-0000-0000-0000-000000000103',
+        'COMPUTER_SCIENCE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000103',
+        'MATHEMATICS'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000103',
+        'DATA_SCIENCE'
+    );

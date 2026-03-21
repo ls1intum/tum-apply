@@ -5,6 +5,7 @@ export * from './addMembersToResearchGroupDTO';
 export * from './applicant';
 export * from './applicantDTO';
 export * from './applicantForApplicationDetailDTO';
+export * from './applicantSubjectAreaSubscriptionDTO';
 export * from './application';
 export * from './applicationDetailDTO';
 export * from './applicationDocumentIdsDTO';
