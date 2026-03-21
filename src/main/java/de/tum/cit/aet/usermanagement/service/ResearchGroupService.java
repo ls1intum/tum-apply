@@ -263,7 +263,6 @@ public class ResearchGroupService {
         entity.setStreet(dto.street());
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
-        entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
 
         // Update department if departmentId is provided
         if (dto.departmentId() != null) {
@@ -294,7 +293,6 @@ public class ResearchGroupService {
         entity.setDepartment(department);
 
         entity.setDescription(request.description());
-        entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
         entity.setStreet(request.street());
         entity.setPostalCode(request.postalCode());
         entity.setCity(request.city());

@@ -29,7 +29,7 @@ describe('JobCardListComponent', () => {
     jobService = {
       getAllFilters: vi.fn().mockReturnValue(
         of({
-          fieldsOfStudy: ['AI', 'ML'],
+          subjectAreas: [DropdownOptions.subjectAreas[0].value, DropdownOptions.subjectAreas[1].value],
           supervisorNames: ['Prof. X'],
         }),
       ),
@@ -75,8 +75,8 @@ describe('JobCardListComponent', () => {
     await component.loadAllFilter();
 
     expect(jobService.getAllFilters).toHaveBeenCalled();
-    // allFieldOfStudies is a static list of i18n keys from DropdownOptions
-    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    // allSubjectAreas is a static list of i18n keys from DropdownOptions
+    expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
     expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
@@ -116,7 +116,7 @@ describe('JobCardListComponent', () => {
 
     expect(component.page()).toBe(0);
     expect(component.searchQuery()).toBe('New query');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should not reload jobs if search query is the same after trimming', async () => {
@@ -128,13 +128,13 @@ describe('JobCardListComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should handle filter changes for fieldOfStudies', async () => {
+  it('should handle filter changes for subjectArea', async () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
-    component.onFilterEmit({ filterId: 'fieldOfStudies', selectedValues: ['AI'] });
+    component.onFilterEmit({ filterId: 'subjectArea', selectedValues: [DropdownOptions.subjectAreas[0].name] });
     fixture.detectChanges();
-    expect(component.selectedFieldOfStudiesFilters()).toEqual(['AI']);
-    expect(spy).toHaveBeenCalled();
+    expect(component.selectedSubjectAreaFilters()).toEqual([DropdownOptions.subjectAreas[0].value]);
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle filter changes for location', async () => {
@@ -146,7 +146,7 @@ describe('JobCardListComponent', () => {
     });
     fixture.detectChanges();
     expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle filter changes for supervisor', async () => {
@@ -155,7 +155,7 @@ describe('JobCardListComponent', () => {
     component.onFilterEmit({ filterId: 'supervisor', selectedValues: ['Prof. X'] });
     fixture.detectChanges();
     expect(component.selectedSupervisorFilters()).toEqual(['Prof. X']);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle sort emit correctly', async () => {
@@ -166,7 +166,7 @@ describe('JobCardListComponent', () => {
     expect(component.page()).toBe(0);
     expect(component.sortBy()).toBe('title');
     expect(component.sortDirection()).toBe('ASC');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle table lazy load correctly', async () => {
@@ -176,7 +176,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(8);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should set empty jobs and totalRecords when API returns no content', async () => {
@@ -189,12 +189,12 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle loadAllFilter when API returns null fields', async () => {
-    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, fieldsOfStudy: null, supervisorNames: null }));
+    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, subjectAreas: null, supervisorNames: null }));
 
     await component.loadAllFilter();
 
-    // allFieldOfStudies remains the static list of i18n keys
-    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    // allSubjectAreas remains the static list of i18n keys
+    expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual([]);
   });
 
@@ -214,7 +214,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
 
     expect(component.searchQuery()).toBe('');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should update sort when called twice with different values', async () => {
@@ -236,7 +236,7 @@ describe('JobCardListComponent', () => {
     component.loadOnTableEmit({ first: 16, rows: undefined });
     fixture.detectChanges();
     expect(component.page()).toBe(Math.floor(16 / component.pageSize()));
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should call loadAllFilter in constructor', () => {

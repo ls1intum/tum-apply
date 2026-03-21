@@ -33,7 +33,6 @@ describe('ResearchGroupInfoComponent', () => {
     postalCode: '80333',
     street: 'Test Street 123',
     description: 'Test description',
-    defaultFieldOfStudies: 'Computer Science',
   };
 
   const mockUser: User = {
@@ -98,7 +97,6 @@ describe('ResearchGroupInfoComponent', () => {
       expect(component.form.controls.postalCode).toBeTruthy();
       expect(component.form.controls.address).toBeTruthy();
       expect(component.form.controls.description).toBeTruthy();
-      expect(component.form.controls.defaultFieldOfStudies).toBeTruthy();
     });
 
     it('should have required validators on name and head fields', () => {
@@ -173,7 +171,6 @@ describe('ResearchGroupInfoComponent', () => {
         postalCode: mockResearchGroupData.postalCode,
         address: mockResearchGroupData.street,
         description: mockResearchGroupData.description,
-        defaultFieldOfStudies: mockResearchGroupData.defaultFieldOfStudies,
       });
     });
 
@@ -445,7 +442,6 @@ describe('ResearchGroupInfoComponent', () => {
           postalCode: '',
           street: '',
           description: '',
-          defaultFieldOfStudies: '',
         }),
       );
     });

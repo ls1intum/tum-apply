@@ -226,10 +226,47 @@ describe('SettingsComponent', () => {
         themeServiceMock.theme.set('dark');
         expect(component.selectedTheme().value).toBe('dark');
 
-        // Case 3: Fallback (unknown theme)
-        themeServiceMock.theme.set('unknown' as any);
+        // Case 3: Fallback when the current theme is not in the available options
+        component.themeOptions = [{ name: 'settings.appearance.options.light', value: 'light' }];
+        themeServiceMock.theme.set('light');
+        themeServiceMock.theme.set('dark');
         expect(component.selectedTheme().value).toBe('light');
       });
+    });
+  });
+
+  describe('exportButtonDisabled()', () => {
+    it('should disable the export button during cooldown or while an export is in progress', () => {
+      const component = TestBed.createComponent(SettingsComponent).componentInstance;
+
+      expect(component.exportButtonDisabled()).toBe(false);
+
+      component.exportCooldownRemaining.set(10);
+      expect(component.exportButtonDisabled()).toBe(true);
+
+      component.exportCooldownRemaining.set(0);
+      component.exportInProgress.set(true);
+      expect(component.exportButtonDisabled()).toBe(true);
+    });
+  });
+
+  describe('onTabChange()', () => {
+    it('should keep the current tab when the requested tab does not exist', () => {
+      accountServiceMock.user.set({
+        id: 'u1',
+        name: 'Test Applicant',
+        email: 'applicant@test.com',
+        authorities: [UserShortDTO.RolesEnum.Applicant],
+      });
+
+      const component = TestBed.createComponent(SettingsComponent).componentInstance;
+      component.onTabChange('notifications');
+
+      expect(component.activeTab()).toBe('notifications');
+
+      component.onTabChange('invalid-tab');
+
+      expect(component.activeTab()).toBe('notifications');
     });
   });
 });

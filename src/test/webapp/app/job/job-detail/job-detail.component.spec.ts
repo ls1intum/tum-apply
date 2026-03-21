@@ -627,6 +627,7 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: '',
       workload: 15 as unknown as number,
       contractDuration: 9 as unknown as number,
+      subjectArea: 'COMPUTER_SCIENCE',
     };
 
     const user = mockAccountService.loadedUser();
@@ -646,7 +647,7 @@ describe('JobDetailComponent', () => {
       title: 'Form Job',
       jobDescriptionEN: 'Some description',
       jobDescriptionDE: 'Some description',
-      fieldOfStudies: '',
+      subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -669,7 +670,7 @@ describe('JobDetailComponent', () => {
 
     const form: JobFormDTO = {
       title: 'Form Job',
-      fieldOfStudies: '',
+      subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',

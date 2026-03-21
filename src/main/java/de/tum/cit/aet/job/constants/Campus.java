@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Campus {
+public enum Campus implements LocalizedEnum {
     GARCHING("Garching", "Garching"),
     GARCHING_HOCHBRUECK("Garching Hochbrueck", "Garching-Hochbrück"),
     HEILBRONN("Heilbronn", "Heilbronn"),
@@ -16,8 +16,4 @@ public enum Campus {
 
     private final String englishValue;
     private final String germanValue;
-
-    public String correctLanguageValue(String lang) {
-        return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
-    }
 }

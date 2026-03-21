@@ -41,7 +41,7 @@ function fillValidJobForm(component: JobCreationFormComponent) {
   component.basicInfoForm.patchValue({
     title: 'T',
     researchArea: 'AI',
-    fieldOfStudies: { value: 'CS' },
+    subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
     location: { value: 'MUNICH' },
     supervisingProfessor: 'Prof',
     jobDescription: '<p>This is a job description.</p>', // Muss im Form gesetzt werden
@@ -192,12 +192,13 @@ describe('JobCreationFormComponent', () => {
 
     it('should initialize in create mode and populate form', async () => {
       mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('create', {})]);
+      mockImageService.getMyDefaultJobBanners.mockClear();
       const fixture2 = TestBed.createComponent(JobCreationFormComponent);
       fixture2.detectChanges();
       await fixture2.whenStable();
 
       expect(fixture2.componentInstance.mode()).toBe('create');
-      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalled();
+      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalledOnce();
     });
 
     it('should navigate to /my-positions if edit mode but no jobId', async () => {
@@ -235,7 +236,7 @@ describe('JobCreationFormComponent', () => {
   describe('Navigation', () => {
     it('should call Location.back on onBack', () => {
       component.onBack();
-      expect(mockLocation.back).toHaveBeenCalled();
+      expect(mockLocation.back).toHaveBeenCalledOnce();
     });
 
     it('should navigate to login when no user is loaded in init', async () => {
@@ -287,7 +288,7 @@ describe('JobCreationFormComponent', () => {
       await getPrivate(component).performAutoSave();
 
       expect(component.jobId()).toBe('abc123');
-      expect(mockJobService.createJob).toHaveBeenCalled();
+      expect(mockJobService.createJob).toHaveBeenCalledOnce();
     });
 
     it('should call updateJob when jobId is set in performAutoSave', async () => {
@@ -438,9 +439,10 @@ describe('JobCreationFormComponent', () => {
         ]),
       );
 
+      mockResearchGroupService.getResearchGroupProfessors.mockClear();
       await getPrivate(component).loadSupervisingProfessors();
 
-      expect(mockResearchGroupService.getResearchGroupProfessors).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupProfessors).toHaveBeenCalledOnce();
       expect(component.supervisingProfessorOptions()).toEqual([
         { value: 'p1', name: 'Alpha Professor' },
         { value: 'p2', name: 'Beta Professor' },
@@ -612,8 +614,9 @@ describe('JobCreationFormComponent', () => {
       ];
       mockImageService.getMyDefaultJobBanners.mockReturnValueOnce(of(mockImages));
       mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
+      mockImageService.getMyDefaultJobBanners.mockClear();
       await component.loadImages();
-      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalled();
+      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalledOnce();
     });
   });
 
@@ -636,7 +639,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({
         title: 'My Job',
         researchArea: 'AI Research',
-        fieldOfStudies: { value: 'CS' },
+        subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescription: 'Some description',
@@ -675,13 +678,13 @@ describe('JobCreationFormComponent', () => {
     });
 
     it.each([
-      { fieldOfStudies: { value: undefined }, expected: '' },
-      { fieldOfStudies: null, expected: '' },
-    ])('should handle fieldOfStudies edge cases', ({ fieldOfStudies, expected }) => {
+      { subjectArea: { value: undefined }, expected: undefined },
+      { subjectArea: null, expected: undefined },
+    ])('should handle subjectArea edge cases', ({ subjectArea, expected }) => {
       component.basicInfoForm.patchValue({
         title: 'Job',
         researchArea: 'AI',
-        fieldOfStudies,
+        subjectArea,
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescriptionEN: '<p>Description</p>',
@@ -690,7 +693,7 @@ describe('JobCreationFormComponent', () => {
       component.jobDescriptionEN.set('<p>Description</p>');
       component.jobDescriptionDE.set('<p>Beschreibung</p>');
       const dto = getPrivate(component).createJobDTO('DRAFT');
-      expect(dto.fieldOfStudies).toBe(expected);
+      expect(dto.subjectArea).toBe(expected);
     });
   });
 
@@ -699,7 +702,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({
         title: 'Test',
         researchArea: 'Area',
-        fieldOfStudies: { value: 'CS' },
+        subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescription: '<p>Description</p>', // HTML-Inhalt für den Validator
@@ -763,7 +766,7 @@ describe('JobCreationFormComponent', () => {
     it('should handle button clicks correctly', () => {
       const steps = getPrivate(component).buildStepData();
       steps[0].buttonGroupPrev?.[0].onClick();
-      expect(mockLocation.back).toHaveBeenCalled();
+      expect(mockLocation.back).toHaveBeenCalledOnce();
 
       steps.forEach(step => {
         step.buttonGroupPrev?.forEach(btn => expect(() => btn.onClick()).not.toThrow());

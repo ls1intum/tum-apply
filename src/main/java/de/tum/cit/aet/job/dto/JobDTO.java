@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public record JobDTO(
     @NotNull UUID jobId,
     @NotNull String title,
     String researchArea,
-    String fieldOfStudies,
+    SubjectArea subjectArea,
     @NotNull UUID supervisingProfessor,
     Campus location,
     LocalDate startDate,
