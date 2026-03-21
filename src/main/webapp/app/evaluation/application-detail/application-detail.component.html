@@ -42,15 +42,14 @@
       (prev)="onPrev()"
     />
 
-    <!-- TODO: Replace p-dialog with jhi-dialog -->
-    <p-dialog
+    <jhi-dialog
       [modal]="true"
-      [(visible)]="addToInterviewDialogVisible"
+      [visible]="addToInterviewDialogVisible()"
+      (visibleChange)="addToInterviewDialogVisible.set($event)"
       [styleClass]="'w-[56%] max-w-[42rem] p-3 [&_.p-dialog-header]:items-start'"
       [dismissableMask]="true"
       [closeOnEscape]="true"
       [draggable]="false"
-      appendTo="body"
     >
       <!-- Header (applicant + job title) - matches review-dialog style -->
       <ng-template #header>
@@ -93,7 +92,7 @@
           </div>
         </div>
       </ng-template>
-    </p-dialog>
+    </jhi-dialog>
 
     <jhi-review-dialog
       [application]="currentApplication()"

@@ -1,28 +1,24 @@
-<p-dialog
+<jhi-dialog
   [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
   [modal]="true"
   [draggable]="false"
-  (visibleChange)="onVisibleChange($event)"
-  [style]="{
-    'background-color': 'var(--p-background-default)',
-    'border-radius': 'var(--p-button-border-radius)',
-  }"
+  [showHeader]="false"
+  styleClass="!w-[90vw] md:!w-[42rem] rounded-xs bg-background-default [&_.p-dialog-content]:!rounded-t-xl"
 >
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-2">
-      <span class="text-lg font-semibold">
-        {{ 'genderDecoder.resultTitle' | translate }}
-      </span>
-      <fa-icon
-        class="text-primary"
-        [icon]="['fas', 'circle-info']"
-        [pTooltip]="'genderDecoder.originalDecoder' | translate"
-        [escape]="false"
-        tooltipPosition="top"
-        [autoHide]="false"
-      />
-    </div>
-  </ng-template>
+  <div class="flex items-center gap-2 pt-4">
+    <span class="text-lg font-semibold">
+      {{ 'genderDecoder.resultTitle' | translate }}
+    </span>
+    <fa-icon
+      class="text-primary"
+      [icon]="['fas', 'circle-info']"
+      [pTooltip]="'genderDecoder.originalDecoder' | translate"
+      [escape]="false"
+      tooltipPosition="top"
+      [autoHide]="false"
+    />
+  </div>
 
   @if (result(); as analysisResult) {
     <div class="space-y-6">
@@ -100,4 +96,4 @@
       }
     </div>
   }
-</p-dialog>
+</jhi-dialog>

@@ -1,5 +1,4 @@
 import { Component, ViewEncapsulation, computed, effect, inject, input, model, output, signal } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +12,7 @@ import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/appl
 import { AcceptDTO } from '../../../../generated/model/acceptDTO';
 import { RejectDTO } from '../../../../generated/model/rejectDTO';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
+import { DialogComponent } from '../../atoms/dialog/dialog.component';
 
 import ReasonEnum = RejectDTO.ReasonEnum;
 
@@ -20,7 +20,7 @@ import ReasonEnum = RejectDTO.ReasonEnum;
   selector: 'jhi-review-dialog',
   imports: [
     CheckboxModule,
-    DialogModule,
+    DialogComponent,
     FormsModule,
     FontAwesomeModule,
     ReactiveFormsModule,
