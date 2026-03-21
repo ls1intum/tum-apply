@@ -68,7 +68,6 @@ public class JobService {
      * @param dto   the {@link JobFormDTO} containing updated job details
      * @return the updated job as a {@link JobFormDTO}
      */
-    @Transactional
     public JobFormDTO updateJob(UUID jobId, JobFormDTO dto) {
         Job job = assertCanManageJob(jobId);
         return updateJobEntity(job, dto);
@@ -90,7 +89,6 @@ public class JobService {
      *                                          rejected
      * @return the updated job as a {@link JobFormDTO}
      */
-    @Transactional
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = assertCanManageJob(jobId);
         job.setState(targetState);
@@ -351,6 +349,9 @@ public class JobService {
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
         JobState oldState = job.getState();
 
+        // Capture old image before any modifications
+        Image oldImage = job.getImage();
+
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
@@ -367,23 +368,24 @@ public class JobService {
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
 
-        // Handle image update (replace old image if changed)
+        // Update image reference (read-only lookup from imageRepository)
         if (dto.imageId() != null) {
-            Image newImage = jobImageHelper.getImageForJob(dto.imageId());
-            job.setImage(jobImageHelper.replaceJobImage(job.getImage(), newImage));
-        } else if (job.getImage() != null) {
-            // If imageId is null but job has image, remove it
-            jobImageHelper.replaceJobImage(job.getImage(), null);
+            job.setImage(jobImageHelper.getImageForJob(dto.imageId()));
+        } else {
             job.setImage(null);
         }
 
+        // Save job entity first (single repository write)
+        Job savedJob = jobRepository.save(job);
+
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
-            Job savedJob = jobRepository.save(job);
             interviewService.createInterviewProcessForJob(savedJob.getJobId());
-            return JobFormDTO.getFromEntity(savedJob);
         }
-        Job createdJob = jobRepository.save(job);
-        return JobFormDTO.getFromEntity(createdJob);
+
+        // Clean up old image after job is persisted (separate from job persistence)
+        jobImageHelper.replaceJobImage(oldImage, savedJob.getImage());
+
+        return JobFormDTO.getFromEntity(savedJob);
     }
 
     /**

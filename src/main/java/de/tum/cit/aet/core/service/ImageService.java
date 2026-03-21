@@ -38,8 +38,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -290,7 +288,8 @@ public class ImageService {
             return;
         }
 
-        deleteImageRecord(existingImage.get());
+        deleteImageFile(existingImage.get());
+        imageRepository.delete(existingImage.get());
         // Flush the delete before a replacement upload inserts a new PROFILE_PICTURE row.
         imageRepository.flush();
     }
@@ -488,7 +487,8 @@ public class ImageService {
 
         validateDeletePermission(image, currentUser, isAdmin);
 
-        deleteImageRecord(image);
+        deleteImageFile(image);
+        imageRepository.delete(image);
     }
 
     /**
@@ -566,7 +566,8 @@ public class ImageService {
             return;
         }
 
-        deleteImageRecord(image);
+        deleteImageFile(image);
+        imageRepository.delete(image);
     }
 
     /**
@@ -578,7 +579,8 @@ public class ImageService {
     public void cleanupOrphanedDefaultImages() {
         List<DepartmentImage> orphanedImages = imageRepository.findOrphanedDepartmentImages();
         for (DepartmentImage image : orphanedImages) {
-            deleteImageRecord(image);
+            deleteImageFile(image);
+            imageRepository.delete(image);
         }
     }
 
@@ -619,37 +621,9 @@ public class ImageService {
         return newImage;
     }
 
-    private void deleteImageRecord(Image image) {
-        imageRepository.delete(image);
-        scheduleImageFileDeletion(image);
-    }
-
-    private void scheduleImageFileDeletion(Image image) {
-        UUID imageId = image.getImageId();
-        String imageUrl = image.getUrl();
-
-        if (TransactionSynchronizationManager.isSynchronizationActive() && TransactionSynchronizationManager.isActualTransactionActive()) {
-            TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronization() {
-                    @Override
-                    public void afterCommit() {
-                        deleteImageFile(imageId, imageUrl);
-                    }
-                }
-            );
-            return;
-        }
-
-        deleteImageFile(imageId, imageUrl);
-    }
-
     private void deleteImageFile(Image image) {
-        deleteImageFile(image.getImageId(), image.getUrl());
-    }
-
-    private void deleteImageFile(UUID imageId, String imageUrl) {
         try {
-            String relativePath = imageUrl.replace("/images/", "");
+            String relativePath = image.getUrl().replace("/images/", "");
             Path imagePath = imageRoot.resolve(relativePath).normalize();
             Path normalizedRoot = imageRoot.normalize();
 
@@ -659,7 +633,7 @@ public class ImageService {
 
             Files.deleteIfExists(imagePath);
         } catch (IOException e) {
-            log.error("Failed to delete image file for: {}", imageId, e);
+            log.error("Failed to delete image file for: {}", image.getImageId(), e);
         }
     }
 
