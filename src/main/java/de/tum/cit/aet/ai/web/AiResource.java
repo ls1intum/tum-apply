@@ -78,7 +78,7 @@ public class AiResource {
      */
 
     @ProfessorOrEmployeeOrAdmin
-    @PutMapping(value = "analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ComplianceResponseDTO> analyzeJobDescriptionForCompliance(
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage

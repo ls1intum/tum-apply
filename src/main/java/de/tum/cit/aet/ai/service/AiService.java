@@ -14,7 +14,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 import reactor.core.publisher.Flux;
 
 @Service
