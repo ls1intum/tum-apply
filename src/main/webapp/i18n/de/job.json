@@ -162,7 +162,7 @@
             "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
           },
           "section2": {
-            "title": "Gesamttonalität",
+            "title": "Gesamteindruck",
             "body": "Neutrale Formulierungen erzielen das beste Ergebnis, während einseitige Sprache zu Punktabzügen führt."
           },
           "section3": {
@@ -175,10 +175,10 @@
         "languageGerman": "Deutsch",
         "translating": "Übersetzt...",
         "aiScoreFeedback": {
-          "critical": "Deine Ausschreibung wirkt stark exkludierend und kann viele passende Talente abschrecken. Überarbeite Sprache und Anforderungen dringend inklusiver.",
-          "warning": "Deine Ausschreibung könnte inklusiver sein. Beiträge mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
+          "critical": "Deine Ausschreibung kann auf viele passende Talente exkludierend wirken. Überarbeite Sprache und Anforderungen gezielt inklusiver.",
+          "warning": "Deine Ausschreibung könnte inklusiver sein. Stellenanzeigen mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
           "good": "Das ist schon eine gute Grundlage. Deine Ausschreibung ist bereits inklusiv und spricht viele Bewerbende an. Mit gezielten Feinjustierungen kannst du sie noch stärker machen.",
-          "excellent": "Richtig stark! Deine Ausschreibung ist sehr einladend formuliert und spricht eine breite Vielfalt an Bewerbende an."
+          "excellent": "Richtig stark! Deine Ausschreibung ist sehr einladend formuliert und spricht eine breite Vielfalt an Bewerbenden an."
         }
       }
     },

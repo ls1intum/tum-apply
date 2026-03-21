@@ -16,35 +16,33 @@ describe('AiScoreRingComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should clamps score input to the valid 0..100 range', () => {
-    fixture.componentRef.setInput('score', 150);
+  it.each([
+    ['value above upper bound', 150, 100],
+    ['value below lower bound', -12, 0],
+  ])('should clamp score when %s', (_caseLabel, inputScore, expectedBoundedScore) => {
+    fixture.componentRef.setInput('score', inputScore);
     fixture.detectChanges();
-    expect(component.boundedScore()).toBe(100);
 
-    fixture.componentRef.setInput('score', -12);
-    fixture.detectChanges();
-    expect(component.boundedScore()).toBe(0);
+    expect(component.boundedScore()).toBe(expectedBoundedScore);
   });
 
-  it('should map animated score to danger/warning/primary colors', () => {
-    component.animatedScore.set(10);
-    expect(component.scoreColor()).toBe('var(--p-danger-color)');
+  it.each([
+    ['danger range', (cmp: AiScoreRingComponent) => 10, 'var(--color-negative-default)'],
+    ['warning threshold', (cmp: AiScoreRingComponent) => cmp.WARNING_THRESHOLD, 'var(--color-warning-default)'],
+    ['primary range', (cmp: AiScoreRingComponent) => cmp.WARNING_THRESHOLD + 1, 'var(--color-primary-default)'],
+  ])('should map animated score to %s color', (_caseLabel, getAnimatedScore, expectedColor) => {
+    component.animatedScore.set(getAnimatedScore(component));
 
-    component.animatedScore.set(component.WARNING_THRESHOLD);
-    expect(component.scoreColor()).toBe('var(--p-warn-color)');
-
-    component.animatedScore.set(component.WARNING_THRESHOLD + 1);
-    expect(component.scoreColor()).toBe('var(--p-primary-color)');
+    expect(component.scoreColor()).toBe(expectedColor);
   });
 
-  it('should calculate stroke offset from the animated score', () => {
-    component.animatedScore.set(0);
-    expect(component.strokeOffset()).toBeCloseTo(component.RING_CIRCUMFERENCE, 5);
+  it.each([
+    ['0%', 0, (cmp: AiScoreRingComponent) => cmp.NORMALIZED_PATH_LENGTH],
+    ['100%', 100, () => 0],
+    ['50%', 50, (cmp: AiScoreRingComponent) => cmp.NORMALIZED_PATH_LENGTH / 2],
+  ])('should calculate stroke offset for %s score', (_caseLabel, animatedScore, getExpectedOffset) => {
+    component.animatedScore.set(animatedScore);
 
-    component.animatedScore.set(100);
-    expect(component.strokeOffset()).toBeCloseTo(0, 5);
-
-    component.animatedScore.set(50);
-    expect(component.strokeOffset()).toBeCloseTo(component.RING_CIRCUMFERENCE / 2, 5);
+    expect(component.strokeOffset()).toBeCloseTo(getExpectedOffset(component), 5);
   });
 });

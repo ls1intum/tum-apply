@@ -10,7 +10,7 @@ export class AiScoreRingComponent {
 
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
-  readonly RING_CIRCUMFERENCE = 94.2;
+  readonly NORMALIZED_PATH_LENGTH = 100;
   readonly animatedScore = signal(0);
 
   readonly boundedScore = computed(() => {
@@ -21,20 +21,20 @@ export class AiScoreRingComponent {
     return Math.max(0, Math.min(100, Math.round(value)));
   });
 
-  readonly strokeOffset = computed(() => this.RING_CIRCUMFERENCE - (this.animatedScore() / 100) * this.RING_CIRCUMFERENCE);
+  readonly strokeOffset = computed(() => this.NORMALIZED_PATH_LENGTH - this.animatedScore());
 
   readonly scoreColor = computed(() => {
     const score = this.animatedScore();
 
     if (score <= this.DANGER_THRESHOLD) {
-      return 'var(--p-danger-color)';
+      return 'var(--color-negative-default)';
     }
 
     if (score <= this.WARNING_THRESHOLD) {
-      return 'var(--p-warn-color)';
+      return 'var(--color-warning-default)';
     }
 
-    return 'var(--p-primary-color)';
+    return 'var(--color-primary-default)';
   });
 
   private animationEffect = effect(onCleanup => {

@@ -7,6 +7,7 @@ import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-ass
 describe('AiAssistantCardComponent', () => {
   let fixture: ComponentFixture<AiAssistantCardComponent>;
   let component: AiAssistantCardComponent;
+  const feedbackKeyPrefix = 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.';
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -19,31 +20,17 @@ describe('AiAssistantCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should map low scores to critical feedback', () => {
-    fixture.componentRef.setInput('score', component.DANGER_THRESHOLD);
+  it.each([
+    ['critical', (cmp: AiAssistantCardComponent) => cmp.DANGER_THRESHOLD, 'critical'],
+    ['warning lower bound', (cmp: AiAssistantCardComponent) => cmp.DANGER_THRESHOLD + 1, 'warning'],
+    ['warning upper bound', (cmp: AiAssistantCardComponent) => cmp.WARNING_THRESHOLD, 'warning'],
+    ['good', (cmp: AiAssistantCardComponent) => cmp.WARNING_THRESHOLD + 1, 'good'],
+    ['excellent', (cmp: AiAssistantCardComponent) => cmp.EXCELLENCE_THRESHOLD, 'excellent'],
+  ])('should map %s score to the correct feedback key', (_caseLabel, getScore, feedbackKeySuffix) => {
+    fixture.componentRef.setInput('score', getScore(component));
     fixture.detectChanges();
 
-    expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical');
-  });
-
-  it('should map medium scores to warning feedback', () => {
-    fixture.componentRef.setInput('score', component.DANGER_THRESHOLD + 1);
-    fixture.detectChanges();
-    expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.warning');
-
-    fixture.componentRef.setInput('score', component.WARNING_THRESHOLD);
-    fixture.detectChanges();
-    expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.warning');
-  });
-
-  it('should map good and excellent ranges correctly', () => {
-    fixture.componentRef.setInput('score', component.WARNING_THRESHOLD + 1);
-    fixture.detectChanges();
-    expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.good');
-
-    fixture.componentRef.setInput('score', component.EXCELLENCE_THRESHOLD);
-    fixture.detectChanges();
-    expect(component.scoreFeedback()).toBe('jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.excellent');
+    expect(component.scoreFeedback()).toBe(`${feedbackKeyPrefix}${feedbackKeySuffix}`);
   });
 
   it('should emit generate when onGenerate is called', () => {

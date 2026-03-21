@@ -1,24 +1,25 @@
 <div class="grid h-[7.75rem] w-[7.75rem] place-items-center">
   <svg
     viewBox="0 0 38 38"
-    class="col-start-1 row-start-1 h-full w-full origin-center -scale-x-100 rotate-90 overflow-visible fill-none"
+    class="col-start-1 row-start-1 h-full w-full origin-center -scale-x-100 rotate-180 overflow-visible fill-none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <!-- Ring paths from the Figma score design -->
     <g transform="translate(0 -4)">
       <path
         d="M19 38C27.2843 38 34 31.2843 34 23C34 14.7157 27.2843 8 19 8C10.7157 8 4 14.7157 4 23C4 31.2843 10.7157 38 19 38Z"
-        stroke="var(--p-background-surface)"
+        stroke="var(--color-background-surface)"
         stroke-width="3"
       />
       <path
-        d="M34 22.97C34 14.6692 27.2843 8 19 8C10.7157 8 4 14.6692 4 22.97C4 31.2709 10.7157 38 19 38C27.2843 38 34 31.2709 34 22.97Z"
+        d="M19 38C27.2843 38 34 31.2843 34 23C34 14.7157 27.2843 8 19 8C10.7157 8 4 14.7157 4 23C4 31.2843 10.7157 38 19 38Z"
         [style.stroke]="scoreColor()"
         stroke-width="3"
         stroke-linecap="round"
+        [attr.pathLength]="NORMALIZED_PATH_LENGTH"
+        [attr.stroke-dasharray]="NORMALIZED_PATH_LENGTH"
+        [attr.stroke-dashoffset]="strokeOffset()"
         class="duration-800 ease-in-out"
-        [style.strokeDasharray]="RING_CIRCUMFERENCE"
-        [style.strokeDashoffset]="strokeOffset()"
       />
     </g>
   </svg>
