@@ -1,20 +1,28 @@
-import { Component, WritableSignal, effect, inject, input, signal } from '@angular/core';
-import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
+import { Component, WritableSignal, computed, effect, inject, input, signal } from '@angular/core';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
+import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
+import { ToastService } from 'app/service/toast-service';
+import { EmailSetting } from 'app/generated/model/emailSetting';
+import { ApplicantSubjectAreaSubscriptionDTO } from 'app/generated/model/applicantSubjectAreaSubscriptionDTO';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import * as DropDownOptions from 'app/job/dropdown-options';
 
 import TranslateDirective from '../../language/translate.directive';
-import { ToastService } from '../../../service/toast-service';
-import { EmailSettingResourceApiService } from '../../../generated/api/emailSettingResourceApi.service';
-import { EmailSetting } from '../../../generated/model/emailSetting';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
+import { FilterChange, FilterMultiselect } from '../../components/atoms/filter-multiselect/filter-multiselect';
 
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
 import RolesEnum = UserShortDTO.RolesEnum;
+type SubjectArea = ApplicantSubjectAreaSubscriptionDTO.SubjectAreaEnum;
+
+interface SubjectAreaOption {
+  name: string;
+  value: SubjectArea;
+}
 
 export interface NotificationGroup {
   groupKey: string; // Title of the group (short)
@@ -25,24 +33,48 @@ export interface NotificationGroup {
 
 @Component({
   selector: 'jhi-email-settings',
-  imports: [DividerModule, FontAwesomeModule, FormsModule, ToggleSwitchModule, TooltipModule, TranslateModule, TranslateDirective],
+  host: {
+    class: 'block h-full w-full',
+  },
+  imports: [FontAwesomeModule, FormsModule, FilterMultiselect, ToggleSwitchModule, TranslateModule, TranslateDirective],
   templateUrl: './email-settings.component.html',
-  styleUrl: './email-settings.component.scss',
 })
 export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
   protected emailSettingService = inject(EmailSettingResourceApiService);
+  protected applicantResourceApiService = inject(ApplicantResourceApiService);
   protected toastService = inject(ToastService);
+  protected translateService = inject(TranslateService);
+  protected readonly RolesEnum = RolesEnum;
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
+  protected subjectAreaSaving = signal(false);
+  protected subjectAreaDropdownOpen = signal(false);
+  protected subjectAreasEnabled = signal(false);
+  protected selectedSubjectAreas = signal<SubjectArea[]>([]);
+  protected readonly subjectAreaOptions: SubjectAreaOption[] = DropDownOptions.subjectAreas.map(option => ({
+    name: option.name,
+    value: option.value as SubjectArea,
+  }));
+  protected readonly subjectAreaFilterOptions: string[] = this.subjectAreaOptions.map(option => option.name);
+  protected readonly selectedSubjectAreaFilterValues = computed(() =>
+    this.selectedSubjectAreas()
+      .map(subjectArea => DropDownOptions.subjectAreaValueToNameMap.get(subjectArea))
+      .filter((subjectAreaName): subjectAreaName is string => subjectAreaName !== undefined),
+  );
+  protected readonly selectedSubjectAreaOptions = computed(() => {
+    const selectedAreas = new Set(this.selectedSubjectAreas());
+    return this.subjectAreaOptions
+      .filter(option => selectedAreas.has(option.value))
+      .sort((left, right) => this.translateService.instant(left.name).localeCompare(this.translateService.instant(right.name)));
+  });
 
   protected readonly roleEffect = effect(() => {
     const role = this.currentRole();
     if (!role) return;
 
-    // Only run once
     void this.loadSettings(role);
   });
 
@@ -85,7 +117,7 @@ export class EmailSettingsComponent {
     ]),
   );
 
-  async loadSettings(role: RolesEnum): Promise<void> {
+  async loadEmailNotificationGroups(role: RolesEnum): Promise<void> {
     try {
       const settings = await firstValueFrom(this.emailSettingService.getEmailSettings());
 
@@ -107,21 +139,114 @@ export class EmailSettingsComponent {
       }
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'loading the notification settings' });
-    } finally {
-      this.loaded.set(true);
     }
   }
 
-  onToggleChanged(group: NotificationGroup): void {
+  async loadSubjectAreaSubscriptions(): Promise<void> {
+    try {
+      const subscriptions = await firstValueFrom(this.applicantResourceApiService.getSubjectAreaSubscriptions());
+      const selectedSubjectAreas = this.sortSubjectAreas(subscriptions.map(subscription => subscription.subjectArea));
+      this.selectedSubjectAreas.set(selectedSubjectAreas);
+      this.subjectAreasEnabled.set(selectedSubjectAreas.length > 0);
+    } catch {
+      this.selectedSubjectAreas.set([]);
+      this.subjectAreasEnabled.set(false);
+      this.toastService.showError({ summary: 'Error', detail: 'loading the subject area subscriptions' });
+    }
+  }
+
+  async loadSettings(role: RolesEnum): Promise<void> {
+    this.loaded.set(false);
+
+    // Notification groups and subject-area subscriptions come from different endpoints.
+    await Promise.allSettled([
+      this.loadEmailNotificationGroups(role),
+      role === RolesEnum.Applicant
+        ? this.loadSubjectAreaSubscriptions()
+        : Promise.resolve().then(() => {
+            this.selectedSubjectAreas.set([]);
+            this.subjectAreasEnabled.set(false);
+          }),
+    ]);
+
+    this.loaded.set(true);
+  }
+
+  async onToggleChanged(group: NotificationGroup): Promise<void> {
+    const role = this.currentRole();
+
     try {
       const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
         emailType,
         enabled: group.enabled,
       }));
 
-      void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
+      await firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
+
+      if (role) {
+        await this.loadEmailNotificationGroups(role);
+      }
     }
+  }
+
+  async onSubjectAreasChange(subjectAreas: SubjectArea[] | null | undefined): Promise<void> {
+    const nextSelection = this.sortSubjectAreas(subjectAreas ?? []);
+    const previousSelection = this.selectedSubjectAreas();
+
+    if (this.areSubjectAreasEqual(previousSelection, nextSelection)) {
+      return;
+    }
+
+    const previousSet = new Set(previousSelection);
+    const nextSet = new Set(nextSelection);
+    const subjectAreasToAdd = nextSelection.filter(subjectArea => !previousSet.has(subjectArea));
+    const subjectAreasToRemove = previousSelection.filter(subjectArea => !nextSet.has(subjectArea));
+
+    // Update local state optimistically and sync only the delta with the backend.
+    this.selectedSubjectAreas.set(nextSelection);
+    this.subjectAreaSaving.set(true);
+
+    try {
+      await Promise.all([
+        ...subjectAreasToAdd.map(subjectArea => firstValueFrom(this.applicantResourceApiService.addSubjectAreaSubscription(subjectArea))),
+        ...subjectAreasToRemove.map(subjectArea =>
+          firstValueFrom(this.applicantResourceApiService.removeSubjectAreaSubscription(subjectArea)),
+        ),
+      ]);
+    } catch {
+      this.selectedSubjectAreas.set(previousSelection);
+      this.toastService.showError({ summary: 'Error', detail: 'updating the subject area subscriptions' });
+      await this.loadSubjectAreaSubscriptions();
+    } finally {
+      this.subjectAreaSaving.set(false);
+    }
+  }
+
+  async removeSubjectArea(subjectArea: SubjectArea): Promise<void> {
+    await this.onSubjectAreasChange(this.selectedSubjectAreas().filter(selectedSubjectArea => selectedSubjectArea !== subjectArea));
+  }
+
+  onSubjectAreasToggleChanged(enabled: boolean): void {
+    this.subjectAreasEnabled.set(enabled);
+  }
+
+  onSubjectAreaFilterChange(filterChange: FilterChange): void {
+    void this.onSubjectAreasChange(DropDownOptions.mapSubjectAreaNames(filterChange.selectedValues) as SubjectArea[]);
+  }
+
+  onSubjectAreaDropdownOpenChange(isOpen: boolean): void {
+    this.subjectAreaDropdownOpen.set(isOpen);
+  }
+
+  // Keep the selection in the canonical dropdown order so equality checks stay stable.
+  private sortSubjectAreas(subjectAreas: readonly SubjectArea[]): SubjectArea[] {
+    const subjectAreaSet = new Set(subjectAreas);
+    return this.subjectAreaOptions.filter(option => subjectAreaSet.has(option.value)).map(option => option.value);
+  }
+
+  private areSubjectAreasEqual(left: readonly SubjectArea[], right: readonly SubjectArea[]): boolean {
+    return left.length === right.length && left.every((subjectArea, index) => subjectArea === right[index]);
   }
 }

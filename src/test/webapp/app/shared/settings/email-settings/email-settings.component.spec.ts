@@ -5,10 +5,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { EmailSettingsComponent, NotificationGroup } from 'app/shared/settings/email-settings/email-settings.component';
 import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
+import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { EmailSetting } from 'app/generated/model/emailSetting';
+import { ApplicantSubjectAreaSubscriptionDTO } from 'app/generated/model/applicantSubjectAreaSubscriptionDTO';
 import RolesEnum = UserShortDTO.RolesEnum;
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
+import SubjectAreaEnum = ApplicantSubjectAreaSubscriptionDTO.SubjectAreaEnum;
 
 describe('EmailSettingsComponent', () => {
   let fixture: ComponentFixture<EmailSettingsComponent>;
@@ -19,6 +22,12 @@ describe('EmailSettingsComponent', () => {
     updateEmailSettings: vi.fn(),
   };
 
+  const applicantResourceApiServiceMock = {
+    getSubjectAreaSubscriptions: vi.fn(),
+    addSubjectAreaSubscription: vi.fn(),
+    removeSubjectAreaSubscription: vi.fn(),
+  };
+
   const toastServiceMock = createToastServiceMock();
 
   beforeEach(() => {
@@ -26,6 +35,7 @@ describe('EmailSettingsComponent', () => {
       imports: [EmailSettingsComponent, TranslateModule.forRoot()],
       providers: [
         { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
+        { provide: ApplicantResourceApiService, useValue: applicantResourceApiServiceMock },
         provideToastServiceMock(toastServiceMock),
       ],
     });
@@ -44,6 +54,7 @@ describe('EmailSettingsComponent', () => {
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
       );
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
@@ -59,6 +70,7 @@ describe('EmailSettingsComponent', () => {
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
       );
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
@@ -69,6 +81,7 @@ describe('EmailSettingsComponent', () => {
 
     it('should show error toast on service failure', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(throwError(() => new Error('fail')));
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
@@ -86,6 +99,7 @@ describe('EmailSettingsComponent', () => {
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
       );
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
@@ -94,10 +108,43 @@ describe('EmailSettingsComponent', () => {
       expect(submissionGroup?.enabled).toBe(true);
       expect(component['loaded']()).toBe(true);
     });
+
+    it('should load subject area subscriptions for applicants', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(
+        of([{ subjectArea: SubjectAreaEnum.Mathematics }, { subjectArea: SubjectAreaEnum.ComputerScience }]),
+      );
+
+      await component.loadSettings(RolesEnum.Applicant);
+
+      expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
+      expect(component['subjectAreasEnabled']()).toBe(true);
+    });
+
+    it('should clear subject area subscriptions for non-applicants', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
+      component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
+      component['subjectAreasEnabled'].set(true);
+
+      await component.loadSettings(RolesEnum.Professor);
+
+      expect(component['selectedSubjectAreas']()).toEqual([]);
+      expect(component['subjectAreasEnabled']()).toBe(false);
+      expect(applicantResourceApiServiceMock.getSubjectAreaSubscriptions).not.toHaveBeenCalled();
+    });
+
+    it('should keep subject areas toggle off when no subscriptions are loaded', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
+
+      await component.loadSettings(RolesEnum.Applicant);
+
+      expect(component['subjectAreasEnabled']()).toBe(false);
+    });
   });
 
   describe('onToggleChanged', () => {
-    it('should call updateEmailSettings with correct payload', () => {
+    it('should call updateEmailSettings with correct payload', async () => {
       const group: NotificationGroup = {
         groupKey: 'test',
         descriptionKey: 'desc',
@@ -107,7 +154,7 @@ describe('EmailSettingsComponent', () => {
 
       emailSettingServiceMock.updateEmailSettings.mockReturnValue(of(undefined));
 
-      component.onToggleChanged(group);
+      await component.onToggleChanged(group);
 
       expect(emailSettingServiceMock.updateEmailSettings).toHaveBeenCalledWith([
         { emailType: EmailTypeEnum.ApplicationSent, enabled: true },
@@ -115,7 +162,7 @@ describe('EmailSettingsComponent', () => {
       ]);
     });
 
-    it('should show error toast if update throws synchronously', () => {
+    it('should show error toast if update throws synchronously', async () => {
       emailSettingServiceMock.updateEmailSettings.mockImplementation(() => {
         throw new Error('boom');
       });
@@ -127,12 +174,59 @@ describe('EmailSettingsComponent', () => {
         enabled: false,
       };
 
-      component.onToggleChanged(group);
+      await component.onToggleChanged(group);
 
       expect(toastServiceMock.showError).toHaveBeenCalledWith({
         summary: 'Error',
         detail: 'updating the notification settings',
       });
+    });
+  });
+
+  describe('onSubjectAreasChange', () => {
+    it('should add and remove subscriptions based on the new selection', async () => {
+      component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
+      applicantResourceApiServiceMock.addSubjectAreaSubscription.mockReturnValue(of(undefined));
+      applicantResourceApiServiceMock.removeSubjectAreaSubscription.mockReturnValue(of(undefined));
+
+      await component.onSubjectAreasChange([SubjectAreaEnum.Mathematics]);
+
+      expect(applicantResourceApiServiceMock.addSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.Mathematics);
+      expect(applicantResourceApiServiceMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.ComputerScience);
+      expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.Mathematics]);
+    });
+
+    it('should do nothing when the selection is unchanged', async () => {
+      component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
+
+      await component.onSubjectAreasChange([SubjectAreaEnum.ComputerScience]);
+
+      expect(applicantResourceApiServiceMock.addSubjectAreaSubscription).not.toHaveBeenCalled();
+      expect(applicantResourceApiServiceMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
+    });
+
+    it('should restore the previous selection when the update fails', async () => {
+      component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
+      applicantResourceApiServiceMock.addSubjectAreaSubscription.mockReturnValue(throwError(() => new Error('fail')));
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([{ subjectArea: SubjectAreaEnum.ComputerScience }]));
+
+      await component.onSubjectAreasChange([SubjectAreaEnum.Mathematics]);
+
+      expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience]);
+      expect(toastServiceMock.showError).toHaveBeenCalledWith({
+        summary: 'Error',
+        detail: 'updating the subject area subscriptions',
+      });
+    });
+  });
+
+  describe('onSubjectAreasToggleChanged', () => {
+    it('should update the subject areas toggle state', () => {
+      component.onSubjectAreasToggleChanged(true);
+      expect(component['subjectAreasEnabled']()).toBe(true);
+
+      component.onSubjectAreasToggleChanged(false);
+      expect(component['subjectAreasEnabled']()).toBe(false);
     });
   });
 

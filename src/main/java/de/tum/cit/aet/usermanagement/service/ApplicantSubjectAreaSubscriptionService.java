@@ -9,7 +9,6 @@ import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscriptionRepository;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,23 +63,12 @@ public class ApplicantSubjectAreaSubscriptionService {
             .findByApplicantUserIdAndSubjectArea(userId, subjectArea)
             .map(ApplicantSubjectAreaSubscriptionDTO::getFromEntity)
             // If not, create a new subscription.
-            .orElseGet(() -> createSubscription(userId, subjectArea));
-    }
-
-    private ApplicantSubjectAreaSubscriptionDTO createSubscription(UUID userId, SubjectArea subjectArea) {
-        Applicant applicant = applicantService.findOrCreateApplicant(userId);
-        ApplicantSubjectAreaSubscription subscription = new ApplicantSubjectAreaSubscription(applicant, subjectArea);
-
-        try {
-            ApplicantSubjectAreaSubscription savedSubscription = subscriptionRepository.saveAndFlush(subscription);
-            return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(savedSubscription);
-        } catch (DataIntegrityViolationException e) {
-            // A concurrent request may have created the same subscription after the existence check.
-            return subscriptionRepository
-                .findByApplicantUserIdAndSubjectArea(userId, subjectArea)
-                .map(ApplicantSubjectAreaSubscriptionDTO::getFromEntity)
-                .orElseThrow(() -> e);
-        }
+            .orElseGet(() -> {
+                Applicant applicant = applicantService.findOrCreateApplicant(userId);
+                ApplicantSubjectAreaSubscription subscription = new ApplicantSubjectAreaSubscription(applicant, subjectArea);
+                subscriptionRepository.save(subscription);
+                return ApplicantSubjectAreaSubscriptionDTO.getFromEntity(subscription);
+            });
     }
 
     /**

@@ -35,7 +35,9 @@
     </ng-template>
 
     <ng-template jhiTabPanel="notifications">
-      <jhi-email-settings [currentRole]="role()" />
+      <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+        <jhi-email-settings class="w-full" [currentRole]="role()" />
+      </div>
     </ng-template>
 
     <ng-template jhiTabPanel="personal-information">

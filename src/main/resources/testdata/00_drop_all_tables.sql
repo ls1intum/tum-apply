@@ -26,7 +26,7 @@ TRUNCATE TABLE internal_comments;
 TRUNCATE TABLE interview_processes;
 TRUNCATE TABLE interview_slots;
 TRUNCATE TABLE jobs;
-TRUNCATE TABLE applicant_subject_area_subscriptions;
+TRUNCATE TABLE TUMApply.applicant_subject_area_subscriptions;
 TRUNCATE TABLE ratings;
 TRUNCATE TABLE research_groups;
 TRUNCATE TABLE schools;
