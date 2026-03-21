@@ -28,21 +28,31 @@
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
-          "description": "Erhalte eine Bestätigung per E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
+          "description": "Erhalte eine E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
         },
         "outcome": {
           "title": "Bewerbungsergebnis",
-          "description": "Du wirst per E-Mail benachrichtigt, wenn deine Bewerbung angenommen oder abgelehnt wurde."
+          "description": "Erhalte eine E-Mail, wenn deine Bewerbung angenommen oder abgelehnt wird."
+        },
+        "subjectAreas": {
+          "title": "Stellenausschreibungen",
+          "description": "Erhalte E-Mails über neue Stellenausschreibungen. Nach der Aktivierung kannst du deine bevorzugten Fachbereiche auswählen.",
+          "placeholder": "Fachbereiche hinzufügen",
+          "filterPlaceholder": "Fachbereich suchen...",
+          "selectedCount": "{{count}} ausgewählt",
+          "empty": "Keine Fachbereiche verfügbar.",
+          "emptyFilter": "Keine Fachbereiche für diese Suche gefunden.",
+          "emptySelection": "Noch keine Fachbereiche ausgewählt."
         }
       },
       "professor": {
         "new": {
           "title": "Neue Bewerbungen",
-          "description": "Du wirst per E-Mail benachrichtigt, wenn eine neue Bewerbung für deine Stelle eingeht."
+          "description": "Erhalte eine E-Mail, wenn eine neue Bewerbung für deine Stelle eingeht."
         },
         "accepted": {
           "title": "Bewerbung angenommen (BCC)",
-          "description": "Erhalte eine Kopie per E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
+          "description": "Erhalte eine E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     },
