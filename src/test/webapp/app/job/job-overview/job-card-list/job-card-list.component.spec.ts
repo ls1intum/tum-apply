@@ -251,7 +251,6 @@ describe('JobCardListComponent', () => {
         professorName: 'P1',
         location: LocationEnum.Heilbronn,
         subjectArea: DropdownOptions.subjectAreas[0].value,
-        departmentName: 'D1',
       },
       {
         jobId: '2',
@@ -259,7 +258,6 @@ describe('JobCardListComponent', () => {
         professorName: 'P2',
         location: LocationEnum.Heilbronn,
         subjectArea: DropdownOptions.subjectAreas[0].value,
-        departmentName: 'D2',
       },
     ]);
     fixture.detectChanges();
@@ -277,7 +275,6 @@ describe('JobCardListComponent', () => {
         location: LocationEnum.Heilbronn,
         subjectArea: DropdownOptions.subjectAreas[0].value,
         applicationState: undefined,
-        departmentName: 'D1',
       },
     ]);
     fixture.detectChanges();
@@ -298,7 +295,6 @@ describe('JobCardListComponent', () => {
         subjectArea: DropdownOptions.subjectAreas[0].value,
         relativeTimeEnglish: '2 days ago',
         relativeTimeGerman: 'vor 2 Tagen',
-        departmentName: 'D1',
       },
     ]);
     fixture.detectChanges();

@@ -3048,7 +3048,6 @@ components:
             INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
-        departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location:

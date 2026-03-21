@@ -14,7 +14,6 @@ export interface JobCardDTO {
     applicationState?: JobCardDTO.ApplicationStateEnum;
     avatar?: string;
     contractDuration?: number;
-    departmentName?: string;
     imageUrl?: string;
     jobId: string;
     location: JobCardDTO.LocationEnum;
@@ -99,5 +98,4 @@ export namespace JobCardDTO {
         UrbanPlanning: 'URBAN_PLANNING' as SubjectAreaEnum
     };
 }
-
 

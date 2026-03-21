@@ -217,8 +217,11 @@
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
                     <div>
-                      {{ job.researchGroupStreet }}{{ job.researchGroupPostalCode ? ', ' : '' }}{{ job.researchGroupPostalCode }}
-                      {{ job.researchGroupCity }}
+                      {{ job.researchGroupStreet }}
+                      @if (job.researchGroupPostalCode || job.researchGroupCity) {
+                        , {{ job.researchGroupPostalCode }}{{ job.researchGroupPostalCode && job.researchGroupCity ? ' ' : ''
+                        }}{{ job.researchGroupCity }}
+                      }
                     </div>
                   </div>
                 }

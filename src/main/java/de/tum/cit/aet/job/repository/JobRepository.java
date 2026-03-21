@@ -92,7 +92,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           CONCAT(p.firstName, ' ', p.lastName) as professorName,
           j.subjectArea as subjectArea,
           p.avatar as avatar,
-          COALESCE(d.name, 'No Department') as departmentName,
           a.applicationId as applicationId,
           a.state as applicationState,
           j.workload as workload,
@@ -103,8 +102,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         )
         FROM Job j
         JOIN j.supervisingProfessor p
-        LEFT JOIN j.researchGroup rg
-        LEFT JOIN rg.department d
         LEFT JOIN j.image i
         LEFT JOIN j.applications a
                WITH (:userId IS NOT NULL
@@ -185,7 +182,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             CONCAT(p.firstName, ' ', p.lastName) as professorName,
             j.subjectArea as subjectArea,
             p.avatar as avatar,
-            COALESCE(d.name, 'No Department') as departmentName,
             a.applicationId as applicationId,
             a.state as applicationState,
             j.workload as workload,
@@ -196,8 +192,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           )
           FROM Job j
           JOIN j.supervisingProfessor p
-          LEFT JOIN j.researchGroup rg
-          LEFT JOIN rg.department d
           LEFT JOIN j.image i
           LEFT JOIN j.applications a
                  WITH (:userId IS NOT NULL
