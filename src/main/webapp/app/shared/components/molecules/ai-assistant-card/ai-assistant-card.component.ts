@@ -64,22 +64,11 @@ export class AiAssistantCardComponent {
     return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.good';
   });
 
-  private wasGenerating = false;
-
   private readonly displayedScoreEffect = effect(() => {
     const generating = this.isGenerating();
     const score = this.boundedScore();
 
     if (generating) {
-      this.wasGenerating = true;
-      return;
-    }
-
-    // Skip the immediate update right after generation ends — the analysis
-    // API hasn't responded yet, so calculateScore returns 100 as a fallback.
-    // The real score will arrive once the analysis completes.
-    if (this.wasGenerating) {
-      this.wasGenerating = false;
       return;
     }
 
