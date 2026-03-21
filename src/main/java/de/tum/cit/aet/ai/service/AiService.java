@@ -3,6 +3,7 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
@@ -24,6 +25,9 @@ public class AiService {
 
     @Value("classpath:prompts/TranslateText.st")
     private Resource translationResource;
+
+    @Value("classpath:prompts/AnalyzeComplianceText.st")
+    private Resource complianceResource;
 
     private final ChatClient chatClient;
 
@@ -129,5 +133,31 @@ public class AiService {
             jobService.updateJobDescriptionLanguage(jobId, toLang, translatedText);
         }
         return translated;
+    }
+
+    /**
+     * Analyzes the job description using the compliance prompt
+     * Passes the selected description language, the job description text,
+     * and optionally the job title to the AI model.
+     *
+     * @param jobFormDTO the job form data containing language-specific job descriptions
+     * @param descriptionLanguage the analysis language, expected to be `de` or `en`
+     * @return structured compliance analysis as a `ComplianceResponseDTO`
+     */
+
+    public ComplianceResponseDTO analyzeJobDescription(JobFormDTO jobFormDTO, String descriptionLanguage) {
+        String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
+        return chatClient
+            .prompt()
+            .options(FAST_CHAT_OPTIONS)
+            .user(u ->
+                u
+                    .text(complianceResource)
+                    .param("descriptionLanguage", descriptionLanguage)
+                    .param("jobDescription", input)
+                    .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
+            )
+            .call()
+            .entity(ComplianceResponseDTO.class);
     }
 }

@@ -23,6 +23,8 @@ export * from './biasedWordDTO';
 export * from './bookSlotRequestDTO';
 export * from './bookingDTO';
 export * from './cancelInterviewDTO';
+export * from './complianceIssueDTO';
+export * from './complianceResponseDTO';
 export * from './conflictDataDTO';
 export * from './createSlotsDTO';
 export * from './createdJobDTO';

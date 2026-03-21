@@ -3,6 +3,26 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
+  /api/ai/analyzeJobDescription:
+    post:
+      tags: [ai-resource]
+      operationId: analyzeJobDescriptionForCompliance
+      parameters:
+      - name: lang
+        in: query
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobFormDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ComplianceResponseDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -2657,6 +2677,23 @@ components:
         deleteSlot: {type: boolean}
         sendReinvite: {type: boolean}
       required: [deleteSlot, sendReinvite]
+    ComplianceIssueDTO:
+      type: object
+      properties:
+        action: {type: string}
+        article: {type: string}
+        category:
+          type: string
+          enum: [CRITICAL_AGG, CRITICAL_DSGVO, TRANSPARENCY]
+        explanation: {type: string}
+        id: {type: string}
+        text: {type: string}
+    ComplianceResponseDTO:
+      type: object
+      properties:
+        issues:
+          type: array
+          items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
     ConflictDataDTO:
       type: object
       properties:
