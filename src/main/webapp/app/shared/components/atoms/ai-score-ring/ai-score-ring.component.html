@@ -17,9 +17,8 @@
         stroke-width="3"
         stroke-linecap="round"
         [attr.pathLength]="NORMALIZED_PATH_LENGTH"
-        [attr.stroke-dasharray]="NORMALIZED_PATH_LENGTH"
-        [attr.stroke-dashoffset]="strokeOffset()"
-        class="duration-800 ease-in-out"
+        [style.strokeDasharray]="NORMALIZED_PATH_LENGTH"
+        [style.strokeDashoffset]="strokeOffset()"
       />
     </g>
   </svg>

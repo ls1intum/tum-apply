@@ -24,11 +24,8 @@
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
     <div class="panel1-layout lg:!gap-x-6" [class.panel1-layout-with-sidebar]="aiToggleSignal()">
-      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto lg:!overflow-y-hidden lg:!pr-0">
-        <form
-          [formGroup]="basicInfoForm"
-          class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:h-full lg:overflow-y-auto lg:overflow-x-hidden lg:px-8 lg:pr-5 xl:px-10"
-        >
+      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto">
+        <form [formGroup]="basicInfoForm" class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:px-8 lg:pr-5 xl:px-10">
           <div class="grid items-start gap-4">
             <div>
               <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
@@ -149,10 +146,12 @@
             <div class="grid gap-4 items-start">
               <!-- Editor -->
               <div>
-                <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm">
-                  <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
-                  <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
-                </div>
+                @if (aiToggleSignal()) {
+                  <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm">
+                    <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
+                    <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
+                  </div>
+                }
                 <jhi-editor
                   #jobDescriptionEditor
                   fieldId="jobDescription"
@@ -179,7 +178,7 @@
         <!--AI Assistant sidebar-->
         <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
         <aside
-          class="mx-auto mt-4 flex w-full max-w-[52rem] flex-col overflow-hidden bg-background-default lg:mx-0 lg:mt-0 lg:h-full lg:w-full lg:max-w-full"
+          class="mx-auto mt-4 flex w-full max-w-[52rem] flex-col overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >
           <div class="flex items-center">
             <div class="flex min-h-16 flex-1 items-center justify-start gap-3 px-5 py-3 text-text-primary">
