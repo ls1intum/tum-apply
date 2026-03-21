@@ -6,9 +6,6 @@
 
   <changeSet id="031_create_applicant_subject_area_subscriptions" author="celine">
     <createTable tableName="applicant_subject_area_subscriptions">
-      <column name="subscription_id" type="CHAR(36)">
-        <constraints nullable="false" primaryKey="true"/>
-      </column>
       <column name="user_id" type="CHAR(36)">
         <constraints nullable="false"/>
       </column>

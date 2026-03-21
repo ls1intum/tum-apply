@@ -15,7 +15,6 @@ import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-import de.tum.cit.aet.usermanagement.repository.ApplicantSubjectAreaSubscriptionRepository;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -35,9 +35,9 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private final ApplicationReviewRepository applicationReviewRepository;
     private final RatingRepository ratingRepository;
     private final InternalCommentRepository internalCommentRepository;
-    private final ApplicantSubjectAreaSubscriptionRepository subscriptionRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public void contribute(ExportContext context, UserDataExportBuilder builder) {
         if (!context.hasApplicantRole() || !applicantRepository.existsById(context.user().getUserId())) {
             return;
@@ -81,7 +81,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .toList();
 
         List<IntervieweeExportDTO> interviewees = getInterviewees(userId);
-        List<String> subjectAreaSubscriptions = getSubjectAreaSubscriptions(userId);
+        List<String> subjectAreaSubscriptions = getSubjectAreaSubscriptions(applicant);
 
         return new ApplicantDataExportDTO(
             applicant.getStreet(),
@@ -148,12 +148,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .toList();
     }
 
-    private List<String> getSubjectAreaSubscriptions(UUID userId) {
-        return subscriptionRepository
-            .findByApplicantUserId(userId)
-            .stream()
-            .sorted((left, right) -> left.getSubjectArea().compareTo(right.getSubjectArea()))
-            .map(subscription -> subscription.getSubjectArea().name())
-            .toList();
+    private List<String> getSubjectAreaSubscriptions(Applicant applicant) {
+        return applicant.getSubjectAreaSubscriptions().stream().sorted().map(Enum::name).toList();
     }
 }
