@@ -4,7 +4,9 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -35,8 +37,11 @@ public class Applicant {
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<DocumentDictionary> documentDictionaries;
 
-    @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<ApplicantSubjectAreaSubscription> subjectAreaSubscriptions;
+    @ElementCollection(targetClass = SubjectArea.class)
+    @CollectionTable(name = "applicant_subject_area_subscriptions", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "subject_area", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<SubjectArea> subjectAreaSubscriptions = new HashSet<>();
 
     @Column(name = "street")
     private String street;

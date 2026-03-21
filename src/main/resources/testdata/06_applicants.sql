@@ -481,23 +481,19 @@ DELETE FROM TUMApply.applicant_subject_area_subscriptions
 WHERE user_id = '00000000-0000-0000-0000-000000000103';
 
 INSERT INTO TUMApply.applicant_subject_area_subscriptions (
-    subscription_id,
     user_id,
     subject_area
 )
 VALUES
     (
-        '60000000-0000-0000-0000-000000000001',
         '00000000-0000-0000-0000-000000000103',
         'COMPUTER_SCIENCE'
     ),
     (
-        '60000000-0000-0000-0000-000000000002',
         '00000000-0000-0000-0000-000000000103',
         'MATHEMATICS'
     ),
     (
-        '60000000-0000-0000-0000-000000000003',
         '00000000-0000-0000-0000-000000000103',
         'DATA_SCIENCE'
     );
