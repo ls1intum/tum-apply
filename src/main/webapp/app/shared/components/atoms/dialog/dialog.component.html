@@ -13,6 +13,7 @@
   [header]="useCustomHeader() ? '' : shouldTranslateHeader() ? (header() | translate) : header()"
   [contentStyleClass]="contentStyleClass()"
   [contentStyle]="contentStyle()"
+  [appendTo]="appendTo()"
 >
   @if (useCustomHeader()) {
     <ng-template pTemplate="header">

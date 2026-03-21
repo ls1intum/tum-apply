@@ -27,6 +27,7 @@ export class DialogComponent {
   contentStyleClass = input<string>('');
   contentStyle = input<Record<string, string>>({});
   style = input<Record<string, string>>({});
+  appendTo = input<string | HTMLElement | null>(null);
 
   visibleChange = output<boolean>();
 
