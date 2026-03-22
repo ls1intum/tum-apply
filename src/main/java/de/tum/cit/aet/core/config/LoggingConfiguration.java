@@ -3,8 +3,8 @@ package de.tum.cit.aet.core.config;
 import static tech.jhipster.config.logging.LoggingUtils.*;
 
 import ch.qos.logback.classic.LoggerContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class LoggingConfiguration {
         @Value("${server.port}") String serverPort,
         JHipsterProperties jHipsterProperties,
         ObjectMapper mapper
-    ) throws JsonProcessingException {
+    ) throws JacksonException {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         Map<String, String> map = new HashMap<>();

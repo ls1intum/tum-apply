@@ -3,7 +3,7 @@ package de.tum.cit.aet.job.web.rest;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.repository.ImageRepository;

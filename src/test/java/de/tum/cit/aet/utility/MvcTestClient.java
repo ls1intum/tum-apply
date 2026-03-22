@@ -3,8 +3,8 @@ package de.tum.cit.aet.utility;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -121,7 +122,7 @@ public class MvcTestClient {
                 builder.file(file);
             }
             // Apply default Accept header and RequestPostProcessors (e.g., JWT)
-            builder = (MockMultipartHttpServletRequestBuilder) applyDefaults(builder);
+            builder = applyDefaults(builder);
             MvcResult result = mockMvc.perform(builder).andExpect(status().is(expectedStatus)).andReturn();
 
             String body = result.getResponse().getContentAsString();
@@ -827,7 +828,7 @@ public class MvcTestClient {
      * Applies the default Accept header and all configured RequestPostProcessors.
      * This is where authentication processors are attached.
      */
-    private MockHttpServletRequestBuilder applyDefaults(MockHttpServletRequestBuilder requestBuilder, MediaType... accepts) {
+    private <B extends AbstractMockHttpServletRequestBuilder<B>> B applyDefaults(B requestBuilder, MediaType... accepts) {
         requestBuilder = (accepts != null && accepts.length > 0) ? requestBuilder.accept(accepts) : requestBuilder.accept(defaultAccept);
         for (RequestPostProcessor rpp : defaultPostProcessors) {
             requestBuilder.with(rpp);

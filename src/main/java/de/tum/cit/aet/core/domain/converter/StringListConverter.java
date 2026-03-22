@@ -1,11 +1,10 @@
 package de.tum.cit.aet.core.domain.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +21,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
         }
         try {
             return MAPPER.writeValueAsString(attribute);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Could not serialize List<String> to JSON", e);
         }
     }
@@ -34,7 +33,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
         }
         try {
             return MAPPER.readValue(dbData, new TypeReference<>() {});
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Could not deserialize JSON to List<String>", e);
         }
     }

@@ -3,7 +3,7 @@ package de.tum.cit.aet.notification.web.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.notification.constants.EmailType;
