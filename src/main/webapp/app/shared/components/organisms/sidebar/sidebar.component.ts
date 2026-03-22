@@ -157,7 +157,10 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.system.system',
-          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' }],
+          buttons: [
+            { icon: 'cubes', text: 'sidebar.system.dependencies', link: '/admin/dependencies' },
+            { icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' },
+          ],
         },
       ],
     };

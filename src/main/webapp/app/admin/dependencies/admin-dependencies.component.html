@@ -1,0 +1,168 @@
+<div class="page-container">
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="dependencies.title">Software Dependencies</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      @if (dependenciesOverview()) {
+        <jhi-button
+          severity="secondary"
+          variant="outlined"
+          size="sm"
+          icon="sync"
+          [label]="'dependencies.refreshVulnerabilities'"
+          [shouldTranslate]="true"
+          [disabled]="isRefreshing()"
+          [loading]="isRefreshing()"
+          (click)="refreshVulnerabilities()"
+        />
+        <jhi-button
+          severity="primary"
+          size="sm"
+          icon="download"
+          [label]="'dependencies.downloadSbom'"
+          [shouldTranslate]="true"
+          (click)="downloadDependencies()"
+        />
+      }
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-16">
+      <jhi-progress-spinner styleClass="w-12 h-12" strokeWidth="4" />
+    </div>
+  } @else if (dependenciesOverview(); as overview) {
+    <!-- Info -->
+    <jhi-info-box severity="info" message="dependencies.infoTitle" [shouldTranslate]="true">
+      <p class="m-0 mt-2 text-sm text-text-secondary leading-relaxed">
+        <span jhiTranslate="dependencies.vulnerabilityExplanation"></span>
+        <a href="https://osv.dev" target="_blank" rel="noopener noreferrer" class="text-primary font-semibold no-underline hover:underline">osv.dev</a>.
+        {{ 'dependencies.securityFeatureHighlight' | translate }}
+      </p>
+      <hr class="border-border-default my-2" />
+      <p class="m-0 text-xs text-text-secondary leading-relaxed">
+        <strong jhiTranslate="dependencies.infoServerLabel"></strong>
+        <span jhiTranslate="dependencies.infoServerDesc"></span>
+        <br />
+        <strong jhiTranslate="dependencies.infoClientLabel"></strong>
+        <span jhiTranslate="dependencies.infoClientDesc"></span>
+      </p>
+    </jhi-info-box>
+
+    <!-- Summary -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+      <div class="bg-background-surface border border-border-default rounded-lg p-5 text-center">
+        <div class="text-3xl font-bold text-text-primary">{{ overview.dependencies?.length }}</div>
+        <div class="text-sm text-text-secondary mt-1" jhiTranslate="dependencies.totalComponents"></div>
+      </div>
+      <div class="bg-background-surface border border-border-default rounded-lg p-5 text-center">
+        <div class="text-3xl font-bold text-text-primary">{{ overview.serverCount }}</div>
+        <div class="text-sm text-text-secondary mt-1" jhiTranslate="dependencies.serverComponents"></div>
+      </div>
+      <div class="bg-background-surface border border-border-default rounded-lg p-5 text-center">
+        <div class="text-3xl font-bold text-text-primary">{{ overview.clientCount }}</div>
+        <div class="text-sm text-text-secondary mt-1" jhiTranslate="dependencies.clientComponents"></div>
+      </div>
+      <div class="bg-background-surface border border-border-default rounded-lg p-5 text-center">
+        <div class="text-3xl font-bold" [class.text-negative]="overview.totalVulnerabilities" [class.text-text-primary]="!overview.totalVulnerabilities">
+          {{ overview.totalVulnerabilities }}
+        </div>
+        <div class="text-sm text-text-secondary mt-1" jhiTranslate="dependencies.vulnerabilities"></div>
+        <div class="flex justify-center gap-1.5 flex-wrap mt-2">
+          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' Critical'" color="danger" />
+          <jhi-tag [text]="(overview.highCount ?? 0) + ' High'" color="warn" />
+          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' Medium'" color="warn" />
+          <jhi-tag [text]="(overview.lowCount ?? 0) + ' Low'" color="secondary" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs for source filtering -->
+    <jhi-tab-view [tabs]="sourceTabs" [activeTabId]="activeSourceTab()" (tabChange)="onTabChange($event)">
+      <ng-template jhiTabPanel="all">
+        <ng-container *ngTemplateOutlet="tableContent" />
+      </ng-template>
+      <ng-template jhiTabPanel="server">
+        <ng-container *ngTemplateOutlet="tableContent" />
+      </ng-template>
+      <ng-template jhiTabPanel="client">
+        <ng-container *ngTemplateOutlet="tableContent" />
+      </ng-template>
+    </jhi-tab-view>
+
+    <!-- Shared table content -->
+    <ng-template #tableContent>
+      <jhi-search-filter-sort-bar
+        [searchText]="'dependencies.filterPlaceholder' | translate"
+        [totalRecords]="filteredDependencyCount()"
+        [singleEntity]="'dependencies.dependency' | translate"
+        [multipleEntities]="'dependencies.dependenciesPlural' | translate"
+        [filters]="securityFilters()"
+        [sortableFields]="sortableFields"
+        [fullWidth]="true"
+        (searchOutput)="onSearchChange($event)"
+        (filterOutput)="onFilterChange($event)"
+        (sortOutput)="onSortChange($event)"
+      />
+
+      <div class="mt-2">
+        <jhi-dynamic-table
+          [columns]="columns()"
+          [data]="paginatedDependencies()"
+          [totalRecords]="filteredDependencyCount()"
+          [page]="currentPage()"
+          [rows]="pageSize()"
+          [loading]="isLoading()"
+          [selectable]="false"
+          (lazyLoad)="onPageChange($event)"
+        />
+      </div>
+    </ng-template>
+
+  } @else {
+    <jhi-info-box severity="info" message="dependencies.notAvailable" [shouldTranslate]="true" />
+  }
+
+  <!-- Custom column templates (outside conditional so viewChild can resolve them) -->
+  <ng-template #versionTemplate let-dep>
+    <jhi-tag [text]="dep.version ?? ''" color="info" />
+  </ng-template>
+
+  <ng-template #securityTemplate let-dep>
+    @if (dep.vulnerabilities?.length) {
+      <div class="flex flex-col gap-1">
+        <jhi-tag
+          [text]="dep.vulnerabilities.length + ' ' + (dep.vulnerabilities.length === 1 ? ('dependencies.vulnerability' | translate) : ('dependencies.vulnerabilitiesCount' | translate))"
+          [color]="dep.severityTagColor"
+          [icon]="faExclamationTriangle"
+        />
+        <div class="flex flex-wrap gap-1">
+          @for (vuln of dep.vulnerabilities.slice(0, 3); track vuln.id) {
+            <a
+              [href]="'https://osv.dev/vulnerability/' + vuln.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="no-underline"
+            >
+              <jhi-tag [text]="vuln.id ?? ''" color="info" />
+            </a>
+          }
+          @if (dep.vulnerabilities.length > 3) {
+            <jhi-tag [text]="'+' + (dep.vulnerabilities.length - 3)" color="info" />
+          }
+        </div>
+      </div>
+    } @else {
+      <jhi-tag text="Secure" color="success" [icon]="faShieldAlt" />
+    }
+  </ng-template>
+
+  <ng-template #sourceTemplate let-dep>
+    @if (dep.source === 'server') {
+      <jhi-tag text="Server" color="primary" />
+    } @else {
+      <jhi-tag text="Client" color="info" />
+    }
+  </ng-template>
+</div>
