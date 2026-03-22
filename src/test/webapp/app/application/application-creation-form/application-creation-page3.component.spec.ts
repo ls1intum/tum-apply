@@ -192,6 +192,7 @@ describe('ApplicationPage3Component', () => {
         location: 'GARCHING',
         professorName: 'profName',
         title: 'title',
+        subjectArea: 'COMPUTER_SCIENCE',
       },
     };
 

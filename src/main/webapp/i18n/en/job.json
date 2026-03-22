@@ -260,6 +260,7 @@
       "workload": "Workload"
     },
     "tooltips": {
+      "subjectArea": "Subject Area",
       "location": "Location",
       "supervisor": "Supervisor",
       "startDate": "Start Date"
@@ -366,6 +367,9 @@
     },
     "infos": {
       "applicantLanguageInfo": "Applicants only see the job description in the language they have selected."
+    },
+    "tooltips": {
+      "department": "Department"
     },
     "dataPrivacy": {
       "dataProtectionText": "When you apply for a position with the Technical University of Munich (TUM), you are submitting personal information. Please take note of the <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/#English\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Data protection information for processing personal data in relation to your application</a>. By submitting your application, you confirm that you have acknowledged the above data protection information of TUM."
