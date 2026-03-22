@@ -4,7 +4,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
-
 import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -48,8 +47,6 @@ import { VulnerabilityDTO } from 'app/generated/model/vulnerabilityDTO';
   templateUrl: './admin-dependencies.component.html',
 })
 export class AdminDependenciesComponent {
-  private readonly dependencyService = inject(AdminDependencyResourceApiService);
-
   /** Icon used for vulnerability warning badges in the security column. */
   protected readonly faShieldAlt = faShieldAlt;
 
@@ -116,7 +113,7 @@ export class AdminDependenciesComponent {
    */
   readonly securityFilters = computed<Filter[]>(() => {
     const overview = this.dependenciesOverview();
-    if (!overview?.totalVulnerabilities) return [];
+    if (overview == null || overview.totalVulnerabilities == null || overview.totalVulnerabilities === 0) return [];
     return [
       {
         filterId: 'security',
@@ -171,7 +168,7 @@ export class AdminDependenciesComponent {
       sorted.sort((a, b) => ((a.vulnerabilities?.length ?? 0) - (b.vulnerabilities?.length ?? 0)) * sortMultiplier);
     } else {
       const key = field as keyof DependencyDTO;
-      sorted.sort((a, b) => ((a[key] as string) ?? '').localeCompare(((b[key] as string) ?? '')) * sortMultiplier);
+      sorted.sort((a, b) => ((a[key] as string) ?? '').localeCompare((b[key] as string) ?? '') * sortMultiplier);
     }
     return sorted;
   });
@@ -212,6 +209,8 @@ export class AdminDependenciesComponent {
     if (sourceTemplate) cols[4].template = sourceTemplate;
     return cols;
   });
+
+  private readonly dependencyService = inject(AdminDependencyResourceApiService);
 
   /** Loads the dependencies overview on component initialization. */
   constructor() {
