@@ -93,8 +93,8 @@ class PDFExportResourceTest extends AbstractResourceTest {
         databaseCleaner.clean();
         group = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, group);
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
-        applicantWithWebsiteAndLinkedin = ApplicantTestData.savedWithNewUserWithWebsiteAndLinkedin(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
+        applicantWithWebsiteAndLinkedin = ApplicantTestData.savedWithNewUserWithWebsiteAndLinkedin(applicantRepository, userRepository);
         job = JobTestData.saved(jobRepository, professor, group, null, null, null);
         application = ApplicationTestData.savedAll(
             applicationRepository,
@@ -273,7 +273,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldExportApplicationWithMasterDegreeNameNull() {
-            Applicant applicantWithMasterNameNull = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicantWithMasterNameNull = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             applicantWithMasterNameNull.setMasterDegreeName(null);
             applicantRepository.save(applicantWithMasterNameNull);
             Application appWithMaster = ApplicationTestData.savedAll(

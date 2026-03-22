@@ -16,6 +16,8 @@ public class JacksonConfiguration {
     /**
      * Custom serializer for LocalTime to ensure consistent string format.
      * Java Time support is built into Jackson 3.x — this only overrides the LocalTime format.
+     *
+     * @return the configured Jackson module with the custom LocalTime serializer
      */
     @Bean
     public SimpleModule localTimeSerializerModule() {

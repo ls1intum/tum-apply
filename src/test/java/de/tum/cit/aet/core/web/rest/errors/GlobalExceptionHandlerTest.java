@@ -10,6 +10,9 @@ import de.tum.cit.aet.core.service.AuthenticationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration;
+import org.springframework.boot.security.oauth2.client.autoconfigure.servlet.OAuth2ClientWebSecurityAutoConfiguration;
+import org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -17,7 +20,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = TestExceptionController.class)
+@WebMvcTest(
+    controllers = TestExceptionController.class,
+    excludeAutoConfiguration = {
+        OAuth2ResourceServerAutoConfiguration.class, OAuth2ClientAutoConfiguration.class, OAuth2ClientWebSecurityAutoConfiguration.class,
+    }
+)
 @Import({ GlobalExceptionHandler.class, GlobalExceptionHandlerTest.TestConfig.class })
 @AutoConfigureMockMvc(addFilters = false)
 class GlobalExceptionHandlerTest {

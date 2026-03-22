@@ -67,7 +67,7 @@ class EmailSettingResourceTest extends AbstractResourceTest {
         databaseCleaner.clean();
         group = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, group);
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
     }
 
     private MvcTestClient asProfessor(User user) {

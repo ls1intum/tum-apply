@@ -101,7 +101,7 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
         researchGroupUnauthorized = ResearchGroupTestData.saved(researchGroupRepository);
         professorUnauthorized = UserTestData.savedProfessor(userRepository, researchGroupUnauthorized);
 
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
 
         publishedJob = JobTestData.saved(
             jobRepository,

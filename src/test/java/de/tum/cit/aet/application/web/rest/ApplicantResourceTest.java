@@ -56,7 +56,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
     }
 
     @Nested

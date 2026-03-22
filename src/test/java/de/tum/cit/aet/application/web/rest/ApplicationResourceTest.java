@@ -97,7 +97,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
 
         // Setup applicant profile
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
 
         // Setup jobs
         publishedJob = JobTestData.saved(

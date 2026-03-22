@@ -84,7 +84,7 @@ class InternalCommentResourceTest extends AbstractResourceTest {
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
         otherProfessor = UserTestData.savedProfessor(userRepository, researchGroup);
 
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
 
         publishedJob = JobTestData.saved(
             jobRepository,

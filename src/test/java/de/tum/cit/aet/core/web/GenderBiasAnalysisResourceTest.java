@@ -274,7 +274,7 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void analyzeTextWithNonProfessorRoleReturns403() {
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
             Void result = api
@@ -286,7 +286,7 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void analyzeHtmlWithNonProfessorRoleReturns403() {
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
             Void result = api
