@@ -37,7 +37,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
 import tools.jackson.core.type.TypeReference;
 
 class JobResourceTest extends AbstractResourceTest {
@@ -173,7 +172,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void createJobPersistsAndReturnsIt() {
         JobFormDTO payload = new JobFormDTO(
             null,
@@ -236,7 +235,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void createJobInvalidDoesNotPersist() {
         long before = jobRepository.count();
 
@@ -285,7 +284,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
+
     void createJobAsApplicantForbidden() {
         JobFormDTO payload = new JobFormDTO(
             null,
@@ -309,7 +308,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobUpdatesCorrectly() {
         Job job = jobRepository.findAll().getFirst();
 
@@ -355,7 +354,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobNonexistentJobThrowsNotFound() {
         JobFormDTO updatedPayload = new JobFormDTO(
             UUID.randomUUID(),
@@ -404,7 +403,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void deleteJobRemovesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(jobRepository.existsById(job.getJobId())).isTrue();
@@ -417,7 +416,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void deleteJobNonexistentJobThrowsNotFound() {
         api.deleteAndRead("/api/jobs/" + UUID.randomUUID(), null, Void.class, 404);
     }
@@ -429,14 +428,14 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
+
     void deleteJobAsApplicantForbidden() {
         Job job = jobRepository.findAll().getFirst();
         api.deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 403);
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void changeJobStateUpdatesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
@@ -457,7 +456,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void changeJobStateNonExistantJobThrowsNotFound() {
         api.putAndRead(
             "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
@@ -479,7 +478,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
+
     void changeJobStateAsApplicantForbidden() {
         Job job = jobRepository.findAll().getFirst();
         api.putAndRead(
@@ -491,7 +490,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void getJobsForCurrentResearchGroupReturnsJobsForResearchGroup() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -500,7 +499,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void getJobsForCurrentResearchGroupInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -513,7 +512,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void getJobByIdReturnsCorrectJob() {
         Job job = jobRepository.findAll().getFirst();
 
@@ -538,7 +537,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void getJobByIdNonExistentJobThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -584,7 +583,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobReplacingImageCallsReplaceImage() {
         // Arrange - Create a job with a job banner
         Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
@@ -609,7 +608,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobRemovingImageDoesNotDeleteReusableLibraryImage() {
         // Arrange - Create a job with a job banner
         Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
@@ -630,7 +629,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobWithDefaultJobBannerDoesNotDeleteOldImage() {
         // Arrange - Create admin user for default image
         User adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
@@ -657,7 +656,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobWithJobBannerDoesNotDeleteOldImage() {
         // Arrange - Create job banners (research group library images)
         Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
@@ -680,7 +679,7 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
+
     void updateJobWithSameImageDoesNotDeleteIt() {
         // Arrange
         Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));

@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import tools.jackson.core.type.TypeReference;
 
@@ -209,7 +208,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        @WithMockUser
         void allEndpointsWithoutProfessorRoleReturn403() {
             api.getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 403);
             api.postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
