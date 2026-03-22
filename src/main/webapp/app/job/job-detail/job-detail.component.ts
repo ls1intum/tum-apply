@@ -51,6 +51,7 @@ export interface JobDetails {
   lastModifiedAt: string;
 
   researchGroupDescription: string;
+  researchGroupDepartment: string;
   researchGroupEmail: string;
   researchGroupWebsite: string;
   researchGroupStreet: string;
@@ -472,6 +473,9 @@ export class JobDetailComponent {
     data: JobDetailDTO | JobFormDTO,
     user?: ReturnType<AccountService['loadedUser']>,
     researchGroupDetails?: {
+      department?: {
+        name: string;
+      };
       description?: string;
       email?: string;
       website?: string;
@@ -506,6 +510,8 @@ export class JobDetailComponent {
     const endDate = data.endDate as string;
 
     const researchGroupDescription = researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : '');
+    const researchGroupDepartment =
+      researchGroupDetails?.department?.name ?? (!isForm ? (jobDetailDTO.researchGroup.department?.name ?? '') : '');
     const researchGroupEmail = researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : '');
     const researchGroupWebsite = researchGroupDetails?.website ?? (!isForm ? (jobDetailDTO.researchGroup.website ?? '') : '');
     const researchGroupStreet = researchGroupDetails?.street ?? (!isForm ? (jobDetailDTO.researchGroup.street ?? '') : '');
@@ -530,6 +536,7 @@ export class JobDetailComponent {
       lastModifiedAt,
 
       researchGroupDescription,
+      researchGroupDepartment,
       researchGroupEmail,
       researchGroupWebsite,
       researchGroupStreet,

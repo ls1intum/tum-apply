@@ -136,6 +136,7 @@ describe('ApplicationPage1Component', () => {
         professorName: 'Professor Name',
         location: 'GARCHING',
         title: 'Example Job',
+        subjectArea: 'COMPUTER_SCIENCE',
       },
     };
 
@@ -243,6 +244,7 @@ describe('ApplicationPage1Component', () => {
         professorName: 'Professor Name',
         location: 'GARCHING',
         title: 'Example Job',
+        subjectArea: 'COMPUTER_SCIENCE',
       },
     };
     const page1 = getPage1FromApplication(app);
