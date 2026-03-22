@@ -79,7 +79,7 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('navigateToHome', () => {
+  describe('onLogoClick', () => {
     it('should navigate to professor landing page when user is professor', () => {
       accountService.setAuthorities(['PROFESSOR']);
 
@@ -103,6 +103,36 @@ describe('HeaderComponent', () => {
       component.navigateToHome();
 
       expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it.each([
+      ['plain left-click without modifiers', { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false }, true, true],
+      ['middle-click', { button: 1, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false }, false, false],
+      ['left-click with modifier keys', { button: 0, ctrlKey: true, metaKey: false, shiftKey: false, altKey: false }, false, false],
+    ])('should handle onLogoClick: %s', (_desc, eventProps, shouldPrevent, shouldNavigate) => {
+      const navSpy = vi.spyOn(component, 'navigateToHome');
+      const mockEvent = {
+        button: eventProps.button,
+        ctrlKey: eventProps.ctrlKey,
+        metaKey: eventProps.metaKey,
+        shiftKey: eventProps.shiftKey,
+        altKey: eventProps.altKey,
+        preventDefault: vi.fn(),
+      } as unknown as MouseEvent;
+
+      component.onLogoClick(mockEvent);
+
+      if (shouldPrevent) {
+        expect(mockEvent.preventDefault).toHaveBeenCalledOnce();
+      } else {
+        expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+      }
+
+      if (shouldNavigate) {
+        expect(navSpy).toHaveBeenCalledOnce();
+      } else {
+        expect(navSpy).not.toHaveBeenCalled();
+      }
     });
   });
 
