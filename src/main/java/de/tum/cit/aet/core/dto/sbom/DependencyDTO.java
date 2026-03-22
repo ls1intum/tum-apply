@@ -1,8 +1,7 @@
 package de.tum.cit.aet.core.dto.sbom;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record DependencyDTO(

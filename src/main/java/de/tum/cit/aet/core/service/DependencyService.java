@@ -1,5 +1,12 @@
 package de.tum.cit.aet.core.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.tum.cit.aet.core.dto.sbom.DependenciesOverviewDTO;
+import de.tum.cit.aet.core.dto.sbom.DependencyDTO;
+import de.tum.cit.aet.core.dto.sbom.VulnerabilityDTO;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -8,20 +15,10 @@ import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import de.tum.cit.aet.core.dto.sbom.DependenciesOverviewDTO;
-import de.tum.cit.aet.core.dto.sbom.DependencyDTO;
-import de.tum.cit.aet.core.dto.sbom.VulnerabilityDTO;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service for parsing project dependencies and scanning them for known security vulnerabilities.
@@ -82,9 +79,10 @@ public class DependencyService {
      * @param projectDir       project root directory path; falls back to the JVM working directory if empty
      */
     public DependencyService(
-            ObjectMapper objectMapper,
-            WebClient.Builder webClientBuilder,
-            @Value("${spring.application.project-dir:}") String projectDir) {
+        ObjectMapper objectMapper,
+        WebClient.Builder webClientBuilder,
+        @Value("${spring.application.project-dir:}") String projectDir
+    ) {
         this.objectMapper = objectMapper;
         this.webClient = webClientBuilder.build();
         this.projectDir = projectDir.isEmpty() ? System.getProperty("user.dir") : projectDir;
@@ -117,8 +115,13 @@ public class DependencyService {
 
         deps = enrichWithVulnerabilities(deps);
 
-        int serverCount = 0, clientCount = 0;
-        int total = 0, critical = 0, high = 0, medium = 0, low = 0;
+        int serverCount = 0,
+            clientCount = 0;
+        int total = 0,
+            critical = 0,
+            high = 0,
+            medium = 0,
+            low = 0;
 
         for (DependencyDTO d : deps) {
             if ("server".equals(d.source())) serverCount++;
@@ -163,7 +166,12 @@ public class DependencyService {
 
             for (String line : content.split("\n")) {
                 String trimmed = line.trim();
-                if (trimmed.startsWith("//") || trimmed.contains("test") || trimmed.contains("annotationProcessor") || trimmed.contains("developmentOnly")) {
+                if (
+                    trimmed.startsWith("//") ||
+                    trimmed.contains("test") ||
+                    trimmed.contains("annotationProcessor") ||
+                    trimmed.contains("developmentOnly")
+                ) {
                     continue;
                 }
 
@@ -222,14 +230,16 @@ public class DependencyService {
      */
     private void addNpmDeps(JsonNode node, List<DependencyDTO> result) {
         if (node == null) return;
-        node.fields().forEachRemaining(entry -> {
-            String fullName = entry.getKey();
-            String version = entry.getValue().asText().replaceFirst("^[~^]", "");
-            String group = fullName.startsWith("@") ? fullName.substring(0, fullName.indexOf('/')) : "";
-            String name = fullName.startsWith("@") ? fullName.substring(fullName.indexOf('/') + 1) : fullName;
-            String purl = "pkg:npm/" + (group.isEmpty() ? "" : group + "/") + name + "@" + version;
-            result.add(new DependencyDTO(name, group, version, "client", purl, List.of()));
-        });
+        node
+            .fields()
+            .forEachRemaining(entry -> {
+                String fullName = entry.getKey();
+                String version = entry.getValue().asText().replaceFirst("^[~^]", "");
+                String group = fullName.startsWith("@") ? fullName.substring(0, fullName.indexOf('/')) : "";
+                String name = fullName.startsWith("@") ? fullName.substring(fullName.indexOf('/') + 1) : fullName;
+                String purl = "pkg:npm/" + (group.isEmpty() ? "" : group + "/") + name + "@" + version;
+                result.add(new DependencyDTO(name, group, version, "client", purl, List.of()));
+            });
     }
 
     /**
@@ -271,7 +281,8 @@ public class DependencyService {
                 q.putObject("package").put("purl", dep.purl());
             }
 
-            String response = webClient.post()
+            String response = webClient
+                .post()
                 .uri(OSV_API_URL)
                 .header("Content-Type", "application/json")
                 .bodyValue(body.toString())
@@ -290,11 +301,7 @@ public class DependencyService {
 
                 List<VulnerabilityDTO> list = new ArrayList<>();
                 for (JsonNode v : vulns) {
-                    list.add(new VulnerabilityDTO(
-                        v.path("id").asText("UNKNOWN"),
-                        v.path("summary").asText(null),
-                        extractSeverity(v)
-                    ));
+                    list.add(new VulnerabilityDTO(v.path("id").asText("UNKNOWN"), v.path("summary").asText(null), extractSeverity(v)));
                 }
                 result.put(batch.get(j).purl(), list);
             }
