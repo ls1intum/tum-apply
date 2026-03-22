@@ -155,61 +155,6 @@ describe('ApplicationPage2Component', () => {
     });
   });
 
-  describe('Document Validity', () => {
-    it('should set bachelorDocsValid to false when docs are undefined or empty', () => {
-      const { componentInstance } = createApplicationPage2Fixture({
-        data: VALID_PAGE2_FORM_DATA,
-      });
-      componentInstance.bachelorDocsSetValidity(undefined);
-      expect(componentInstance.bachelorDocsValid()).toBe(false);
-
-      componentInstance.bachelorDocsSetValidity([]);
-      expect(componentInstance.bachelorDocsValid()).toBe(false);
-    });
-
-    it('should set bachelorDocsValid to true when docs are provided', () => {
-      const { componentInstance } = createApplicationPage2Fixture({
-        data: VALID_PAGE2_FORM_DATA,
-      });
-      componentInstance.bachelorDocsSetValidity([{ id: '1', size: 1 }]);
-      expect(componentInstance.bachelorDocsValid()).toBe(true);
-    });
-
-    it('should set masterDocsValid to false when docs are undefined or empty', () => {
-      const { componentInstance } = createApplicationPage2Fixture({
-        data: VALID_PAGE2_FORM_DATA,
-      });
-      componentInstance.masterDocsSetValidity(undefined);
-      expect(componentInstance.masterDocsValid()).toBe(false);
-
-      componentInstance.masterDocsSetValidity([]);
-      expect(componentInstance.masterDocsValid()).toBe(false);
-    });
-
-    it('should set masterDocsValid to true when docs are provided', () => {
-      const { componentInstance } = createApplicationPage2Fixture({
-        data: VALID_PAGE2_FORM_DATA,
-      });
-      componentInstance.masterDocsSetValidity([{ id: '2', size: 2 }]);
-      expect(componentInstance.masterDocsValid()).toBe(true);
-    });
-
-    it('should emit valid=false when form fields are valid but documents are missing', () => {
-      const { componentInstance } = createApplicationPage2Fixture({
-        data: VALID_PAGE2_FORM_DATA,
-      });
-      const validSpy = vi.fn();
-      componentInstance.valid.subscribe(validSpy);
-
-      // Form is valid but docs are missing
-      componentInstance.page2Form.updateValueAndValidity();
-
-      expect(componentInstance.page2Form.valid).toBe(true);
-      expect(componentInstance.bachelorDocsValid()).toBe(false);
-      expect(componentInstance.masterDocsValid()).toBe(false);
-    });
-  });
-
   describe('Form Behavior', () => {
     it('should not emit if form value has not changed (distinctUntilChanged)', async () => {
       const { fixture, componentInstance } = createApplicationPage2Fixture();
@@ -284,6 +229,76 @@ describe('ApplicationPage2Component', () => {
 
       const uploadButtons = fixture.nativeElement.querySelectorAll('jhi-upload-button');
       expect(uploadButtons.length).toBe(2); // Bachelor + Master
+    });
+  });
+
+  describe('Document Validation', () => {
+    it.each([
+      { type: 'bachelor', expected: true, desc: 'provided', value: [{ id: '1', size: 1 }] },
+      { type: 'bachelor', expected: false, desc: 'undefined', value: undefined },
+      { type: 'bachelor', expected: false, desc: 'empty', value: [] },
+      { type: 'master', expected: true, desc: 'provided', value: [{ id: '2', size: 2 }] },
+      { type: 'master', expected: false, desc: 'undefined', value: undefined },
+      { type: 'master', expected: false, desc: 'empty', value: [] },
+    ])('should set $typeDocsValid to $expected when $type docs are $desc', ({ type, expected, value }) => {
+      const { componentInstance } = createApplicationPage2Fixture();
+
+      if (type === 'bachelor') {
+        componentInstance.bachelorDocsSetValidity(value);
+        expect(componentInstance.bachelorDocsValid()).toBe(expected);
+      } else {
+        componentInstance.masterDocsSetValidity(value);
+        expect(componentInstance.masterDocsValid()).toBe(expected);
+      }
+    });
+
+    it('should derive bachelor/master docs validity from input-linked signals', () => {
+      const { componentInstance, componentRef, fixture } = createApplicationPage2Fixture({
+        documentIdsBachelorTranscript: [{ id: 'b-1', size: 10 }],
+        documentIdsMasterTranscript: [{ id: 'm-1', size: 20 }],
+      });
+
+      fixture.detectChanges();
+
+      expect(componentInstance.bachelorDocsValid()).toBe(true);
+      expect(componentInstance.masterDocsValid()).toBe(true);
+
+      componentRef.setInput('documentIdsBachelorTranscript', undefined);
+      componentRef.setInput('documentIdsMasterTranscript', undefined);
+      fixture.detectChanges();
+
+      expect(componentInstance.bachelorDocsValid()).toBe(false);
+      expect(componentInstance.masterDocsValid()).toBe(false);
+    });
+
+    it.each([
+      {
+        desc: 'both transcripts are present',
+        expected: true,
+        bachelorDocs: [{ id: 'b-1', size: 1 }],
+        masterDocs: [{ id: 'm-1', size: 1 }],
+      },
+      {
+        desc: 'transcripts are missing',
+        expected: false,
+        bachelorDocs: [],
+        masterDocs: [],
+      },
+    ])('should emit valid=$expected when form data is valid and $desc', async ({ expected, bachelorDocs, masterDocs }) => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+        documentIdsBachelorTranscript: bachelorDocs,
+        documentIdsMasterTranscript: masterDocs,
+      });
+
+      const validSpy = vi.fn();
+      componentInstance.valid.subscribe(validSpy);
+
+      // Wait for initialization and debounced effects
+      await new Promise(resolve => setTimeout(resolve, 200));
+      fixture.detectChanges();
+
+      expect(validSpy).toHaveBeenCalledWith(expected);
     });
   });
 
