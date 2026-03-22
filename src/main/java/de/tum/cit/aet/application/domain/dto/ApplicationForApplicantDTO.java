@@ -5,8 +5,6 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
-import de.tum.cit.aet.usermanagement.domain.Department;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -35,9 +33,6 @@ public record ApplicationForApplicantDTO(
             return null;
         }
         Job job = application.getJob();
-        ResearchGroup researchGroup = job.getResearchGroup();
-        Department department = researchGroup != null ? researchGroup.getDepartment() : null;
-        String departmentName = department != null ? department.getName() : "No Department";
         return new ApplicationForApplicantDTO(
             application.getApplicationId(),
             ApplicantDTO.getFromApplicationSnapshot(application),
@@ -46,7 +41,8 @@ public record ApplicationForApplicantDTO(
                 job.getTitle(),
                 job.getLocation(),
                 job.getSupervisingProfessor().getLastName(),
-                departmentName,
+                job.getSubjectArea(),
+                job.getSupervisingProfessor().getAvatar(),
                 application.getApplicationId(),
                 application.getState(),
                 job.getWorkload(),

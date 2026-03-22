@@ -3,13 +3,14 @@
 
   <!-- Confirm Dialog  -->
   <jhi-confirm-dialog
-    #bookingConfirmationDialog
     [header]="'interview.booking.confirmDialog.header' | translate"
     [message]="'interview.booking.confirmDialog.message' | translate"
     [label]="'interview.booking.confirmDialog.confirm' | translate"
     severity="primary"
     [showOpenButton]="false"
+    [visible]="showBookingDialog()"
     (confirmed)="book.emit()"
+    (closed)="showBookingDialog.set(false)"
   />
 
   <!-- Job Info Section -->

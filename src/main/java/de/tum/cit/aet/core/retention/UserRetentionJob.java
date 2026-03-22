@@ -74,6 +74,10 @@ public class UserRetentionJob {
      */
     @Scheduled(cron = "${user.retention.cron:0 0 3 * * *}", zone = "UTC")
     public void warnUserOfDataDeletion() {
+        if (!Boolean.TRUE.equals(properties.getEnabled())) {
+            return;
+        }
+
         Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
         if (inactiveDays == null || inactiveDays <= DAYS_BEFORE_DELETION_WARNING) {
             log.warn("User retention warning skipped: invalid inactiveDaysBeforeDeletion value={}", inactiveDays);

@@ -9,6 +9,7 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * REST controller for managing job postings.
  * Provides endpoints for creating, updating, deleting, and retrieving jobs.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/jobs")
 public class JobResource {
@@ -33,7 +35,7 @@ public class JobResource {
      * (PUBLISHED) job postings.
      *
      * <p>
-     * Supports filtering by title, field of studies, campus location, professor
+     * Supports filtering by title, subject area, campus location, professor
      * name, and workload.
      * Supports sorting using the {@link SortDTO} for fields such as title,
      * workload, etc.
@@ -45,8 +47,8 @@ public class JobResource {
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sorting parameter containing the field and
      *                               direction
-     * @param searchQuery            string to search for job title, field of
-     *                               studies or supervisor name
+     * @param searchQuery            string to search for job title, subject area
+     *                               or supervisor name
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link JobCardDTO}
      */
@@ -58,6 +60,7 @@ public class JobResource {
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
         @RequestParam(required = false) String searchQuery
     ) {
+        log.info("GET /api/jobs/available - Fetching available jobs");
         Page<JobCardDTO> jobs = jobService.getAvailableJobs(pageDTO, availableJobsFilterDTO, sortDTO, searchQuery);
         return ResponseEntity.ok(jobs);
     }
@@ -67,7 +70,7 @@ public class JobResource {
      *
      * This endpoint provides all unique filter values that can be used in the job
      * filters
-     * It returns fields of study and supervisor names from all
+     * It returns subject areas and supervisor names from all
      * published jobs
      * to populate dropdown menus and filter components on the client side.
      *
@@ -77,7 +80,8 @@ public class JobResource {
     @Public
     @GetMapping("/filters")
     public ResponseEntity<JobFiltersDTO> getAllFilters() {
-        JobFiltersDTO dto = new JobFiltersDTO(jobService.getAllFieldOfStudies(), jobService.getAllSupervisorNames());
+        log.info("GET /api/jobs/filters - Fetching all job filter options");
+        JobFiltersDTO dto = new JobFiltersDTO(jobService.getAllSubjectAreas(), jobService.getAllSupervisorNames());
         return ResponseEntity.ok(dto);
     }
 
@@ -90,6 +94,7 @@ public class JobResource {
     @ProfessorOrEmployeeOrAdmin
     @PostMapping("/create")
     public ResponseEntity<JobFormDTO> createJob(@RequestBody JobFormDTO jobForm) {
+        log.info("POST /api/jobs/create - Creating new job");
         JobFormDTO createdJob = jobService.createJob(jobForm);
         return ResponseEntity.ok(createdJob);
     }
@@ -107,6 +112,7 @@ public class JobResource {
     @ProfessorOrEmployeeOrAdmin
     @PutMapping("/update/{jobId}")
     public ResponseEntity<JobFormDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
+        log.info("PUT /api/jobs/update/{} - Updating job", jobId);
         JobFormDTO updatedJob = jobService.updateJob(jobId, jobForm);
         return ResponseEntity.ok(updatedJob);
     }
@@ -120,6 +126,7 @@ public class JobResource {
     @ProfessorOrEmployeeOrAdmin
     @DeleteMapping("/{jobId}")
     public ResponseEntity<Void> deleteJob(@PathVariable UUID jobId) {
+        log.info("DELETE /api/jobs/{} - Deleting job", jobId);
         jobService.deleteJob(jobId);
         return ResponseEntity.noContent().build();
     }
@@ -145,6 +152,7 @@ public class JobResource {
         @RequestParam JobState jobState,
         @RequestParam(required = false) boolean shouldRejectRemainingApplications
     ) {
+        log.info("PUT /api/jobs/changeState/{} - Changing job state to {}", jobId, jobState);
         JobFormDTO updatedJob = jobService.changeJobState(jobId, jobState, shouldRejectRemainingApplications);
         return ResponseEntity.ok(updatedJob);
     }
@@ -175,6 +183,7 @@ public class JobResource {
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
         @RequestParam(required = false) String searchQuery
     ) {
+        log.info("GET /api/jobs/research-group - Fetching jobs for current research group");
         return ResponseEntity.ok(jobService.getJobsForCurrentResearchGroup(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
     }
 
@@ -188,6 +197,7 @@ public class JobResource {
     @ProfessorOrEmployeeOrAdmin
     @GetMapping("/{jobId}")
     public ResponseEntity<JobDTO> getJobById(@PathVariable UUID jobId) {
+        log.info("GET /api/jobs/{} - Fetching job details", jobId);
         return ResponseEntity.ok(jobService.getJobById(jobId));
     }
 
@@ -202,6 +212,7 @@ public class JobResource {
     @Public
     @GetMapping("/detail/{jobId}")
     public ResponseEntity<JobDetailDTO> getJobDetails(@PathVariable UUID jobId) {
+        log.info("GET /api/jobs/detail/{} - Fetching job detail page data", jobId);
         return ResponseEntity.ok(jobService.getJobDetails(jobId));
     }
 }

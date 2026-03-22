@@ -22,6 +22,7 @@ export type TranslateServiceMock = Pick<
   | 'onFallbackLangChange'
   | 'currentLang'
   | 'getCurrentLang'
+  | 'getBrowserCultureLang'
   | 'use'
   | 'setDefaultLang'
   | 'setFallbackLang'
@@ -60,6 +61,7 @@ export function createTranslateServiceMock(): TranslateServiceMock {
       onFallbackLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
       return of(emptyTranslations);
     }),
+    getBrowserCultureLang: vi.fn(() => 'en'),
   };
 
   return mock;

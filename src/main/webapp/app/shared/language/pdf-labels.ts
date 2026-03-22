@@ -14,8 +14,6 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
 
     // Overview item researchgroup is only needed for applications and will therefore not be part of the getOverviewItemLabel function
     researchGroup: translate.instant('jobDetailPage.header.researchGroup'),
-
-    jobDescription: translate.instant('jobDetailPage.sections.jobDescription'),
   };
 }
 
@@ -23,7 +21,6 @@ export function getJobPDFLabels(translate: TranslateService): Record<string, str
   return {
     ...getJobHeaderLabel(translate),
     ...getOverviewItemLabel(translate),
-    ...getJobDetailLabel(translate),
     ...getResearchGroupDetailsLabel(translate),
     ...getFooterLabels(translate),
 
@@ -54,7 +51,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
   return {
     supervisor: translate.instant('jobDetailPage.header.supervisor'),
     location: translate.instant('jobDetailPage.header.location'),
-    fieldsOfStudies: `${translate.instant('jobDetailPage.labels.fieldOfStudies')}:`,
+    subjectArea: `${translate.instant('jobDetailPage.labels.subjectArea')}:`,
     researchArea: `${translate.instant('jobDetailPage.labels.researchArea')}:`,
     workload: `${translate.instant('jobDetailPage.labels.workload')}:`,
     hoursPerWeek: translate.instant('jobDetailPage.units.hoursPerWeek'),
@@ -63,6 +60,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
     endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
+    jobDetails: translate.instant('pdf.sections.jobDetails'),
     lang: translate.getCurrentLang(),
   };
 }
@@ -90,15 +88,6 @@ function getPersonalStatementsLabel(translate: TranslateService): Record<string,
     motivation: translate.instant('entity.applicationDetail.motivation'),
     skills: translate.instant('entity.applicationDetail.skills'),
     researchExperience: translate.instant('entity.applicationDetail.researchExperience'),
-  };
-}
-
-function getJobDetailLabel(translate: TranslateService): Record<string, string> {
-  return {
-    jobDetails: translate.instant('pdf.sections.jobDetails'),
-    description: translate.instant('pdf.sections.description'),
-    tasksResponsibilities: translate.instant('jobDetailPage.sections.tasksResponsibilities'),
-    eligibilityCriteria: translate.instant('jobDetailPage.sections.eligibilityCriteria'),
   };
 }
 

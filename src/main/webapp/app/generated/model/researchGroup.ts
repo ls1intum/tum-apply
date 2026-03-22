@@ -16,7 +16,6 @@ export interface ResearchGroup {
     abbreviation?: string;
     city?: string;
     createdAt?: string;
-    defaultFieldOfStudies?: string;
     department?: Department;
     description?: string;
     email?: string;

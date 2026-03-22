@@ -8,10 +8,10 @@
   (sortOutput)="onSortEmit($event)"
   [filters]="[
     {
-      filterId: 'fieldOfStudies',
-      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies',
-      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudiesPlaceholder',
-      filterOptions: allFieldOfStudies,
+      filterId: 'subjectArea',
+      filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.subjectArea',
+      filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.subjectAreaPlaceholder',
+      filterOptions: allSubjectAreas,
       shouldTranslateOptions: true,
     },
     {
@@ -37,9 +37,10 @@
         <jhi-job-card
           [jobId]="job.jobId"
           [jobTitle]="job.title"
-          [departmentName]="job.departmentName ?? 'No Department'"
+          [subjectArea]="job.subjectArea"
           [location]="job.location.toString()"
           [professor]="job.professorName"
+          [avatarUrl]="job.avatar"
           [workload]="job.workload || undefined"
           [startDate]="job.startDate?.toString() || undefined"
           [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"

@@ -13,7 +13,6 @@ export interface ResearchGroupRequestDTO {
     abbreviation?: string;
     city?: string;
     contactEmail?: string;
-    defaultFieldOfStudies?: string;
     departmentId: string;
     description?: string;
     firstName?: string;

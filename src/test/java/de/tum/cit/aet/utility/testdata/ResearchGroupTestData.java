@@ -32,7 +32,6 @@ public final class ResearchGroupTestData {
         rg.setName("Test Group");
         rg.setAbbreviation("TG");
         rg.setCity("Testville");
-        rg.setDefaultFieldOfStudies("CS");
         rg.setDescription("A test research group");
         rg.setEmail("rg@example.com");
         rg.setPostalCode("12345");
@@ -52,7 +51,6 @@ public final class ResearchGroupTestData {
         rg.setName("Test Group");
         rg.setAbbreviation(null);
         rg.setCity(null);
-        rg.setDefaultFieldOfStudies(null);
         rg.setDescription(null);
         rg.setEmail(null);
         rg.setPostalCode(null);
@@ -71,7 +69,6 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String defaultFieldOfStudies,
         String description,
         String email,
         String postalCode,
@@ -80,8 +77,7 @@ public final class ResearchGroupTestData {
         String website,
         String state
     ) {
-        // school parameter is ignored for backward compatibility
-        return newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, street, website, state);
+        return newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state);
     }
 
     /**
@@ -92,7 +88,6 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String defaultFieldOfStudies,
         String description,
         String email,
         String postalCode,
@@ -105,7 +100,6 @@ public final class ResearchGroupTestData {
         if (name != null) rg.setName(name);
         if (abbreviation != null) rg.setAbbreviation(abbreviation);
         if (city != null) rg.setCity(city);
-        if (defaultFieldOfStudies != null) rg.setDefaultFieldOfStudies(defaultFieldOfStudies);
         if (description != null) rg.setDescription(description);
         if (email != null) rg.setEmail(email);
         if (postalCode != null) rg.setPostalCode(postalCode);
@@ -144,7 +138,6 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String defaultFieldOfStudies,
         String description,
         String email,
         String postalCode,
@@ -153,10 +146,7 @@ public final class ResearchGroupTestData {
         String website,
         String state
     ) {
-        // school parameter is ignored for backward compatibility
-        return repo.save(
-            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, street, website, state)
-        );
+        return repo.save(newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state));
     }
 
     public static ResearchGroup savedAll(
@@ -166,7 +156,6 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String city,
-        String defaultFieldOfStudies,
         String description,
         String email,
         String postalCode,
@@ -174,19 +163,7 @@ public final class ResearchGroupTestData {
         String website,
         String state
     ) {
-        ResearchGroup rg = newRgAll(
-            head,
-            name,
-            abbreviation,
-            city,
-            defaultFieldOfStudies,
-            description,
-            email,
-            postalCode,
-            street,
-            website,
-            state
-        );
+        ResearchGroup rg = newRgAll(head, name, abbreviation, city, description, email, postalCode, street, website, state);
         rg.setDepartment(department);
         return repo.save(rg);
     }
@@ -217,7 +194,6 @@ public final class ResearchGroupTestData {
             "NRG",
             "https://nrg.com",
             "Description",
-            "CS",
             "Main St",
             "12345",
             "City"
@@ -235,26 +211,12 @@ public final class ResearchGroupTestData {
         String email,
         String website,
         String description,
-        String field,
         String street,
         String postalCode,
         String city,
         ResearchGroupState state
     ) {
-        return new ResearchGroupDTO(
-            name,
-            abbreviation,
-            head,
-            email,
-            website,
-            description,
-            field,
-            street,
-            postalCode,
-            city,
-            departmentId,
-            state
-        );
+        return new ResearchGroupDTO(name, abbreviation, head, email, website, description, street, postalCode, city, departmentId, state);
     }
 
     /**

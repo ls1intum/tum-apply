@@ -10,7 +10,60 @@
 
 
 export interface JobFiltersDTO { 
-    fieldsOfStudy?: Array<string>;
+    subjectAreas?: Array<JobFiltersDTO.SubjectAreasEnum>;
     supervisorNames?: Array<string>;
 }
+export namespace JobFiltersDTO {
+    export type SubjectAreasEnum = 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING';
+    export const SubjectAreasEnum = {
+        AerospaceEngineering: 'AEROSPACE_ENGINEERING' as SubjectAreasEnum,
+        AgriculturalEngineering: 'AGRICULTURAL_ENGINEERING' as SubjectAreasEnum,
+        AgriculturalScience: 'AGRICULTURAL_SCIENCE' as SubjectAreasEnum,
+        Architecture: 'ARCHITECTURE' as SubjectAreasEnum,
+        ArtHistory: 'ART_HISTORY' as SubjectAreasEnum,
+        AutomotiveEngineering: 'AUTOMOTIVE_ENGINEERING' as SubjectAreasEnum,
+        Bioengineering: 'BIOENGINEERING' as SubjectAreasEnum,
+        Biochemistry: 'BIOCHEMISTRY' as SubjectAreasEnum,
+        Biology: 'BIOLOGY' as SubjectAreasEnum,
+        BiomedicalEngineering: 'BIOMEDICAL_ENGINEERING' as SubjectAreasEnum,
+        Biotechnology: 'BIOTECHNOLOGY' as SubjectAreasEnum,
+        Chemistry: 'CHEMISTRY' as SubjectAreasEnum,
+        ComputerEngineering: 'COMPUTER_ENGINEERING' as SubjectAreasEnum,
+        ComputerScience: 'COMPUTER_SCIENCE' as SubjectAreasEnum,
+        ComputerVision: 'COMPUTER_VISION' as SubjectAreasEnum,
+        DataScience: 'DATA_SCIENCE' as SubjectAreasEnum,
+        Economics: 'ECONOMICS' as SubjectAreasEnum,
+        EducationTechnology: 'EDUCATION_TECHNOLOGY' as SubjectAreasEnum,
+        ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as SubjectAreasEnum,
+        EnergySystems: 'ENERGY_SYSTEMS' as SubjectAreasEnum,
+        EnvironmentalBiology: 'ENVIRONMENTAL_BIOLOGY' as SubjectAreasEnum,
+        EnvironmentalChemistry: 'ENVIRONMENTAL_CHEMISTRY' as SubjectAreasEnum,
+        EnvironmentalEngineering: 'ENVIRONMENTAL_ENGINEERING' as SubjectAreasEnum,
+        EnvironmentalLaw: 'ENVIRONMENTAL_LAW' as SubjectAreasEnum,
+        EnvironmentalScience: 'ENVIRONMENTAL_SCIENCE' as SubjectAreasEnum,
+        FinancialEngineering: 'FINANCIAL_ENGINEERING' as SubjectAreasEnum,
+        FoodTechnology: 'FOOD_TECHNOLOGY' as SubjectAreasEnum,
+        Geology: 'GEOLOGY' as SubjectAreasEnum,
+        Geosciences: 'GEOSCIENCES' as SubjectAreasEnum,
+        IndustrialEngineering: 'INDUSTRIAL_ENGINEERING' as SubjectAreasEnum,
+        InformationSystems: 'INFORMATION_SYSTEMS' as SubjectAreasEnum,
+        LifeSciences: 'LIFE_SCIENCES' as SubjectAreasEnum,
+        Linguistics: 'LINGUISTICS' as SubjectAreasEnum,
+        MarineBiology: 'MARINE_BIOLOGY' as SubjectAreasEnum,
+        MaterialsScience: 'MATERIALS_SCIENCE' as SubjectAreasEnum,
+        Mathematics: 'MATHEMATICS' as SubjectAreasEnum,
+        MechanicalEngineering: 'MECHANICAL_ENGINEERING' as SubjectAreasEnum,
+        MedicalInformatics: 'MEDICAL_INFORMATICS' as SubjectAreasEnum,
+        Neuroscience: 'NEUROSCIENCE' as SubjectAreasEnum,
+        Philosophy: 'PHILOSOPHY' as SubjectAreasEnum,
+        Physics: 'PHYSICS' as SubjectAreasEnum,
+        Psychology: 'PSYCHOLOGY' as SubjectAreasEnum,
+        SoftwareEngineering: 'SOFTWARE_ENGINEERING' as SubjectAreasEnum,
+        SportsScience: 'SPORTS_SCIENCE' as SubjectAreasEnum,
+        Statistics: 'STATISTICS' as SubjectAreasEnum,
+        Telecommunications: 'TELECOMMUNICATIONS' as SubjectAreasEnum,
+        UrbanPlanning: 'URBAN_PLANNING' as SubjectAreasEnum
+    };
+}
+
 

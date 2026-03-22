@@ -103,17 +103,17 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ## 📄 Documentation for Developers
 
-If you're a developer or contributor, head over to the full documentation:
+If you're a developer or contributor, head over to the full documentation on our [Docusaurus site](https://ls1intum.github.io/tum-apply/developer/intro):
 
-- 📚 [Development Setup](docs-github/setup/dev-environment.md)
-- 💡 [General Documentation](docs-github/general/general-documentation.md)
-- 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
-- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
-- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
-- 📝 [Application Documentation](docs-github/application/application-module-documentation.md)
-- 📊 [Evaluation Documentation](docs-github/evaluation/evaluation-module-documentation.md)
+- 📚 [Development Setup](https://ls1intum.github.io/tum-apply/developer/setup/dev-environment)
+- 💡 [General Documentation](https://ls1intum.github.io/tum-apply/developer/general/general-documentation)
+- 🧪 [Testing Guide](https://ls1intum.github.io/tum-apply/developer/testing/testing-guide)
+- 🎨 [Theming & Color Tokens](https://ls1intum.github.io/tum-apply/developer/theming/color-theming)
+- 💼 [Job Documentation](https://ls1intum.github.io/tum-apply/developer/modules/job)
+- 📝 [Application Documentation](https://ls1intum.github.io/tum-apply/developer/modules/application)
+- 📊 [Evaluation Documentation](https://ls1intum.github.io/tum-apply/developer/modules/evaluation)
 
-Full documentation is available in the [`/docs`](docs-github) folder.
+Full documentation is available on the [Developer Docs](https://ls1intum.github.io/tum-apply/developer/intro) site.
 
 ---
 

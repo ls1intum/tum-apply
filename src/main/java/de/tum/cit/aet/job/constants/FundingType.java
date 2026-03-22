@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum FundingType {
+public enum FundingType implements LocalizedEnum {
     FULLY_FUNDED("Fully Funded", "Vollständig finanziert"),
     PARTIALLY_FUNDED("Partially Funded", "Teilweise finanziert"),
     SCHOLARSHIP("Scholarship", "Stipendium"),
@@ -16,8 +16,4 @@ public enum FundingType {
 
     private final String englishValue;
     private final String germanValue;
-
-    public String correctLanguageValue(String lang) {
-        return "de".equalsIgnoreCase(lang) ? germanValue : englishValue;
-    }
 }

@@ -9,7 +9,7 @@
       "documents": "Dokumente"
     },
     "personalInformation": {
-      "description": "Aktualisiere hier deine persönlichen Informationen. \nDeine gespeicherten Daten werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "description": "Aktualisiere hier deine persönlichen Informationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
         "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
@@ -47,6 +47,42 @@
       }
     },
 
+    "profilePicture": {
+      "header": "Profilbild",
+      "description": "Mach dein Profil persönlicher mit einem Foto.",
+      "saved": {
+        "summary": "Profilbild aktualisiert",
+        "detail": "Dein Profilbild wurde erfolgreich aktualisiert."
+      },
+      "saveFailed": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "deleted": {
+        "summary": "Profilbild entfernt",
+        "detail": "Dein Profilbild wurde erfolgreich entfernt."
+      },
+      "deleteFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht entfernt werden. Bitte versuche es erneut."
+      },
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bitte wähle ein Bild, das kleiner als 5 MB ist."
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte wähle ein JPEG-, JPG- oder PNG-Bild."
+      },
+      "resetConfirm": {
+        "header": "Profilbild löschen?",
+        "message": "Möchtest du dein aktuelles Profilbild wirklich löschen?"
+      },
+      "cropDialog": {
+        "header": "Profilbild zuschneiden",
+        "rotate": "Drehen"
+      }
+    },
     "appearance": {
       "header": "Aussehen",
       "theme": {
@@ -61,7 +97,7 @@
       }
     },
     "documents": {
-      "description": "Lade hier deine Dokumente hoch und verwalte sie. \nDeine gespeicherten Dokumente werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "description": "Lade hier deine Dokumente hoch und verwalte sie. Deine gespeicherten Dokumente werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "sections": {
         "bachelor": "Bachelor Studium",
         "master": "Master Studium",

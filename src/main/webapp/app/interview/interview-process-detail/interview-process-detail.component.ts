@@ -32,6 +32,7 @@ export class InterviewProcessDetailComponent {
   // Signal to trigger slots section reload
   slotsRefreshKey = signal(0);
   invitedCount = signal(0);
+  hasSlots = signal(false);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

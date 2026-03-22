@@ -1,44 +1,57 @@
-<a
-  [routerLink]="['/interviews', 'process', interview().processId, 'interviewee', interview().intervieweeId, 'assessment']"
-  [queryParams]="{ from: 'overview' }"
-  class="group grid grid-cols-[minmax(0,1fr)_auto_8.75rem] gap-4 p-4 rounded-lg border border-border-default hover:bg-background-surface text-text-primary transition-colors"
+<div
+  (click)="navigateToAssessment($event)"
+  (keydown.enter)="navigateToAssessment($event)"
+  role="link"
+  tabindex="0"
+  class="flex flex-col p-3 bg-background-default border rounded-lg border-border-default hover:bg-background-surface gap-2 group h-[8.5rem] w-full overflow-hidden cursor-pointer"
 >
-  <!-- LEFT: Avatar + Name + Job -->
-  <div class="flex items-center gap-3">
-    <!-- Avatar -->
-    <div
-      class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base shrink-0"
-      [style.backgroundColor]="avatarBgColor()"
-    >
-      {{ initials() }}
-    </div>
-    <!-- Name + Job Title -->
-    <div class="flex flex-col justify-center min-w-0">
-      <span class="font-bold text-base line-clamp-2 break-words" [title]="interview().intervieweeName">{{
-        interview().intervieweeName
-      }}</span>
-      <span class="text-sm text-text-secondary leading-snug line-clamp-2 break-words" [title]="interview().jobTitle">{{
-        interview().jobTitle
-      }}</span>
-    </div>
+  <!-- Row 1: Avatar + Name -->
+  <div class="flex items-center gap-2 w-full">
+    <jhi-user-avatar [fullName]="intervieweeName()" [avatarUrl]="avatarUrl()" size="sm" class="flex-shrink-0" />
+    <span class="text-sm font-bold text-text-primary truncate block flex-1" [title]="intervieweeName()">
+      {{ intervieweeName() }}
+    </span>
   </div>
 
-  <!-- Divider -->
-  <div class="border-r border-border-default"></div>
-
-  <!-- RIGHT: Date / Time / Location -->
-  <div class="flex flex-col justify-center gap-1.5 text-sm text-text-secondary">
-    <div class="flex items-center gap-2">
-      <fa-icon icon="calendar" class="text-primary" />
-      <span>{{ interview().startDateTime | localizedDate }}</span>
+  <!-- Row 2: Time (Large & Bold) -->
+  <div class="flex items-center gap-2 w-full">
+    <div class="flex justify-center w-8 flex-shrink-0">
+      <fa-icon icon="clock" class="text-xs text-primary" />
     </div>
-    <div class="flex items-center gap-2">
-      <fa-icon icon="clock" class="text-primary" />
-      <span>{{ formattedTimeRange() }}</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <fa-icon icon="location-dot" class="text-primary" />
-      <span class="truncate" [title]="interview().location">{{ interview().location }}</span>
-    </div>
+    <span class="text-sm font-bold text-text-primary truncate block flex-1">
+      {{ formattedTimeRange() }}
+    </span>
   </div>
-</a>
+
+  <!-- Row 3: Location (Clickable if URL) -->
+  <div class="flex items-center gap-2 w-full text-xs text-text-secondary">
+    <div class="flex justify-center w-8 flex-shrink-0">
+      <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-xs text-primary" />
+    </div>
+    @if (meetingUrl()) {
+      <a
+        [href]="meetingUrl()"
+        target="_blank"
+        (click)="$event.stopPropagation()"
+        class="text-primary hover:underline truncate block flex-1"
+        [title]="location()"
+      >
+        {{ location() }}
+      </a>
+    } @else {
+      <span class="truncate block flex-1" [title]="location()">
+        {{ location() }}
+      </span>
+    }
+  </div>
+
+  <!-- Row 4: Job -->
+  <div class="flex items-center gap-2 w-full text-xs text-text-secondary">
+    <div class="flex justify-center w-8 flex-shrink-0">
+      <fa-icon icon="briefcase" class="text-xs text-primary" />
+    </div>
+    <span class="truncate block flex-1" [title]="interview().jobTitle">
+      {{ interview().jobTitle }}
+    </span>
+  </div>
+</div>

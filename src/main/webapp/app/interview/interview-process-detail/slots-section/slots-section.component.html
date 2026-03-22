@@ -78,8 +78,8 @@
                       @for (slot of group.visibleSlots; track slot.id) {
                         <jhi-slot-card
                           [slot]="slot"
+                          (editSlot)="onEditSlot($event)"
                           [isClosed]="isClosed()"
-                          (editSlot)="onEditSlot()"
                           (deleteSlot)="onDeleteSlot(slot)"
                           (assignApplicant)="onAssignApplicant(slot)"
                           (cancelInterview)="onCancelInterview(slot)"
@@ -161,48 +161,79 @@
   />
 }
 
-@if (selectedSlotForCancel()) {
-  <jhi-dialog
-    header="interview.slots.cancelInterview.header"
-    [shouldTranslateHeader]="true"
-    [visible]="showCancelModal()"
-    (visibleChange)="showCancelModal.set($event)"
-    [modal]="true"
-    [closable]="true"
-  >
-    <div class="flex flex-col gap-4 mt-2">
-      <p class="text-sm text-text-primary mb-1" jhiTranslate="interview.slots.cancelInterview.message">
-        Are you sure you want to cancel this interview?
-      </p>
+<!-- Edit Location Dialog -->
+@if (selectedSlotForEdit()) {
+  <jhi-dialog [visible]="showEditDialog()" (visibleChange)="closeEditDialog()" header="interview.slots.edit.title" width="30rem">
+    <div class="flex flex-col gap-4">
+      <!-- Read-only Date & Time -->
+      <div class="flex flex-col gap-1 p-4 border border-border-default rounded-sm bg-background-default">
+        <div class="flex items-center gap-2 text-sm text-text-primary">
+          <fa-icon icon="calendar" class="text-primary" />
+          <span>{{ editSlotDate() }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-text-primary">
+          <fa-icon icon="clock" class="text-primary" />
+          <span>{{ editSlotTimeRange() }}</span>
+        </div>
+      </div>
 
-      <div class="flex flex-col gap-3">
-        <jhi-checkbox
-          [model]="cancelDeleteSlot()"
-          (modelChange)="cancelDeleteSlot.set($event)"
-          label="interview.slots.cancelInterview.deleteSlot"
-          inputId="deleteSlotCb"
-          [shouldTranslate]="true"
-          class="text-sm text-text-primary"
-        />
-        <jhi-checkbox
-          [model]="cancelSendReinvite()"
-          (modelChange)="cancelSendReinvite.set($event)"
-          label="interview.slots.cancelInterview.sendReinvite"
-          inputId="sendReinviteCb"
-          [shouldTranslate]="true"
-          class="text-sm text-text-primary"
+      <!-- Location Input -->
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-text-primary" jhiTranslate="interview.slots.create.location">Location</label>
+        <jhi-string-input
+          [model]="editLocation()"
+          (modelChange)="editLocation.set($event)"
+          [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
+          [errorEnabled]="false"
         />
       </div>
 
-      <div class="flex justify-end gap-3 mt-4">
-        <jhi-button variant="text" label="interview.slots.create.cancel" [shouldTranslate]="true" (click)="showCancelModal.set(false)" />
+      <!-- Info for booked slots -->
+      @if (editSlotIsBooked()) {
+        <jhi-message severity="info">
+          <span jhiTranslate="interview.slots.edit.bookedInfo"></span>
+          <a
+            [routerLink]="
+              locationChangedTemplateId() ? ['/research-group/template', locationChangedTemplateId(), 'edit'] : '/research-group/templates'
+            "
+            class="text-primary hover:underline font-medium cursor-pointer"
+            jhiTranslate="interview.slots.edit.editTemplates"
+          ></a>
+          <span jhiTranslate="interview.slots.edit.editTemplatesSuffix"></span>
+        </jhi-message>
+      }
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-2">
         <jhi-button
+          variant="outlined"
           severity="primary"
-          label="interview.slots.cancelInterview.button"
+          label="button.cancel"
           [shouldTranslate]="true"
-          (click)="onCancelInterviewConfirm()"
+          size="sm"
+          styleClass="w-28 h-10"
+          (click)="closeEditDialog()"
+        />
+        <jhi-button
+          label="button.save"
+          severity="primary"
+          [shouldTranslate]="true"
+          [disabled]="!editLocation().trim()"
+          size="sm"
+          styleClass="w-28 h-10"
+          [loading]="editLoading()"
+          (click)="saveSlotLocation()"
         />
       </div>
     </div>
   </jhi-dialog>
+}
+
+<!-- Cancel Interview Dialog -->
+@if (selectedSlotForCancel()) {
+  <jhi-cancel-interview-modal
+    [visible]="showCancelModal()"
+    (visibleChange)="showCancelModal.set($event)"
+    (confirmed)="onCancelInterviewConfirm($event)"
+  />
 }

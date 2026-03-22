@@ -62,7 +62,7 @@ public class AiService {
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
-        final String locationText = jobFormDTO.location().correctLanguageValue(descriptionLanguage);
+        final String locationText = jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(descriptionLanguage) : "";
 
         return chatClient
             .prompt()
@@ -74,7 +74,10 @@ public class AiService {
                     .param("jobDescription", input)
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
-                    .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
+                    .param(
+                        "subjectArea",
+                        jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(descriptionLanguage) : ""
+                    )
                     .param("location", locationText)
                     .param("inclusiveWords", String.join(", ", inclusive))
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))

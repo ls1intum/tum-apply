@@ -16,6 +16,7 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -143,7 +144,7 @@ public class JobService {
         if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
-            } catch (Exception e) {}
+            } catch (Exception _) {}
         }
 
         jobRepository.deleteById(jobId);
@@ -161,7 +162,7 @@ public class JobService {
             job.getJobId(),
             job.getTitle(),
             job.getResearchArea(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             job.getSupervisingProfessor().getUserId(),
             job.getLocation(),
             job.getStartDate(),
@@ -203,7 +204,7 @@ public class JobService {
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
             job.getSupervisingProfessor().getResearchGroup(),
             job.getTitle(),
-            job.getFieldOfStudies(),
+            job.getSubjectArea(),
             job.getResearchArea(),
             job.getLocation(),
             job.getWorkload(),
@@ -231,8 +232,8 @@ public class JobService {
      * @param pageDTO                pagination configuration
      * @param availableJobsFilterDTO DTO containing all optionally filterable fields
      * @param sortDTO                sort configuration (by field and direction)
-     * @param searchQuery            string to search for job title, field of
-     *                               studies or supervisor name
+     * @param searchQuery            string to search for job title, subject area
+     *                               or supervisor name
      * @return a page of {@link JobCardDTO} matching the criteria
      */
     public Page<JobCardDTO> getAvailableJobs(
@@ -245,18 +246,28 @@ public class JobService {
         Pageable pageable;
 
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        List<SubjectArea> searchSubjectAreas = normalizedSearchQuery != null ? SubjectArea.search(normalizedSearchQuery) : null;
+        if (searchSubjectAreas != null && searchSubjectAreas.isEmpty()) {
+            searchSubjectAreas = null;
+        }
+        List<SubjectArea> subjectAreas = availableJobsFilterDTO.subjectAreas();
+        if (subjectAreas != null && subjectAreas.isEmpty()) {
+            subjectAreas = null;
+        }
+
         if (sortDTO.sortBy() != null && sortDTO.sortBy().equals("professorName")) {
             // Use pageable without sort: Sorting will be handled manually in @Query
             pageable = PageUtil.createPageRequest(pageDTO, null, null, false);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                availableJobsFilterDTO.fieldOfStudies(), // filter for field of studies
+                subjectAreas,
                 availableJobsFilterDTO.locations(), // filter for campus location
                 availableJobsFilterDTO.professorNames(), // filter for supervising professor's full name
                 sortDTO.sortBy(),
                 sortDTO.direction().name(),
                 userId,
                 normalizedSearchQuery,
+                searchSubjectAreas,
                 pageable
             );
         } else {
@@ -264,26 +275,27 @@ public class JobService {
             pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.AVAILABLE_JOBS, true);
             return jobRepository.findAllJobCardsByState(
                 JobState.PUBLISHED,
-                availableJobsFilterDTO.fieldOfStudies(), // optional filter for field of studies
+                subjectAreas,
                 availableJobsFilterDTO.locations(), // optional filter for campus location
                 availableJobsFilterDTO.professorNames(), // optional filter for supervising professor's full name
                 userId,
                 normalizedSearchQuery,
+                searchSubjectAreas,
                 pageable
             );
         }
     }
 
     /**
-     * Retrieves all unique fields of study.
+     * Retrieves all unique subject areas.
      * This is used for filter dropdown options and should not be affected by
      * current filters.
      *
-     * @return a list of all unique fields of study sorted
+     * @return a list of all unique subject areas sorted
      * alphabetically
      */
-    public List<String> getAllFieldOfStudies() {
-        return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
+    public List<SubjectArea> getAllSubjectAreas() {
+        return jobRepository.findAllUniqueSubjectAreas(JobState.PUBLISHED);
     }
 
     /**
@@ -336,7 +348,7 @@ public class JobService {
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
         job.setTitle(dto.title());
         job.setResearchArea(dto.researchArea());
-        job.setFieldOfStudies(dto.fieldOfStudies());
+        job.setSubjectArea(dto.subjectArea());
         job.setLocation(dto.location());
         job.setStartDate(dto.startDate());
         job.setEndDate(dto.endDate());
@@ -348,23 +360,27 @@ public class JobService {
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
 
-        // Handle image update (replace old image if changed)
+        // Capture old image before any modifications
+        Image oldImage = job.getImage();
+
+        // Update image reference (read-only lookup from imageRepository)
         if (dto.imageId() != null) {
-            Image newImage = jobImageHelper.getImageForJob(dto.imageId());
-            job.setImage(jobImageHelper.replaceJobImage(job.getImage(), newImage));
-        } else if (job.getImage() != null) {
-            // If imageId is null but job has image, remove it
-            jobImageHelper.replaceJobImage(job.getImage(), null);
+            job.setImage(jobImageHelper.getImageForJob(dto.imageId()));
+        } else {
             job.setImage(null);
         }
 
+        // Save job entity first (single repository write)
+        Job savedJob = jobRepository.save(job);
+
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
-            Job savedJob = jobRepository.save(job);
             interviewService.createInterviewProcessForJob(savedJob.getJobId());
-            return JobFormDTO.getFromEntity(savedJob);
         }
-        Job createdJob = jobRepository.save(job);
-        return JobFormDTO.getFromEntity(createdJob);
+
+        // Clean up old image after job is persisted (separate from job persistence)
+        jobImageHelper.replaceJobImage(oldImage, savedJob.getImage());
+
+        return JobFormDTO.getFromEntity(savedJob);
     }
 
     /**
@@ -377,18 +393,6 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
-    }
-
-    /**
-     * Returns the supervising professor's user ID for a given job ID.
-     *
-     * @param jobId the job ID
-     * @return the supervising professor's user ID
-     */
-    public UUID getSupervisingProfessorUserId(UUID jobId) {
-        return jobRepository
-            .findSupervisingProfessorUserIdByJobId(jobId)
-            .orElseThrow(() -> new EntityNotFoundException("User for job with Id '" + jobId + "' does not exist"));
     }
 
     /**

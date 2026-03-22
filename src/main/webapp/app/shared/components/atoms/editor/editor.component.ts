@@ -14,6 +14,7 @@ import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
+import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -30,6 +31,7 @@ const STANDARD_CHARACTER_BUFFER = 300;
     TranslateModule,
     TooltipModule,
     GenderBiasAnalysisDialogComponent,
+    TranslateDirective,
   ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
@@ -38,6 +40,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => extractTextFromHtml(this.htmlValue()).length);
   fieldId = input<string>('default');
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
+  height = input<string>('12.5rem');
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
@@ -117,6 +120,41 @@ export class EditorComponent extends BaseInputDirective<string> {
     const key = this.getCodingTranslationKey(coding);
     return this.translateService.instant(key);
   });
+
+  public quillModules = {
+    clipboard: {
+      matchers: [
+        [
+          Node.ELEMENT_NODE,
+          (_node: HTMLElement, delta: { ops: { insert?: string | object; attributes?: Record<string, unknown> }[] }) => {
+            delta.ops.forEach(op => {
+              if (op.attributes) {
+                const oldAttrs = op.attributes;
+                const newAttrs: Record<string, unknown> = {};
+
+                // List of formatting keys we explicitly allow
+                const allowed = ['bold', 'italic', 'underline', 'link', 'list', 'header', 'align'];
+
+                for (const key of allowed) {
+                  if (Object.prototype.hasOwnProperty.call(oldAttrs, key)) {
+                    newAttrs[key] = oldAttrs[key];
+                  }
+                }
+
+                // Reassign the filtered object or remove attributes entirely
+                if (Object.keys(newAttrs).length > 0) {
+                  op.attributes = newAttrs;
+                } else {
+                  op.attributes = undefined;
+                }
+              }
+            });
+            return delta;
+          },
+        ],
+      ],
+    },
+  };
 
   protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 

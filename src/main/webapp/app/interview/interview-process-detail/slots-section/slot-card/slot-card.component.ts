@@ -1,4 +1,4 @@
-import { Component, computed, input, output, viewChild } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TranslateModule } from '@ngx-translate/core';
@@ -7,6 +7,8 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 @Component({
   selector: 'jhi-slot-card',
@@ -22,11 +24,11 @@ export class SlotCardComponent {
   deleteSlot = output<InterviewSlotDTO>();
   assignApplicant = output<InterviewSlotDTO>();
 
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  showDeleteDialog = signal(false);
 
   // Computed values
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
-  isVirtual = computed(() => this.slot().location === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
   isBooked = computed(() => this.slot().isBooked ?? false);
   isPast = computed(() => {
     const start = this.slot().startDateTime;
@@ -35,21 +37,27 @@ export class SlotCardComponent {
   applicantName = computed(() => {
     const interviewee = this.slot().interviewee;
     if (!interviewee) return '';
-    return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
+    return formatFullName(interviewee.firstName, interviewee.lastName);
   });
 
   cancelInterview = output<InterviewSlotDTO>();
 
   // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => {
-    const items: JhiMenuItem[] = [];
+    const items: JhiMenuItem[] = [
+      {
+        label: 'button.edit',
+        icon: 'pencil',
+        command: () => this.onEdit(),
+        severity: 'primary',
+      },
+    ];
+
     if (this.isBooked()) {
       items.push({
-        label: 'interview.slots.cancelInterview.button',
+        label: 'interview.slots.cancelInterview.triggerButton',
         icon: 'xmark',
-        command: () => {
-          this.onCancelInterview();
-        },
+        command: () => this.onCancelInterview(),
         severity: 'danger',
       });
     } else {
@@ -57,11 +65,12 @@ export class SlotCardComponent {
         label: 'button.delete',
         icon: 'trash',
         command: () => {
-          this.deleteDialog().confirm();
+          this.showDeleteDialog.set(true);
         },
         severity: 'danger',
       });
     }
+
     return items;
   });
 
@@ -71,7 +80,6 @@ export class SlotCardComponent {
 
   onEdit(): void {
     this.editSlot.emit(this.slot());
-    // TODO: Open Edit Modal
   }
 
   onDelete(): void {

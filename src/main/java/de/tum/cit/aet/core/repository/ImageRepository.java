@@ -2,9 +2,11 @@ package de.tum.cit.aet.core.repository;
 
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -90,13 +92,23 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<DepartmentImage> findOrphanedDepartmentImages();
 
     /**
-     * Deletes the profile image associated with the given user.
+     * Finds the profile image associated with the given user.
      *
-     * @param userId the ID of the user whose profile image should be deleted
+     * @param userId the ID of the user whose profile image should be returned
+     * @return the stored profile image for the given user, if present
      */
-    @Modifying
-    @Query("DELETE FROM Image i WHERE i.uploadedBy.userId = :userId AND TYPE(i) = ProfileImage")
-    void deleteProfileImageByUser(@Param("userId") UUID userId);
+    @Query("SELECT pi FROM ProfileImage pi WHERE pi.uploadedBy.userId = :userId")
+    Optional<ProfileImage> findProfileImageByUserId(@Param("userId") UUID userId);
+
+    /**
+     * Checks whether the given user owns a persisted profile image with the provided URL.
+     *
+     * @param userId the owner of the profile image
+     * @param url the exact profile image URL
+     * @return {@code true} when the URL belongs to a stored profile image of that user
+     */
+    @Query("SELECT COUNT(pi) > 0 FROM ProfileImage pi WHERE pi.uploadedBy.userId = :userId AND pi.url = :url")
+    boolean existsProfileImageByUserIdAndUrl(@Param("userId") UUID userId, @Param("url") String url);
 
     /**
      * Updates all {@link Image} records uploaded by the given {@code user} to associate them with the

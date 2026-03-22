@@ -1,28 +1,30 @@
 <!-- Confirmation Dialog for Professor -->
 @if (isProfessorMode()) {
   <jhi-confirm-dialog
-    #confirmDialog
     [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
     [message]="'onboarding.professorRequest.confirmDialog.message' | translate"
     [label]="'onboarding.professorRequest.confirmDialog.confirm' | translate"
     severity="primary"
     confirmIcon="paper-plane"
     [showOpenButton]="false"
+    [visible]="showConfirmDialog()"
     (confirmed)="onConfirmSubmit()"
+    (closed)="showConfirmDialog.set(false)"
   />
 }
 
 <!-- Confirmation Dialog for Admin -->
 @if (isAdminMode()) {
   <jhi-confirm-dialog
-    #confirmDialog
     [header]="'researchGroup.adminView.createDialog.confirmHeader' | translate"
     [message]="'researchGroup.adminView.createDialog.confirmMessage' | translate"
     [label]="'researchGroup.adminView.createDialog.confirmButton' | translate"
     severity="primary"
     confirmIcon="check"
     [showOpenButton]="false"
+    [visible]="showConfirmDialog()"
     (confirmed)="onConfirmSubmit()"
+    (closed)="showConfirmDialog.set(false)"
   />
 }
 
@@ -288,16 +290,6 @@
         [model]="form.get('researchGroupDescription')?.value"
         [control]="form.get('researchGroupDescription') ?? undefined"
         [characterLimit]="1000"
-        [shouldTranslate]="true"
-      />
-    </div>
-
-    <div>
-      <jhi-string-input
-        label="onboarding.professorRequest.researchGroupFieldOfStudies.label"
-        placeholder="onboarding.professorRequest.researchGroupFieldOfStudies.placeholder"
-        [model]="form.get('researchGroupFieldOfStudies')?.value"
-        [control]="form.get('researchGroupFieldOfStudies') ?? undefined"
         [shouldTranslate]="true"
       />
     </div>

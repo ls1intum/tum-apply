@@ -50,42 +50,63 @@
         <h2 class="text-xl font-semibold text-text-primary" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
       </div>
 
-      <!-- Error State -->
-      @if (error()) {
-        <jhi-info-box
-          message="interview.overview.error.failedToLoad"
-          [shouldTranslate]="true"
-          severity="danger"
-          icon="exclamation-triangle"
+      <!-- Month Navigation -->
+      @if (!loading() && !error()) {
+        <jhi-month-navigation
+          [currentMonth]="currentMonth()"
+          [isClosed]="true"
+          (previousMonth)="previousMonth()"
+          (nextMonth)="nextMonth()"
         />
-      }
+        <!-- Empty State -->
+        @if (groupedUpcomingInterviews().length === 0) {
+          <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="secondary" icon="calendar" />
+        } @else {
+          <!-- Calendar Grid Section -->
+          <div [class]="datesPerPage() === 1 ? 'flex flex-col gap-4' : 'flex items-start gap-4'">
+            <!-- Left Pagination Arrow (Desktop) -->
+            @if (datesPerPage() > 1) {
+              <div class="flex-shrink-0 pt-8">
+                <jhi-button icon="chevron-left" variant="text" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
+              </div>
+            }
 
-      <!-- Empty State -->
-      @if (!loading() && !error() && upcomingInterviews().length === 0) {
-        <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="secondary" icon="calendar" />
-      }
+            <!-- Date Grid -->
+            <div class="grid gap-3 w-full" [style.grid-template-columns]="'repeat(' + datesPerPage() + ', minmax(0, 1fr))'">
+              @for (group of paginatedInterviews(); track group.date) {
+                <div class="flex flex-col gap-2 min-w-0">
+                  <!-- Date Header -->
+                  <jhi-date-header [date]="group.localDate" [slotCount]="group.interviews.length" />
 
-      <!-- Calendar List State -->
-      @if (!loading() && !error() && groupedUpcomingInterviews().length > 0) {
-        <div class="flex flex-col gap-6">
-          @for (monthGroup of groupedUpcomingInterviews(); track monthGroup.monthLabel) {
-            <section class="flex flex-col gap-3">
-              <!-- Reusing month-navigation styling: centered bold text, top/bottom divider -->
-              <div class="text-text-primary mb-3 mt-2 border-b border-border-default">
-                <div class="flex items-center justify-center pb-2">
-                  <h3 class="text-base font-semibold tracking-wider text-text-primary">{{ monthGroup.monthLabel }}</h3>
+                  <!-- Interview Cards -->
+                  <div class="flex flex-col gap-2">
+                    @for (interview of group.interviews; track interview.id) {
+                      <jhi-upcoming-interview-card [interview]="interview" />
+                    }
+                  </div>
                 </div>
-              </div>
+              }
+            </div>
 
-              <!-- Grid for the upcoming cards within the month -->
-              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                @for (interview of monthGroup.interviews; track interview.id; let i = $index) {
-                  <jhi-upcoming-interview-card [interview]="interview" [index]="i" />
-                }
+            <!-- Right Pagination Arrow (Desktop) -->
+            @if (datesPerPage() > 1) {
+              <div class="flex-shrink-0 pt-8">
+                <jhi-button icon="chevron-right" variant="text" [disabled]="!canGoNextDate()" (click)="nextDatePage()" />
               </div>
-            </section>
-          }
-        </div>
+            }
+
+            <!-- Mobile Pagination -->
+            @if (datesPerPage() === 1) {
+              <div class="flex justify-center items-center w-full pt-4 gap-6">
+                <jhi-button icon="chevron-left" variant="text" size="sm" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
+                <span class="text-sm font-medium text-text-secondary min-w-[3rem] text-center">
+                  {{ currentDatePage() + 1 }} / {{ totalDatePages() }}
+                </span>
+                <jhi-button icon="chevron-right" variant="text" size="sm" [disabled]="!canGoNextDate()" (click)="nextDatePage()" />
+              </div>
+            }
+          </div>
+        }
       }
     </div>
   </div>
