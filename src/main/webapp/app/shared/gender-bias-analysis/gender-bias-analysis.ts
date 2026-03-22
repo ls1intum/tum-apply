@@ -74,17 +74,6 @@ export class GenderBiasAnalysisService {
     this.firstLoads.add(fieldId);
   }
 
-  private getCodingFactor(coding: string | undefined): number {
-    switch (coding) {
-      case 'neutral':
-        return CODING_FACTORS.neutral;
-      case 'inclusive-coded':
-        return CODING_FACTORS['inclusive-coded'];
-      default:
-        return CODING_FACTORS['non-inclusive-coded'];
-    }
-  }
-
   /**
    * Calculates the compliance score of a job posting based on the gender bias analysis.
    * The calculation is performed in several steps:
@@ -121,5 +110,16 @@ export class GenderBiasAnalysisService {
     const score = Math.sqrt(inclusiveWeight * factor) * 100;
 
     return Math.max(0, Math.min(100, Math.round(score)));
+  }
+
+  private getCodingFactor(coding: string | undefined): number {
+    switch (coding) {
+      case 'neutral':
+        return CODING_FACTORS.neutral;
+      case 'inclusive-coded':
+        return CODING_FACTORS['inclusive-coded'];
+      default:
+        return CODING_FACTORS['non-inclusive-coded'];
+    }
   }
 }
