@@ -108,7 +108,7 @@
               <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
               <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
 
-              <div class="mt-3 mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex flex-col gap-3 mt-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-3">
                   <jhi-segmented-toggle
                     [value]="segmentValueForLang(currentDescriptionLanguage())"
@@ -147,7 +147,7 @@
               <!-- Editor -->
               <div>
                 @if (aiToggleSignal()) {
-                  <div class="mt-5 -mb-5 flex items-center justify-end gap-1 text-sm">
+                  <div class="flex items-center mt-5 -mb-5 justify-end gap-1 text-sm">
                     <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
                     <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
                   </div>
@@ -178,10 +178,10 @@
         <!--AI Assistant sidebar-->
         <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
         <aside
-          class="mx-auto mt-4 flex w-full max-w-[52rem] flex-col overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
+          class="flex flex-col mx-auto mt-4 w-full max-w-[52rem] overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >
           <div class="flex items-center">
-            <div class="flex min-h-16 flex-1 items-center justify-start gap-3 px-5 py-3 text-text-primary">
+            <div class="flex flex-1 items-center justify-start min-h-16 gap-3 px-5 py-3 text-text-primary">
               <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
               <span class="text-base leading-tight font-bold text-text-primary" jhiTranslate="jobCreationForm.aiSidebar.header"></span>
             </div>
@@ -200,7 +200,7 @@
 
   <!-- Step 2: Employment Terms -->
   <ng-template #panel2>
-    <div class="h-full min-h-[calc(100vh-300px)] flex flex-column">
+    <div class="flex flex-column h-full min-h-[calc(100vh-300px)]">
       <form [formGroup]="positionDetailsForm" class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
         <div class="flex flex-col">

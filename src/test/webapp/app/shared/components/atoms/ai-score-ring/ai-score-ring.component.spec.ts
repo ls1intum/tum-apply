@@ -27,7 +27,7 @@ describe('AiScoreRingComponent', () => {
   });
 
   it.each([
-    ['danger range', (cmp: AiScoreRingComponent) => 10, 'var(--color-negative-default)'],
+    ['danger range', () => 10, 'var(--color-negative-default)'],
     ['warning threshold', (cmp: AiScoreRingComponent) => cmp.WARNING_THRESHOLD, 'var(--color-warning-default)'],
     ['primary range', (cmp: AiScoreRingComponent) => cmp.WARNING_THRESHOLD + 1, 'var(--color-primary-default)'],
   ])('should map animated score to %s color', (_caseLabel, getAnimatedScore, expectedColor) => {
