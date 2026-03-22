@@ -144,7 +144,7 @@ public class JobService {
         if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
-            } catch (Exception e) {}
+            } catch (Exception _) {}
         }
 
         jobRepository.deleteById(jobId);
@@ -360,23 +360,27 @@ public class JobService {
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
 
-        // Handle image update (replace old image if changed)
+        // Capture old image before any modifications
+        Image oldImage = job.getImage();
+
+        // Update image reference (read-only lookup from imageRepository)
         if (dto.imageId() != null) {
-            Image newImage = jobImageHelper.getImageForJob(dto.imageId());
-            job.setImage(jobImageHelper.replaceJobImage(job.getImage(), newImage));
-        } else if (job.getImage() != null) {
-            // If imageId is null but job has image, remove it
-            jobImageHelper.replaceJobImage(job.getImage(), null);
+            job.setImage(jobImageHelper.getImageForJob(dto.imageId()));
+        } else {
             job.setImage(null);
         }
 
+        // Save job entity first (single repository write)
+        Job savedJob = jobRepository.save(job);
+
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
-            Job savedJob = jobRepository.save(job);
             interviewService.createInterviewProcessForJob(savedJob.getJobId());
-            return JobFormDTO.getFromEntity(savedJob);
         }
-        Job createdJob = jobRepository.save(job);
-        return JobFormDTO.getFromEntity(createdJob);
+
+        // Clean up old image after job is persisted (separate from job persistence)
+        jobImageHelper.replaceJobImage(oldImage, savedJob.getImage());
+
+        return JobFormDTO.getFromEntity(savedJob);
     }
 
     /**
@@ -389,18 +393,6 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
-    }
-
-    /**
-     * Returns the supervising professor's user ID for a given job ID.
-     *
-     * @param jobId the job ID
-     * @return the supervising professor's user ID
-     */
-    public UUID getSupervisingProfessorUserId(UUID jobId) {
-        return jobRepository
-            .findSupervisingProfessorUserIdByJobId(jobId)
-            .orElseThrow(() -> new EntityNotFoundException("User for job with Id '" + jobId + "' does not exist"));
     }
 
     /**
