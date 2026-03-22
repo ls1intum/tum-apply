@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -217,7 +218,7 @@ export class AdminDependenciesComponent {
 
   /** Loads the dependencies overview on component initialization. */
   constructor() {
-    this.loadDependencies();
+    void this.loadDependencies();
   }
 
   /**
@@ -225,15 +226,14 @@ export class AdminDependenciesComponent {
    * Sets the loading state while the request is in progress and updates
    * the dependenciesOverview signal with the response.
    */
-  loadDependencies(): void {
+  async loadDependencies(): Promise<void> {
     this.isLoading.set(true);
-    this.dependencyService.getOverview().subscribe({
-      next: overview => {
-        this.dependenciesOverview.set(overview);
-        this.isLoading.set(false);
-      },
-      error: () => this.isLoading.set(false),
-    });
+    try {
+      const overview = await firstValueFrom(this.dependencyService.getOverview());
+      this.dependenciesOverview.set(overview);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   /**
@@ -241,15 +241,14 @@ export class AdminDependenciesComponent {
    * Sets the refreshing state while the request is in progress and updates
    * the dependenciesOverview signal with the fresh response.
    */
-  refreshVulnerabilities(): void {
+  async refreshVulnerabilities(): Promise<void> {
     this.isRefreshing.set(true);
-    this.dependencyService.refresh1().subscribe({
-      next: overview => {
-        this.dependenciesOverview.set(overview);
-        this.isRefreshing.set(false);
-      },
-      error: () => this.isRefreshing.set(false),
-    });
+    try {
+      const overview = await firstValueFrom(this.dependencyService.refresh());
+      this.dependenciesOverview.set(overview);
+    } finally {
+      this.isRefreshing.set(false);
+    }
   }
 
   /**
