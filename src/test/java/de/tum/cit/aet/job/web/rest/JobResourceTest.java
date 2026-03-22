@@ -172,7 +172,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void createJobPersistsAndReturnsIt() {
         JobFormDTO payload = new JobFormDTO(
             null,
@@ -235,7 +234,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void createJobInvalidDoesNotPersist() {
         long before = jobRepository.count();
 
@@ -284,7 +282,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void createJobAsApplicantForbidden() {
         JobFormDTO payload = new JobFormDTO(
             null,
@@ -308,7 +305,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobUpdatesCorrectly() {
         Job job = jobRepository.findAll().getFirst();
 
@@ -354,7 +350,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobNonexistentJobThrowsNotFound() {
         JobFormDTO updatedPayload = new JobFormDTO(
             UUID.randomUUID(),
@@ -403,7 +398,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void deleteJobRemovesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(jobRepository.existsById(job.getJobId())).isTrue();
@@ -416,7 +410,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void deleteJobNonexistentJobThrowsNotFound() {
         api.deleteAndRead("/api/jobs/" + UUID.randomUUID(), null, Void.class, 404);
     }
@@ -428,14 +421,12 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void deleteJobAsApplicantForbidden() {
         Job job = jobRepository.findAll().getFirst();
         api.deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 403);
     }
 
     @Test
-
     void changeJobStateUpdatesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
@@ -456,7 +447,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void changeJobStateNonExistantJobThrowsNotFound() {
         api.putAndRead(
             "/api/jobs/changeState/" + UUID.randomUUID() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
@@ -478,7 +468,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void changeJobStateAsApplicantForbidden() {
         Job job = jobRepository.findAll().getFirst();
         api.putAndRead(
@@ -490,7 +479,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void getJobsForCurrentResearchGroupReturnsJobsForResearchGroup() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -499,7 +487,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void getJobsForCurrentResearchGroupInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -512,7 +499,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void getJobByIdReturnsCorrectJob() {
         Job job = jobRepository.findAll().getFirst();
 
@@ -537,7 +523,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void getJobByIdNonExistentJobThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -583,7 +568,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobReplacingImageCallsReplaceImage() {
         // Arrange - Create a job with a job banner
         Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
@@ -608,7 +592,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobRemovingImageDoesNotDeleteReusableLibraryImage() {
         // Arrange - Create a job with a job banner
         Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
@@ -629,7 +612,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobWithDefaultJobBannerDoesNotDeleteOldImage() {
         // Arrange - Create admin user for default image
         User adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
@@ -656,7 +638,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobWithJobBannerDoesNotDeleteOldImage() {
         // Arrange - Create job banners (research group library images)
         Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
@@ -679,7 +660,6 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
-
     void updateJobWithSameImageDoesNotDeleteIt() {
         // Arrange
         Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
