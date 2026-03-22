@@ -2,7 +2,6 @@ package de.tum.cit.aet.application.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import tools.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
@@ -47,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import tools.jackson.core.type.TypeReference;
 
 class ApplicationResourceTest extends AbstractResourceTest {
 

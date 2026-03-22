@@ -2,7 +2,6 @@ package de.tum.cit.aet.usermanagement.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import tools.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.School;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Integration tests for {@link DepartmentResource}.

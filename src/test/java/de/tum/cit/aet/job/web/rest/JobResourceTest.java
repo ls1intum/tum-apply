@@ -3,7 +3,6 @@ package de.tum.cit.aet.job.web.rest;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import tools.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -39,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
+import tools.jackson.core.type.TypeReference;
 
 class JobResourceTest extends AbstractResourceTest {
 
