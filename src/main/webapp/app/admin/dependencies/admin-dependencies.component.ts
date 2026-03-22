@@ -47,12 +47,6 @@ import { VulnerabilityDTO } from 'app/generated/model/vulnerabilityDTO';
   templateUrl: './admin-dependencies.component.html',
 })
 export class AdminDependenciesComponent {
-  /** Icon used for vulnerability warning badges in the security column. */
-  protected readonly faShieldAlt = faShieldAlt;
-
-  /** Icon used for secure status badges in the security column. */
-  protected readonly faExclamationTriangle = faExclamationTriangle;
-
   /** Whether the initial dependency data is being loaded. */
   readonly isLoading = signal(false);
 
@@ -113,7 +107,7 @@ export class AdminDependenciesComponent {
    */
   readonly securityFilters = computed<Filter[]>(() => {
     const overview = this.dependenciesOverview();
-    if (overview == null || overview.totalVulnerabilities == null || overview.totalVulnerabilities === 0) return [];
+    if (overview?.totalVulnerabilities == null || overview.totalVulnerabilities === 0) return [];
     return [
       {
         filterId: 'security',
@@ -168,7 +162,11 @@ export class AdminDependenciesComponent {
       sorted.sort((a, b) => ((a.vulnerabilities?.length ?? 0) - (b.vulnerabilities?.length ?? 0)) * sortMultiplier);
     } else {
       const key = field as keyof DependencyDTO;
-      sorted.sort((a, b) => ((a[key] as string) ?? '').localeCompare((b[key] as string) ?? '') * sortMultiplier);
+      sorted.sort((a, b) => {
+        const aVal = String(a[key] ?? '');
+        const bVal = String(b[key] ?? '');
+        return aVal.localeCompare(bVal) * sortMultiplier;
+      });
     }
     return sorted;
   });
@@ -209,6 +207,12 @@ export class AdminDependenciesComponent {
     if (sourceTemplate) cols[4].template = sourceTemplate;
     return cols;
   });
+
+  /** Icon used for secure status badges in the security column. */
+  protected readonly faShieldAlt = faShieldAlt;
+
+  /** Icon used for vulnerability warning badges in the security column. */
+  protected readonly faExclamationTriangle = faExclamationTriangle;
 
   private readonly dependencyService = inject(AdminDependencyResourceApiService);
 
