@@ -20,6 +20,28 @@ import { DependencyDTO } from 'app/generated/model/dependencyDTO';
 import { VulnerabilityDTO } from 'app/generated/model/vulnerabilityDTO';
 
 /**
+ * Safely retrieves a string field value from a DependencyDTO by field name.
+ *
+ * @param dep the dependency to read from
+ * @param field the field name to access
+ * @returns the field value as a string, or an empty string if not found
+ */
+function getStringField(dep: DependencyDTO, field: string): string {
+  switch (field) {
+    case 'name':
+      return dep.name ?? '';
+    case 'group':
+      return dep.group ?? '';
+    case 'version':
+      return dep.version ?? '';
+    case 'source':
+      return dep.source ?? '';
+    default:
+      return '';
+  }
+}
+
+/**
  * Admin page component for displaying the project's software dependencies
  * and their known security vulnerabilities.
  *
@@ -161,10 +183,9 @@ export class AdminDependenciesComponent {
     if (field === 'security') {
       sorted.sort((a, b) => ((a.vulnerabilities?.length ?? 0) - (b.vulnerabilities?.length ?? 0)) * sortMultiplier);
     } else {
-      const key = field as keyof DependencyDTO;
       sorted.sort((a, b) => {
-        const aVal = String(a[key] ?? '');
-        const bVal = String(b[key] ?? '');
+        const aVal = getStringField(a, field);
+        const bVal = getStringField(b, field);
         return aVal.localeCompare(bVal) * sortMultiplier;
       });
     }
