@@ -13,7 +13,8 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
+import { outputToObservable } from '@angular/core/rxjs-interop';
 
 const DEFAULT_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
   bachelorDegreeName: '',
@@ -291,14 +292,14 @@ describe('ApplicationPage2Component', () => {
         documentIdsMasterTranscript: masterDocs,
       });
 
-      const validSpy = vi.fn();
-      componentInstance.valid.subscribe(validSpy);
+      const valid = outputToObservable(componentInstance.valid);
+      const validPromise = firstValueFrom(valid);
 
-      // Wait for initialization and debounced effects
-      await new Promise(resolve => setTimeout(resolve, 200));
       fixture.detectChanges();
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-      expect(validSpy).toHaveBeenCalledWith(expected);
+      const result = await validPromise;
+      expect(result).toBe(expected);
     });
   });
 
