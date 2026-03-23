@@ -9,27 +9,18 @@
  */
 
 /**
- * EmailSettingResourceApi - API service
+ * EmailSettingResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EmailSettingDTO } from '../models/email-setting-dto';
+import { EmailSettingDTO } from '../models/email-setting-resource';
 
 @Injectable({ providedIn: 'root' })
 export class EmailSettingResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
-
-    /**
-     * 
-     * 
-     */
-    getEmailSettings(): Observable<Array<EmailSettingDTO>> {
-        const url = `${this.basePath}/api/settings/emails`;
-        return this.http.get<Array<EmailSettingDTO>>(url);
-    }
 
     /**
      * 

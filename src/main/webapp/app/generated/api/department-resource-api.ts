@@ -9,15 +9,14 @@
  */
 
 /**
- * DepartmentResourceApi - API service
+ * DepartmentResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DepartmentDTO } from '../models/department-dto';
-import { DepartmentCreationDTO } from '../models/department-creation-dto';
-import { PageResponseDTODepartmentDTO } from '../models/page-response-dto-department-dto';
+import { DepartmentCreationDTO } from '../models/department-resource';
+import { DepartmentDTO } from '../models/department-resource';
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentResourceApi {
@@ -42,68 +41,7 @@ export class DepartmentResourceApi {
     deleteDepartment(id: string): Observable<void> {
         const idPath = encodeURIComponent(String(id));
         const url = `${this.basePath}/api/departments/delete/${idPath}`;
-        return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param id 
-     */
-    getDepartmentById(id: string): Observable<DepartmentDTO> {
-        const idPath = encodeURIComponent(String(id));
-        const url = `${this.basePath}/api/departments/${idPath}`;
-        return this.http.get<DepartmentDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param schoolId 
-     */
-    getDepartments(schoolId?: string): Observable<Array<DepartmentDTO>> {
-        const queryParams: Record<string, string> = {};
-        if (schoolId !== undefined && schoolId !== null) {
-            queryParams['schoolId'] = String(schoolId);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/departments${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<DepartmentDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param schoolNames 
-     * @param searchQuery 
-     * @param sortBy 
-     * @param direction 
-     */
-    getDepartmentsForAdmin(pageSize?: number, pageNumber?: number, schoolNames?: Array<string>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTODepartmentDTO> {
-        const queryParams: Record<string, string> = {};
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
-        }
-        if (schoolNames !== undefined && schoolNames !== null) {
-            queryParams['schoolNames'] = schoolNames.join(',');
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/departments/admin/search${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTODepartmentDTO>(url);
+        return this.http.delete(url);
     }
 
     /**

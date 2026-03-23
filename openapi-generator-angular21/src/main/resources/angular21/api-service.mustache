@@ -1,14 +1,14 @@
 {{>licenseInfo}}
 /**
- * {{classname}} - API service
+ * {{classname}} - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient{{#operations.operation}}{{#hasFormParams}}, HttpHeaders{{/hasFormParams}}{{/operations.operation}} } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-{{#tsImports}}
-import { {{classname}} } from '../models/{{filename}}';
-{{/tsImports}}
+{{#imports}}
+import { {{classname}} } from '../models/{{classFilename}}';
+{{/imports}}
 
 @Injectable({ providedIn: 'root' })
 export class {{classname}} {
@@ -17,6 +17,7 @@ export class {{classname}} {
 
 {{#operations}}
 {{#operation}}
+{{^vendorExtensions.x-is-get}}
     /**
      * {{summary}}
      * {{notes}}
@@ -60,18 +61,26 @@ export class {{classname}} {
 {{/isArray}}
         }
 {{/formParams}}
-        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url, formData);
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url, formData);
 {{/hasFormParams}}
 {{^hasFormParams}}
 {{#bodyParam}}
-        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url, {{paramName}});
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url, {{paramName}});
 {{/bodyParam}}
 {{^bodyParam}}
-        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url{{#isBodyAllowed}}, null{{/isBodyAllowed}});
+{{#hasQueryParams}}
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url);
+{{/hasQueryParams}}
+{{^hasQueryParams}}
+{{#vendorExtensions.x-is-mutation}}
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url{{#isBodyAllowed}}, null{{/isBodyAllowed}});
+{{/vendorExtensions.x-is-mutation}}
+{{/hasQueryParams}}
 {{/bodyParam}}
 {{/hasFormParams}}
     }
 
+{{/vendorExtensions.x-is-get}}
 {{/operation}}
 {{/operations}}
 }

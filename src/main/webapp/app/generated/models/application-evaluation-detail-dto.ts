@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ProfessorDTO } from './professor-dto';
-import type { ApplicationDetailDTO } from './application-detail-dto';
+import type { ProfessorDTO } from 'professor-dto';
+import type { ApplicationDetailDTO } from 'application-detail-dto';
 
 export interface ApplicationEvaluationDetailDTO {
     readonly applicationDetailDTO: ApplicationDetailDTO;

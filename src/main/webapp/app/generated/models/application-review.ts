@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { User } from './user';
-import type { Application } from './application';
+import type { User } from 'user';
+import type { Application } from 'application';
 
 export interface ApplicationReview {
     readonly application?: Application;

@@ -15,10 +15,10 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { ApplicationForApplicantDTO } from '../models/application-for-applicant-dto';
-import { ApplicationDetailDTO } from '../models/application-detail-dto';
-import { PageApplicationOverviewDTO } from '../models/page-application-overview-dto';
-import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
+import { ApplicationDetailDTO } from '../models/application-resource';
+import { ApplicationDocumentIdsDTO } from '../models/application-resource';
+import { ApplicationForApplicantDTO } from '../models/application-resource';
+import { PageApplicationOverviewDTO } from '../models/application-resource';
 const BASE_PATH = '';
 
 /**

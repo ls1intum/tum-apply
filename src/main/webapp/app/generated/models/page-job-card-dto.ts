@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { PageableObject } from './pageable-object';
-import type { JobCardDTO } from './job-card-dto';
-import type { SortObject } from './sort-object';
+import type { PageableObject } from 'pageable-object';
+import type { JobCardDTO } from 'job-card-dto';
+import type { SortObject } from 'sort-object';
 
 export interface PageJobCardDTO {
     readonly content?: Array<JobCardDTO>;

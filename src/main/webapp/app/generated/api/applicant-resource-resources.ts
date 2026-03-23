@@ -14,8 +14,8 @@
  * @generated from OpenAPI specification
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { ApplicantDTO } from '../models/applicant-dto';
-import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
+import { ApplicantDTO } from '../models/applicant-resource';
+import { ApplicationDocumentIdsDTO } from '../models/applicant-resource';
 const BASE_PATH = '';
 
 /**
@@ -37,17 +37,6 @@ export function getApplicantProfileResource(): HttpResourceRef<ApplicantDTO | un
 export function getApplicantProfileDocumentIdsResource(): HttpResourceRef<ApplicationDocumentIdsDTO | undefined> {
     return httpResource<ApplicationDocumentIdsDTO>(() => {
         return `${BASE_PATH}/api/applicants/profile/document-ids`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getSubjectAreaSubscriptionsResource(): HttpResourceRef<Array<string> | undefined> {
-    return httpResource<Array<string>>(() => {
-        return `${BASE_PATH}/api/applicants/subject-area-subscriptions`;
     });
 }
 

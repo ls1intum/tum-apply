@@ -148,6 +148,9 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         for (Map.Entry<String, TagUsage> entry : usageByTag.entrySet()) {
             String apiFilename = toApiFilename(entry.getKey());
             TagUsage usage = entry.getValue();
+            if (!usage.hasMutation) {
+                openapiGeneratorIgnoreList.add("api/" + apiFilename + "-api.ts");
+            }
             if (useHttpResource && separateResources && !usage.hasGet) {
                 openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
             }
@@ -278,20 +281,6 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         operations.put("mutationOperations", mutationOperations);
         operations.put("hasGetOperations", !getOperations.isEmpty());
         operations.put("hasMutationOperations", !mutationOperations.isEmpty());
-
-        // Build tsImports: map each imported model class to its kebab-case filename
-        Set<String> modelImports = new LinkedHashSet<>();
-        for (CodegenOperation op : ops) {
-            modelImports.addAll(op.imports);
-        }
-        List<Map<String, String>> tsImports = new ArrayList<>();
-        for (String im : modelImports) {
-            Map<String, String> tsImport = new HashMap<>();
-            tsImport.put("classname", im);
-            tsImport.put("filename", toModelFilename(im));
-            tsImports.add(tsImport);
-        }
-        result.put("tsImports", tsImports);
 
         return result;
     }

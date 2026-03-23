@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { InterviewSlotDTO } from './interview-slot-dto';
-import type { IntervieweeUserDTO } from './interviewee-user-dto';
+import type { InterviewSlotDTO } from 'interview-slot-dto';
+import type { IntervieweeUserDTO } from 'interviewee-user-dto';
 
 export interface IntervieweeDTO {
     readonly applicationId?: string;

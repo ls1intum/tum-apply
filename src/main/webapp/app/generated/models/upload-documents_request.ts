@@ -8,9 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { KeycloakUserDTO } from 'keycloak-user-dto';
 
-export interface AddMembersToResearchGroupDTO {
-    readonly keycloakUsers: Array<KeycloakUserDTO>;
-    readonly researchGroupId?: string;
+export interface UploadDocumentsRequest {
+    readonly files: Array<Blob>;
 }

@@ -15,8 +15,8 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { DepartmentDTO } from '../models/department-dto';
-import { PageResponseDTODepartmentDTO } from '../models/page-response-dto-department-dto';
+import { DepartmentDTO } from '../models/department-resource';
+import { PageResponseDTODepartmentDTO } from '../models/department-resource';
 
 const BASE_PATH = '';
 

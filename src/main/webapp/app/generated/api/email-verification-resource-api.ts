@@ -9,13 +9,13 @@
  */
 
 /**
- * EmailVerificationResourceApi - API service
+ * EmailVerificationResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SendCodeRequest } from '../models/send-code-request';
+import { SendCodeRequest } from '../models/email-verification-resource';
 
 @Injectable({ providedIn: 'root' })
 export class EmailVerificationResourceApi {
@@ -29,7 +29,7 @@ export class EmailVerificationResourceApi {
      */
     send(sendCodeRequest: SendCodeRequest): Observable<void> {
         const url = `${this.basePath}/api/auth/send-code`;
-        return this.http.post<void>(url, sendCodeRequest);
+        return this.http.post(url, sendCodeRequest);
     }
 
     /**
@@ -39,7 +39,7 @@ export class EmailVerificationResourceApi {
      */
     sendRegistrationEmail(sendCodeRequest: SendCodeRequest): Observable<void> {
         const url = `${this.basePath}/api/auth/send-registration-email`;
-        return this.http.post<void>(url, sendCodeRequest);
+        return this.http.post(url, sendCodeRequest);
     }
 
 }

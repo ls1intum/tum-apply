@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ApplicantForApplicationDetailDTO } from './applicant-for-application-detail-dto';
+import type { ApplicantForApplicationDetailDTO } from 'applicant-for-application-detail-dto';
 
 export interface ApplicationDetailDTO {
     readonly applicant?: ApplicantForApplicationDetailDTO;

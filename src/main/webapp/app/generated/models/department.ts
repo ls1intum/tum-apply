@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { School } from './school';
+import type { School } from 'school';
 
 export interface Department {
     readonly createdAt?: string;

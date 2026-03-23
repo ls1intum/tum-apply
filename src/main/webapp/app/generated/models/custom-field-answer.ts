@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { CustomField } from './custom-field';
-import type { Application } from './application';
+import type { CustomField } from 'custom-field';
+import type { Application } from 'application';
 
 export interface CustomFieldAnswer {
     readonly answers?: Array<string>;

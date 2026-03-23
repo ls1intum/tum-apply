@@ -9,14 +9,14 @@
  */
 
 /**
- * GenderBiasAnalysisResourceApi - API service
+ * GenderBiasAnalysisResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GenderBiasAnalysisResponse } from '../models/gender-bias-analysis-response';
-import { GenderBiasAnalysisRequest } from '../models/gender-bias-analysis-request';
+import { GenderBiasAnalysisRequest } from '../models/gender-bias-analysis-resource';
+import { GenderBiasAnalysisResponse } from '../models/gender-bias-analysis-resource';
 
 @Injectable({ providedIn: 'root' })
 export class GenderBiasAnalysisResourceApi {

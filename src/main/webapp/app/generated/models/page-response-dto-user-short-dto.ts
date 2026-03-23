@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { UserShortDTO } from './user-short-dto';
+import type { UserShortDTO } from 'user-short-dto';
 
 export interface PageResponseDTOUserShortDTO {
     readonly content?: Array<UserShortDTO>;

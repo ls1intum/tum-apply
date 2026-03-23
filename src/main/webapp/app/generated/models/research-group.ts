@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { Department } from './department';
-import type { School } from './school';
-import type { UserResearchGroupRole } from './user-research-group-role';
+import type { Department } from 'department';
+import type { School } from 'school';
+import type { UserResearchGroupRole } from 'user-research-group-role';
 
 export interface ResearchGroup {
     readonly abbreviation?: string;

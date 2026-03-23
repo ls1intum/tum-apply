@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroupShortDTO } from './research-group-short-dto';
+import type { ResearchGroupShortDTO } from 'research-group-short-dto';
 
 export interface UserShortDTO {
     readonly avatar?: string;

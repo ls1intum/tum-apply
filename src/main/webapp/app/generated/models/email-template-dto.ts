@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { EmailTemplateTranslationDTO } from './email-template-translation-dto';
+import type { EmailTemplateTranslationDTO } from 'email-template-translation-dto';
 
 export interface EmailTemplateDTO {
     readonly emailTemplateId?: string;

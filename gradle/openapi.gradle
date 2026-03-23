@@ -6,7 +6,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath "org.yaml:snakeyaml:${rootProject.property('snakeyamlVersion')}"
+    classpath "org.yaml:snakeyaml:${rootProject.property('snakeyaml_version')}"
   }
 }
 

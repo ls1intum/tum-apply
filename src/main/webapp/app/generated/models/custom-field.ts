@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { Job } from './job';
-import type { CustomFieldAnswer } from './custom-field-answer';
+import type { Job } from 'job';
+import type { CustomFieldAnswer } from 'custom-field-answer';
 
 export interface CustomField {
     readonly answerOptions?: Array<string>;

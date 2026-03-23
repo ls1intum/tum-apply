@@ -9,14 +9,14 @@
  */
 
 /**
- * PdfExportResourceApi - API service
+ * PdfExportResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicationPDFRequest } from '../models/application-pdf-request';
-import { JobPreviewRequest } from '../models/job-preview-request';
+import { ApplicationPDFRequest } from '../models/pdf-export-resource';
+import { JobPreviewRequest } from '../models/pdf-export-resource';
 
 @Injectable({ providedIn: 'root' })
 export class PdfExportResourceApi {

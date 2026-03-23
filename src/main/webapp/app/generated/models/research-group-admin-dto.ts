@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { DepartmentDTO } from './department-dto';
+import type { DepartmentDTO } from 'department-dto';
 
 export interface ResearchGroupAdminDTO {
     readonly createdAt?: string;

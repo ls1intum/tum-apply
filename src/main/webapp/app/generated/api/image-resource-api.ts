@@ -9,13 +9,13 @@
  */
 
 /**
- * ImageResourceApi - API service
+ * ImageResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpHeaders, HttpHeaders, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ImageDTO } from '../models/image-dto';
+import { ImageDTO } from '../models/image-resource';
 
 @Injectable({ providedIn: 'root' })
 export class ImageResourceApi {
@@ -30,79 +30,7 @@ export class ImageResourceApi {
     deleteImage(imageId: string): Observable<void> {
         const imageIdPath = encodeURIComponent(String(imageId));
         const url = `${this.basePath}/api/images/${imageIdPath}`;
-        return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param departmentId 
-     */
-    getDefaultJobBanners(departmentId?: string): Observable<Array<ImageDTO>> {
-        const queryParams: Record<string, string> = {};
-        if (departmentId !== undefined && departmentId !== null) {
-            queryParams['departmentId'] = String(departmentId);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/images/defaults/job-banners${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param schoolId 
-     */
-    getDefaultJobBannersBySchool(schoolId: string): Observable<Array<ImageDTO>> {
-        const queryParams: Record<string, string> = {};
-        if (schoolId !== undefined && schoolId !== null) {
-            queryParams['schoolId'] = String(schoolId);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/images/defaults/job-banners/by-school${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getMyDefaultJobBanners(): Observable<Array<ImageDTO>> {
-        const url = `${this.basePath}/api/images/defaults/job-banners/for-me`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getMyUploadedImages(): Observable<Array<ImageDTO>> {
-        const url = `${this.basePath}/api/images/my-uploads`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getResearchGroupJobBanners(): Observable<Array<ImageDTO>> {
-        const url = `${this.basePath}/api/images/research-group/job-banners`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param researchGroupId 
-     */
-    getResearchGroupJobBannersByResearchGroup(researchGroupId: string): Observable<Array<ImageDTO>> {
-        const queryParams: Record<string, string> = {};
-        if (researchGroupId !== undefined && researchGroupId !== null) {
-            queryParams['researchGroupId'] = String(researchGroupId);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/images/research-group/job-banners/by-research-group${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<ImageDTO>>(url);
+        return this.http.delete(url);
     }
 
     /**

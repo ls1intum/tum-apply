@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { UserForApplicationDetailDTO } from './user-for-application-detail-dto';
+import type { UserForApplicationDetailDTO } from 'user-for-application-detail-dto';
 
 export interface ApplicantForApplicationDetailDTO {
     readonly bachelorDegreeName?: string;

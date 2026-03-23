@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroupDTO } from './research-group-dto';
+import type { ResearchGroupDTO } from 'research-group-dto';
 
 export interface PageResponseDTOResearchGroupDTO {
     readonly content?: Array<ResearchGroupDTO>;
