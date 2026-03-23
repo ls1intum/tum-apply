@@ -4,6 +4,7 @@ import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.compone
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 import { ToastService } from 'app/service/toast-service';
+import { SubjectAreaNotificationService } from 'app/service/subject-area-notification.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -17,6 +18,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 export class JobsPreviewSectionComponent {
   readonly jobService = inject(JobResourceApiService);
   readonly toastService = inject(ToastService);
+  readonly subjectAreaNotifications = inject(SubjectAreaNotificationService);
   readonly router = inject(Router);
 
   readonly jobs = signal<JobCardDTO[]>([]);
@@ -26,6 +28,9 @@ export class JobsPreviewSectionComponent {
 
   constructor() {
     void this.loadJobs();
+    if (this.subjectAreaNotifications.canManageSubjectAreaSubscriptions()) {
+      void this.subjectAreaNotifications.loadSubjectAreaSubscriptions();
+    }
   }
 
   async loadJobs(): Promise<void> {

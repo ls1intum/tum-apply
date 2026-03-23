@@ -137,8 +137,33 @@
           <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
-                <span jhiTranslate="jobDetailPage.labels.subjectArea"></span>
-                <span class="value">{{ (dropDownOptions.getSubjectAreaTranslationKey(job.subjectArea) | translate) || '-' }}</span>
+                <span class="flex items-center gap-1">
+                  <span jhiTranslate="jobDetailPage.labels.subjectArea"></span>
+                  @if (subjectAreaNotifications.canManageSubjectAreaSubscriptions()) {
+                    <button
+                      type="button"
+                      class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-transparent transition-colors hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      [class.text-primary]="subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea)"
+                      [class.text-text-disabled]="!subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea)"
+                      [pTooltip]="subjectAreaNotificationTooltipKey(job.subjectArea) | translate"
+                      tooltipPosition="top"
+                      [attr.aria-label]="
+                        subjectAreaNotificationAriaLabelKey(job.subjectArea)
+                          | translate: { subjectArea: dropDownOptions.getSubjectAreaTranslationKey(job.subjectArea) | translate }
+                      "
+                      [attr.aria-pressed]="subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea)"
+                      (click)="subjectAreaNotifications.toggleSubjectAreaNotification(job.subjectArea)"
+                    >
+                      <fa-icon
+                        [icon]="subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea) ? ['fas', 'bell'] : ['fas', 'bell-slash']"
+                        class="w-4"
+                      />
+                    </button>
+                  }
+                </span>
+                <span class="value">
+                  {{ (dropDownOptions.getSubjectAreaTranslationKey(job.subjectArea) | translate) || '-' }}
+                </span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>

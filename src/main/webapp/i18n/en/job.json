@@ -250,18 +250,40 @@
     },
     "tooltips": {
       "subjectArea": "Subject Area",
+      "subscribeToSubjectArea": "Enable notifications for this subject area",
+      "subjectAreaSubscribed": "Disable notifications for this subject area",
       "location": "Location",
       "supervisor": "Supervisor",
       "startDate": "Start Date"
     },
     "ariaLabels": {
-      "viewJobDetails": "View details for {{title}}"
+      "viewJobDetails": "View details for {{title}}",
+      "subscribeToSubjectArea": "Enable notifications for {{subjectArea}}",
+      "subjectAreaSubscribed": "Disable notifications for {{subjectArea}}"
     },
     "hoursPerWeek": "{{workload}} h/week",
+    "subjectAreaNotifications": {
+      "activated": {
+        "summary": "Notifications enabled",
+        "detail": "You will now receive notifications about new job offers in this subject area. Manage them in settings."
+      },
+      "deactivated": {
+        "summary": "Notifications disabled",
+        "detail": "You will no longer receive notifications about new job offers in this subject area."
+      },
+      "error": {
+        "summary": "Update failed",
+        "detail": "The notification for this subject area could not be updated. Please try again."
+      }
+    },
     "errors": {
       "loadFilter": {
         "summary": "Error",
         "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+      },
+      "loadSubjectAreaSubscriptions": {
+        "summary": "Error",
+        "detail": "Failed to load added subject areas. Please try refreshing the page, or contact us if the problem continues."
       },
       "loadJobs": {
         "summary": "Error",

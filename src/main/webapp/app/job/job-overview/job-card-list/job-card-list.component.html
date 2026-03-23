@@ -38,6 +38,8 @@
           [jobId]="job.jobId"
           [jobTitle]="job.title"
           [subjectArea]="job.subjectArea"
+          [showSubscriptionBell]="subjectAreaNotifications.canManageSubjectAreaSubscriptions()"
+          [isSubjectAreaSubscribed]="subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea)"
           [location]="job.location.toString()"
           [professor]="job.professorName"
           [avatarUrl]="job.avatar"
@@ -48,6 +50,7 @@
           [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
           [contractDuration]="job.contractDuration"
           [headerImageUrl]="job.imageUrl || getExampleImageUrl(i)"
+          (subjectAreaNotificationClick)="subjectAreaNotifications.toggleSubjectAreaNotification($event)"
         />
       </div>
     }

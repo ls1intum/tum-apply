@@ -250,18 +250,40 @@
     },
     "tooltips": {
       "subjectArea": "Fachbereich",
+      "subscribeToSubjectArea": "Benachrichtigungen für diesen Fachbereich aktivieren",
+      "subjectAreaSubscribed": "Benachrichtigungen für diesen Fachbereich deaktivieren",
       "location": "Standort",
       "supervisor": "Betreuer:in",
       "startDate": "Startdatum"
     },
     "ariaLabels": {
-      "viewJobDetails": "Details anzeigen für {{title}}"
+      "viewJobDetails": "Details anzeigen für {{title}}",
+      "subscribeToSubjectArea": "Benachrichtigungen für {{subjectArea}} aktivieren",
+      "subjectAreaSubscribed": "Benachrichtigungen für {{subjectArea}} deaktivieren"
     },
     "hoursPerWeek": "{{workload}} h/Woche",
+    "subjectAreaNotifications": {
+      "activated": {
+        "summary": "Benachrichtigungen aktiviert",
+        "detail": "Du erhältst nun Benachrichtigungen für neue Stellenangebote in diesem Fachbereich. Verwalte diese in den Einstellungen."
+      },
+      "deactivated": {
+        "summary": "Benachrichtigungen deaktiviert",
+        "detail": "Du erhältst keine Benachrichtigungen mehr für neue Stellenangebote in diesem Fachbereich."
+      },
+      "error": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Die Benachrichtigung für diesen Fachbereich konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      }
+    },
     "errors": {
       "loadFilter": {
         "summary": "Fehler",
         "detail": "Laden der Filteroptionen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "loadSubjectAreaSubscriptions": {
+        "summary": "Fehler",
+        "detail": "Laden der hinzugefügten Fachbereiche fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadJobs": {
         "summary": "Fehler",

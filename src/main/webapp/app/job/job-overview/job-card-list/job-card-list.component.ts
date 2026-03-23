@@ -7,6 +7,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
+import { SubjectAreaNotificationService } from 'app/service/subject-area-notification.service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { emptyToUndef } from 'app/core/util/array-util.service';
@@ -58,6 +59,7 @@ export class JobCardListComponent {
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
+  readonly subjectAreaNotifications = inject(SubjectAreaNotificationService);
 
   private jobService = inject(JobResourceApiService);
   private readonly toastService = inject(ToastService);
@@ -76,6 +78,9 @@ export class JobCardListComponent {
 
   constructor() {
     void this.loadAllFilter();
+    if (this.subjectAreaNotifications.canManageSubjectAreaSubscriptions()) {
+      void this.subjectAreaNotifications.loadSubjectAreaSubscriptions();
+    }
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {

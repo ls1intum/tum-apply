@@ -16,6 +16,7 @@ import {
   faBan,
   faBars,
   faBell,
+  faBellSlash,
   faBook,
   faBookOpen,
   faBrain,
@@ -127,6 +128,7 @@ import {
   faWrench,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { faBell as faBellRegular, faBellSlash as faBellSlashRegular } from '@fortawesome/free-regular-svg-icons';
 import { faApple, faGoogle, faLinkedin, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
 export const fontAwesomeIcons = [
@@ -148,6 +150,9 @@ export const fontAwesomeIcons = [
   faBan,
   faBars,
   faBell,
+  faBellSlash,
+  faBellRegular,
+  faBellSlashRegular,
   faBook,
   faBookOpen,
   faBriefcase,

@@ -6,6 +6,7 @@ import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-transla
 import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
+import { SubjectAreaNotificationService } from 'app/service/subject-area-notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -277,6 +278,7 @@ export class JobDetailComponent {
   readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
   readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
+  readonly subjectAreaNotifications = inject(SubjectAreaNotificationService);
   private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
@@ -293,6 +295,12 @@ export class JobDetailComponent {
       void this.init();
     }
   });
+
+  constructor() {
+    if (this.subjectAreaNotifications.canManageSubjectAreaSubscriptions()) {
+      void this.subjectAreaNotifications.loadSubjectAreaSubscriptions();
+    }
+  }
 
   isProfessorOrEmployee(): boolean {
     return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);
@@ -313,6 +321,18 @@ export class JobDetailComponent {
 
   trimWebsiteUrl(url: string): string {
     return trimWebsiteUrl(url);
+  }
+
+  subjectAreaNotificationTooltipKey(subjectArea: JobFormDTO.SubjectAreaEnum | undefined): string {
+    return this.subjectAreaNotifications.isSubjectAreaSubscribed(subjectArea)
+      ? 'jobOverviewPage.tooltips.subjectAreaSubscribed'
+      : 'jobOverviewPage.tooltips.subscribeToSubjectArea';
+  }
+
+  subjectAreaNotificationAriaLabelKey(subjectArea: JobFormDTO.SubjectAreaEnum | undefined): string {
+    return this.subjectAreaNotifications.isSubjectAreaSubscribed(subjectArea)
+      ? 'jobOverviewPage.ariaLabels.subjectAreaSubscribed'
+      : 'jobOverviewPage.ariaLabels.subscribeToSubjectArea';
   }
 
   onApply(): void {

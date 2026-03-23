@@ -56,7 +56,27 @@
           [pTooltip]="'jobOverviewPage.tooltips.subjectArea' | translate"
           tooltipPosition="top"
         />
-        <span class="truncate">{{ dropDownOptions.getSubjectAreaTranslationKey(subjectArea()) | translate }}</span>
+        <div class="flex min-w-0 items-center gap-1">
+          <span class="truncate">{{ dropDownOptions.getSubjectAreaTranslationKey(subjectArea()) | translate }}</span>
+          @if (showSubscriptionBell()) {
+            <button
+              type="button"
+              class="job-card-subscription-button inline-flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent transition-colors hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              [class.text-primary]="isSubjectAreaSubscribed()"
+              [class.text-text-disabled]="!isSubjectAreaSubscribed()"
+              [pTooltip]="subscriptionTooltipKey() | translate"
+              tooltipPosition="top"
+              [attr.aria-label]="
+                subjectAreaNotificationAriaLabelKey(subjectArea())
+                  | translate: { subjectArea: dropDownOptions.getSubjectAreaTranslationKey(subjectArea()) | translate }
+              "
+              [attr.aria-pressed]="isSubjectAreaSubscribed()"
+              (click)="onSubscriptionBellClick($event)"
+            >
+              <fa-icon [icon]="isSubjectAreaSubscribed() ? ['fas', 'bell'] : ['fas', 'bell-slash']" class="w-4" />
+            </button>
+          }
+        </div>
       </div>
       <div class="flex items-center gap-2 text-sm">
         <fa-icon
