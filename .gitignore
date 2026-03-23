@@ -176,3 +176,7 @@ storage
 ######################
 /openapi/openapi.yaml
 /src/main/webapp/app/generated/
+
+# OpenAPI generator subproject build artifacts
+openapi-generator-angular21/build/
+openapi-generator-angular21/.gradle/
