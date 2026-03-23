@@ -9,15 +9,14 @@
  */
 
 /**
- * ApplicantResourceApi - API service
+ * ApplicantResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicantDTO } from '../models/applicant-dto';
-import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
-import { DocumentInformationHolderDTO } from '../models/document-information-holder-dto';
+import { ApplicantDTO } from '../models/applicant-resource';
+import { DocumentInformationHolderDTO } from '../models/applicant-resource';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicantResourceApi {
@@ -27,61 +26,12 @@ export class ApplicantResourceApi {
     /**
      * 
      * 
-     * @param subjectArea 
-     */
-    addSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'): Observable<void> {
-        const subjectAreaPath = encodeURIComponent(String(subjectArea));
-        const url = `${this.basePath}/api/applicants/subject-area-subscriptions/${subjectAreaPath}`;
-        return this.http.post<void>(url, null);
-    }
-
-    /**
-     * 
-     * 
      * @param documentDictionaryId 
      */
     deleteApplicantProfileDocument(documentDictionaryId: string): Observable<void> {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}`;
-        return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getApplicantProfile(): Observable<ApplicantDTO> {
-        const url = `${this.basePath}/api/applicants/profile`;
-        return this.http.get<ApplicantDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getApplicantProfileDocumentIds(): Observable<ApplicationDocumentIdsDTO> {
-        const url = `${this.basePath}/api/applicants/profile/document-ids`;
-        return this.http.get<ApplicationDocumentIdsDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getSubjectAreaSubscriptions(): Observable<Array<string>> {
-        const url = `${this.basePath}/api/applicants/subject-area-subscriptions`;
-        return this.http.get<Array<string>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param subjectArea 
-     */
-    removeSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'): Observable<void> {
-        const subjectAreaPath = encodeURIComponent(String(subjectArea));
-        const url = `${this.basePath}/api/applicants/subject-area-subscriptions/${subjectAreaPath}`;
-        return this.http.delete<void>(url);
+        return this.http.delete(url);
     }
 
     /**
@@ -98,7 +48,7 @@ export class ApplicantResourceApi {
         }
         const queryString = new URLSearchParams(queryParams).toString();
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
-        return this.http.put<void>(url, null);
+        return this.http.put(url);
     }
 
     /**

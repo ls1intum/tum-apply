@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { BiasedWordDTO } from './biased-word-dto';
+import type { BiasedWordDTO } from 'biased-word-dto';
 
 export interface GenderBiasAnalysisResponse {
     readonly biasedWords?: Array<BiasedWordDTO>;

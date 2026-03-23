@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { SortObject } from './sort-object';
+import type { SortObject } from 'sort-object';
 
 export interface PageableObject {
     readonly offset?: number;

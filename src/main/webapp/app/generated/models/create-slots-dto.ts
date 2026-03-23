@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { SlotInput } from './slot-input';
+import type { SlotInput } from 'slot-input';
 
 export interface CreateSlotsDTO {
     readonly slots: Array<SlotInput>;

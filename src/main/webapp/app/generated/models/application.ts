@@ -8,11 +8,11 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { DocumentDictionary } from './document-dictionary';
-import type { InternalComment } from './internal-comment';
-import type { Applicant } from './applicant';
-import type { ApplicationReview } from './application-review';
-import type { CustomFieldAnswer } from './custom-field-answer';
+import type { DocumentDictionary } from 'document-dictionary';
+import type { InternalComment } from 'internal-comment';
+import type { Applicant } from 'applicant';
+import type { ApplicationReview } from 'application-review';
+import type { CustomFieldAnswer } from 'custom-field-answer';
 
 export interface Application {
     readonly applicant?: Applicant;
@@ -56,17 +56,6 @@ export interface Application {
 }
 
 export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
-
-export const ApplicationStateEnum = {
-  Saved: 'SAVED' as const,
-  Sent: 'SENT' as const,
-  Accepted: 'ACCEPTED' as const,
-  InReview: 'IN_REVIEW' as const,
-  Rejected: 'REJECTED' as const,
-  Withdrawn: 'WITHDRAWN' as const,
-  JobClosed: 'JOB_CLOSED' as const,
-  Interview: 'INTERVIEW' as const,
-} as const;
 
 export const ApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'INTERVIEW'] as const;
 

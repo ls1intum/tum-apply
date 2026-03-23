@@ -9,18 +9,15 @@
  */
 
 /**
- * ApplicationResourceApi - API service
+ * ApplicationResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicationForApplicantDTO } from '../models/application-for-applicant-dto';
-import { ApplicationDetailDTO } from '../models/application-detail-dto';
-import { PageApplicationOverviewDTO } from '../models/page-application-overview-dto';
-import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
-import { UpdateApplicationDTO } from '../models/update-application-dto';
-import { DocumentInformationHolderDTO } from '../models/document-information-holder-dto';
+import { ApplicationForApplicantDTO } from '../models/application-resource';
+import { DocumentInformationHolderDTO } from '../models/application-resource';
+import { UpdateApplicationDTO } from '../models/application-resource';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationResourceApi {
@@ -46,7 +43,7 @@ export class ApplicationResourceApi {
     deleteApplication(applicationId: string): Observable<void> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/applications/${applicationIdPath}`;
-        return this.http.delete<void>(url);
+        return this.http.delete(url);
     }
 
     /**
@@ -57,67 +54,7 @@ export class ApplicationResourceApi {
     deleteDocumentFromApplication(documentDictionaryId: string): Observable<void> {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/applications/documents/${documentDictionaryIdPath}`;
-        return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     */
-    getApplicationById(applicationId: string): Observable<ApplicationForApplicantDTO> {
-        const applicationIdPath = encodeURIComponent(String(applicationId));
-        const url = `${this.basePath}/api/applications/${applicationIdPath}`;
-        return this.http.get<ApplicationForApplicantDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     */
-    getApplicationForDetailPage(applicationId: string): Observable<ApplicationDetailDTO> {
-        const applicationIdPath = encodeURIComponent(String(applicationId));
-        const url = `${this.basePath}/api/applications/${applicationIdPath}/detail`;
-        return this.http.get<ApplicationDetailDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param sortBy 
-     * @param direction 
-     */
-    getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageApplicationOverviewDTO> {
-        const queryParams: Record<string, string> = {};
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/applications/pages${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageApplicationOverviewDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     */
-    getDocumentDictionaryIds(applicationId: string): Observable<ApplicationDocumentIdsDTO> {
-        const applicationIdPath = encodeURIComponent(String(applicationId));
-        const url = `${this.basePath}/api/applications/getDocumentIds/${applicationIdPath}`;
-        return this.http.get<ApplicationDocumentIdsDTO>(url);
+        return this.http.delete(url);
     }
 
     /**
@@ -134,7 +71,7 @@ export class ApplicationResourceApi {
         }
         const queryString = new URLSearchParams(queryParams).toString();
         const url = `${this.basePath}/api/applications/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
-        return this.http.put<void>(url, null);
+        return this.http.put(url);
     }
 
     /**
@@ -173,7 +110,7 @@ export class ApplicationResourceApi {
     withdrawApplication(applicationId: string): Observable<void> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/applications/withdraw/${applicationIdPath}`;
-        return this.http.put<void>(url, null);
+        return this.http.put(url, null);
     }
 
 }

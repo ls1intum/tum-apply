@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroupShortDTO } from './research-group-short-dto';
+import type { ResearchGroupShortDTO } from 'research-group-short-dto';
 
 export interface UserShortDTO {
     readonly avatar?: string;
@@ -16,19 +16,12 @@ export interface UserShortDTO {
     readonly firstName?: string;
     readonly lastName?: string;
     readonly researchGroup?: ResearchGroupShortDTO;
-    readonly roles?: Array<UserShortDTORolesEnum>;
+    readonly roles?: UserShortDTORolesEnum;
     readonly universityId?: string;
     readonly userId?: string;
 }
 
 export type UserShortDTORolesEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN' | 'EMPLOYEE';
-
-export const UserShortDTORolesEnum = {
-  Applicant: 'APPLICANT' as const,
-  Professor: 'PROFESSOR' as const,
-  Admin: 'ADMIN' as const,
-  Employee: 'EMPLOYEE' as const,
-} as const;
 
 export const UserShortDTORolesEnumValues = ['APPLICANT', 'PROFESSOR', 'ADMIN', 'EMPLOYEE'] as const;
 

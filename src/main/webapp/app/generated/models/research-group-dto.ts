@@ -25,11 +25,5 @@ export interface ResearchGroupDTO {
 
 export type ResearchGroupDTOStateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
 
-export const ResearchGroupDTOStateEnum = {
-  Draft: 'DRAFT' as const,
-  Active: 'ACTIVE' as const,
-  Denied: 'DENIED' as const,
-} as const;
-
 export const ResearchGroupDTOStateEnumValues = ['DRAFT', 'ACTIVE', 'DENIED'] as const;
 

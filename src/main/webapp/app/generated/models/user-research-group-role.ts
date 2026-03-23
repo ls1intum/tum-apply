@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroup } from './research-group';
-import type { User } from './user';
+import type { ResearchGroup } from 'research-group';
+import type { User } from 'user';
 
 export interface UserResearchGroupRole {
     readonly researchGroup?: ResearchGroup;
@@ -19,13 +19,6 @@ export interface UserResearchGroupRole {
 }
 
 export type UserResearchGroupRoleRoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN' | 'EMPLOYEE';
-
-export const UserResearchGroupRoleRoleEnum = {
-  Applicant: 'APPLICANT' as const,
-  Professor: 'PROFESSOR' as const,
-  Admin: 'ADMIN' as const,
-  Employee: 'EMPLOYEE' as const,
-} as const;
 
 export const UserResearchGroupRoleRoleEnumValues = ['APPLICANT', 'PROFESSOR', 'ADMIN', 'EMPLOYEE'] as const;
 

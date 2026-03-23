@@ -30,94 +30,17 @@ export interface JobFormDTO {
 
 export type JobFormDTOFundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
 
-export const JobFormDTOFundingTypeEnum = {
-  FullyFunded: 'FULLY_FUNDED' as const,
-  PartiallyFunded: 'PARTIALLY_FUNDED' as const,
-  Scholarship: 'SCHOLARSHIP' as const,
-  SelfFunded: 'SELF_FUNDED' as const,
-  IndustrySponsored: 'INDUSTRY_SPONSORED' as const,
-  GovernmentFunded: 'GOVERNMENT_FUNDED' as const,
-  ResearchGrant: 'RESEARCH_GRANT' as const,
-} as const;
-
 export const JobFormDTOFundingTypeEnumValues = ['FULLY_FUNDED', 'PARTIALLY_FUNDED', 'SCHOLARSHIP', 'SELF_FUNDED', 'INDUSTRY_SPONSORED', 'GOVERNMENT_FUNDED', 'RESEARCH_GRANT'] as const;
 
 export type JobFormDTOLocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
-
-export const JobFormDTOLocationEnum = {
-  Garching: 'GARCHING' as const,
-  GarchingHochbrueck: 'GARCHING_HOCHBRUECK' as const,
-  Heilbronn: 'HEILBRONN' as const,
-  Munich: 'MUNICH' as const,
-  Straubing: 'STRAUBING' as const,
-  Weihenstephan: 'WEIHENSTEPHAN' as const,
-  Singapore: 'SINGAPORE' as const,
-} as const;
 
 export const JobFormDTOLocationEnumValues = ['GARCHING', 'GARCHING_HOCHBRUECK', 'HEILBRONN', 'MUNICH', 'STRAUBING', 'WEIHENSTEPHAN', 'SINGAPORE'] as const;
 
 export type JobFormDTOStateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
 
-export const JobFormDTOStateEnum = {
-  Draft: 'DRAFT' as const,
-  Published: 'PUBLISHED' as const,
-  Closed: 'CLOSED' as const,
-  ApplicantFound: 'APPLICANT_FOUND' as const,
-} as const;
-
 export const JobFormDTOStateEnumValues = ['DRAFT', 'PUBLISHED', 'CLOSED', 'APPLICANT_FOUND'] as const;
 
 export type JobFormDTOSubjectAreaEnum = 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING';
-
-export const JobFormDTOSubjectAreaEnum = {
-  AerospaceEngineering: 'AEROSPACE_ENGINEERING' as const,
-  AgriculturalEngineering: 'AGRICULTURAL_ENGINEERING' as const,
-  AgriculturalScience: 'AGRICULTURAL_SCIENCE' as const,
-  Architecture: 'ARCHITECTURE' as const,
-  ArtHistory: 'ART_HISTORY' as const,
-  AutomotiveEngineering: 'AUTOMOTIVE_ENGINEERING' as const,
-  Bioengineering: 'BIOENGINEERING' as const,
-  Biochemistry: 'BIOCHEMISTRY' as const,
-  Biology: 'BIOLOGY' as const,
-  BiomedicalEngineering: 'BIOMEDICAL_ENGINEERING' as const,
-  Biotechnology: 'BIOTECHNOLOGY' as const,
-  Chemistry: 'CHEMISTRY' as const,
-  ComputerEngineering: 'COMPUTER_ENGINEERING' as const,
-  ComputerScience: 'COMPUTER_SCIENCE' as const,
-  ComputerVision: 'COMPUTER_VISION' as const,
-  DataScience: 'DATA_SCIENCE' as const,
-  Economics: 'ECONOMICS' as const,
-  EducationTechnology: 'EDUCATION_TECHNOLOGY' as const,
-  ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as const,
-  EnergySystems: 'ENERGY_SYSTEMS' as const,
-  EnvironmentalBiology: 'ENVIRONMENTAL_BIOLOGY' as const,
-  EnvironmentalChemistry: 'ENVIRONMENTAL_CHEMISTRY' as const,
-  EnvironmentalEngineering: 'ENVIRONMENTAL_ENGINEERING' as const,
-  EnvironmentalLaw: 'ENVIRONMENTAL_LAW' as const,
-  EnvironmentalScience: 'ENVIRONMENTAL_SCIENCE' as const,
-  FinancialEngineering: 'FINANCIAL_ENGINEERING' as const,
-  FoodTechnology: 'FOOD_TECHNOLOGY' as const,
-  Geology: 'GEOLOGY' as const,
-  Geosciences: 'GEOSCIENCES' as const,
-  IndustrialEngineering: 'INDUSTRIAL_ENGINEERING' as const,
-  InformationSystems: 'INFORMATION_SYSTEMS' as const,
-  LifeSciences: 'LIFE_SCIENCES' as const,
-  Linguistics: 'LINGUISTICS' as const,
-  MarineBiology: 'MARINE_BIOLOGY' as const,
-  MaterialsScience: 'MATERIALS_SCIENCE' as const,
-  Mathematics: 'MATHEMATICS' as const,
-  MechanicalEngineering: 'MECHANICAL_ENGINEERING' as const,
-  MedicalInformatics: 'MEDICAL_INFORMATICS' as const,
-  Neuroscience: 'NEUROSCIENCE' as const,
-  Philosophy: 'PHILOSOPHY' as const,
-  Physics: 'PHYSICS' as const,
-  Psychology: 'PSYCHOLOGY' as const,
-  SoftwareEngineering: 'SOFTWARE_ENGINEERING' as const,
-  SportsScience: 'SPORTS_SCIENCE' as const,
-  Statistics: 'STATISTICS' as const,
-  Telecommunications: 'TELECOMMUNICATIONS' as const,
-  UrbanPlanning: 'URBAN_PLANNING' as const,
-} as const;
 
 export const JobFormDTOSubjectAreaEnumValues = ['AEROSPACE_ENGINEERING', 'AGRICULTURAL_ENGINEERING', 'AGRICULTURAL_SCIENCE', 'ARCHITECTURE', 'ART_HISTORY', 'AUTOMOTIVE_ENGINEERING', 'BIOENGINEERING', 'BIOCHEMISTRY', 'BIOLOGY', 'BIOMEDICAL_ENGINEERING', 'BIOTECHNOLOGY', 'CHEMISTRY', 'COMPUTER_ENGINEERING', 'COMPUTER_SCIENCE', 'COMPUTER_VISION', 'DATA_SCIENCE', 'ECONOMICS', 'EDUCATION_TECHNOLOGY', 'ELECTRICAL_ENGINEERING', 'ENERGY_SYSTEMS', 'ENVIRONMENTAL_BIOLOGY', 'ENVIRONMENTAL_CHEMISTRY', 'ENVIRONMENTAL_ENGINEERING', 'ENVIRONMENTAL_LAW', 'ENVIRONMENTAL_SCIENCE', 'FINANCIAL_ENGINEERING', 'FOOD_TECHNOLOGY', 'GEOLOGY', 'GEOSCIENCES', 'INDUSTRIAL_ENGINEERING', 'INFORMATION_SYSTEMS', 'LIFE_SCIENCES', 'LINGUISTICS', 'MARINE_BIOLOGY', 'MATERIALS_SCIENCE', 'MATHEMATICS', 'MECHANICAL_ENGINEERING', 'MEDICAL_INFORMATICS', 'NEUROSCIENCE', 'PHILOSOPHY', 'PHYSICS', 'PSYCHOLOGY', 'SOFTWARE_ENGINEERING', 'SPORTS_SCIENCE', 'STATISTICS', 'TELECOMMUNICATIONS', 'URBAN_PLANNING'] as const;
 

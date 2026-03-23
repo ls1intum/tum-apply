@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { DepartmentDTO } from './department-dto';
+import type { DepartmentDTO } from 'department-dto';
 
 export interface ResearchGroupAdminDTO {
     readonly createdAt?: string;
@@ -20,12 +20,6 @@ export interface ResearchGroupAdminDTO {
 }
 
 export type ResearchGroupAdminDTOStatusEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
-
-export const ResearchGroupAdminDTOStatusEnum = {
-  Draft: 'DRAFT' as const,
-  Active: 'ACTIVE' as const,
-  Denied: 'DENIED' as const,
-} as const;
 
 export const ResearchGroupAdminDTOStatusEnumValues = ['DRAFT', 'ACTIVE', 'DENIED'] as const;
 

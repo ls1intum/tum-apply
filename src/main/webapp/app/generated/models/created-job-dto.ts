@@ -22,12 +22,5 @@ export interface CreatedJobDTO {
 
 export type CreatedJobDTOStateEnum = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND';
 
-export const CreatedJobDTOStateEnum = {
-  Draft: 'DRAFT' as const,
-  Published: 'PUBLISHED' as const,
-  Closed: 'CLOSED' as const,
-  ApplicantFound: 'APPLICANT_FOUND' as const,
-} as const;
-
 export const CreatedJobDTOStateEnumValues = ['DRAFT', 'PUBLISHED', 'CLOSED', 'APPLICANT_FOUND'] as const;
 

@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { PageableObject } from './pageable-object';
-import type { SortObject } from './sort-object';
-import type { ApplicationOverviewDTO } from './application-overview-dto';
+import type { PageableObject } from 'pageable-object';
+import type { SortObject } from 'sort-object';
+import type { ApplicationOverviewDTO } from 'application-overview-dto';
 
 export interface PageApplicationOverviewDTO {
     readonly content?: Array<ApplicationOverviewDTO>;

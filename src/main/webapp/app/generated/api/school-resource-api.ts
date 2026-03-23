@@ -9,16 +9,14 @@
  */
 
 /**
- * SchoolResourceApi - API service
+ * SchoolResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SchoolCreationDTO } from '../models/school-creation-dto';
-import { SchoolShortDTO } from '../models/school-short-dto';
-import { SchoolDTO } from '../models/school-dto';
-import { PageResponseDTOSchoolDTO } from '../models/page-response-dto-school-dto';
+import { SchoolCreationDTO } from '../models/school-resource';
+import { SchoolShortDTO } from '../models/school-resource';
 
 @Injectable({ providedIn: 'root' })
 export class SchoolResourceApi {
@@ -43,67 +41,7 @@ export class SchoolResourceApi {
     deleteSchool(id: string): Observable<void> {
         const idPath = encodeURIComponent(String(id));
         const url = `${this.basePath}/api/schools/delete/${idPath}`;
-        return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getAllSchools(): Observable<Array<SchoolShortDTO>> {
-        const url = `${this.basePath}/api/schools`;
-        return this.http.get<Array<SchoolShortDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getAllSchoolsWithDepartments(): Observable<Array<SchoolDTO>> {
-        const url = `${this.basePath}/api/schools/with-departments`;
-        return this.http.get<Array<SchoolDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param id 
-     */
-    getSchoolById(id: string): Observable<SchoolDTO> {
-        const idPath = encodeURIComponent(String(id));
-        const url = `${this.basePath}/api/schools/${idPath}`;
-        return this.http.get<SchoolDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param searchQuery 
-     * @param sortBy 
-     * @param direction 
-     */
-    getSchoolsForAdmin(pageSize?: number, pageNumber?: number, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTOSchoolDTO> {
-        const queryParams: Record<string, string> = {};
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/schools/admin/search${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTOSchoolDTO>(url);
+        return this.http.delete(url);
     }
 
     /**

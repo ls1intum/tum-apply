@@ -9,14 +9,14 @@
  */
 
 /**
- * PdfExportResourceApi - API service
+ * PdfExportResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicationPDFRequest } from '../models/application-pdf-request';
-import { JobPreviewRequest } from '../models/job-preview-request';
+import { ApplicationPDFRequest } from '../models/pdf-export-resource';
+import { JobPreviewRequest } from '../models/pdf-export-resource';
 
 @Injectable({ providedIn: 'root' })
 export class PdfExportResourceApi {
@@ -28,9 +28,9 @@ export class PdfExportResourceApi {
      * 
      * @param applicationPDFRequest 
      */
-    exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest): Observable<HttpResponse<Blob>> {
+    exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest): Observable<Blob> {
         const url = `${this.basePath}/api/export/application/pdf`;
-        return this.http.post(url, applicationPDFRequest, { responseType: 'blob', observe: 'response' });
+        return this.http.post<Blob>(url, applicationPDFRequest);
     }
 
     /**
@@ -38,9 +38,9 @@ export class PdfExportResourceApi {
      * 
      * @param jobPreviewRequest 
      */
-    exportJobPreviewToPDF(jobPreviewRequest: JobPreviewRequest): Observable<HttpResponse<Blob>> {
+    exportJobPreviewToPDF(jobPreviewRequest: JobPreviewRequest): Observable<Blob> {
         const url = `${this.basePath}/api/export/job/preview/pdf`;
-        return this.http.post(url, jobPreviewRequest, { responseType: 'blob', observe: 'response' });
+        return this.http.post<Blob>(url, jobPreviewRequest);
     }
 
     /**
@@ -49,10 +49,10 @@ export class PdfExportResourceApi {
      * @param id 
      * @param requestBody 
      */
-    exportJobToPDF(id: string, requestBody: { [key: string]: string; }): Observable<HttpResponse<Blob>> {
+    exportJobToPDF(id: string, requestBody: { [key: string]: string; }): Observable<Blob> {
         const idPath = encodeURIComponent(String(id));
         const url = `${this.basePath}/api/export/job/${idPath}/pdf`;
-        return this.http.post(url, requestBody, { responseType: 'blob', observe: 'response' });
+        return this.http.post<Blob>(url, requestBody);
     }
 
 }

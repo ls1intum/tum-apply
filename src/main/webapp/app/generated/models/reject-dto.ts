@@ -16,12 +16,5 @@ export interface RejectDTO {
 
 export type RejectDTOReasonEnum = 'JOB_FILLED' | 'JOB_OUTDATED' | 'FAILED_REQUIREMENTS' | 'OTHER_REASON';
 
-export const RejectDTOReasonEnum = {
-  JobFilled: 'JOB_FILLED' as const,
-  JobOutdated: 'JOB_OUTDATED' as const,
-  FailedRequirements: 'FAILED_REQUIREMENTS' as const,
-  OtherReason: 'OTHER_REASON' as const,
-} as const;
-
 export const RejectDTOReasonEnumValues = ['JOB_FILLED', 'JOB_OUTDATED', 'FAILED_REQUIREMENTS', 'OTHER_REASON'] as const;
 

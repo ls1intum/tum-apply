@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { InterviewSlotDTO } from './interview-slot-dto';
-import type { ProfessorDTO } from './professor-dto';
-import type { UserBookingInfoDTO } from './user-booking-info-dto';
+import type { InterviewSlotDTO } from 'interview-slot-dto';
+import type { ProfessorDTO } from 'professor-dto';
+import type { UserBookingInfoDTO } from 'user-booking-info-dto';
 
 export interface BookingDTO {
     readonly availableSlots?: Array<InterviewSlotDTO>;

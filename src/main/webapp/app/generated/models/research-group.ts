@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { Department } from './department';
-import type { School } from './school';
-import type { UserResearchGroupRole } from './user-research-group-role';
+import type { Department } from 'department';
+import type { School } from 'school';
+import type { UserResearchGroupRole } from 'user-research-group-role';
 
 export interface ResearchGroup {
     readonly abbreviation?: string;
@@ -33,12 +33,6 @@ export interface ResearchGroup {
 }
 
 export type ResearchGroupStateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
-
-export const ResearchGroupStateEnum = {
-  Draft: 'DRAFT' as const,
-  Active: 'ACTIVE' as const,
-  Denied: 'DENIED' as const,
-} as const;
 
 export const ResearchGroupStateEnumValues = ['DRAFT', 'ACTIVE', 'DENIED'] as const;
 

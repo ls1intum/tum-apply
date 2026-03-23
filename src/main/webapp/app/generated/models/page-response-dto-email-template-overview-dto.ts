@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { EmailTemplateOverviewDTO } from './email-template-overview-dto';
+import type { EmailTemplateOverviewDTO } from 'email-template-overview-dto';
 
 export interface PageResponseDTOEmailTemplateOverviewDTO {
     readonly content?: Array<EmailTemplateOverviewDTO>;

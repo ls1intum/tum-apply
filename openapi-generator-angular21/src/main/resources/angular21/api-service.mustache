@@ -1,14 +1,14 @@
 {{>licenseInfo}}
 /**
- * {{classname}} - API service
+ * {{classname}} - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
-import { HttpClient{{#operations}}{{#hasBlobResponse}}, HttpResponse{{/hasBlobResponse}}{{/operations}} } from '@angular/common/http';
+import { HttpClient{{#operations.operation}}{{#hasFormParams}}, HttpHeaders{{/hasFormParams}}{{/operations.operation}} } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-{{#tsImports}}
-import { {{classname}} } from '../models/{{filename}}';
-{{/tsImports}}
+{{#imports}}
+import { {{classname}} } from '../models/{{classFilename}}';
+{{/imports}}
 
 @Injectable({ providedIn: 'root' })
 export class {{classname}} {
@@ -17,6 +17,7 @@ export class {{classname}} {
 
 {{#operations}}
 {{#operation}}
+{{^vendorExtensions.x-is-get}}
     /**
      * {{summary}}
      * {{notes}}
@@ -24,7 +25,7 @@ export class {{classname}} {
      * @param {{paramName}} {{description}}
 {{/allParams}}
      */
-    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^-last}}, {{/-last}}{{/allParams}}): Observable<{{#vendorExtensions.x-is-blob-response}}HttpResponse<Blob>{{/vendorExtensions.x-is-blob-response}}{{^vendorExtensions.x-is-blob-response}}{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}{{/vendorExtensions.x-is-blob-response}}> {
+    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^-last}}, {{/-last}}{{/allParams}}): Observable<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}> {
 {{#pathParams}}
 {{^vendorExtensions.x-is-numeric}}
         const {{paramName}}Path = encodeURIComponent(String({{paramName}}));
@@ -48,7 +49,6 @@ export class {{classname}} {
 {{^hasQueryParams}}
         const url = `${this.basePath}{{{vendorExtensions.xPathTemplate}}}`;
 {{/hasQueryParams}}
-{{#vendorExtensions.x-is-blob-response}}
 {{#hasFormParams}}
         const formData = new FormData();
 {{#formParams}}
@@ -61,43 +61,26 @@ export class {{classname}} {
 {{/isArray}}
         }
 {{/formParams}}
-        return this.http.{{httpMethod}}(url, formData, { responseType: 'blob', observe: 'response' });
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url, formData);
 {{/hasFormParams}}
 {{^hasFormParams}}
 {{#bodyParam}}
-        return this.http.{{httpMethod}}(url, {{paramName}}, { responseType: 'blob', observe: 'response' });
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url, {{paramName}});
 {{/bodyParam}}
 {{^bodyParam}}
-        return this.http.{{httpMethod}}(url{{#isBodyAllowed}}, null{{/isBodyAllowed}}, { responseType: 'blob', observe: 'response' });
+{{#hasQueryParams}}
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url);
+{{/hasQueryParams}}
+{{^hasQueryParams}}
+{{#vendorExtensions.x-is-mutation}}
+        return this.http.{{httpMethod}}{{#returnType}}<{{{.}}}>{{/returnType}}(url{{#isBodyAllowed}}, null{{/isBodyAllowed}});
+{{/vendorExtensions.x-is-mutation}}
+{{/hasQueryParams}}
 {{/bodyParam}}
 {{/hasFormParams}}
-{{/vendorExtensions.x-is-blob-response}}
-{{^vendorExtensions.x-is-blob-response}}
-{{#hasFormParams}}
-        const formData = new FormData();
-{{#formParams}}
-        if ({{paramName}} !== undefined && {{paramName}} !== null) {
-{{#isArray}}
-            {{paramName}}.forEach(item => formData.append('{{baseName}}', item));
-{{/isArray}}
-{{^isArray}}
-            formData.append('{{baseName}}', {{paramName}});
-{{/isArray}}
-        }
-{{/formParams}}
-        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url, formData);
-{{/hasFormParams}}
-{{^hasFormParams}}
-{{#bodyParam}}
-        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url, {{paramName}});
-{{/bodyParam}}
-{{^bodyParam}}
-        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url{{#isBodyAllowed}}, null{{/isBodyAllowed}});
-{{/bodyParam}}
-{{/hasFormParams}}
-{{/vendorExtensions.x-is-blob-response}}
     }
 
+{{/vendorExtensions.x-is-get}}
 {{/operation}}
 {{/operations}}
 }

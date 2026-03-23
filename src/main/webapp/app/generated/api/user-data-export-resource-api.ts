@@ -9,13 +9,12 @@
  */
 
 /**
- * UserDataExportResourceApi - API service
+ * UserDataExportResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DataExportStatusDTO } from '../models/data-export-status-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataExportResourceApi {
@@ -23,32 +22,12 @@ export class UserDataExportResourceApi {
     private readonly basePath = '';
 
     /**
-     * Download a prepared data export
-     * 
-     * @param token 
-     */
-    downloadDataExport(token: string): Observable<HttpResponse<Blob>> {
-        const tokenPath = encodeURIComponent(String(token));
-        const url = `${this.basePath}/api/users/data-export/download/${tokenPath}`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
-    }
-
-    /**
-     * Get data export status for the current user
-     * 
-     */
-    getDataExportStatus(): Observable<DataExportStatusDTO> {
-        const url = `${this.basePath}/api/users/data-export/status`;
-        return this.http.get<DataExportStatusDTO>(url);
-    }
-
-    /**
      * Request a data export for the current user
      * 
      */
     requestDataExport(): Observable<void> {
         const url = `${this.basePath}/api/users/data-export`;
-        return this.http.post<void>(url, null);
+        return this.http.post(url, null);
     }
 
 }

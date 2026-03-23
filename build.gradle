@@ -21,8 +21,8 @@ plugins {
   id "org.liquibase.gradle" version "${liquibasePluginVersion}"
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "${springdocPluginVersion}"
-  // TODO: we cannot upgrade to the latest version yet, because of liquibase and openapi errors
-  id "org.openapi.generator" version "${openapiGeneratorPluginVersion}"
+  // openapi code generation is handled via a custom JavaExec task in gradle/openapi.gradle
+  // using the angular21 custom generator (de.tum.cit.aet:openapi-generator-angular21)
 }
 
 group = "de.tum.cit.aet"

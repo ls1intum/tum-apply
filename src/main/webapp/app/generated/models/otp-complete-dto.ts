@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { UserProfileDTO } from './user-profile-dto';
+import type { UserProfileDTO } from 'user-profile-dto';
 
 export interface OtpCompleteDTO {
     readonly code: string;
@@ -18,11 +18,6 @@ export interface OtpCompleteDTO {
 }
 
 export type OtpCompleteDTOPurposeEnum = 'LOGIN' | 'REGISTER';
-
-export const OtpCompleteDTOPurposeEnum = {
-  Login: 'LOGIN' as const,
-  Register: 'REGISTER' as const,
-} as const;
 
 export const OtpCompleteDTOPurposeEnumValues = ['LOGIN', 'REGISTER'] as const;
 

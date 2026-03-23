@@ -9,16 +9,14 @@
  */
 
 /**
- * ApplicationEvaluationResourceApi - API service
+ * ApplicationEvaluationResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AcceptDTO } from '../models/accept-dto';
-import { ApplicationEvaluationDetailListDTO } from '../models/application-evaluation-detail-list-dto';
-import { ApplicationEvaluationOverviewListDTO } from '../models/application-evaluation-overview-list-dto';
-import { RejectDTO } from '../models/reject-dto';
+import { AcceptDTO } from '../models/application-evaluation-resource';
+import { RejectDTO } from '../models/application-evaluation-resource';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationEvaluationResourceApi {
@@ -34,144 +32,7 @@ export class ApplicationEvaluationResourceApi {
     acceptApplication(applicationId: string, acceptDTO: AcceptDTO): Observable<void> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/accept`;
-        return this.http.post<void>(url, acceptDTO);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     */
-    downloadAll(applicationId: string): Observable<HttpResponse<Blob>> {
-        const applicationIdPath = encodeURIComponent(String(applicationId));
-        const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/documents-download`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
-    }
-
-    /**
-     * 
-     * 
-     */
-    getAllJobNames(): Observable<Array<string>> {
-        const url = `${this.basePath}/api/evaluation/job-names`;
-        return this.http.get<Array<string>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param offset 
-     * @param limit 
-     * @param sortBy 
-     * @param direction 
-     * @param status 
-     * @param job 
-     * @param search 
-     */
-    getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
-        const queryParams: Record<string, string> = {};
-        if (offset !== undefined && offset !== null) {
-            queryParams['offset'] = String(offset);
-        }
-        if (limit !== undefined && limit !== null) {
-            queryParams['limit'] = String(limit);
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
-        }
-        if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
-        }
-        if (job !== undefined && job !== null) {
-            queryParams['job'] = job.join(',');
-        }
-        if (search !== undefined && search !== null) {
-            queryParams['search'] = String(search);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/evaluation/application-details${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<ApplicationEvaluationDetailListDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     * @param windowSize 
-     * @param sortBy 
-     * @param direction 
-     * @param status 
-     * @param job 
-     * @param search 
-     */
-    getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
-        const queryParams: Record<string, string> = {};
-        if (applicationId !== undefined && applicationId !== null) {
-            queryParams['applicationId'] = String(applicationId);
-        }
-        if (windowSize !== undefined && windowSize !== null) {
-            queryParams['windowSize'] = String(windowSize);
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
-        }
-        if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
-        }
-        if (job !== undefined && job !== null) {
-            queryParams['job'] = job.join(',');
-        }
-        if (search !== undefined && search !== null) {
-            queryParams['search'] = String(search);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/evaluation/application-details/window${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<ApplicationEvaluationDetailListDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param offset 
-     * @param limit 
-     * @param sortBy 
-     * @param direction 
-     * @param status 
-     * @param job 
-     * @param search 
-     */
-    getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationOverviewListDTO> {
-        const queryParams: Record<string, string> = {};
-        if (offset !== undefined && offset !== null) {
-            queryParams['offset'] = String(offset);
-        }
-        if (limit !== undefined && limit !== null) {
-            queryParams['limit'] = String(limit);
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
-        }
-        if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
-        }
-        if (job !== undefined && job !== null) {
-            queryParams['job'] = job.join(',');
-        }
-        if (search !== undefined && search !== null) {
-            queryParams['search'] = String(search);
-        }
-        const queryString = new URLSearchParams(queryParams).toString();
-        const url = `${this.basePath}/api/evaluation/applications${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<ApplicationEvaluationOverviewListDTO>(url);
+        return this.http.post(url, acceptDTO);
     }
 
     /**
@@ -182,7 +43,7 @@ export class ApplicationEvaluationResourceApi {
     markApplicationAsInReview(applicationId: string): Observable<void> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/open`;
-        return this.http.put<void>(url, null);
+        return this.http.put(url, null);
     }
 
     /**
@@ -194,7 +55,7 @@ export class ApplicationEvaluationResourceApi {
     rejectApplication(applicationId: string, rejectDTO: RejectDTO): Observable<void> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/reject`;
-        return this.http.post<void>(url, rejectDTO);
+        return this.http.post(url, rejectDTO);
     }
 
 }

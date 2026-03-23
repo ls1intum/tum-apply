@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ApplicationEvaluationDetailDTO } from './application-evaluation-detail-dto';
+import type { ApplicationEvaluationDetailDTO } from 'application-evaluation-detail-dto';
 
 export interface ApplicationEvaluationDetailListDTO {
     readonly applications?: Array<ApplicationEvaluationDetailDTO>;

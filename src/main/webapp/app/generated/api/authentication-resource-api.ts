@@ -9,15 +9,15 @@
  */
 
 /**
- * AuthenticationResourceApi - API service
+ * AuthenticationResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthSessionInfoDTO } from '../models/auth-session-info-dto';
-import { LoginRequestDTO } from '../models/login-request-dto';
-import { OtpCompleteDTO } from '../models/otp-complete-dto';
+import { AuthSessionInfoDTO } from '../models/authentication-resource';
+import { LoginRequestDTO } from '../models/authentication-resource';
+import { OtpCompleteDTO } from '../models/authentication-resource';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationResourceApi {
@@ -40,7 +40,7 @@ export class AuthenticationResourceApi {
      */
     logout(): Observable<void> {
         const url = `${this.basePath}/api/auth/logout`;
-        return this.http.post<void>(url, null);
+        return this.http.post(url, null);
     }
 
     /**

@@ -15,11 +15,11 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { JobFiltersDTO } from '../models/job-filters-dto';
-import { PageJobCardDTO } from '../models/page-job-card-dto';
-import { JobDTO } from '../models/job-dto';
-import { JobDetailDTO } from '../models/job-detail-dto';
-import { PageCreatedJobDTO } from '../models/page-created-job-dto';
+import { JobDTO } from '../models/job-resource';
+import { JobDetailDTO } from '../models/job-resource';
+import { JobFiltersDTO } from '../models/job-resource';
+import { PageCreatedJobDTO } from '../models/job-resource';
+import { PageJobCardDTO } from '../models/job-resource';
 
 const BASE_PATH = '';
 

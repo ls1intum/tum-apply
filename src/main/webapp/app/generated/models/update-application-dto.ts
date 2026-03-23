@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ApplicantDTO } from './applicant-dto';
+import type { ApplicantDTO } from 'applicant-dto';
 
 export interface UpdateApplicationDTO {
     readonly applicant: ApplicantDTO;
@@ -21,17 +21,6 @@ export interface UpdateApplicationDTO {
 }
 
 export type UpdateApplicationDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
-
-export const UpdateApplicationDTOApplicationStateEnum = {
-  Saved: 'SAVED' as const,
-  Sent: 'SENT' as const,
-  Accepted: 'ACCEPTED' as const,
-  InReview: 'IN_REVIEW' as const,
-  Rejected: 'REJECTED' as const,
-  Withdrawn: 'WITHDRAWN' as const,
-  JobClosed: 'JOB_CLOSED' as const,
-  Interview: 'INTERVIEW' as const,
-} as const;
 
 export const UpdateApplicationDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'INTERVIEW'] as const;
 

@@ -14,7 +14,7 @@
  * @generated from OpenAPI specification
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { EmailSettingDTO } from '../models/email-setting-dto';
+import { EmailSettingDTO } from '../models/email-setting-resource';
 
 const BASE_PATH = '';
 

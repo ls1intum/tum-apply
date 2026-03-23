@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { DepartmentShortDTO } from './department-short-dto';
+import type { DepartmentShortDTO } from 'department-short-dto';
 
 export interface SchoolDTO {
     readonly abbreviation?: string;

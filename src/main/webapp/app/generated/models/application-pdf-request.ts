@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ApplicationDetailDTO } from './application-detail-dto';
+import type { ApplicationDetailDTO } from 'application-detail-dto';
 
 export interface ApplicationPDFRequest {
     application?: ApplicationDetailDTO;

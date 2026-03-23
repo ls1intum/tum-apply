@@ -8,8 +8,8 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { Job } from './job';
-import type { CustomFieldAnswer } from './custom-field-answer';
+import type { Job } from 'job';
+import type { CustomFieldAnswer } from 'custom-field-answer';
 
 export interface CustomField {
     readonly answerOptions?: Array<string>;
@@ -23,13 +23,6 @@ export interface CustomField {
 }
 
 export type CustomFieldCustomFieldTypeEnum = 'FREE_TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILE_UPLOAD';
-
-export const CustomFieldCustomFieldTypeEnum = {
-  FreeText: 'FREE_TEXT' as const,
-  SingleChoice: 'SINGLE_CHOICE' as const,
-  MultipleChoice: 'MULTIPLE_CHOICE' as const,
-  FileUpload: 'FILE_UPLOAD' as const,
-} as const;
 
 export const CustomFieldCustomFieldTypeEnumValues = ['FREE_TEXT', 'SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'FILE_UPLOAD'] as const;
 

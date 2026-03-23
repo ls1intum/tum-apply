@@ -8,10 +8,10 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ApplicationDocumentIdsDTO } from './application-document-ids-dto';
-import type { InterviewSlotDTO } from './interview-slot-dto';
-import type { IntervieweeUserDTO } from './interviewee-user-dto';
-import type { ApplicationDetailDTO } from './application-detail-dto';
+import type { ApplicationDocumentIdsDTO } from 'application-document-ids-dto';
+import type { InterviewSlotDTO } from 'interview-slot-dto';
+import type { IntervieweeUserDTO } from 'interviewee-user-dto';
+import type { ApplicationDetailDTO } from 'application-detail-dto';
 
 export interface IntervieweeDetailDTO {
     readonly application?: ApplicationDetailDTO;
@@ -27,13 +27,6 @@ export interface IntervieweeDetailDTO {
 }
 
 export type IntervieweeDetailDTOStateEnum = 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
-
-export const IntervieweeDetailDTOStateEnum = {
-  Uncontacted: 'UNCONTACTED' as const,
-  Invited: 'INVITED' as const,
-  Scheduled: 'SCHEDULED' as const,
-  Completed: 'COMPLETED' as const,
-} as const;
 
 export const IntervieweeDetailDTOStateEnumValues = ['UNCONTACTED', 'INVITED', 'SCHEDULED', 'COMPLETED'] as const;
 

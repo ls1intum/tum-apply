@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { DocumentInformationHolderDTO } from './document-information-holder-dto';
+import type { DocumentInformationHolderDTO } from 'document-information-holder-dto';
 
 export interface ApplicationDocumentIdsDTO {
     readonly bachelorDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
