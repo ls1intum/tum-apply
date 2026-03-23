@@ -241,35 +241,18 @@ describe('ApplicationPage2Component', () => {
       { type: 'master', expected: true, desc: 'provided', value: [{ id: '2', size: 2 }] },
       { type: 'master', expected: false, desc: 'undefined', value: undefined },
       { type: 'master', expected: false, desc: 'empty', value: [] },
-    ])('should set $typeDocsValid to $expected when $type docs are $desc', ({ type, expected, value }) => {
-      const { componentInstance } = createApplicationPage2Fixture();
+    ])('should compute $typeDocsValid to $expected when $type docs are $desc', ({ type, expected, value }) => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       if (type === 'bachelor') {
-        componentInstance.bachelorDocsSetValidity(value);
+        componentInstance.documentIdsBachelorTranscript.set(value as DocumentInformationHolderDTO[]);
+        fixture.detectChanges();
         expect(componentInstance.bachelorDocsValid()).toBe(expected);
       } else {
-        componentInstance.masterDocsSetValidity(value);
+        componentInstance.documentIdsMasterTranscript.set(value as DocumentInformationHolderDTO[]);
+        fixture.detectChanges();
         expect(componentInstance.masterDocsValid()).toBe(expected);
       }
-    });
-
-    it('should derive bachelor/master docs validity from input-linked signals', () => {
-      const { componentInstance, componentRef, fixture } = createApplicationPage2Fixture({
-        documentIdsBachelorTranscript: [{ id: 'b-1', size: 10 }],
-        documentIdsMasterTranscript: [{ id: 'm-1', size: 20 }],
-      });
-
-      fixture.detectChanges();
-
-      expect(componentInstance.bachelorDocsValid()).toBe(true);
-      expect(componentInstance.masterDocsValid()).toBe(true);
-
-      componentRef.setInput('documentIdsBachelorTranscript', undefined);
-      componentRef.setInput('documentIdsMasterTranscript', undefined);
-      fixture.detectChanges();
-
-      expect(componentInstance.bachelorDocsValid()).toBe(false);
-      expect(componentInstance.masterDocsValid()).toBe(false);
     });
 
     it.each([

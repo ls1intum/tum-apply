@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, linkedSignal, model, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -58,8 +58,8 @@ export default class ApplicationCreationPage2Component {
   data = model<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
-  documentIdsBachelorTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
-  documentIdsMasterTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
+  documentIdsBachelorTranscript = model<DocumentInformationHolderDTO[] | undefined>(undefined);
+  documentIdsMasterTranscript = model<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   valid = output<boolean>();
   changed = output<boolean>();
@@ -86,14 +86,8 @@ export default class ApplicationCreationPage2Component {
   hasInitialized = signal(false);
   hasInitialLimitsSet = signal(false);
 
-  bachelorDocsValid = linkedSignal(() => {
-    const docs = this.documentIdsBachelorTranscript();
-    return docs !== undefined && docs.length > 0;
-  });
-  masterDocsValid = linkedSignal(() => {
-    const docs = this.documentIdsMasterTranscript();
-    return docs !== undefined && docs.length > 0;
-  });
+  bachelorDocsValid = computed(() => (this.documentIdsBachelorTranscript()?.length ?? 0) > 0);
+  masterDocsValid = computed(() => (this.documentIdsMasterTranscript()?.length ?? 0) > 0);
 
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
@@ -234,14 +228,6 @@ export default class ApplicationCreationPage2Component {
 
     this.valid.emit(this.page2Form.valid && this.bachelorDocsValid() && this.masterDocsValid());
   });
-
-  bachelorDocsSetValidity(docs: DocumentInformationHolderDTO[] | undefined): void {
-    this.bachelorDocsValid.set(docs !== undefined && docs.length > 0);
-  }
-
-  masterDocsSetValidity(docs: DocumentInformationHolderDTO[] | undefined): void {
-    this.masterDocsValid.set(docs !== undefined && docs.length > 0);
-  }
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
     const currentUpperLimit =
