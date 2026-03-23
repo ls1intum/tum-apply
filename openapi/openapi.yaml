@@ -3142,7 +3142,6 @@ components:
             INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
-        departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location:
@@ -3153,9 +3152,22 @@ components:
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
         startDate: {type: string, format: date}
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [jobId, location, professorName, title]
+      required: [jobId, location, professorName, subjectArea, title]
     JobDTO:
       type: object
       properties:

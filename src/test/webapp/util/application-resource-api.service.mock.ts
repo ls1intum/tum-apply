@@ -28,6 +28,7 @@ export const createMockApplicationDTO = (
     jobId: '123',
     location: 'GARCHING',
     professorName: 'Prof. Dr. Abc',
+    subjectArea: 'COMPUTER_SCIENCE',
     title: 'Sophisticated Studies',
   },
   applicant: {
