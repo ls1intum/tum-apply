@@ -32,7 +32,7 @@ interface MembersRow {
   firstName?: string;
   lastName?: string;
   researchGroup?: ResearchGroupShortDTO;
-  roles?: UserShortDTORolesEnum;
+  roles?: Array<UserShortDTORolesEnum>;
   userId?: string;
   name: string;
   role: string;
@@ -198,13 +198,12 @@ export class ResearchGroupMembersComponent {
 
   /** Internal methods */
 
-  private formatRoles(roles?: string): string {
-    if (!roles) {
+  private formatRoles(roles?: string[]): string {
+    if (!roles?.length) {
       return this.translate.instant(`${this.translationKey}.noRole`);
     }
 
-    // Capitalize first letter and make it singular
-    return roles.charAt(0).toUpperCase() + roles.slice(1).toLowerCase();
+    return roles.map(role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()).join(', ');
   }
 
   private isCurrentUser(member: UserShortDTO): boolean {
