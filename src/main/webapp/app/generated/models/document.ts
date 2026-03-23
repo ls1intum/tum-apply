@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { User } from 'user';
+import type { User } from './user';
 
 export interface Document {
     readonly createdAt?: string;

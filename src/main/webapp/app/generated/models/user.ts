@@ -8,10 +8,10 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroup } from 'research-group';
-import type { UserResearchGroupRole } from 'user-research-group-role';
-import type { EmailSetting } from 'email-setting';
-import type { Job } from 'job';
+import type { ResearchGroup } from './research-group';
+import type { UserResearchGroupRole } from './user-research-group-role';
+import type { EmailSetting } from './email-setting';
+import type { Job } from './job';
 
 export interface User {
     readonly avatar?: string;

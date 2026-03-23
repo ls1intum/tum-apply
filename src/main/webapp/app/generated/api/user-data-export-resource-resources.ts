@@ -15,7 +15,8 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { DataExportStatusDTO } from '../models/user-data-export-resource';
+import { DataExportStatusDTO } from '../models/data-export-status-dto';
+
 const BASE_PATH = '';
 
 /**

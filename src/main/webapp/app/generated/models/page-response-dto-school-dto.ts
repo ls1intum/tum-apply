@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { SchoolDTO } from 'school-dto';
+import type { SchoolDTO } from './school-dto';
 
 export interface PageResponseDTOSchoolDTO {
     readonly content?: Array<SchoolDTO>;

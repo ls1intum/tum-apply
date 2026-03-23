@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { SchoolShortDTO } from 'school-short-dto';
+import type { SchoolShortDTO } from './school-short-dto';
 
 export interface DepartmentDTO {
     readonly departmentId?: string;

@@ -54,6 +54,7 @@ import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-ass
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
+import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOStateEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 
@@ -1096,7 +1097,7 @@ export class JobCreationFormComponent {
     try {
       const response = await firstValueFrom(this.researchGroupService.getResearchGroupProfessors());
       const options = response
-        .filter(member => (member.roles ?? []).includes('PROFESSOR') && member.userId)
+        .filter(member => member.roles === 'PROFESSOR' && member.userId)
         .map(member => {
           const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
           const fallback = (member.email ?? member.userId ?? '').trim();

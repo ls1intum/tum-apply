@@ -15,8 +15,8 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { EmailTemplateDTO } from '../models/email-template-resource';
-import { PageResponseDTOEmailTemplateOverviewDTO } from '../models/email-template-resource';
+import { EmailTemplateDTO } from '../models/email-template-dto';
+import { PageResponseDTOEmailTemplateOverviewDTO } from '../models/page-response-dto-email-template-overview-dto';
 
 const BASE_PATH = '';
 

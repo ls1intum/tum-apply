@@ -15,7 +15,6 @@ import { ResearchGroupShortDTO } from 'app/generated/models/research-group-short
 import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -26,13 +25,14 @@ import { ResearchGroupResourceApi } from '../../../generated/api/research-group-
 import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 interface MembersRow {
   avatar?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
   researchGroup?: ResearchGroupShortDTO;
-  roles?: UserShortDTORolesEnum[];
+  roles?: UserShortDTORolesEnum;
   userId?: string;
   name: string;
   role: string;
@@ -198,12 +198,13 @@ export class ResearchGroupMembersComponent {
 
   /** Internal methods */
 
-  private formatRoles(roles?: string[]): string {
-    if (!roles?.length) {
+  private formatRoles(roles?: string): string {
+    if (!roles) {
       return this.translate.instant(`${this.translationKey}.noRole`);
     }
 
-    return roles.map(role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()).join(', ');
+    // Capitalize first letter and make it singular
+    return roles.charAt(0).toUpperCase() + roles.slice(1).toLowerCase();
   }
 
   private isCurrentUser(member: UserShortDTO): boolean {

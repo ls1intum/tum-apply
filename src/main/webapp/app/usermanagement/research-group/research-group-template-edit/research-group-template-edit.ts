@@ -10,16 +10,17 @@ import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
-import 'quill-mention/autoregister';
-import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/models/email-template-dto';
 
+import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
 import { EmailTemplateDTO } from '../../../generated/models/email-template-dto';
 import { AccountService } from '../../../core/auth/account.service';
+import { UserShortDTO } from '../../../generated/models/user-short-dto';
 
+import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/models/email-template-dto';
 @Component({
   selector: 'jhi-research-group-template-edit',
   imports: [

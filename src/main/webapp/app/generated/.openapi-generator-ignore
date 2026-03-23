@@ -36,5 +36,4 @@ api/gender-bias-analysis-resource-resources.ts
 api/pdf-export-resource-resources.ts
 api/public-config-resource-api.ts
 api/ai-resource-resources.ts
-api/document-resource-api.ts
 api/authentication-resource-resources.ts

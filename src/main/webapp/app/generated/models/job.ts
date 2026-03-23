@@ -8,11 +8,11 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroup } from 'research-group';
-import type { User } from 'user';
-import type { CustomField } from 'custom-field';
-import type { Image } from 'image';
-import type { Application } from 'application';
+import type { ResearchGroup } from './research-group';
+import type { User } from './user';
+import type { CustomField } from './custom-field';
+import type { Image } from './image';
+import type { Application } from './application';
 
 export interface Job {
     readonly applications?: Array<Application>;

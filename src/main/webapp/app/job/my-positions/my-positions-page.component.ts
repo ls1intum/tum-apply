@@ -21,7 +21,6 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../shared/componen
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { CreatedJobDTO } from '../../generated/models/created-job-dto';
-import { CreatedJobDTOStateEnum } from '../../generated/models/created-job-dto';
 import { JobResourceApi } from '../../generated/api/job-resource-api';
 @Component({
   selector: 'jhi-my-positions-page',
@@ -64,10 +63,10 @@ export class MyPositionsPageComponent {
   ];
 
   readonly availableStatusOptions: { key: string; label: string }[] = [
-    { key: CreatedJobDTOStateEnum.Draft, label: 'jobState.draft' },
-    { key: CreatedJobDTOStateEnum.Published, label: 'jobState.published' },
-    { key: CreatedJobDTOStateEnum.Closed, label: 'jobState.closed' },
-    { key: CreatedJobDTOStateEnum.ApplicantFound, label: 'jobState.applicantFound' },
+    { key: 'DRAFT', label: 'jobState.draft' },
+    { key: 'PUBLISHED', label: 'jobState.published' },
+    { key: 'CLOSED', label: 'jobState.closed' },
+    { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
   ];
 
   readonly stateTextMap = computed<Record<string, string>>(() =>
@@ -117,10 +116,10 @@ export class MyPositionsPageComponent {
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
   readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'contrast' | 'secondary'>>({
-    [CreatedJobDTOStateEnum.Draft]: 'info',
-    [CreatedJobDTOStateEnum.Published]: 'secondary',
-    [CreatedJobDTOStateEnum.Closed]: 'contrast',
-    [CreatedJobDTOStateEnum.ApplicantFound]: 'success',
+    DRAFT: 'info',
+    PUBLISHED: 'secondary',
+    CLOSED: 'contrast',
+    APPLICANT_FOUND: 'success',
   });
 
   // Computed signal that creates a map of job IDs to their menu items
@@ -131,7 +130,7 @@ export class MyPositionsPageComponent {
       const items: JhiMenuItem[] = [];
 
       // Edit action - different behavior for DRAFT vs PUBLISHED
-      if (job.state === CreatedJobDTOStateEnum.Draft) {
+      if (job.state === 'DRAFT') {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -140,7 +139,7 @@ export class MyPositionsPageComponent {
             this.onEditJob(job.jobId);
           },
         });
-      } else if (job.state === CreatedJobDTOStateEnum.Published) {
+      } else if (job.state === 'PUBLISHED') {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -153,7 +152,7 @@ export class MyPositionsPageComponent {
       }
 
       // Delete/Close action - based on state
-      if (job.state === CreatedJobDTOStateEnum.Draft) {
+      if (job.state === 'DRAFT') {
         items.push({
           label: 'button.delete',
           icon: 'trash',
@@ -163,7 +162,7 @@ export class MyPositionsPageComponent {
             this.showDeleteDialog.set(true);
           },
         });
-      } else if (job.state === CreatedJobDTOStateEnum.Published) {
+      } else if (job.state === 'PUBLISHED') {
         items.push({
           label: 'button.close',
           icon: 'xmark',
@@ -264,7 +263,7 @@ export class MyPositionsPageComponent {
 
   async onCloseJob(jobId: string): Promise<void> {
     try {
-      await firstValueFrom(this.jobService.changeJobState(jobId, CreatedJobDTOStateEnum.Closed));
+      await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
       await this.loadJobs();
     } catch (error) {

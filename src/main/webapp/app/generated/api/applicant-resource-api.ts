@@ -9,14 +9,15 @@
  */
 
 /**
- * ApplicantResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * ApplicantResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicantDTO } from '../models/applicant-resource';
-import { DocumentInformationHolderDTO } from '../models/applicant-resource';
+import { ApplicantDTO } from '../models/applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
+import { DocumentInformationHolderDTO } from '../models/document-information-holder-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicantResourceApi {
@@ -42,7 +43,25 @@ export class ApplicantResourceApi {
     deleteApplicantProfileDocument(documentDictionaryId: string): Observable<void> {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}`;
-        return this.http.delete(url);
+        return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getApplicantProfile(): Observable<ApplicantDTO> {
+        const url = `${this.basePath}/api/applicants/profile`;
+        return this.http.get<ApplicantDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getApplicantProfileDocumentIds(): Observable<ApplicationDocumentIdsDTO> {
+        const url = `${this.basePath}/api/applicants/profile/document-ids`;
+        return this.http.get<ApplicationDocumentIdsDTO>(url);
     }
 
     /**
@@ -70,7 +89,7 @@ export class ApplicantResourceApi {
         }
         const queryString = new URLSearchParams(queryParams).toString();
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
-        return this.http.put(url);
+        return this.http.put<void>(url, null);
     }
 
     /**

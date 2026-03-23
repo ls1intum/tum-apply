@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { User } from 'user';
-import type { DocumentDictionary } from 'document-dictionary';
-import type { Application } from 'application';
+import type { User } from './user';
+import type { DocumentDictionary } from './document-dictionary';
+import type { Application } from './application';
 
 export interface Applicant {
     readonly bachelorDegreeName?: string;

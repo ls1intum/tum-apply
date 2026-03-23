@@ -21,8 +21,6 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
-import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -45,6 +43,8 @@ import { ApplicationResourceApi } from '../../../generated/api/application-resou
 import { UpdateApplicationDTO } from '../../../generated/models/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 const applyflow = 'entity.toast.applyFlow';
 
 @Component({
@@ -124,7 +124,7 @@ export default class ApplicationCreationFormComponent {
   jobId = signal<string>('');
   applicantId = signal<string>('');
   applicationId = signal<string>('');
-  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
+  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>('SAVED');
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   savingBadgeCalculatedClass = computed<string>(
@@ -415,7 +415,7 @@ export default class ApplicationCreationFormComponent {
     if (jobId !== null) {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
-      this.applicationState.set(ApplicationForApplicantDTOApplicationStateEnum.Saved);
+      this.applicationState.set('SAVED');
 
       // Fetch job title for display
       firstValueFrom(this.jobResourceService.getJobDetails(jobId))
@@ -435,7 +435,7 @@ export default class ApplicationCreationFormComponent {
   async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
     const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
 
-    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
+    if (application.applicationState !== 'SAVED') {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', applicationId]);
       throw new Error('Application is not editable.');
@@ -448,7 +448,7 @@ export default class ApplicationCreationFormComponent {
   async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO> {
     const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
 
-    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
+    if (application.applicationState !== 'SAVED') {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', application.applicationId]);
       throw new Error('Application is not editable.');
@@ -491,7 +491,7 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
-    void this.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
+    void this.sendCreateApplicationData('SENT', true);
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTOApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
@@ -517,7 +517,7 @@ export default class ApplicationCreationFormComponent {
       this.clearLocalStorage();
 
       // After application is sent, reload user data to update header with latest names
-      if (state === ApplicationForApplicantDTOApplicationStateEnum.Sent) {
+      if (state === 'SENT') {
         await this.accountService.loadUser();
       }
 

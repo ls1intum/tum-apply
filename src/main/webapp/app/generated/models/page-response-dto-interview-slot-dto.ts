@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { InterviewSlotDTO } from 'interview-slot-dto';
+import type { InterviewSlotDTO } from './interview-slot-dto';
 
 export interface PageResponseDTOInterviewSlotDTO {
     readonly content?: Array<InterviewSlotDTO>;

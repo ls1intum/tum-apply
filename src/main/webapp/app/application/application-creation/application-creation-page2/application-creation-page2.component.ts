@@ -6,6 +6,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateDirective } from 'app/shared/language';
+import { ApplicationForApplicantDTO } from '../../../generated/models/application-for-applicant-dto';
+import { DocumentInformationHolderDTO } from '../../../generated/models/document-information-holder-dto';
+import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
 import {
   GradingScaleLimitsResult,
   getDetectedGradeLimitsPatch,
@@ -14,10 +17,6 @@ import {
   hasGradeLimits,
   resolveGradingScaleLimits,
 } from 'app/shared/util/grading-scale.utils';
-
-import { ApplicationForApplicantDTO } from '../../../generated/models/application-for-applicant-dto';
-import { DocumentInformationHolderDTO } from '../../../generated/models/document-information-holder-dto';
-import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 

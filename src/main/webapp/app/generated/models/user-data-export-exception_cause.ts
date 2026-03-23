@@ -8,12 +8,10 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { UserDataExportExceptionCauseSuppressedInner } from 'user-data-export-exception-cause-suppressed-inner';
-import type { UserDataExportExceptionCauseStackTraceInner } from 'user-data-export-exception-cause-stack-trace-inner';
+import type { UserDataExportExceptionCauseStackTraceInner } from './user-data-export-exception-cause-stack-trace-inner';
 
 export interface UserDataExportExceptionCause {
     readonly stackTrace?: Array<UserDataExportExceptionCauseStackTraceInner>;
     readonly message?: string;
-    readonly suppressed?: Array<UserDataExportExceptionCauseSuppressedInner>;
     readonly localizedMessage?: string;
 }

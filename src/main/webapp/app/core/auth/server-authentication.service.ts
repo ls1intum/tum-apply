@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthSessionInfoDTO } from 'app/generated/models/auth-session-info-dto';
 import { AuthenticationResourceApi } from 'app/generated/api/authentication-resource-api';
 import { EmailVerificationResourceApi } from 'app/generated/api/email-verification-resource-api';
-import { OtpCompleteDTOPurposeEnum } from 'app/generated/models/otp-complete-dto';
+import { OtpCompleteDTO, OtpCompleteDTOPurposeEnum } from 'app/generated/models/otp-complete-dto';
 import { UserProfileDTO } from 'app/generated/models/user-profile-dto';
 
 /**

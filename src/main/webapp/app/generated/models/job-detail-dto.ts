@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroup } from 'research-group';
+import type { ResearchGroup } from './research-group';
 
 export interface JobDetailDTO {
     readonly applicationId?: string;

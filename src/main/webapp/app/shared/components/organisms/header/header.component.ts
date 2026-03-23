@@ -18,6 +18,7 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';

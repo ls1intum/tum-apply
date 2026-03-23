@@ -9,16 +9,21 @@
  */
 
 /**
- * ResearchGroupResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * ResearchGroupResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AddMembersToResearchGroupDTO } from '../models/research-group-resource';
-import { EmployeeResearchGroupRequestDTO } from '../models/research-group-resource';
-import { ResearchGroupDTO } from '../models/research-group-resource';
-import { ResearchGroupRequestDTO } from '../models/research-group-resource';
+import { ResearchGroupDTO } from '../models/research-group-dto';
+import { AddMembersToResearchGroupDTO } from '../models/add-members-to-research-group-dto';
+import { EmployeeResearchGroupRequestDTO } from '../models/employee-research-group-request-dto';
+import { ResearchGroupRequestDTO } from '../models/research-group-request-dto';
+import { PageResponseDTOResearchGroupDTO } from '../models/page-response-dto-research-group-dto';
+import { PageResponseDTOUserShortDTO } from '../models/page-response-dto-user-short-dto';
+import { UserShortDTO } from '../models/user-short-dto';
+import { PageResponseDTOResearchGroupAdminDTO } from '../models/page-response-dto-research-group-admin-dto';
+import { ResearchGroupLargeDTO } from '../models/research-group-large-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ResearchGroupResourceApi {
@@ -43,7 +48,7 @@ export class ResearchGroupResourceApi {
      */
     addMembersToResearchGroup(addMembersToResearchGroupDTO: AddMembersToResearchGroupDTO): Observable<void> {
         const url = `${this.basePath}/api/research-groups/members`;
-        return this.http.post(url, addMembersToResearchGroupDTO);
+        return this.http.post<void>(url, addMembersToResearchGroupDTO);
     }
 
     /**
@@ -53,7 +58,7 @@ export class ResearchGroupResourceApi {
      */
     createEmployeeResearchGroupRequest(employeeResearchGroupRequestDTO: EmployeeResearchGroupRequestDTO): Observable<void> {
         const url = `${this.basePath}/api/research-groups/employee-request`;
-        return this.http.post(url, employeeResearchGroupRequestDTO);
+        return this.http.post<void>(url, employeeResearchGroupRequestDTO);
     }
 
     /**
@@ -90,12 +95,156 @@ export class ResearchGroupResourceApi {
     /**
      * 
      * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getAllResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/research-groups${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOResearchGroupDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getDraftResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/research-groups/draft${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOResearchGroupDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param id 
+     */
+    getResearchGroup(id: string): Observable<ResearchGroupDTO> {
+        const idPath = encodeURIComponent(String(id));
+        const url = `${this.basePath}/api/research-groups/${idPath}`;
+        return this.http.get<ResearchGroupDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getResearchGroupMembers(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOUserShortDTO> {
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/research-groups/members${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOUserShortDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param researchGroupId 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getResearchGroupMembersById(researchGroupId: string, pageSize?: number, pageNumber?: number): Observable<PageResponseDTOUserShortDTO> {
+        const researchGroupIdPath = encodeURIComponent(String(researchGroupId));
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/research-groups/${researchGroupIdPath}/members${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOUserShortDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getResearchGroupProfessors(): Observable<Array<UserShortDTO>> {
+        const url = `${this.basePath}/api/research-groups/professors`;
+        return this.http.get<Array<UserShortDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     * @param status 
+     * @param searchQuery 
+     * @param sortBy 
+     * @param direction 
+     */
+    getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTOResearchGroupAdminDTO> {
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        if (status !== undefined && status !== null) {
+            queryParams['status'] = status.join(',');
+        }
+        if (searchQuery !== undefined && searchQuery !== null) {
+            queryParams['searchQuery'] = String(searchQuery);
+        }
+        if (sortBy !== undefined && sortBy !== null) {
+            queryParams['sortBy'] = String(sortBy);
+        }
+        if (direction !== undefined && direction !== null) {
+            queryParams['direction'] = String(direction);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/research-groups/admin${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOResearchGroupAdminDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param researchGroupId 
+     */
+    getResourceGroupDetails(researchGroupId: string): Observable<ResearchGroupLargeDTO> {
+        const researchGroupIdPath = encodeURIComponent(String(researchGroupId));
+        const url = `${this.basePath}/api/research-groups/detail/${researchGroupIdPath}`;
+        return this.http.get<ResearchGroupLargeDTO>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param userId 
      */
     removeMemberFromResearchGroup(userId: string): Observable<void> {
         const userIdPath = encodeURIComponent(String(userId));
         const url = `${this.basePath}/api/research-groups/members/${userIdPath}`;
-        return this.http.delete(url);
+        return this.http.delete<void>(url);
     }
 
     /**
