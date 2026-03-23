@@ -1,3 +1,5 @@
+import { UserShortDTO } from 'app/generated/models/user-short-dto';
+
 import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 export interface User {
   id: string;

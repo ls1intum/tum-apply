@@ -67,7 +67,11 @@
         [loading]="sending()"
         [fullWidth]="true"
         [tooltip]="noSlotsTooltip()"
-        [label]="interviewee().state === 'INVITED' ? 'interview.interviewees.resendInvitation' : 'interview.interviewees.sendInvitation'"
+        [label]="
+          interviewee().state === 'INVITED'
+            ? 'interview.interviewees.resendInvitation'
+            : 'interview.interviewees.sendInvitation'
+        "
         styleClass="lg:w-auto w-full justify-center"
       />
     </div>

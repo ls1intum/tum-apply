@@ -60,6 +60,7 @@ import {
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
+import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOStateEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 

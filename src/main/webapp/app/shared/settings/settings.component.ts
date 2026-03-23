@@ -1,10 +1,10 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
+import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
@@ -15,6 +15,7 @@ import { PersonalInformationSettingsComponent } from './personal-information-set
 import { ProfilePictureSettingsComponent } from './profile-picture-settings/profile-picture-settings.component';
 import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
 
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'documents';
 @Component({
   selector: 'jhi-settings',

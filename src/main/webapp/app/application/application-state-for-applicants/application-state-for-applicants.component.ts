@@ -1,9 +1,10 @@
 import { Component, input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 
+import { ApplicationDetailDTO } from '../../generated/models/application-detail-dto';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 @Component({
   selector: 'jhi-application-state-for-applicants',
   imports: [TagComponent, TranslateModule],

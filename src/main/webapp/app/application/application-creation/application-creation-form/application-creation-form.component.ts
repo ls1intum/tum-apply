@@ -21,8 +21,6 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
-import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -45,6 +43,8 @@ import { ApplicationResourceApi } from '../../../generated/api/application-resou
 import { UpdateApplicationDTO } from '../../../generated/models/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 const applyflow = 'entity.toast.applyFlow';
 
 @Component({

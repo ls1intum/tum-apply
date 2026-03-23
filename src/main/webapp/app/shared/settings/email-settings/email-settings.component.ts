@@ -6,14 +6,15 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/models/email-setting';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 import TranslateDirective from '../../language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailSettingResourceApi } from '../../../generated/api/email-setting-resource-api';
 import { EmailSetting } from '../../../generated/models/email-setting';
+import { UserShortDTO } from '../../../generated/models/user-short-dto';
 
+import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/models/email-setting';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 type RolesEnum = UserShortDTORolesEnum;
 
 export interface NotificationGroup {
