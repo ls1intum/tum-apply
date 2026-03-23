@@ -12,7 +12,7 @@
  * DocumentResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -26,10 +26,10 @@ export class DocumentResourceApi {
      * 
      * @param documentDictionaryId 
      */
-    downloadDocument(documentDictionaryId: string): Observable<HttpResponse<Blob>> {
+    downloadDocument(documentDictionaryId: string): Observable<Blob> {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/documents/${documentDictionaryIdPath}`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
+        return this.http.get<Blob>(url);
     }
 
 }

@@ -10,7 +10,7 @@
 
 
 export interface JobFiltersDTO {
-    readonly subjectAreas?: JobFiltersDTOSubjectAreasEnum;
+    readonly subjectAreas?: Array<JobFiltersDTOSubjectAreasEnum>;
     readonly supervisorNames?: Array<string>;
 }
 

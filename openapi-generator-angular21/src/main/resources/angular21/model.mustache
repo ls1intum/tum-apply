@@ -22,7 +22,7 @@ export interface {{classname}}{{#parent}} extends {{.}}{{/parent}} {
 {{#description}}
     /** {{{.}}} */
 {{/description}}
-{{#vendorExtensions.x-is-readonly}}    readonly {{/vendorExtensions.x-is-readonly}}{{^vendorExtensions.x-is-readonly}}    {{/vendorExtensions.x-is-readonly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{classname}}{{enumName}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
+{{#vendorExtensions.x-is-readonly}}    readonly {{/vendorExtensions.x-is-readonly}}{{^vendorExtensions.x-is-readonly}}    {{/vendorExtensions.x-is-readonly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{#isArray}}Array<{{classname}}{{enumName}}>{{/isArray}}{{^isArray}}{{classname}}{{enumName}}{{/isArray}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
 {{/vars}}
 }
 {{#hasEnums}}
