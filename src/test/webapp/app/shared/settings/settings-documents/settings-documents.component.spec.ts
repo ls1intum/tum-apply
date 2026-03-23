@@ -113,10 +113,6 @@ describe('SettingsDocumentsComponent', () => {
     });
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe('loading', () => {
     it('should load profile data and document ids on construction', async () => {
       const component = await createComponent();
@@ -214,6 +210,10 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   describe('grading scale', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it.each([
       {
         gradeType: 'bachelor' as const,
