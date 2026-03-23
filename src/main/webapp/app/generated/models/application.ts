@@ -8,11 +8,11 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { DocumentDictionary } from 'document-dictionary';
-import type { InternalComment } from 'internal-comment';
-import type { Applicant } from 'applicant';
-import type { ApplicationReview } from 'application-review';
-import type { CustomFieldAnswer } from 'custom-field-answer';
+import type { DocumentDictionary } from './document-dictionary';
+import type { InternalComment } from './internal-comment';
+import type { Applicant } from './applicant';
+import type { ApplicationReview } from './application-review';
+import type { CustomFieldAnswer } from './custom-field-answer';
 
 export interface Application {
     readonly applicant?: Applicant;

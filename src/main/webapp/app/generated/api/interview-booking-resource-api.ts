@@ -9,14 +9,15 @@
  */
 
 /**
- * InterviewBookingResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * InterviewBookingResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BookSlotRequestDTO } from '../models/interview-booking-resource';
-import { InterviewSlotDTO } from '../models/interview-booking-resource';
+import { BookSlotRequestDTO } from '../models/book-slot-request-dto';
+import { InterviewSlotDTO } from '../models/interview-slot-dto';
+import { BookingDTO } from '../models/booking-dto';
 
 @Injectable({ providedIn: 'root' })
 export class InterviewBookingResourceApi {
@@ -33,6 +34,35 @@ export class InterviewBookingResourceApi {
         const processIdPath = encodeURIComponent(String(processId));
         const url = `${this.basePath}/api/interviews/booking/${processIdPath}/book`;
         return this.http.post<InterviewSlotDTO>(url, bookSlotRequestDTO);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     * @param year 
+     * @param month 
+     * @param page 
+     * @param size 
+     */
+    getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number): Observable<BookingDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const queryParams: Record<string, string> = {};
+        if (year !== undefined && year !== null) {
+            queryParams['year'] = String(year);
+        }
+        if (month !== undefined && month !== null) {
+            queryParams['month'] = String(month);
+        }
+        if (page !== undefined && page !== null) {
+            queryParams['page'] = String(page);
+        }
+        if (size !== undefined && size !== null) {
+            queryParams['size'] = String(size);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/interviews/booking/${processIdPath}${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<BookingDTO>(url);
     }
 
 }

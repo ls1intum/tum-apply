@@ -9,14 +9,14 @@
  */
 
 /**
- * InternalCommentResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * InternalCommentResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { InternalCommentDTO } from '../models/internal-comment-resource';
-import { InternalCommentUpdateDTO } from '../models/internal-comment-resource';
+import { InternalCommentDTO } from '../models/internal-comment-dto';
+import { InternalCommentUpdateDTO } from '../models/internal-comment-update-dto';
 
 @Injectable({ providedIn: 'root' })
 export class InternalCommentResourceApi {
@@ -43,7 +43,18 @@ export class InternalCommentResourceApi {
     deleteComment(commentId: string): Observable<void> {
         const commentIdPath = encodeURIComponent(String(commentId));
         const url = `${this.basePath}/api/comments/${commentIdPath}`;
-        return this.http.delete(url);
+        return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    listComments(applicationId: string): Observable<Array<InternalCommentDTO>> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/comments`;
+        return this.http.get<Array<InternalCommentDTO>>(url);
     }
 
     /**

@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { JobFormDTO } from 'job-form-dto';
+import type { JobFormDTO } from './job-form-dto';
 
 export interface JobPreviewRequest {
     job?: JobFormDTO;

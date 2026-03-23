@@ -9,18 +9,29 @@
  */
 
 /**
- * RatingResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * RatingResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { RatingOverviewDTO } from '../models/rating-resource';
+import { RatingOverviewDTO } from '../models/rating-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class RatingResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    getRatings(applicationId: string): Observable<RatingOverviewDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/ratings`;
+        return this.http.get<RatingOverviewDTO>(url);
+    }
 
     /**
      * 
@@ -36,7 +47,7 @@ export class RatingResourceApi {
         }
         const queryString = new URLSearchParams(queryParams).toString();
         const url = `${this.basePath}/api/applications/${applicationIdPath}/ratings${queryString ? `?${queryString}` : ''}`;
-        return this.http.put<RatingOverviewDTO>(url);
+        return this.http.put<RatingOverviewDTO>(url, null);
     }
 
 }

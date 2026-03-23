@@ -32,8 +32,6 @@
 # the option `openapiGeneratorIgnoreList` (--openapi-generator-ignore-list in CLI for example).
 api/email-verification-resource-resources.ts
 api/gender-bias-analysis-resource-resources.ts
-api/public-config-resource-api.ts
 api/pdf-export-resource-resources.ts
 api/ai-resource-resources.ts
-api/document-resource-api.ts
 api/authentication-resource-resources.ts

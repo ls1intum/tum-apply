@@ -15,8 +15,8 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { ApplicationEvaluationDetailListDTO } from '../models/application-evaluation-resource';
-import { ApplicationEvaluationOverviewListDTO } from '../models/application-evaluation-resource';
+import { ApplicationEvaluationDetailListDTO } from '../models/application-evaluation-detail-list-dto';
+import { ApplicationEvaluationOverviewListDTO } from '../models/application-evaluation-overview-list-dto';
 const BASE_PATH = '';
 
 /**

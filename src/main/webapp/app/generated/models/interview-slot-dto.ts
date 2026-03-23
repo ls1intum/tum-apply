@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { AssignedIntervieweeDTO } from 'assigned-interviewee-dto';
+import type { AssignedIntervieweeDTO } from './assigned-interviewee-dto';
 
 export interface InterviewSlotDTO {
     readonly endDateTime?: string;

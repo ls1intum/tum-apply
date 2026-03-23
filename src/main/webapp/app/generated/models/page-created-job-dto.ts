@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { PageableObject } from 'pageable-object';
-import type { CreatedJobDTO } from 'created-job-dto';
-import type { SortObject } from 'sort-object';
+import type { PageableObject } from './pageable-object';
+import type { CreatedJobDTO } from './created-job-dto';
+import type { SortObject } from './sort-object';
 
 export interface PageCreatedJobDTO {
     readonly content?: Array<CreatedJobDTO>;

@@ -9,14 +9,14 @@
  */
 
 /**
- * AiResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * AiResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AIJobDescriptionTranslationDTO } from '../models/ai-resource';
-import { JobFormDTO } from '../models/ai-resource';
+import { JobFormDTO } from '../models/job-form-dto';
+import { AIJobDescriptionTranslationDTO } from '../models/ai-job-description-translation-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AiResourceApi {

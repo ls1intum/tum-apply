@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { UserDataExportExceptionCauseStackTraceInner } from 'user-data-export-exception-cause-stack-trace-inner';
+import type { UserDataExportExceptionCauseStackTraceInner } from './user-data-export-exception-cause-stack-trace-inner';
 
 export interface UserDataExportExceptionCause {
     readonly stackTrace?: Array<UserDataExportExceptionCauseStackTraceInner>;

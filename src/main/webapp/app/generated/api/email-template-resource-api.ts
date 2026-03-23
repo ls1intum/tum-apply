@@ -9,13 +9,14 @@
  */
 
 /**
- * EmailTemplateResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * EmailTemplateResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EmailTemplateDTO } from '../models/email-template-resource';
+import { EmailTemplateDTO } from '../models/email-template-dto';
+import { PageResponseDTOEmailTemplateOverviewDTO } from '../models/page-response-dto-email-template-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class EmailTemplateResourceApi {
@@ -40,7 +41,37 @@ export class EmailTemplateResourceApi {
     deleteTemplate(templateId: string): Observable<void> {
         const templateIdPath = encodeURIComponent(String(templateId));
         const url = `${this.basePath}/api/email-templates/${templateIdPath}`;
-        return this.http.delete(url);
+        return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param templateId 
+     */
+    getTemplate(templateId: string): Observable<EmailTemplateDTO> {
+        const templateIdPath = encodeURIComponent(String(templateId));
+        const url = `${this.basePath}/api/email-templates/${templateIdPath}`;
+        return this.http.get<EmailTemplateDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getTemplates(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOEmailTemplateOverviewDTO> {
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/email-templates${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOEmailTemplateOverviewDTO>(url);
     }
 
     /**

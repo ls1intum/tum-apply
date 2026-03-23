@@ -14,7 +14,7 @@
  * @generated from OpenAPI specification
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { ProfOnboardingDTO } from '../models/prof-onboarding-resource';
+import { ProfOnboardingDTO } from '../models/prof-onboarding-dto';
 
 const BASE_PATH = '';
 

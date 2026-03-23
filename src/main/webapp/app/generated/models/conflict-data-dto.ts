@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ExistingSlotDTO } from 'existing-slot-dto';
+import type { ExistingSlotDTO } from './existing-slot-dto';
 
 export interface ConflictDataDTO {
     readonly currentProcessId?: string;

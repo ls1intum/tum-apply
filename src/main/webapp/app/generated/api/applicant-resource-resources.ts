@@ -14,8 +14,8 @@
  * @generated from OpenAPI specification
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { ApplicantDTO } from '../models/applicant-resource';
-import { ApplicationDocumentIdsDTO } from '../models/applicant-resource';
+import { ApplicantDTO } from '../models/applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
 const BASE_PATH = '';
 
 /**

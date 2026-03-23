@@ -9,15 +9,17 @@
  */
 
 /**
- * UserResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * UserResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UpdateAvatarDTO } from '../models/user-resource';
-import { UpdatePasswordDTO } from '../models/user-resource';
-import { UpdateUserNameDTO } from '../models/user-resource';
+import { PageResponseDTOKeycloakUserDTO } from '../models/page-response-dto-keycloak-user-dto';
+import { UserShortDTO } from '../models/user-short-dto';
+import { UpdateAvatarDTO } from '../models/update-avatar-dto';
+import { UpdatePasswordDTO } from '../models/update-password-dto';
+import { UpdateUserNameDTO } from '../models/update-user-name-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserResourceApi {
@@ -27,11 +29,43 @@ export class UserResourceApi {
     /**
      * 
      * 
+     * @param pageSize 
+     * @param pageNumber 
+     * @param searchQuery 
+     */
+    getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string): Observable<PageResponseDTOKeycloakUserDTO> {
+        const queryParams: Record<string, string> = {};
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams['pageSize'] = String(pageSize);
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams['pageNumber'] = String(pageNumber);
+        }
+        if (searchQuery !== undefined && searchQuery !== null) {
+            queryParams['searchQuery'] = String(searchQuery);
+        }
+        const queryString = new URLSearchParams(queryParams).toString();
+        const url = `${this.basePath}/api/users/available-for-research-group${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOKeycloakUserDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getCurrentUser(): Observable<UserShortDTO> {
+        const url = `${this.basePath}/api/users/me`;
+        return this.http.get<UserShortDTO>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param updateAvatarDTO 
      */
     updateAvatar(updateAvatarDTO: UpdateAvatarDTO): Observable<void> {
         const url = `${this.basePath}/api/users/avatar`;
-        return this.http.put(url, updateAvatarDTO);
+        return this.http.put<void>(url, updateAvatarDTO);
     }
 
     /**
@@ -41,7 +75,7 @@ export class UserResourceApi {
      */
     updatePassword(updatePasswordDTO: UpdatePasswordDTO): Observable<void> {
         const url = `${this.basePath}/api/users/password`;
-        return this.http.put(url, updatePasswordDTO);
+        return this.http.put<void>(url, updatePasswordDTO);
     }
 
     /**
@@ -51,7 +85,7 @@ export class UserResourceApi {
      */
     updateUserName(updateUserNameDTO: UpdateUserNameDTO): Observable<void> {
         const url = `${this.basePath}/api/users/name`;
-        return this.http.put(url, updateUserNameDTO);
+        return this.http.put<void>(url, updateUserNameDTO);
     }
 
 }

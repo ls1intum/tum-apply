@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ApplicantDTO } from 'applicant-dto';
+import type { ApplicantDTO } from './applicant-dto';
 
 export interface UpdateApplicationDTO {
     readonly applicant: ApplicantDTO;
