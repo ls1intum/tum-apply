@@ -11,7 +11,8 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
+import { ResearchGroupShortDTO } from 'app/generated/models/research-group-short-dto';
+import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 
@@ -20,17 +21,18 @@ import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/c
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
-import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { ResearchGroupResourceApi } from '../../../generated/api/research-group-resource-api';
 import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 interface MembersRow {
   avatar?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
   researchGroup?: ResearchGroupShortDTO;
-  roles?: UserShortDTO.RolesEnum[];
+  roles?: UserShortDTORolesEnum;
   userId?: string;
   name: string;
   role: string;
@@ -106,9 +108,9 @@ export class ResearchGroupMembersComponent {
     });
   });
 
-  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false);
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes('EMPLOYEE') ?? false);
 
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupService = inject(ResearchGroupResourceApi);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
@@ -196,13 +198,13 @@ export class ResearchGroupMembersComponent {
 
   /** Internal methods */
 
-  private formatRoles(roles?: string[]): string {
-    if (!roles || roles.length === 0) {
+  private formatRoles(roles?: string): string {
+    if (!roles) {
       return this.translate.instant(`${this.translationKey}.noRole`);
     }
 
     // Capitalize first letter and make it singular
-    return roles[0].charAt(0).toUpperCase() + roles[0].slice(1).toLowerCase();
+    return roles.charAt(0).toUpperCase() + roles.slice(1).toLowerCase();
   }
 
   private isCurrentUser(member: UserShortDTO): boolean {

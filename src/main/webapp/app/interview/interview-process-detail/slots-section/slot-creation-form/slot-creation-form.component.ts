@@ -8,12 +8,12 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { TooltipModule } from 'primeng/tooltip';
-import { InterviewResourceApiService } from 'app/generated';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { ConflictDataDTO } from 'app/generated/model/conflictDataDTO';
-import { ExistingSlotDTO } from 'app/generated/model/existingSlotDTO';
-import { SlotInput } from 'app/generated/model/slotInput';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
+import { ConflictDataDTO } from 'app/generated/models/conflict-data-dto';
+import { ExistingSlotDTO } from 'app/generated/models/existing-slot-dto';
+import { SlotInput } from 'app/generated/models/slot-input';
 import { firstValueFrom } from 'rxjs';
 import { DateSlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -141,7 +141,7 @@ export class SlotCreationFormComponent {
   readonly minDate = new Date();
 
   // Dependencies
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewService = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
 
   /**

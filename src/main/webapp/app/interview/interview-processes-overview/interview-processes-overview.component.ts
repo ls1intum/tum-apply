@@ -8,9 +8,9 @@ import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
-import { UpcomingInterviewDTO } from 'app/generated/model/upcomingInterviewDTO';
-import { InterviewResourceApiService } from 'app/generated';
+import { InterviewOverviewDTO } from 'app/generated/models/interview-overview-dto';
+import { UpcomingInterviewDTO } from 'app/generated/models/upcoming-interview-dto';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { MonthNavigationComponent } from 'app/interview/interview-process-detail/slots-section/month-navigation/month-navigation.component';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
@@ -107,7 +107,7 @@ export class InterviewProcessesOverviewComponent {
   private readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewService = inject(InterviewResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);

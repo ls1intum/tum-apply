@@ -9,12 +9,13 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import TranslateDirective from '../../language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailSettingResourceApiService } from '../../../generated/api/emailSettingResourceApi.service';
-import { EmailSetting } from '../../../generated/model/emailSetting';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
+import { EmailSettingResourceApi } from '../../../generated/api/email-setting-resource-api';
+import { EmailSetting } from '../../../generated/models/email-setting';
+import { UserShortDTO } from '../../../generated/models/user-short-dto';
 
-import EmailTypeEnum = EmailSetting.EmailTypeEnum;
-import RolesEnum = UserShortDTO.RolesEnum;
+import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/models/email-setting';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+type RolesEnum = UserShortDTORolesEnum;
 
 export interface NotificationGroup {
   groupKey: string; // Title of the group (short)
@@ -32,7 +33,7 @@ export interface NotificationGroup {
 export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
-  protected emailSettingService = inject(EmailSettingResourceApiService);
+  protected emailSettingService = inject(EmailSettingResourceApi);
   protected toastService = inject(ToastService);
 
   // to control that switches are only displayed when settings are loaded
@@ -49,35 +50,35 @@ export class EmailSettingsComponent {
   protected roleSettings: WritableSignal<Map<RolesEnum, NotificationGroup[]>> = signal(
     new Map<RolesEnum, NotificationGroup[]>([
       [
-        RolesEnum.Applicant,
+        'APPLICANT',
         [
           {
             groupKey: 'settings.notifications.applicant.submission.title',
             descriptionKey: 'settings.notifications.applicant.submission.description',
-            emailTypes: [EmailTypeEnum.ApplicationSent, EmailTypeEnum.ApplicationWithdrawn],
+            emailTypes: ['APPLICATION_SENT', 'APPLICATION_WITHDRAWN'],
             enabled: false,
           },
           {
             groupKey: 'settings.notifications.applicant.outcome.title',
             descriptionKey: 'settings.notifications.applicant.outcome.description',
-            emailTypes: [EmailTypeEnum.ApplicationAccepted, EmailTypeEnum.ApplicationRejected],
+            emailTypes: ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED'],
             enabled: false,
           },
         ],
       ],
       [
-        RolesEnum.Professor,
+        'PROFESSOR',
         [
           {
             groupKey: 'settings.notifications.professor.new.title',
             descriptionKey: 'settings.notifications.professor.new.description',
-            emailTypes: [EmailTypeEnum.ApplicationReceived],
+            emailTypes: ['APPLICATION_RECEIVED'],
             enabled: false,
           },
           {
             groupKey: 'settings.notifications.professor.accepted.title',
             descriptionKey: 'settings.notifications.professor.accepted.description',
-            emailTypes: [EmailTypeEnum.ApplicationAccepted],
+            emailTypes: ['APPLICATION_ACCEPTED'],
             enabled: false,
           },
         ],

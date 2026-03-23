@@ -11,8 +11,8 @@ import { EditorComponent } from 'app/shared/components/atoms/editor/editor.compo
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { TranslateDirective } from 'app/shared/language';

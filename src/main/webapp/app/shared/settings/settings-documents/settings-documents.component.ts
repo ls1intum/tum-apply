@@ -5,14 +5,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantDTO } from 'app/generated/models/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
 import { AccountService } from 'app/core/auth/account.service';
 import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
 import { deepEqual } from 'app/core/util/deepequal-util';
@@ -135,7 +135,7 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
-  private applicantService = inject(ApplicantResourceApiService);
+  private applicantService = inject(ApplicantResourceApi);
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
@@ -289,9 +289,9 @@ export class SettingsDocumentsComponent {
     try {
       this.hasInitialLimitsSet.set(false);
 
-      const profile = await firstValueFrom(this.applicantService.getApplicantProfile('body', false, { transferCache: false }));
+      const profile = await firstValueFrom(this.applicantService.getApplicantProfile());
       const profileDocumentIds = await firstValueFrom(
-        this.applicantService.getApplicantProfileDocumentIds('body', false, { transferCache: false }),
+        this.applicantService.getApplicantProfileDocumentIds(),
       );
       this.applyProfileDocumentIds(profileDocumentIds);
 

@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 
-import { ApplicationDetailDTO } from '../../../../generated/model/applicationDetailDTO';
+import { ApplicationDetailDTO } from '../../../../generated/models/application-detail-dto';
 
 @Component({
   selector: 'jhi-application-detail-card',

@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { JobCardDTO } from 'job-card-dto';
-import type { CustomFieldAnswerDTO } from 'custom-field-answer-dto';
-import type { ApplicantDTO } from 'applicant-dto';
+import type { JobCardDTO } from './job-card-dto';
+import type { CustomFieldAnswerDTO } from './custom-field-answer-dto';
+import type { ApplicantDTO } from './applicant-dto';
 
 export interface ApplicationForApplicantDTO {
     readonly applicant?: ApplicantDTO;

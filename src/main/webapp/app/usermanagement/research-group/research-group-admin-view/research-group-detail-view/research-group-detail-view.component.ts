@@ -3,10 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
+import { DepartmentDTO } from 'app/generated/models/department-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -70,8 +70,8 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     return this.departmentOptions().find(opt => opt.value === deptId);
   });
 
-  readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly departmentService = inject(DepartmentResourceApiService);
+  readonly ResearchGroupService = inject(ResearchGroupResourceApi);
+  private readonly departmentService = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

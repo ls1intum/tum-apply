@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
-import { InterviewResourceApiService } from 'app/generated';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
@@ -36,7 +36,7 @@ export class InterviewProcessDetailComponent {
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewService = inject(InterviewResourceApi);
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
 

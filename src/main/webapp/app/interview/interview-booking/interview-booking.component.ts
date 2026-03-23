@@ -5,9 +5,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { InterviewBookingResourceApiService } from 'app/generated/api/interviewBookingResourceApi.service';
-import { BookingDTO } from 'app/generated/model/bookingDTO';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { InterviewBookingResourceApi } from 'app/generated/api/interview-booking-resource-api';
+import { BookingDTO } from 'app/generated/models/booking-dto';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -142,7 +142,7 @@ export class InterviewBookingComponent {
 
   // Services
   private readonly route = inject(ActivatedRoute);
-  private readonly bookingService = inject(InterviewBookingResourceApiService);
+  private readonly bookingService = inject(InterviewBookingResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 

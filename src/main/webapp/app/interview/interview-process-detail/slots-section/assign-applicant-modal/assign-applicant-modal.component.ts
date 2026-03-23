@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { InterviewResourceApiService } from 'app/generated';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
+import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -72,7 +72,7 @@ export class AssignApplicantModalComponent {
   private locale = computed(() => getLocale(this.translateService));
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewService = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 

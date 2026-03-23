@@ -27,16 +27,16 @@ import { MessageComponent } from 'app/shared/components/atoms/message/message.co
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
-import { AiResourceApiService } from 'app/generated';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
-import { JobDTO } from 'app/generated/model/jobDTO';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { ImageDTO } from 'app/generated/model/imageDTO';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { JobFormDTO } from 'app/generated/models/job-form-dto';
+import { JobDTO } from 'app/generated/models/job-dto';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { ImageDTO } from 'app/generated/models/image-dto';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
   ImageUploadButtonComponent,
@@ -47,6 +47,7 @@ import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
+import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOStateEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 
@@ -96,7 +97,7 @@ type JobFormMode = 'create' | 'edit';
     ImageUploadButtonComponent,
     CheckboxComponent,
   ],
-  providers: [JobResourceApiService],
+  providers: [JobResourceApi],
 })
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
@@ -206,17 +207,17 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceApiService);
-  private imageResourceService = inject(ImageResourceApiService);
+  private jobResourceService = inject(JobResourceApi);
+  private imageResourceService = inject(ImageResourceApi);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private aiService = inject(AiResourceApiService);
+  private aiService = inject(AiResourceApi);
   private aiStreamingService = inject(AiStreamingService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupService = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -667,14 +668,14 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTO.SubjectAreaEnum,
+        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTOSubjectAreaEnum,
         supervisingProfessor: this.userId(),
-        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
+        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTOLocationEnum,
 
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
 
-        state: JobFormDTO.StateEnum.Draft,
+        state: 'DRAFT',
       };
       this.autoScrollStreaming();
 
@@ -887,7 +888,7 @@ export class JobCreationFormComponent {
    * @param state - The job state ('DRAFT' or 'PUBLISHED')
    * @returns The complete job form DTO
    */
-  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
+  private createJobDTO(state: JobFormDTOStateEnum): JobFormDTO {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
@@ -910,9 +911,9 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTO.SubjectAreaEnum,
+      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTOSubjectAreaEnum,
       supervisingProfessor: supervisingProfessorId ?? '',
-      location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
+      location: basicInfoValue.location?.value as JobFormDTOLocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
@@ -921,7 +922,7 @@ export class JobCreationFormComponent {
       endDate: positionDetailsValue.applicationDeadline ?? '',
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
-      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
+      fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
@@ -1074,7 +1075,7 @@ export class JobCreationFormComponent {
     try {
       const response = await firstValueFrom(this.researchGroupService.getResearchGroupProfessors());
       const options = response
-        .filter(member => (member.roles ?? []).includes('PROFESSOR') && member.userId)
+        .filter(member => member.roles === 'PROFESSOR' && member.userId)
         .map(member => {
           const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
           const fallback = (member.email ?? member.userId ?? '').trim();

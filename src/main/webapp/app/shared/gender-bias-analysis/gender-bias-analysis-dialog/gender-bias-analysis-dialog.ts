@@ -2,7 +2,8 @@ import { Component, ViewEncapsulation, computed, input, output } from '@angular/
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
-import { BiasedWordDTO, GenderBiasAnalysisResponse } from 'app/generated';
+import { BiasedWordDTO } from 'app/generated/models/biased-word-dto';
+import { GenderBiasAnalysisResponse } from 'app/generated/models/gender-bias-analysis-response';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 

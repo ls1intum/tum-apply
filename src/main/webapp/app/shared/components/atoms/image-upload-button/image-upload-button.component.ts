@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { ImageDTO } from 'app/generated/model/imageDTO';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { ImageDTO } from 'app/generated/models/image-dto';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 
 export interface ImageUploadConfig {
@@ -36,7 +36,7 @@ export class ImageUploadButtonComponent {
   readonly isUploading = signal<boolean>(false);
 
   // Services
-  readonly imageService = inject(ImageResourceApiService);
+  readonly imageService = inject(ImageResourceApi);
 
   // Constants
   readonly DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

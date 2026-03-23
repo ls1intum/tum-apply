@@ -5,12 +5,12 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { DividerModule } from 'primeng/divider';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
@@ -74,8 +74,8 @@ export class ResearchGroupInfoComponent {
 
   // Services
   private accountService = inject(AccountService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
-  private departmentService = inject(DepartmentResourceApiService);
+  private researchGroupService = inject(ResearchGroupResourceApi);
+  private departmentService = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private translate = inject(TranslateService);
 

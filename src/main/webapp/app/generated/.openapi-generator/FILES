@@ -8,6 +8,7 @@ api/application-resource-resources.ts
 api/authentication-resource-api.ts
 api/department-resource-api.ts
 api/department-resource-resources.ts
+api/document-resource-api.ts
 api/document-resource-resources.ts
 api/email-setting-resource-api.ts
 api/email-setting-resource-resources.ts
@@ -28,6 +29,7 @@ api/job-resource-resources.ts
 api/pdf-export-resource-api.ts
 api/prof-onboarding-resource-api.ts
 api/prof-onboarding-resource-resources.ts
+api/public-config-resource-api.ts
 api/public-config-resource-resources.ts
 api/rating-resource-api.ts
 api/rating-resource-resources.ts

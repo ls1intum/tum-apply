@@ -1,9 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { ResearchGroupShortDTO } from '../../generated/model/researchGroupShortDTO';
-import { UserResourceApiService } from '../../generated/api/userResourceApi.service';
-import { UserShortDTO } from '../../generated/model/userShortDTO';
+import { ResearchGroupShortDTO } from '../../generated/models/research-group-short-dto';
+import { UserResourceApi } from '../../generated/api/user-resource-api';
+import { UserShortDTO } from '../../generated/models/user-short-dto';
 import { formatFullName } from '../../shared/util/name.util';
 
 export interface User {
@@ -32,7 +32,7 @@ export interface User {
  * -----
  *  - This service does not handle authentication itself; it assumes that the server session or Keycloak
  *    has already established an authenticated context.
- *  - It relies on `UserResourceApiService` for all server communication.
+ *  - It relies on `UserResourceApi` for all server communication.
  *  - Errors when fetching the user are logged and result in `user` being set to `undefined` while `loaded` is true.
  */
 @Injectable({ providedIn: 'root' })
@@ -44,7 +44,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
-  private readonly userResourceService = inject(UserResourceApiService);
+  private readonly userResourceService = inject(UserResourceApi);
 
   /**
    * Returns the id of the signed-in user, or undefined if no user is loaded.
@@ -96,7 +96,7 @@ export class AccountService {
         name: formatFullName(userShortDTO.firstName, userShortDTO.lastName) || 'User',
         avatar: userShortDTO.avatar,
         researchGroup: userShortDTO.researchGroup ?? undefined,
-        authorities: userShortDTO.roles,
+        authorities: userShortDTO.roles ? [userShortDTO.roles] : undefined,
       };
       this.user.set(user);
       this.loaded.set(true);

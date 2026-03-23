@@ -6,9 +6,9 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
-import { InterviewResourceApiService } from 'app/generated';
-import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
-import { UpdateAssessmentDTO } from 'app/generated/model/updateAssessmentDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { IntervieweeDetailDTO } from 'app/generated/models/interviewee-detail-dto';
+import { UpdateAssessmentDTO } from 'app/generated/models/update-assessment-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -101,7 +101,7 @@ export class IntervieweeAssessmentComponent {
 
   // Services
   private readonly router = inject(Router);
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewService = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly serverRating = signal<number | undefined>(undefined);
   private readonly isInitializing = signal<boolean>(true);

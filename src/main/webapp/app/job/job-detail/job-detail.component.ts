@@ -6,7 +6,7 @@ import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-transla
 import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
@@ -17,13 +17,14 @@ import { BackButtonComponent } from 'app/shared/components/atoms/back-button/bac
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
-import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
-import { JobPreviewRequest, UserShortDTO } from 'app/generated';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { JobFormDTO } from 'app/generated/models/job-form-dto';
+import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
+import { JobDetailDTO } from 'app/generated/models/job-detail-dto';
+import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
+import { JobPreviewRequest } from 'app/generated/models/job-preview-request';
+import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -32,12 +33,14 @@ import { createMenuActionSignals } from 'app/shared/util/util';
 
 import * as DropDownOptions from '../dropdown-options';
 
-import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
+import { JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
+type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
 export interface JobDetails {
   supervisingProfessor: string;
   researchGroup: string;
   title: string;
-  subjectArea: JobFormDTO.SubjectAreaEnum;
+  subjectArea: JobFormDTOSubjectAreaEnum;
   researchArea: string;
   location: string;
   workload: string;
@@ -115,7 +118,8 @@ export class JobDetailComponent {
     return this.translate.instant('jobDetailPage.noData');
   });
 
-  pdfExportService = inject(PdfExportResourceApiService);
+  pdfExportService = inject(PdfExportResourceApi);
+  private http = inject(HttpClient);
 
   readonly primaryActionButton = computed<ActionButton | null>(() => {
     if (this.previewData()) {
@@ -137,7 +141,7 @@ export class JobDetailComponent {
             disabled: false,
             shouldTranslate: true,
           };
-        case ApplicationStateEnum.Saved:
+        case 'SAVED':
           return {
             label: 'button.edit',
             severity: 'primary',
@@ -277,13 +281,13 @@ export class JobDetailComponent {
   readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
   readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
-  private jobResourceService = inject(JobResourceApiService);
+  private jobResourceService = inject(JobResourceApi);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupService = inject(ResearchGroupResourceApi);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
@@ -295,7 +299,7 @@ export class JobDetailComponent {
   });
 
   isProfessorOrEmployee(): boolean {
-    return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);
+    return this.accountService.hasAnyAuthority(['PROFESSOR', 'EMPLOYEE']);
   }
 
   onEditResearchGroup(): void {
@@ -384,7 +388,7 @@ export class JobDetailComponent {
       };
 
       try {
-        const response = await firstValueFrom(this.pdfExportService.exportJobPreviewToPDF(req, 'response'));
+        const response = await firstValueFrom(this.http.post('/api/export/job/preview/pdf', req, { observe: 'response', responseType: 'blob' }));
 
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = 'job.pdf';
@@ -411,7 +415,7 @@ export class JobDetailComponent {
     const jobId = this.jobId();
 
     try {
-      const response = await firstValueFrom(this.pdfExportService.exportJobToPDF(jobId, labels, 'response'));
+      const response = await firstValueFrom(this.http.post(`/api/export/job/${encodeURIComponent(jobId)}/pdf`, labels, { observe: 'response', responseType: 'blob' }));
 
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'job.pdf';
@@ -522,7 +526,7 @@ export class JobDetailComponent {
       supervisingProfessor,
       researchGroup,
       title: data.title,
-      subjectArea: data.subjectArea as JobFormDTO.SubjectAreaEnum,
+      subjectArea: data.subjectArea as JobFormDTOSubjectAreaEnum,
       researchArea: data.researchArea ?? '',
       location: data.location ?? '',
       workload: data.workload?.toString() ?? '',

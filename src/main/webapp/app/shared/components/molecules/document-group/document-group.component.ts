@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
 
 import { DocumentViewerComponent } from '../../atoms/document-viewer/document-viewer.component';
-import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationDocumentIdsDTO } from '../../../../generated/models/application-document-ids-dto';
 
 /**
  * A UI component that displays a group of document viewers arranged

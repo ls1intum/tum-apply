@@ -1,8 +1,8 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
-import { DocumentResourceApiService } from 'app/generated/api/documentResourceApi.service';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class DocumentViewerComponent {
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
-  private documentService = inject(DocumentResourceApiService);
+  private documentService = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
 
   constructor() {

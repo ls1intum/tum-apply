@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { Document } from 'document';
-import type { Applicant } from 'applicant';
-import type { CustomFieldAnswer } from 'custom-field-answer';
+import type { Document } from './document';
+import type { Applicant } from './applicant';
+import type { CustomFieldAnswer } from './custom-field-answer';
 
 export interface DocumentDictionary {
     readonly applicant?: Applicant;

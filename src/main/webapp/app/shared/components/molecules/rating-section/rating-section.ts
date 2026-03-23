@@ -3,8 +3,8 @@ import { firstValueFrom } from 'rxjs';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
-import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
+import { RatingOverviewDTO } from 'app/generated/models/rating-overview-dto';
+import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
 
 import TranslateDirective from '../../../language/translate.directive';
 import { SubSection } from '../../atoms/sub-section/sub-section';
@@ -15,7 +15,7 @@ import { SubSection } from '../../atoms/sub-section/sub-section';
   templateUrl: './rating-section.html',
 })
 export class RatingSection {
-  ratingService = inject(RatingResourceApiService);
+  ratingService = inject(RatingResourceApi);
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 

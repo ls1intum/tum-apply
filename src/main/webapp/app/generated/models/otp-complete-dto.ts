@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { UserProfileDTO } from 'user-profile-dto';
+import type { UserProfileDTO } from './user-profile-dto';
 
 export interface OtpCompleteDTO {
     readonly code: string;

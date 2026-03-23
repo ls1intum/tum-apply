@@ -9,8 +9,8 @@ import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-d
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { AccountService } from '../core/auth/account.service';
-import { ProfOnboardingResourceApiService } from '../generated/api/profOnboardingResourceApi.service';
-import { ProfOnboardingDTO } from '../generated/model/profOnboardingDTO';
+import { ProfOnboardingResourceApi } from '../generated/api/prof-onboarding-resource-api';
+import { ProfOnboardingDTO } from '../generated/models/prof-onboarding-dto';
 
 /**
  * Orchestrates the professor onboarding dialog on the client.
@@ -26,7 +26,7 @@ export class OnboardingOrchestratorService {
   private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
   private readonly dialog = inject(DialogService);
-  private readonly profOnboardingResourceService = inject(ProfOnboardingResourceApiService);
+  private readonly profOnboardingResourceService = inject(ProfOnboardingResourceApi);
 
   // Prevents opening multiple dialogs concurrently.
   private opened = false;

@@ -19,7 +19,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 
 import ApplicationCreationPage1Component, {
@@ -36,13 +36,15 @@ import ApplicationCreationPage2Component, {
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
-import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
-import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
-import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
+import { ApplicationDetailDTO } from '../../../generated/models/application-detail-dto';
+import { ApplicationForApplicantDTO } from '../../../generated/models/application-for-applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../../../generated/models/application-document-ids-dto';
+import { ApplicationResourceApi } from '../../../generated/api/application-resource-api';
+import { UpdateApplicationDTO } from '../../../generated/models/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 const applyflow = 'entity.toast.applyFlow';
 
 @Component({
@@ -122,7 +124,7 @@ export default class ApplicationCreationFormComponent {
   jobId = signal<string>('');
   applicantId = signal<string>('');
   applicationId = signal<string>('');
-  applicationState = signal<ApplicationForApplicantDTO.ApplicationStateEnum>('SAVED');
+  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>('SAVED');
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   savingBadgeCalculatedClass = computed<string>(
@@ -337,7 +339,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceService = inject(ApplicationResourceApiService);
+  private readonly applicationResourceService = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
@@ -346,7 +348,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
-  private readonly jobResourceService = inject(JobResourceApiService);
+  private readonly jobResourceService = inject(JobResourceApi);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -492,7 +494,7 @@ export default class ApplicationCreationFormComponent {
     void this.sendCreateApplicationData('SENT', true);
   }
 
-  async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
+  async sendCreateApplicationData(state: ApplicationForApplicantDTOApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -653,7 +655,7 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
+  private mapPagesToDTO(state?: ApplicationDetailDTOApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
     const p1 = this.personalInfoData();
     const p2 = this.educationData();
     const p3 = this.applicationDetailsData();

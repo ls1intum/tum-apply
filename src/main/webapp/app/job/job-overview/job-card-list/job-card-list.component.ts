@@ -8,15 +8,16 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { JobFormDTO } from 'app/generated/models/job-form-dto';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { TranslateDirective } from 'app/shared/language';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
-import { JobCardDTO } from '../../../generated/model/jobCardDTO';
-import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { JobCardDTO } from '../../../generated/models/job-card-dto';
+import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
@@ -37,8 +38,8 @@ export class JobCardListComponent {
 
   DropdownOptions = DropdownOptions;
 
-  readonly selectedSubjectAreaFilters = signal<JobFormDTO.SubjectAreaEnum[]>([]);
-  readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
+  readonly selectedSubjectAreaFilters = signal<JobFormDTOSubjectAreaEnum[]>([]);
+  readonly selectedLocationFilters = signal<JobFormDTOLocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
   readonly allSubjectAreas = this.DropdownOptions.subjectAreas.map(option => option.name);
@@ -59,7 +60,7 @@ export class JobCardListComponent {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
 
-  private jobService = inject(JobResourceApiService);
+  private jobService = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
   private readonly loadJobsEffect = effect(() => {

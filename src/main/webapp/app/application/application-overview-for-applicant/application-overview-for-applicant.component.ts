@@ -14,8 +14,8 @@ import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicationOverviewDTO } from 'app/generated/models/application-overview-dto';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
@@ -184,7 +184,7 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
-  private readonly applicationService = inject(ApplicationResourceApiService);
+  private readonly applicationService = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
 
   private applicantId = signal<string>('');

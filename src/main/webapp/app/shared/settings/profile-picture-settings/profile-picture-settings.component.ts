@@ -3,8 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { ImageCropperComponent, ImageTransform } from 'ngx-image-cropper';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -67,9 +67,9 @@ export class ProfilePictureSettingsComponent {
   currentProfilePictureUrl = computed<string | null>(() => normalizeOptionalString(this.accountService.loadedUser()?.avatar));
 
   private readonly accountService = inject(AccountService);
-  private readonly imageResourceService = inject(ImageResourceApiService);
+  private readonly imageResourceService = inject(ImageResourceApi);
   private readonly toastService = inject(ToastService);
-  private readonly userResourceService = inject(UserResourceApiService);
+  private readonly userResourceService = inject(UserResourceApi);
 
   onAddPictureClick(): void {
     this.fileInput().nativeElement.click();

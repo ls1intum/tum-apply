@@ -1,6 +1,6 @@
 import { Component, inject, input, output } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 type SidebarButton = { icon: string; text: string; link: string };
 type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
@@ -46,7 +47,7 @@ export class SidebarComponent {
       ?.map((authority: string) =>
         authority === 'PROFESSOR' || authority === 'EMPLOYEE'
           ? categoryConfig.PROFESSOR_EMPLOYEE
-          : categoryConfig[authority as UserShortDTO.RolesEnum],
+          : categoryConfig[authority as UserShortDTORolesEnum],
       )
       .flat();
   }

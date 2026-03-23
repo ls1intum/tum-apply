@@ -7,8 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
@@ -72,7 +72,7 @@ export class UploadButtonComponent {
   showDuplicateDialog = signal(false);
   showReplacementDialog = signal(false);
 
-  private applicationService = inject(ApplicationResourceApiService);
+  private applicationService = inject(ApplicationResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
 

@@ -2,7 +2,7 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
-import { DepartmentDTO } from 'app/generated/model/models';
+import { DepartmentDTO } from 'app/generated/models/department-dto';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -13,9 +13,9 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { DepartmentEditDialogComponent } from './department-edit-dialog/department-edit-dialog.component';
@@ -123,8 +123,8 @@ export class ResearchGroupDepartmentsComponent {
   });
 
   private toastService = inject(ToastService);
-  private readonly departmentResourceApiService = inject(DepartmentResourceApiService);
-  private readonly schoolResourceApiService = inject(SchoolResourceApiService);
+  private readonly departmentResourceApi = inject(DepartmentResourceApi);
+  private readonly schoolResourceApi = inject(SchoolResourceApi);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
@@ -153,7 +153,7 @@ export class ResearchGroupDepartmentsComponent {
   async loadDepartments(): Promise<void> {
     try {
       const pageResponse = await firstValueFrom(
-        this.departmentResourceApiService.getDepartmentsForAdmin(
+        this.departmentResourceApi.getDepartmentsForAdmin(
           this.pageSize(),
           this.pageNumber(),
           this.selectedSchoolFilters(),
@@ -223,7 +223,7 @@ export class ResearchGroupDepartmentsComponent {
     if (departmentId == null) {
       return;
     }
-    this.departmentResourceApiService.deleteDepartment(departmentId).subscribe({
+    this.departmentResourceApi.deleteDepartment(departmentId).subscribe({
       next: () => {
         this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteSuccess`);
         void this.loadDepartments();
@@ -253,7 +253,7 @@ export class ResearchGroupDepartmentsComponent {
 
   private async loadSchools(): Promise<void> {
     try {
-      const schools = await firstValueFrom(this.schoolResourceApiService.getAllSchools());
+      const schools = await firstValueFrom(this.schoolResourceApi.getAllSchools());
       this.schools.set(schools);
     } catch {
       // non-fatal, availableSchools will be empty

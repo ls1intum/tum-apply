@@ -4,8 +4,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ResearchGroupAdminDTO } from 'app/generated/models/research-group-admin-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -198,7 +198,7 @@ export class ResearchGroupAdminView {
 
   private toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupService = inject(ResearchGroupResourceApi);
   private readonly dialogService = inject(DialogService);
   private router = inject(Router);
 

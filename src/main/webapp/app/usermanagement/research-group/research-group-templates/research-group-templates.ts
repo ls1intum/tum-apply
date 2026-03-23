@@ -10,10 +10,10 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/compo
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplateOverviewDTO';
+import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateOverviewDTO } from '../../../generated/models/email-template-overview-dto';
 import { AccountService } from '../../../core/auth/account.service';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
+import { UserShortDTO } from '../../../generated/models/user-short-dto';
 
 @Component({
   selector: 'jhi-research-group-templates',
@@ -26,7 +26,7 @@ export class ResearchGroupTemplates {
   protected pageSize = signal<number>(10);
   protected total = signal<number>(0);
 
-  protected readonly emailTemplateService = inject(EmailTemplateResourceApiService);
+  protected readonly emailTemplateService = inject(EmailTemplateResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);
@@ -38,7 +38,7 @@ export class ResearchGroupTemplates {
 
   protected readonly isEmployee = computed<boolean>(() => {
     const currentUserAuthorities = this.accountService.userAuthorities;
-    return currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false;
+    return currentUserAuthorities?.includes('EMPLOYEE') ?? false;
   });
 
   protected readonly columns = computed<DynamicTableColumn[]>(() => {

@@ -15,7 +15,7 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { InternalCommentDTO } from '../models/internal-comment-resource';
+import { InternalCommentDTO } from '../models/internal-comment-dto';
 const BASE_PATH = '';
 
 /**

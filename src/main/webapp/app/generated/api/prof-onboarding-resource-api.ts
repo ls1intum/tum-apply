@@ -9,12 +9,13 @@
  */
 
 /**
- * ProfOnboardingResourceApi - API service for mutations (POST, PUT, DELETE, PATCH)
+ * ProfOnboardingResourceApi - API service
  * @generated from OpenAPI specification
  */
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ProfOnboardingDTO } from '../models/prof-onboarding-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ProfOnboardingResourceApi {
@@ -25,9 +26,18 @@ export class ProfOnboardingResourceApi {
      * 
      * 
      */
+    check(): Observable<ProfOnboardingDTO> {
+        const url = `${this.basePath}/api/me/prof-onboarding`;
+        return this.http.get<ProfOnboardingDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
     confirmOnboarding(): Observable<void> {
         const url = `${this.basePath}/api/me/prof-onboarding/confirm`;
-        return this.http.post(url, null);
+        return this.http.post<void>(url, null);
     }
 
     /**
@@ -36,7 +46,7 @@ export class ProfOnboardingResourceApi {
      */
     remindLater(): Observable<void> {
         const url = `${this.basePath}/api/me/prof-onboarding/remind`;
-        return this.http.post(url, null);
+        return this.http.post<void>(url, null);
     }
 
 }

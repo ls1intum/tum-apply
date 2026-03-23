@@ -16,8 +16,8 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { UserAvatarComponent } from '../../shared/components/atoms/user-avatar/user-avatar.component';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
-import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicationEvaluationOverviewDTO';
+import { ApplicationEvaluationResourceApi } from '../../generated/api/application-evaluation-resource-api';
+import { ApplicationEvaluationOverviewDTO } from '../../generated/models/application-evaluation-overview-dto';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -91,7 +91,7 @@ export class ApplicationOverviewComponent {
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
 
-  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private toastService = inject(ToastService);

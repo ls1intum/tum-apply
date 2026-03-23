@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
-import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
-import { SendInvitationsResultDTO } from 'app/generated/model/sendInvitationsResultDTO';
-import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
+import { AddIntervieweesDTO } from 'app/generated/models/add-interviewees-dto';
+import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
+import { SendInvitationsResultDTO } from 'app/generated/models/send-invitations-result-dto';
+import { CancelInterviewDTO } from 'app/generated/models/cancel-interview-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -190,8 +191,8 @@ export class IntervieweeSectionComponent {
   });
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly interviewService = inject(InterviewResourceApi);
+  private readonly applicationService = inject(ApplicationEvaluationResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 

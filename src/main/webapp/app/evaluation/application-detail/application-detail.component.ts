@@ -14,15 +14,15 @@ import { ApplicationCarouselComponent } from 'app/shared/components/organisms/ap
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
-import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { InterviewResourceApiService } from 'app/generated/api/interviewResourceApi.service';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { AcceptDTO } from 'app/generated/model/acceptDTO';
-import { RejectDTO } from 'app/generated/model/rejectDTO';
-import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
+import { AcceptDTO } from 'app/generated/models/accept-dto';
+import { RejectDTO } from 'app/generated/models/reject-dto';
+import { ApplicationEvaluationDetailListDTO } from 'app/generated/models/application-evaluation-detail-list-dto';
+import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TooltipModule } from 'primeng/tooltip';
@@ -36,7 +36,8 @@ import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
 import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
-import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
+type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
 
 const CAROUSEL_SIZE = 7;
 
@@ -106,7 +107,7 @@ export class ApplicationDetailComponent {
 
   isAlreadyInInterview = computed(() => {
     const currentApplication = this.currentApplication();
-    return currentApplication?.applicationDetailDTO.applicationState === ApplicationStateEnum.Interview;
+    return currentApplication?.applicationDetailDTO.applicationState === 'INTERVIEW';
   });
 
   currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
@@ -156,9 +157,9 @@ export class ApplicationDetailComponent {
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
 
-  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
-  private readonly applicationResourceService = inject(ApplicationResourceApiService);
-  private readonly interviewResourceService = inject(InterviewResourceApiService);
+  private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApi);
+  private readonly applicationResourceService = inject(ApplicationResourceApi);
+  private readonly interviewResourceService = inject(InterviewResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
@@ -321,7 +322,7 @@ export class ApplicationDetailComponent {
       );
 
       // 3. Update local state
-      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
+      this.updateCurrentApplicationState('INTERVIEW');
       this.toastService.showSuccess({
         summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
         detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),

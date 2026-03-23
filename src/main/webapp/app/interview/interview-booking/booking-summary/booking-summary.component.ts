@@ -2,8 +2,8 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { ProfessorDTO } from 'app/generated/model/professorDTO';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
+import { ProfessorDTO } from 'app/generated/models/professor-dto';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';

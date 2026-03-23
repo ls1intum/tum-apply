@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
+import { KeycloakUserDTO } from 'app/generated/models/keycloak-user-dto';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -45,8 +47,8 @@ export class ResearchGroupAddMembersComponent {
   users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
-  userService = inject(UserResourceApiService);
-  researchGroupService = inject(ResearchGroupResourceApiService);
+  userService = inject(UserResourceApi);
+  researchGroupService = inject(ResearchGroupResourceApi);
   toastService = inject(ToastService);
 
   public readonly MIN_SEARCH_LENGTH = 3;

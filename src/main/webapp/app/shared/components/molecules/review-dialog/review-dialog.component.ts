@@ -9,12 +9,13 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
-import { AcceptDTO } from '../../../../generated/model/acceptDTO';
-import { RejectDTO } from '../../../../generated/model/rejectDTO';
+import { ApplicationEvaluationDetailDTO } from '../../../../generated/models/application-evaluation-detail-dto';
+import { AcceptDTO } from '../../../../generated/models/accept-dto';
+import { RejectDTO } from '../../../../generated/models/reject-dto';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
 
-import ReasonEnum = RejectDTO.ReasonEnum;
+import { RejectDTOReasonEnum } from 'app/generated/models/reject-dto';
+type ReasonEnum = RejectDTOReasonEnum;
 
 @Component({
   selector: 'jhi-review-dialog',

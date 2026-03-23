@@ -11,10 +11,10 @@ import {
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { ImageDTO } from 'app/generated/model/imageDTO';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ImageDTO } from 'app/generated/models/image-dto';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { DepartmentDTO } from 'app/generated/models/department-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
@@ -57,8 +57,8 @@ export class DepartmentImages {
   readonly inUseImages = computed(() => this.defaultImages().filter(image => image.isInUse === true));
   readonly notInUseImages = computed(() => this.defaultImages().filter(image => image.isInUse !== true));
 
-  private readonly imageService = inject(ImageResourceApiService);
-  private readonly departmentService = inject(DepartmentResourceApiService);
+  private readonly imageService = inject(ImageResourceApi);
+  private readonly departmentService = inject(DepartmentResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly preselectedDepartmentId = signal<string>('');

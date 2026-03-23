@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
@@ -11,18 +12,18 @@ import { DocumentViewerComponent } from 'app/shared/components/atoms/document-vi
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
+import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 import { formatGradeDisplay, getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { createMenuActionSignals } from 'app/shared/util/util';
-import { ApplicationPDFRequest } from 'app/generated';
+import { ApplicationPDFRequest } from 'app/generated/models/application-pdf-request';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
-import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
+import { ApplicationDetailDTO } from '../../generated/models/application-detail-dto';
+import { ApplicationDocumentIdsDTO } from '../../generated/models/application-document-ids-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
@@ -191,12 +192,13 @@ export default class ApplicationDetailForApplicantComponent {
   });
 
   readonly dropDownOptions = DropDownOptions;
-  private applicationService = inject(ApplicationResourceApiService);
+  private applicationService = inject(ApplicationResourceApi);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
-  private pdfExportService = inject(PdfExportResourceApiService);
+  private pdfExportService = inject(PdfExportResourceApi);
+  private http = inject(HttpClient);
   private translate = inject(TranslateService);
 
   private currentLang = toSignal(this.translate.onLangChange);
@@ -272,7 +274,7 @@ export default class ApplicationDetailForApplicantComponent {
       };
     }
 
-    this.pdfExportService.exportApplicationToPDF(req, 'response').subscribe(response => {
+    this.http.post('/api/export/application/pdf', req, { observe: 'response', responseType: 'blob' }).subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 

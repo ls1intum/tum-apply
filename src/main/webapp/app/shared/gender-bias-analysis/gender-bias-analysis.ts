@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, catchError, debounceTime, merge, of, shareReplay, switchMap } from 'rxjs';
-import { GenderBiasAnalysisRequest, GenderBiasAnalysisResourceApiService, GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisRequest } from 'app/generated/models/gender-bias-analysis-request';
+import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
+import { GenderBiasAnalysisResponse } from 'app/generated/models/gender-bias-analysis-response';
 
 @Injectable({ providedIn: 'root' })
 export class GenderBiasAnalysisService {
@@ -10,7 +12,7 @@ export class GenderBiasAnalysisService {
   private readonly lastLanguages = new Map<string, string>();
   private readonly firstLoads = new Set<string>();
 
-  private readonly apiService = inject(GenderBiasAnalysisResourceApiService);
+  private readonly apiService = inject(GenderBiasAnalysisResourceApi);
 
   getAnalysisForField(fieldId: string): Observable<GenderBiasAnalysisResponse | null> {
     if (!this.analyses.has(fieldId)) {

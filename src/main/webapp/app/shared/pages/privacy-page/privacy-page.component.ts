@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
-import { UserDataExportResourceApiService } from 'app/generated/api/api';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { AccountService } from 'app/core/auth/account.service';
 
@@ -45,7 +45,7 @@ export class PrivacyPageComponent {
   readonly cooldownSeconds = signal<number>(0);
   readonly signedIn = computed(() => this.accountService.signedIn());
 
-  protected readonly userDataExportService = inject(UserDataExportResourceApiService);
+  protected readonly userDataExportService = inject(UserDataExportResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);

@@ -8,8 +8,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { EmailTemplateResourceApiService, InterviewResourceApiService } from 'app/generated';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -19,7 +20,7 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { formatDateWithWeekday, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
-import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
+import { CancelInterviewDTO } from 'app/generated/models/cancel-interview-dto';
 
 import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
 
@@ -63,8 +64,8 @@ export class SlotsSectionComponent {
   readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
-  readonly interviewService = inject(InterviewResourceApiService);
-  readonly emailTemplateService = inject(EmailTemplateResourceApiService);
+  readonly interviewService = inject(InterviewResourceApi);
+  readonly emailTemplateService = inject(EmailTemplateResourceApi);
   readonly translateService = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly breakpointObserver = inject(BreakpointObserver);

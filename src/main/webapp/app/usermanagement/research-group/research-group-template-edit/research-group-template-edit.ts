@@ -15,11 +15,12 @@ import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateDTO } from '../../../generated/model/emailTemplateDTO';
+import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateDTO } from '../../../generated/models/email-template-dto';
 import { AccountService } from '../../../core/auth/account.service';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
+import { UserShortDTO } from '../../../generated/models/user-short-dto';
 
+import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/models/email-template-dto';
 @Component({
   selector: 'jhi-research-group-template-edit',
   imports: [
@@ -41,7 +42,7 @@ import { UserShortDTO } from '../../../generated/model/userShortDTO';
 export class ResearchGroupTemplateEdit {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
-  readonly emailTemplateService = inject(EmailTemplateResourceApiService);
+  readonly emailTemplateService = inject(EmailTemplateResourceApi);
   readonly translate = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly accountService = inject(AccountService);
@@ -193,7 +194,7 @@ export class ResearchGroupTemplateEdit {
 
     if (isNonDefault && (nameMissing || typeMissing)) return;
 
-    const isEmployee = this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
+    const isEmployee = this.accountService.userAuthorities?.includes('EMPLOYEE');
     if (isEmployee) return;
 
     this.savingState.set('SAVING');
@@ -217,7 +218,7 @@ export class ResearchGroupTemplateEdit {
   setSelectedEmailType(selection: SelectOption): void {
     this.formModel.update(prev => ({
       ...prev,
-      emailType: selection.value as EmailTemplateDTO.EmailTypeEnum,
+      emailType: selection.value as EmailTemplateDTOEmailTypeEnum,
     }));
   }
 

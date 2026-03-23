@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DocumentCacheService } from 'app/service/document-cache.service';
-import { AuthSessionInfoDTO, OtpCompleteDTO, UserProfileDTO } from 'app/generated';
+import { AuthSessionInfoDTO } from 'app/generated/models/auth-session-info-dto';
+import { OtpCompleteDTO } from 'app/generated/models/otp-complete-dto';
+import { UserProfileDTO } from 'app/generated/models/user-profile-dto';
 import { ToastMessageInput, ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -143,7 +145,7 @@ export class AuthFacadeService {
   /** Verify an OTP code and start a server session, then redirect. */
   async verifyOtp(code: string, registration = false): Promise<boolean> {
     const email = this.authOrchestrator.email();
-    const purpose = registration ? OtpCompleteDTO.PurposeEnum.Register : OtpCompleteDTO.PurposeEnum.Login;
+    const purpose = registration ? 'REGISTER' : 'LOGIN';
     const profile: UserProfileDTO | undefined = registration
       ? {
           firstName: this.authOrchestrator.firstName(),

@@ -2,8 +2,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DepartmentResourceApiService, SchoolResourceApiService } from 'app/generated';
-import { SchoolShortDTO } from 'app/generated/model/models';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -49,8 +50,8 @@ export class DepartmentEditDialogComponent {
 
   private readonly config = inject(DynamicDialogConfig);
   private readonly ref = inject(DynamicDialogRef);
-  private readonly departmentService = inject(DepartmentResourceApiService);
-  private readonly schoolService = inject(SchoolResourceApiService);
+  private readonly departmentService = inject(DepartmentResourceApi);
+  private readonly schoolService = inject(SchoolResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {

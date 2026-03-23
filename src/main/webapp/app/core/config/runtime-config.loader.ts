@@ -1,5 +1,5 @@
 import { firstValueFrom } from 'rxjs';
-import { PublicConfigResourceApiService } from 'app/generated/api/publicConfigResourceApi.service';
+import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { ApplicationConfig } from './application-config.model';
@@ -12,7 +12,7 @@ import { ApplicationConfig } from './application-config.model';
  * @param service - The service used to set the application configuration.
  * @returns A function that returns a promise resolving to void.
  */
-export function initializeAppConfig(api: PublicConfigResourceApiService, service: ApplicationConfigService): () => Promise<void> {
+export function initializeAppConfig(api: PublicConfigResourceApi, service: ApplicationConfigService): () => Promise<void> {
   return async () => {
     const response = await firstValueFrom(api.config());
     service.setAppConfig(response as ApplicationConfig);

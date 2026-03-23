@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
-import { HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -11,9 +11,9 @@ import { SubSection } from '../../atoms/sub-section/sub-section';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
-import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicationDocumentIdsDTO';
-import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
-import { ApplicationEvaluationResourceApiService } from '../../../../generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationDocumentIdsDTO } from '../../../../generated/models/application-document-ids-dto';
+import { DocumentInformationHolderDTO } from '../../../../generated/models/document-information-holder-dto';
+import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 
 export interface DocumentHolder {
@@ -41,7 +41,8 @@ export class DocumentSection {
 
   readonly NUMBER_OF_DOCUMENTS = 3;
 
-  evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
+  evaluationResourceService = inject(ApplicationEvaluationResourceApi);
+  private http = inject(HttpClient);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
@@ -95,8 +96,10 @@ export class DocumentSection {
 
     try {
       const response: HttpResponse<Blob> = await firstValueFrom(
-        this.evaluationResourceService.downloadAll(applicationId, 'response', false, {
-          httpHeaderAccept: 'application/zip',
+        this.http.get(`/api/evaluation/applications/${encodeURIComponent(applicationId)}/documents-download`, {
+          observe: 'response',
+          responseType: 'blob',
+          headers: { Accept: 'application/zip' },
         }),
       );
 

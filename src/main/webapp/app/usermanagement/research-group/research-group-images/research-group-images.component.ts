@@ -5,8 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { ImageDTO } from 'app/generated/model/imageDTO';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { ImageDTO } from 'app/generated/models/image-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateDirective } from 'app/shared/language';
@@ -51,7 +51,7 @@ export class ResearchGroupImagesComponent {
   readonly inUseCount = computed(() => this.inUseImages().length);
   readonly notInUseCount = computed(() => this.notInUseImages().length);
 
-  private readonly imageService = inject(ImageResourceApiService);
+  private readonly imageService = inject(ImageResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
 

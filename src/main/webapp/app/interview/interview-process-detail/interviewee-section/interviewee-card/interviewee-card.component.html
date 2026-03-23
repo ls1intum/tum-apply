@@ -16,10 +16,10 @@
         <!-- Status Bar -->
         <div
           class="w-1 h-6 rounded-full"
-          [class.bg-primary-200]="interviewee().state === IntervieweeState.Uncontacted"
-          [class.bg-primary-300]="interviewee().state === IntervieweeState.Invited"
-          [class.bg-primary-400]="interviewee().state === IntervieweeState.Scheduled"
-          [class.bg-primary-default]="interviewee().state === IntervieweeState.Completed"
+          [class.bg-primary-200]="interviewee().state === 'UNCONTACTED'"
+          [class.bg-primary-300]="interviewee().state === 'INVITED'"
+          [class.bg-primary-400]="interviewee().state === 'SCHEDULED'"
+          [class.bg-primary-default]="interviewee().state === 'COMPLETED'"
         ></div>
 
         <!-- Status Text -->
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Schedule Details (only for SCHEDULED state) -->
-    @if (interviewee().state === IntervieweeState.Scheduled && interviewee().scheduledSlot) {
+    @if (interviewee().state === 'SCHEDULED' && interviewee().scheduledSlot) {
       <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-text-secondary mt-1 lg:mt-0">
         <!-- Date -->
         <div class="flex items-center gap-2">
@@ -55,12 +55,12 @@
   </div>
 
   <!-- Actions for UNCONTACTED or INVITED state -->
-  @if ((interviewee().state === IntervieweeState.Uncontacted || interviewee().state === IntervieweeState.Invited) && !isClosed()) {
+  @if ((interviewee().state === 'UNCONTACTED' || interviewee().state === 'INVITED') && !isClosed()) {
     <div class="flex-shrink-0 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0">
       <jhi-button
         (click)="$event.stopPropagation(); sendInvitation.emit(interviewee())"
         [shouldTranslate]="true"
-        [icon]="interviewee().state === IntervieweeState.Invited ? 'rotate-right' : 'paper-plane'"
+        [icon]="interviewee().state === 'INVITED' ? 'rotate-right' : 'paper-plane'"
         variant="outlined"
         severity="primary"
         [disabled]="sending() || !hasSlots()"
@@ -68,7 +68,7 @@
         [fullWidth]="true"
         [tooltip]="noSlotsTooltip()"
         [label]="
-          interviewee().state === IntervieweeState.Invited
+          interviewee().state === 'INVITED'
             ? 'interview.interviewees.resendInvitation'
             : 'interview.interviewees.sendInvitation'
         "
@@ -78,7 +78,7 @@
   }
 
   <!-- Actions for SCHEDULED state -->
-  @if (interviewee().state === IntervieweeState.Scheduled) {
+  @if (interviewee().state === 'SCHEDULED') {
     <div class="flex-shrink-0 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0">
       <jhi-button
         (click)="onCancelInterview($event)"
