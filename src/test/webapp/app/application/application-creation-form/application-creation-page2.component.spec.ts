@@ -241,7 +241,7 @@ describe('ApplicationPage2Component', () => {
       { type: 'master', expected: true, desc: 'provided', value: [{ id: '2', size: 2 }] },
       { type: 'master', expected: false, desc: 'undefined', value: undefined },
       { type: 'master', expected: false, desc: 'empty', value: [] },
-    ])('should compute $typeDocsValid to $expected when $type docs are $desc', ({ type, expected, value }) => {
+    ])('should compute $type-DocsValid to $expected when $type docs are $desc', ({ type, expected, value }) => {
       const { componentInstance, fixture } = createApplicationPage2Fixture();
 
       if (type === 'bachelor') {
