@@ -7,7 +7,7 @@ import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
-import de.tum.cit.aet.usermanagement.service.ApplicantSubjectAreaSubscriptionService;
+import de.tum.cit.aet.usermanagement.service.SubjectAreaSubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,10 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicantResource {
 
     private final ApplicantService applicantService;
-    private final ApplicantSubjectAreaSubscriptionService subscriptionService;
+    private final SubjectAreaSubscriptionService subscriptionService;
 
     @Autowired
-    public ApplicantResource(ApplicantService applicantService, ApplicantSubjectAreaSubscriptionService subscriptionService) {
+    public ApplicantResource(ApplicantService applicantService, SubjectAreaSubscriptionService subscriptionService) {
         this.applicantService = applicantService;
         this.subscriptionService = subscriptionService;
     }
