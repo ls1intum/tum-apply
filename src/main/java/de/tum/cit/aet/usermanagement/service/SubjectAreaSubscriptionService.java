@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
  * Handles loading, adding, and removing individual subject area subscriptions.
  */
 @Service
-public class ApplicantSubjectAreaSubscriptionService {
+public class SubjectAreaSubscriptionService {
 
     private final ApplicantRepository applicantRepository;
     private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
 
-    public ApplicantSubjectAreaSubscriptionService(
+    public SubjectAreaSubscriptionService(
         ApplicantRepository applicantRepository,
         ApplicantService applicantService,
         CurrentUserService currentUserService
@@ -42,7 +42,10 @@ public class ApplicantSubjectAreaSubscriptionService {
     @Transactional(readOnly = true)
     public List<SubjectArea> getSubscriptionsForCurrentUser() {
         UUID userId = currentUserService.getUserId();
-        return applicantRepository.findById(userId).map(this::toSubjectAreas).orElseGet(List::of);
+        return applicantRepository
+            .findById(userId)
+            .map(applicant -> applicant.getSubjectAreaSubscriptions().stream().sorted(Comparator.naturalOrder()).toList())
+            .orElseGet(List::of);
     }
 
     /**
@@ -50,29 +53,26 @@ public class ApplicantSubjectAreaSubscriptionService {
      * If the subscription already exists, it is not added again.
      *
      * @param subjectArea the subject area to subscribe to
-     * @return the created subscription
      */
     @Transactional
-    public SubjectArea addSubscription(SubjectArea subjectArea) {
+    public void addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
         Applicant applicant = applicantService.findOrCreateApplicant(userId);
         Set<SubjectArea> subscriptions = applicant.getSubjectAreaSubscriptions();
 
         if (subscriptions.contains(subjectArea)) {
-            return subjectArea;
+            return;
         }
 
         subscriptions.add(subjectArea);
 
         try {
             applicantRepository.saveAndFlush(applicant);
-            return subjectArea;
         } catch (DataIntegrityViolationException e) {
             // A concurrent request may have created the same subscription after the existence check.
-            return applicantRepository
+            applicantRepository
                 .findById(userId)
                 .filter(existingApplicant -> existingApplicant.getSubjectAreaSubscriptions().contains(subjectArea))
-                .map(existingApplicant -> subjectArea)
                 .orElseThrow(() -> e);
         }
     }
@@ -89,9 +89,5 @@ public class ApplicantSubjectAreaSubscriptionService {
             .findById(userId)
             .filter(applicant -> applicant.getSubjectAreaSubscriptions().remove(subjectArea))
             .ifPresent(applicantRepository::save);
-    }
-
-    private List<SubjectArea> toSubjectAreas(Applicant applicant) {
-        return applicant.getSubjectAreaSubscriptions().stream().sorted(Comparator.naturalOrder()).toList();
     }
 }
