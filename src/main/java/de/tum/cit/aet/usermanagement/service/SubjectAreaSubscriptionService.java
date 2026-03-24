@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
  * Handles loading, adding, and removing individual subject area subscriptions.
  */
 @Service
-public class ApplicantSubjectAreaSubscriptionService {
+public class SubjectAreaSubscriptionService {
 
     private final ApplicantRepository applicantRepository;
     private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
 
-    public ApplicantSubjectAreaSubscriptionService(
+    public SubjectAreaSubscriptionService(
         ApplicantRepository applicantRepository,
         ApplicantService applicantService,
         CurrentUserService currentUserService
