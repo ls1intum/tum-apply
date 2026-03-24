@@ -180,6 +180,7 @@ repositories {
 }
 
 dependencies {
+  implementation 'org.apache.pdfbox:pdfbox:3.0.3'
   // Defines low-level streaming API, and includes JSON-specific implementations
   implementation "com.fasterxml.jackson.core:jackson-core:${fasterxml_version}"
   // Contains standard Jackson annotations

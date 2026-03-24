@@ -3,17 +3,32 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
+
+import javax.imageio.ImageIO;
 
 @Service
 @Slf4j
@@ -25,9 +40,14 @@ public class AiService {
     @Value("classpath:prompts/TranslateText.st")
     private Resource translationResource;
 
+    @Value("classpath:prompts/ExtractPdfData.st")
+    private Resource pdfExtractionResource;
+
     private final ChatClient chatClient;
 
     private final JobService jobService;
+
+    private final ApplicationService applicationService;
 
     /**
      * Maximum number of tokens for AI completion responses.
@@ -43,9 +63,10 @@ public class AiService {
         .reasoningEffort("low")
         .build();
 
-    public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
+    public AiService(ChatClient.Builder chatClientBuilder, JobService jobService, ApplicationService applicationService) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
+        this.applicationService = applicationService;
     }
 
     /**
@@ -129,5 +150,58 @@ public class AiService {
             jobService.updateJobDescriptionLanguage(jobId, toLang, translatedText);
         }
         return translated;
+    }
+
+    /**
+     * Extracts applicant data from the provided PDF file
+     *
+     * @param pdfFile the uploaded multipart PDF file to be analyzed
+     * @return the parsed data from the document
+     * @throws PDFExtractionException if an I/O error occurs while reading the PDF file
+     */
+    private ExtractedApplicationDataDTO extractPdfData(MultipartFile pdfFile) {
+        try (PDDocument document = Loader.loadPDF(pdfFile.getBytes())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+
+            // Render the first page (index 0) at 300 DPI for high OCR accuracy
+            BufferedImage bim = pdfRenderer.renderImageWithDPI(0, 300);
+
+            // Convert BufferedImage to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bim, "jpg", baos);
+            byte[] imageBytes = baos.toByteArray();
+
+            return chatClient
+                .prompt()
+                .options(FAST_CHAT_OPTIONS)
+                .user(u -> u
+                    .text(pdfExtractionResource)
+                    // Switch from APPLICATION_PDF to IMAGE_JPEG for Gemma 3
+                    .media(MediaType.IMAGE_JPEG, new ByteArrayResource(imageBytes))
+                )
+                .call()
+                .entity(ExtractedApplicationDataDTO.class);
+
+        } catch (IOException e) {
+            log.error("Failed to convert PDF to image for Gemma extraction", e);
+            throw new RuntimeException("PDF conversion failed", e);
+        }
+    }
+
+    /**
+     * Extracts applicant data from a PDF document and persists the extracted data
+     * in the application entity
+     *
+     * @param pdfFile the PDF file
+     * @return the extracted data as a structured DTO
+     */
+    public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, MultipartFile pdfFile) {
+        log.info("Extracting applicant data from PDF");
+
+        ExtractedApplicationDataDTO extracted = extractPdfData(pdfFile);
+        if (extracted != null) {
+            applicationService.applyExtractedPdfData(applicationId, extracted);
+        }
+        return extracted;
     }
 }

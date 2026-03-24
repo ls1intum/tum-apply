@@ -1,0 +1,10 @@
+### Test PDF Extraction (Auth Bypassed)
+PUT http://localhost:8080/api/ai/extractPdfData/851756b1-4eb8-4624-a3ca-90cfe993f6f2
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="dummy-resume.pdf"
+Content-Type: application/pdf
+
+< ./dummy-resume.pdf
+--WebAppBoundary--

@@ -91,6 +91,7 @@ public class SecurityConfiguration {
                     // are forwarded to the SPA
                     // Client related URLs and publicly accessible information (allowed for
                     // everyone).
+                    .requestMatchers("/api/ai/extractPdfData/**").permitAll()
                     .requestMatchers("/", "/index.html", "/public/**")
                     .permitAll()
                     .requestMatchers("/*.js", "/*.css", "/*.map", "/*.json")

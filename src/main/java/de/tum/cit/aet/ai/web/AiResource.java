@@ -1,7 +1,9 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -42,7 +45,7 @@ public class AiResource {
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {
-        log.info("PUT /api/ai/generateJobDescriptionStream - Streaming request received (lang={})", descriptionLanguage);
+        log.info("PUT /api/ai/generateJobApplicationDraftStream - Streaming request received (lang={})", descriptionLanguage);
         return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage);
     }
 
@@ -65,5 +68,24 @@ public class AiResource {
     ) {
         log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
         return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, text));
+    }
+
+    /**
+     * Extracts applicant data from a PDF file using AI and persists the extracted
+     * values into the application entity. Only fields that are currently empty/null
+     * on the application will be overwritten.
+     *
+     * @param applicationId the ID of the application to update
+     * @param file          the PDF file to extract data from
+     * @return the extracted data DTO
+     */
+    //@ApplicantOrAdmin
+    @PutMapping(value = "extractPdfData/{applicationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
+        @PathVariable String applicationId,
+        @RequestParam("file") MultipartFile file
+    ) {
+        log.info("PUT /api/ai/extractPdfData/{} - PDF extraction request received", applicationId);
+        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, file));
     }
 }
