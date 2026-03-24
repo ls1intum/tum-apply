@@ -252,6 +252,7 @@ describe('ApplicationPage2Component', () => {
         location: 'GARCHING',
         professorName: 'Pr. Test',
         title: 'Job title',
+        subjectArea: 'COMPUTER_SCIENCE',
       },
       applicationState: 'SAVED',
     };

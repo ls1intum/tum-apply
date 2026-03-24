@@ -4,13 +4,17 @@
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
 >
-  <div (click)="navigateToHome()" class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0">
+  <a
+    href="/"
+    (click)="onLogoClick($event)"
+    class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0"
+  >
     <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     <span>TUMApply</span>
     @if (isProfessorPage()) {
       <span class="text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
     }
-  </div>
+  </a>
 
   <div class="flex items-center gap-1 flex-shrink-0">
     <div class="flex items-center gap-1 mr-2">

@@ -66,7 +66,7 @@ ext {
 }
 
 wrapper {
-  gradleVersion = "9.3.1"
+  gradleVersion = "9.4.0"
 }
 
 spotless {
@@ -257,7 +257,7 @@ dependencies {
   testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
   // PDF text extraction for tests
-  testImplementation "org.apache.pdfbox:pdfbox:3.0.6"
+  testImplementation "org.apache.pdfbox:pdfbox:3.0.7"
   // Annotation processors
   annotationProcessor "org.glassfish.jaxb:jaxb-runtime:4.0.6"
   annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
@@ -293,7 +293,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "9.3.1"
+  gradleVersion = "9.4.0"
 }
 
 node {

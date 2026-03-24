@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
@@ -43,7 +42,7 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
 
         @Test
         void getSubscriptionsReturnsEmptyListForNewApplicant() {
-            List<ApplicantSubjectAreaSubscriptionDTO> subscriptions = api
+            List<SubjectArea> subscriptions = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
@@ -55,30 +54,17 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
             // Create some subscriptions
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, SubjectArea.class, 200);
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/MATHEMATICS",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/MATHEMATICS", null, SubjectArea.class, 200);
 
             // Verify we can retrieve them
-            List<ApplicantSubjectAreaSubscriptionDTO> subscriptions = api
+            List<SubjectArea> subscriptions = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
-            assertThat(subscriptions)
-                .hasSize(2)
-                .extracting(ApplicantSubjectAreaSubscriptionDTO::subjectArea)
-                .containsExactlyInAnyOrder(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
+            assertThat(subscriptions).hasSize(2).containsExactlyInAnyOrder(SubjectArea.COMPUTER_SCIENCE, SubjectArea.MATHEMATICS);
         }
     }
 
@@ -87,23 +73,18 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
 
         @Test
         void postSubscriptionCreatesNewSubscription() {
-            ApplicantSubjectAreaSubscriptionDTO result = api
+            SubjectArea result = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, SubjectArea.class, 200);
 
-            assertThat(result.subjectArea()).isEqualTo(SubjectArea.COMPUTER_SCIENCE);
+            assertThat(result).isEqualTo(SubjectArea.COMPUTER_SCIENCE);
 
             // Verify in database
-            List<ApplicantSubjectAreaSubscriptionDTO> all = api
+            List<SubjectArea> all = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
-            assertThat(all).hasSize(1).extracting(ApplicantSubjectAreaSubscriptionDTO::subjectArea).contains(SubjectArea.COMPUTER_SCIENCE);
+            assertThat(all).hasSize(1).contains(SubjectArea.COMPUTER_SCIENCE);
         }
 
         @Test
@@ -111,23 +92,13 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
             // Add subscription twice
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, SubjectArea.class, 200);
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, SubjectArea.class, 200);
 
             // Verify only one subscription exists
-            List<ApplicantSubjectAreaSubscriptionDTO> subscriptions = api
+            List<SubjectArea> subscriptions = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
@@ -143,15 +114,10 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
             // Create subscription
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, SubjectArea.class, 200);
 
             // Verify it exists
-            List<ApplicantSubjectAreaSubscriptionDTO> before = api
+            List<SubjectArea> before = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
             assertThat(before).hasSize(1);
@@ -162,7 +128,7 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
                 .deleteAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, Void.class, 204);
 
             // Verify it's gone
-            List<ApplicantSubjectAreaSubscriptionDTO> after = api
+            List<SubjectArea> after = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
@@ -180,25 +146,15 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
             // User checks Computer Science
             api
                 .with(JwtPostProcessors.jwtUser(userId, "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, SubjectArea.class, 200);
 
             // User checks Mathematics
             api
                 .with(JwtPostProcessors.jwtUser(userId, "ROLE_APPLICANT"))
-                .postAndRead(
-                    "/api/applicants/subject-area-subscriptions/MATHEMATICS",
-                    null,
-                    ApplicantSubjectAreaSubscriptionDTO.class,
-                    200
-                );
+                .postAndRead("/api/applicants/subject-area-subscriptions/MATHEMATICS", null, SubjectArea.class, 200);
 
             // Verify both exist
-            List<ApplicantSubjectAreaSubscriptionDTO> after = api
+            List<SubjectArea> after = api
                 .with(JwtPostProcessors.jwtUser(userId, "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
             assertThat(after).hasSize(2);
@@ -209,14 +165,11 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
                 .deleteAndRead("/api/applicants/subject-area-subscriptions/COMPUTER_SCIENCE", null, Void.class, 204);
 
             // Verify only Mathematics remains
-            List<ApplicantSubjectAreaSubscriptionDTO> finalResult = api
+            List<SubjectArea> finalResult = api
                 .with(JwtPostProcessors.jwtUser(userId, "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/subject-area-subscriptions", null, new TypeReference<>() {}, 200);
 
-            assertThat(finalResult)
-                .hasSize(1)
-                .extracting(ApplicantSubjectAreaSubscriptionDTO::subjectArea)
-                .contains(SubjectArea.MATHEMATICS);
+            assertThat(finalResult).hasSize(1).contains(SubjectArea.MATHEMATICS);
         }
     }
 }

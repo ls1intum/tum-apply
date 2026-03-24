@@ -4,7 +4,6 @@ import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -38,12 +37,12 @@ public class ApplicantSubjectAreaSubscriptionService {
     /**
      * Retrieves all subject area subscriptions for the authenticated applicant.
      *
-     * @return list of subscription DTOs for the current user; empty list if none exist
+     * @return list of subscriptions for the current user; empty list if none exist
      */
     @Transactional(readOnly = true)
-    public List<ApplicantSubjectAreaSubscriptionDTO> getSubscriptionsForCurrentUser() {
+    public List<SubjectArea> getSubscriptionsForCurrentUser() {
         UUID userId = currentUserService.getUserId();
-        return applicantRepository.findById(userId).map(this::toDtos).orElseGet(List::of);
+        return applicantRepository.findById(userId).map(this::toSubjectAreas).orElseGet(List::of);
     }
 
     /**
@@ -51,29 +50,29 @@ public class ApplicantSubjectAreaSubscriptionService {
      * If the subscription already exists, it is not added again.
      *
      * @param subjectArea the subject area to subscribe to
-     * @return the created subscription DTO
+     * @return the created subscription
      */
     @Transactional
-    public ApplicantSubjectAreaSubscriptionDTO addSubscription(SubjectArea subjectArea) {
+    public SubjectArea addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
         Applicant applicant = applicantService.findOrCreateApplicant(userId);
         Set<SubjectArea> subscriptions = applicant.getSubjectAreaSubscriptions();
 
         if (subscriptions.contains(subjectArea)) {
-            return ApplicantSubjectAreaSubscriptionDTO.fromSubjectArea(subjectArea);
+            return subjectArea;
         }
 
         subscriptions.add(subjectArea);
 
         try {
             applicantRepository.saveAndFlush(applicant);
-            return ApplicantSubjectAreaSubscriptionDTO.fromSubjectArea(subjectArea);
+            return subjectArea;
         } catch (DataIntegrityViolationException e) {
             // A concurrent request may have created the same subscription after the existence check.
             return applicantRepository
                 .findById(userId)
                 .filter(existingApplicant -> existingApplicant.getSubjectAreaSubscriptions().contains(subjectArea))
-                .map(existingApplicant -> ApplicantSubjectAreaSubscriptionDTO.fromSubjectArea(subjectArea))
+                .map(existingApplicant -> subjectArea)
                 .orElseThrow(() -> e);
         }
     }
@@ -92,12 +91,7 @@ public class ApplicantSubjectAreaSubscriptionService {
             .ifPresent(applicantRepository::save);
     }
 
-    private List<ApplicantSubjectAreaSubscriptionDTO> toDtos(Applicant applicant) {
-        return applicant
-            .getSubjectAreaSubscriptions()
-            .stream()
-            .sorted(Comparator.naturalOrder())
-            .map(ApplicantSubjectAreaSubscriptionDTO::fromSubjectArea)
-            .toList();
+    private List<SubjectArea> toSubjectAreas(Applicant applicant) {
+        return applicant.getSubjectAreaSubscriptions().stream().sorted(Comparator.naturalOrder()).toList();
     }
 }

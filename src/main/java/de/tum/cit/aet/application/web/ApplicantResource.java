@@ -7,7 +7,6 @@ import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
-import de.tum.cit.aet.usermanagement.dto.ApplicantSubjectAreaSubscriptionDTO;
 import de.tum.cit.aet.usermanagement.service.ApplicantSubjectAreaSubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -170,7 +169,7 @@ public class ApplicantResource {
      */
     @ApplicantOrAdmin
     @GetMapping("/subject-area-subscriptions")
-    public ResponseEntity<List<ApplicantSubjectAreaSubscriptionDTO>> getSubjectAreaSubscriptions() {
+    public ResponseEntity<List<SubjectArea>> getSubjectAreaSubscriptions() {
         log.info("GET /api/applicants/subject-area-subscriptions - Retrieving subject area subscriptions for current user");
         return ResponseEntity.ok(subscriptionService.getSubscriptionsForCurrentUser());
     }
@@ -183,7 +182,7 @@ public class ApplicantResource {
      */
     @ApplicantOrAdmin
     @PostMapping("/subject-area-subscriptions/{subjectArea}")
-    public ResponseEntity<ApplicantSubjectAreaSubscriptionDTO> addSubjectAreaSubscription(@PathVariable SubjectArea subjectArea) {
+    public ResponseEntity<SubjectArea> addSubjectAreaSubscription(@PathVariable SubjectArea subjectArea) {
         log.info("POST /api/applicants/subject-area-subscriptions/{} - Adding subject area subscription for current user", subjectArea);
         return ResponseEntity.ok(subscriptionService.addSubscription(subjectArea));
     }

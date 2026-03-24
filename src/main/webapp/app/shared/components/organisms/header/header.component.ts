@@ -224,6 +224,17 @@ export class HeaderComponent {
     void this.router.navigate(['/settings']);
   }
 
+  onLogoClick(event: MouseEvent): void {
+    // Only intercept plain left-clicks without modifier keys
+    const isLeftClick = event.button === 0;
+    const hasModifier = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+
+    if (isLeftClick && !hasModifier) {
+      event.preventDefault();
+      this.navigateToHome();
+    }
+  }
+
   toggleProfileMenu(event: Event): void {
     this.profileMenu()?.toggle(event);
   }
