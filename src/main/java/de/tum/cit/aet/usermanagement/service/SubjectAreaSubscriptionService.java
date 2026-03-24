@@ -3,9 +3,9 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.SubjectArea;
-import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,16 +15,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class SubjectAreaSubscriptionService {
 
-    private final ApplicantRepository applicantRepository;
+    private final JdbcTemplate jdbcTemplate;
     private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
 
     public SubjectAreaSubscriptionService(
-        ApplicantRepository applicantRepository,
+        JdbcTemplate jdbcTemplate,
         ApplicantService applicantService,
         CurrentUserService currentUserService
     ) {
-        this.applicantRepository = applicantRepository;
+        this.jdbcTemplate = jdbcTemplate;
         this.applicantService = applicantService;
         this.currentUserService = currentUserService;
     }
@@ -36,7 +36,13 @@ public class SubjectAreaSubscriptionService {
      */
     public List<SubjectArea> getSubscriptionsForCurrentUser() {
         UUID userId = currentUserService.getUserId();
-        return applicantRepository.findSubjectAreaSubscriptionsByUserId(userId).stream()
+        return jdbcTemplate
+            .queryForList(
+                "SELECT subject_area FROM applicant_subject_area_subscriptions WHERE user_id = ? ORDER BY subject_area",
+                String.class,
+                userId.toString()
+            )
+            .stream()
             .map(SubjectArea::valueOf)
             .toList();
     }
@@ -50,7 +56,11 @@ public class SubjectAreaSubscriptionService {
     public void addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
         applicantService.findOrCreateApplicant(userId);
-        applicantRepository.addSubjectAreaSubscription(userId, subjectArea.name());
+        jdbcTemplate.update(
+            "INSERT IGNORE INTO applicant_subject_area_subscriptions (user_id, subject_area) VALUES (?, ?)",
+            userId.toString(),
+            subjectArea.name()
+        );
     }
 
     /**
@@ -60,6 +70,10 @@ public class SubjectAreaSubscriptionService {
      */
     public void removeSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
-        applicantRepository.removeSubjectAreaSubscription(userId, subjectArea.name());
+        jdbcTemplate.update(
+            "DELETE FROM applicant_subject_area_subscriptions WHERE user_id = ? AND subject_area = ?",
+            userId.toString(),
+            subjectArea.name()
+        );
     }
 }

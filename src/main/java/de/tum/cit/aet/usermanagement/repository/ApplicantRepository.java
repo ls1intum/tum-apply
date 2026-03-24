@@ -3,7 +3,6 @@ package de.tum.cit.aet.usermanagement.repository;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -89,23 +88,4 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
         @Param("userId") UUID userId
     );
 
-    @Query(
-        value = "SELECT subject_area FROM applicant_subject_area_subscriptions WHERE user_id = :userId ORDER BY subject_area",
-        nativeQuery = true
-    )
-    List<String> findSubjectAreaSubscriptionsByUserId(@Param("userId") UUID userId);
-
-    @Modifying
-    @Query(
-        value = "INSERT IGNORE INTO applicant_subject_area_subscriptions (user_id, subject_area) VALUES (:userId, :subjectArea)",
-        nativeQuery = true
-    )
-    void addSubjectAreaSubscription(@Param("userId") UUID userId, @Param("subjectArea") String subjectArea);
-
-    @Modifying
-    @Query(
-        value = "DELETE FROM applicant_subject_area_subscriptions WHERE user_id = :userId AND subject_area = :subjectArea",
-        nativeQuery = true
-    )
-    void removeSubjectAreaSubscription(@Param("userId") UUID userId, @Param("subjectArea") String subjectArea);
 }
