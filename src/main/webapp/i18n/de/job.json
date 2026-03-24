@@ -12,11 +12,11 @@
         },
         "employmentTerms": {
           "name": "Arbeitsbedingungen",
-          "description": "Gib die Angaben zu den Arbeitsbedingungen an."
+          "description": "Gib die Arbeitsbedingungen an."
         },
         "imageSelection": {
           "name": "Bannerbild",
-          "description": "Wähle ein optionales Bannerbild für die Stellenkarte aus Standardbildern oder aus der Bildersammlung deiner Forschungsgruppe."
+          "description": "Wähle ein optionales Bannerbild für die Stellenkarte aus den Standardbildern oder aus der Bildersammlung deiner Forschungsgruppe."
         },
         "additionalInfo": {
           "name": "Zusätzliche Informationen"

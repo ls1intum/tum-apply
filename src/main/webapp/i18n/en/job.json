@@ -16,7 +16,7 @@
         },
         "imageSelection": {
           "name": "Banner Image",
-          "description": "Select an optional banner image for the position card from default images or your research group’s image collection."
+          "description": "Select an optional banner image for the position card from the default images or your research group’s image collection."
         },
         "additionalInfo": {
           "name": "Additional Information"
