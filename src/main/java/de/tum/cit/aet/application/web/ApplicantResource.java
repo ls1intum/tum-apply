@@ -178,13 +178,14 @@ public class ApplicantResource {
      * Adds a subject area subscription for the authenticated applicant.
      *
      * @param subjectArea the subject area to subscribe to
-     * @return the created subscription
+     * @return 204 No Content when subscription is successful
      */
     @ApplicantOrAdmin
     @PostMapping("/subject-area-subscriptions/{subjectArea}")
-    public ResponseEntity<SubjectArea> addSubjectAreaSubscription(@PathVariable SubjectArea subjectArea) {
+    public ResponseEntity<Void> addSubjectAreaSubscription(@PathVariable SubjectArea subjectArea) {
         log.info("POST /api/applicants/subject-area-subscriptions/{} - Adding subject area subscription for current user", subjectArea);
-        return ResponseEntity.ok(subscriptionService.addSubscription(subjectArea));
+        subscriptionService.addSubscription(subjectArea);
+        return ResponseEntity.noContent().build();
     }
 
     /**
