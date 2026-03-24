@@ -210,10 +210,6 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   describe('grading scale', () => {
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
     it.each([
       {
         gradeType: 'bachelor' as const,
@@ -330,6 +326,7 @@ describe('SettingsDocumentsComponent', () => {
         await vi.advanceTimersByTimeAsync(600);
 
         expect(getWarning(component)).toBe('entity.applicationPage2.warnText');
+        vi.useRealTimers();
       },
     );
   });
