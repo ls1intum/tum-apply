@@ -12,6 +12,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -28,6 +29,7 @@ describe('ApplicationPage1Component', () => {
         provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClientMock(),
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);
@@ -250,5 +252,38 @@ describe('ApplicationPage1Component', () => {
     const page1 = getPage1FromApplication(app);
     expect(page1.firstName).toBe('');
     expect(page1.gender).toBeUndefined();
+  });
+
+  describe('CV Validation', () => {
+    it('should set cvValid to false when cvDocs is undefined or empty', () => {
+      comp.cvDocsSetValidity(undefined);
+      expect(comp.cvValid()).toBe(false);
+
+      comp.cvDocsSetValidity([]);
+      expect(comp.cvValid()).toBe(false);
+    });
+
+    it('should set cvValid to true when cvDocs is provided', () => {
+      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
+      expect(comp.cvValid()).toBe(true);
+    });
+  });
+
+  describe('Document Input Handling', () => {
+    it('should return array with doc if documentIdsCv is defined', () => {
+      const doc = { id: '1', size: 1 };
+
+      fixture.componentRef.setInput('documentIdsCv', doc);
+      fixture.detectChanges();
+
+      expect(comp.computedDocumentIdsCvSet()).toEqual([doc]);
+    });
+
+    it('should return undefined if documentIdsCv is undefined', () => {
+      fixture.componentRef.setInput('documentIdsCv', undefined);
+      fixture.detectChanges();
+
+      expect(comp.computedDocumentIdsCvSet()).toBeUndefined();
+    });
   });
 });

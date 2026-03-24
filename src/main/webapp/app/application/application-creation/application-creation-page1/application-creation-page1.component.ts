@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -7,6 +7,10 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateDirective } from 'app/shared/language';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
+import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
+import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 
 import { selectGender } from '../../../shared/constants/genders';
 import { postalCodeValidator } from '../../../shared/validators/custom-validators';
@@ -66,6 +70,9 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     StringInputComponent,
     TranslateModule,
     TranslateDirective,
+    UploadButtonComponent,
+    FontAwesomeModule,
+    TooltipModule,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -73,8 +80,28 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
+  applicationIdForDocuments = input<string | undefined>();
+  documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
+
   valid = output<boolean>();
   changed = output<boolean>();
+
+  cvValid = signal<boolean>(false);
+
+  computedDocumentIdsCvSet = computed(() => {
+    const docInfoHolder = this.documentIdsCv();
+    return docInfoHolder ? [docInfoHolder] : undefined;
+  });
+
+  isCvSectionVisible = computed(() => !!this.applicationIdForDocuments());
+
+  isPageValid = computed(() => {
+    const formValid = this.page1Form().valid;
+    if (this.isCvSectionVisible()) {
+      return formValid && this.cvValid();
+    }
+    return formValid;
+  });
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
@@ -158,20 +185,34 @@ export default class ApplicationCreationPage1Component {
           ...normalizedValue,
         });
         this.changed.emit(true);
-        this.valid.emit(form.valid);
+        this.valid.emit(this.isPageValid());
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
+        this.valid.emit(this.isPageValid());
       });
 
-      this.valid.emit(form.valid);
+      this.valid.emit(this.isPageValid());
 
       onCleanup(() => {
         valueSubscription.unsubscribe();
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  private initializeCvDocs = effect(() => {
+    const cvDocs = this.computedDocumentIdsCvSet();
+    this.cvDocsSetValidity(cvDocs);
+  });
+
+  cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
+    if (cvDocs === undefined || cvDocs.length === 0) {
+      this.cvValid.set(false);
+    } else {
+      this.cvValid.set(true);
+    }
+    this.valid.emit(this.isPageValid());
   }
 
   emitChanged(): void {

@@ -18,6 +18,8 @@
       [(data)]="personalInfoData"
       (valid)="onPersonalInfoDataValidityChanged($event)"
       (changed)="onValueChanged()"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
     />
   </div>
 </ng-template>
@@ -46,7 +48,6 @@
         (valid)="onApplicationDetailsDataValidityChanged($event)"
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
-        [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
       />
     }
   </div>

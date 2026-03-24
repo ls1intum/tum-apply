@@ -61,6 +61,7 @@ export class UploadButtonComponent {
   deferUpload = input<boolean>(false);
   queuedFilesById = signal<Map<string, File>>(new Map());
   queuedFiles = computed(() => Array.from(this.queuedFilesById().values()));
+  compact = input<boolean>(false);
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
