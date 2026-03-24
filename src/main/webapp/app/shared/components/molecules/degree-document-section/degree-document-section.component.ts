@@ -45,6 +45,5 @@ export class DegreeDocumentSectionComponent {
   readonly degreeUniversityLabelKey = computed(() => `entity.applicationPage2.label.${this.degreeType()}DegreeUniversity`);
   readonly gradeLabelKey = computed(() => `entity.applicationPage2.label.${this.degreeType()}Grade`);
   readonly gradeTooltipKey = computed(() => `entity.applicationPage2.tooltip.${this.degreeType()}Grade`);
-  readonly uploadKey = computed(() => `entity.upload.upload_instruction.${this.documentType()}`);
   readonly documentType = computed<DocumentType>(() => (this.degreeType() === 'bachelor' ? 'BACHELOR_TRANSCRIPT' : 'MASTER_TRANSCRIPT'));
 }

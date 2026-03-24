@@ -9,14 +9,6 @@
 >
   <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
     <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full" (click)="fileupload_component.choose()">
-      <div class="text-center flex items-center">
-        <span class="inline-block whitespace-nowrap">
-          <span [jhiTranslate]="uploadKey()"></span>
-          @if (markAsRequired()) {
-            <span class="required">*</span>
-          }
-        </span>
-      </div>
     </div>
   </ng-template>
   <ng-template #empty>
@@ -44,8 +36,8 @@
         <tbody>
           @if (selectedFiles(); as selectedFiles) {
             @for (file of selectedFiles; track $index) {
-              <tr class="border border-color leading-0 border-x-0">
-                <td>
+              <tr class="leading-normal hover:bg-background-surface transition-colors">
+                <td class="py-1">
                   <span class="w-full h-full inline-flex justify-center">
                     <fa-icon
                       icon="cloud-arrow-up"
@@ -55,15 +47,17 @@
                     />
                   </span>
                 </td>
-                <td>
-                  <span class="w-full h-full inline-flex justify-center">
-                    <input [(ngModel)]="file.name" class="editable-input" />
+                <td class="py-1 pr-4">
+                  <span class="w-full h-full inline-flex items-center">
+                    <input
+                      [(ngModel)]="file.name"
+                      class="w-full bg-transparent border-0 border-b border-dashed border-neutral-color hover:border-solid hover:border-neutral-hover-color focus:border-solid focus:border-primary-color focus:ring-0 px-1 py-1 outline-none transition-all text-color"                    />
                   </span>
                 </td>
-                <td class="text-center">
+                <td class="text-center py-1">
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
                 </td>
-                <td>
+                <td class="py-1 text-center">
                   <jhi-button
                     icon="times"
                     severity="danger"
@@ -77,8 +71,8 @@
           }
           @if (documentIds(); as documentIds) {
             @for (info of documentIds; track $index) {
-              <tr class="border border-color leading-0 border-x-0">
-                <td>
+              <tr class="leading-normal hover:bg-background-surface transition-colors">
+                <td class="py-1">
                   <span class="w-full h-full inline-flex justify-center">
                     <fa-icon
                       icon="file-circle-check"
@@ -88,13 +82,16 @@
                     />
                   </span>
                 </td>
-                <td>
-                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" class="editable-input" />
+                <td class="py-1 pr-4">
+                  <input
+                    [(ngModel)]="info.name"
+                    (blur)="renameDocument(info)"
+                    class="w-full bg-transparent border-0 border-b border-dashed border-neutral-color hover:border-solid hover:border-neutral-hover-color focus:border-solid focus:border-primary-color focus:ring-0 px-1 py-1 outline-none transition-all text-color"                  />
                 </td>
                 <td class="text-center">
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
-                <td class="border-r-0">
+                <td class="py-1 text-center">
                   <jhi-confirm-dialog
                     [label]="'button.delete' | translate"
                     [header]="'entity.upload.deleteDocument.confirm.header' | translate"

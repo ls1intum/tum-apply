@@ -1,3 +1,4 @@
+
 {
   "global": {
     "title": "TUMApply",
@@ -246,13 +247,6 @@
       }
     },
     "upload": {
-      "upload_instruction_standard": "Bitte hochladen",
-      "upload_instruction": {
-        "BACHELOR_TRANSCRIPT": "Bitte lade dein Bachelor-Zeugnis hoch",
-        "MASTER_TRANSCRIPT": "Bitte lade dein Master-Zeugnis hoch",
-        "REFERENCE": "Bitte lade deine Empfehlungsschreiben hoch",
-        "CV": "Bitte lade deinen Lebenslauf hoch"
-      },
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",

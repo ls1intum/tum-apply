@@ -24,7 +24,6 @@ describe('UploadButtonComponent', () => {
   function createUploadButtonFixture(inputs: {
     documentType: DocumentType;
     applicationId: string;
-    markAsRequired?: boolean;
     deferUpload?: boolean;
     allowMultiple?: boolean;
   }) {

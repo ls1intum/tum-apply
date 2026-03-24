@@ -458,11 +458,14 @@ jhi-menu {
 .p-fileupload-content {
   background: var(--p-background-default);
   color: var(--p-text-color);
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .p-fileupload-header {
   background: var(--p-background-default);
   color: var(--p-text-color);
+  display: none;
 }
 
 /* ---------------------------

@@ -46,10 +46,8 @@ export class UploadButtonComponent {
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
-  uploadKey = input<string>('entity.upload.upload_instruction_standard');
   documentType = input.required<DocumentType>();
   applicationId = input.required<string>();
-  markAsRequired = input<boolean>(false);
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
