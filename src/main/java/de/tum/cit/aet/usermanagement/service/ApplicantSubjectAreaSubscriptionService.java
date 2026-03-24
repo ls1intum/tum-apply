@@ -42,7 +42,10 @@ public class ApplicantSubjectAreaSubscriptionService {
     @Transactional(readOnly = true)
     public List<SubjectArea> getSubscriptionsForCurrentUser() {
         UUID userId = currentUserService.getUserId();
-        return applicantRepository.findById(userId).map(this::toSubjectAreas).orElseGet(List::of);
+        return applicantRepository
+            .findById(userId)
+            .map(applicant -> applicant.getSubjectAreaSubscriptions().stream().sorted(Comparator.naturalOrder()).toList())
+            .orElseGet(List::of);
     }
 
     /**
@@ -72,7 +75,7 @@ public class ApplicantSubjectAreaSubscriptionService {
             return applicantRepository
                 .findById(userId)
                 .filter(existingApplicant -> existingApplicant.getSubjectAreaSubscriptions().contains(subjectArea))
-                .map(existingApplicant -> subjectArea)
+                .map(_ -> subjectArea)
                 .orElseThrow(() -> e);
         }
     }
@@ -89,9 +92,5 @@ public class ApplicantSubjectAreaSubscriptionService {
             .findById(userId)
             .filter(applicant -> applicant.getSubjectAreaSubscriptions().remove(subjectArea))
             .ifPresent(applicantRepository::save);
-    }
-
-    private List<SubjectArea> toSubjectAreas(Applicant applicant) {
-        return applicant.getSubjectAreaSubscriptions().stream().sorted(Comparator.naturalOrder()).toList();
     }
 }
