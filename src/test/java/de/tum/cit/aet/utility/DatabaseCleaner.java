@@ -30,6 +30,7 @@ public class DatabaseCleaner {
         "interview_processes",
         "interview_slots",
         "jobs",
+        "applicant_subject_area_subscriptions",
         "ratings",
         "research_groups",
         "schools",
