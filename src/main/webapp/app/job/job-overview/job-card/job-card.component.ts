@@ -1,10 +1,11 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TranslateDirective } from 'app/shared/language';
@@ -36,16 +37,14 @@ export class JobCardComponent {
   relativeTime = input<string>('');
   applicationId = input<string | undefined>(undefined);
   contractDuration = input<number | undefined>(undefined);
-  showSubscriptionBell = input(false);
-  isSubjectAreaSubscribed = input(false);
 
   applicationState = input<ApplicationStatusExtended>(ApplicationStatusExtended.NotYetApplied);
-  subjectAreaNotificationClick = output<JobCardDTO.SubjectAreaEnum>();
 
   // Optional header background image
   headerImageUrl = input<string | undefined>(undefined);
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
   icon = input<string>('flask-vial');
+  ref: DynamicDialogRef | undefined;
   readonly dropDownOptions = DropDownOptions;
   translate = inject(TranslateService);
 
@@ -72,10 +71,6 @@ export class JobCardComponent {
     return duration;
   });
 
-  readonly subscriptionTooltipKey = computed(() => {
-    return this.subjectAreaNotificationTooltipKey(this.subjectArea());
-  });
-
   ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;
 
   private router = inject(Router);
@@ -89,36 +84,5 @@ export class JobCardComponent {
       event.preventDefault();
       this.onViewDetails();
     }
-  }
-
-  onSubscriptionBellClick(event: Event): void {
-    // We don't want the click on the subscription bell to trigger the card's click event, which would navigate to the job details page.
-    // Therefore, we stop the propagation of the click event.
-    event.stopPropagation();
-
-    const subjectArea = this.subjectArea();
-    if (subjectArea) {
-      this.subjectAreaNotificationClick.emit(subjectArea);
-    }
-  }
-
-  subjectAreaNotificationTooltipKey(subjectArea: JobCardDTO.SubjectAreaEnum | undefined): string {
-    if (!subjectArea) {
-      return 'jobOverviewPage.tooltips.subscribeToSubjectArea';
-    }
-
-    return this.isSubjectAreaSubscribed()
-      ? 'jobOverviewPage.tooltips.subjectAreaSubscribed'
-      : 'jobOverviewPage.tooltips.subscribeToSubjectArea';
-  }
-
-  subjectAreaNotificationAriaLabelKey(subjectArea: JobCardDTO.SubjectAreaEnum | undefined): string {
-    if (!subjectArea) {
-      return 'jobOverviewPage.ariaLabels.subscribeToSubjectArea';
-    }
-
-    return this.isSubjectAreaSubscribed()
-      ? 'jobOverviewPage.ariaLabels.subjectAreaSubscribed'
-      : 'jobOverviewPage.ariaLabels.subscribeToSubjectArea';
   }
 }

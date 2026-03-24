@@ -38,8 +38,6 @@
           [jobId]="job.jobId"
           [jobTitle]="job.title"
           [subjectArea]="job.subjectArea"
-          [showSubscriptionBell]="subjectAreaNotifications.canManageSubjectAreaSubscriptions()"
-          [isSubjectAreaSubscribed]="subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea)"
           [location]="job.location.toString()"
           [professor]="job.professorName"
           [avatarUrl]="job.avatar"
@@ -50,7 +48,6 @@
           [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
           [contractDuration]="job.contractDuration"
           [headerImageUrl]="job.imageUrl || getExampleImageUrl(i)"
-          (subjectAreaNotificationClick)="subjectAreaNotifications.toggleSubjectAreaNotification($event)"
         />
       </div>
     }
@@ -67,3 +64,12 @@
   (onLazyLoad)="loadOnTableEmit($event)"
   [tableStyle]="{ width: '100%' }"
 />
+@if (this.canManageSubjectAreaSubscriptions()) {
+  <div class="mx-auto mt-5 mb-8 max-w-3xl text-center text-sm text-text-secondary">
+    <span jhiTranslate="jobOverviewPage.notificationsCta.title"></span>
+    <span jhiTranslate="jobOverviewPage.notificationsCta.description"></span>
+    <a class="font-medium text-primary hover:underline" [routerLink]="['/settings']" [queryParams]="{ tab: 'notifications' }">{{
+      'jobOverviewPage.notificationsCta.link' | translate
+    }}</a>
+  </div>
+}

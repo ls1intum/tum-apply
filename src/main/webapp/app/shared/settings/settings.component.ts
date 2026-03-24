@@ -1,4 +1,6 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
@@ -73,6 +75,8 @@ export class SettingsComponent {
   protected readonly themeService = inject(ThemeService);
   protected readonly accountService = inject(AccountService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly queryParamMap = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
   // Internal subscription used for the cooldown interval
   private exportCooldownSub: Subscription | null = null;
@@ -80,6 +84,13 @@ export class SettingsComponent {
   constructor() {
     const authorities = this.accountService.loadedUser()?.authorities;
     this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
+
+    effect(() => {
+      const requestedTab = this.queryParamMap().get('tab');
+      if (requestedTab && this.tabs().some(tab => tab.id === requestedTab)) {
+        this.activeTab.set(requestedTab as SettingsTab);
+      }
+    });
 
     this.destroyRef.onDestroy(() => {
       this.exportCooldownSub?.unsubscribe();

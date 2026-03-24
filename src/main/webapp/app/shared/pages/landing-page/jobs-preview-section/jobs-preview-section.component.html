@@ -18,8 +18,6 @@
                 [jobId]="job.jobId"
                 [jobTitle]="job.title"
                 [subjectArea]="job.subjectArea"
-                [showSubscriptionBell]="subjectAreaNotifications.canManageSubjectAreaSubscriptions()"
-                [isSubjectAreaSubscribed]="subjectAreaNotifications.isSubjectAreaSubscribed(job.subjectArea)"
                 [location]="job.location"
                 [professor]="job.professorName"
                 [avatarUrl]="job.avatar"
@@ -28,7 +26,6 @@
                 [applicationId]="job.applicationId"
                 [contractDuration]="job.contractDuration"
                 [headerImageUrl]="job.imageUrl || getExampleImageUrl($index)"
-                (subjectAreaNotificationClick)="subjectAreaNotifications.toggleSubjectAreaNotification($event)"
               />
             </div>
           </div>
