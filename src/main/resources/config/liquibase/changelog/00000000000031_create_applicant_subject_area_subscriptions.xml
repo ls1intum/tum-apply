@@ -18,7 +18,8 @@
                              baseTableName="applicant_subject_area_subscriptions"
                              constraintName="fk_applicant_subscriptions_user"
                              referencedColumnNames="user_id"
-                             referencedTableName="applicants"/>
+                             referencedTableName="applicants"
+                             onDelete="CASCADE"/>
 
     <addUniqueConstraint tableName="applicant_subject_area_subscriptions"
                          columnNames="user_id, subject_area"
