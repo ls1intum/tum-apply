@@ -7,8 +7,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
 import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
+import { Applicant } from 'app/generated/model/applicant';
 import { EmailSetting } from 'app/generated/model/emailSetting';
-import { ApplicantSubjectAreaSubscriptionDTO } from 'app/generated/model/applicantSubjectAreaSubscriptionDTO';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import * as DropDownOptions from 'app/job/dropdown-options';
 
@@ -17,7 +17,7 @@ import { FilterChange, FilterMultiselect } from '../../components/atoms/filter-m
 
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
 import RolesEnum = UserShortDTO.RolesEnum;
-type SubjectArea = ApplicantSubjectAreaSubscriptionDTO.SubjectAreaEnum;
+type SubjectArea = Applicant.SubjectAreaSubscriptionsEnum;
 
 interface SubjectAreaOption {
   name: string;
@@ -145,7 +145,7 @@ export class EmailSettingsComponent {
   async loadSubjectAreaSubscriptions(): Promise<void> {
     try {
       const subscriptions = await firstValueFrom(this.applicantResourceApiService.getSubjectAreaSubscriptions());
-      const selectedSubjectAreas = this.sortSubjectAreas(subscriptions.map(subscription => subscription.subjectArea));
+      const selectedSubjectAreas = this.sortSubjectAreas((subscriptions ?? []) as SubjectArea[]);
       this.selectedSubjectAreas.set(selectedSubjectAreas);
       this.subjectAreasEnabled.set(selectedSubjectAreas.length > 0);
     } catch {
