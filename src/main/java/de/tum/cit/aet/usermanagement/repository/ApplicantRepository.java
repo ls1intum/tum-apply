@@ -87,5 +87,4 @@ public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UU
         @Param("masterUniversity") String masterUniversity,
         @Param("userId") UUID userId
     );
-
 }
