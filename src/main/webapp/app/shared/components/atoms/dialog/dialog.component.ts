@@ -22,7 +22,6 @@ export class DialogComponent {
   closeOnEscape = input<boolean>(true);
   closable = input<boolean>(true);
   showHeader = input<boolean>(true);
-  useCustomHeader = input<boolean>(false);
   styleClass = input<string>('');
   contentStyleClass = input<string>('');
   contentStyle = input<Record<string, string>>({});

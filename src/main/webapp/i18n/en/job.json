@@ -154,7 +154,6 @@
         "aiScoreTitle": "Inclusivity Score",
         "aiScoreDialog": {
           "title": "How the Inclusivity Score is calculated",
-          "tooltip": "Based on the current analysis and text content.",
           "summary": "Calculation factors",
           "explanation": "The score combines wording analysis, tone evaluation, and balanced weighting.",
           "section1": {

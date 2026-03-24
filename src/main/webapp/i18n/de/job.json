@@ -154,7 +154,6 @@
         "aiScoreTitle": "Inklusivitäts-Score",
         "aiScoreDialog": {
           "title": "Berechnung des Inklusivitäts-Scores",
-          "tooltip": "Basiert auf aktueller Analyse und Textinhalt.",
           "summary": "Berechnungsfaktoren",
           "explanation": "Der Score kombiniert Wortwahl, Tonalität und eine ausbalancierte Gewichtung.",
           "section1": {

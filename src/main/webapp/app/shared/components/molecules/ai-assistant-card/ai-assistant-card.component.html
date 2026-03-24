@@ -75,24 +75,10 @@
   [modal]="true"
   [draggable]="false"
   [appendTo]="'body'"
-  [useCustomHeader]="true"
+  header="jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title"
   (visibleChange)="onScoreDialogVisibleChange($event)"
   styleClass="!w-[90vw] md:!w-[42rem] rounded-xs bg-background-default"
 >
-  <div dialog-header class="flex items-center gap-2">
-    <span class="text-lg font-semibold">
-      {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title' | translate }}
-    </span>
-    <fa-icon
-      class="text-primary"
-      [icon]="['fas', 'circle-info']"
-      [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.tooltip' | translate"
-      [escape]="false"
-      tooltipPosition="top"
-      [autoHide]="false"
-    />
-  </div>
-
   <div class="space-y-6">
     <div class="text-center">
       <p class="m-0 text-lg font-semibold leading-6">
