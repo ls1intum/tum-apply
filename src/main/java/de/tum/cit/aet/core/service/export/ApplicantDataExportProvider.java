@@ -79,6 +79,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .toList();
 
         List<IntervieweeExportDTO> interviewees = getInterviewees(userId);
+        List<String> subjectAreaSubscriptions = getSubjectAreaSubscriptions(applicant);
 
         return new ApplicantDataExportDTO(
             applicant.getStreet(),
@@ -97,7 +98,8 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             applicant.getMasterUniversity(),
             documents,
             applications,
-            interviewees
+            interviewees,
+            subjectAreaSubscriptions
         );
     }
 
@@ -142,5 +144,9 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
                 new IntervieweeExportDTO(interviewee.getInterviewProcess().getJob().getTitle(), interviewee.getLastInvited())
             )
             .toList();
+    }
+
+    private List<String> getSubjectAreaSubscriptions(Applicant applicant) {
+        return applicant.getSubjectAreaSubscriptions().stream().sorted().map(Enum::name).toList();
     }
 }

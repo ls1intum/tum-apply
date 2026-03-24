@@ -22,5 +22,6 @@ public record ApplicantDataExportDTO(
     String masterUniversity,
     Set<DocumentExportDTO> documents,
     List<ApplicationExportDTO> applications,
-    List<IntervieweeExportDTO> interviewees
+    List<IntervieweeExportDTO> interviewees,
+    List<String> subjectAreaSubscriptions
 ) {}
