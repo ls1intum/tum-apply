@@ -25,7 +25,7 @@
       },
       "researchArea": {
         "label": "Research Area",
-        "placeholder": "e.g. Machine Learning, Human-Computer Interaction",
+        "placeholder": "e.g. Machine Learning",
         "toolTipText": "Specify the main Research Area the doctoral position focuses on."
       },
       "subjectArea": {
@@ -104,17 +104,17 @@
       },
       "applicationDeadline": {
         "label": "Application Deadline",
-        "placeholder": "Select an Application Deadline...",
+        "placeholder": "Choose an Application Deadline...",
         "toolTipText": "After this date, applying is no longer possible."
       },
       "workload": {
         "label": "Workload",
-        "placeholder": "Specify the Workload (in h/week)...",
+        "placeholder": "e.g. 20 h/week",
         "toolTipText": "Indicate the expected workload for the doctoral position in hours per week (e.g. 20). You can enter up to 40 h/week."
       },
       "contractDuration": {
         "label": "Contract Duration",
-        "placeholder": "Specify the Contract Duration (in years)...",
+        "placeholder": "e.g. 3 years",
         "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
       },
       "fundingType": {

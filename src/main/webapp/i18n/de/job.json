@@ -25,7 +25,7 @@
       },
       "researchArea": {
         "label": "Forschungsbereich",
-        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
+        "placeholder": "z.B. Maschinelles Lernen",
         "toolTipText": "Gib das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
       },
       "subjectArea": {
@@ -109,12 +109,12 @@
       },
       "workload": {
         "label": "Arbeitsaufwand",
-        "placeholder": "Gib einen Arbeitsaufwand an (in h/Woche)...",
+        "placeholder": "z.B. 20 h/Woche",
         "toolTipText": "Gib den erwarteten Arbeitsaufwand für die Doktorandenstelle in Stunden pro Woche an (z.B. 20). Du kannst bis zu 40 h/Woche eingeben."
       },
       "contractDuration": {
         "label": "Vertragslaufzeit",
-        "placeholder": "Gib eine Vertragslaufzeit an (in Jahren)...",
+        "placeholder": "z.B. 3 Jahre",
         "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
       "fundingType": {
