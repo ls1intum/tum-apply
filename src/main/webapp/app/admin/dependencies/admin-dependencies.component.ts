@@ -93,15 +93,7 @@ export class AdminDependenciesComponent {
 
   /** Computed filter definitions for the search-filter-sort bar. */
   readonly filters = computed<Filter[]>(() => {
-    const result: Filter[] = [
-      {
-        filterId: 'source',
-        filterLabel: 'dependencies.componentSource',
-        filterSearchPlaceholder: 'dependencies.filterPlaceholder',
-        filterOptions: ['dependencies.sourceServer', 'dependencies.sourceClient'],
-        shouldTranslateOptions: true,
-      },
-    ];
+    const result: Filter[] = [];
 
     const overview = this.dependenciesOverview();
     if (overview?.totalVulnerabilities != null && overview.totalVulnerabilities > 0) {
@@ -113,6 +105,14 @@ export class AdminDependenciesComponent {
         shouldTranslateOptions: true,
       });
     }
+
+    result.push({
+      filterId: 'source',
+      filterLabel: 'dependencies.componentSource',
+      filterSearchPlaceholder: 'dependencies.filterPlaceholder',
+      filterOptions: ['dependencies.sourceServer', 'dependencies.sourceClient'],
+      shouldTranslateOptions: true,
+    });
 
     return result;
   });

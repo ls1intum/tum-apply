@@ -11,7 +11,7 @@
     "totalComponents": "Gesamtabhängigkeiten",
     "serverComponents": "Server-Abhängigkeiten",
     "clientComponents": "Client-Abhängigkeiten",
-    "filterPlaceholder": "Filtern nach Name, Gruppe, Version, Typ oder Lizenz...",
+    "filterPlaceholder": "Abhängigkeiten suchen...",
     "sourceServer": "Server",
     "sourceClient": "Client",
     "showingComponents": "{{ count }} Abhängigkeiten angezeigt",

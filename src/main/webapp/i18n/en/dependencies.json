@@ -11,7 +11,7 @@
     "totalComponents": "Total Dependencies",
     "serverComponents": "Server Dependencies",
     "clientComponents": "Client Dependencies",
-    "filterPlaceholder": "Filter by name, group, version, type, or license...",
+    "filterPlaceholder": "Search dependencies...",
     "sourceServer": "Server",
     "sourceClient": "Client",
     "showingComponents": "Showing {{ count }} dependencies",
