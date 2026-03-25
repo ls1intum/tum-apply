@@ -3,10 +3,15 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service for managing applicant subject area subscriptions.
@@ -34,23 +39,42 @@ public class SubjectAreaSubscriptionService {
      *
      * @return list of subscriptions for the current user; empty list if none exist
      */
+    @Transactional(readOnly = true)
     public List<SubjectArea> getSubscriptionsForCurrentUser() {
         UUID userId = currentUserService.getUserId();
-        return applicantRepository.findSubjectAreaSubscriptionsByUserId(userId).stream()
-            .map(SubjectArea::valueOf)
-            .toList();
+        return applicantRepository
+            .findById(userId)
+            .map(applicant -> applicant.getSubjectAreaSubscriptions().stream().sorted(Comparator.naturalOrder()).toList())
+            .orElseGet(List::of);
     }
 
     /**
      * Adds a subject area subscription for the authenticated applicant.
-     * If the subscription already exists, it is not added again (INSERT IGNORE).
+     * If the subscription already exists, it is not added again.
      *
      * @param subjectArea the subject area to subscribe to
      */
+    @Transactional
     public void addSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
-        applicantService.findOrCreateApplicant(userId);
-        applicantRepository.addSubjectAreaSubscription(userId, subjectArea.name());
+        Applicant applicant = applicantService.findOrCreateApplicant(userId);
+        Set<SubjectArea> subscriptions = applicant.getSubjectAreaSubscriptions();
+
+        if (subscriptions.contains(subjectArea)) {
+            return;
+        }
+
+        subscriptions.add(subjectArea);
+
+        try {
+            applicantRepository.saveAndFlush(applicant);
+        } catch (DataIntegrityViolationException e) {
+            // A concurrent request may have created the same subscription after the existence check.
+            applicantRepository
+                .findById(userId)
+                .filter(existingApplicant -> existingApplicant.getSubjectAreaSubscriptions().contains(subjectArea))
+                .orElseThrow(() -> e);
+        }
     }
 
     /**
@@ -58,8 +82,12 @@ public class SubjectAreaSubscriptionService {
      *
      * @param subjectArea the subject area to unsubscribe from
      */
+    @Transactional
     public void removeSubscription(SubjectArea subjectArea) {
         UUID userId = currentUserService.getUserId();
-        applicantRepository.removeSubjectAreaSubscription(userId, subjectArea.name());
+        applicantRepository
+            .findById(userId)
+            .filter(applicant -> applicant.getSubjectAreaSubscriptions().remove(subjectArea))
+            .ifPresent(applicantRepository::save);
     }
 }
