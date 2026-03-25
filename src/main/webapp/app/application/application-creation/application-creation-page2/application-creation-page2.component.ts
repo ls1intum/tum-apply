@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
+import { TranslateDirective } from 'app/shared/language';
 
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
@@ -53,7 +54,7 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   standalone: true,
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
-  imports: [DegreeDocumentSectionComponent, ReactiveFormsModule],
+  imports: [DegreeDocumentSectionComponent, ReactiveFormsModule, TranslateDirective],
 })
 export default class ApplicationCreationPage2Component {
   data = model<ApplicationCreationPage2Data>();
