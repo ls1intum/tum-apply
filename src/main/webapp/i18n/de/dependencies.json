@@ -23,20 +23,32 @@
     "componentLicenses": "Lizenzen",
     "componentSource": "Quelle",
     "componentSecurity": "Sicherheit",
-    "noComponents": "Keine Abhängigkeiten gefunden, die Ihrem Filter entsprechen.",
+    "noComponents": "Keine Abhängigkeiten gefunden, die den aktuellen Filtern entsprechen.",
     "notAvailable": "Abhängigkeitsinformationen sind nicht verfügbar. Die Build-Dateien sind möglicherweise nicht zugänglich.",
-    "loadError": "Fehler beim Laden der Abhängigkeitsinformationen.",
+    "loadError": {
+      "summary": "Laden fehlgeschlagen",
+      "detail": "Fehler beim Laden der Abhängigkeitsinformationen."
+    },
     "downloadSbom": "Herunterladen",
     "vulnerabilities": "Schwachstellen",
     "vulnerability": "Schwachstelle",
-    "vulnerabilitiesCount": "Schwachstellen",
     "loadingVulnerabilities": "Prüfe auf Schwachstellen...",
     "vulnerabilitiesNotLoaded": "Schwachstellendaten nicht geladen",
-    "vulnerabilityLoadError": "Fehler beim Laden der Schwachstelleninformationen.",
-    "vulnerabilityRefreshSuccess": "Schwachstellendaten erfolgreich aktualisiert.",
+    "vulnerabilityLoadError": {
+      "summary": "Aktualisierung fehlgeschlagen",
+      "detail": "Fehler beim Aktualisieren der Schwachstelleninformationen."
+    },
+    "vulnerabilityRefreshSuccess": {
+      "summary": "Aktualisierung abgeschlossen",
+      "detail": "Schwachstellendaten erfolgreich aktualisiert."
+    },
     "refreshVulnerabilities": "Aktualisieren",
     "showVulnerableOnly": "Verwundbar",
     "secure": "Sicher",
+    "severityCritical": "Kritisch",
+    "severityHigh": "Hoch",
+    "severityMedium": "Mittel",
+    "severityLow": "Niedrig",
     "dependency": "Abhängigkeit",
     "dependenciesPlural": "Abhängigkeiten"
   }

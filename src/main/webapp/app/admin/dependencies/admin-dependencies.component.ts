@@ -15,6 +15,7 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TabItem, TabPanelTemplateDirective, TabViewComponent } from 'app/shared/components/molecules/tab-view/tab-view.component';
+import { ToastService } from 'app/service/toast-service';
 import { AdminDependencyResourceApiService } from 'app/generated/api/adminDependencyResourceApi.service';
 import { DependenciesOverviewDTO } from 'app/generated/model/dependenciesOverviewDTO';
 import { DependencyDTO } from 'app/generated/model/dependencyDTO';
@@ -114,8 +115,8 @@ export class AdminDependenciesComponent {
         filterId: 'security',
         filterLabel: 'dependencies.componentSecurity',
         filterSearchPlaceholder: 'dependencies.filterPlaceholder',
-        filterOptions: ['Vulnerable', 'Secure'],
-        shouldTranslateOptions: false,
+        filterOptions: ['dependencies.showVulnerableOnly', 'dependencies.secure'],
+        shouldTranslateOptions: true,
       },
     ];
   });
@@ -129,46 +130,10 @@ export class AdminDependenciesComponent {
     if (!overview?.dependencies) return [];
 
     let dependencies = overview.dependencies;
-
-    const sourceTab = this.activeSourceTab();
-    if (sourceTab !== 'all') {
-      dependencies = dependencies.filter(dep => dep.source === sourceTab);
-    }
-
-    const securityFilterValues = this.selectedSecurityFilter();
-    if (securityFilterValues.length) {
-      const showVulnerable = securityFilterValues.includes('Vulnerable');
-      const showSecure = securityFilterValues.includes('Secure');
-      if (showVulnerable && !showSecure) {
-        dependencies = dependencies.filter(dep => (dep.vulnerabilities?.length ?? 0) > 0);
-      } else if (showSecure && !showVulnerable) {
-        dependencies = dependencies.filter(dep => (dep.vulnerabilities?.length ?? 0) === 0);
-      }
-    }
-
-    const searchTerm = this.searchQuery().toLowerCase();
-    if (searchTerm) {
-      dependencies = dependencies.filter(
-        dep =>
-          (dep.name?.toLowerCase().includes(searchTerm) ?? false) ||
-          (dep.group?.toLowerCase().includes(searchTerm) ?? false) ||
-          (dep.version?.toLowerCase().includes(searchTerm) ?? false),
-      );
-    }
-
-    const field = this.sortField();
-    const sortMultiplier = this.sortDirection() === 'ASC' ? 1 : -1;
-    const sorted = dependencies.slice();
-    if (field === 'security') {
-      sorted.sort((a, b) => ((a.vulnerabilities?.length ?? 0) - (b.vulnerabilities?.length ?? 0)) * sortMultiplier);
-    } else {
-      sorted.sort((a, b) => {
-        const aVal = this.getDependencySortValue(a, field);
-        const bVal = this.getDependencySortValue(b, field);
-        return aVal.localeCompare(bVal) * sortMultiplier;
-      });
-    }
-    return sorted;
+    dependencies = this.applySourceFilter(dependencies, this.activeSourceTab());
+    dependencies = this.applySecurityFilter(dependencies, this.selectedSecurityFilter());
+    dependencies = this.applySearchFilter(dependencies, this.searchQuery());
+    return this.applySorting(dependencies, this.sortField(), this.sortDirection());
   });
 
   /** Total number of dependencies after filtering, used for pagination. */
@@ -215,6 +180,7 @@ export class AdminDependenciesComponent {
   protected readonly faExclamationTriangle = faExclamationTriangle;
 
   private readonly dependencyService = inject(AdminDependencyResourceApiService);
+  private readonly toastService = inject(ToastService);
 
   /** Loads the dependencies overview on component initialization. */
   constructor() {
@@ -231,6 +197,8 @@ export class AdminDependenciesComponent {
     try {
       const overview = await firstValueFrom(this.dependencyService.getOverview());
       this.dependenciesOverview.set(overview);
+    } catch {
+      this.toastService.showErrorKey('dependencies.loadError');
     } finally {
       this.isLoading.set(false);
     }
@@ -246,6 +214,9 @@ export class AdminDependenciesComponent {
     try {
       const overview = await firstValueFrom(this.dependencyService.refresh());
       this.dependenciesOverview.set(overview);
+      this.toastService.showSuccessKey('dependencies.vulnerabilityRefreshSuccess');
+    } catch {
+      this.toastService.showErrorKey('dependencies.vulnerabilityLoadError');
     } finally {
       this.isRefreshing.set(false);
     }
@@ -359,14 +330,49 @@ export class AdminDependenciesComponent {
     }
   }
 
-  /**
-   * Resolves the sortable string value from a dependency for the given field name.
-   * Used by the sort comparator to safely access optional DTO fields.
-   *
-   * @param dep the dependency to read the field from
-   * @param field the sort field name (e.g. 'name', 'group', 'version', 'source')
-   * @returns the field value as a string, or an empty string if the field is not found
-   */
+  private applySourceFilter(dependencies: DependencyDTO[], sourceTab: string): DependencyDTO[] {
+    return sourceTab === 'all' ? dependencies : dependencies.filter(dep => dep.source === sourceTab);
+  }
+
+  private applySecurityFilter(dependencies: DependencyDTO[], filterValues: string[]): DependencyDTO[] {
+    if (!filterValues.length) return dependencies;
+    const showVulnerable = filterValues.includes('dependencies.showVulnerableOnly');
+    const showSecure = filterValues.includes('dependencies.secure');
+    if (showVulnerable && !showSecure) {
+      return dependencies.filter(dep => (dep.vulnerabilities?.length ?? 0) > 0);
+    }
+    if (showSecure && !showVulnerable) {
+      return dependencies.filter(dep => (dep.vulnerabilities?.length ?? 0) === 0);
+    }
+    return dependencies;
+  }
+
+  private applySearchFilter(dependencies: DependencyDTO[], query: string): DependencyDTO[] {
+    const searchTerm = query.toLowerCase();
+    if (!searchTerm) return dependencies;
+    return dependencies.filter(
+      dep =>
+        (dep.name?.toLowerCase().includes(searchTerm) ?? false) ||
+        (dep.group?.toLowerCase().includes(searchTerm) ?? false) ||
+        (dep.version?.toLowerCase().includes(searchTerm) ?? false),
+    );
+  }
+
+  private applySorting(dependencies: DependencyDTO[], field: string, direction: 'ASC' | 'DESC'): DependencyDTO[] {
+    const multiplier = direction === 'ASC' ? 1 : -1;
+    const sorted = dependencies.slice();
+    if (field === 'security') {
+      sorted.sort((a, b) => ((a.vulnerabilities?.length ?? 0) - (b.vulnerabilities?.length ?? 0)) * multiplier);
+    } else {
+      sorted.sort((a, b) => {
+        const aVal = this.getDependencySortValue(a, field);
+        const bVal = this.getDependencySortValue(b, field);
+        return aVal.localeCompare(bVal) * multiplier;
+      });
+    }
+    return sorted;
+  }
+
   private getDependencySortValue(dep: DependencyDTO, field: string): string {
     switch (field) {
       case 'name':

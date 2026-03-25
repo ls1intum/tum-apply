@@ -4,18 +4,18 @@
       <h1 jhiTranslate="dependencies.title">Software Dependencies</h1>
     </div>
     <div class="flex items-center gap-2">
+      <jhi-button
+        severity="secondary"
+        variant="outlined"
+        size="sm"
+        icon="sync"
+        [label]="'dependencies.refreshVulnerabilities'"
+        [shouldTranslate]="true"
+        [disabled]="isRefreshing()"
+        [loading]="isRefreshing()"
+        (click)="refreshVulnerabilities()"
+      />
       @if (dependenciesOverview()) {
-        <jhi-button
-          severity="secondary"
-          variant="outlined"
-          size="sm"
-          icon="sync"
-          [label]="'dependencies.refreshVulnerabilities'"
-          [shouldTranslate]="true"
-          [disabled]="isRefreshing()"
-          [loading]="isRefreshing()"
-          (click)="refreshVulnerabilities()"
-        />
         <jhi-button
           severity="primary"
           size="sm"
@@ -76,10 +76,10 @@
         </div>
         <div class="text-sm text-text-secondary mt-1" jhiTranslate="dependencies.vulnerabilities"></div>
         <div class="flex justify-center gap-1.5 flex-wrap mt-2">
-          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' Critical'" color="danger" />
-          <jhi-tag [text]="(overview.highCount ?? 0) + ' High'" color="warn" />
-          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' Medium'" color="warn" />
-          <jhi-tag [text]="(overview.lowCount ?? 0) + ' Low'" color="secondary" />
+          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severityCritical' | translate)" color="danger" />
+          <jhi-tag [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severityHigh' | translate)" color="warn" />
+          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severityMedium' | translate)" color="warn" />
+          <jhi-tag [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severityLow' | translate)" color="secondary" />
         </div>
       </div>
     </div>
@@ -143,7 +143,7 @@
             ' ' +
             (dep.vulnerabilities.length === 1
               ? ('dependencies.vulnerability' | translate)
-              : ('dependencies.vulnerabilitiesCount' | translate))
+              : ('dependencies.vulnerabilities' | translate))
           "
           [color]="dep.severityTagColor"
           [icon]="faExclamationTriangle"
@@ -160,15 +160,15 @@
         </div>
       </div>
     } @else {
-      <jhi-tag text="Secure" color="success" [icon]="faShieldAlt" />
+      <jhi-tag [text]="'dependencies.secure' | translate" color="success" [icon]="faShieldAlt" />
     }
   </ng-template>
 
   <ng-template #sourceTemplate let-dep>
     @if (dep.source === 'server') {
-      <jhi-tag text="Server" color="primary" />
+      <jhi-tag [text]="'dependencies.sourceServer' | translate" color="primary" />
     } @else {
-      <jhi-tag text="Client" color="info" />
+      <jhi-tag [text]="'dependencies.sourceClient' | translate" color="info" />
     }
   </ng-template>
 </div>
