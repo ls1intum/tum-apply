@@ -34,14 +34,14 @@ import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   getPage2FromApplication,
 } from '../application-creation-page2/application-creation-page2.component';
-import TranslateDirective from '../../../shared/language/translate.directive';
-import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
-import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
-import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
-import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
-import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
+import TranslateDirective from 'app/shared/language/translate.directive';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
+import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { UpdateApplicationDTO } from 'app/generated/model/updateApplicationDTO';
+import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 
 const applyflow = 'entity.toast.applyFlow';
 
@@ -142,6 +142,11 @@ export default class ApplicationCreationFormComponent {
   savingTick = signal<number>(0);
   allPagesValid = computed(() => this.personalInfoDataValid() && this.educationDataValid() && this.applicationDetailsDataValid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  queuedCvFiles = signal<File[]>([]);
+  documentIdsCvAsArray = computed(() => {
+    const cvDocs = this.documentIds()?.cvDocumentDictionaryId;
+    return cvDocs ? [cvDocs] : undefined;
+  });
   readonly formbuilder = inject(FormBuilder);
 
   dialogService = inject(DialogService);
@@ -647,6 +652,15 @@ export default class ApplicationCreationFormComponent {
       this.applicationId.set(application.applicationId ?? this.applicationId());
       this.savingState.set(SavingStates.SAVING);
       await this.sendCreateApplicationData(this.applicationState(), false);
+
+      const filesToUpload = this.queuedCvFiles();
+      if (filesToUpload && filesToUpload.length > 0) {
+        for (const file of filesToUpload) {
+          await firstValueFrom(this.applicationResourceService.uploadDocuments(this.applicationId(), 'CV', file));
+        }
+        this.queuedCvFiles.set([]);
+      }
+
       // TODO: remove application from local storage
     } catch {
       this.toastService.showErrorKey(`${applyflow}.migrationFailed`);

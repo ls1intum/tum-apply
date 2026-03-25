@@ -53,6 +53,7 @@ export class UploadButtonComponent {
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
+  uploadedFiles = output<File[]>();
 
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
@@ -191,6 +192,7 @@ export class UploadButtonComponent {
       const uploadResults = await Promise.all(uploadedPromises);
       const allUploadedIds = uploadResults.flat();
       this.documentIds.set(allUploadedIds);
+      this.uploadedFiles.emit(files);
       this.selectedFiles.set([]);
     } catch {
       this.toastService.showErrorKey('entity.upload.error.upload_failed');

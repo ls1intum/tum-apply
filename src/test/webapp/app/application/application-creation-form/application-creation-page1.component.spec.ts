@@ -12,6 +12,9 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { MessageService } from 'primeng/api';
+import { provideHttpClientMock } from 'util/http-client.mock';
+import { AiResourceApiService } from 'app/generated/api/aiResourceApi.service';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -28,6 +31,14 @@ describe('ApplicationPage1Component', () => {
         provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClientMock(),
+        MessageService,
+        {
+          provide: AiResourceApiService,
+          useValue: {
+            extractPdfData: vi.fn(),
+          },
+        },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);

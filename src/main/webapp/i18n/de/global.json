@@ -351,6 +351,12 @@
       }
     },
     "applicationPage1": {
+      "aiExtraction": {
+        "button": "KI Extrahierung",
+        "noFileError": "Bitte wähle zuerst eine Lebenslauf-Datei für die KI Extrahierung aus.",
+        "success": "KI Extrahierung erfolgreich. Bitte überprüfe die ausgefüllten Felder.",
+        "error": "Daten konnten nicht mit KI extrahiert werden. Bitte versuche es erneut oder fülle die Felder manuell aus."
+      },
       "label": {
         "firstName": "Vorname",
         "lastName": "Nachname",

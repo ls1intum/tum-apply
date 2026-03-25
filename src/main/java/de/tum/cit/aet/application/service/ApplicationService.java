@@ -52,12 +52,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicationService {
 
     private static final List<DocumentType> PROFILE_SYNCED_DOCUMENT_TYPES = List.of(
-        DocumentType.CV,
-        DocumentType.REFERENCE,
-        DocumentType.BACHELOR_TRANSCRIPT,
-        DocumentType.MASTER_TRANSCRIPT,
-        DocumentType.CUSTOM
-    );
+            DocumentType.CV,
+            DocumentType.REFERENCE,
+            DocumentType.BACHELOR_TRANSCRIPT,
+            DocumentType.MASTER_TRANSCRIPT,
+            DocumentType.CUSTOM);
 
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
@@ -143,32 +142,37 @@ public class ApplicationService {
     }
 
     /**
-     * Copies document references from the applicant's profile to the newly created application.
-     * This includes CVs, references, bachelor transcripts, master transcripts, and custom documents.
+     * Copies document references from the applicant's profile to the newly created
+     * application.
+     * This includes CVs, references, bachelor transcripts, master transcripts, and
+     * custom documents.
      *
      * <p>
-     * Snapshot principle: each copied entry belongs to the application afterwards, so future
+     * Snapshot principle: each copied entry belongs to the application afterwards,
+     * so future
      * profile edits do not mutate already-created applications.
      * </p>
      *
      * @param applicant   the applicant whose documents should be copied
-     * @param application the newly created application to receive the document references
+     * @param application the newly created application to receive the document
+     *                    references
      */
     private void prefillDocumentsFromApplicantProfile(Applicant applicant, Application application) {
         for (DocumentType documentType : PROFILE_SYNCED_DOCUMENT_TYPES) {
             Set<DocumentDictionary> applicantDocuments = documentDictionaryService.getApplicantDocumentDictionaries(
-                applicant,
-                documentType
-            );
+                    applicant,
+                    documentType);
             copyDocumentsToApplication(applicantDocuments, application);
         }
     }
 
     /**
-     * Creates new DocumentDictionary entries for the application, referencing the same documents.
+     * Creates new DocumentDictionary entries for the application, referencing the
+     * same documents.
      * No file content is duplicated; only ownership mapping rows are created.
      *
-     * @param sourceDictionaries the source DocumentDictionary entries from the applicant profile
+     * @param sourceDictionaries the source DocumentDictionary entries from the
+     *                           applicant profile
      * @param application        the application to associate the new entries with
      */
     private void copyDocumentsToApplication(Set<DocumentDictionary> sourceDictionaries, Application application) {
@@ -189,8 +193,10 @@ public class ApplicationService {
 
     /**
      * Updates an existing application with new information.
-     * Updates are stored in the application's snapshot fields, not in the applicant entity.
-     * When the application is sent, the snapshot data is synced back to the applicant profile.
+     * Updates are stored in the application's snapshot fields, not in the applicant
+     * entity.
+     * When the application is sent, the snapshot data is synced back to the
+     * applicant profile.
      *
      * @param updateApplicationDTO DTO containing updated application data
      * @return the updated ApplicationForApplicantDTO
@@ -207,7 +213,8 @@ public class ApplicationService {
             application.setAppliedAt(LocalDateTime.now());
         }
 
-        // Update snapshot fields in the application entity instead of the applicant entity
+        // Update snapshot fields in the application entity instead of the applicant
+        // entity
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
         application.setApplicantFirstName(applicantDTO.user().firstName());
         application.setApplicantLastName(applicantDTO.user().lastName());
@@ -248,7 +255,8 @@ public class ApplicationService {
 
     /**
      * Syncs snapshot data from application back to the applicant profile.
-     * This ensures the applicant's profile is updated with the latest data when an application is sent.
+     * This ensures the applicant's profile is updated with the latest data when an
+     * application is sent.
      *
      * @param application the application containing the snapshot data to sync
      */
@@ -263,7 +271,8 @@ public class ApplicationService {
 
     /**
      * Syncs documents from application to the applicant's profile.
-     * This ensures documents uploaded during application creation are available for future applications
+     * This ensures documents uploaded during application creation are available for
+     * future applications
      * and that profile documents reflect the final submitted application state.
      *
      * @param application the application containing the documents to sync
@@ -278,11 +287,14 @@ public class ApplicationService {
 
     /**
      * Syncs documents of a specific type from application to applicant profile.
-     * Replaces existing documents in the applicant profile with those from the application.
-     * This ensures that documents deleted or replaced in the application are also removed from the profile.
+     * Replaces existing documents in the applicant profile with those from the
+     * application.
+     * This ensures that documents deleted or replaced in the application are also
+     * removed from the profile.
      *
      * <p>
-     * The replacement is intentional: after submission, the profile becomes the source for prefilling
+     * The replacement is intentional: after submission, the profile becomes the
+     * source for prefilling
      * future applications with the latest confirmed document set.
      * </p>
      *
@@ -291,12 +303,15 @@ public class ApplicationService {
      * @param documentType the type of documents to sync
      */
     private void syncDocumentsByType(Application application, Applicant applicant, DocumentType documentType) {
-        Set<DocumentDictionary> applicationDocs = documentDictionaryService.getApplicationDocumentDictionaries(application, documentType);
-        Set<DocumentDictionary> applicantDocs = documentDictionaryService.getApplicantDocumentDictionaries(applicant, documentType);
+        Set<DocumentDictionary> applicationDocs = documentDictionaryService
+                .getApplicationDocumentDictionaries(application, documentType);
+        Set<DocumentDictionary> applicantDocs = documentDictionaryService.getApplicantDocumentDictionaries(applicant,
+                documentType);
 
         // Delete all existing documents from applicant profile
         for (DocumentDictionary applicantDoc : applicantDocs) {
-            documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant, applicantDoc.getDocumentDictionaryId());
+            documentDictionaryService.deleteApplicantOwnedDocumentDictionary(applicant,
+                    applicantDoc.getDocumentDictionaryId());
         }
 
         // Copy all documents from application dictionary to applicant profile
@@ -309,12 +324,15 @@ public class ApplicationService {
      * Clones one DocumentDictionary entry to a different owner.
      *
      * <p>
-     * This is the core isolation mechanism: Applicant and Application never share the same
-     * dictionary row. They can still reference the same Document, but ownership metadata
+     * This is the core isolation mechanism: Applicant and Application never share
+     * the same
+     * dictionary row. They can still reference the same Document, but ownership
+     * metadata
      * (name/type/owner relation) is separated.
      * </p>
      */
-    private void copyDocumentDictionary(DocumentDictionary source, java.util.function.Consumer<DocumentDictionary> ownerSetter) {
+    private void copyDocumentDictionary(DocumentDictionary source,
+            java.util.function.Consumer<DocumentDictionary> ownerSetter) {
         DocumentDictionary copy = new DocumentDictionary();
         ownerSetter.accept(copy);
         copy.setDocument(source.getDocument());
@@ -326,24 +344,24 @@ public class ApplicationService {
     private void confirmApplicationToApplicant(Application application) {
         User user = application.getApplicant().getUser();
         Email email = Email.builder()
-            .to(user)
-            .language(Language.fromCode(user.getSelectedLanguage()))
-            .emailType(EmailType.APPLICATION_SENT)
-            .content(application)
-            .researchGroup(application.getJob().getResearchGroup())
-            .build();
+                .to(user)
+                .language(Language.fromCode(user.getSelectedLanguage()))
+                .emailType(EmailType.APPLICATION_SENT)
+                .content(application)
+                .researchGroup(application.getJob().getResearchGroup())
+                .build();
         sender.sendAsync(email);
     }
 
     private void confirmApplicationToProfessor(Application application) {
         User supervisingProfessor = application.getJob().getSupervisingProfessor();
         Email email = Email.builder()
-            .to(supervisingProfessor)
-            .language(Language.fromCode(supervisingProfessor.getSelectedLanguage()))
-            .emailType(EmailType.APPLICATION_RECEIVED)
-            .content(application)
-            .researchGroup(application.getJob().getResearchGroup())
-            .build();
+                .to(supervisingProfessor)
+                .language(Language.fromCode(supervisingProfessor.getSelectedLanguage()))
+                .emailType(EmailType.APPLICATION_RECEIVED)
+                .content(application)
+                .researchGroup(application.getJob().getResearchGroup())
+                .build();
         sender.sendAsync(email);
     }
 
@@ -363,12 +381,12 @@ public class ApplicationService {
         application = applicationRepository.save(application);
 
         Email email = Email.builder()
-            .to(user)
-            .language(Language.fromCode(user.getSelectedLanguage()))
-            .emailType(EmailType.APPLICATION_WITHDRAWN)
-            .content(application)
-            .researchGroup(job.getResearchGroup())
-            .build();
+                .to(user)
+                .language(Language.fromCode(user.getSelectedLanguage()))
+                .emailType(EmailType.APPLICATION_WITHDRAWN)
+                .content(application)
+                .researchGroup(job.getResearchGroup())
+                .build();
 
         sender.sendAsync(email);
     }
@@ -404,7 +422,8 @@ public class ApplicationService {
      */
     public Page<ApplicationOverviewDTO> getAllApplications(PageDTO pageDTO, SortDTO sortDTO) {
         UUID userId = currentUserService.getUserId();
-        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS, true);
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS,
+                true);
         return applicationRepository.findApplicationsByApplicant(userId, pageable);
     }
 
@@ -435,7 +454,8 @@ public class ApplicationService {
      * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
      */
     public Set<DocumentDictionary> getBachelorTranscripts(Application application) {
-        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.BACHELOR_TRANSCRIPT);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application,
+                DocumentType.BACHELOR_TRANSCRIPT);
     }
 
     /**
@@ -445,7 +465,8 @@ public class ApplicationService {
      * @return set of document dictionary entries of type MASTER_TRANSCRIPT
      */
     public Set<DocumentDictionary> getMasterTranscripts(Application application) {
-        return documentDictionaryService.getApplicationDocumentDictionaries(application, DocumentType.MASTER_TRANSCRIPT);
+        return documentDictionaryService.getApplicationDocumentDictionaries(application,
+                DocumentType.MASTER_TRANSCRIPT);
     }
 
     /**
@@ -468,13 +489,15 @@ public class ApplicationService {
      * @param type        the type of the transcript
      * @param application the application the transcripts belong to
      */
-    private void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application) {
+    private void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type,
+            Application application) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Set<Pair<Document, String>> documents = transcripts
-            .stream()
-            .map(file -> Pair.of(documentService.upload(file, user), Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))
-            .collect(Collectors.toSet());
+                .stream()
+                .map(file -> Pair.of(documentService.upload(file, user),
+                        Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))
+                .collect(Collectors.toSet());
         updateDocumentDictionaries(application, type, documents);
     }
 
@@ -487,9 +510,12 @@ public class ApplicationService {
      *                     BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT)
      * @param newDocuments the set of newly uploaded documents to associate
      */
-    protected void updateDocumentDictionaries(Application application, DocumentType type, Set<Pair<Document, String>> newDocuments) {
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicationDocumentDictionaries(application, type);
-        documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplication(application));
+    protected void updateDocumentDictionaries(Application application, DocumentType type,
+            Set<Pair<Document, String>> newDocuments) {
+        Set<DocumentDictionary> existingEntries = documentDictionaryService
+                .getApplicationDocumentDictionaries(application, type);
+        documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type,
+                dd -> dd.setApplication(application));
     }
 
     /**
@@ -502,10 +528,9 @@ public class ApplicationService {
      * @return a set of document IDs matching the given application and document
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(
-        UUID applicationId,
-        DocumentType documentType,
-        List<MultipartFile> files
-    ) {
+            UUID applicationId,
+            DocumentType documentType,
+            List<MultipartFile> files) {
         Application application = assertCanManageApplication(applicationId);
         assertApplicationDocumentsEditable(application);
 
@@ -518,10 +543,13 @@ public class ApplicationService {
                 // Only one file allowed
                 break;
             default:
-                throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
+                throw new NotImplementedException(
+                        String.format("The type %s is not supported yet", documentType.name()));
         }
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicationDocumentDictionaries(application, documentType);
-        return existingEntries.stream().map(DocumentInformationHolderDTO::getFromDocumentDictionary).collect(Collectors.toSet());
+        Set<DocumentDictionary> existingEntries = documentDictionaryService
+                .getApplicationDocumentDictionaries(application, documentType);
+        return existingEntries.stream().map(DocumentInformationHolderDTO::getFromDocumentDictionary)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -530,7 +558,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     * document IDs for the application
+     *         document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
@@ -575,14 +603,15 @@ public class ApplicationService {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
         Application application = applicationRepository
-            .findById(applicationId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+                .findById(applicationId)
+                .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
         return application;
     }
 
     private DocumentDictionary assertCanManageApplicationDocument(UUID documentDictionaryId) {
-        DocumentDictionary documentDictionary = documentDictionaryService.findDocumentDictionaryById(documentDictionaryId);
+        DocumentDictionary documentDictionary = documentDictionaryService
+                .findDocumentDictionaryById(documentDictionaryId);
         Application application = documentDictionary.getApplication();
         if (application == null) {
             throw new OperationNotAllowedException("Only application documents can be managed via this endpoint.");
@@ -593,7 +622,8 @@ public class ApplicationService {
 
     private void assertApplicationDocumentsEditable(Application application) {
         if (!ApplicationState.SAVED.equals(application.getState())) {
-            throw new OperationNotAllowedException("Documents can only be modified while the application is in SAVED state.");
+            throw new OperationNotAllowedException(
+                    "Documents can only be modified while the application is in SAVED state.");
         }
     }
 
@@ -602,8 +632,8 @@ public class ApplicationService {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
         Application application = applicationRepository
-            .findById(applicationId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+                .findById(applicationId)
+                .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
             currentUserService.verifyJobAccess(application.getJob());
             return application;
@@ -634,8 +664,8 @@ public class ApplicationService {
 
         if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
             Application managedApplication = applicationRepository
-                .findById(applicationId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+                    .findById(applicationId)
+                    .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
             currentUserService.verifyJobAccess(managedApplication.getJob());
             return application;
         }
@@ -645,7 +675,8 @@ public class ApplicationService {
     }
 
     /**
-     * Applies AI-extracted PDF data to an application, only updating fields that are
+     * Applies AI-extracted PDF data to an application, only updating fields that
+     * are
      * currently null or blank. This ensures existing data is never overwritten.
      *
      * @param applicationId the ID of the application to update
@@ -667,26 +698,29 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantCountry, application::setApplicantCountry, extracted.country());
         setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());
         setIfEmpty(
-            application::getApplicantBachelorDegreeName,
-            application::setApplicantBachelorDegreeName,
-            extracted.bachelorDegreeName()
-        );
+                application::getApplicantBachelorDegreeName,
+                application::setApplicantBachelorDegreeName,
+                extracted.bachelorDegreeName());
         setIfEmpty(
-            application::getApplicantBachelorUniversity,
-            application::setApplicantBachelorUniversity,
-            extracted.bachelorUniversity()
-        );
-        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.bachelorGrade());
-        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
-        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
+                application::getApplicantBachelorUniversity,
+                application::setApplicantBachelorUniversity,
+                extracted.bachelorUniversity());
+        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade,
+                extracted.bachelorGrade());
+        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName,
+                extracted.masterDegreeName());
+        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity,
+                extracted.masterUniversity());
         setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
 
         // Handle date of birth separately since it's a LocalDate field
-        if (application.getApplicantBirthday() == null && extracted.dateOfBirth() != null && !extracted.dateOfBirth().isBlank()) {
+        if (application.getApplicantBirthday() == null && extracted.dateOfBirth() != null
+                && !extracted.dateOfBirth().isBlank()) {
             try {
                 application.setApplicantBirthday(LocalDate.parse(extracted.dateOfBirth()));
             } catch (DateTimeParseException e) {
-                log.warn("Could not parse extracted date of birth '{}' for application {}", extracted.dateOfBirth(), applicationId);
+                log.warn("Could not parse extracted date of birth '{}' for application {}", extracted.dateOfBirth(),
+                        applicationId);
             }
         }
 

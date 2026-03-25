@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, model, output, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -8,12 +8,20 @@ import { TranslateDirective } from 'app/shared/language';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 
-import { selectGender } from '../../../shared/constants/genders';
-import { postalCodeValidator } from '../../../shared/validators/custom-validators';
-import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
-import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { selectGender } from 'app/shared/constants/genders';
+import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { AiResourceApiService } from 'app/generated/api/aiResourceApi.service';
+import { ToastService } from 'app/service/toast-service';
+import { firstValueFrom } from 'rxjs';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -66,12 +74,23 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     StringInputComponent,
     TranslateModule,
     TranslateDirective,
+    UploadButtonComponent,
+    FontAwesomeModule,
+    TooltipModule,
+    ButtonComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
 })
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
+
+  applicationIdForDocuments = input<string | undefined>();
+  documentIdsCv = model<DocumentInformationHolderDTO[] | undefined>();
+  queuedCvFiles = model<File[]>([]);
+  cvValid = signal<boolean>(false);
+  latestUploadedCv = signal<File | undefined>(undefined);
+  isExtracting = signal<boolean>(false);
 
   valid = output<boolean>();
   changed = output<boolean>();
@@ -91,6 +110,8 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
+  aiResourceService = inject(AiResourceApiService);
+  toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
 
@@ -158,14 +179,14 @@ export default class ApplicationCreationPage1Component {
           ...normalizedValue,
         });
         this.changed.emit(true);
-        this.valid.emit(form.valid);
+        this.valid.emit(form.valid && this.cvValid());
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
+        this.valid.emit(form.valid && this.cvValid());
       });
 
-      this.valid.emit(form.valid);
+      this.valid.emit(form.valid && this.cvValid());
 
       onCleanup(() => {
         valueSubscription.unsubscribe();
@@ -173,6 +194,19 @@ export default class ApplicationCreationPage1Component {
       });
     });
   }
+
+  // Effect to update CV validity when documentIdsCv or queuedCvFiles change
+  private updateCvValidity = effect(() => {
+    const cvDocs = this.documentIdsCv();
+    const queuedDocs = this.queuedCvFiles();
+    const isValid = (cvDocs !== undefined && cvDocs.length > 0) || (queuedDocs !== undefined && queuedDocs.length > 0);
+
+    // Schedule the emission avoiding ExpressionChangedAfterItHasBeenCheckedError
+    queueMicrotask(() => {
+      this.cvValid.set(isValid);
+      this.valid.emit(this.page1Form().valid && isValid);
+    });
+  });
 
   emitChanged(): void {
     this.changed.emit(true);
@@ -192,5 +226,73 @@ export default class ApplicationCreationPage1Component {
       [field]: value,
     });
     this.emitChanged();
+  }
+
+  async generateFromCV(): Promise<void> {
+    const cvFile = (this.queuedCvFiles() && this.queuedCvFiles().length > 0)
+      ? this.queuedCvFiles()[0]
+      : this.latestUploadedCv();
+
+    if (!cvFile) {
+      this.toastService.showErrorKey('entity.applicationPage1.aiExtraction.noFileError');
+      return;
+    }
+
+    this.isExtracting.set(true);
+
+    try {
+      const extracted = await firstValueFrom(
+        this.aiResourceService.extractPdfData(this.applicationIdForDocuments() || 'draft', cvFile)
+      );
+
+      const toPatch: Partial<ApplicationCreationPage1Data> = {};
+
+      if (extracted.firstName) toPatch.firstName = extracted.firstName;
+      if (extracted.lastName) toPatch.lastName = extracted.lastName;
+      if (extracted.city) toPatch.city = extracted.city;
+      if (extracted.street) toPatch.street = extracted.street;
+      if (extracted.postalCode) toPatch.postcode = extracted.postalCode;
+      if (extracted.phoneNumber) toPatch.phoneNumber = extracted.phoneNumber;
+      if (extracted.dateOfBirth) toPatch.dateOfBirth = extracted.dateOfBirth;
+      if (extracted.website) toPatch.website = extracted.website;
+      if (extracted.linkedinUrl) toPatch.linkedIn = extracted.linkedinUrl;
+
+      if (extracted.gender) {
+        const lowerGender = extracted.gender.toLowerCase();
+        const genderMatch = this.selectGenderLocal.find(g =>
+          g.name?.toString().toLowerCase() === lowerGender || g.value?.toString().toLowerCase() === lowerGender
+        );
+        if (genderMatch) toPatch.gender = genderMatch;
+      }
+
+      if (extracted.nationality) {
+        const lowerNat = extracted.nationality.toLowerCase();
+        const natMatch = this.selectNationalityComputed().find(n =>
+          n.name?.toString().toLowerCase() === lowerNat || n.value?.toString().toLowerCase() === lowerNat
+        );
+        if (natMatch) toPatch.nationality = natMatch;
+      }
+
+      if (extracted.country) {
+        const lowerCountry = extracted.country.toLowerCase();
+        const countryMatch = this.selectCountriesLocal().find(c =>
+          c.name?.toString().toLowerCase() === lowerCountry || c.value?.toString().toLowerCase() === lowerCountry
+        );
+        if (countryMatch) toPatch.country = countryMatch;
+      }
+
+      this.data.set({
+        ...this.data(),
+        ...toPatch,
+      });
+
+      this.page1Form().patchValue(toPatch);
+
+      this.toastService.showSuccessKey('entity.applicationPage1.aiExtraction.success');
+    } catch {
+      this.toastService.showErrorKey('entity.applicationPage1.aiExtraction.error');
+    } finally {
+      this.isExtracting.set(false);
+    }
   }
 }

@@ -1,4 +1,43 @@
 <form [formGroup]="page1Form()">
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span></p-divider>
+  <div class="flex flex-col mb-4">
+    <div class="flex-1">
+      <label>
+        <span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span>
+        <span class="required"> *</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+          tooltipPosition="top"
+        />
+      </label>
+      <jhi-upload-button
+        uploadKey="entity.upload.upload_instruction.CV"
+        documentType="CV"
+        [applicationId]="applicationIdForDocuments() ?? ''"
+        [(documentIds)]="documentIdsCv"
+        (queuedFilesChange)="queuedCvFiles.set($event)"
+        (uploadedFiles)="latestUploadedCv.set($event[0])"
+        [allowMultiple]="false"
+        [deferUpload]="!applicationIdForDocuments()"
+      />
+      <div class="mt-4 flex gap-2 justify-center">
+        <jhi-button
+          type="button"
+          [label]="'entity.applicationPage1.aiExtraction.button'"
+          [shouldTranslate]="true"
+          severity="primary"
+          icon="custom-sparkle"
+          class="w-auto"
+          [loading]="isExtracting()"
+          [disabled]="(!queuedCvFiles().length && !latestUploadedCv() && !(documentIdsCv()?.length)) || isExtracting()"
+          (click)="generateFromCV()"
+        />
+      </div>
+    </div>
+  </div>
+
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="flex flex-col">
     <div class="flex flex-col lg:flex-row lg:gap-8">

@@ -351,6 +351,12 @@
       }
     },
     "applicationPage1": {
+      "aiExtraction": {
+        "button": "AI Extraction",
+        "noFileError": "Please select a CV file first for AI Extraction.",
+        "success": "AI Extraction successful. Please review the populated fields.",
+        "error": "Failed to extract data using AI. Please try again or fill the fields manually."
+      },
       "label": {
         "firstName": "First Name",
         "lastName": "Last Name",
