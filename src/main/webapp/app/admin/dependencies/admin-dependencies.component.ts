@@ -1,5 +1,4 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,7 +13,6 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { TabItem, TabPanelTemplateDirective, TabViewComponent } from 'app/shared/components/molecules/tab-view/tab-view.component';
 import { ToastService } from 'app/service/toast-service';
 import { AdminDependencyResourceApiService } from 'app/generated/api/adminDependencyResourceApi.service';
 import { DependenciesOverviewDTO } from 'app/generated/model/dependenciesOverviewDTO';
@@ -27,13 +25,12 @@ import { VulnerabilityDTO } from 'app/generated/model/vulnerabilityDTO';
  *
  * Shows server-side (Java/Gradle) and client-side (npm) dependencies in a
  * filterable, sortable, paginated table with vulnerability severity indicators.
- * Data is fetched from the backend, which queries OSV.dev for vulnerability information.
+ * Data is fetched from the server, which queries OSV.dev for vulnerability information.
  */
 @Component({
   selector: 'jhi-admin-dependencies',
   standalone: true,
   imports: [
-    CommonModule,
     FontAwesomeModule,
     TranslateDirective,
     TranslateModule,
@@ -43,8 +40,6 @@ import { VulnerabilityDTO } from 'app/generated/model/vulnerabilityDTO';
     ProgressSpinnerComponent,
     DynamicTableComponent,
     SearchFilterSortBar,
-    TabViewComponent,
-    TabPanelTemplateDirective,
   ],
   templateUrl: './admin-dependencies.component.html',
 })
@@ -55,7 +50,7 @@ export class AdminDependenciesComponent {
   /** Whether a manual vulnerability refresh is in progress. */
   readonly isRefreshing = signal(false);
 
-  /** The full dependencies overview response from the backend. */
+  /** The full dependencies overview response from the server. */
   readonly dependenciesOverview = signal<DependenciesOverviewDTO | undefined>(undefined);
 
   /** Current zero-based page index for table pagination. */
@@ -76,8 +71,8 @@ export class AdminDependenciesComponent {
   /** Sort direction for the dependency table. */
   readonly sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  /** Currently active source tab (all, server, or client). */
-  readonly activeSourceTab = signal('all');
+  /** Currently selected values in the source filter dropdown. */
+  readonly selectedSourceFilter = signal<string[]>([]);
 
   /** Template reference for the custom version column rendering. */
   readonly versionColumnTemplate = viewChild<TemplateRef<unknown>>('versionTemplate');
@@ -88,13 +83,6 @@ export class AdminDependenciesComponent {
   /** Template reference for the custom source column rendering. */
   readonly sourceColumnTemplate = viewChild<TemplateRef<unknown>>('sourceTemplate');
 
-  /** Tab definitions for filtering dependencies by source (all, server, client). */
-  readonly sourceTabs: TabItem[] = [
-    { id: 'all', translationKey: 'dependencies.sourceAll' },
-    { id: 'server', translationKey: 'dependencies.sourceServer', icon: ['fas', 'server'] },
-    { id: 'client', translationKey: 'dependencies.sourceClient', icon: ['fas', 'desktop'] },
-  ];
-
   /** Available sort options shown in the search-filter-sort bar dropdown. */
   readonly sortableFields: SortOption[] = [
     { displayName: 'dependencies.componentSecurity', fieldName: 'security', type: 'NUMBER' },
@@ -103,22 +91,30 @@ export class AdminDependenciesComponent {
     { displayName: 'dependencies.componentVersion', fieldName: 'version', type: 'TEXT' },
   ];
 
-  /**
-   * Computed filter definitions for the search-filter-sort bar.
-   * Only shows the security filter when vulnerabilities exist.
-   */
-  readonly securityFilters = computed<Filter[]>(() => {
-    const overview = this.dependenciesOverview();
-    if (overview?.totalVulnerabilities == null || overview.totalVulnerabilities === 0) return [];
-    return [
+  /** Computed filter definitions for the search-filter-sort bar. */
+  readonly filters = computed<Filter[]>(() => {
+    const result: Filter[] = [
       {
+        filterId: 'source',
+        filterLabel: 'dependencies.componentSource',
+        filterSearchPlaceholder: 'dependencies.filterPlaceholder',
+        filterOptions: ['dependencies.sourceServer', 'dependencies.sourceClient'],
+        shouldTranslateOptions: true,
+      },
+    ];
+
+    const overview = this.dependenciesOverview();
+    if (overview?.totalVulnerabilities != null && overview.totalVulnerabilities > 0) {
+      result.push({
         filterId: 'security',
         filterLabel: 'dependencies.componentSecurity',
         filterSearchPlaceholder: 'dependencies.filterPlaceholder',
         filterOptions: ['dependencies.showVulnerableOnly', 'dependencies.secure'],
         shouldTranslateOptions: true,
-      },
-    ];
+      });
+    }
+
+    return result;
   });
 
   /**
@@ -126,14 +122,14 @@ export class AdminDependenciesComponent {
    * search query, and sort order. This is the full filtered dataset before pagination.
    */
   readonly filteredDependencies = computed(() => {
-    const overview = this.dependenciesOverview();
-    if (!overview?.dependencies) return [];
+    const dependencies = this.dependenciesOverview()?.dependencies;
+    if (!dependencies) return [];
 
-    let dependencies = overview.dependencies;
-    dependencies = this.applySourceFilter(dependencies, this.activeSourceTab());
-    dependencies = this.applySecurityFilter(dependencies, this.selectedSecurityFilter());
-    dependencies = this.applySearchFilter(dependencies, this.searchQuery());
-    return this.applySorting(dependencies, this.sortField(), this.sortDirection());
+    let filtered = dependencies;
+    filtered = this.applySourceFilter(filtered, this.selectedSourceFilter());
+    filtered = this.applySecurityFilter(filtered, this.selectedSecurityFilter());
+    filtered = this.applySearchFilter(filtered, this.searchQuery());
+    return this.applySorting(filtered, this.sortField(), this.sortDirection());
   });
 
   /** Total number of dependencies after filtering, used for pagination. */
@@ -188,7 +184,7 @@ export class AdminDependenciesComponent {
   }
 
   /**
-   * Fetches the dependencies overview from the backend using the cached endpoint.
+   * Fetches the dependencies overview using the cached endpoint.
    * Sets the loading state while the request is in progress and updates
    * the dependenciesOverview signal with the response.
    */
@@ -205,7 +201,7 @@ export class AdminDependenciesComponent {
   }
 
   /**
-   * Triggers a forced refresh of vulnerability data, bypassing the backend cache.
+   * Triggers a forced refresh of vulnerability data, bypassing the server cache.
    * Sets the refreshing state while the request is in progress and updates
    * the dependenciesOverview signal with the fresh response.
    */
@@ -223,16 +219,6 @@ export class AdminDependenciesComponent {
   }
 
   /**
-   * Handles source tab changes and resets pagination to the first page.
-   *
-   * @param tabId the selected tab identifier ('all', 'server', or 'client')
-   */
-  onTabChange(tabId: string): void {
-    this.activeSourceTab.set(tabId);
-    this.currentPage.set(0);
-  }
-
-  /**
    * Handles search input changes and resets pagination to the first page.
    *
    * @param query the search text entered by the user
@@ -243,16 +229,17 @@ export class AdminDependenciesComponent {
   }
 
   /**
-   * Handles security filter changes and resets pagination to the first page.
-   * Only processes changes for the 'security' filter, ignoring other filter IDs.
+   * Handles filter changes and resets pagination to the first page.
    *
    * @param change the filter change event containing the filter ID and selected values
    */
   onFilterChange(change: FilterChange): void {
-    if (change.filterId === 'security') {
+    if (change.filterId === 'source') {
+      this.selectedSourceFilter.set(change.selectedValues);
+    } else if (change.filterId === 'security') {
       this.selectedSecurityFilter.set(change.selectedValues);
-      this.currentPage.set(0);
     }
+    this.currentPage.set(0);
   }
 
   /**
@@ -330,8 +317,17 @@ export class AdminDependenciesComponent {
     }
   }
 
-  private applySourceFilter(dependencies: DependencyDTO[], sourceTab: string): DependencyDTO[] {
-    return sourceTab === 'all' ? dependencies : dependencies.filter(dep => dep.source === sourceTab);
+  private applySourceFilter(dependencies: DependencyDTO[], filterValues: string[]): DependencyDTO[] {
+    if (!filterValues.length) return dependencies;
+    const showServer = filterValues.includes('dependencies.sourceServer');
+    const showClient = filterValues.includes('dependencies.sourceClient');
+    if (showServer && !showClient) {
+      return dependencies.filter(dep => dep.source === 'server');
+    }
+    if (showClient && !showServer) {
+      return dependencies.filter(dep => dep.source === 'client');
+    }
+    return dependencies;
   }
 
   private applySecurityFilter(dependencies: DependencyDTO[], filterValues: string[]): DependencyDTO[] {

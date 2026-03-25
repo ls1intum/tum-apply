@@ -361,7 +361,7 @@ const routes: Routes = [
   // Admin - Dependencies
   // ======================================================================================
   {
-    path: 'admin/dependencies',
+    path: 'dependencies',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () => import('./admin/dependencies/admin-dependencies.component').then(m => m.AdminDependenciesComponent),

@@ -15,7 +15,6 @@ export interface DependenciesOverviewDTO {
     criticalCount?: number;
     dependencies?: Array<DependencyDTO>;
     highCount?: number;
-    lastChecked?: string;
     lowCount?: number;
     mediumCount?: number;
     serverCount?: number;

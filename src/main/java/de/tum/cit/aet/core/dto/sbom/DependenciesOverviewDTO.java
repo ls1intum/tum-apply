@@ -12,6 +12,5 @@ public record DependenciesOverviewDTO(
     int criticalCount,
     int highCount,
     int mediumCount,
-    int lowCount,
-    String lastChecked
+    int lowCount
 ) {}

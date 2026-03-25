@@ -27,7 +27,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * dependencies from {@code package.json} (npm), then queries the
  * <a href="https://osv.dev">OSV.dev</a> vulnerability database to identify known CVEs.</p>
  *
- * <p>Results are cached for {@value #CACHE_TTL_SECONDS} seconds (24 hours) to minimize
+ * <p>Results are cached for {@value #CACHE_TTL_SECONDS} seconds to minimize
  * external API calls. Use {@link #refresh()} to bypass the cache.</p>
  */
 @Slf4j
@@ -140,7 +140,7 @@ public class DependencyService {
         }
 
         // 4) Cache and return the overview
-        cached = new DependenciesOverviewDTO(deps, serverCount, clientCount, total, critical, high, medium, low, Instant.now().toString());
+        cached = new DependenciesOverviewDTO(deps, serverCount, clientCount, total, critical, high, medium, low);
         cacheExpiry = Instant.now().plusSeconds(CACHE_TTL_SECONDS);
         return cached;
     }
@@ -199,10 +199,12 @@ public class DependencyService {
     }
 
     private boolean isSkippedGradleLine(String trimmed) {
-        return trimmed.startsWith("//")
-            || trimmed.contains("test")
-            || trimmed.contains("annotationProcessor")
-            || trimmed.contains("developmentOnly");
+        return (
+            trimmed.startsWith("//") ||
+            trimmed.contains("test") ||
+            trimmed.contains("annotationProcessor") ||
+            trimmed.contains("developmentOnly")
+        );
     }
 
     /**
@@ -425,10 +427,16 @@ public class DependencyService {
 
         // 2) Map each metric to its numeric weight per the CVSS v3.1 spec
         Double av = switch (metrics.getOrDefault("AV", "")) {
-            case "N" -> 0.85; case "A" -> 0.62; case "L" -> 0.55; case "P" -> 0.20; default -> null;
+            case "N" -> 0.85;
+            case "A" -> 0.62;
+            case "L" -> 0.55;
+            case "P" -> 0.20;
+            default -> null;
         };
         Double ac = switch (metrics.getOrDefault("AC", "")) {
-            case "L" -> 0.77; case "H" -> 0.44; default -> null;
+            case "L" -> 0.77;
+            case "H" -> 0.44;
+            default -> null;
         };
         Double pr = switch (metrics.getOrDefault("PR", "")) {
             case "N" -> 0.85;
@@ -437,33 +445,40 @@ public class DependencyService {
             default -> null;
         };
         Double ui = switch (metrics.getOrDefault("UI", "")) {
-            case "N" -> 0.85; case "R" -> 0.62; default -> null;
+            case "N" -> 0.85;
+            case "R" -> 0.62;
+            default -> null;
         };
         Double c = switch (metrics.getOrDefault("C", "")) {
-            case "H" -> 0.56; case "L" -> 0.22; case "N" -> 0.0; default -> null;
+            case "H" -> 0.56;
+            case "L" -> 0.22;
+            case "N" -> 0.0;
+            default -> null;
         };
         Double i = switch (metrics.getOrDefault("I", "")) {
-            case "H" -> 0.56; case "L" -> 0.22; case "N" -> 0.0; default -> null;
+            case "H" -> 0.56;
+            case "L" -> 0.22;
+            case "N" -> 0.0;
+            default -> null;
         };
         Double a = switch (metrics.getOrDefault("A", "")) {
-            case "H" -> 0.56; case "L" -> 0.22; case "N" -> 0.0; default -> null;
+            case "H" -> 0.56;
+            case "L" -> 0.22;
+            case "N" -> 0.0;
+            default -> null;
         };
 
         if (av == null || ac == null || pr == null || ui == null || c == null || i == null || a == null) return null;
 
         // 3) Compute Impact Sub-Score (ISS) and Impact
         double iss = 1 - ((1 - c) * (1 - i) * (1 - a));
-        double impact = scopeChanged
-            ? 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15)
-            : 6.42 * iss;
+        double impact = scopeChanged ? 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15) : 6.42 * iss;
 
         if (impact <= 0) return 0.0;
 
         // 4) Compute Exploitability and final base score with Roundup
         double exploitability = 8.22 * av * ac * pr * ui;
-        double raw = scopeChanged
-            ? 1.08 * (impact + exploitability)
-            : impact + exploitability;
+        double raw = scopeChanged ? 1.08 * (impact + exploitability) : impact + exploitability;
 
         return Math.ceil(Math.min(raw, 10.0) * 10) / 10.0;
     }

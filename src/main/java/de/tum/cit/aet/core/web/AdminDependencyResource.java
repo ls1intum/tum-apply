@@ -36,7 +36,7 @@ public class AdminDependencyResource {
     /**
      * Returns the dependencies overview with cached vulnerability data.
      *
-     * <p>Results are served from cache if available and not expired (24-hour TTL).
+     * <p>Results are served from cache if available and not expired.
      * Otherwise, a full refresh is triggered automatically.</p>
      *
      * @return {@link ResponseEntity} containing the {@link DependenciesOverviewDTO}
