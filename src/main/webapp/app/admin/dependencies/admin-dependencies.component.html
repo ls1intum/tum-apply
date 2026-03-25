@@ -132,7 +132,12 @@
         />
         <div class="flex flex-wrap gap-1">
           @for (vuln of dep.vulnerabilities.slice(0, 3); track vuln.id) {
-            <a [href]="'https://osv.dev/vulnerability/' + vuln.id" target="_blank" rel="noopener noreferrer" class="no-underline hover:opacity-70 transition-opacity">
+            <a
+              [href]="'https://osv.dev/vulnerability/' + vuln.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="no-underline hover:opacity-70 transition-opacity"
+            >
               <jhi-tag [text]="vuln.id ?? ''" color="info" />
             </a>
           }
