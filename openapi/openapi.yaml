@@ -2790,7 +2790,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/DependencyDTO'}
         highCount: {type: integer, format: int32}
-        lastChecked: {type: string}
         lowCount: {type: integer, format: int32}
         mediumCount: {type: integer, format: int32}
         serverCount: {type: integer, format: int32}
