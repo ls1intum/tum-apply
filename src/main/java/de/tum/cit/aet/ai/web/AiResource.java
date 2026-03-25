@@ -80,9 +80,9 @@ public class AiResource {
      * @return the extracted data DTO
      */
     //@ApplicantOrAdmin
-    @PutMapping(value = "extractPdfData/{applicationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "extractPdfData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
-        @PathVariable String applicationId,
+        @RequestParam("applicationId") String applicationId,
         @RequestParam("file") MultipartFile file
     ) {
         log.info("PUT /api/ai/extractPdfData/{} - PDF extraction request received", applicationId);

@@ -44,6 +44,7 @@ export * from './emailTemplateOverviewDTO';
 export * from './emailTemplateTranslationDTO';
 export * from './employeeResearchGroupRequestDTO';
 export * from './existingSlotDTO';
+export * from './extractedApplicationDataDTO';
 export * from './genderBiasAnalysisRequest';
 export * from './genderBiasAnalysisResponse';
 export * from './image';

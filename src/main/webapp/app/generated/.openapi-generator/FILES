@@ -77,6 +77,7 @@ model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
 model/employeeResearchGroupRequestDTO.ts
 model/existingSlotDTO.ts
+model/extractedApplicationDataDTO.ts
 model/genderBiasAnalysisRequest.ts
 model/genderBiasAnalysisResponse.ts
 model/image.ts
