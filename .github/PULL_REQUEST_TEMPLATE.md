@@ -25,7 +25,7 @@
 - [ ] **Important**: I implemented the changes with a very good performance, prevented too many (unnecessary) REST calls and made sure the UI is responsive, even with large data (e.g. using paging).
 - [ ] I **strictly** followed the principle of **data economy** for all client-server REST calls.
 - [ ] I **strictly** followed the [client coding and design guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311716/Client+Guidelines).
-- [ ] I added multiple integration tests (Jest) related to the features (with a high test coverage), while following the [test guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311925/Client+Test+Guidelines).
+- [ ] I added multiple integration tests (Vitest) related to the features (with a high test coverage), while following the [test guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311925/Client+Test+Guidelines).
 - [ ] I documented the TypeScript code using JSDoc style.
 - [ ] I added multiple screenshots/screencasts of my UI changes.
 
