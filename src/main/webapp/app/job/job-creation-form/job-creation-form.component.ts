@@ -1322,7 +1322,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel1) {
       steps.push({
-        name: 'jobCreationForm.header.steps.basicInfo',
+        name: 'jobCreationForm.header.steps.basicInfo.name',
         panelTemplate: templates.panel1,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1356,7 +1356,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.employmentTerms',
+        name: 'jobCreationForm.header.steps.employmentTerms.name',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1389,7 +1389,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel3) {
       steps.push({
-        name: 'jobCreationForm.header.steps.imageSelection',
+        name: 'jobCreationForm.header.steps.imageSelection.name',
         panelTemplate: templates.panel3,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1422,7 +1422,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel4) {
       steps.push({
-        name: 'jobCreationForm.header.steps.summary',
+        name: 'jobCreationForm.header.steps.summary.name',
         panelTemplate: templates.panel4,
         shouldTranslate: true,
         buttonGroupPrev: [
