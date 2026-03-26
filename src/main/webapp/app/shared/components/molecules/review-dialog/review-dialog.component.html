@@ -1,8 +1,9 @@
-<p-dialog
+<jhi-dialog
   [modal]="true"
-  [(visible)]="visible"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
   [styleClass]="'w-[56%] max-w-[42rem] p-3 [&_.p-dialog-header]:items-start'"
-  [contentStyle]="mode() === 'REJECT' ? { overflow: 'visible' } : undefined"
+  [contentStyle]="mode() === 'REJECT' ? { overflow: 'visible' } : {}"
   [dismissableMask]="true"
   [closeOnEscape]="true"
   [draggable]="false"
@@ -37,7 +38,7 @@
       }
     </div>
   </ng-template>
-</p-dialog>
+</jhi-dialog>
 
 <!-- ───────── Template rendered in ACCEPT mode ───────── -->
 <ng-template #acceptTemplate>

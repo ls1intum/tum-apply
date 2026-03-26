@@ -1,7 +1,8 @@
-<button type="button" [class]="buttonClass()" [disabled]="disabled()" (click)="onClick()">
-  @if (shouldTranslate()) {
-    {{ label() | translate }}
-  } @else {
-    {{ label() }}
-  }
-</button>
+<jhi-button
+  [label]="label()"
+  [shouldTranslate]="shouldTranslate()"
+  [disabled]="disabled()"
+  [styleClass]="buttonClass()"
+  variant="text"
+  (click)="onClick()"
+/>

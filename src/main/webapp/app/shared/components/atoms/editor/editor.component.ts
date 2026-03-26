@@ -15,6 +15,7 @@ import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analys
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -32,6 +33,7 @@ const STANDARD_CHARACTER_BUFFER = 300;
     TooltipModule,
     GenderBiasAnalysisDialogComponent,
     TranslateDirective,
+    ButtonComponent,
   ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',

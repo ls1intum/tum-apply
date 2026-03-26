@@ -1,15 +1,15 @@
 import { Component, ViewEncapsulation, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogModule } from 'primeng/dialog';
 import { BiasedWordDTO, GenderBiasAnalysisResponse } from 'app/generated';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 
 @Component({
   selector: 'jhi-gender-bias-analysis-dialog',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DialogModule, FontAwesomeModule, TooltipModule],
+  imports: [CommonModule, TranslateModule, DialogComponent, FontAwesomeModule, TooltipModule],
   templateUrl: './gender-bias-analysis-dialog.html',
   encapsulation: ViewEncapsulation.None,
 })
