@@ -31,6 +31,7 @@
       }
     },
     "basicInformationSection": {
+      "description": "Provide the key details of the position and add a clear description.",
       "jobTitle": {
         "label": "Job Title",
         "placeholder": "e.g. Doctoral Position in Robotics"
@@ -194,6 +195,7 @@
       }
     },
     "imageSection": {
+      "description": "Select an optional banner image for the position card from the default images or your research group’s image collection.",
       "defaultImages": "Default Images",
       "orDivider": "or",
       "researchGroupImages": "Image Collection",

@@ -5,7 +5,7 @@ import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 const DEFAULT_INCLUSIVE_WEIGHT = 1;
 const CODING_FACTORS = {
-  'neutral': 1,
+  neutral: 1,
   'inclusive-coded': 1,
   'non-inclusive-coded': 0.2,
 } as const;
@@ -115,7 +115,7 @@ export class GenderBiasAnalysisService {
   private getCodingFactor(coding: string | undefined): number {
     switch (coding) {
       case 'neutral':
-        return CODING_FACTORS['neutral'];
+        return CODING_FACTORS.neutral;
       case 'inclusive-coded':
         return CODING_FACTORS['inclusive-coded'];
       default:

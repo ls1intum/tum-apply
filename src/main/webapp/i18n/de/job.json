@@ -31,6 +31,7 @@
       }
     },
     "basicInformationSection": {
+      "description": "Gib die wichtigsten Details der Stelle an und füge eine klare Beschreibung hinzu.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
@@ -194,6 +195,7 @@
       }
     },
     "imageSection": {
+      "description": "Wähle ein optionales Bannerbild für die Stellenkarte aus den Standardbildern oder aus der Bildersammlung deiner Forschungsgruppe.",
       "defaultImages": "Standardbilder",
       "orDivider": "oder",
       "researchGroupImages": "Bildersammlung",
