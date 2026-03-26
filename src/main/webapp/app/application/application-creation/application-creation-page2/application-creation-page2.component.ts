@@ -6,10 +6,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateDirective } from 'app/shared/language';
-
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import {
   GradingScaleLimitsResult,
   getDetectedGradeLimitsPatch,
@@ -17,7 +16,7 @@ import {
   getGradeWarningText,
   hasGradeLimits,
   resolveGradingScaleLimits,
-} from '../../../shared/util/grading-scale.utils';
+} from 'app/shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -60,8 +59,8 @@ export default class ApplicationCreationPage2Component {
   data = model<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
-  documentIdsBachelorTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
-  documentIdsMasterTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
+  documentIdsBachelorTranscript = model<DocumentInformationHolderDTO[] | undefined>(undefined);
+  documentIdsMasterTranscript = model<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   valid = output<boolean>();
   changed = output<boolean>();
@@ -87,6 +86,9 @@ export default class ApplicationCreationPage2Component {
 
   hasInitialized = signal(false);
   hasInitialLimitsSet = signal(false);
+
+  bachelorDocsValid = computed(() => (this.documentIdsBachelorTranscript()?.length ?? 0) > 0);
+  masterDocsValid = computed(() => (this.documentIdsMasterTranscript()?.length ?? 0) > 0);
 
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
@@ -225,7 +227,7 @@ export default class ApplicationCreationPage2Component {
       this.changed.emit(true);
     }
 
-    this.valid.emit(this.page2Form.valid);
+    this.valid.emit(this.page2Form.valid && this.bachelorDocsValid() && this.masterDocsValid());
   });
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
