@@ -5,8 +5,8 @@ import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 const DEFAULT_INCLUSIVE_WEIGHT = 1;
 const CODING_FACTORS = {
-  neutral: 1,
-  'inclusive-coded': 0.9,
+  'neutral': 1,
+  'inclusive-coded': 1,
   'non-inclusive-coded': 0.2,
 } as const;
 
@@ -81,7 +81,7 @@ export class GenderBiasAnalysisService {
    * 2. Calculates the ratio (`inclusiveWeight`) of inclusive words to the total number of flagged words (inclusive + non-inclusive)
    * 3. Applies a penalty factor based on the overall coding of the analysis:
    * - 'neutral-coded': 1.0 (no penalty)
-   * - 'inclusive-coded': 0.9 (slight penalty)
+   * - 'inclusive-coded': 1.0 (no penalty))
    * - 'non-inclusive-coded': 0.2 (penalty)
    * 4. The final score is derived from the square root of (`inclusiveWeight` * factor) and scaled to a 0-100 range.
    * The square root is applied to soften the penalty curve and avoid overly harsh scores.
@@ -115,7 +115,7 @@ export class GenderBiasAnalysisService {
   private getCodingFactor(coding: string | undefined): number {
     switch (coding) {
       case 'neutral':
-        return CODING_FACTORS.neutral;
+        return CODING_FACTORS['neutral'];
       case 'inclusive-coded':
         return CODING_FACTORS['inclusive-coded'];
       default:

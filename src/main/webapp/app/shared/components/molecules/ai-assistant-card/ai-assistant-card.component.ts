@@ -32,7 +32,7 @@ export class AiAssistantCardComponent {
   buttonIcon = input<string>('custom-sparkle');
   generate = output();
 
-  readonly WARNING_THRESHOLD = 65;
+  readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly EXCELLENCE_THRESHOLD = 90;
   readonly displayedScore = signal(0);

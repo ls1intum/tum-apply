@@ -47,7 +47,7 @@ input:disabled {
 .panel1-divider {
   @media (min-width: bp.$lg) {
     height: 100%;
-    background-color: var(--p-divider-border-color);
+    background-color: var(--color-divider-default);
   }
 }
 
