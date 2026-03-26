@@ -39,6 +39,57 @@ export class ApplicantResourceApiService extends BaseService {
     }
 
     /**
+     * @param subjectArea 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public addSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public addSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public addSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public addSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (subjectArea === null || subjectArea === undefined) {
+            throw new Error('Required parameter subjectArea was null or undefined when calling addSubjectAreaSubscription.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/applicants/subject-area-subscriptions/${this.configuration.encodeParam({name: "subjectArea", value: subjectArea, in: "path", style: "simple", explode: false, dataType: "'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * @param documentDictionaryId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -173,6 +224,105 @@ export class ApplicantResourceApiService extends BaseService {
 
         let localVarPath = `/api/applicants/profile/document-ids`;
         return this.httpClient.request<ApplicationDocumentIdsDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getSubjectAreaSubscriptions(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<string>>;
+    public getSubjectAreaSubscriptions(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<string>>>;
+    public getSubjectAreaSubscriptions(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<string>>>;
+    public getSubjectAreaSubscriptions(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/applicants/subject-area-subscriptions`;
+        return this.httpClient.request<Array<string>>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param subjectArea 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public removeSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public removeSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public removeSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public removeSubjectAreaSubscription(subjectArea: 'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (subjectArea === null || subjectArea === undefined) {
+            throw new Error('Required parameter subjectArea was null or undefined when calling removeSubjectAreaSubscription.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/applicants/subject-area-subscriptions/${this.configuration.encodeParam({name: "subjectArea", value: subjectArea, in: "path", style: "simple", explode: false, dataType: "'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

@@ -6,11 +6,24 @@
         "edit": "Edit the Current Doctorate Position"
       },
       "steps": {
-        "basicInfo": "Basic Information",
-        "employmentTerms": "Employment Terms",
-        "imageSelection": "Banner Image",
-        "additionalInfo": "Additional Information",
-        "summary": "Summary"
+        "basicInfo": {
+          "name": "Basic Information",
+          "description": "Provide the key details of the position and add a clear description."
+        },
+        "employmentTerms": {
+          "name": "Employment Terms",
+          "description": "Provide the employment information."
+        },
+        "imageSelection": {
+          "name": "Banner Image",
+          "description": "Select an optional banner image for the position card from the default images or your research group’s image collection."
+        },
+        "additionalInfo": {
+          "name": "Additional Information"
+        },
+        "summary": {
+          "name": "Summary"
+        }
       },
       "basicInfo": {
         "section1": "Overview",
@@ -18,7 +31,6 @@
       }
     },
     "basicInformationSection": {
-      "description": "Provide the key details about the doctoral position, such as title, subject area, and supervising professor.",
       "jobTitle": {
         "label": "Job Title",
         "placeholder": "e.g. Doctoral Position in Robotics"
@@ -154,7 +166,6 @@
       }
     },
     "imageSection": {
-      "description": "Select an optional banner image that will be displayed in your position card. Choose from default images or use your research group's image library.",
       "defaultImages": "Default Images",
       "orDivider": "or",
       "researchGroupImages": "Image Collection",

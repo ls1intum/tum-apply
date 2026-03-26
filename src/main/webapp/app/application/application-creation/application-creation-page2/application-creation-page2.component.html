@@ -1,5 +1,6 @@
 @if (data()) {
   <form [formGroup]="page2Form">
+    <p jhiTranslate="entity.applicationPage2.description"></p>
     <jhi-degree-document-section
       degreeType="bachelor"
       sectionTitleKey="entity.applicationPage2.section.bachelor"
@@ -12,6 +13,7 @@
       [gradeHelperText]="helperTextBachelorGrade()"
       [gradeWarningText]="warningTextBachelorGrade()"
       (changeScale)="onChangeGradingScale('bachelor')"
+      (documentIdsChange)="documentIdsBachelorTranscript.set($event)"
     />
 
     <jhi-degree-document-section
@@ -26,6 +28,7 @@
       [gradeHelperText]="helperTextMasterGrade()"
       [gradeWarningText]="warningTextMasterGrade()"
       (changeScale)="onChangeGradingScale('master')"
+      (documentIdsChange)="documentIdsMasterTranscript.set($event)"
     />
   </form>
 }
