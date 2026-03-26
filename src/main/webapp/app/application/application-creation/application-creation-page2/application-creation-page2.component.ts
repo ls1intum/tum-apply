@@ -7,9 +7,9 @@ import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateDirective } from 'app/shared/language';
 
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import {
   GradingScaleLimitsResult,
   getDetectedGradeLimitsPatch,
