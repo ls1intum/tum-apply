@@ -175,6 +175,7 @@ storage
 # Generated files
 ######################
 /openapi/openapi.yaml
+/src/main/generated/
 /src/main/webapp/app/generated/
 
 # OpenAPI generator subproject build artifacts
