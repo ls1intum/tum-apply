@@ -2,18 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ResearchGroupSchoolsComponent } from 'app/usermanagement/research-group/research-group-schools/research-group-schools.component';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createDialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { SchoolEditDialogComponent } from 'app/usermanagement/research-group/research-group-schools/school-edit-dialog/school-edit-dialog.component';
 
 describe('ResearchGroupSchoolsComponent', () => {
   let component: ResearchGroupSchoolsComponent;
   let fixture: ComponentFixture<ResearchGroupSchoolsComponent>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockSchoolService: ReturnType<typeof createSchoolResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogService: ReturnType<typeof createDialogServiceMock>;
 
@@ -23,7 +23,7 @@ describe('ResearchGroupSchoolsComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockSchoolService = createSchoolResourceApiServiceMock();
+    mockSchoolService = createSchoolResourceApiMock();
     mockSchoolService.getSchoolsForAdmin.mockReturnValue(of({ content: mockSchools, totalElements: mockSchools.length }));
     mockSchoolService.deleteSchool.mockReturnValue(of({}));
 
@@ -33,7 +33,7 @@ describe('ResearchGroupSchoolsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupSchoolsComponent],
       providers: [
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideSchoolResourceApiMock(mockSchoolService),
         provideDialogServiceMock(mockDialogService),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),

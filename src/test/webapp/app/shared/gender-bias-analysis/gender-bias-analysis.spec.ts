@@ -1,23 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-  createGenderBiasAnalysisResourceApiServiceMock,
-  provideGenderBiasAnalysisResourceApiServiceMock,
-  GenderBiasAnalysisResourceApiServiceMock,
+  createGenderBiasAnalysisResourceApiMock,
+  provideGenderBiasAnalysisResourceApiMock,
+  GenderBiasAnalysisResourceApiMock,
 } from 'util/gender-bias-analysis-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisResponse } from 'app/generated/models/gender-bias-analysis-response';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 
 describe('GenderBiasAnalysisService', () => {
   let service: GenderBiasAnalysisService;
-  let apiServiceMock: GenderBiasAnalysisResourceApiServiceMock;
+  let apiServiceMock: GenderBiasAnalysisResourceApiMock;
 
   beforeEach(() => {
-    apiServiceMock = createGenderBiasAnalysisResourceApiServiceMock();
+    apiServiceMock = createGenderBiasAnalysisResourceApiMock();
 
     TestBed.configureTestingModule({
-      providers: [GenderBiasAnalysisService, provideGenderBiasAnalysisResourceApiServiceMock(apiServiceMock)],
+      providers: [GenderBiasAnalysisService, provideGenderBiasAnalysisResourceApiMock(apiServiceMock)],
     });
 
     service = TestBed.inject(GenderBiasAnalysisService);

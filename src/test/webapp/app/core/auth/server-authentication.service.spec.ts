@@ -1,38 +1,38 @@
 import { TestBed } from '@angular/core/testing';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
 import { of, throwError } from 'rxjs';
-import { OtpCompleteDTO } from 'app/generated/model/otpCompleteDTO';
+import { OtpCompleteDTOPurposeEnum } from 'app/generated/models/otp-complete-dto';
 import { vi } from 'vitest';
 import {
-  AuthenticationResourceApiServiceMock,
-  createAuthenticationResourceApiServiceMock,
-  createEmailVerificationResourceApiServiceMock,
-  EmailVerificationResourceApiServiceMock,
+  AuthenticationResourceApiMock,
+  createAuthenticationResourceApiMock,
+  createEmailVerificationResourceApiMock,
+  EmailVerificationResourceApiMock,
   mockSessionInfo,
-  provideAuthenticationResourceApiServiceMock,
-  provideEmailVerificationResourceApiServiceMock,
+  provideAuthenticationResourceApiMock,
+  provideEmailVerificationResourceApiMock,
 } from 'util/authentication-resource-api.service.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from '../../../util/translate.mock';
 
 describe('ServerAuthenticationService', () => {
   let service: ServerAuthenticationService;
-  let authApi: AuthenticationResourceApiServiceMock;
-  let emailApi: EmailVerificationResourceApiServiceMock;
+  let authApi: AuthenticationResourceApiMock;
+  let emailApi: EmailVerificationResourceApiMock;
   let toastService: ToastServiceMock;
   let translateService: TranslateServiceMock;
 
   beforeEach(() => {
-    authApi = createAuthenticationResourceApiServiceMock();
-    emailApi = createEmailVerificationResourceApiServiceMock();
+    authApi = createAuthenticationResourceApiMock();
+    emailApi = createEmailVerificationResourceApiMock();
     toastService = createToastServiceMock();
     translateService = createTranslateServiceMock();
 
     TestBed.configureTestingModule({
       providers: [
         ServerAuthenticationService,
-        provideAuthenticationResourceApiServiceMock(authApi),
-        provideEmailVerificationResourceApiServiceMock(emailApi),
+        provideAuthenticationResourceApiMock(authApi),
+        provideEmailVerificationResourceApiMock(emailApi),
         provideToastServiceMock(toastService),
         provideTranslateMock(translateService),
       ],
@@ -79,24 +79,24 @@ describe('ServerAuthenticationService', () => {
     });
 
     it('should verify OTP for login', async () => {
-      const result = await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Login);
+      const result = await service.verifyOtp('test@example.com', '123456', OtpCompleteDTOPurposeEnum.Login);
       expect(authApi.otpComplete).toHaveBeenCalledWith({
         email: 'test@example.com',
         code: '123456',
         profile: undefined,
-        purpose: OtpCompleteDTO.PurposeEnum.Login,
+        purpose: OtpCompleteDTOPurposeEnum.Login,
       });
       expect(result).toEqual(mockSessionInfo);
     });
 
     it('should verify OTP for registration with profile', async () => {
       const profile = { firstName: 'Test', lastName: 'User' };
-      const result = await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Register, profile);
+      const result = await service.verifyOtp('test@example.com', '123456', OtpCompleteDTOPurposeEnum.Register, profile);
       expect(authApi.otpComplete).toHaveBeenCalledWith({
         email: 'test@example.com',
         code: '123456',
         profile,
-        purpose: OtpCompleteDTO.PurposeEnum.Register,
+        purpose: OtpCompleteDTOPurposeEnum.Register,
       });
       expect(result).toEqual(mockSessionInfo);
     });
@@ -106,7 +106,7 @@ describe('ServerAuthenticationService', () => {
         toPromise: () => Promise.reject(new Error('fail')),
         subscribe: (s: any, e: any) => e(new Error('fail')),
       });
-      await expect(service.verifyOtp('fail@example.com', '123', OtpCompleteDTO.PurposeEnum.Login)).rejects.toThrow();
+      await expect(service.verifyOtp('fail@example.com', '123', OtpCompleteDTOPurposeEnum.Login)).rejects.toThrow();
     });
   });
 
@@ -141,7 +141,7 @@ describe('ServerAuthenticationService', () => {
 
     it('should schedule automatic token refresh after OTP verification', async () => {
       const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
-      await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Login);
+      await service.verifyOtp('test@example.com', '123456', OtpCompleteDTOPurposeEnum.Login);
       expect(setTimeoutSpy).toHaveBeenCalledOnce();
       setTimeoutSpy.mockRestore();
     });

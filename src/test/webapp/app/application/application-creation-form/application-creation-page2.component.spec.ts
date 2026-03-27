@@ -7,9 +7,9 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { provideHttpClient as provideHttpClientMock } from '@angular/common/http';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';

@@ -8,7 +8,7 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
-import { provideJobResourceApiServiceMock } from 'src/test/webapp/util/job-resource-api.service.mock';
+import { provideJobResourceApiMock } from 'src/test/webapp/util/job-resource-api.service.mock';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 
@@ -68,7 +68,7 @@ describe('LandingPageComponent', () => {
         provideFontAwesomeTesting(),
         provideNoopAnimations(),
         provideHttpClientTesting(),
-        provideJobResourceApiServiceMock(),
+        provideJobResourceApiMock(),
         provideToastServiceMock(),
         provideRouterMock(routerMock),
         provideAccountServiceMock(accountServiceMock),

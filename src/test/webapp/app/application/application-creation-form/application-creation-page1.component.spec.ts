@@ -11,7 +11,7 @@ import { selectGender } from 'app/shared/constants/genders';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;

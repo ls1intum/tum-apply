@@ -3,16 +3,18 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+import { ApplicantDTO } from 'app/generated/models/applicant-dto';
 import { PersonalInformationData, PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
-import { createApplicantResourceApiServiceMock, provideApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
+import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
+
 describe('PersonalInformationSettingsComponent', () => {
-  const createProfile = (): ApplicantDTO => ({
+  const createProfile = (): Mutable<ApplicantDTO> => ({
     user: {
       userId: 'user-1',
       firstName: 'Ada',
@@ -52,7 +54,7 @@ describe('PersonalInformationSettingsComponent', () => {
     return component;
   };
 
-  const applicantResourceApiServiceMock = createApplicantResourceApiServiceMock();
+  const applicantResourceApiServiceMock = createApplicantResourceApiMock();
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
   const translateServiceMock = createTranslateServiceMock();
@@ -75,7 +77,7 @@ describe('PersonalInformationSettingsComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       providers: [
-        provideApplicantResourceApiServiceMock(applicantResourceApiServiceMock),
+        provideApplicantResourceApiMock(applicantResourceApiServiceMock),
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(translateServiceMock),

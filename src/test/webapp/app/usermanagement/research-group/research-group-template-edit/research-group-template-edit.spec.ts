@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { convertToParamMap, ParamMap } from '@angular/router';
 
-import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateDTO } from 'app/generated/model/emailTemplateDTO';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { EmailTemplateDTO, EmailTemplateDTOEmailTypeEnum } from 'app/generated/models/email-template-dto';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -12,7 +12,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { ResearchGroupTemplateEdit } from 'app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
 import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 class ResizeObserverMock {
   observe() {}
@@ -23,7 +23,7 @@ if (typeof global.ResizeObserver === 'undefined') {
   global.ResizeObserver = ResizeObserverMock;
 }
 
-class EmailTemplateResourceApiServiceMock {
+class EmailTemplateResourceApiMock {
   createTemplate = vi.fn();
   updateTemplate = vi.fn();
   getTemplate = vi.fn();
@@ -32,7 +32,7 @@ class EmailTemplateResourceApiServiceMock {
 describe('ResearchGroupTemplateEdit', () => {
   let fixture: ComponentFixture<ResearchGroupTemplateEdit>;
   let component: ResearchGroupTemplateEdit;
-  let api: EmailTemplateResourceApiServiceMock;
+  let api: EmailTemplateResourceApiMock;
   let mockToast: ToastServiceMock;
   let paramMapSubject: BehaviorSubject<ParamMap>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
@@ -67,7 +67,7 @@ describe('ResearchGroupTemplateEdit', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupTemplateEdit],
       providers: [
-        { provide: EmailTemplateResourceApiService, useClass: EmailTemplateResourceApiServiceMock },
+        { provide: EmailTemplateResourceApi, useClass: EmailTemplateResourceApiMock },
         provideRouterMock(mockRouter),
         provideToastServiceMock(mockToast),
         provideTranslateMock(mockTranslate),
@@ -77,7 +77,7 @@ describe('ResearchGroupTemplateEdit', () => {
       ],
     })
       .overrideComponent(ResearchGroupTemplateEdit, {
-        remove: { providers: [EmailTemplateResourceApiService] },
+        remove: { providers: [EmailTemplateResourceApi] },
       })
       .compileComponents();
 
@@ -85,7 +85,7 @@ describe('ResearchGroupTemplateEdit', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    api = TestBed.inject(EmailTemplateResourceApiService) as unknown as EmailTemplateResourceApiServiceMock;
+    api = TestBed.inject(EmailTemplateResourceApi) as unknown as EmailTemplateResourceApiMock;
   });
 
   afterEach(() => {
@@ -166,7 +166,7 @@ describe('ResearchGroupTemplateEdit', () => {
     });
 
     it('does not autosave for employees', () => {
-      mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+      mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTORolesEnum.Employee] } : u));
       component.formModel.set({
         templateName: 'Valid',
         emailType: 'APPLICATION_ACCEPTED',
@@ -205,9 +205,9 @@ describe('ResearchGroupTemplateEdit', () => {
     it('updates email type via setSelectedEmailType', () => {
       component.setSelectedEmailType({
         name: 'x',
-        value: EmailTemplateDTO.EmailTypeEnum.ApplicationRejected,
+        value: EmailTemplateDTOEmailTypeEnum.ApplicationRejected,
       });
-      expect(component.formModel().emailType).toBe(EmailTemplateDTO.EmailTypeEnum.ApplicationRejected);
+      expect(component.formModel().emailType).toBe(EmailTemplateDTOEmailTypeEnum.ApplicationRejected);
     });
 
     it.each([
@@ -216,7 +216,7 @@ describe('ResearchGroupTemplateEdit', () => {
     ])('$field computed falls back to empty when null', ({ getter }) => {
       component.formModel.set({
         templateName: 'X',
-        emailType: EmailTemplateDTO.EmailTypeEnum.ApplicationAccepted,
+        emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
         isDefault: false,
         english: undefined,
         german: undefined,
@@ -230,13 +230,13 @@ describe('ResearchGroupTemplateEdit', () => {
     {
       name: 'with name',
       templateName: 'welcome',
-      emailType: EmailTemplateDTO.EmailTypeEnum.ApplicationAccepted,
+      emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
       expected: 'researchGroup.emailTemplates.default.APPLICATION_ACCEPTED-welcome',
     },
     {
       name: 'without name',
       templateName: undefined,
-      emailType: EmailTemplateDTO.EmailTypeEnum.ApplicationSent,
+      emailType: EmailTemplateDTOEmailTypeEnum.ApplicationSent,
       expected: 'researchGroup.emailTemplates.default.APPLICATION_SENT',
     },
   ])('templateDisplayName', ({ name, templateName, emailType, expected }) => {

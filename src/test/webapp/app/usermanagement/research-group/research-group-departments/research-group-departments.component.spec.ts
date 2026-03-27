@@ -2,23 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ResearchGroupDepartmentsComponent } from 'app/usermanagement/research-group/research-group-departments/research-group-departments.component';
-import { DepartmentDTO } from 'app/generated/model/models';
+import { DepartmentDTO } from 'app/generated/models/department-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createDialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
-import { createDepartmentResourceApiServiceMock, provideDepartmentResourceApiServiceMock } from 'util/department-resource-api.service.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createDepartmentResourceApiMock, provideDepartmentResourceApiMock } from 'util/department-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { DepartmentEditDialogComponent } from 'app/usermanagement/research-group/research-group-departments/department-edit-dialog/department-edit-dialog.component';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 
 describe('ResearchGroupDepartmentsComponent', () => {
   let component: ResearchGroupDepartmentsComponent;
   let fixture: ComponentFixture<ResearchGroupDepartmentsComponent>;
-  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiServiceMock>;
+  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogService: ReturnType<typeof createDialogServiceMock>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockSchoolService: ReturnType<typeof createSchoolResourceApiMock>;
   let mockRouter: ReturnType<typeof createRouterMock>;
 
   const mockDepartments: DepartmentDTO[] = [
@@ -35,11 +35,11 @@ describe('ResearchGroupDepartmentsComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockDepartmentService = createDepartmentResourceApiServiceMock();
+    mockDepartmentService = createDepartmentResourceApiMock();
     mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(of({ content: mockDepartments, totalElements: mockDepartments.length }));
     mockDepartmentService.deleteDepartment.mockReturnValue(of({}));
 
-    mockSchoolService = createSchoolResourceApiServiceMock();
+    mockSchoolService = createSchoolResourceApiMock();
     mockSchoolService.getAllSchools.mockReturnValue(of([{ schoolId: 's1', name: 'School 1', abbreviation: 'S1' }]));
 
     mockToastService = createToastServiceMock();
@@ -49,8 +49,8 @@ describe('ResearchGroupDepartmentsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupDepartmentsComponent],
       providers: [
-        provideDepartmentResourceApiServiceMock(mockDepartmentService),
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideDepartmentResourceApiMock(mockDepartmentService),
+        provideSchoolResourceApiMock(mockSchoolService),
         provideDialogServiceMock(mockDialogService),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),

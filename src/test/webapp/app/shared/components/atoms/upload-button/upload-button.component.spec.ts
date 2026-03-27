@@ -12,13 +12,13 @@ import rxjs, { of } from 'rxjs';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import {
-  ApplicationResourceApiServiceMock,
-  createApplicationResourceApiServiceMock,
-  provideApplicationResourceApiServiceMock,
+  ApplicationResourceApiMock,
+  createApplicationResourceApiMock,
+  provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
 
 describe('UploadButtonComponent', () => {
-  let applicationService: ApplicationResourceApiServiceMock;
+  let applicationService: ApplicationResourceApiMock;
   let toastService: ToastServiceMock;
 
   function createUploadButtonFixture(inputs: {
@@ -37,12 +37,12 @@ describe('UploadButtonComponent', () => {
   }
 
   beforeEach(async () => {
-    applicationService = createApplicationResourceApiServiceMock();
+    applicationService = createApplicationResourceApiMock();
     toastService = createToastServiceMock();
     await TestBed.configureTestingModule({
       imports: [UploadButtonComponent],
       providers: [
-        provideApplicationResourceApiServiceMock(applicationService),
+        provideApplicationResourceApiMock(applicationService),
         provideToastServiceMock(toastService),
         provideHttpClientMock(),
         provideFontAwesomeTesting(),

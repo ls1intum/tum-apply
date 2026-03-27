@@ -8,7 +8,7 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -19,13 +19,13 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 describe('SchoolEditDialogComponent', () => {
   let component: SchoolEditDialogComponent;
   let fixture: ComponentFixture<SchoolEditDialogComponent>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockSchoolService: ReturnType<typeof createSchoolResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogRef: ReturnType<typeof createDynamicDialogRefMock>;
   let mockDialogConfig: ReturnType<typeof createDynamicDialogConfigMock>;
 
   beforeEach(async () => {
-    mockSchoolService = createSchoolResourceApiServiceMock();
+    mockSchoolService = createSchoolResourceApiMock();
     mockToastService = createToastServiceMock();
     mockDialogRef = createDynamicDialogRefMock();
     mockDialogConfig = createDynamicDialogConfigMock();
@@ -33,7 +33,7 @@ describe('SchoolEditDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SchoolEditDialogComponent],
       providers: [
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideSchoolResourceApiMock(mockSchoolService),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideToastServiceMock(mockToastService),

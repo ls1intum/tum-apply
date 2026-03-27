@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PrivacyPageComponent } from 'app/shared/pages/privacy-page/privacy-page.component';
-import { UserDataExportResourceApiService } from 'app/generated/api/api';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 
 import { createToastServiceMock, provideToastServiceMock } from 'src/test/webapp/util/toast-service.mock';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
@@ -45,7 +45,7 @@ describe('PrivacyPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PrivacyPageComponent],
       providers: [
-        { provide: UserDataExportResourceApiService, useValue: serviceMocks },
+        { provide: UserDataExportResourceApi, useValue: serviceMocks },
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(mockToast),
         provideTranslateMock(),

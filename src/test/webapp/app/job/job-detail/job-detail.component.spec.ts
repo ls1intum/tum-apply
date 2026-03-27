@@ -8,19 +8,19 @@ import { TranslateService } from '@ngx-translate/core';
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
 import { JhiMenuItem } from 'app/shared/components/atoms/menu/menu.component';
 import { User } from 'app/core/auth/account.service';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { JobDetailDTO } from 'app/generated/models/job-detail-dto';
+import { JobFormDTO, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 import { signal } from '@angular/core';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
+import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -65,10 +65,10 @@ describe('JobDetailComponent', () => {
       imports: [JobDetailComponent],
       providers: [
         { provide: Location, useValue: location },
-        { provide: JobResourceApiService, useValue: jobService },
-        { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+        { provide: JobResourceApi, useValue: jobService },
+        { provide: ResearchGroupResourceApi, useValue: researchGroupService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
-        { provide: PdfExportResourceApiService, useValue: pdfExportService },
+        { provide: PdfExportResourceApi, useValue: pdfExportService },
         provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
         provideAccountServiceMock(mockAccountService),
@@ -302,8 +302,8 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: JobResourceApiService, useValue: jobService },
-          { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+          { provide: JobResourceApi, useValue: jobService },
+          { provide: ResearchGroupResourceApi, useValue: researchGroupService },
           { provide: ActivatedRoute, useValue: invalidRoute },
           provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
@@ -444,7 +444,7 @@ describe('JobDetailComponent', () => {
   it('should trigger onEditApplication from computed button', () => {
     const job = {
       belongsToResearchGroup: false,
-      applicationState: ApplicationForApplicantDTO.ApplicationStateEnum.Saved,
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onEditApplication');
@@ -456,7 +456,7 @@ describe('JobDetailComponent', () => {
   it('should trigger onViewApplication from computed button', () => {
     const job = {
       belongsToResearchGroup: false,
-      applicationState: ApplicationForApplicantDTO.ApplicationStateEnum.Sent,
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Sent,
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onViewApplication');
@@ -585,8 +585,8 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: JobResourceApiService, useValue: jobService },
-          { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+          { provide: JobResourceApi, useValue: jobService },
+          { provide: ResearchGroupResourceApi, useValue: researchGroupService },
           { provide: ActivatedRoute, useValue: routeNoJobId },
           provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
@@ -647,7 +647,7 @@ describe('JobDetailComponent', () => {
       title: 'Form Job',
       jobDescriptionEN: 'Some description',
       jobDescriptionDE: 'Some description',
-      subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
+      subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',
@@ -670,7 +670,7 @@ describe('JobDetailComponent', () => {
 
     const form: JobFormDTO = {
       title: 'Form Job',
-      subjectArea: JobFormDTO.SubjectAreaEnum.ComputerScience,
+      subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
       location: 'GARCHING',
       state: 'CLOSED',

@@ -5,9 +5,9 @@ import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
-import { InterviewResourceApiService } from 'app/generated';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { ConflictDataDTO } from 'app/generated/model/conflictDataDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
+import { ConflictDataDTO } from 'app/generated/models/conflict-data-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -15,7 +15,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 describe('SlotCreationFormComponent', () => {
   let fixture: ComponentFixture<SlotCreationFormComponent>;
   let component: SlotCreationFormComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
   let toastMock: ToastServiceMock;
 
   const conflictData: ConflictDataDTO = {
@@ -36,7 +36,7 @@ describe('SlotCreationFormComponent', () => {
         provideTranslateMock(),
         provideToastServiceMock(toastMock),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from '../../../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from '../../../../../util/router.mock';
@@ -63,7 +63,7 @@ describe('SidebarComponent', () => {
     });
 
     it('should return categories for APPLICANT role', () => {
-      accountService.user.set({ authorities: [UserShortDTO.RolesEnum.Applicant] } as User);
+      accountService.user.set({ authorities: [UserShortDTORolesEnum.Applicant] } as User);
       fixture.detectChanges();
       expect(component.categories).toHaveLength(2);
       expect(component.categories?.[0].title).toBe('sidebar.dashboard.dashboard');
@@ -71,7 +71,7 @@ describe('SidebarComponent', () => {
     });
 
     it('should return categories for PROFESSOR role', () => {
-      accountService.user.set({ authorities: [UserShortDTO.RolesEnum.Professor] } as User);
+      accountService.user.set({ authorities: [UserShortDTORolesEnum.Professor] } as User);
       fixture.detectChanges();
       expect(component.categories).toHaveLength(3);
     });

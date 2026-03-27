@@ -5,7 +5,7 @@ import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { provideNoopAnimations } from '@angular/platform-browser/animations'; // DialogModule of PrimeNG still uses legacy animations (@animation.start)
 import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
 
 describe('ReviewDialogComponent', () => {
   let fixture: ComponentFixture<ReviewDialogComponent>;

@@ -1,15 +1,15 @@
 import { computed, signal, WritableSignal } from '@angular/core';
 import { vi } from 'vitest';
 import { AccountService, User } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTO, UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 export type AccountServiceMock = Pick<
   AccountService,
   'user' | 'loadedUser' | 'signedIn' | 'loaded' | 'hasAnyAuthority' | 'userId' | 'userAuthorities'
 > & {
   loadUser: ReturnType<typeof vi.fn>;
-  authorities: UserShortDTO.RolesEnum[];
-  setAuthorities: (roles: UserShortDTO.RolesEnum[]) => void;
+  authorities: UserShortDTORolesEnum[];
+  setAuthorities: (roles: UserShortDTORolesEnum[]) => void;
   updateUser: ReturnType<typeof vi.fn>;
   updatePassword: ReturnType<typeof vi.fn>;
 };
@@ -24,7 +24,7 @@ export let defaultUser: User = {
 export function createAccountServiceMock(signedIn?: boolean, loaded?: boolean): AccountServiceMock {
   const userLocal: WritableSignal<User | undefined> = signal(defaultUser);
 
-  const normalizeRole = (role: string | UserShortDTO.RolesEnum): string => role.toString().toUpperCase();
+  const normalizeRole = (role: string | UserShortDTORolesEnum): string => role.toString().toUpperCase();
 
   const mock: AccountServiceMock = {
     user: userLocal,
@@ -41,7 +41,7 @@ export function createAccountServiceMock(signedIn?: boolean, loaded?: boolean): 
       return normalizedRequested.some(role => normalizedAuthorities.includes(role));
     },
     loadUser: vi.fn(),
-    setAuthorities: (roles: UserShortDTO.RolesEnum[]) => {
+    setAuthorities: (roles: UserShortDTORolesEnum[]) => {
       mock.authorities = roles;
     },
     updateUser: vi.fn().mockResolvedValue(undefined),

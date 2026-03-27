@@ -7,11 +7,11 @@ import {
   ImageUploadConfig,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
-import { ImageDTO } from 'app/generated/model/imageDTO';
+import { ImageDTO } from 'app/generated/models/image-dto';
 
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { createImageResourceApiServiceMock, provideImageResourceApiServiceMock } from '../../../../../util/image-resource-api.service.mock';
+import { createImageResourceApiMock, provideImageResourceApiMock } from '../../../../../util/image-resource-api.service.mock';
 
 // Helper functions
 function createMockFile(name: string, type: string, size: number): File {
@@ -53,7 +53,7 @@ describe('ImageUploadButtonComponent', () => {
 
   let component: ImageUploadButtonComponent;
   let fixture: ComponentFixture<ImageUploadButtonComponent>;
-  let mockImageService: ReturnType<typeof createImageResourceApiServiceMock>;
+  let mockImageService: ReturnType<typeof createImageResourceApiMock>;
 
   // Common test files
   let validJpegFile: File;
@@ -61,11 +61,11 @@ describe('ImageUploadButtonComponent', () => {
   let svgFile: File;
 
   beforeEach(async () => {
-    mockImageService = createImageResourceApiServiceMock();
+    mockImageService = createImageResourceApiMock();
 
     await TestBed.configureTestingModule({
       imports: [ImageUploadButtonComponent],
-      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideImageResourceApiServiceMock(mockImageService)],
+      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideImageResourceApiMock(mockImageService)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ImageUploadButtonComponent);

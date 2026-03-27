@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { of } from 'rxjs';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { DocumentHolder } from 'app/shared/components/organisms/document-section/document-section';
 import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
 import { provideTranslateMock } from '../../../../util/translate.mock';
-import { DocumentResourceApiService } from 'app/generated/api/documentResourceApi.service';
+import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 
 function createDocument(id: string, name: string, size = 123): DocumentInformationHolderDTO {
   return { id, name, size };
@@ -33,7 +33,7 @@ describe('DocumentDialog', () => {
       providers: [
         provideTranslateMock(),
         {
-          provide: DocumentResourceApiService,
+          provide: DocumentResourceApi,
           useValue: { downloadDocument: () => of(new ArrayBuffer(0)) },
         },
       ],

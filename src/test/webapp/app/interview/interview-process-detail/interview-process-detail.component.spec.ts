@@ -5,8 +5,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { InterviewProcessDetailComponent } from 'app/interview/interview-process-detail/interview-process-detail.component';
-import { InterviewResourceApiService, EmailTemplateResourceApiService, ApplicationEvaluationResourceApiService } from 'app/generated';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { InterviewOverviewDTO } from 'app/generated/models/interview-overview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock } from 'util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock, ActivatedRouteMock } from 'util/activated-route.mock';
@@ -17,7 +19,7 @@ import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';
 describe('InterviewProcessDetailComponent', () => {
   let fixture: ComponentFixture<InterviewProcessDetailComponent>;
   let component: InterviewProcessDetailComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
   let toastMock: ToastServiceMock;
   let activatedRouteMock: ActivatedRouteMock;
 
@@ -58,10 +60,10 @@ describe('InterviewProcessDetailComponent', () => {
         provideToastServiceMock(toastMock),
         provideFontAwesomeTesting(),
         provideBreakpointObserverMock(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
-        { provide: EmailTemplateResourceApiService, useValue: { getTemplates: vi.fn().mockReturnValue(of({ content: [] })) } },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
+        { provide: EmailTemplateResourceApi, useValue: { getTemplates: vi.fn().mockReturnValue(of({ content: [] })) } },
         {
-          provide: ApplicationEvaluationResourceApiService,
+          provide: ApplicationEvaluationResourceApi,
           useValue: { getApplicationsDetails: vi.fn().mockReturnValue(of({ applications: [], totalRecords: 0 })) },
         },
       ],

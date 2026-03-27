@@ -4,8 +4,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { IntervieweeAssessmentComponent } from 'app/interview/interviewee-assessment/interviewee-assessment.component';
-import { InterviewResourceApiService } from 'app/generated';
-import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { IntervieweeDetailDTO } from 'app/generated/models/interviewee-detail-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock, ActivatedRouteMock } from 'util/activated-route.mock';
@@ -61,7 +61,7 @@ const intervieweeWithoutOptionals: IntervieweeDetailDTO = {
 describe('IntervieweeAssessmentComponent', () => {
   let fixture: ComponentFixture<IntervieweeAssessmentComponent>;
   let component: IntervieweeAssessmentComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
   let toastMock: ToastServiceMock;
   let routerMock: RouterMock;
   let activatedRouteMock: ActivatedRouteMock;
@@ -80,7 +80,7 @@ describe('IntervieweeAssessmentComponent', () => {
         provideActivatedRouteMock(activatedRouteMock),
         provideToastServiceMock(toastMock),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

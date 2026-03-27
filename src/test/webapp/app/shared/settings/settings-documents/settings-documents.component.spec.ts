@@ -3,10 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, Subject, throwError } from 'rxjs';
 
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantDTO } from 'app/generated/models/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
-import { createApplicantResourceApiServiceMock, provideApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
+import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -19,7 +21,7 @@ describe('SettingsDocumentsComponent', () => {
     loadProfile(this: SettingsDocumentsComponent): Promise<void>;
   };
 
-  const createProfile = (): ApplicantDTO => ({
+  const createProfile = (): Mutable<ApplicantDTO> => ({
     user: {
       userId: 'user-1',
       firstName: 'Ada',
@@ -76,7 +78,7 @@ describe('SettingsDocumentsComponent', () => {
     }
   };
 
-  const applicantResourceApiServiceMock = createApplicantResourceApiServiceMock();
+  const applicantResourceApiServiceMock = createApplicantResourceApiMock();
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
   const translateServiceMock = createTranslateServiceMock();
@@ -103,7 +105,7 @@ describe('SettingsDocumentsComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       providers: [
-        provideApplicantResourceApiServiceMock(applicantResourceApiServiceMock),
+        provideApplicantResourceApiMock(applicantResourceApiServiceMock),
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(translateServiceMock),

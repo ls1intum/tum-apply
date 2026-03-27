@@ -3,10 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
-import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
 import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
 
@@ -26,7 +26,7 @@ describe('DocumentSection', () => {
     await TestBed.configureTestingModule({
       imports: [DocumentSection],
       providers: [
-        { provide: ApplicationEvaluationResourceApiService, useValue: mockApi },
+        { provide: ApplicationEvaluationResourceApi, useValue: mockApi },
         provideToastServiceMock(mockToast),
         provideTranslateMock(mockTranslate),
       ],

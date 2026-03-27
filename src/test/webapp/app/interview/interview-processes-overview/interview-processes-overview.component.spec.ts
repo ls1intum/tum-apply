@@ -5,9 +5,9 @@ import { of, throwError } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { InterviewProcessesOverviewComponent } from 'app/interview/interview-processes-overview/interview-processes-overview.component';
-import { InterviewResourceApiService } from 'app/generated';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
-import { UpcomingInterviewDTO } from 'app/generated/model/upcomingInterviewDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewOverviewDTO } from 'app/generated/models/interview-overview-dto';
+import { UpcomingInterviewDTO } from 'app/generated/models/upcoming-interview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';
@@ -41,7 +41,7 @@ const mockUpcomingInterview: UpcomingInterviewDTO = {
 describe('InterviewProcessesOverviewComponent', () => {
   let fixture: ComponentFixture<InterviewProcessesOverviewComponent>;
   let component: InterviewProcessesOverviewComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
   let routerMock: RouterMock;
 
   beforeEach(async () => {
@@ -59,7 +59,7 @@ describe('InterviewProcessesOverviewComponent', () => {
         provideRouterMock(routerMock),
         provideBreakpointObserverMock(),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

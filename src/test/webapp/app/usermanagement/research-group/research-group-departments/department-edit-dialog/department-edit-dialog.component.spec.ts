@@ -8,11 +8,11 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { createDepartmentResourceApiServiceMock, provideDepartmentResourceApiServiceMock } from 'util/department-resource-api.service.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createDepartmentResourceApiMock, provideDepartmentResourceApiMock } from 'util/department-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SchoolShortDTO } from 'app/generated/model/models';
+import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -21,8 +21,8 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 describe('DepartmentEditDialogComponent', () => {
   let component: DepartmentEditDialogComponent;
   let fixture: ComponentFixture<DepartmentEditDialogComponent>;
-  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiServiceMock>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiMock>;
+  let mockSchoolService: ReturnType<typeof createSchoolResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogRef: ReturnType<typeof createDynamicDialogRefMock>;
   let mockDialogConfig: ReturnType<typeof createDynamicDialogConfigMock>;
@@ -33,8 +33,8 @@ describe('DepartmentEditDialogComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockDepartmentService = createDepartmentResourceApiServiceMock();
-    mockSchoolService = createSchoolResourceApiServiceMock();
+    mockDepartmentService = createDepartmentResourceApiMock();
+    mockSchoolService = createSchoolResourceApiMock();
     mockSchoolService.getAllSchools.mockReturnValue(of(mockSchools));
     mockToastService = createToastServiceMock();
     mockDialogRef = createDynamicDialogRefMock();
@@ -43,8 +43,8 @@ describe('DepartmentEditDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DepartmentEditDialogComponent],
       providers: [
-        provideDepartmentResourceApiServiceMock(mockDepartmentService),
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideDepartmentResourceApiMock(mockDepartmentService),
+        provideSchoolResourceApiMock(mockSchoolService),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideToastServiceMock(mockToastService),

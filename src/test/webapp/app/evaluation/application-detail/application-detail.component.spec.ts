@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { convertToParamMap, Router } from '@angular/router';
 import { ApplicationDetailComponent } from 'app/evaluation/application-detail/application-detail.component';
-import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -67,8 +67,8 @@ describe('ApplicationDetailComponent', () => {
       imports: [ApplicationDetailComponent],
       providers: [
         provideRouterMock(),
-        { provide: ApplicationEvaluationResourceApiService, useValue: evaluationApi },
-        { provide: ApplicationResourceApiService, useValue: applicationApi },
+        { provide: ApplicationEvaluationResourceApi, useValue: evaluationApi },
+        { provide: ApplicationResourceApi, useValue: applicationApi },
         provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
         provideTranslateMock(),

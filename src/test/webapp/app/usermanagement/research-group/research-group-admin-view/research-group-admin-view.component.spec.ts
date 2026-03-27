@@ -5,9 +5,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupAdminView } from 'app/usermanagement/research-group/research-group-admin-view/research-group-admin-view.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
-import { PageResponseDTOResearchGroupAdminDTO } from 'app/generated/model/pageResponseDTOResearchGroupAdminDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/models/research-group-admin-dto';
+import { PageResponseDTOResearchGroupAdminDTO } from 'app/generated/models/page-response-dto-research-group-admin-dto';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -32,7 +32,7 @@ describe('ResearchGroupAdminView', () => {
   const mockResearchGroup1: ResearchGroupAdminDTO = {
     id: 'rg-1',
     professorName: 'Prof. Dr. Smith',
-    status: ResearchGroupAdminDTO.StatusEnum.Draft,
+    status: ResearchGroupAdminDTOStatusEnum.Draft,
     researchGroup: 'AI Research Lab',
     createdAt: '2024-01-01T00:00:00.000Z',
   };
@@ -40,7 +40,7 @@ describe('ResearchGroupAdminView', () => {
   const mockResearchGroup2: ResearchGroupAdminDTO = {
     id: 'rg-2',
     professorName: 'Prof. Dr. Jones',
-    status: ResearchGroupAdminDTO.StatusEnum.Active,
+    status: ResearchGroupAdminDTOStatusEnum.Active,
     researchGroup: 'ML Research Lab',
     createdAt: '2024-01-02T00:00:00.000Z',
   };
@@ -48,7 +48,7 @@ describe('ResearchGroupAdminView', () => {
   const mockResearchGroup3: ResearchGroupAdminDTO = {
     id: 'rg-3',
     professorName: 'Prof. Dr. Brown',
-    status: ResearchGroupAdminDTO.StatusEnum.Denied,
+    status: ResearchGroupAdminDTOStatusEnum.Denied,
     researchGroup: 'Data Science Lab',
     createdAt: '2024-01-03T00:00:00.000Z',
   };
@@ -75,7 +75,7 @@ describe('ResearchGroupAdminView', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupAdminView],
       providers: [
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
         provideDialogServiceMock(mockDialogService),
         provideTranslateMock(mockTranslateService),
         provideToastServiceMock(mockToastService),

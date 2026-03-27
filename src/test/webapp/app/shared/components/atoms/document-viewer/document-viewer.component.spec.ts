@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DocumentViewerComponent } from '../../../../../../../main/webapp/app/shared/components/atoms/document-viewer/document-viewer.component';
-import { DocumentResourceApiService } from 'app/generated/api/documentResourceApi.service';
+import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 import { DocumentCacheService } from 'app/service/document-cache.service';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
 import { of, throwError } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -16,7 +16,7 @@ const createMockDocumentInfo = (overrides?: Partial<DocumentInformationHolderDTO
 });
 
 describe('DocumentViewerComponent', () => {
-  let documentService: Pick<DocumentResourceApiService, 'downloadDocument'>;
+  let documentService: Pick<DocumentResourceApi, 'downloadDocument'>;
   let cacheService: Pick<DocumentCacheService, 'get' | 'set'>;
   let domSanitizer: Pick<DomSanitizer, 'bypassSecurityTrustResourceUrl'>;
   let fixture: ComponentFixture<DocumentViewerComponent>;
@@ -47,7 +47,7 @@ describe('DocumentViewerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DocumentViewerComponent],
       providers: [
-        { provide: DocumentResourceApiService, useValue: documentService },
+        { provide: DocumentResourceApi, useValue: documentService },
         { provide: DocumentCacheService, useValue: cacheService },
         { provide: DomSanitizer, useValue: domSanitizer },
         provideTranslateMock(),

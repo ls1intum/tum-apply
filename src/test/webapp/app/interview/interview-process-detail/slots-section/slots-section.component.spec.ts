@@ -4,8 +4,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { SlotsSectionComponent } from 'app/interview/interview-process-detail/slots-section/slots-section.component';
-import { InterviewResourceApiService, EmailTemplateResourceApiService } from 'app/generated';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';
@@ -39,8 +40,8 @@ const bookedFutureSlot: InterviewSlotDTO = {
 describe('SlotsSectionComponent', () => {
   let fixture: ComponentFixture<SlotsSectionComponent>;
   let component: SlotsSectionComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
-  let mockEmailTemplateService: Partial<EmailTemplateResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
+  let mockEmailTemplateService: Partial<EmailTemplateResourceApi>;
   let toastMock: ToastServiceMock;
 
   beforeEach(async () => {
@@ -62,8 +63,8 @@ describe('SlotsSectionComponent', () => {
         provideToastServiceMock(toastMock),
         provideBreakpointObserverMock(),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
-        { provide: EmailTemplateResourceApiService, useValue: mockEmailTemplateService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
+        { provide: EmailTemplateResourceApi, useValue: mockEmailTemplateService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

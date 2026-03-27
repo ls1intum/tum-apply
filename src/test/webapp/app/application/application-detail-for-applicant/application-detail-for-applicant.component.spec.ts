@@ -9,24 +9,24 @@ import { createToastServiceMock, ToastServiceMock, provideToastServiceMock } fro
 import { createRouterMock, RouterMock, provideRouterMock } from 'util/router.mock';
 import { createLocationMock, LocationMock, provideLocationMock } from 'util/location.mock';
 import {
-  createApplicationResourceApiServiceMock,
-  ApplicationResourceApiServiceMock,
-  provideApplicationResourceApiServiceMock,
+  createApplicationResourceApiMock,
+  ApplicationResourceApiMock,
+  provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
-import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { createPdfExportResourceApiServiceMock, providePdfExportResourceApiServiceMock } from 'util/pdf-export-resource-api.service.mock';
+import { ApplicationDetailDTO } from 'app/generated/models/application-detail-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+import { createPdfExportResourceApiMock, providePdfExportResourceApiMock } from 'util/pdf-export-resource-api.service.mock';
 
-function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiServiceMock>) {
-  const applicationService: ApplicationResourceApiServiceMock = {
-    ...createApplicationResourceApiServiceMock(),
+function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiMock>) {
+  const applicationService: ApplicationResourceApiMock = {
+    ...createApplicationResourceApiMock(),
     ...(appServiceOverrides ?? {}),
   };
 
   const routeMock = createActivatedRouteMock(paramId ? { application_id: paramId } : {});
   const translate: TranslateServiceMock = createTranslateServiceMock();
-  const pdfExportService = createPdfExportResourceApiServiceMock();
+  const pdfExportService = createPdfExportResourceApiMock();
   const toast: ToastServiceMock = createToastServiceMock();
   const router: RouterMock = createRouterMock();
   const location: LocationMock = createLocationMock();
@@ -34,8 +34,8 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
   TestBed.configureTestingModule({
     providers: [
       provideActivatedRouteMock(routeMock),
-      provideApplicationResourceApiServiceMock(applicationService),
-      providePdfExportResourceApiServiceMock(pdfExportService),
+      provideApplicationResourceApiMock(applicationService),
+      providePdfExportResourceApiMock(pdfExportService),
       provideTranslateMock(translate),
       provideToastServiceMock(toast),
       provideRouterMock(router),
@@ -83,7 +83,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const appData = { jobId: 'JOB123', id: 'APP1' };
     const docIds = { transcriptId: 'D1' };
     let component: ApplicationDetailForApplicantComponent;
-    let applicationService: ApplicationResourceApiServiceMock;
+    let applicationService: ApplicationResourceApiMock;
     let toast: ToastServiceMock;
 
     beforeEach(async () => {

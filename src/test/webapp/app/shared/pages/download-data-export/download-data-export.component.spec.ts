@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { UserDataExportResourceApiService } from 'app/generated';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 import { DownloadDataExportComponent } from 'app/shared/pages/download-data-export/download-data-export.component';
 import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
@@ -29,7 +29,7 @@ describe('DownloadDataExportComponent', () => {
       imports: [DownloadDataExportComponent],
       providers: [
         provideActivatedRouteMock(routeMock),
-        { provide: UserDataExportResourceApiService, useValue: exportServiceMock },
+        { provide: UserDataExportResourceApi, useValue: exportServiceMock },
         provideToastServiceMock(toastServiceMock),
         provideFontAwesomeTesting(),
         provideTranslateMock(),

@@ -5,12 +5,12 @@ import { UrlSegment } from '@angular/router';
 import { signal, TemplateRef } from '@angular/core';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { User } from 'app/core/auth/account.service';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
-import { JobDTO } from 'app/generated/model/jobDTO';
-import { ImageDTO } from 'app/generated/model/imageDTO';
+import { JobFormDTO, JobFormDTOSubjectAreaEnum, JobFormDTOStateEnum } from 'app/generated/models/job-form-dto';
+import { JobDTO } from 'app/generated/models/job-dto';
+import { ImageDTO } from 'app/generated/models/image-dto';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { unescapeJsonString } from 'app/shared/util/util';
 
@@ -21,12 +21,12 @@ import { createToastServiceMock, provideToastServiceMock } from '../../../util/t
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createLocationMock, provideLocationMock } from '../../../util/location.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
-import { createJobResourceApiServiceMock, provideJobResourceApiServiceMock } from '../../../util/job-resource-api.service.mock';
-import { createImageResourceApiServiceMock, provideImageResourceApiServiceMock } from '../../../util/image-resource-api.service.mock';
+import { createJobResourceApiMock, provideJobResourceApiMock } from '../../../util/job-resource-api.service.mock';
+import { createImageResourceApiMock, provideImageResourceApiMock } from '../../../util/image-resource-api.service.mock';
 import { createAiStreamingServiceMock, provideAiStreamingServiceMock } from '../../../util/ai-streaming.service.mock';
 import {
-  createResearchGroupResourceApiServiceMock,
-  provideResearchGroupResourceApiServiceMock,
+  createResearchGroupResourceApiMock,
+  provideResearchGroupResourceApiMock,
 } from '../../../util/research-group-resource-api.service.mock';
 
 interface Step {
@@ -41,7 +41,7 @@ function fillValidJobForm(component: JobCreationFormComponent) {
   component.basicInfoForm.patchValue({
     title: 'T',
     researchArea: 'AI',
-    subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
+    subjectArea: { value: JobFormDTOSubjectAreaEnum.ComputerScience },
     location: { value: 'MUNICH' },
     supervisingProfessor: 'Prof',
     jobDescription: '<p>This is a job description.</p>', // Muss im Form gesetzt werden
@@ -84,7 +84,7 @@ type ComponentPrivate = {
   autoSaveTimer?: number;
   autoSaveInitialized: boolean;
   populateForm: (job?: JobDTO) => void;
-  createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
+  createJobDTO: (state?: JobFormDTOStateEnum) => JobFormDTO;
   buildStepData: () => Step[];
   findDropdownOption: (arr: { value: string }[], val: string) => unknown;
   sendPublishDialog: () => { confirm: () => void };
@@ -105,23 +105,23 @@ function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
 describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
-  let mockJobService: ReturnType<typeof createJobResourceApiServiceMock>;
-  let mockImageService: ReturnType<typeof createImageResourceApiServiceMock>;
+  let mockJobService: ReturnType<typeof createJobResourceApiMock>;
+  let mockImageService: ReturnType<typeof createImageResourceApiMock>;
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockRouter: ReturnType<typeof createRouterMock>;
   let mockLocation: ReturnType<typeof createLocationMock>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
   let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
-  let mockResearchGroupService: ReturnType<typeof createResearchGroupResourceApiServiceMock>;
+  let mockResearchGroupService: ReturnType<typeof createResearchGroupResourceApiMock>;
 
   beforeEach(async () => {
-    mockJobService = createJobResourceApiServiceMock();
+    mockJobService = createJobResourceApiMock();
     mockJobService.getJobById.mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' }));
     mockJobService.createJob.mockReturnValue(of({ jobId: 'new123' }));
     mockJobService.updateJob.mockReturnValue(of({}));
 
-    mockImageService = createImageResourceApiServiceMock();
+    mockImageService = createImageResourceApiMock();
     mockImageService.getMyDefaultJobBanners.mockReturnValue(of([]));
     mockImageService.getDefaultJobBanners.mockReturnValue(of([]));
     mockImageService.getResearchGroupJobBanners.mockReturnValue(of([]));
@@ -142,14 +142,14 @@ describe('JobCreationFormComponent', () => {
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
     mockAiStreamingService = createAiStreamingServiceMock();
     mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
-    mockResearchGroupService = createResearchGroupResourceApiServiceMock();
+    mockResearchGroupService = createResearchGroupResourceApiMock();
     mockResearchGroupService.getResearchGroupProfessors.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
       providers: [
-        provideJobResourceApiServiceMock(mockJobService),
-        provideImageResourceApiServiceMock(mockImageService),
+        provideJobResourceApiMock(mockJobService),
+        provideImageResourceApiMock(mockImageService),
         provideLocationMock(mockLocation),
         provideActivatedRouteMock(mockActivatedRoute),
         provideAccountServiceMock(mockAccountService),
@@ -158,11 +158,11 @@ describe('JobCreationFormComponent', () => {
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideAiStreamingServiceMock(mockAiStreamingService),
-        provideResearchGroupResourceApiServiceMock(mockResearchGroupService),
+        provideResearchGroupResourceApiMock(mockResearchGroupService),
       ],
     })
       .overrideComponent(JobCreationFormComponent, {
-        remove: { providers: [JobResourceApiService, ImageResourceApiService] },
+        remove: { providers: [JobResourceApi, ImageResourceApi] },
       })
       .compileComponents();
 
@@ -639,7 +639,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({
         title: 'My Job',
         researchArea: 'AI Research',
-        subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
+        subjectArea: { value: JobFormDTOSubjectAreaEnum.ComputerScience },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescription: 'Some description',
@@ -702,7 +702,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({
         title: 'Test',
         researchArea: 'Area',
-        subjectArea: { value: JobFormDTO.SubjectAreaEnum.ComputerScience },
+        subjectArea: { value: JobFormDTOSubjectAreaEnum.ComputerScience },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
         jobDescription: '<p>Description</p>', // HTML-Inhalt für den Validator

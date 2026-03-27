@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ApplicationCardComponent } from 'app/shared/components/molecules/application-card/application-card.component';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
+import { ApplicationDetailDTO } from 'app/generated/models/application-detail-dto';
 import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
 import { provideThemeServiceMock } from '../../../../../util/theme.service.mock';

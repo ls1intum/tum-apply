@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { DepartmentImages } from 'app/usermanagement/research-group/research-group-departments/department-images/department-images.component';
-import { ImageDTO } from 'app/generated/model/imageDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ImageDTO } from 'app/generated/models/image-dto';
+import { DepartmentDTO } from 'app/generated/models/department-dto';
 import { ImageUploadError } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
-import { provideDepartmentResourceApiServiceMock, createDepartmentResourceApiServiceMock } from 'util/department-resource-api.service.mock';
-import { provideImageResourceApiServiceMock, createImageResourceApiServiceMock } from 'util/image-resource-api.service.mock';
+import { provideDepartmentResourceApiMock, createDepartmentResourceApiMock } from 'util/department-resource-api.service.mock';
+import { provideImageResourceApiMock, createImageResourceApiMock } from 'util/image-resource-api.service.mock';
 import { provideActivatedRouteMock, createActivatedRouteMock } from 'util/activated-route.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
@@ -17,8 +17,8 @@ const createFile = () => new File(['content'], 'banner.png', { type: 'image/png'
 describe('DepartmentImages', () => {
   let component: DepartmentImages;
   let fixture: ComponentFixture<DepartmentImages>;
-  let mockImageService: ReturnType<typeof createImageResourceApiServiceMock>;
-  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiServiceMock>;
+  let mockImageService: ReturnType<typeof createImageResourceApiMock>;
+  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let routeMock: ReturnType<typeof createActivatedRouteMock>;
 
@@ -38,12 +38,12 @@ describe('DepartmentImages', () => {
   };
 
   beforeEach(async () => {
-    mockImageService = createImageResourceApiServiceMock();
+    mockImageService = createImageResourceApiMock();
     mockImageService.getDefaultJobBanners.mockReturnValue(of([]));
     mockImageService.uploadDefaultJobBanner.mockReturnValue(of(imageNotInUse));
     mockImageService.deleteImage.mockReturnValue(of({}));
 
-    mockDepartmentService = createDepartmentResourceApiServiceMock();
+    mockDepartmentService = createDepartmentResourceApiMock();
     mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
 
     mockToastService = createToastServiceMock();
@@ -52,8 +52,8 @@ describe('DepartmentImages', () => {
     await TestBed.configureTestingModule({
       imports: [DepartmentImages],
       providers: [
-        provideImageResourceApiServiceMock(mockImageService),
-        provideDepartmentResourceApiServiceMock(mockDepartmentService),
+        provideImageResourceApiMock(mockImageService),
+        provideDepartmentResourceApiMock(mockDepartmentService),
         provideToastServiceMock(mockToastService),
         provideActivatedRouteMock(routeMock),
         provideTranslateMock(),

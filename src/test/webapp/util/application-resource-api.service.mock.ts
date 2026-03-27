@@ -1,11 +1,11 @@
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTO, ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 import { of } from 'rxjs';
-import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
+import { ApplicationOverviewDTO } from 'app/generated/models/application-overview-dto';
 
-export type ApplicationResourceApiServiceMock = {
+export type ApplicationResourceApiMock = {
   createApplication: ReturnType<typeof vi.fn>;
   getApplicationById: ReturnType<typeof vi.fn>;
   getApplicationForDetailPage: ReturnType<typeof vi.fn>;
@@ -20,7 +20,7 @@ export type ApplicationResourceApiServiceMock = {
 };
 
 export const createMockApplicationDTO = (
-  applicationState: ApplicationForApplicantDTO.ApplicationStateEnum,
+  applicationState: ApplicationForApplicantDTOApplicationStateEnum,
 ): ApplicationForApplicantDTO => ({
   applicationState: applicationState,
   applicationId: '456',
@@ -53,11 +53,11 @@ export const createMockApplicationOverviewPages = () => [
   createMockApplicationOverview({ applicationId: '2' }),
 ];
 
-export function createApplicationResourceApiServiceMock(): ApplicationResourceApiServiceMock {
+export function createApplicationResourceApiMock(): ApplicationResourceApiMock {
   const mockApplicationOverviewPages = createMockApplicationOverviewPages();
   return {
-    createApplication: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
-    getApplicationById: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
+    createApplication: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved))),
+    getApplicationById: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved))),
     getApplicationForDetailPage: vi.fn().mockReturnValue(of({})),
     updateApplication: vi.fn().mockReturnValue(of({})),
     withdrawApplication: vi.fn().mockReturnValue(of({})),
@@ -70,8 +70,8 @@ export function createApplicationResourceApiServiceMock(): ApplicationResourceAp
   };
 }
 
-export function provideApplicationResourceApiServiceMock(
-  mock: ApplicationResourceApiServiceMock = createApplicationResourceApiServiceMock(),
+export function provideApplicationResourceApiMock(
+  mock: ApplicationResourceApiMock = createApplicationResourceApiMock(),
 ): Provider {
-  return { provide: ApplicationResourceApiService, useValue: mock };
+  return { provide: ApplicationResourceApi, useValue: mock };
 }

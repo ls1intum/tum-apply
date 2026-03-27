@@ -4,8 +4,8 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { convertToParamMap, Params, Router } from '@angular/router';
 
 import { ApplicationOverviewComponent } from 'app/evaluation/application-overview/application-overview.component';
-import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
-import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/applicationEvaluationOverviewDTO';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { ApplicationEvaluationOverviewDTO } from 'app/generated/models/application-evaluation-overview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
@@ -13,7 +13,7 @@ import { provideToastServiceMock } from '../../../util/toast-service.mock';
 import { provideRouterMock } from '../../../util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
-type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApiService['getApplicationsOverviews']>;
+type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApi['getApplicationsOverviews']>;
 
 function makeOverview(id: string, partial?: Partial<ApplicationEvaluationOverviewDTO>): ApplicationEvaluationOverviewDTO {
   return {
@@ -54,7 +54,7 @@ describe('ApplicationOverviewComponent', () => {
       imports: [ApplicationOverviewComponent],
       providers: [
         provideRouterMock(),
-        { provide: ApplicationEvaluationResourceApiService, useValue: api },
+        { provide: ApplicationEvaluationResourceApi, useValue: api },
         provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
         provideTranslateMock(),

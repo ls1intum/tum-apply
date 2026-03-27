@@ -4,22 +4,22 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { ResearchGroupInfoComponent } from 'app/usermanagement/research-group/research-group-info/research-group-info.component';
 import { User } from 'app/core/auth/account.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideAccountServiceMock, createAccountServiceMock, AccountServiceMock } from 'util/account.service.mock';
 import {
-  provideResearchGroupResourceApiServiceMock,
-  createResearchGroupResourceApiServiceMock,
-  ResearchGroupResourceApiServiceMock,
+  provideResearchGroupResourceApiMock,
+  createResearchGroupResourceApiMock,
+  ResearchGroupResourceApiMock,
 } from 'util/research-group-resource-api.service.mock';
 import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ResearchGroupInfoComponent', () => {
   let component: ResearchGroupInfoComponent;
   let fixture: ComponentFixture<ResearchGroupInfoComponent>;
-  let mockResearchGroupService: ResearchGroupResourceApiServiceMock;
+  let mockResearchGroupService: ResearchGroupResourceApiMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockAccountService: AccountServiceMock;
 
@@ -46,7 +46,7 @@ describe('ResearchGroupInfoComponent', () => {
   };
 
   beforeEach(async () => {
-    mockResearchGroupService = createResearchGroupResourceApiServiceMock();
+    mockResearchGroupService = createResearchGroupResourceApiMock();
 
     mockToastService = createToastServiceMock();
 
@@ -57,7 +57,7 @@ describe('ResearchGroupInfoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupInfoComponent],
       providers: [
-        provideResearchGroupResourceApiServiceMock(mockResearchGroupService),
+        provideResearchGroupResourceApiMock(mockResearchGroupService),
         provideAccountServiceMock(mockAccountService),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),

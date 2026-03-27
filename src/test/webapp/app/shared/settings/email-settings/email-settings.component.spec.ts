@@ -2,13 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 import { EmailSettingsComponent, NotificationGroup } from 'app/shared/settings/email-settings/email-settings.component';
-import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
+import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { EmailSetting } from 'app/generated/model/emailSetting';
-import RolesEnum = UserShortDTO.RolesEnum;
-import EmailTypeEnum = EmailSetting.EmailTypeEnum;
+import { EmailSetting, EmailSettingEmailTypeEnum } from 'app/generated/models/email-setting';
+
+const RolesEnum = UserShortDTORolesEnum;
+const EmailTypeEnum = EmailSettingEmailTypeEnum;
 
 describe('EmailSettingsComponent', () => {
   let fixture: ComponentFixture<EmailSettingsComponent>;
@@ -25,7 +26,7 @@ describe('EmailSettingsComponent', () => {
     TestBed.configureTestingModule({
       imports: [EmailSettingsComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
+        { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
         provideToastServiceMock(toastServiceMock),
       ],
     });

@@ -3,13 +3,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { JobCardListComponent } from 'app/job/job-overview/job-card-list/job-card-list.component';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import * as DropdownOptions from 'app/job/dropdown-options';
-import { Job } from 'app/generated/model/job';
-import LocationEnum = Job.LocationEnum;
+import { JobLocationEnum } from 'app/generated/models/job';
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
@@ -40,7 +39,7 @@ describe('JobCardListComponent', () => {
               jobId: '1',
               title: 'Test Job',
               professorName: 'Prof. Y',
-              location: LocationEnum.Munich,
+              location: JobLocationEnum.Munich,
             },
           ],
           totalElements: 1,
@@ -51,7 +50,7 @@ describe('JobCardListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [JobCardListComponent],
       providers: [
-        { provide: JobResourceApiService, useValue: jobService },
+        { provide: JobResourceApi, useValue: jobService },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideToastServiceMock(mockToastService),
@@ -249,14 +248,14 @@ describe('JobCardListComponent', () => {
         jobId: '1',
         title: 'A',
         professorName: 'P1',
-        location: LocationEnum.Heilbronn,
+        location: JobLocationEnum.Heilbronn,
         subjectArea: DropdownOptions.subjectAreas[0].value,
       },
       {
         jobId: '2',
         title: 'B',
         professorName: 'P2',
-        location: LocationEnum.Heilbronn,
+        location: JobLocationEnum.Heilbronn,
         subjectArea: DropdownOptions.subjectAreas[0].value,
       },
     ]);
@@ -272,7 +271,7 @@ describe('JobCardListComponent', () => {
         jobId: '1',
         title: 'A',
         professorName: 'P1',
-        location: LocationEnum.Heilbronn,
+        location: JobLocationEnum.Heilbronn,
         subjectArea: DropdownOptions.subjectAreas[0].value,
         applicationState: undefined,
       },
@@ -291,7 +290,7 @@ describe('JobCardListComponent', () => {
         jobId: '1',
         title: 'A',
         professorName: 'P1',
-        location: LocationEnum.Garching,
+        location: JobLocationEnum.Garching,
         subjectArea: DropdownOptions.subjectAreas[0].value,
         relativeTimeEnglish: '2 days ago',
         relativeTimeGerman: 'vor 2 Tagen',

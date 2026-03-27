@@ -10,7 +10,7 @@ import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 describe('ProfessorHeroSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorHeroSectionComponent>;
@@ -79,7 +79,7 @@ describe('ProfessorHeroSectionComponent', () => {
       beforeEach(async () => {
         authFacadeServiceMock = createAuthFacadeServiceMock();
         accountServiceMock = createAccountServiceMock(true);
-        accountServiceMock.setAuthorities([UserShortDTO.RolesEnum.Professor]);
+        accountServiceMock.setAuthorities([UserShortDTORolesEnum.Professor]);
         routerMock = createRouterMock();
         dialogServiceMock = createDialogServiceMock();
 
@@ -112,7 +112,7 @@ describe('ProfessorHeroSectionComponent', () => {
       beforeEach(async () => {
         authFacadeServiceMock = createAuthFacadeServiceMock();
         accountServiceMock = createAccountServiceMock(true);
-        accountServiceMock.setAuthorities([UserShortDTO.RolesEnum.Employee]);
+        accountServiceMock.setAuthorities([UserShortDTORolesEnum.Employee]);
         routerMock = createRouterMock();
         dialogServiceMock = createDialogServiceMock();
 

@@ -4,8 +4,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
-import { InterviewResourceApiService, ApplicationEvaluationResourceApiService } from 'app/generated';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -42,8 +43,8 @@ const allInterviewees = [uncontactedInterviewee, invitedInterviewee, scheduledIn
 describe('IntervieweeSectionComponent', () => {
   let fixture: ComponentFixture<IntervieweeSectionComponent>;
   let component: IntervieweeSectionComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
-  let mockApplicationService: Partial<ApplicationEvaluationResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
+  let mockApplicationService: Partial<ApplicationEvaluationResourceApi>;
   let toastMock: ToastServiceMock;
 
   beforeEach(async () => {
@@ -64,8 +65,8 @@ describe('IntervieweeSectionComponent', () => {
         provideTranslateMock(),
         provideToastServiceMock(toastMock),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
-        { provide: ApplicationEvaluationResourceApiService, useValue: mockApplicationService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
+        { provide: ApplicationEvaluationResourceApi, useValue: mockApplicationService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

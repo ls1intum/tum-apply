@@ -4,12 +4,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import { ApplicantDTO } from 'app/generated/models/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
-import { createApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
+import { createApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
@@ -17,7 +19,7 @@ import { createDialogServiceMock, provideDialogServiceMock } from '../../../util
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('Profile save isolation', () => {
-  const baseProfile: ApplicantDTO = {
+  const baseProfile: Mutable<ApplicantDTO> = {
     user: {
       userId: 'user-1',
       firstName: 'Ada',
@@ -46,14 +48,14 @@ describe('Profile save isolation', () => {
     masterGradeLowerLimit: '4.0',
   };
 
-  const baseDocumentIds: ApplicationDocumentIdsDTO = {
+  const baseDocumentIds: Mutable<ApplicationDocumentIdsDTO> = {
     bachelorDocumentDictionaryIds: [{ id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 }],
     masterDocumentDictionaryIds: [{ id: 'master-doc-1', name: 'master.pdf', size: 100 }],
     cvDocumentDictionaryId: { id: 'cv-doc-1', name: 'cv.pdf', size: 100 },
     referenceDocumentDictionaryIds: [{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }],
   };
 
-  const applicationResourceServiceMock = createApplicantResourceApiServiceMock();
+  const applicationResourceServiceMock = createApplicantResourceApiMock();
 
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
@@ -61,7 +63,7 @@ describe('Profile save isolation', () => {
   const httpClientMock = {
     post: vi.fn(),
   };
-  const cloneValue = <T>(value: T): T => structuredClone(value);
+  const cloneValue = <T>(value: T): Mutable<T> => structuredClone(value) as Mutable<T>;
   const createDocumentsComponent = async (): Promise<SettingsDocumentsComponent> => {
     const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
     await component['loadProfile']();
@@ -83,7 +85,7 @@ describe('Profile save isolation', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, TranslateModule.forRoot()],
       providers: [
-        { provide: ApplicantResourceApiService, useValue: applicationResourceServiceMock },
+        { provide: ApplicantResourceApi, useValue: applicationResourceServiceMock },
         { provide: HttpClient, useValue: httpClientMock },
         provideDialogServiceMock(dialogServiceMock),
         provideAccountServiceMock(accountServiceMock),
@@ -276,7 +278,7 @@ describe('Profile save isolation', () => {
       throw new Error('Expected initial CV document');
     }
 
-    cvDocuments[0].name = 'cv-renamed.pdf';
+    (cvDocuments[0] as Mutable<typeof cvDocuments[0]>).name = 'cv-renamed.pdf';
 
     await documentsComponent.saveAll();
 

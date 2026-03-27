@@ -1,7 +1,7 @@
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisResponse } from 'app/generated/models/gender-bias-analysis-response';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 
 export type GenderBiasAnalysisServiceMock = Pick<GenderBiasAnalysisService, 'triggerAnalysis' | 'getAnalysisForField'>;

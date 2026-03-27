@@ -6,14 +6,14 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { MyPositionsPageComponent } from 'app/job/my-positions/my-positions-page.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { CreatedJobDTO } from 'app/generated/model/createdJobDTO';
-import { PageCreatedJobDTO } from 'app/generated/model/pageCreatedJobDTO';
+import { CreatedJobDTO } from 'app/generated/models/created-job-dto';
+import { PageCreatedJobDTO } from 'app/generated/models/page-created-job-dto';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import {
-  createJobResourceApiServiceMock,
-  JobResourceApiServiceMock,
-  provideJobResourceApiServiceMock,
+  createJobResourceApiMock,
+  JobResourceApiMock,
+  provideJobResourceApiMock,
 } from 'src/test/webapp/util/job-resource-api.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
@@ -24,12 +24,12 @@ describe('MyPositionsPageComponent', () => {
   let accountService: Mocked<AccountService>;
   let router: Mocked<Router>;
 
-  let mockJobService: JobResourceApiServiceMock;
+  let mockJobService: JobResourceApiMock;
 
   let mockToastService: ReturnType<typeof createToastServiceMock>;
 
   beforeEach(async () => {
-    mockJobService = createJobResourceApiServiceMock();
+    mockJobService = createJobResourceApiMock();
     mockJobService.getJobsForCurrentResearchGroup.mockReturnValue(
       of<PageCreatedJobDTO>({
         content: [{ jobId: '1', title: 'Job A', state: 'DRAFT' } as CreatedJobDTO],
@@ -53,7 +53,7 @@ describe('MyPositionsPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MyPositionsPageComponent, TranslateModule.forRoot()],
       providers: [
-        provideJobResourceApiServiceMock(mockJobService),
+        provideJobResourceApiMock(mockJobService),
         { provide: AccountService, useValue: accountService },
         { provide: Router, useValue: router },
         provideToastServiceMock(mockToastService),

@@ -5,9 +5,9 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { of, throwError } from 'rxjs';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
-import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { UserShortDTO, UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { PageResponseDTOUserShortDTO } from 'app/generated/models/page-response-dto-user-short-dto';
+import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideDialogServiceMock } from 'util/dialog.service.mock';
@@ -16,15 +16,15 @@ import { createAccountServiceMock, provideAccountServiceMock } from 'util/accoun
 import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import {
-  createResearchGroupResourceApiServiceMock,
-  provideResearchGroupResourceApiServiceMock,
-  ResearchGroupResourceApiServiceMock,
+  createResearchGroupResourceApiMock,
+  provideResearchGroupResourceApiMock,
+  ResearchGroupResourceApiMock,
 } from 'util/research-group-resource-api.service.mock';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
   let fixture: ComponentFixture<ResearchGroupMembersComponent>;
-  let mockResearchGroupService: ResearchGroupResourceApiServiceMock;
+  let mockResearchGroupService: ResearchGroupResourceApiMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockActivatedRoute: ActivatedRouteMock;
@@ -34,14 +34,14 @@ describe('ResearchGroupMembersComponent', () => {
     userId: 'user-1',
     firstName: 'John',
     lastName: 'Doe',
-    roles: [UserShortDTO.RolesEnum.Professor],
+    roles: [UserShortDTORolesEnum.Professor],
   };
 
   const mockCurrentUser: UserShortDTO = {
     userId: 'current-user',
     firstName: 'Current',
     lastName: 'User',
-    roles: [UserShortDTO.RolesEnum.Admin],
+    roles: [UserShortDTORolesEnum.Admin],
   };
 
   const mockPageResponse: PageResponseDTOUserShortDTO = {
@@ -50,7 +50,7 @@ describe('ResearchGroupMembersComponent', () => {
   };
 
   beforeEach(async () => {
-    mockResearchGroupService = createResearchGroupResourceApiServiceMock();
+    mockResearchGroupService = createResearchGroupResourceApiMock();
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of({ content: [], totalElements: 0 }));
     mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [], totalElements: 0 }));
     mockActivatedRoute = createActivatedRouteMock();
@@ -62,7 +62,7 @@ describe('ResearchGroupMembersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
       providers: [
-        provideResearchGroupResourceApiServiceMock(mockResearchGroupService),
+        provideResearchGroupResourceApiMock(mockResearchGroupService),
         provideAccountServiceMock(mockAccountService),
         provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
@@ -243,7 +243,7 @@ describe('ResearchGroupMembersComponent', () => {
       userId: 'user-1',
       firstName: 'John',
       lastName: 'Doe',
-      roles: [UserShortDTO.RolesEnum.Professor],
+      roles: [UserShortDTORolesEnum.Professor],
       name: 'John Doe',
       role: 'Professor',
       isCurrentUser: false,
@@ -253,7 +253,7 @@ describe('ResearchGroupMembersComponent', () => {
       userId: 'current-user',
       firstName: 'Current',
       lastName: 'User',
-      roles: [UserShortDTO.RolesEnum.Admin],
+      roles: [UserShortDTORolesEnum.Admin],
       name: 'Current User',
       role: 'Admin',
       isCurrentUser: true,
@@ -276,7 +276,7 @@ describe('ResearchGroupMembersComponent', () => {
       userId: undefined,
       firstName: 'John',
       lastName: 'Doe',
-      roles: [UserShortDTO.RolesEnum.Professor],
+      roles: [UserShortDTORolesEnum.Professor],
     };
     mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
@@ -292,7 +292,7 @@ describe('ResearchGroupMembersComponent', () => {
       userId: 'user-1',
       firstName: 'John',
       lastName: 'Doe',
-      roles: [UserShortDTO.RolesEnum.Professor],
+      roles: [UserShortDTORolesEnum.Professor],
     };
     component.members.set([memberWithLowercaseRole]);
     const row = component.tableData()[0];
@@ -343,14 +343,14 @@ describe('ResearchGroupMembersComponent', () => {
         id: user.id,
         name: user.name,
         email: user.email,
-        authorities: [UserShortDTO.RolesEnum.Employee],
+        authorities: [UserShortDTORolesEnum.Employee],
       };
     });
     const professorMember: UserShortDTO = {
       userId: 'user-1',
       firstName: 'John',
       lastName: 'Doe',
-      roles: [UserShortDTO.RolesEnum.Professor],
+      roles: [UserShortDTORolesEnum.Professor],
     };
     component.members.set([professorMember]);
 
@@ -368,10 +368,10 @@ describe('ResearchGroupMembersComponent', () => {
         id: user.id,
         name: user.name,
         email: user.email,
-        authorities: [UserShortDTO.RolesEnum.Employee],
+        authorities: [UserShortDTORolesEnum.Employee],
       };
     });
-    const studentMember: UserShortDTO = { userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [UserShortDTO.RolesEnum.Employee] };
+    const studentMember: UserShortDTO = { userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [UserShortDTORolesEnum.Employee] };
     component.members.set([studentMember]);
 
     const row = component.tableData()[0];
@@ -407,7 +407,7 @@ describe('ResearchGroupMembersComponent', () => {
         id: user.id,
         name: user.name,
         email: user.email,
-        authorities: [UserShortDTO.RolesEnum.Employee],
+        authorities: [UserShortDTORolesEnum.Employee],
       };
     });
 
@@ -423,7 +423,7 @@ describe('ResearchGroupMembersComponent', () => {
         id: user.id,
         name: user.name,
         email: user.email,
-        authorities: [UserShortDTO.RolesEnum.Professor],
+        authorities: [UserShortDTORolesEnum.Professor],
       };
     });
 

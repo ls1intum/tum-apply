@@ -3,19 +3,19 @@ import { of, throwError } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import {
-  createUserResourceApiServiceMock,
-  provideUserResourceApiServiceMock,
-  UserResourceApiServiceMock,
+  createUserResourceApiMock,
+  provideUserResourceApiMock,
+  UserResourceApiMock,
 } from 'util/user-resource-api.service.mock';
 
 describe('AccountService', () => {
   let service: AccountService;
-  let api: UserResourceApiServiceMock;
+  let api: UserResourceApiMock;
 
   beforeEach(() => {
-    api = createUserResourceApiServiceMock();
+    api = createUserResourceApiMock();
     TestBed.configureTestingModule({
-      providers: [AccountService, provideUserResourceApiServiceMock(api)],
+      providers: [AccountService, provideUserResourceApiMock(api)],
     });
     service = TestBed.inject(AccountService);
   });

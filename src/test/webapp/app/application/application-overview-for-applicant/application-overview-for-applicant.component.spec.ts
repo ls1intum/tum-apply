@@ -9,16 +9,16 @@ import { provideRouter, Router } from '@angular/router';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import {
-  ApplicationResourceApiServiceMock,
-  createApplicationResourceApiServiceMock,
+  ApplicationResourceApiMock,
+  createApplicationResourceApiMock,
   createMockApplicationOverviewPages,
-  provideApplicationResourceApiServiceMock,
+  provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 describe('ApplicationOverviewForApplicantComponent', () => {
   let accountService: AccountServiceMock;
-  let applicationService: ApplicationResourceApiServiceMock;
+  let applicationService: ApplicationResourceApiMock;
   let toastService: ToastServiceMock;
   let router: Router;
   let fixture: ComponentFixture<ApplicationOverviewForApplicantComponent>;
@@ -27,7 +27,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   beforeEach(async () => {
     accountService = createAccountServiceMock();
 
-    applicationService = createApplicationResourceApiServiceMock();
+    applicationService = createApplicationResourceApiMock();
 
     toastService = createToastServiceMock();
 
@@ -35,7 +35,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       imports: [ApplicationOverviewForApplicantComponent],
       providers: [
         provideAccountServiceMock(accountService),
-        provideApplicationResourceApiServiceMock(applicationService),
+        provideApplicationResourceApiMock(applicationService),
         provideToastServiceMock(toastService),
         provideRouter([]),
         provideTranslateMock(),
