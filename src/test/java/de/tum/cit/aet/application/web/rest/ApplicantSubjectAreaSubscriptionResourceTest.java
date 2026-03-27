@@ -2,11 +2,12 @@ package de.tum.cit.aet.application.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
@@ -24,6 +25,9 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
     ApplicantRepository applicantRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
 
     @Autowired
@@ -34,7 +38,7 @@ class ApplicantSubjectAreaSubscriptionResourceTest extends AbstractResourceTest 
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
     }
 
     @Nested
