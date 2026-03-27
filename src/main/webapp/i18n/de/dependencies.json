@@ -12,21 +12,35 @@
     "serverComponents": "Server-Abhängigkeiten",
     "clientComponents": "Client-Abhängigkeiten",
     "filterPlaceholder": "Abhängigkeiten suchen...",
+    "filterSecurityPlaceholder": "Sicherheitstyp suchen...",
+    "filterSourcePlaceholder": "Quelle suchen...",
     "sourceServer": "Server",
     "sourceClient": "Client",
     "showingComponents": "{{ count }} Abhängigkeiten angezeigt",
-    "componentName": "Name",
-    "componentGroup": "Gruppe / Bereich",
-    "componentVersion": "Version",
-    "componentType": "Typ",
-    "componentLicenses": "Lizenzen",
-    "componentSource": "Quelle",
-    "componentSecurity": "Sicherheit",
+    "column": {
+      "name": "Name",
+      "group": "Gruppe / Bereich",
+      "version": "Version",
+      "type": "Typ",
+      "licenses": "Lizenzen",
+      "source": "Quelle",
+      "security": "Sicherheit"
+    },
     "noComponents": "Keine Abhängigkeiten gefunden, die den aktuellen Filtern entsprechen.",
     "notAvailable": "Abhängigkeitsinformationen sind nicht verfügbar. Die Build-Dateien sind möglicherweise nicht zugänglich.",
-    "loadError": {
-      "summary": "Laden fehlgeschlagen",
-      "detail": "Fehler beim Laden der Abhängigkeitsinformationen."
+    "toast": {
+      "loadError": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Abhängigkeitsinformationen."
+      },
+      "vulnerabilityLoadError": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Fehler beim Aktualisieren der Schwachstelleninformationen."
+      },
+      "vulnerabilityRefreshSuccess": {
+        "summary": "Aktualisierung abgeschlossen",
+        "detail": "Schwachstellendaten erfolgreich aktualisiert."
+      }
     },
     "downloadSbom": "Herunterladen",
     "vulnerabilities": "Schwachstellen",
@@ -34,24 +48,18 @@
 
     "loadingVulnerabilities": "Prüfe auf Schwachstellen...",
     "vulnerabilitiesNotLoaded": "Schwachstellendaten nicht geladen",
-    "vulnerabilityLoadError": {
-      "summary": "Aktualisierung fehlgeschlagen",
-      "detail": "Fehler beim Aktualisieren der Schwachstelleninformationen."
-    },
-    "vulnerabilityRefreshSuccess": {
-      "summary": "Aktualisierung abgeschlossen",
-      "detail": "Schwachstellendaten erfolgreich aktualisiert."
-    },
     "refreshVulnerabilities": "Aktualisieren",
     "showVulnerableOnly": "Verwundbar",
     "secure": "Sicher",
 
-    "severityCritical": "Kritisch",
-    "severityHigh": "Hoch",
-    "severityMedium": "Mittel",
-    "severityLow": "Niedrig",
+    "severity": {
+      "critical": "Kritisch",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig"
+    },
     "dependency": "Abhängigkeit",
-    "dependenciesPlural": "Abhängigkeiten",
+    "dependencies": "Abhängigkeiten",
     "showLess": "Weniger anzeigen"
   }
 }

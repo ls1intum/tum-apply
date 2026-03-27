@@ -85,10 +85,10 @@ export class AdminDependenciesComponent {
 
   /** Available sort options shown in the search-filter-sort bar dropdown. */
   readonly sortableFields: SortOption[] = [
-    { displayName: 'dependencies.componentSecurity', fieldName: 'security', type: 'NUMBER' },
-    { displayName: 'dependencies.componentName', fieldName: 'name', type: 'TEXT' },
-    { displayName: 'dependencies.componentGroup', fieldName: 'group', type: 'TEXT' },
-    { displayName: 'dependencies.componentVersion', fieldName: 'version', type: 'TEXT' },
+    { displayName: 'dependencies.column.security', fieldName: 'security', type: 'NUMBER' },
+    { displayName: 'dependencies.column.name', fieldName: 'name', type: 'TEXT' },
+    { displayName: 'dependencies.column.group', fieldName: 'group', type: 'TEXT' },
+    { displayName: 'dependencies.column.version', fieldName: 'version', type: 'TEXT' },
   ];
 
   /** Computed filter definitions for the search-filter-sort bar. */
@@ -99,8 +99,8 @@ export class AdminDependenciesComponent {
     if (overview?.totalVulnerabilities != null && overview.totalVulnerabilities > 0) {
       result.push({
         filterId: 'security',
-        filterLabel: 'dependencies.componentSecurity',
-        filterSearchPlaceholder: 'dependencies.filterPlaceholder',
+        filterLabel: 'dependencies.column.security',
+        filterSearchPlaceholder: 'dependencies.filterSecurityPlaceholder',
         filterOptions: ['dependencies.showVulnerableOnly', 'dependencies.secure'],
         shouldTranslateOptions: true,
       });
@@ -108,8 +108,8 @@ export class AdminDependenciesComponent {
 
     result.push({
       filterId: 'source',
-      filterLabel: 'dependencies.componentSource',
-      filterSearchPlaceholder: 'dependencies.filterPlaceholder',
+      filterLabel: 'dependencies.column.source',
+      filterSearchPlaceholder: 'dependencies.filterSourcePlaceholder',
       filterOptions: ['dependencies.sourceServer', 'dependencies.sourceClient'],
       shouldTranslateOptions: true,
     });
@@ -154,11 +154,11 @@ export class AdminDependenciesComponent {
   /** Column definitions for the dynamic table, with custom templates assigned when available. */
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const cols: DynamicTableColumn[] = [
-      { field: 'name', header: 'dependencies.componentName', width: '14rem' },
-      { field: 'group', header: 'dependencies.componentGroup', width: '14rem' },
-      { field: 'version', header: 'dependencies.componentVersion', width: '8rem' },
-      { field: 'security', header: 'dependencies.componentSecurity', width: '14rem' },
-      { field: 'source', header: 'dependencies.componentSource', width: '8rem' },
+      { field: 'name', header: 'dependencies.column.name', width: '14rem' },
+      { field: 'group', header: 'dependencies.column.group', width: '14rem' },
+      { field: 'version', header: 'dependencies.column.version', width: '8rem' },
+      { field: 'security', header: 'dependencies.column.security', width: '14rem' },
+      { field: 'source', header: 'dependencies.column.source', width: '8rem' },
     ];
     const versionTemplate = this.versionColumnTemplate();
     const securityTemplate = this.securityColumnTemplate();
@@ -224,7 +224,7 @@ export class AdminDependenciesComponent {
       const overview = await firstValueFrom(this.dependencyService.getOverview());
       this.dependenciesOverview.set(overview);
     } catch {
-      this.toastService.showErrorKey('dependencies.loadError');
+      this.toastService.showErrorKey('dependencies.toast.loadError');
     } finally {
       this.isLoading.set(false);
     }
@@ -240,9 +240,9 @@ export class AdminDependenciesComponent {
     try {
       const overview = await firstValueFrom(this.dependencyService.refresh());
       this.dependenciesOverview.set(overview);
-      this.toastService.showSuccessKey('dependencies.vulnerabilityRefreshSuccess');
+      this.toastService.showSuccessKey('dependencies.toast.vulnerabilityRefreshSuccess');
     } catch {
-      this.toastService.showErrorKey('dependencies.vulnerabilityLoadError');
+      this.toastService.showErrorKey('dependencies.toast.vulnerabilityLoadError');
     } finally {
       this.isRefreshing.set(false);
     }

@@ -80,10 +80,10 @@
           }}
         </div>
         <div class="flex justify-center gap-1.5 flex-wrap mt-2">
-          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severityCritical' | translate)" color="danger" />
-          <jhi-tag [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severityHigh' | translate)" color="warn" />
-          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severityMedium' | translate)" color="warn" />
-          <jhi-tag [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severityLow' | translate)" color="secondary" />
+          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severity.critical' | translate)" color="danger" />
+          <jhi-tag [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severity.high' | translate)" color="warn" />
+          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severity.medium' | translate)" color="warn" />
+          <jhi-tag [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severity.low' | translate)" color="secondary" />
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@
       [searchText]="'dependencies.filterPlaceholder' | translate"
       [totalRecords]="filteredDependencyCount()"
       [singleEntity]="'dependencies.dependency' | translate"
-      [multipleEntities]="'dependencies.dependenciesPlural' | translate"
+      [multipleEntities]="'dependencies.dependencies' | translate"
       [filters]="filters()"
       [sortableFields]="sortableFields"
       [fullWidth]="true"

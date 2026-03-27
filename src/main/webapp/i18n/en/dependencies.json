@@ -12,21 +12,35 @@
     "serverComponents": "Server Dependencies",
     "clientComponents": "Client Dependencies",
     "filterPlaceholder": "Search dependencies...",
+    "filterSecurityPlaceholder": "Search security type...",
+    "filterSourcePlaceholder": "Search source...",
     "sourceServer": "Server",
     "sourceClient": "Client",
     "showingComponents": "Showing {{ count }} dependencies",
-    "componentName": "Name",
-    "componentGroup": "Group / Scope",
-    "componentVersion": "Version",
-    "componentType": "Type",
-    "componentLicenses": "Licenses",
-    "componentSource": "Source",
-    "componentSecurity": "Security",
+    "column": {
+      "name": "Name",
+      "group": "Group / Scope",
+      "version": "Version",
+      "type": "Type",
+      "licenses": "Licenses",
+      "source": "Source",
+      "security": "Security"
+    },
     "noComponents": "No dependencies found matching your filter.",
     "notAvailable": "Dependency information is not available. The build files may not be accessible.",
-    "loadError": {
-      "summary": "Load failed",
-      "detail": "Failed to load dependency information."
+    "toast": {
+      "loadError": {
+        "summary": "Load failed",
+        "detail": "Failed to load dependency information."
+      },
+      "vulnerabilityLoadError": {
+        "summary": "Refresh failed",
+        "detail": "Failed to refresh vulnerability information."
+      },
+      "vulnerabilityRefreshSuccess": {
+        "summary": "Refresh complete",
+        "detail": "Vulnerability data refreshed successfully."
+      }
     },
     "downloadSbom": "Download",
     "vulnerabilities": "Vulnerabilities",
@@ -34,24 +48,18 @@
 
     "loadingVulnerabilities": "Checking for vulnerabilities...",
     "vulnerabilitiesNotLoaded": "Vulnerability data not loaded",
-    "vulnerabilityLoadError": {
-      "summary": "Refresh failed",
-      "detail": "Failed to refresh vulnerability information."
-    },
-    "vulnerabilityRefreshSuccess": {
-      "summary": "Refresh complete",
-      "detail": "Vulnerability data refreshed successfully."
-    },
     "refreshVulnerabilities": "Refresh",
     "showVulnerableOnly": "Vulnerable",
     "secure": "Secure",
 
-    "severityCritical": "Critical",
-    "severityHigh": "High",
-    "severityMedium": "Medium",
-    "severityLow": "Low",
+    "severity": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
     "dependency": "dependency",
-    "dependenciesPlural": "dependencies",
+    "dependencies": "dependencies",
     "showLess": "Show less"
   }
 }
