@@ -124,7 +124,7 @@
 
   <ng-template #securityTemplate let-dep>
     @if (dep.vulnerabilities?.length) {
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col items-start gap-1">
         <jhi-tag
           [text]="
             dep.vulnerabilities.length +
@@ -145,15 +145,16 @@
               <jhi-tag [text]="vuln.id ?? ''" color="info" />
             </a>
           }
-          @if (dep.vulnerabilities.length > 3) {
-            <button class="cursor-pointer border-none bg-transparent p-0" (click)="toggleVulnerabilityExpansion(dep)">
-              <jhi-tag
-                [text]="isVulnerabilityExpanded(dep) ? ('dependencies.showLess' | translate) : '+' + (dep.vulnerabilities.length - 3)"
-                color="info"
-              />
-            </button>
-          }
         </div>
+        @if (dep.vulnerabilities.length > 3) {
+          <jhi-button
+            [label]="isVulnerabilityExpanded(dep) ? ('dependencies.showLess' | translate) : '+' + (dep.vulnerabilities.length - 3)"
+            variant="text"
+            severity="primary"
+            size="xs"
+            (click)="$event.stopPropagation(); toggleVulnerabilityExpansion(dep)"
+          />
+        }
       </div>
     } @else {
       <jhi-tag [text]="'dependencies.secure' | translate" color="success" [icon]="faShieldAlt" />

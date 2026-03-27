@@ -304,7 +304,7 @@ export class AdminDependenciesComponent {
   downloadDependencies(): void {
     const overview = this.dependenciesOverview();
     if (!overview) return;
-    const blob = new Blob([JSON.stringify(overview.dependencies, undefined, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(this.filteredDependencies(), undefined, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
