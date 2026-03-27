@@ -375,12 +375,7 @@ public class DependencyService {
      */
     private JsonNode fetchFullVulnerability(String id) {
         try {
-            String response = webClient
-                .get()
-                .uri("https://api.osv.dev/v1/vulns/" + id)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+            String response = webClient.get().uri("https://api.osv.dev/v1/vulns/" + id).retrieve().bodyToMono(String.class).block();
             if (response != null) {
                 return objectMapper.readTree(response);
             }
