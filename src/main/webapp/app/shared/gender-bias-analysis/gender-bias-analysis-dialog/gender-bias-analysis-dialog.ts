@@ -5,11 +5,12 @@ import { DialogModule } from 'primeng/dialog';
 import { BiasedWordDTO, GenderBiasAnalysisResponse } from 'app/generated';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 @Component({
   selector: 'jhi-gender-bias-analysis-dialog',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DialogModule, FontAwesomeModule, TooltipModule],
+  imports: [CommonModule, TranslateModule, DialogModule, FontAwesomeModule, TooltipModule, InfoBoxComponent],
   templateUrl: './gender-bias-analysis-dialog.html',
   encapsulation: ViewEncapsulation.None,
 })
