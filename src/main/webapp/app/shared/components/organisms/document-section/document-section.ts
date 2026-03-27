@@ -42,7 +42,6 @@ export class DocumentSection {
   readonly NUMBER_OF_DOCUMENTS = 3;
 
   evaluationResourceService = inject(ApplicationEvaluationResourceApi);
-  private http = inject(HttpClient);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
@@ -86,6 +85,8 @@ export class DocumentSection {
     this.documents.set(result.slice(0, this.NUMBER_OF_DOCUMENTS));
     this.extraDocuments.set(result.slice(this.NUMBER_OF_DOCUMENTS));
   });
+
+  private http = inject(HttpClient);
 
   async downloadAllDocuments(): Promise<void> {
     const applicationId = this.applicationId();
