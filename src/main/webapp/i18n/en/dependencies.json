@@ -30,7 +30,8 @@
     },
     "downloadSbom": "Download",
     "vulnerabilities": "Vulnerabilities",
-    "vulnerability": "vulnerability",
+    "vulnerability": "Vulnerability",
+
     "loadingVulnerabilities": "Checking for vulnerabilities...",
     "vulnerabilitiesNotLoaded": "Vulnerability data not loaded",
     "vulnerabilityLoadError": {
@@ -50,6 +51,7 @@
     "severityMedium": "Medium",
     "severityLow": "Low",
     "dependency": "dependency",
-    "dependenciesPlural": "dependencies"
+    "dependenciesPlural": "dependencies",
+    "showLess": "Show less"
   }
 }

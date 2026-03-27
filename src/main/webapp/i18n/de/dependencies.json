@@ -31,6 +31,7 @@
     "downloadSbom": "Herunterladen",
     "vulnerabilities": "Schwachstellen",
     "vulnerability": "Schwachstelle",
+
     "loadingVulnerabilities": "Prüfe auf Schwachstellen...",
     "vulnerabilitiesNotLoaded": "Schwachstellendaten nicht geladen",
     "vulnerabilityLoadError": {
@@ -50,6 +51,7 @@
     "severityMedium": "Mittel",
     "severityLow": "Niedrig",
     "dependency": "Abhängigkeit",
-    "dependenciesPlural": "Abhängigkeiten"
+    "dependenciesPlural": "Abhängigkeiten",
+    "showLess": "Weniger anzeigen"
   }
 }

@@ -169,6 +169,9 @@ export class AdminDependenciesComponent {
     return cols;
   });
 
+  /** Tracks which dependencies have their vulnerability list expanded (by name+group key). */
+  readonly expandedVulnerabilities = signal<Set<string>>(new Set());
+
   /** Icon used for secure status badges in the security column. */
   protected readonly faShieldAlt = faShieldAlt;
 
@@ -177,6 +180,33 @@ export class AdminDependenciesComponent {
 
   private readonly dependencyService = inject(AdminDependencyResourceApiService);
   private readonly toastService = inject(ToastService);
+
+  /**
+   * Toggles the expanded state of the vulnerability list for a dependency.
+   *
+   * @param dep the dependency whose vulnerability list should be toggled
+   */
+  toggleVulnerabilityExpansion(dep: DependencyDTO): void {
+    const key = `${dep.group}:${dep.name}`;
+    const current = this.expandedVulnerabilities();
+    const next = new Set(current);
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
+    this.expandedVulnerabilities.set(next);
+  }
+
+  /**
+   * Checks whether a dependency's vulnerability list is currently expanded.
+   *
+   * @param dep the dependency to check
+   * @returns true if the vulnerability list is expanded
+   */
+  isVulnerabilityExpanded(dep: DependencyDTO): boolean {
+    return this.expandedVulnerabilities().has(`${dep.group}:${dep.name}`);
+  }
 
   /** Loads the dependencies overview on component initialization. */
   constructor() {
