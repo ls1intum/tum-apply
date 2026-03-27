@@ -261,7 +261,9 @@ tasks.register('postProcessTsFiles', Exec) {
   description = "Post-process generated OpenAPI TypeScript files"
 
   def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
-  def npxExecutable = isWindows ? "npx.cmd" : "npx"
-
-  commandLine npxExecutable, "tsx", "gradle/scripts/openapi-post-processing.ts"
+  if (isWindows) {
+    commandLine "cmd", "/c", "npx", "tsx", "gradle/scripts/openapi-post-processing.ts"
+  } else {
+    commandLine "sh", "-lc", "npx tsx gradle/scripts/openapi-post-processing.ts"
+  }
 }

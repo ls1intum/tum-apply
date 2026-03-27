@@ -351,6 +351,7 @@
       }
     },
     "applicationPage1": {
+      "description": "Enter your personal details and contact information.",
       "label": {
         "firstName": "First Name",
         "lastName": "Last Name",
@@ -381,6 +382,7 @@
       }
     },
     "applicationPage2": {
+      "description": "Add your academic background.",
       "section": {
         "bachelor": "Bachelor's Degree",
         "master": "Master's Degree"
@@ -414,6 +416,7 @@
       }
     },
     "applicationPage3": {
+      "description": "Share your skills, motivation, and relevant research experience.",
       "label": {
         "desiredStartDate": "Desired Start Date",
         "curriculumVitae": "Curriculum Vitae",

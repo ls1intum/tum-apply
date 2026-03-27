@@ -13,6 +13,7 @@
   [header]="shouldTranslateHeader() ? (header() | translate) : header()"
   [contentStyleClass]="contentStyleClass()"
   [contentStyle]="contentStyle()"
+  [appendTo]="appendTo()"
 >
   <ng-content />
 </p-dialog>

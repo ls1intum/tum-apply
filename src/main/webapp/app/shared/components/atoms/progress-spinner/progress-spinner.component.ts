@@ -7,6 +7,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   standalone: true,
   templateUrl: './progress-spinner.component.html',
   imports: [CommonModule, ProgressSpinnerModule],
+  host: { class: 'inline-flex shrink-0 items-center' },
 })
 export class ProgressSpinnerComponent {
   /**
