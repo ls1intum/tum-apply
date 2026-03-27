@@ -38,7 +38,7 @@ function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): Conten
 
 describe('EditorComponent', () => {
   let genderBiasService: GenderBiasAnalysisServiceMock;
-  let analysisSubject: BehaviorSubject<GenderBiasAnalysisResponse | null>;
+  let analysisSubject: BehaviorSubject<GenderBiasAnalysisResponse | undefined>;
 
   function createFixture() {
     const fixture = TestBed.createComponent(EditorComponent);
@@ -51,7 +51,7 @@ describe('EditorComponent', () => {
   }
 
   beforeEach(async () => {
-    analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | null>(null);
+    analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | undefined>(undefined);
     genderBiasService = createGenderBiasAnalysisServiceMock();
     vi.mocked(genderBiasService.getAnalysisForField).mockReturnValue(analysisSubject.asObservable());
 
@@ -336,12 +336,12 @@ describe('EditorComponent', () => {
       expect(comp.shouldShowButton()).toBe(true);
     });
 
-    it('should not show button when showGenderDecoderButton is true but analysisResult is null', () => {
+    it('should not show button when showGenderDecoderButton is true but analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -364,11 +364,11 @@ describe('EditorComponent', () => {
   });
 
   describe('codingDisplay computed', () => {
-    it('should return null when analysisResult is null', () => {
+    it('should return null when analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       fixture.detectChanges();
 
       expect(comp.codingDisplay()).toBeNull();
@@ -483,12 +483,12 @@ describe('EditorComponent', () => {
       expect(comp.shouldShowButton()).toBe(false);
     });
 
-    it('should return false when analysisResult is null', () => {
+    it('should return false when analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -525,11 +525,11 @@ describe('EditorComponent', () => {
       expect(comp.showAnalysisModal()).toBe(true);
     });
 
-    it('should not set showAnalysisModal when analysisResult is null', () => {
+    it('should not set showAnalysisModal when analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       comp.showAnalysisModal.set(false);
       comp.onGenderDecoderClick();
 

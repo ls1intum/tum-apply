@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Language, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -26,6 +25,7 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
@@ -49,6 +49,7 @@ import {
   JobFormDTOStateEnum,
   JobFormDTOSubjectAreaEnum,
 } from 'app/generated/models/job-form-dto';
+import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -75,7 +76,6 @@ type JobFormMode = 'create' | 'edit';
   styleUrls: ['./job-creation-form.component.scss'],
   imports: [
     CommonModule,
-    TooltipModule,
     ReactiveFormsModule,
     FormsModule,
     FontAwesomeModule,
@@ -101,6 +101,7 @@ type JobFormMode = 'create' | 'edit';
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
     CheckboxComponent,
+    AiAssistantCardComponent,
   ],
   providers: [JobResourceApi],
 })
@@ -223,6 +224,21 @@ export class JobCreationFormComponent {
   private aiService = inject(AiResourceApi);
   private aiStreamingService = inject(AiStreamingService);
   private researchGroupService = inject(ResearchGroupResourceApi);
+  private genderBiasAnalysisService = inject(GenderBiasAnalysisService);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI SCORE SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Latest gender decoder result for the job description */
+  readonly jobDescriptionAnalysis = toSignal(this.genderBiasAnalysisService.getAnalysisForField('jobDescription'), {
+    initialValue: undefined,
+  });
+
+  /** Score shown in the AI sidebar */
+  readonly aiScore = computed(() =>
+    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()),
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -1312,7 +1328,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel1) {
       steps.push({
-        name: 'jobCreationForm.header.steps.basicInfo',
+        name: 'jobCreationForm.header.steps.basicInfo.name',
         panelTemplate: templates.panel1,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1346,7 +1362,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.employmentTerms',
+        name: 'jobCreationForm.header.steps.employmentTerms.name',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1379,7 +1395,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel3) {
       steps.push({
-        name: 'jobCreationForm.header.steps.imageSelection',
+        name: 'jobCreationForm.header.steps.imageSelection.name',
         panelTemplate: templates.panel3,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1412,7 +1428,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel4) {
       steps.push({
-        name: 'jobCreationForm.header.steps.summary',
+        name: 'jobCreationForm.header.steps.summary.name',
         panelTemplate: templates.panel4,
         shouldTranslate: true,
         buttonGroupPrev: [

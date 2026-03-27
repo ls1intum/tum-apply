@@ -1,0 +1,65 @@
+{
+  "dependencies": {
+    "title": "Software-Abhängigkeiten",
+    "infoTitle": "Was ist diese Seite?",
+    "vulnerabilityExplanation": "TUMApply überwacht automatisch alle Abhängigkeiten auf bekannte Sicherheitslücken. Schwachstellendaten werden täglich aktualisiert von ",
+    "securityFeatureHighlight": "Diese proaktive Sicherheitsüberwachung hilft Administrator:innen, potenzielle Risiken zu erkennen und zu beheben, bevor sie zu Bedrohungen werden.",
+    "infoServerLabel": "Server-Abhängigkeiten: ",
+    "infoServerDesc": "Java-Bibliotheken, die serverseitig für die Anwendungslogik verwendet werden (aus build.gradle).",
+    "infoClientLabel": "Client-Abhängigkeiten: ",
+    "infoClientDesc": "TypeScript-Pakete, die von der Weboberfläche verwendet werden (aus package.json).",
+    "totalComponents": "Gesamtabhängigkeiten",
+    "serverComponents": "Server-Abhängigkeiten",
+    "clientComponents": "Client-Abhängigkeiten",
+    "filterPlaceholder": "Abhängigkeiten suchen...",
+    "filterSecurityPlaceholder": "Sicherheitstyp suchen...",
+    "filterSourcePlaceholder": "Quelle suchen...",
+    "sourceServer": "Server",
+    "sourceClient": "Client",
+    "showingComponents": "{{ count }} Abhängigkeiten angezeigt",
+    "column": {
+      "name": "Name",
+      "group": "Gruppe / Bereich",
+      "version": "Version",
+      "type": "Typ",
+      "licenses": "Lizenzen",
+      "source": "Quelle",
+      "security": "Sicherheit"
+    },
+    "noComponents": "Keine Abhängigkeiten gefunden, die den aktuellen Filtern entsprechen.",
+    "notAvailable": "Abhängigkeitsinformationen sind nicht verfügbar. Die Build-Dateien sind möglicherweise nicht zugänglich.",
+    "toast": {
+      "loadError": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Abhängigkeitsinformationen."
+      },
+      "vulnerabilityLoadError": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Fehler beim Aktualisieren der Schwachstelleninformationen."
+      },
+      "vulnerabilityRefreshSuccess": {
+        "summary": "Aktualisierung abgeschlossen",
+        "detail": "Schwachstellendaten erfolgreich aktualisiert."
+      }
+    },
+    "downloadSbom": "Herunterladen",
+    "vulnerabilities": "Schwachstellen",
+    "vulnerability": "Schwachstelle",
+
+    "loadingVulnerabilities": "Prüfe auf Schwachstellen...",
+    "vulnerabilitiesNotLoaded": "Schwachstellendaten nicht geladen",
+    "refreshVulnerabilities": "Aktualisieren",
+    "showVulnerableOnly": "Verwundbar",
+    "secure": "Sicher",
+
+    "severity": {
+      "critical": "Kritisch",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig"
+    },
+    "dependency": "Abhängigkeit",
+    "dependencies": "Abhängigkeiten",
+    "showLess": "Weniger anzeigen"
+  }
+}

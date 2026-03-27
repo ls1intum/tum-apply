@@ -1,0 +1,118 @@
+<div class="px-4 pt-4 pb-2">
+  <div class="flex flex-col mx-auto w-full max-w-72 gap-4 lg:mx-0">
+    <div class="flex flex-col ai-score-block gap-4">
+      <div class="flex justify-center ai-score-ring-wrapper" [class.opacity-50]="isGenerating()">
+        <jhi-ai-score-ring [score]="displayedScore()" />
+      </div>
+
+      <div class="flex items-center justify-center gap-2 lg:justify-start">
+        <h3
+          class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
+          jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
+        ></h3>
+        <jhi-button
+          label="?"
+          severity="primary"
+          variant="outlined"
+          styleClass="!flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
+          (click)="openScoreDialog()"
+        />
+      </div>
+      <!-- Inclusivity feedback text -->
+      <p class="mt-1.5 mb-0 text-sm leading-6 text-text-tertiary text-center lg:text-left" [jhiTranslate]="scoreFeedback()"></p>
+    </div>
+
+    <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />
+
+    <div class="flex items-start justify-center gap-2 lg:justify-start">
+      <h3
+        class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
+        jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
+      ></h3>
+      <!-- Tooltip with AI assistant hint -->
+      <fa-icon
+        class="text-primary"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
+        tooltipPosition="top"
+      />
+    </div>
+
+    <p
+      class="m-0 text-sm leading-6 text-text-tertiary text-center lg:text-left"
+      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
+    ></p>
+
+    <div>
+      @if (isGenerating()) {
+        <div class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-default px-3 h-10">
+          <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+          <span
+            class="text-sm font-semibold text-text-primary whitespace-nowrap"
+            jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
+          ></span>
+        </div>
+      } @else {
+        <jhi-button
+          [label]="
+            isRewriteMode()
+              ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
+              : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
+          "
+          [shouldTranslate]="true"
+          severity="primary"
+          [icon]="buttonIcon()"
+          styleClass="!w-full !justify-center !whitespace-nowrap"
+          (click)="onGenerate()"
+        />
+      }
+    </div>
+  </div>
+</div>
+
+<jhi-dialog
+  [visible]="scoreDialogVisible()"
+  [modal]="true"
+  [draggable]="false"
+  [appendTo]="'body'"
+  header="jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title"
+  (visibleChange)="onScoreDialogVisibleChange($event)"
+  styleClass="!w-[90vw] md:!w-[42rem] rounded-xs bg-background-default"
+>
+  <div class="space-y-6">
+    <div class="text-center">
+      <p class="m-0 text-lg font-semibold leading-6">
+        {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.summary' | translate }}
+      </p>
+    </div>
+
+    <div class="grid grid-rows-3 divide-y divide-border-default rounded-md border border-border-default">
+      <div class="grid h-full gap-2 p-4">
+        <p class="m-0 font-semibold leading-6">
+          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section1.title' | translate }}
+        </p>
+        <p class="m-0 leading-6 text-text-secondary">
+          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section1.body' | translate }}
+        </p>
+      </div>
+
+      <div class="grid h-full gap-2 p-4">
+        <p class="m-0 font-semibold leading-6">
+          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section2.title' | translate }}
+        </p>
+        <p class="m-0 leading-6 text-text-secondary">
+          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section2.body' | translate }}
+        </p>
+      </div>
+
+      <div class="grid h-full gap-2 p-4">
+        <p class="m-0 font-semibold leading-6">
+          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section3.title' | translate }}
+        </p>
+        <p class="m-0 leading-6 text-text-secondary">
+          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section3.body' | translate }}
+        </p>
+      </div>
+    </div>
+  </div>
+</jhi-dialog>

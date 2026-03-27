@@ -21,7 +21,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   function createComponentWithInputs(
     visible: boolean,
-    result: GenderBiasAnalysisResponse | null = null,
+    result: GenderBiasAnalysisResponse | undefined = undefined,
   ): {
     fixture: ComponentFixture<GenderBiasAnalysisDialogComponent>;
     component: GenderBiasAnalysisDialogComponent;
@@ -29,7 +29,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     const fixture = TestBed.createComponent(GenderBiasAnalysisDialogComponent);
     const componentRef = fixture.componentRef as ComponentRef<GenderBiasAnalysisDialogComponent>;
     componentRef.setInput('visible', visible);
-    if (result !== null) {
+    if (result !== undefined) {
       componentRef.setInput('result', result);
     }
     fixture.detectChanges();
@@ -122,8 +122,8 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.neutral');
     });
 
-    it('should return neutral key when result is null', () => {
-      const { component } = createComponentWithInputs(true, null);
+    it('should return neutral key when result is undefined', () => {
+      const { component } = createComponentWithInputs(true, undefined);
 
       expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.neutral');
     });
@@ -190,8 +190,8 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.neutral');
     });
 
-    it('should return neutral key when result is null', () => {
-      const { component } = createComponentWithInputs(true, null);
+    it('should return neutral key when result is undefined', () => {
+      const { component } = createComponentWithInputs(true, undefined);
 
       expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.neutral');
     });
@@ -265,8 +265,8 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       expect(component.nonInclusiveWords()).toHaveLength(0);
     });
 
-    it('should return empty array when result is null', () => {
-      const { component } = createComponentWithInputs(true, null);
+    it('should return empty array when result is undefined', () => {
+      const { component } = createComponentWithInputs(true, undefined);
 
       expect(component.nonInclusiveWords()).toHaveLength(0);
     });
@@ -416,9 +416,9 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       expect(component.result()).toEqual(mockResult);
     });
 
-    it('should handle null result input', () => {
-      const { component } = createComponentWithInputs(true, null);
-      expect(component.result()).toBeNull();
+    it('should handle undefined result input', () => {
+      const { component } = createComponentWithInputs(true, undefined);
+      expect(component.result()).toBeUndefined();
     });
 
     it('should change visible input value', () => {

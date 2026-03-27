@@ -352,6 +352,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Admin - Dependencies
+  // ======================================================================================
+  {
+    path: 'dependencies',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () => import('./admin/dependencies/admin-dependencies.component').then(m => m.AdminDependenciesComponent),
+    title: 'global.routes.admin.dependencies',
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,
