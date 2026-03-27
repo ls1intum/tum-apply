@@ -242,8 +242,8 @@ public class DependencyService {
     private void addNpmDeps(JsonNode node, List<DependencyDTO> result) {
         if (node == null) return;
         node
-            .fields()
-            .forEachRemaining(entry -> {
+            .properties()
+            .forEach(entry -> {
                 String fullName = entry.getKey();
                 String version = entry.getValue().asText().replaceFirst("^[~^]", "");
                 String group = fullName.startsWith("@") ? fullName.substring(0, fullName.indexOf('/')) : "";
