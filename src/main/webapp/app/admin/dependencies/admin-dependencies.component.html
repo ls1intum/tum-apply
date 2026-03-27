@@ -74,7 +74,11 @@
         >
           {{ overview.totalVulnerabilities }}
         </div>
-        <div class="text-sm text-text-secondary mt-1">{{ overview.totalVulnerabilities === 1 ? ('dependencies.vulnerability' | translate) : ('dependencies.vulnerabilities' | translate) }}</div>
+        <div class="text-sm text-text-secondary mt-1">
+          {{
+            overview.totalVulnerabilities === 1 ? ('dependencies.vulnerability' | translate) : ('dependencies.vulnerabilities' | translate)
+          }}
+        </div>
         <div class="flex justify-center gap-1.5 flex-wrap mt-2">
           <jhi-tag [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severityCritical' | translate)" color="danger" />
           <jhi-tag [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severityHigh' | translate)" color="warn" />
@@ -131,7 +135,7 @@
           [icon]="faExclamationTriangle"
         />
         <div class="flex flex-wrap gap-1">
-          @for (vuln of (isVulnerabilityExpanded(dep) ? dep.vulnerabilities : dep.vulnerabilities.slice(0, 3)); track vuln.id) {
+          @for (vuln of isVulnerabilityExpanded(dep) ? dep.vulnerabilities : dep.vulnerabilities.slice(0, 3); track vuln.id) {
             <a
               [href]="'https://osv.dev/vulnerability/' + vuln.id"
               target="_blank"
