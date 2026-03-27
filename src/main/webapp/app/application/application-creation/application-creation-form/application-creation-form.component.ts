@@ -21,8 +21,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
-import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -38,11 +38,11 @@ import ApplicationCreationPage2Component, {
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
-import { ApplicationDetailDTO } from '../../../generated/models/application-detail-dto';
-import { ApplicationForApplicantDTO } from '../../../generated/models/application-for-applicant-dto';
-import { ApplicationDocumentIdsDTO } from '../../../generated/models/application-document-ids-dto';
+import { ApplicationDetailDTO } from '../../../generated/model/application-detail-dto';
+import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../../../generated/model/application-document-ids-dto';
 import { ApplicationResourceApi } from '../../../generated/api/application-resource-api';
-import { UpdateApplicationDTO } from '../../../generated/models/update-application-dto';
+import { UpdateApplicationDTO } from '../../../generated/model/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
 const applyflow = 'entity.toast.applyFlow';

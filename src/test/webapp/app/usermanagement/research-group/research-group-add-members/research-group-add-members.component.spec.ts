@@ -7,7 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
-import { PageResponseDTOUserShortDTO } from 'app/generated/models/page-response-dto-user-short-dto';
+import { PageResponseDTOUserShortDTO } from 'app/generated/model/page-response-dto-user-short-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -17,7 +17,7 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { KeycloakUserDTO } from 'app/generated/models/keycloak-user-dto';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ResearchGroupAddMembersComponent', () => {

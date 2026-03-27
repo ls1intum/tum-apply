@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { RatingOverviewDTO } from '../models/rating-overview-dto';
+import { RatingOverviewDTO } from '../model/rating-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class RatingResourceApi {

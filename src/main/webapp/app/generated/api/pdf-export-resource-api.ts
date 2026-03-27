@@ -15,8 +15,8 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicationPDFRequest } from '../models/application-pdf-request';
-import { JobPreviewRequest } from '../models/job-preview-request';
+import { ApplicationPDFRequest } from '../model/application-pdf-request';
+import { JobPreviewRequest } from '../model/job-preview-request';
 
 @Injectable({ providedIn: 'root' })
 export class PdfExportResourceApi {

@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ImageDTO } from '../models/image-dto';
+import { ImageDTO } from '../model/image-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ImageResourceApi {

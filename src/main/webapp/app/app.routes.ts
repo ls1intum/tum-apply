@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { InterviewProcessDetailComponent } from 'app/interview/interview-process-detail/interview-process-detail.component';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { errorRoute } from './layouts/error/error.route';
 

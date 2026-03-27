@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SendCodeRequest } from '../models/send-code-request';
+import { SendCodeRequest } from '../model/send-code-request';
 
 @Injectable({ providedIn: 'root' })
 export class EmailVerificationResourceApi {

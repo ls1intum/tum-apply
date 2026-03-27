@@ -11,10 +11,10 @@ import {
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { ImageDTO } from 'app/generated/models/image-dto';
+import { ImageDTO } from 'app/generated/model/image-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
-import { DepartmentDTO } from 'app/generated/models/department-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 

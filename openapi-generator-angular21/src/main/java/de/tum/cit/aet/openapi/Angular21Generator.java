@@ -401,6 +401,6 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
 
     @Override
     public String modelFileFolder() {
-        return outputFolder + File.separator + "models";
+        return outputFolder + File.separator + "model";
     }
 }

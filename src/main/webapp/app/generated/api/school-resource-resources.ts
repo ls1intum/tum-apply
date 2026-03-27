@@ -15,9 +15,9 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { SchoolShortDTO } from '../models/school-short-dto';
-import { SchoolDTO } from '../models/school-dto';
-import { PageResponseDTOSchoolDTO } from '../models/page-response-dto-school-dto';
+import { SchoolShortDTO } from '../model/school-short-dto';
+import { SchoolDTO } from '../model/school-dto';
+import { PageResponseDTOSchoolDTO } from '../model/page-response-dto-school-dto';
 
 const BASE_PATH = '';
 

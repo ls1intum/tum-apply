@@ -16,13 +16,13 @@ import { formatGradeDisplay, getApplicationPDFLabels } from 'app/shared/language
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { createMenuActionSignals } from 'app/shared/util/util';
-import { ApplicationPDFRequest } from 'app/generated/models/application-pdf-request';
+import { ApplicationPDFRequest } from 'app/generated/model/application-pdf-request';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
-import { ApplicationDetailDTO } from '../../generated/models/application-detail-dto';
-import { ApplicationDocumentIdsDTO } from '../../generated/models/application-document-ids-dto';
+import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
+import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 

@@ -15,9 +15,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicantDTO } from '../models/applicant-dto';
-import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
-import { DocumentInformationHolderDTO } from '../models/document-information-holder-dto';
+import { ApplicantDTO } from '../model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../model/application-document-ids-dto';
+import { DocumentInformationHolderDTO } from '../model/document-information-holder-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicantResourceApi {

@@ -10,7 +10,7 @@ import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 describe('ProfessorHeroSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorHeroSectionComponent>;

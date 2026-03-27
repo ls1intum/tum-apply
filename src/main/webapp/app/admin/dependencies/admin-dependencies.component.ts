@@ -15,9 +15,9 @@ import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multise
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { ToastService } from 'app/service/toast-service';
 import { AdminDependencyResourceApi } from 'app/generated/api/admin-dependency-resource-api';
-import { DependenciesOverviewDTO } from 'app/generated/models/dependencies-overview-dto';
-import { DependencyDTO } from 'app/generated/models/dependency-dto';
-import { VulnerabilityDTO } from 'app/generated/models/vulnerability-dto';
+import { DependenciesOverviewDTO } from 'app/generated/model/dependencies-overview-dto';
+import { DependencyDTO } from 'app/generated/model/dependency-dto';
+import { VulnerabilityDTO } from 'app/generated/model/vulnerability-dto';
 
 /**
  * Admin page component for displaying the project's software dependencies

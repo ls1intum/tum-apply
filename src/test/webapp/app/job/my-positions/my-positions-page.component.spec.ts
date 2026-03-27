@@ -6,8 +6,8 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { MyPositionsPageComponent } from 'app/job/my-positions/my-positions-page.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { CreatedJobDTO } from 'app/generated/models/created-job-dto';
-import { PageCreatedJobDTO } from 'app/generated/models/page-created-job-dto';
+import { CreatedJobDTO } from 'app/generated/model/created-job-dto';
+import { PageCreatedJobDTO } from 'app/generated/model/page-created-job-dto';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import {

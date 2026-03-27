@@ -5,8 +5,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
-import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
-import { DepartmentDTO } from 'app/generated/models/department-dto';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';

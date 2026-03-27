@@ -3,7 +3,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { IntervieweeCardComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-card/interviewee-card.component';
-import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
+import { IntervieweeDTO } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

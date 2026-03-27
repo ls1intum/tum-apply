@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { ApplicantDTO } from 'app/generated/models/applicant-dto';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { PersonalInformationData, PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';

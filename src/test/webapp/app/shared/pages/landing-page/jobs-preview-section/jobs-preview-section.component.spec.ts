@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { JobsPreviewSectionComponent } from 'app/shared/pages/landing-page/jobs-preview-section/jobs-preview-section.component';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
-import { JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
+import { JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

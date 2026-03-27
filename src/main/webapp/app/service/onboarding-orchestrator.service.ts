@@ -10,7 +10,7 @@ import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-d
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { AccountService } from '../core/auth/account.service';
 import { ProfOnboardingResourceApi } from '../generated/api/prof-onboarding-resource-api';
-import { ProfOnboardingDTO } from '../generated/models/prof-onboarding-dto';
+import { ProfOnboardingDTO } from '../generated/model/prof-onboarding-dto';
 
 /**
  * Orchestrates the professor onboarding dialog on the client.

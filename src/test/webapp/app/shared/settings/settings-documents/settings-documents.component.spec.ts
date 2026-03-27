@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, Subject, throwError } from 'rxjs';
 
-import { ApplicantDTO } from 'app/generated/models/applicant-dto';
-import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';

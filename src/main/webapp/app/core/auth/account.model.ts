@@ -1,4 +1,4 @@
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 export interface User {
   id: string;
   email: string;

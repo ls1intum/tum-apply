@@ -1,7 +1,7 @@
 import { computed, signal, WritableSignal } from '@angular/core';
 import { vi } from 'vitest';
 import { AccountService, User } from 'app/core/auth/account.service';
-import { UserShortDTO, UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTO, UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 export type AccountServiceMock = Pick<
   AccountService,

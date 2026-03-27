@@ -6,8 +6,8 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupAdminView } from 'app/usermanagement/research-group/research-group-admin-view/research-group-admin-view.component';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/models/research-group-admin-dto';
-import { PageResponseDTOResearchGroupAdminDTO } from 'app/generated/models/page-response-dto-research-group-admin-dto';
+import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/model/research-group-admin-dto';
+import { PageResponseDTOResearchGroupAdminDTO } from 'app/generated/model/page-response-dto-research-group-admin-dto';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

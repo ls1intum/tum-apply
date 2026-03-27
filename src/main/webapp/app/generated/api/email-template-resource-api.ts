@@ -15,8 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EmailTemplateDTO } from '../models/email-template-dto';
-import { PageResponseDTOEmailTemplateOverviewDTO } from '../models/page-response-dto-email-template-overview-dto';
+import { EmailTemplateDTO } from '../model/email-template-dto';
+import { PageResponseDTOEmailTemplateOverviewDTO } from '../model/page-response-dto-email-template-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class EmailTemplateResourceApi {

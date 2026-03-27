@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { UpcomingInterviewDTO } from 'app/generated/models/upcoming-interview-dto';
+import { UpcomingInterviewDTO } from 'app/generated/model/upcoming-interview-dto';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import dayjs from 'dayjs/esm';

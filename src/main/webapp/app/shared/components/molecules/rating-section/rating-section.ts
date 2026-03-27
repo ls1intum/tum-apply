@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { RatingOverviewDTO } from 'app/generated/models/rating-overview-dto';
+import { RatingOverviewDTO } from 'app/generated/model/rating-overview-dto';
 import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
 
 import TranslateDirective from '../../../language/translate.directive';

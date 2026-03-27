@@ -6,8 +6,8 @@ import dayjs from 'dayjs/esm';
 
 import { InterviewProcessesOverviewComponent } from 'app/interview/interview-processes-overview/interview-processes-overview.component';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
-import { InterviewOverviewDTO } from 'app/generated/models/interview-overview-dto';
-import { UpcomingInterviewDTO } from 'app/generated/models/upcoming-interview-dto';
+import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
+import { UpcomingInterviewDTO } from 'app/generated/model/upcoming-interview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';

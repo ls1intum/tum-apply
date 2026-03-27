@@ -15,8 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { JobFormDTO } from '../models/job-form-dto';
-import { AIJobDescriptionTranslationDTO } from '../models/ai-job-description-translation-dto';
+import { JobFormDTO } from '../model/job-form-dto';
+import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-translation-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AiResourceApi {

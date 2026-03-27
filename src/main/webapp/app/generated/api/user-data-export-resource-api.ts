@@ -15,7 +15,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DataExportStatusDTO } from '../models/data-export-status-dto';
+import { DataExportStatusDTO } from '../model/data-export-status-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataExportResourceApi {

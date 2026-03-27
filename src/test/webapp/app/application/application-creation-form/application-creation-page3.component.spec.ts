@@ -6,7 +6,7 @@ import ApplicationCreationPage3Component, {
   getPage3FromApplication,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
+import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ApplicationPage3Component', () => {

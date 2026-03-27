@@ -15,12 +15,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicationForApplicantDTO } from '../models/application-for-applicant-dto';
-import { ApplicationDetailDTO } from '../models/application-detail-dto';
-import { PageApplicationOverviewDTO } from '../models/page-application-overview-dto';
-import { ApplicationDocumentIdsDTO } from '../models/application-document-ids-dto';
-import { UpdateApplicationDTO } from '../models/update-application-dto';
-import { DocumentInformationHolderDTO } from '../models/document-information-holder-dto';
+import { ApplicationForApplicantDTO } from '../model/application-for-applicant-dto';
+import { ApplicationDetailDTO } from '../model/application-detail-dto';
+import { PageApplicationOverviewDTO } from '../model/page-application-overview-dto';
+import { ApplicationDocumentIdsDTO } from '../model/application-document-ids-dto';
+import { UpdateApplicationDTO } from '../model/update-application-dto';
+import { DocumentInformationHolderDTO } from '../model/document-information-holder-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationResourceApi {

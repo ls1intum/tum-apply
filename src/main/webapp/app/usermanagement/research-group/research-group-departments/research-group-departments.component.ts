@@ -2,7 +2,7 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
-import { DepartmentDTO } from 'app/generated/models/department-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multise
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
-import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { DepartmentEditDialogComponent } from './department-edit-dialog/department-edit-dialog.component';

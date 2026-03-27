@@ -15,8 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { InternalCommentDTO } from '../models/internal-comment-dto';
-import { InternalCommentUpdateDTO } from '../models/internal-comment-update-dto';
+import { InternalCommentDTO } from '../model/internal-comment-dto';
+import { InternalCommentUpdateDTO } from '../model/internal-comment-update-dto';
 
 @Injectable({ providedIn: 'root' })
 export class InternalCommentResourceApi {

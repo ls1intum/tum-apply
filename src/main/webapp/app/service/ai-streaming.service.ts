@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
-import { JobFormDTO } from 'app/generated/models/job-form-dto';
+import { JobFormDTO } from 'app/generated/model/job-form-dto';
 
 /**
  * Service for streaming AI responses using Server-Sent Events (SSE).

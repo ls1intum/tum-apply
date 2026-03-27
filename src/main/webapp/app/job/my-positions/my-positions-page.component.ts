@@ -20,7 +20,7 @@ import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/use
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { CreatedJobDTO } from '../../generated/models/created-job-dto';
+import { CreatedJobDTO } from '../../generated/model/created-job-dto';
 import { JobResourceApi } from '../../generated/api/job-resource-api';
 @Component({
   selector: 'jhi-my-positions-page',

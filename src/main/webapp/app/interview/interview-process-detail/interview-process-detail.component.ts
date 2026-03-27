@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
-import { JobDetailDTOStateEnum } from 'app/generated/models/job-detail-dto';
+import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';

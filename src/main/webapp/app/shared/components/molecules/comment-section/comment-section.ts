@@ -4,7 +4,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { Comment } from 'app/shared/components/molecules/comment/comment';
 import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
-import { InternalCommentDTO } from 'app/generated/models/internal-comment-dto';
+import { InternalCommentDTO } from 'app/generated/model/internal-comment-dto';
 
 import TranslateDirective from '../../../language/translate.directive';
 

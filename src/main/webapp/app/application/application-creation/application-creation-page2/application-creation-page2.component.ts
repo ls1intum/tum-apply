@@ -15,8 +15,8 @@ import {
   resolveGradingScaleLimits,
 } from 'app/shared/util/grading-scale.utils';
 
-import { ApplicationForApplicantDTO } from '../../../generated/models/application-for-applicant-dto';
-import { DocumentInformationHolderDTO } from '../../../generated/models/document-information-holder-dto';
+import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
+import { DocumentInformationHolderDTO } from '../../../generated/model/document-information-holder-dto';
 import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';

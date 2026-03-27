@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 import TranslateDirective from '../../../language/translate.directive';

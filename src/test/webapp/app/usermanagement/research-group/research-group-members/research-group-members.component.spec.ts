@@ -5,9 +5,9 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { of, throwError } from 'rxjs';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
-import { UserShortDTO, UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
-import { PageResponseDTOUserShortDTO } from 'app/generated/models/page-response-dto-user-short-dto';
-import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
+import { UserShortDTO, UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { PageResponseDTOUserShortDTO } from 'app/generated/model/page-response-dto-user-short-dto';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideDialogServiceMock } from 'util/dialog.service.mock';

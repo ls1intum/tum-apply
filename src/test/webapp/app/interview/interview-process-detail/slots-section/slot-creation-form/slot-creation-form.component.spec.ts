@@ -6,8 +6,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
-import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
-import { ConflictDataDTO } from 'app/generated/models/conflict-data-dto';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
+import { ConflictDataDTO } from 'app/generated/model/conflict-data-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

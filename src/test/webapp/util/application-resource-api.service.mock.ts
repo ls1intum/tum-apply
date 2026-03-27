@@ -4,9 +4,9 @@ import { vi } from 'vitest';
 import {
   ApplicationForApplicantDTO,
   ApplicationForApplicantDTOApplicationStateEnum,
-} from 'app/generated/models/application-for-applicant-dto';
+} from 'app/generated/model/application-for-applicant-dto';
 import { of } from 'rxjs';
-import { ApplicationOverviewDTO } from 'app/generated/models/application-overview-dto';
+import { ApplicationOverviewDTO } from 'app/generated/model/application-overview-dto';
 
 export type ApplicationResourceApiMock = {
   createApplication: ReturnType<typeof vi.fn>;

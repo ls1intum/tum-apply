@@ -12,7 +12,7 @@ import { createDepartmentResourceApiMock, provideDepartmentResourceApiMock } fro
 import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';

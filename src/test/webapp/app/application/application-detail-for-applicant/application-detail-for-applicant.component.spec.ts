@@ -14,8 +14,8 @@ import {
   provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
-import { ApplicationDetailDTO } from 'app/generated/models/application-detail-dto';
-import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+import { ApplicationDetailDTO } from 'app/generated/model/application-detail-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { createPdfExportResourceApiMock, providePdfExportResourceApiMock } from 'util/pdf-export-resource-api.service.mock';
 
 function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiMock>) {

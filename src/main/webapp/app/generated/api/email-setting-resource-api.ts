@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EmailSettingDTO } from '../models/email-setting-dto';
+import { EmailSettingDTO } from '../model/email-setting-dto';
 
 @Injectable({ providedIn: 'root' })
 export class EmailSettingResourceApi {

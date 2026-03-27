@@ -15,21 +15,21 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AddIntervieweesDTO } from '../models/add-interviewees-dto';
-import { IntervieweeDTO } from '../models/interviewee-dto';
-import { AssignSlotRequestDTO } from '../models/assign-slot-request-dto';
-import { InterviewSlotDTO } from '../models/interview-slot-dto';
-import { CancelInterviewDTO } from '../models/cancel-interview-dto';
-import { CreateSlotsDTO } from '../models/create-slots-dto';
-import { ConflictDataDTO } from '../models/conflict-data-dto';
-import { InterviewOverviewDTO } from '../models/interview-overview-dto';
-import { IntervieweeDetailDTO } from '../models/interviewee-detail-dto';
-import { PageResponseDTOInterviewSlotDTO } from '../models/page-response-dto-interview-slot-dto';
-import { UpcomingInterviewDTO } from '../models/upcoming-interview-dto';
-import { SendInvitationsRequestDTO } from '../models/send-invitations-request-dto';
-import { SendInvitationsResultDTO } from '../models/send-invitations-result-dto';
-import { UpdateAssessmentDTO } from '../models/update-assessment-dto';
-import { UpdateSlotLocationDTO } from '../models/update-slot-location-dto';
+import { AddIntervieweesDTO } from '../model/add-interviewees-dto';
+import { IntervieweeDTO } from '../model/interviewee-dto';
+import { AssignSlotRequestDTO } from '../model/assign-slot-request-dto';
+import { InterviewSlotDTO } from '../model/interview-slot-dto';
+import { CancelInterviewDTO } from '../model/cancel-interview-dto';
+import { CreateSlotsDTO } from '../model/create-slots-dto';
+import { ConflictDataDTO } from '../model/conflict-data-dto';
+import { InterviewOverviewDTO } from '../model/interview-overview-dto';
+import { IntervieweeDetailDTO } from '../model/interviewee-detail-dto';
+import { PageResponseDTOInterviewSlotDTO } from '../model/page-response-dto-interview-slot-dto';
+import { UpcomingInterviewDTO } from '../model/upcoming-interview-dto';
+import { SendInvitationsRequestDTO } from '../model/send-invitations-request-dto';
+import { SendInvitationsResultDTO } from '../model/send-invitations-result-dto';
+import { UpdateAssessmentDTO } from '../model/update-assessment-dto';
+import { UpdateSlotLocationDTO } from '../model/update-slot-location-dto';
 
 @Injectable({ providedIn: 'root' })
 export class InterviewResourceApi {

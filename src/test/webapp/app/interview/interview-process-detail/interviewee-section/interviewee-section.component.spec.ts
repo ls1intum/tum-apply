@@ -6,7 +6,7 @@ import { of, throwError } from 'rxjs';
 import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
-import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
+import { IntervieweeDTO } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

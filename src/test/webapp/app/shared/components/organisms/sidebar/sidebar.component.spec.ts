@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from '../../../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from '../../../../../util/router.mock';

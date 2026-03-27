@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
-import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -20,7 +20,7 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { formatDateWithWeekday, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
-import { CancelInterviewDTO } from 'app/generated/models/cancel-interview-dto';
+import { CancelInterviewDTO } from 'app/generated/model/cancel-interview-dto';
 
 import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
 

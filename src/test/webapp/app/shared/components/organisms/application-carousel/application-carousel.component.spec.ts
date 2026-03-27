@@ -6,9 +6,9 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
-import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
-import { ProfessorDTO } from 'app/generated/models/professor-dto';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
+import { ProfessorDTO } from 'app/generated/model/professor-dto';
 
 describe('ApplicationCarouselComponent', () => {
   let fixture: ComponentFixture<ApplicationCarouselComponent>;

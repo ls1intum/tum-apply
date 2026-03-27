@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, catchError, debounceTime, merge, of, shareReplay, switchMap } from 'rxjs';
-import { GenderBiasAnalysisRequest } from 'app/generated/models/gender-bias-analysis-request';
+import { GenderBiasAnalysisRequest } from 'app/generated/model/gender-bias-analysis-request';
 import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
-import { GenderBiasAnalysisResponse } from 'app/generated/models/gender-bias-analysis-response';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 const DEFAULT_INCLUSIVE_WEIGHT = 1;

@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
-import { ImageDTO } from 'app/generated/models/image-dto';
+import { ImageDTO } from 'app/generated/model/image-dto';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 
 export interface ImageUploadConfig {

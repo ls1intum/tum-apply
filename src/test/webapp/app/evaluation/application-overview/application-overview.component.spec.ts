@@ -5,7 +5,7 @@ import { convertToParamMap, Params, Router } from '@angular/router';
 
 import { ApplicationOverviewComponent } from 'app/evaluation/application-overview/application-overview.component';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
-import { ApplicationEvaluationOverviewDTO } from 'app/generated/models/application-evaluation-overview-dto';
+import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/application-evaluation-overview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';

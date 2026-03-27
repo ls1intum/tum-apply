@@ -15,8 +15,8 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { PageResponseDTOKeycloakUserDTO } from '../models/page-response-dto-keycloak-user-dto';
-import { UserShortDTO } from '../models/user-short-dto';
+import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
+import { UserShortDTO } from '../model/user-short-dto';
 const BASE_PATH = '';
 
 /**

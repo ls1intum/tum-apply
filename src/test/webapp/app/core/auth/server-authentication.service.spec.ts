@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
 import { of, throwError } from 'rxjs';
-import { OtpCompleteDTOPurposeEnum } from 'app/generated/models/otp-complete-dto';
+import { OtpCompleteDTOPurposeEnum } from 'app/generated/model/otp-complete-dto';
 import { vi } from 'vitest';
 import {
   AuthenticationResourceApiMock,

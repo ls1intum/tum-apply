@@ -8,7 +8,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { User } from 'app/core/auth/account.service';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';

@@ -15,9 +15,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthSessionInfoDTO } from '../models/auth-session-info-dto';
-import { LoginRequestDTO } from '../models/login-request-dto';
-import { OtpCompleteDTO } from '../models/otp-complete-dto';
+import { AuthSessionInfoDTO } from '../model/auth-session-info-dto';
+import { LoginRequestDTO } from '../model/login-request-dto';
+import { OtpCompleteDTO } from '../model/otp-complete-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationResourceApi {

@@ -15,9 +15,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DepartmentDTO } from '../models/department-dto';
-import { DepartmentCreationDTO } from '../models/department-creation-dto';
-import { PageResponseDTODepartmentDTO } from '../models/page-response-dto-department-dto';
+import { DepartmentDTO } from '../model/department-dto';
+import { DepartmentCreationDTO } from '../model/department-creation-dto';
+import { PageResponseDTODepartmentDTO } from '../model/page-response-dto-department-dto';
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentResourceApi {

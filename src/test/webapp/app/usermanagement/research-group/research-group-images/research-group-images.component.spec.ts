@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { ResearchGroupImagesComponent } from 'app/usermanagement/research-group/research-group-images/research-group-images.component';
-import { ImageDTO } from 'app/generated/models/image-dto';
+import { ImageDTO } from 'app/generated/model/image-dto';
 import { ImageUploadError } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';

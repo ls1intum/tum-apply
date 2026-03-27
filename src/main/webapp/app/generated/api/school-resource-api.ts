@@ -15,10 +15,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SchoolCreationDTO } from '../models/school-creation-dto';
-import { SchoolShortDTO } from '../models/school-short-dto';
-import { SchoolDTO } from '../models/school-dto';
-import { PageResponseDTOSchoolDTO } from '../models/page-response-dto-school-dto';
+import { SchoolCreationDTO } from '../model/school-creation-dto';
+import { SchoolShortDTO } from '../model/school-short-dto';
+import { SchoolDTO } from '../model/school-dto';
+import { PageResponseDTOSchoolDTO } from '../model/page-response-dto-school-dto';
 
 @Injectable({ providedIn: 'root' })
 export class SchoolResourceApi {

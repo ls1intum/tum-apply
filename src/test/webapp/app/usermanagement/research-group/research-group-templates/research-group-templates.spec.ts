@@ -4,13 +4,13 @@ import { of, throwError } from 'rxjs';
 
 import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
-import { EmailTemplateOverviewDTO, EmailTemplateOverviewDTOEmailTypeEnum } from 'app/generated/models/email-template-overview-dto';
+import { EmailTemplateOverviewDTO, EmailTemplateOverviewDTOEmailTypeEnum } from 'app/generated/model/email-template-overview-dto';
 import { createRouterMock, provideRouterMock } from '../../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 class EmailTemplateResourceApiMock {
   getTemplates = vi.fn();

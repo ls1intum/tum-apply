@@ -8,7 +8,7 @@ import { InterviewProcessDetailComponent } from 'app/interview/interview-process
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
-import { InterviewOverviewDTO } from 'app/generated/models/interview-overview-dto';
+import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock } from 'util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock, ActivatedRouteMock } from 'util/activated-route.mock';

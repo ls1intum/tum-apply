@@ -15,7 +15,7 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { BookingDTO } from '../models/booking-dto';
+import { BookingDTO } from '../model/booking-dto';
 
 const BASE_PATH = '';
 

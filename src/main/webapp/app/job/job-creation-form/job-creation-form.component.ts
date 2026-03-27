@@ -32,10 +32,10 @@ import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
-import { JobFormDTO } from 'app/generated/models/job-form-dto';
-import { JobDTO } from 'app/generated/models/job-dto';
+import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
-import { ImageDTO } from 'app/generated/models/image-dto';
+import { ImageDTO } from 'app/generated/model/image-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
@@ -48,7 +48,7 @@ import {
   JobFormDTOLocationEnum,
   JobFormDTOStateEnum,
   JobFormDTOSubjectAreaEnum,
-} from 'app/generated/models/job-form-dto';
+} from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';

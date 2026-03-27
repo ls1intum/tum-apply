@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { EmailSettingsComponent, NotificationGroup } from 'app/shared/settings/email-settings/email-settings.component';
 import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { EmailSetting, EmailSettingEmailTypeEnum } from 'app/generated/models/email-setting';
+import { EmailSetting, EmailSettingEmailTypeEnum } from 'app/generated/model/email-setting';
 
 const RolesEnum = UserShortDTORolesEnum;
 const EmailTypeEnum = EmailSettingEmailTypeEnum;

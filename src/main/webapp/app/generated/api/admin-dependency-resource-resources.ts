@@ -14,7 +14,7 @@
  * @generated from OpenAPI specification
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { DependenciesOverviewDTO } from '../models/dependencies-overview-dto';
+import { DependenciesOverviewDTO } from '../model/dependencies-overview-dto';
 
 const BASE_PATH = '';
 

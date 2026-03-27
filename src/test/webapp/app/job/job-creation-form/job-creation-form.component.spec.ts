@@ -8,9 +8,9 @@ import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { User } from 'app/core/auth/account.service';
-import { JobFormDTO, JobFormDTOSubjectAreaEnum, JobFormDTOStateEnum } from 'app/generated/models/job-form-dto';
-import { JobDTO } from 'app/generated/models/job-dto';
-import { ImageDTO } from 'app/generated/models/image-dto';
+import { JobFormDTO, JobFormDTOSubjectAreaEnum, JobFormDTOStateEnum } from 'app/generated/model/job-form-dto';
+import { JobDTO } from 'app/generated/model/job-dto';
+import { ImageDTO } from 'app/generated/model/image-dto';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { unescapeJsonString } from 'app/shared/util/util';
 

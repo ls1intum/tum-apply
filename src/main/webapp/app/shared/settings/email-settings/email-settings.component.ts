@@ -6,13 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/models/email-setting';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import TranslateDirective from '../../language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailSettingResourceApi } from '../../../generated/api/email-setting-resource-api';
-import { EmailSetting } from '../../../generated/models/email-setting';
+import { EmailSetting } from '../../../generated/model/email-setting';
 
 type RolesEnum = UserShortDTORolesEnum;
 

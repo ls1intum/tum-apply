@@ -15,15 +15,15 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ResearchGroupDTO } from '../models/research-group-dto';
-import { AddMembersToResearchGroupDTO } from '../models/add-members-to-research-group-dto';
-import { EmployeeResearchGroupRequestDTO } from '../models/employee-research-group-request-dto';
-import { ResearchGroupRequestDTO } from '../models/research-group-request-dto';
-import { PageResponseDTOResearchGroupDTO } from '../models/page-response-dto-research-group-dto';
-import { PageResponseDTOUserShortDTO } from '../models/page-response-dto-user-short-dto';
-import { UserShortDTO } from '../models/user-short-dto';
-import { PageResponseDTOResearchGroupAdminDTO } from '../models/page-response-dto-research-group-admin-dto';
-import { ResearchGroupLargeDTO } from '../models/research-group-large-dto';
+import { ResearchGroupDTO } from '../model/research-group-dto';
+import { AddMembersToResearchGroupDTO } from '../model/add-members-to-research-group-dto';
+import { EmployeeResearchGroupRequestDTO } from '../model/employee-research-group-request-dto';
+import { ResearchGroupRequestDTO } from '../model/research-group-request-dto';
+import { PageResponseDTOResearchGroupDTO } from '../model/page-response-dto-research-group-dto';
+import { PageResponseDTOUserShortDTO } from '../model/page-response-dto-user-short-dto';
+import { UserShortDTO } from '../model/user-short-dto';
+import { PageResponseDTOResearchGroupAdminDTO } from '../model/page-response-dto-research-group-admin-dto';
+import { ResearchGroupLargeDTO } from '../model/research-group-large-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ResearchGroupResourceApi {

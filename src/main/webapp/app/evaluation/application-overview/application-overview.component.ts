@@ -17,7 +17,7 @@ import { UserAvatarComponent } from '../../shared/components/atoms/user-avatar/u
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApi } from '../../generated/api/application-evaluation-resource-api';
-import { ApplicationEvaluationOverviewDTO } from '../../generated/models/application-evaluation-overview-dto';
+import { ApplicationEvaluationOverviewDTO } from '../../generated/model/application-evaluation-overview-dto';
 
 @Component({
   selector: 'jhi-application-overview',

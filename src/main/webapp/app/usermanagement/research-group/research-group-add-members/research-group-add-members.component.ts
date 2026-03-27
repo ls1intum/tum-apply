@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { KeycloakUserDTO } from 'app/generated/models/keycloak-user-dto';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { lastValueFrom } from 'rxjs';

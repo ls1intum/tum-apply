@@ -2,7 +2,7 @@ import { Component, effect, inject, input, signal } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
-import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 
 @Component({

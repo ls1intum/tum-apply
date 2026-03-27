@@ -1,5 +1,5 @@
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 
 import { FilterField, FilterOption } from '../shared/filter';
 

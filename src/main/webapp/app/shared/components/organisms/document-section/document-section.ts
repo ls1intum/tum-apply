@@ -11,8 +11,8 @@ import { SubSection } from '../../atoms/sub-section/sub-section';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
-import { ApplicationDocumentIdsDTO } from '../../../../generated/models/application-document-ids-dto';
-import { DocumentInformationHolderDTO } from '../../../../generated/models/document-information-holder-dto';
+import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
+import { DocumentInformationHolderDTO } from '../../../../generated/model/document-information-holder-dto';
 import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 

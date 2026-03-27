@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SettingsComponent } from 'app/shared/settings/settings.component';
-import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { createThemeServiceMock, provideThemeServiceMock, setupWindowMatchMediaMock } from '../../../util/theme.service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
 import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';

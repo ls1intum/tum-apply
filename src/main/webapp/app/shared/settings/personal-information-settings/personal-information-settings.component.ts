@@ -8,7 +8,7 @@ import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
-import { ApplicantDTO } from 'app/generated/models/applicant-dto';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';

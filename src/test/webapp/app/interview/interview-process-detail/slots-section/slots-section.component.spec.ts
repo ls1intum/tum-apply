@@ -6,7 +6,7 @@ import { of, throwError } from 'rxjs';
 import { SlotsSectionComponent } from 'app/interview/interview-process-detail/slots-section/slots-section.component';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
-import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ResearchGroupSchoolsComponent } from 'app/usermanagement/research-group/research-group-schools/research-group-schools.component';
-import { SchoolShortDTO } from 'app/generated/models/school-short-dto';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

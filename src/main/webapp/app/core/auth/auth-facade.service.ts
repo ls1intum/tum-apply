@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DocumentCacheService } from 'app/service/document-cache.service';
-import { AuthSessionInfoDTO } from 'app/generated/models/auth-session-info-dto';
-import { UserProfileDTO } from 'app/generated/models/user-profile-dto';
+import { AuthSessionInfoDTO } from 'app/generated/model/auth-session-info-dto';
+import { UserProfileDTO } from 'app/generated/model/user-profile-dto';
 import { ToastMessageInput, ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 

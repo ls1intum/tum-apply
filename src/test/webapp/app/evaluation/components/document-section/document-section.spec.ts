@@ -4,9 +4,9 @@ import { of, throwError } from 'rxjs';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
-import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
-import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
 

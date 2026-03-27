@@ -15,9 +15,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BookSlotRequestDTO } from '../models/book-slot-request-dto';
-import { InterviewSlotDTO } from '../models/interview-slot-dto';
-import { BookingDTO } from '../models/booking-dto';
+import { BookSlotRequestDTO } from '../model/book-slot-request-dto';
+import { InterviewSlotDTO } from '../model/interview-slot-dto';
+import { BookingDTO } from '../model/booking-dto';
 
 @Injectable({ providedIn: 'root' })
 export class InterviewBookingResourceApi {

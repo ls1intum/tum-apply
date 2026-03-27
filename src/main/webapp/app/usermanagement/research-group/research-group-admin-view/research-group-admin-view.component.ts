@@ -5,7 +5,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { ResearchGroupAdminDTO } from 'app/generated/models/research-group-admin-dto';
+import { ResearchGroupAdminDTO } from 'app/generated/model/research-group-admin-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';

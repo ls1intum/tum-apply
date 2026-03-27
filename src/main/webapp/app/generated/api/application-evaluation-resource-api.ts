@@ -15,10 +15,10 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AcceptDTO } from '../models/accept-dto';
-import { ApplicationEvaluationDetailListDTO } from '../models/application-evaluation-detail-list-dto';
-import { ApplicationEvaluationOverviewListDTO } from '../models/application-evaluation-overview-list-dto';
-import { RejectDTO } from '../models/reject-dto';
+import { AcceptDTO } from '../model/accept-dto';
+import { ApplicationEvaluationDetailListDTO } from '../model/application-evaluation-detail-list-dto';
+import { ApplicationEvaluationOverviewListDTO } from '../model/application-evaluation-overview-list-dto';
+import { RejectDTO } from '../model/reject-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationEvaluationResourceApi {

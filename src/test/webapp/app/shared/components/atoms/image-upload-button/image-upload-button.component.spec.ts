@@ -7,7 +7,7 @@ import {
   ImageUploadConfig,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
-import { ImageDTO } from 'app/generated/models/image-dto';
+import { ImageDTO } from 'app/generated/model/image-dto';
 
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

@@ -5,7 +5,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { ResearchGroupDTO } from 'app/generated/models/research-group-dto';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';

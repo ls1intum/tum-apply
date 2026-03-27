@@ -11,7 +11,7 @@ import { ButtonComponent } from '../../../shared/components/atoms/button/button.
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
-import { EmailTemplateOverviewDTO } from '../../../generated/models/email-template-overview-dto';
+import { EmailTemplateOverviewDTO } from '../../../generated/model/email-template-overview-dto';
 import { AccountService } from '../../../core/auth/account.service';
 
 @Component({

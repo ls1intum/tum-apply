@@ -1,9 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { ResearchGroupShortDTO } from '../../generated/models/research-group-short-dto';
+import { ResearchGroupShortDTO } from '../../generated/model/research-group-short-dto';
 import { UserResourceApi } from '../../generated/api/user-resource-api';
-import { UserShortDTO } from '../../generated/models/user-short-dto';
+import { UserShortDTO } from '../../generated/model/user-short-dto';
 import { formatFullName } from '../../shared/util/name.util';
 
 export interface User {

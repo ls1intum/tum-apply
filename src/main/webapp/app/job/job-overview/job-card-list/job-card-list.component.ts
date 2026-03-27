@@ -10,10 +10,10 @@ import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { TranslateDirective } from 'app/shared/language';
-import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
-import { JobCardDTO } from '../../../generated/models/job-card-dto';
+import { JobCardDTO } from '../../../generated/model/job-card-dto';
 import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 

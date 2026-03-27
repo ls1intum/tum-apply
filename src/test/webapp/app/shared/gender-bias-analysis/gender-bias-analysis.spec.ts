@@ -6,7 +6,7 @@ import {
   GenderBiasAnalysisResourceApiMock,
 } from 'util/gender-bias-analysis-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated/models/gender-bias-analysis-response';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 
 describe('GenderBiasAnalysisService', () => {

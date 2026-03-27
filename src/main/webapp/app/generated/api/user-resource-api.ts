@@ -15,11 +15,11 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PageResponseDTOKeycloakUserDTO } from '../models/page-response-dto-keycloak-user-dto';
-import { UserShortDTO } from '../models/user-short-dto';
-import { UpdateAvatarDTO } from '../models/update-avatar-dto';
-import { UpdatePasswordDTO } from '../models/update-password-dto';
-import { UpdateUserNameDTO } from '../models/update-user-name-dto';
+import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
+import { UserShortDTO } from '../model/user-short-dto';
+import { UpdateAvatarDTO } from '../model/update-avatar-dto';
+import { UpdatePasswordDTO } from '../model/update-password-dto';
+import { UpdateUserNameDTO } from '../model/update-user-name-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserResourceApi {

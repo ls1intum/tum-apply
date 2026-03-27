@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 

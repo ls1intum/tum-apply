@@ -15,8 +15,8 @@ import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
-import { ApplicationOverviewDTO } from 'app/generated/models/application-overview-dto';
-import { ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/models/application-overview-dto';
+import { ApplicationOverviewDTO } from 'app/generated/model/application-overview-dto';
+import { ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/model/application-overview-dto';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 

@@ -5,8 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
-import { ApplicantDTO } from 'app/generated/models/applicant-dto';
-import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';

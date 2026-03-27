@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 
 import { IntervieweeAssessmentComponent } from 'app/interview/interviewee-assessment/interviewee-assessment.component';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
-import { IntervieweeDetailDTO } from 'app/generated/models/interviewee-detail-dto';
+import { IntervieweeDetailDTO } from 'app/generated/model/interviewee-detail-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock, ActivatedRouteMock } from 'util/activated-route.mock';

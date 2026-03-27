@@ -15,8 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GenderBiasAnalysisResponse } from '../models/gender-bias-analysis-response';
-import { GenderBiasAnalysisRequest } from '../models/gender-bias-analysis-request';
+import { GenderBiasAnalysisResponse } from '../model/gender-bias-analysis-response';
+import { GenderBiasAnalysisRequest } from '../model/gender-bias-analysis-request';
 
 @Injectable({ providedIn: 'root' })
 export class GenderBiasAnalysisResourceApi {

@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ProfOnboardingDTO } from '../models/prof-onboarding-dto';
+import { ProfOnboardingDTO } from '../model/prof-onboarding-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ProfOnboardingResourceApi {

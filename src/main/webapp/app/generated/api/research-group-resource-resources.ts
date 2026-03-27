@@ -15,12 +15,12 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { ResearchGroupDTO } from '../models/research-group-dto';
-import { PageResponseDTOResearchGroupDTO } from '../models/page-response-dto-research-group-dto';
-import { PageResponseDTOUserShortDTO } from '../models/page-response-dto-user-short-dto';
-import { UserShortDTO } from '../models/user-short-dto';
-import { PageResponseDTOResearchGroupAdminDTO } from '../models/page-response-dto-research-group-admin-dto';
-import { ResearchGroupLargeDTO } from '../models/research-group-large-dto';
+import { ResearchGroupDTO } from '../model/research-group-dto';
+import { PageResponseDTOResearchGroupDTO } from '../model/page-response-dto-research-group-dto';
+import { PageResponseDTOUserShortDTO } from '../model/page-response-dto-user-short-dto';
+import { UserShortDTO } from '../model/user-short-dto';
+import { PageResponseDTOResearchGroupAdminDTO } from '../model/page-response-dto-research-group-admin-dto';
+import { ResearchGroupLargeDTO } from '../model/research-group-large-dto';
 
 const BASE_PATH = '';
 

@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DependenciesOverviewDTO } from '../models/dependencies-overview-dto';
+import { DependenciesOverviewDTO } from '../model/dependencies-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AdminDependencyResourceApi {

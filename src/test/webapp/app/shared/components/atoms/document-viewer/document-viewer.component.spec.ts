@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DocumentViewerComponent } from '../../../../../../../main/webapp/app/shared/components/atoms/document-viewer/document-viewer.component';
 import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 import { DocumentCacheService } from 'app/service/document-cache.service';
-import { DocumentInformationHolderDTO } from 'app/generated/models/document-information-holder-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { of, throwError } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { provideTranslateMock } from 'util/translate.mock';

@@ -15,12 +15,12 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { IntervieweeDTO } from '../models/interviewee-dto';
-import { ConflictDataDTO } from '../models/conflict-data-dto';
-import { InterviewOverviewDTO } from '../models/interview-overview-dto';
-import { IntervieweeDetailDTO } from '../models/interviewee-detail-dto';
-import { PageResponseDTOInterviewSlotDTO } from '../models/page-response-dto-interview-slot-dto';
-import { UpcomingInterviewDTO } from '../models/upcoming-interview-dto';
+import { IntervieweeDTO } from '../model/interviewee-dto';
+import { ConflictDataDTO } from '../model/conflict-data-dto';
+import { InterviewOverviewDTO } from '../model/interview-overview-dto';
+import { IntervieweeDetailDTO } from '../model/interviewee-detail-dto';
+import { PageResponseDTOInterviewSlotDTO } from '../model/page-response-dto-interview-slot-dto';
+import { UpcomingInterviewDTO } from '../model/upcoming-interview-dto';
 const BASE_PATH = '';
 
 /**

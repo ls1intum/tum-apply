@@ -2,11 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthSessionInfoDTO } from 'app/generated/models/auth-session-info-dto';
+import { AuthSessionInfoDTO } from 'app/generated/model/auth-session-info-dto';
 import { AuthenticationResourceApi } from 'app/generated/api/authentication-resource-api';
 import { EmailVerificationResourceApi } from 'app/generated/api/email-verification-resource-api';
-import { OtpCompleteDTOPurposeEnum } from 'app/generated/models/otp-complete-dto';
-import { UserProfileDTO } from 'app/generated/models/user-profile-dto';
+import { OtpCompleteDTOPurposeEnum } from 'app/generated/model/otp-complete-dto';
+import { UserProfileDTO } from 'app/generated/model/user-profile-dto';
 
 /**
  * Purpose

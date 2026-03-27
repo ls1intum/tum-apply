@@ -11,7 +11,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
-import { SchoolDTO } from 'app/generated/models/school-dto';
+import { SchoolDTO } from 'app/generated/model/school-dto';
 
 import { SchoolEditDialogComponent } from './school-edit-dialog/school-edit-dialog.component';
 

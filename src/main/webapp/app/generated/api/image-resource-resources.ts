@@ -15,7 +15,7 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { ImageDTO } from '../models/image-dto';
+import { ImageDTO } from '../model/image-dto';
 
 const BASE_PATH = '';
 

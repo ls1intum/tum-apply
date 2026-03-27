@@ -17,15 +17,15 @@ import { ReviewDialogComponent } from 'app/shared/components/molecules/review-di
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
-import { AcceptDTO } from 'app/generated/models/accept-dto';
-import { RejectDTO } from 'app/generated/models/reject-dto';
-import { ApplicationEvaluationDetailListDTO } from 'app/generated/models/application-evaluation-detail-list-dto';
-import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { AcceptDTO } from 'app/generated/model/accept-dto';
+import { RejectDTO } from 'app/generated/model/reject-dto';
+import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/application-evaluation-detail-list-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TooltipModule } from 'primeng/tooltip';
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
