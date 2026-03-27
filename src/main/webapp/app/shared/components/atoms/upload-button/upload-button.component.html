@@ -7,15 +7,12 @@
   (onSelect)="onFileSelected($event)"
   #fileupload_component
 >
-  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
-    <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full" (click)="fileupload_component.choose()">
-    </div>
-  </ng-template>
+  <ng-template #header> </ng-template>
   <ng-template #empty>
     <div class="flex justify-center flex-col gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
-      <div class="flex w-full justify-center">
-        <span class="flex border items-center justify-center rounded-pill border-primary size-20">
-          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
+      <div class="flex w-full justify-center mb-4">
+        <span class="flex border items-center justify-center rounded-pill border-primary size-17">
+          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg"></fa-icon>
         </span>
       </div>
       <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
@@ -24,7 +21,7 @@
   </ng-template>
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
     <div class="mt-0 w-full">
-      <table class="table-fixed border-collapse w-full slim-table">
+      <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
         <thead>
           <tr>
             <th class="w-1/10"></th>
@@ -36,32 +33,29 @@
         <tbody>
           @if (selectedFiles(); as selectedFiles) {
             @for (file of selectedFiles; track $index) {
-              <tr class="leading-normal hover:bg-background-surface transition-colors">
-                <td class="py-1">
+              <tr [class]="rowClass">
+                <td>
                   <span class="w-full h-full inline-flex justify-center">
                     <fa-icon
                       icon="cloud-arrow-up"
-                      class="icon-color-warning"
+                      [style.color]="'var(--color-warning-default)'"
                       [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
                       tooltipPosition="top"
                     />
                   </span>
                 </td>
-                <td class="py-1 pr-4">
-                  <span class="w-full h-full inline-flex items-center">
-                    <input
-                      [(ngModel)]="file.name"
-                      class="w-full bg-transparent border-0 border-b border-dashed border-neutral-color hover:border-solid hover:border-neutral-hover-color focus:border-solid focus:border-primary-color focus:ring-0 px-1 py-1 outline-none transition-all text-color"                    />
-                  </span>
+                <td class="pr-3">
+                  <input [(ngModel)]="file.name" [class]="inputClass" />
                 </td>
-                <td class="text-center py-1">
+                <td class="text-center">
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
                 </td>
-                <td class="py-1 text-center">
+                <td>
                   <jhi-button
                     icon="times"
                     severity="danger"
                     variant="text"
+                    size="sm"
                     (click)="removeFileCallback($event, $index)"
                     aria-label="Remove file"
                   />
@@ -71,27 +65,24 @@
           }
           @if (documentIds(); as documentIds) {
             @for (info of documentIds; track $index) {
-              <tr class="leading-normal hover:bg-background-surface transition-colors">
-                <td class="py-1">
+              <tr [class]="rowClass">
+                <td>
                   <span class="w-full h-full inline-flex justify-center">
                     <fa-icon
                       icon="file-circle-check"
-                      class="icon-color-success"
+                      [style.color]="'var(--color-positive-default)'"
                       [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate"
                       tooltipPosition="top"
                     />
                   </span>
                 </td>
-                <td class="py-1 pr-4">
-                  <input
-                    [(ngModel)]="info.name"
-                    (blur)="renameDocument(info)"
-                    class="w-full bg-transparent border-0 border-b border-dashed border-neutral-color hover:border-solid hover:border-neutral-hover-color focus:border-solid focus:border-primary-color focus:ring-0 px-1 py-1 outline-none transition-all text-color"                  />
+                <td class="pr-3">
+                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" [class]="inputClass" />
                 </td>
                 <td class="text-center">
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
-                <td class="py-1 text-center">
+                <td>
                   <jhi-confirm-dialog
                     [label]="'button.delete' | translate"
                     [header]="'entity.upload.deleteDocument.confirm.header' | translate"

@@ -38,11 +38,13 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
   selector: 'jhi-upload-button',
   imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
   templateUrl: './upload-button.component.html',
-  styleUrl: './upload-button.component.scss',
   standalone: true,
 })
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 25;
+  readonly inputClass =
+    'w-full px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
+  readonly rowClass = 'transition-colors hover:bg-background-surface';
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
