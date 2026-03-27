@@ -21,11 +21,11 @@ import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application
 import { AcceptDTO } from 'app/generated/models/accept-dto';
 import { RejectDTO } from 'app/generated/models/reject-dto';
 import { ApplicationEvaluationDetailListDTO } from 'app/generated/models/application-evaluation-detail-list-dto';
-import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TooltipModule } from 'primeng/tooltip';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
@@ -36,8 +36,7 @@ import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
 import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
-import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
-type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
+type ApplicationStateEnum = ApplicationDetailDTOApplicationStateEnum;
 
 const CAROUSEL_SIZE = 7;
 
@@ -102,12 +101,16 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    return state !== 'ACCEPTED' && state !== 'REJECTED' && state !== 'JOB_CLOSED';
+    return (
+      state !== ApplicationDetailDTOApplicationStateEnum.Accepted &&
+      state !== ApplicationDetailDTOApplicationStateEnum.Rejected &&
+      state !== ApplicationDetailDTOApplicationStateEnum.JobClosed
+    );
   });
 
   isAlreadyInInterview = computed(() => {
     const currentApplication = this.currentApplication();
-    return currentApplication?.applicationDetailDTO.applicationState === 'INTERVIEW';
+    return currentApplication?.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Interview;
   });
 
   currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
@@ -322,7 +325,7 @@ export class ApplicationDetailComponent {
       );
 
       // 3. Update local state
-      this.updateCurrentApplicationState('INTERVIEW');
+      this.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.Interview);
       this.toastService.showSuccess({
         summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
         detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
@@ -344,7 +347,7 @@ export class ApplicationDetailComponent {
     const application = this.currentApplication();
 
     if (application) {
-      this.updateCurrentApplicationState('ACCEPTED');
+      this.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.Accepted);
 
       if (acceptDTO.closeJob === true) {
         // update the state of all applications in memory for this job
@@ -359,7 +362,7 @@ export class ApplicationDetailComponent {
     const application = this.currentApplication();
 
     if (application) {
-      this.updateCurrentApplicationState('REJECTED');
+      this.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.Rejected);
       this.reviewDialogVisible.set(false);
       await firstValueFrom(this.evaluationResourceService.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
     }
@@ -368,8 +371,8 @@ export class ApplicationDetailComponent {
   async markCurrentApplicationAsInReview(): Promise<void> {
     const application = this.currentApplication();
 
-    if (application?.applicationDetailDTO.applicationState === 'SENT') {
-      this.updateCurrentApplicationState('IN_REVIEW');
+    if (application?.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Sent) {
+      this.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.InReview);
       await firstValueFrom(this.evaluationResourceService.markApplicationAsInReview(application.applicationDetailDTO.applicationId));
     }
   }
@@ -453,14 +456,14 @@ export class ApplicationDetailComponent {
     this.applications.update(apps =>
       apps.map(application =>
         application.jobId === jobId &&
-        (application.applicationDetailDTO.applicationState === 'SENT' ||
-          application.applicationDetailDTO.applicationState === 'IN_REVIEW' ||
-          application.applicationDetailDTO.applicationState === 'INTERVIEW')
+        (application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Sent ||
+          application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.InReview ||
+          application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Interview)
           ? {
               ...application,
               applicationDetailDTO: {
                 ...application.applicationDetailDTO,
-                applicationState: 'REJECTED',
+                applicationState: ApplicationDetailDTOApplicationStateEnum.Rejected,
               },
             }
           : application,

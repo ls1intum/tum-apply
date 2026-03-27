@@ -8,16 +8,15 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { JobFormDTO } from 'app/generated/models/job-form-dto';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { TranslateDirective } from 'app/shared/language';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/models/job-card-dto';
 import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 
-import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
