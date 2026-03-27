@@ -22,5 +22,11 @@ export interface ImageDTO {
 
 export type ImageDTOImageTypeEnum = 'JOB_BANNER' | 'PROFILE_PICTURE' | 'DEFAULT_JOB_BANNER';
 
+export const ImageDTOImageTypeEnum = {
+    JobBanner: 'JOB_BANNER' as const,
+    ProfilePicture: 'PROFILE_PICTURE' as const,
+    DefaultJobBanner: 'DEFAULT_JOB_BANNER' as const,
+} as const;
+
 export const ImageDTOImageTypeEnumValues = ['JOB_BANNER', 'PROFILE_PICTURE', 'DEFAULT_JOB_BANNER'] as const;
 

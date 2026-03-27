@@ -20,5 +20,12 @@ export interface AssignedIntervieweeDTO {
 
 export type AssignedIntervieweeDTOStateEnum = 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
 
+export const AssignedIntervieweeDTOStateEnum = {
+    Uncontacted: 'UNCONTACTED' as const,
+    Invited: 'INVITED' as const,
+    Scheduled: 'SCHEDULED' as const,
+    Completed: 'COMPLETED' as const,
+} as const;
+
 export const AssignedIntervieweeDTOStateEnumValues = ['UNCONTACTED', 'INVITED', 'SCHEDULED', 'COMPLETED'] as const;
 

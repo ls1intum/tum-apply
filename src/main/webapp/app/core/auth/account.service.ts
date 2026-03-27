@@ -96,7 +96,7 @@ export class AccountService {
         name: formatFullName(userShortDTO.firstName, userShortDTO.lastName) || 'User',
         avatar: userShortDTO.avatar,
         researchGroup: userShortDTO.researchGroup ?? undefined,
-        authorities: userShortDTO.roles ? [userShortDTO.roles] : undefined,
+        authorities: userShortDTO.roles ? [...userShortDTO.roles] : undefined,
       };
       this.user.set(user);
       this.loaded.set(true);

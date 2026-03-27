@@ -144,7 +144,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
       // Withdraw action - for SENT or IN_REVIEW applications
       if (
-        [ApplicationOverviewDTOApplicationStateEnum.Sent, ApplicationOverviewDTOApplicationStateEnum.InReview].includes(
+        ([ApplicationOverviewDTOApplicationStateEnum.Sent, ApplicationOverviewDTOApplicationStateEnum.InReview] as ApplicationOverviewDTOApplicationStateEnum[]).includes(
           application.applicationState as ApplicationOverviewDTOApplicationStateEnum,
         )
       ) {

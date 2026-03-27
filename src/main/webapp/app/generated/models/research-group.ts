@@ -34,5 +34,11 @@ export interface ResearchGroup {
 
 export type ResearchGroupStateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
 
+export const ResearchGroupStateEnum = {
+    Draft: 'DRAFT' as const,
+    Active: 'ACTIVE' as const,
+    Denied: 'DENIED' as const,
+} as const;
+
 export const ResearchGroupStateEnumValues = ['DRAFT', 'ACTIVE', 'DENIED'] as const;
 

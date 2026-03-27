@@ -21,5 +21,11 @@ export interface ResearchGroupAdminDTO {
 
 export type ResearchGroupAdminDTOStatusEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
 
+export const ResearchGroupAdminDTOStatusEnum = {
+    Draft: 'DRAFT' as const,
+    Active: 'ACTIVE' as const,
+    Denied: 'DENIED' as const,
+} as const;
+
 export const ResearchGroupAdminDTOStatusEnumValues = ['DRAFT', 'ACTIVE', 'DENIED'] as const;
 

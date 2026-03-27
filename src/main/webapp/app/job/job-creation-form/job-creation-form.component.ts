@@ -1096,7 +1096,7 @@ export class JobCreationFormComponent {
     try {
       const response = await firstValueFrom(this.researchGroupService.getResearchGroupProfessors());
       const options = response
-        .filter(member => member.roles === 'PROFESSOR' && member.userId)
+        .filter(member => member.roles?.includes('PROFESSOR') && member.userId)
         .map(member => {
           const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
           const fallback = (member.email ?? member.userId ?? '').trim();

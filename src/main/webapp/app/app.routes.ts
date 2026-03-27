@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { InterviewProcessDetailComponent } from 'app/interview/interview-process-detail/interview-process-detail.component';
+import { UserShortDTORolesEnum } from 'app/generated/models/user-short-dto';
 
 import { errorRoute } from './layouts/error/error.route';
 
@@ -357,7 +358,7 @@ const routes: Routes = [
   {
     path: 'dependencies',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () => import('./admin/dependencies/admin-dependencies.component').then(m => m.AdminDependenciesComponent),
     title: 'global.routes.admin.dependencies',
   },
