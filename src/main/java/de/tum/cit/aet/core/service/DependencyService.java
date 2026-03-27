@@ -1,9 +1,9 @@
 package de.tum.cit.aet.core.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import de.tum.cit.aet.core.dto.sbom.DependenciesOverviewDTO;
 import de.tum.cit.aet.core.dto.sbom.DependencyDTO;
 import de.tum.cit.aet.core.dto.sbom.VulnerabilityDTO;
@@ -219,18 +219,13 @@ public class DependencyService {
         Path pkgFile = Path.of(projectDir, "package.json");
         if (!Files.exists(pkgFile)) return List.of();
 
-        try {
-            JsonNode root = objectMapper.readTree(pkgFile.toFile());
-            List<DependencyDTO> result = new ArrayList<>();
+        JsonNode root = objectMapper.readTree(pkgFile.toFile());
+        List<DependencyDTO> result = new ArrayList<>();
 
-            addNpmDeps(root.get("dependencies"), result);
-            addNpmDeps(root.get("devDependencies"), result);
+        addNpmDeps(root.get("dependencies"), result);
+        addNpmDeps(root.get("devDependencies"), result);
 
-            return result;
-        } catch (IOException e) {
-            log.error("Failed to parse package.json", e);
-            return List.of();
-        }
+        return result;
     }
 
     /**
@@ -245,7 +240,7 @@ public class DependencyService {
             .properties()
             .forEach(entry -> {
                 String fullName = entry.getKey();
-                String version = entry.getValue().asText().replaceFirst("^[~^]", "");
+                String version = entry.getValue().asString().replaceFirst("^[~^]", "");
                 String group = fullName.startsWith("@") ? fullName.substring(0, fullName.indexOf('/')) : "";
                 String name = fullName.startsWith("@") ? fullName.substring(fullName.indexOf('/') + 1) : fullName;
                 String purl = "pkg:npm/" + (group.isEmpty() ? "" : group + "/") + name + "@" + version;
@@ -324,8 +319,8 @@ public class DependencyService {
 
             List<VulnerabilityDTO> list = new ArrayList<>();
             for (JsonNode v : vulns) {
-                String id = v.path("id").asText("UNKNOWN");
-                String summary = v.path("summary").asText(null);
+                String id = v.path("id").asString("UNKNOWN");
+                String summary = v.path("summary").asString(null);
                 String severity = extractSeverity(v);
 
                 // If severity could not be determined from the batch response,
@@ -335,7 +330,7 @@ public class DependencyService {
                     if (fullVuln != null) {
                         severity = extractSeverity(fullVuln);
                         if (summary == null) {
-                            summary = fullVuln.path("summary").asText(null);
+                            summary = fullVuln.path("summary").asString(null);
                         }
                     }
                 }
@@ -414,11 +409,11 @@ public class DependencyService {
         if (sev == null || !sev.isArray()) return null;
 
         for (JsonNode s : sev) {
-            String score = s.path("score").asText("");
+            String score = s.path("score").asString("");
             Double numericScore = parseDouble(score);
             if (numericScore != null) return cvssToSeverity(numericScore);
 
-            String type = s.path("type").asText("");
+            String type = s.path("type").asString("");
             if (type.startsWith("CVSS")) {
                 // Try CVSS v3 base score computation
                 Double baseScore = computeCvssV3BaseScore(score);
@@ -427,8 +422,7 @@ public class DependencyService {
                 // For CVSS v4 or other versions, extract severity from the vector's
                 // base metrics if possible (approximate via macrovector approach)
                 if (score.startsWith("CVSS:4")) {
-                    String v4Severity = extractCvssV4SeverityFromVector(score);
-                    if (v4Severity != null) return v4Severity;
+                    return extractCvssV4SeverityFromVector(score);
                 }
             }
         }
@@ -479,7 +473,7 @@ public class DependencyService {
     private String severityFromDatabaseSpecific(JsonNode vuln) {
         JsonNode db = vuln.get("database_specific");
         if (db == null || !db.has("severity")) return null;
-        return normalizeSeverity(db.get("severity").asText(""));
+        return normalizeSeverity(db.get("severity").asString(""));
     }
 
     private String severityFromEcosystemSpecific(JsonNode vuln) {
@@ -489,7 +483,7 @@ public class DependencyService {
         for (JsonNode a : affected) {
             JsonNode eco = a.get("ecosystem_specific");
             if (eco != null && eco.has("severity")) {
-                String result = normalizeSeverity(eco.get("severity").asText(""));
+                String result = normalizeSeverity(eco.get("severity").asString(""));
                 if (result != null) return result;
             }
         }
