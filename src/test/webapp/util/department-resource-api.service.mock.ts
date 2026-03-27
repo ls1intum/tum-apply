@@ -22,8 +22,6 @@ export function createDepartmentResourceApiMock(): DepartmentResourceApiMock {
   };
 }
 
-export function provideDepartmentResourceApiMock(
-  mock: DepartmentResourceApiMock = createDepartmentResourceApiMock(),
-): Provider {
+export function provideDepartmentResourceApiMock(mock: DepartmentResourceApiMock = createDepartmentResourceApiMock()): Provider {
   return { provide: DepartmentResourceApi, useValue: mock };
 }

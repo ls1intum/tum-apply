@@ -6,10 +6,7 @@ import { EmailVerificationResourceApi } from 'app/generated/api/email-verificati
 
 export const mockSessionInfo = { expiresIn: 60 };
 
-export type AuthenticationResourceApiMock = Pick<
-  AuthenticationResourceApi,
-  'login' | 'otpComplete' | 'logout' | 'refresh'
-> & {
+export type AuthenticationResourceApiMock = Pick<AuthenticationResourceApi, 'login' | 'otpComplete' | 'logout' | 'refresh'> & {
   login: ReturnType<typeof vi.fn>;
   otpComplete: ReturnType<typeof vi.fn>;
   logout: ReturnType<typeof vi.fn>;

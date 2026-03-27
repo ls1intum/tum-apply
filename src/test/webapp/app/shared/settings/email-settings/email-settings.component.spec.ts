@@ -25,10 +25,7 @@ describe('EmailSettingsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [EmailSettingsComponent, TranslateModule.forRoot()],
-      providers: [
-        { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
-        provideToastServiceMock(toastServiceMock),
-      ],
+      providers: [{ provide: EmailSettingResourceApi, useValue: emailSettingServiceMock }, provideToastServiceMock(toastServiceMock)],
     });
 
     fixture = TestBed.createComponent(EmailSettingsComponent);

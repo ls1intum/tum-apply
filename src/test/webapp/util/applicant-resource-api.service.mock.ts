@@ -29,8 +29,6 @@ export function createApplicantResourceApiMock(): ApplicantResourceApiMock {
   };
 }
 
-export function provideApplicantResourceApiMock(
-  mock: ApplicantResourceApiMock = createApplicantResourceApiMock(),
-): Provider {
+export function provideApplicantResourceApiMock(mock: ApplicantResourceApiMock = createApplicantResourceApiMock()): Provider {
   return { provide: ApplicantResourceApi, useValue: mock };
 }

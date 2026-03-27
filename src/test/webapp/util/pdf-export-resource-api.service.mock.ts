@@ -13,8 +13,6 @@ export function createPdfExportResourceApiMock(): PdfExportResourceApiMock {
   };
 }
 
-export function providePdfExportResourceApiMock(
-  mock: PdfExportResourceApiMock = createPdfExportResourceApiMock(),
-): Provider {
+export function providePdfExportResourceApiMock(mock: PdfExportResourceApiMock = createPdfExportResourceApiMock()): Provider {
   return { provide: PdfExportResourceApi, useValue: mock };
 }

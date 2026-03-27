@@ -26,11 +26,7 @@ describe('RatingSection', () => {
 
     await TestBed.configureTestingModule({
       imports: [RatingSection],
-      providers: [
-        { provide: RatingResourceApi, useValue: mockRatingApi },
-        provideToastServiceMock(mockToast),
-        provideAccountServiceMock(),
-      ],
+      providers: [{ provide: RatingResourceApi, useValue: mockRatingApi }, provideToastServiceMock(mockToast), provideAccountServiceMock()],
     })
       .overrideComponent(RatingSection, { set: { template: '' } })
       .compileComponents();

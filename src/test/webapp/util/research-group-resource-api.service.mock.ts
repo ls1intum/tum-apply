@@ -42,8 +42,6 @@ export function createResearchGroupResourceApiMock(): ResearchGroupResourceApiMo
   };
 }
 
-export function provideResearchGroupResourceApiMock(
-  mock: ResearchGroupResourceApiMock = createResearchGroupResourceApiMock(),
-): Provider {
+export function provideResearchGroupResourceApiMock(mock: ResearchGroupResourceApiMock = createResearchGroupResourceApiMock()): Provider {
   return { provide: ResearchGroupResourceApi, useValue: mock };
 }

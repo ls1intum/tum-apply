@@ -278,7 +278,7 @@ describe('Profile save isolation', () => {
       throw new Error('Expected initial CV document');
     }
 
-    (cvDocuments[0] as Mutable<typeof cvDocuments[0]>).name = 'cv-renamed.pdf';
+    (cvDocuments[0] as Mutable<(typeof cvDocuments)[0]>).name = 'cv-renamed.pdf';
 
     await documentsComponent.saveAll();
 

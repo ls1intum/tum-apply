@@ -36,11 +36,7 @@ import {
   ApplicationResourceApiMock,
   createMockApplicationDTO,
 } from 'util/application-resource-api.service.mock';
-import {
-  createJobResourceApiMock,
-  provideJobResourceApiMock,
-  JobResourceApiMock,
-} from 'util/job-resource-api.service.mock';
+import { createJobResourceApiMock, provideJobResourceApiMock, JobResourceApiMock } from 'util/job-resource-api.service.mock';
 import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {

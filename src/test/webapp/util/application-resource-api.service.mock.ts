@@ -1,7 +1,10 @@
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
-import { ApplicationForApplicantDTO, ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/models/application-for-applicant-dto';
 import { of } from 'rxjs';
 import { ApplicationOverviewDTO } from 'app/generated/models/application-overview-dto';
 
@@ -19,9 +22,7 @@ export type ApplicationResourceApiMock = {
   deleteDocumentFromApplication: ReturnType<typeof vi.fn>;
 };
 
-export const createMockApplicationDTO = (
-  applicationState: ApplicationForApplicantDTOApplicationStateEnum,
-): ApplicationForApplicantDTO => ({
+export const createMockApplicationDTO = (applicationState: ApplicationForApplicantDTOApplicationStateEnum): ApplicationForApplicantDTO => ({
   applicationState: applicationState,
   applicationId: '456',
   job: {
@@ -70,8 +71,6 @@ export function createApplicationResourceApiMock(): ApplicationResourceApiMock {
   };
 }
 
-export function provideApplicationResourceApiMock(
-  mock: ApplicationResourceApiMock = createApplicationResourceApiMock(),
-): Provider {
+export function provideApplicationResourceApiMock(mock: ApplicationResourceApiMock = createApplicationResourceApiMock()): Provider {
   return { provide: ApplicationResourceApi, useValue: mock };
 }
