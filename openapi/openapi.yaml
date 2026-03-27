@@ -3,6 +3,26 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
+  /api/admin/dependencies:
+    get:
+      tags: [admin-dependency-resource]
+      operationId: getOverview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/admin/dependencies/refresh:
+    get:
+      tags: [admin-dependency-resource]
+      operationId: refresh_1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -2848,6 +2868,30 @@ components:
       properties:
         departmentId: {type: string, format: uuid}
         name: {type: string}
+    DependenciesOverviewDTO:
+      type: object
+      properties:
+        clientCount: {type: integer, format: int32}
+        criticalCount: {type: integer, format: int32}
+        dependencies:
+          type: array
+          items: {$ref: '#/components/schemas/DependencyDTO'}
+        highCount: {type: integer, format: int32}
+        lowCount: {type: integer, format: int32}
+        mediumCount: {type: integer, format: int32}
+        serverCount: {type: integer, format: int32}
+        totalVulnerabilities: {type: integer, format: int32}
+    DependencyDTO:
+      type: object
+      properties:
+        group: {type: string}
+        name: {type: string}
+        purl: {type: string}
+        source: {type: string}
+        version: {type: string}
+        vulnerabilities:
+          type: array
+          items: {$ref: '#/components/schemas/VulnerabilityDTO'}
     Document:
       type: object
       properties:
@@ -3847,3 +3891,9 @@ components:
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         universityId: {type: string}
         userId: {type: string, format: uuid}
+    VulnerabilityDTO:
+      type: object
+      properties:
+        id: {type: string}
+        severity: {type: string}
+        summary: {type: string}
