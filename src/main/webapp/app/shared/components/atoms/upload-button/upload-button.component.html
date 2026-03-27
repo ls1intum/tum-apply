@@ -8,24 +8,27 @@
   #fileupload_component
 >
   <ng-template #empty>
-    <div class="flex justify-center flex-col gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
-      <div class="flex w-full justify-center mb-4">
-        <span class="flex items-center justify-center size-17 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
-              tabindex="0"
-              role="button"
-              aria-label="Select file to upload"
-              (click)="fileupload_component.choose()"
-              (keydown.enter)="fileupload_component.choose()"
-              (keydown.space)="$event.preventDefault(); fileupload_component.choose()">
+    <div class="flex flex-col justify-center gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
+      <div class="flex justify-center w-full mb-4">
+        <span
+          class="flex items-center justify-center size-17 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+          tabindex="0"
+          role="button"
+          aria-label="Select file to upload"
+          (click)="fileupload_component.choose()"
+          (keydown.enter)="fileupload_component.choose()"
+          (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
+        >
           <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg"></fa-icon>
         </span>
       </div>
-      <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
-      <p class="mt-0 mb-0 text-xs text-color text-center"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
+      <p class="text-sm text-color text-center mt-0" jhiTranslate="entity.upload.instruction"></p>
+      <p class="text-xs text-color text-center mt-0 mb-0"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
     </div>
   </ng-template>
+
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
-    <div class="mt-0 w-full">
+    <div class="w-full mt-0">
       <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
         <thead>
           <tr>
@@ -40,7 +43,7 @@
             @for (file of selectedFiles; track $index) {
               <tr [class]="rowClass">
                 <td>
-                  <span class="w-full h-full inline-flex justify-center">
+                  <span class="inline-flex justify-center w-full h-full">
                     <fa-icon
                       icon="cloud-arrow-up"
                       [style.color]="'var(--color-warning-default)'"
@@ -72,7 +75,7 @@
             @for (info of documentIds; track $index) {
               <tr [class]="rowClass">
                 <td>
-                  <span class="w-full h-full inline-flex justify-center">
+                  <span class="inline-flex justify-center w-full h-full">
                     <fa-icon
                       icon="file-circle-check"
                       [style.color]="'var(--color-positive-default)'"
