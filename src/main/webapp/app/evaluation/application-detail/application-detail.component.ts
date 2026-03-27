@@ -21,11 +21,11 @@ import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application
 import { AcceptDTO } from 'app/generated/models/accept-dto';
 import { RejectDTO } from 'app/generated/models/reject-dto';
 import { ApplicationEvaluationDetailListDTO } from 'app/generated/models/application-evaluation-detail-list-dto';
-import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/models/application-document-ids-dto';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TooltipModule } from 'primeng/tooltip';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
@@ -36,7 +36,6 @@ import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
 import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 type ApplicationStateEnum = ApplicationDetailDTOApplicationStateEnum;
 
 const CAROUSEL_SIZE = 7;
@@ -102,7 +101,11 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    return state !== ApplicationDetailDTOApplicationStateEnum.Accepted && state !== ApplicationDetailDTOApplicationStateEnum.Rejected && state !== ApplicationDetailDTOApplicationStateEnum.JobClosed;
+    return (
+      state !== ApplicationDetailDTOApplicationStateEnum.Accepted &&
+      state !== ApplicationDetailDTOApplicationStateEnum.Rejected &&
+      state !== ApplicationDetailDTOApplicationStateEnum.JobClosed
+    );
   });
 
   isAlreadyInInterview = computed(() => {

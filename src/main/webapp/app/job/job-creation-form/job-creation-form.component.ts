@@ -43,11 +43,16 @@ import {
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import {
+  JobFormDTOFundingTypeEnum,
+  JobFormDTOLocationEnum,
+  JobFormDTOStateEnum,
+  JobFormDTOSubjectAreaEnum,
+} from 'app/generated/models/job-form-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
-import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOStateEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 

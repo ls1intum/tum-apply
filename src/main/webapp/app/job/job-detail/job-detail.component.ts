@@ -20,22 +20,19 @@ import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { JobFormDTO } from 'app/generated/models/job-form-dto';
-import { ApplicationForApplicantDTO } from 'app/generated/models/application-for-applicant-dto';
 import { JobDetailDTO } from 'app/generated/models/job-detail-dto';
 import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 import { JobPreviewRequest } from 'app/generated/models/job-preview-request';
-import { UserShortDTO } from 'app/generated/models/user-short-dto';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { createMenuActionSignals } from 'app/shared/util/util';
-
-import * as DropDownOptions from '../dropdown-options';
-
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 import { JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 import { JobDetailDTOStateEnum } from 'app/generated/models/job-detail-dto';
+
+import * as DropDownOptions from '../dropdown-options';
 type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
 export interface JobDetails {
   supervisingProfessor: string;

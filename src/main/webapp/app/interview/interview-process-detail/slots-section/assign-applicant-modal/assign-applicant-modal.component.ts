@@ -51,7 +51,9 @@ export class AssignApplicantModalComponent {
   selectedApplicantId = signal<string | null>(null);
 
   // Filters out already scheduled and completed interviewees (UNCONTACTED + INVITED are assignable)
-  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== IntervieweeDTOStateEnum.Scheduled && i.state !== IntervieweeDTOStateEnum.Completed));
+  availableInterviewees = computed(() =>
+    this.interviewees().filter(i => i.state !== IntervieweeDTOStateEnum.Scheduled && i.state !== IntervieweeDTOStateEnum.Completed),
+  );
 
   // Returns true if an applicant is selected
   canAssign = computed(() => this.selectedApplicantId() !== null);

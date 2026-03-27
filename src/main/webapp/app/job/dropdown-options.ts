@@ -1,5 +1,3 @@
-import { JobFormDTO } from '../generated/models/job-form-dto';
-
 import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 const BASIC_INFO_I18N = 'jobCreationForm.basicInformationSection';
 

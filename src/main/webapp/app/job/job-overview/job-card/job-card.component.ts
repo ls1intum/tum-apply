@@ -6,13 +6,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { JobCardDTO } from 'app/generated/models/job-card-dto';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TranslateDirective } from 'app/shared/language';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { JobCardDTOApplicationStateEnum, JobCardDTOSubjectAreaEnum } from 'app/generated/models/job-card-dto';
 
 import * as DropDownOptions from '../../dropdown-options';
-import { JobCardDTOApplicationStateEnum, JobCardDTOSubjectAreaEnum } from 'app/generated/models/job-card-dto';
 export type ApplicationStatusExtended = JobCardDTOApplicationStateEnum | 'NOT_YET_APPLIED';
 
 export const ApplicationStatusExtended = {
