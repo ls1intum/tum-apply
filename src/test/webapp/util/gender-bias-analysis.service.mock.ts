@@ -6,7 +6,7 @@ import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gende
 
 export type GenderBiasAnalysisServiceMock = Pick<GenderBiasAnalysisService, 'triggerAnalysis' | 'getAnalysisForField'>;
 export function createGenderBiasAnalysisServiceMock(): GenderBiasAnalysisServiceMock {
-  const analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | null>(null);
+  const analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | undefined>(undefined);
 
   return {
     triggerAnalysis: vi.fn(),
