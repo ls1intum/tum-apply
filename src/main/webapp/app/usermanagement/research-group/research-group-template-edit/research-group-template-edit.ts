@@ -10,7 +10,6 @@ import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
-
 import 'quill-mention/autoregister';
 import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/models/email-template-dto';
 
