@@ -573,8 +573,7 @@ export class ApplicationResourceApiService extends BaseService {
 
         // to determine the Content-Type header
         const consumes: string[] = [
-            'multipart/form-data',
-            'application/json'
+            'multipart/form-data'
         ];
 
         const canConsumeForm = this.canConsumeForm(consumes);

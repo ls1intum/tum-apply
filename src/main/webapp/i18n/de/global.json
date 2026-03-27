@@ -38,6 +38,9 @@
         "images": "TUMApply - Meine Bilder",
         "info": "TUMApply - Meine Gruppe"
       },
+      "admin": {
+        "dependencies": "TUMApply - Abhängigkeiten"
+      },
       "about-us": "TumApply - Über uns",
       "interview": {
         "overview": "TUMApply - Interviewübersicht",

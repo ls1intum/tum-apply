@@ -24,8 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -274,7 +274,7 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void analyzeTextWithNonProfessorRoleReturns403() {
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
             Void result = api
@@ -286,7 +286,7 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void analyzeHtmlWithNonProfessorRoleReturns403() {
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
             Void result = api

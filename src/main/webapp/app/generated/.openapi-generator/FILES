@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/adminDependencyResourceApi.service.ts
 api/aiResourceApi.service.ts
 api/api.ts
 api/applicantResourceApi.service.ts
@@ -67,6 +68,8 @@ model/department.ts
 model/departmentCreationDTO.ts
 model/departmentDTO.ts
 model/departmentShortDTO.ts
+model/dependenciesOverviewDTO.ts
+model/dependencyDTO.ts
 model/document.ts
 model/documentDictionary.ts
 model/documentInformationHolderDTO.ts
@@ -139,16 +142,17 @@ model/updateAvatarDTO.ts
 model/updatePasswordDTO.ts
 model/updateSlotLocationDTO.ts
 model/updateUserNameDTO.ts
-model/uploadDocumentsRequest.ts
 model/user.ts
 model/userBookingInfoDTO.ts
 model/userDTO.ts
 model/userDataExportException.ts
 model/userDataExportExceptionCause.ts
 model/userDataExportExceptionCauseStackTraceInner.ts
+model/userDataExportExceptionCauseSuppressedInner.ts
 model/userForApplicationDetailDTO.ts
 model/userProfileDTO.ts
 model/userResearchGroupRole.ts
 model/userShortDTO.ts
+model/vulnerabilityDTO.ts
 param.ts
 variables.ts

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ContentChildren, Directive, QueryList, TemplateRef, computed, inject, input, output } from '@angular/core';
+import { Component, Directive, TemplateRef, computed, contentChildren, inject, input, output } from '@angular/core';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -39,7 +39,7 @@ export class TabViewComponent {
   // Outputs
   tabChange = output<string>();
 
-  @ContentChildren(TabPanelTemplateDirective) tabPanels?: QueryList<TabPanelTemplateDirective>;
+  readonly tabPanels = contentChildren(TabPanelTemplateDirective);
 
   // Computed current active tab id for PrimeNG binding
   readonly currentTabValue = computed(() => {
@@ -65,7 +65,7 @@ export class TabViewComponent {
   }
 
   findTemplate(tabId: string): TemplateRef<unknown> | null {
-    const panels: readonly TabPanelTemplateDirective[] = this.tabPanels?.toArray() ?? [];
+    const panels = this.tabPanels();
     const match = panels.find(panel => panel.tabId() === tabId);
     return match ? match.template : null;
   }
