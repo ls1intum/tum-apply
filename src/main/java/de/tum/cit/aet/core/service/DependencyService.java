@@ -1,9 +1,5 @@
 package de.tum.cit.aet.core.service;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.node.ObjectNode;
 import de.tum.cit.aet.core.dto.sbom.DependenciesOverviewDTO;
 import de.tum.cit.aet.core.dto.sbom.DependencyDTO;
 import de.tum.cit.aet.core.dto.sbom.VulnerabilityDTO;
@@ -19,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Service for parsing project dependencies and scanning them for known security vulnerabilities.
