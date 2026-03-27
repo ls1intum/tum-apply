@@ -40,3 +40,14 @@ export function getApplicantProfileDocumentIdsResource(): HttpResourceRef<Applic
     });
 }
 
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getSubjectAreaSubscriptionsResource(): HttpResourceRef<Array<string> | undefined> {
+    return httpResource<Array<string>>(() => {
+        return `${BASE_PATH}/api/applicants/subject-area-subscriptions`;
+    });
+}
+
