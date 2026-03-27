@@ -517,9 +517,7 @@ export class SlotsSectionComponent {
       }
 
       // 1. Fetch all slots for the target month
-      const response = await firstValueFrom(
-        this.interviewApi.getSlotsByProcessId(processId, year, month, undefined, undefined, 0, 1000),
-      );
+      const response = await firstValueFrom(this.interviewApi.getSlotsByProcessId(processId, year, month, undefined, undefined, 0, 1000));
       const allSlots = response.content ?? [];
 
       // 2. Partition into past and future based on current time

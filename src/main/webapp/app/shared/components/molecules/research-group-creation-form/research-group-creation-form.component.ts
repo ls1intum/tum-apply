@@ -278,9 +278,7 @@ export class ResearchGroupCreationFormComponent {
     }, this.ADMIN_LOADER_DELAY_MS);
 
     try {
-      const response = await firstValueFrom(
-        this.userApi.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
-      );
+      const response = await firstValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery));
       if (requestId !== this.latestAdminSearchRequestId) {
         return;
       }
