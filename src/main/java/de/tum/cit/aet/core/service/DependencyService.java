@@ -264,19 +264,30 @@ public class DependencyService {
      */
     private List<DependencyDTO> enrichWithVulnerabilities(List<DependencyDTO> deps) {
         List<DependencyDTO> enriched = new ArrayList<>(deps.size());
-        for (int i = 0; i < deps.size(); i += OSV_BATCH_SIZE) {
-            // 1) Slice the next batch of dependencies
-            List<DependencyDTO> batch = deps.subList(i, Math.min(i + OSV_BATCH_SIZE, deps.size()));
 
-            // 2) Query OSV.dev for vulnerabilities in this batch
+        // Separate managed deps (version not resolved, OSV cannot analyze them)
+        List<DependencyDTO> analyzable = new ArrayList<>();
+        List<DependencyDTO> managed = new ArrayList<>();
+        for (DependencyDTO dep : deps) {
+            if ("managed".equals(dep.version())) {
+                managed.add(dep);
+            } else {
+                analyzable.add(dep);
+            }
+        }
+
+        // Query OSV.dev only for dependencies with a concrete version
+        for (int i = 0; i < analyzable.size(); i += OSV_BATCH_SIZE) {
+            List<DependencyDTO> batch = analyzable.subList(i, Math.min(i + OSV_BATCH_SIZE, analyzable.size()));
             Map<String, List<VulnerabilityDTO>> vulnMap = queryOsv(batch);
-
-            // 3) Attach vulnerability data to each dependency
             for (DependencyDTO dep : batch) {
                 List<VulnerabilityDTO> vulns = vulnMap.getOrDefault(dep.purl(), List.of());
                 enriched.add(new DependencyDTO(dep.name(), dep.group(), dep.version(), dep.source(), dep.purl(), vulns));
             }
         }
+
+        // Add managed deps as-is (no vulnerability data, version unresolved)
+        enriched.addAll(managed);
         return enriched;
     }
 
