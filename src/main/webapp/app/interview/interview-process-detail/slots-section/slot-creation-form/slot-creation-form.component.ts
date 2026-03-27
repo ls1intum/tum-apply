@@ -1,4 +1,4 @@
-import { Component, QueryList, ViewChildren, computed, inject, input, model, output, signal } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal, viewChildren } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
@@ -48,7 +48,7 @@ import { toLocalDateString } from 'app/shared/util/date-time.util';
   templateUrl: './slot-creation-form.component.html',
 })
 export class SlotCreationFormComponent {
-  @ViewChildren(DateSlotCardComponent) dateCards!: QueryList<DateSlotCardComponent>;
+  readonly dateCards = viewChildren(DateSlotCardComponent);
 
   // Inputs
   readonly visible = model.required<boolean>();
@@ -253,7 +253,7 @@ export class SlotCreationFormComponent {
    * Copies the slots from the first selected date to all other selected dates.
    */
   copySlotsToAllDays(): void {
-    const cards = this.dateCards.toArray();
+    const cards = this.dateCards();
     if (cards.length < 2) {
       return;
     }

@@ -1,50 +1,44 @@
 package de.tum.cit.aet.core.config;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
-import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module.Feature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.io.IOException;
 import java.time.LocalTime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.datatype.hibernate7.Hibernate7Module;
+import tools.jackson.datatype.hibernate7.Hibernate7Module.Feature;
 
 @Configuration
 public class JacksonConfiguration {
 
     /**
-     * Support for Java date and time API.
+     * Custom serializer for LocalTime to ensure consistent string format.
+     * Java Time support is built into Jackson 3.x — this only overrides the LocalTime format.
      *
-     * @return the corresponding Jackson module.
+     * @return the configured Jackson module with the custom LocalTime serializer
      */
     @Bean
-    public JavaTimeModule javaTimeModule() {
-        final JavaTimeModule javaTime = new JavaTimeModule();
-        javaTime.addSerializer(
+    public SimpleModule localTimeSerializerModule() {
+        SimpleModule module = new SimpleModule("LocalTimeModule");
+        module.addSerializer(
             LocalTime.class,
-            new JsonSerializer<LocalTime>() {
+            new ValueSerializer<LocalTime>() {
                 @Override
-                public void serialize(LocalTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                public void serialize(LocalTime value, JsonGenerator gen, SerializationContext serializers) {
                     gen.writeString(value.toString());
                 }
             }
         );
-        return javaTime;
-    }
-
-    @Bean
-    public Jdk8Module jdk8TimeModule() {
-        return new Jdk8Module();
+        return module;
     }
 
     /*
      * Support for Hibernate types in Jackson.
      */
     @Bean
-    public Hibernate6Module hibernate6Module() {
-        return new Hibernate6Module().configure(Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS, true);
+    public Hibernate7Module hibernate7Module() {
+        return new Hibernate7Module().configure(Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS, true);
     }
 }
