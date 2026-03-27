@@ -91,7 +91,7 @@ describe('PersonalInformationSettingsComponent', () => {
       const component = await createComponent();
 
       expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledWith('body', false, { transferCache: false });
+      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledWith();
       expect(component.loadedProfile()).toEqual(createProfile());
       expect(component.data()).toEqual({
         firstName: 'Ada',

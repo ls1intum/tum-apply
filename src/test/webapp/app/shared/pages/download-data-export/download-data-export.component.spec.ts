@@ -92,7 +92,7 @@ describe('DownloadDataExportComponent', () => {
 
     await createComponent();
 
-    expect(exportServiceMock.downloadDataExport).toHaveBeenCalledWith('token-123', 'response');
+    expect(exportServiceMock.downloadDataExport).toHaveBeenCalledWith('token-123');
     expect(anchor.download).toBe('export.zip');
     expect(anchor.href).toContain('blob:url');
     expect(anchorClickSpy).toHaveBeenCalledTimes(1);
@@ -138,7 +138,7 @@ describe('DownloadDataExportComponent', () => {
 
     await createComponent();
 
-    expect(exportServiceMock.downloadDataExport).toHaveBeenCalledWith('token-fail', 'response');
+    expect(exportServiceMock.downloadDataExport).toHaveBeenCalledWith('token-fail');
     expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('global.dataExport.error.downloadFailed');
     expect(createObjectURLSpy).not.toHaveBeenCalled();
     expect(anchorClickSpy).not.toHaveBeenCalled();

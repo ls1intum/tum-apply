@@ -127,12 +127,7 @@ describe('DocumentSection', () => {
       fixture.componentRef.setInput('applicationId', 'app-1');
       await component.downloadAllDocuments();
 
-      expect(mockApi.downloadAll).toHaveBeenCalledWith(
-        'app-1',
-        'response',
-        false,
-        expect.objectContaining({ httpHeaderAccept: 'application/zip' }),
-      );
+      expect(mockApi.downloadAll).toHaveBeenCalledWith('app-1');
       expect(createObjectSpy).toHaveBeenCalledWith(blob);
       expect(clickSpy).toHaveBeenCalled();
       expect(anchor.download).toBe('documents.zip');

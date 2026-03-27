@@ -385,14 +385,18 @@ export class JobDetailComponent {
       };
 
       try {
-        const blob = await firstValueFrom(this.pdfExportService.exportJobPreviewToPDF(req));
-        const filename = 'job.pdf';
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        window.URL.revokeObjectURL(url);
+        const response = await firstValueFrom(this.pdfExportService.exportJobPreviewToPDF(req));
+        const contentDisposition = response.headers.get('Content-Disposition');
+        const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
+        const blob = response.body;
+        if (blob) {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
       } catch {
         this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
       }
@@ -402,14 +406,18 @@ export class JobDetailComponent {
     const jobId = this.jobId();
 
     try {
-      const blob = await firstValueFrom(this.pdfExportService.exportJobToPDF(jobId, labels));
-      const filename = 'job.pdf';
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      const response = await firstValueFrom(this.pdfExportService.exportJobToPDF(jobId, labels));
+      const contentDisposition = response.headers.get('Content-Disposition');
+      const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
+      const blob = response.body;
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
     } catch {
       this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
     }

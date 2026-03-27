@@ -743,7 +743,7 @@ describe('JobDetailComponent', () => {
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object), 'response');
+      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
     it('should download PDF for preview job', async () => {

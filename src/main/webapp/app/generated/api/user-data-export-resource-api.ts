@@ -12,7 +12,7 @@
  * UserDataExportResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DataExportStatusDTO } from '../models/data-export-status-dto';
@@ -27,10 +27,10 @@ export class UserDataExportResourceApi {
      * 
      * @param token 
      */
-    downloadDataExport(token: string): Observable<Blob> {
+    downloadDataExport(token: string): Observable<HttpResponse<Blob>> {
         const tokenPath = encodeURIComponent(String(token));
         const url = `${this.basePath}/api/users/data-export/download/${tokenPath}`;
-        return this.http.get<Blob>(url);
+        return this.http.get(url, { responseType: 'blob', observe: 'response' });
     }
 
     /**

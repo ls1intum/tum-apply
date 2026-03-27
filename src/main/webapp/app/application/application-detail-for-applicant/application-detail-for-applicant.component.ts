@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
@@ -198,7 +197,6 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private pdfExportService = inject(PdfExportResourceApi);
-  private http = inject(HttpClient);
   private translate = inject(TranslateService);
 
   private currentLang = toSignal(this.translate.onLangChange);
@@ -274,7 +272,7 @@ export default class ApplicationDetailForApplicantComponent {
       };
     }
 
-    this.http.post('/api/export/application/pdf', req, { observe: 'response', responseType: 'blob' }).subscribe(response => {
+    this.pdfExportService.exportApplicationToPDF(req).subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 

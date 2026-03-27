@@ -38,7 +38,7 @@ export class DocumentViewerComponent {
 
     try {
       const response = await firstValueFrom(this.documentService.downloadDocument(docId));
-      const pdfBlob = new Blob([response], { type: 'application/pdf' });
+      const pdfBlob = response.body ?? new Blob([], { type: 'application/pdf' });
       const safeUrl = this.cache.set(docId, pdfBlob);
       this.sanitizedBlobUrl.set(safeUrl);
     } catch (error) {

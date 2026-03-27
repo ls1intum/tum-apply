@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -86,8 +86,6 @@ export class DocumentSection {
     this.extraDocuments.set(result.slice(this.NUMBER_OF_DOCUMENTS));
   });
 
-  private http = inject(HttpClient);
-
   async downloadAllDocuments(): Promise<void> {
     const applicationId = this.applicationId();
     if (applicationId === undefined) {
@@ -96,13 +94,7 @@ export class DocumentSection {
     }
 
     try {
-      const response: HttpResponse<Blob> = await firstValueFrom(
-        this.http.get(`/api/evaluation/applications/${encodeURIComponent(applicationId)}/documents-download`, {
-          observe: 'response',
-          responseType: 'blob',
-          headers: { Accept: 'application/zip' },
-        }),
-      );
+      const response: HttpResponse<Blob> = await firstValueFrom(this.evaluationResourceService.downloadAll(applicationId));
 
       const blob = response.body;
 

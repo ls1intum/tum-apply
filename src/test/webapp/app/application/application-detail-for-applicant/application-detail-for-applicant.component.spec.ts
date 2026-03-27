@@ -266,7 +266,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
         application: expect.any(Object),
         labels: expect.any(Object),
       }),
-      'response',
     );
     expect(clickSpy).toHaveBeenCalled();
     expect((globalThis as unknown as { URL: { createObjectURL: Function } }).URL.createObjectURL).toHaveBeenCalled();
@@ -296,7 +295,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
         application: expect.any(Object),
         labels: expect.any(Object),
       }),
-      'response',
     );
     expect(anchor.download).toBe('application.pdf');
   });
