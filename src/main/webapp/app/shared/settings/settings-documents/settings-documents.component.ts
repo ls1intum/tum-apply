@@ -135,7 +135,7 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
-  private applicantService = inject(ApplicantResourceApi);
+  private applicantApi = inject(ApplicantResourceApi);
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
@@ -256,7 +256,7 @@ export class SettingsDocumentsComponent {
         masterGrade: this.form.get('masterGrade')?.value ?? undefined,
       };
 
-      await firstValueFrom(this.applicantService.updateApplicantDocumentSettings(applicantDTO));
+      await firstValueFrom(this.applicantApi.updateApplicantDocumentSettings(applicantDTO));
       await this.saveDeferredDocumentChanges();
       await this.loadProfile();
 
@@ -289,8 +289,8 @@ export class SettingsDocumentsComponent {
     try {
       this.hasInitialLimitsSet.set(false);
 
-      const profile = await firstValueFrom(this.applicantService.getApplicantProfile());
-      const profileDocumentIds = await firstValueFrom(this.applicantService.getApplicantProfileDocumentIds());
+      const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
+      const profileDocumentIds = await firstValueFrom(this.applicantApi.getApplicantProfileDocumentIds());
       this.applyProfileDocumentIds(profileDocumentIds);
 
       this.form.patchValue({
@@ -444,11 +444,11 @@ export class SettingsDocumentsComponent {
     });
 
     for (const documentId of deletedIds) {
-      await firstValueFrom(this.applicantService.deleteApplicantProfileDocument(documentId));
+      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
     }
 
     for (const document of renamedDocs) {
-      await firstValueFrom(this.applicantService.renameApplicantProfileDocument(document.id, document.newName));
+      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(document.id, document.newName));
     }
   }
 

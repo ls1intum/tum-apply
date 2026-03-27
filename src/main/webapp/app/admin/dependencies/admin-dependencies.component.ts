@@ -178,7 +178,7 @@ export class AdminDependenciesComponent {
   /** Icon used for vulnerability warning badges in the security column. */
   protected readonly faExclamationTriangle = faExclamationTriangle;
 
-  private readonly dependencyService = inject(AdminDependencyResourceApi);
+  private readonly dependencyApi = inject(AdminDependencyResourceApi);
   private readonly toastService = inject(ToastService);
 
   /** Loads the dependencies overview on component initialization. */
@@ -221,7 +221,7 @@ export class AdminDependenciesComponent {
   async loadDependencies(): Promise<void> {
     this.isLoading.set(true);
     try {
-      const overview = await firstValueFrom(this.dependencyService.getOverview());
+      const overview = await firstValueFrom(this.dependencyApi.getOverview());
       this.dependenciesOverview.set(overview);
     } catch {
       this.toastService.showErrorKey('dependencies.toast.loadError');
@@ -238,7 +238,7 @@ export class AdminDependenciesComponent {
   async refreshVulnerabilities(): Promise<void> {
     this.isRefreshing.set(true);
     try {
-      const overview = await firstValueFrom(this.dependencyService.refresh());
+      const overview = await firstValueFrom(this.dependencyApi.refresh());
       this.dependenciesOverview.set(overview);
       this.toastService.showSuccessKey('dependencies.toast.vulnerabilityRefreshSuccess');
     } catch {

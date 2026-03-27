@@ -17,7 +17,7 @@ export class DocumentViewerComponent {
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
-  private documentService = inject(DocumentResourceApi);
+  private documentApi = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
 
   constructor() {
@@ -37,7 +37,7 @@ export class DocumentViewerComponent {
     }
 
     try {
-      const response = await firstValueFrom(this.documentService.downloadDocument(docId));
+      const response = await firstValueFrom(this.documentApi.downloadDocument(docId));
       const pdfBlob = response.body ?? new Blob([], { type: 'application/pdf' });
       const safeUrl = this.cache.set(docId, pdfBlob);
       this.sanitizedBlobUrl.set(safeUrl);

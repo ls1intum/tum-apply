@@ -116,7 +116,7 @@ export class JobDetailComponent {
     return this.translate.instant('jobDetailPage.noData');
   });
 
-  pdfExportService = inject(PdfExportResourceApi);
+  pdfExportApi = inject(PdfExportResourceApi);
 
   readonly primaryActionButton = computed<ActionButton | null>(() => {
     if (this.previewData()) {
@@ -278,13 +278,13 @@ export class JobDetailComponent {
   readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
   readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
-  private jobResourceService = inject(JobResourceApi);
+  private jobResourceApi = inject(JobResourceApi);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupService = inject(ResearchGroupResourceApi);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
@@ -346,7 +346,7 @@ export class JobDetailComponent {
 
   async onCloseJob(): Promise<void> {
     try {
-      await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), JobDetailDTOStateEnum.Closed));
+      await firstValueFrom(this.jobResourceApi.changeJobState(this.jobId(), JobDetailDTOStateEnum.Closed));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
       this.location.back();
     } catch (error) {
@@ -358,7 +358,7 @@ export class JobDetailComponent {
 
   async onDeleteJob(): Promise<void> {
     try {
-      await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
+      await firstValueFrom(this.jobResourceApi.deleteJob(this.jobId()));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
       this.location.back();
     } catch (error) {
@@ -385,7 +385,7 @@ export class JobDetailComponent {
       };
 
       try {
-        const response = await firstValueFrom(this.pdfExportService.exportJobPreviewToPDF(req));
+        const response = await firstValueFrom(this.pdfExportApi.exportJobPreviewToPDF(req));
         const contentDisposition = response.headers.get('Content-Disposition');
         const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
         const blob = response.body;
@@ -406,7 +406,7 @@ export class JobDetailComponent {
     const jobId = this.jobId();
 
     try {
-      const response = await firstValueFrom(this.pdfExportService.exportJobToPDF(jobId, labels));
+      const response = await firstValueFrom(this.pdfExportApi.exportJobToPDF(jobId, labels));
       const contentDisposition = response.headers.get('Content-Disposition');
       const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
       const blob = response.body;
@@ -436,7 +436,7 @@ export class JobDetailComponent {
         return;
       }
 
-      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId()));
+      const job = await firstValueFrom(this.jobResourceApi.getJobDetails(this.jobId()));
       this.loadJobDetails(job);
       this.dataLoaded.set(true);
     } catch (error) {
@@ -547,7 +547,7 @@ export class JobDetailComponent {
     let researchGroupDetails;
     try {
       researchGroupDetails = await firstValueFrom(
-        this.researchGroupService.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
+        this.researchGroupApi.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
       );
     } catch {
       this.toastService.showError({ detail: `Error loading research Group details.` });

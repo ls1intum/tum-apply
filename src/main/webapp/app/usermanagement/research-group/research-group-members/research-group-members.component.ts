@@ -110,7 +110,7 @@ export class ResearchGroupMembersComponent {
 
   readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes('EMPLOYEE') ?? false);
 
-  private researchGroupService = inject(ResearchGroupResourceApi);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
@@ -151,7 +151,7 @@ export class ResearchGroupMembersComponent {
 
   async removeMember(member: UserShortDTO): Promise<void> {
     try {
-      await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
+      await firstValueFrom(this.researchGroupApi.removeMemberFromResearchGroup(member.userId ?? ''));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
         memberName: formatFullName(member.firstName, member.lastName),
       });
@@ -169,8 +169,8 @@ export class ResearchGroupMembersComponent {
     try {
       const id = this.researchGroupId();
       const members = id
-        ? await firstValueFrom(this.researchGroupService.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
-        : await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+        ? await firstValueFrom(this.researchGroupApi.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
+        : await firstValueFrom(this.researchGroupApi.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);
@@ -212,7 +212,7 @@ export class ResearchGroupMembersComponent {
 
   private async loadResearchGroupName(researchGroupId: string): Promise<void> {
     try {
-      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
       this.researchGroupName.set(researchGroup.name);
     } catch {
       this.researchGroupName.set(undefined);

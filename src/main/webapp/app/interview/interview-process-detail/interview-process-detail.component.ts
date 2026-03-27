@@ -39,7 +39,7 @@ export class InterviewProcessDetailComponent {
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly interviewService = inject(InterviewResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
 
@@ -74,7 +74,7 @@ export class InterviewProcessDetailComponent {
 
   private async loadProcessDetails(processId: string): Promise<void> {
     try {
-      const process = await firstValueFrom(this.interviewService.getInterviewProcessDetails(processId));
+      const process = await firstValueFrom(this.interviewApi.getInterviewProcessDetails(processId));
 
       if (process.jobTitle) {
         this.jobTitle.set(process.jobTitle);

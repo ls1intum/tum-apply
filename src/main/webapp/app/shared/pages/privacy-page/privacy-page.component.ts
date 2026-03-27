@@ -45,7 +45,7 @@ export class PrivacyPageComponent {
   readonly cooldownSeconds = signal<number>(0);
   readonly signedIn = computed(() => this.accountService.signedIn());
 
-  protected readonly userDataExportService = inject(UserDataExportResourceApi);
+  protected readonly userDataExportApi = inject(UserDataExportResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -69,7 +69,7 @@ export class PrivacyPageComponent {
     this.currentExportStatus.set('IN_CREATION');
 
     try {
-      await firstValueFrom(this.userDataExportService.requestDataExport());
+      await firstValueFrom(this.userDataExportApi.requestDataExport());
       await this.refreshStatus();
       this.toastService.showInfoKey('privacy.export.requested');
     } catch (error) {
@@ -96,7 +96,7 @@ export class PrivacyPageComponent {
       return;
     }
     try {
-      const status = await firstValueFrom(this.userDataExportService.getDataExportStatus());
+      const status = await firstValueFrom(this.userDataExportApi.getDataExportStatus());
       this.currentExportStatus.set((status.status as ExportStatus) ?? null);
       this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
     } catch {

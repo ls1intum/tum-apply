@@ -16,7 +16,7 @@ const createMockDocumentInfo = (overrides?: Partial<DocumentInformationHolderDTO
 });
 
 describe('DocumentViewerComponent', () => {
-  let documentService: Pick<DocumentResourceApi, 'downloadDocument'>;
+  let documentApi: Pick<DocumentResourceApi, 'downloadDocument'>;
   let cacheService: Pick<DocumentCacheService, 'get' | 'set'>;
   let domSanitizer: Pick<DomSanitizer, 'bypassSecurityTrustResourceUrl'>;
   let fixture: ComponentFixture<DocumentViewerComponent>;
@@ -25,7 +25,7 @@ describe('DocumentViewerComponent', () => {
   let mockSafeUrl: SafeResourceUrl;
 
   beforeEach(async () => {
-    documentService = {
+    documentApi = {
       downloadDocument: vi.fn(),
     };
 
@@ -47,7 +47,7 @@ describe('DocumentViewerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DocumentViewerComponent],
       providers: [
-        { provide: DocumentResourceApi, useValue: documentService },
+        { provide: DocumentResourceApi, useValue: documentApi },
         { provide: DocumentCacheService, useValue: cacheService },
         { provide: DomSanitizer, useValue: domSanitizer },
         provideTranslateMock(),
@@ -80,25 +80,25 @@ describe('DocumentViewerComponent', () => {
 
       expect(cacheService.get).toHaveBeenCalledWith('doc-123');
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
-      expect(documentService.downloadDocument).not.toHaveBeenCalled();
+      expect(documentApi.downloadDocument).not.toHaveBeenCalled();
     });
 
     it('should download document when not in cache', async () => {
       const mockBlob = new ArrayBuffer(100);
-      documentService.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
 
       await comp.initDocument();
 
       expect(cacheService.get).toHaveBeenCalledWith('doc-123');
-      expect(documentService.downloadDocument).toHaveBeenCalledWith('doc-123');
+      expect(documentApi.downloadDocument).toHaveBeenCalledWith('doc-123');
       expect(cacheService.set).toHaveBeenCalledWith('doc-123', expect.any(Blob));
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
     });
 
     it('should create PDF blob with correct type', async () => {
       const mockBlob = new ArrayBuffer(100);
-      documentService.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
       cacheService.set = vi.fn().mockImplementation((_, blob) => {
         expect(blob.type).toBe('application/pdf');
         expect(blob.size).toBe(100);
@@ -113,7 +113,7 @@ describe('DocumentViewerComponent', () => {
     it('should handle download error gracefully', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      documentService.downloadDocument = vi.fn().mockReturnValue(throwError(() => new Error('Download failed')));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(throwError(() => new Error('Download failed')));
 
       await comp.initDocument();
 
@@ -126,7 +126,7 @@ describe('DocumentViewerComponent', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       comp.sanitizedBlobUrl.set('previous-value' as unknown as SafeResourceUrl);
-      documentService.downloadDocument = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
 
       await comp.initDocument();
 
@@ -141,19 +141,19 @@ describe('DocumentViewerComponent', () => {
       const mockDocInfo2 = createMockDocumentInfo({ id: 'doc-2' });
       const mockSafeUrl2 = domSanitizer.bypassSecurityTrustResourceUrl('blob:http://test/doc-2');
 
-      documentService.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
       cacheService.set = vi.fn().mockReturnValueOnce(mockSafeUrl).mockReturnValueOnce(mockSafeUrl2);
 
       // Test first document
       fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
       await comp.initDocument();
-      expect(documentService.downloadDocument).toHaveBeenCalledWith('doc-123');
+      expect(documentApi.downloadDocument).toHaveBeenCalledWith('doc-123');
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
 
       // Test second document
       fixture.componentRef.setInput('documentDictionaryId', mockDocInfo2);
       await comp.initDocument();
-      expect(documentService.downloadDocument).toHaveBeenCalledWith('doc-2');
+      expect(documentApi.downloadDocument).toHaveBeenCalledWith('doc-2');
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl2);
     });
   });
@@ -161,7 +161,7 @@ describe('DocumentViewerComponent', () => {
   describe('integration - cache behavior', () => {
     it('should use cache and skip download when document is cached', async () => {
       cacheService.get = vi.fn().mockReturnValue(mockSafeUrl);
-      const downloadSpy = vi.spyOn(documentService, 'downloadDocument');
+      const downloadSpy = vi.spyOn(documentApi, 'downloadDocument');
 
       await comp.initDocument();
 
@@ -172,7 +172,7 @@ describe('DocumentViewerComponent', () => {
 
     it('should cache downloaded document', async () => {
       const mockBlob = new ArrayBuffer(200);
-      documentService.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
 
       await comp.initDocument();
@@ -187,12 +187,12 @@ describe('DocumentViewerComponent', () => {
       const mockBlob = new ArrayBuffer(100);
       fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
       cacheService.get = vi.fn().mockReturnValue(undefined);
-      documentService.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
 
       await comp.initDocument();
 
-      expect(documentService.downloadDocument).toHaveBeenCalledWith('');
+      expect(documentApi.downloadDocument).toHaveBeenCalledWith('');
     });
 
     it('should handle very large documents', async () => {
@@ -200,7 +200,7 @@ describe('DocumentViewerComponent', () => {
       mockDocInfo = createMockDocumentInfo({ id: 'large-doc', size: size });
       const largeBlob = new ArrayBuffer(size);
       fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
-      documentService.downloadDocument = vi.fn().mockReturnValue(of(largeBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of(largeBlob));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
 
       await comp.initDocument();

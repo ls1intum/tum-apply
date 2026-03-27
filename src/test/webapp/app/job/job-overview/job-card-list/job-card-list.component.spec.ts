@@ -17,7 +17,7 @@ describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
   let component: JobCardListComponent;
 
-  let jobService: {
+  let jobApi: {
     getAllFilters: ReturnType<typeof vi.fn>;
     getAvailableJobs: ReturnType<typeof vi.fn>;
   };
@@ -25,7 +25,7 @@ describe('JobCardListComponent', () => {
   let mockToastService = createToastServiceMock();
 
   beforeEach(async () => {
-    jobService = {
+    jobApi = {
       getAllFilters: vi.fn().mockReturnValue(
         of({
           subjectAreas: [DropdownOptions.subjectAreas[0].value, DropdownOptions.subjectAreas[1].value],
@@ -50,7 +50,7 @@ describe('JobCardListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [JobCardListComponent],
       providers: [
-        { provide: JobResourceApi, useValue: jobService },
+        { provide: JobResourceApi, useValue: jobApi },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideToastServiceMock(mockToastService),
@@ -73,7 +73,7 @@ describe('JobCardListComponent', () => {
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
-    expect(jobService.getAllFilters).toHaveBeenCalled();
+    expect(jobApi.getAllFilters).toHaveBeenCalled();
     // allSubjectAreas is a static list of i18n keys from DropdownOptions
     expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
@@ -81,7 +81,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle error when loading filters', async () => {
-    jobService.getAllFilters.mockReturnValueOnce(throwError(() => new Error('fail')));
+    jobApi.getAllFilters.mockReturnValueOnce(throwError(() => new Error('fail')));
 
     await component.loadAllFilter();
 
@@ -91,13 +91,13 @@ describe('JobCardListComponent', () => {
   it('should load jobs successfully', async () => {
     await component.loadJobs();
 
-    expect(jobService.getAvailableJobs).toHaveBeenCalled();
+    expect(jobApi.getAvailableJobs).toHaveBeenCalled();
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
   });
 
   it('should handle error when loading jobs', async () => {
-    jobService.getAvailableJobs.mockReturnValueOnce(throwError(() => new Error('fail')));
+    jobApi.getAvailableJobs.mockReturnValueOnce(throwError(() => new Error('fail')));
 
     await component.loadJobs();
 
@@ -179,7 +179,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should set empty jobs and totalRecords when API returns no content', async () => {
-    jobService.getAvailableJobs.mockReturnValueOnce(of({ content: undefined, totalElements: undefined }));
+    jobApi.getAvailableJobs.mockReturnValueOnce(of({ content: undefined, totalElements: undefined }));
 
     await component.loadJobs();
 
@@ -188,7 +188,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle loadAllFilter when API returns null fields', async () => {
-    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, subjectAreas: null, supervisorNames: null }));
+    jobApi.getAllFilters.mockReturnValueOnce(of({ jobNames: null, subjectAreas: null, supervisorNames: null }));
 
     await component.loadAllFilter();
 
@@ -239,7 +239,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should call loadAllFilter in constructor', () => {
-    expect(jobService.getAllFilters).toHaveBeenCalled();
+    expect(jobApi.getAllFilters).toHaveBeenCalled();
   });
 
   it('should render one job-card per job when jobs exist', () => {

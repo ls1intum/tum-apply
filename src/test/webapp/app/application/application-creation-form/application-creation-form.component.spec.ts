@@ -74,7 +74,7 @@ interface TestBedConfig {
   authOrchestrator: AuthOrchestratorServiceMock;
   localStorageService: LocalStorageServiceMock;
   translateService: TranslateServiceMock;
-  jobResourceService: JobResourceApiMock;
+  jobResourceApi: JobResourceApiMock;
 }
 
 async function configureTestBed(config: TestBedConfig) {
@@ -91,7 +91,7 @@ async function configureTestBed(config: TestBedConfig) {
       provideDialogServiceMock(config.dialogService),
       provideAuthOrchestratorServiceMock(config.authOrchestrator),
       provideLocalStorageServiceMock(config.localStorageService),
-      provideJobResourceApiMock(config.jobResourceService),
+      provideJobResourceApiMock(config.jobResourceApi),
       provideTranslateMock(config.translateService),
       provideFontAwesomeTesting(),
     ],
@@ -129,7 +129,7 @@ describe('ApplicationForm', () => {
   let localStorageService: LocalStorageServiceMock;
   let translateService: TranslateServiceMock;
   let activatedRoute: ActivatedRouteMock;
-  let jobResourceService: JobResourceApiMock;
+  let jobResourceApi: JobResourceApiMock;
 
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
@@ -154,8 +154,8 @@ describe('ApplicationForm', () => {
 
     translateService = createTranslateServiceMock();
 
-    jobResourceService = createJobResourceApiMock();
-    jobResourceService.getJobDetails = vi.fn().mockReturnValue({ title: 'Test Job' });
+    jobResourceApi = createJobResourceApiMock();
+    jobResourceApi.getJobDetails = vi.fn().mockReturnValue({ title: 'Test Job' });
 
     activatedRoute = createActivatedRouteMock({}, { job: '123', application: '456' });
 
@@ -171,7 +171,7 @@ describe('ApplicationForm', () => {
       authOrchestrator,
       localStorageService,
       translateService,
-      jobResourceService,
+      jobResourceApi,
     });
     fixture = TestBed.createComponent(ApplicationCreationFormComponent);
     comp = fixture.componentInstance;
@@ -210,7 +210,7 @@ describe('ApplicationForm', () => {
       authOrchestrator,
       localStorageService,
       translateService,
-      jobResourceService,
+      jobResourceApi,
     });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
@@ -242,7 +242,7 @@ describe('ApplicationForm', () => {
       authOrchestrator,
       localStorageService,
       translateService,
-      jobResourceService,
+      jobResourceApi,
     });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
@@ -379,7 +379,7 @@ describe('ApplicationForm', () => {
       const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
       const mockJobDetails = { title: 'Senior Software Engineer' };
 
-      jobResourceService.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
+      jobResourceApi.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
 
       comp.initPageForLocalStorageCase('job-456');
 
@@ -392,7 +392,7 @@ describe('ApplicationForm', () => {
       expect(loadDataSpy).toHaveBeenCalledWith('job-456');
       expect(comp.applicationState()).toBe('SAVED');
       expect(comp.title()).toBe('Senior Software Engineer');
-      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-456');
+      expect(jobResourceApi.getJobDetails).toHaveBeenCalledWith('job-456');
     });
 
     it('should handle missing title in jobDetails in initPageForLocalStorageCase', async () => {
@@ -402,7 +402,7 @@ describe('ApplicationForm', () => {
       // Reset title to empty string
       comp.title = signal('');
 
-      jobResourceService.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
+      jobResourceApi.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
 
       comp.initPageForLocalStorageCase('job-789');
 
@@ -415,13 +415,13 @@ describe('ApplicationForm', () => {
       expect(loadDataSpy).toHaveBeenCalledWith('job-789');
       expect(comp.applicationState()).toBe('SAVED');
       expect(comp.title()).toBe(''); // Title should remain empty since jobDetails has no title
-      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-789');
+      expect(jobResourceApi.getJobDetails).toHaveBeenCalledWith('job-789');
     });
 
     it('should handle error when fetching jobDetails in initPageForLocalStorageCase', async () => {
       const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
 
-      jobResourceService.getJobDetails = vi.fn().mockReturnValue(throwError(() => new Error('Job fetch failed')));
+      jobResourceApi.getJobDetails = vi.fn().mockReturnValue(throwError(() => new Error('Job fetch failed')));
 
       comp.initPageForLocalStorageCase('job-error');
 
@@ -434,7 +434,7 @@ describe('ApplicationForm', () => {
       expect(loadDataSpy).toHaveBeenCalledWith('job-error');
       expect(comp.applicationState()).toBe('SAVED');
       // Error should be silently caught (no toast shown for non-critical operation)
-      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-error');
+      expect(jobResourceApi.getJobDetails).toHaveBeenCalledWith('job-error');
     });
   });
 

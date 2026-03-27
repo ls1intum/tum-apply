@@ -44,7 +44,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
-  private readonly userResourceService = inject(UserResourceApi);
+  private readonly userResourceApi = inject(UserResourceApi);
 
   /**
    * Returns the id of the signed-in user, or undefined if no user is loaded.
@@ -110,7 +110,7 @@ export class AccountService {
     const normalizedFirstName = firstName.trim();
     const normalizedLastName = lastName.trim();
     await firstValueFrom(
-      this.userResourceService.updateUserName({
+      this.userResourceApi.updateUserName({
         firstName: normalizedFirstName,
         lastName: normalizedLastName,
       }),
@@ -121,7 +121,7 @@ export class AccountService {
   async updatePassword(password: string): Promise<void> {
     const trimmedPassword = password.trim();
     if (trimmedPassword) {
-      await firstValueFrom(this.userResourceService.updatePassword({ newPassword: trimmedPassword }));
+      await firstValueFrom(this.userResourceApi.updatePassword({ newPassword: trimmedPassword }));
     }
   }
 
@@ -131,7 +131,7 @@ export class AccountService {
 
   private async getCurrentUser(): Promise<UserShortDTO | null> {
     try {
-      const user = await firstValueFrom(this.userResourceService.getCurrentUser());
+      const user = await firstValueFrom(this.userResourceApi.getCurrentUser());
       return user;
     } catch (error) {
       console.error('Failed to fetch user:', error);

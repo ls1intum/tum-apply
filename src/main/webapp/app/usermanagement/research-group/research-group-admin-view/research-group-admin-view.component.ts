@@ -198,7 +198,7 @@ export class ResearchGroupAdminView {
 
   private toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
-  private researchGroupService = inject(ResearchGroupResourceApi);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
   private readonly dialogService = inject(DialogService);
   private router = inject(Router);
 
@@ -269,7 +269,7 @@ export class ResearchGroupAdminView {
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {
     try {
-      await firstValueFrom(this.researchGroupService.activateResearchGroup(researchGroupId));
+      await firstValueFrom(this.researchGroupApi.activateResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.approve`);
       await this.loadResearchGroups();
     } catch {
@@ -279,7 +279,7 @@ export class ResearchGroupAdminView {
 
   async onDenyResearchGroup(researchGroupId: string): Promise<void> {
     try {
-      await firstValueFrom(this.researchGroupService.denyResearchGroup(researchGroupId));
+      await firstValueFrom(this.researchGroupApi.denyResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.deny`);
       await this.loadResearchGroups();
     } catch {
@@ -289,7 +289,7 @@ export class ResearchGroupAdminView {
 
   async onWithdrawResearchGroup(researchGroupId: string): Promise<void> {
     try {
-      await firstValueFrom(this.researchGroupService.withdrawResearchGroup(researchGroupId));
+      await firstValueFrom(this.researchGroupApi.withdrawResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.withdraw`);
       await this.loadResearchGroups();
     } catch {
@@ -326,7 +326,7 @@ export class ResearchGroupAdminView {
   private async loadResearchGroups(): Promise<void> {
     try {
       const pageData = await firstValueFrom(
-        this.researchGroupService.getResearchGroupsForAdmin(
+        this.researchGroupApi.getResearchGroupsForAdmin(
           this.pageSize(),
           this.page(),
           this.selectedStatusFilters(),

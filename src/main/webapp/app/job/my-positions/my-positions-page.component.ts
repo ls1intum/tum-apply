@@ -187,7 +187,7 @@ export class MyPositionsPageComponent {
     };
   });
 
-  private jobService = inject(JobResourceApi);
+  private jobApi = inject(JobResourceApi);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);
@@ -251,7 +251,7 @@ export class MyPositionsPageComponent {
 
   async onDeleteJob(jobId: string): Promise<void> {
     try {
-      await firstValueFrom(this.jobService.deleteJob(jobId));
+      await firstValueFrom(this.jobApi.deleteJob(jobId));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
       await this.loadJobs();
     } catch (error) {
@@ -263,7 +263,7 @@ export class MyPositionsPageComponent {
 
   async onCloseJob(jobId: string): Promise<void> {
     try {
-      await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
+      await firstValueFrom(this.jobApi.changeJobState(jobId, 'CLOSED'));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
       await this.loadJobs();
     } catch (error) {
@@ -307,7 +307,7 @@ export class MyPositionsPageComponent {
         return;
       }
       const pageData = await firstValueFrom(
-        this.jobService.getJobsForCurrentResearchGroup(
+        this.jobApi.getJobsForCurrentResearchGroup(
           this.pageSize(),
           this.page(),
           emptyToUndef(this.selectedStatusFilters()),

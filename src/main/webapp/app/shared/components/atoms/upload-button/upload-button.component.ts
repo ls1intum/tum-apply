@@ -72,7 +72,7 @@ export class UploadButtonComponent {
   showDuplicateDialog = signal(false);
   showReplacementDialog = signal(false);
 
-  private applicationService = inject(ApplicationResourceApi);
+  private applicationApi = inject(ApplicationResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
 
@@ -128,7 +128,7 @@ export class UploadButtonComponent {
         this.removeQueuedFileFor(existingDoc.id);
       } else {
         try {
-          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
+          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(existingDoc.id));
           const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
           this.documentIds.set(updatedList);
         } catch {
@@ -164,7 +164,7 @@ export class UploadButtonComponent {
     } else {
       for (const doc of existingDocs) {
         try {
-          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
+          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(doc.id));
         } catch {
           this.toastService.showErrorKey('entity.upload.error.replace_failed');
           return;
@@ -186,7 +186,7 @@ export class UploadButtonComponent {
     this.isUploading.set(true);
     try {
       const uploadedPromises = files.map(file =>
-        firstValueFrom(this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), file)),
+        firstValueFrom(this.applicationApi.uploadDocuments(this.applicationId(), this.documentType(), file)),
       );
       const uploadResults = await Promise.all(uploadedPromises);
       const allUploadedIds = uploadResults.flat();
@@ -213,7 +213,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationService.deleteDocumentFromApplication(documentId));
+      await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
       this.documentIds.set(updatedList);
     } catch {
@@ -255,7 +255,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
+      await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
       const updatedDocs =
         this.documentIds()?.map(doc =>
           doc.id === documentId

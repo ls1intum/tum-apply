@@ -59,7 +59,7 @@ export class JobCardListComponent {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
 
-  private jobService = inject(JobResourceApi);
+  private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
   private readonly loadJobsEffect = effect(() => {
@@ -118,7 +118,7 @@ export class JobCardListComponent {
 
   async loadAllFilter(): Promise<void> {
     try {
-      const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
+      const filterOptions = await firstValueFrom(this.jobApi.getAllFilters());
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
       this.allSupervisorNames.set([]);
@@ -129,7 +129,7 @@ export class JobCardListComponent {
   async loadJobs(): Promise<void> {
     try {
       const pageData = await firstValueFrom(
-        this.jobService.getAvailableJobs(
+        this.jobApi.getAvailableJobs(
           this.pageSize(),
           this.page(),
           emptyToUndef(this.selectedSubjectAreaFilters()),

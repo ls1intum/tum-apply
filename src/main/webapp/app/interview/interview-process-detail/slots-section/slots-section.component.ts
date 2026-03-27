@@ -64,8 +64,8 @@ export class SlotsSectionComponent {
   readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
-  readonly interviewService = inject(InterviewResourceApi);
-  readonly emailTemplateService = inject(EmailTemplateResourceApi);
+  readonly interviewApi = inject(InterviewResourceApi);
+  readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   readonly translateService = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly breakpointObserver = inject(BreakpointObserver);
@@ -342,7 +342,7 @@ export class SlotsSectionComponent {
 
     try {
       this.editLoading.set(true);
-      await firstValueFrom(this.interviewService.updateSlotLocation(slot.id, { location: this.editLocation().trim() }));
+      await firstValueFrom(this.interviewApi.updateSlotLocation(slot.id, { location: this.editLocation().trim() }));
       this.toastService.showSuccessKey('interview.slots.edit.success');
       this.closeEditDialog();
       await this.refreshSlots();
@@ -372,7 +372,7 @@ export class SlotsSectionComponent {
 
     try {
       // Opt out of global loading to prevent UI flicker, we could add a local loading spinner later if needed
-      await firstValueFrom(this.interviewService.deleteSlot(slotId));
+      await firstValueFrom(this.interviewApi.deleteSlot(slotId));
       await this.checkGlobalSlots(this.processId(), false);
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
@@ -413,7 +413,7 @@ export class SlotsSectionComponent {
     if (slot?.id == null) return;
 
     try {
-      await firstValueFrom(this.interviewService.cancelInterview(this.processId(), slot.id, cancelParams));
+      await firstValueFrom(this.interviewApi.cancelInterview(this.processId(), slot.id, cancelParams));
 
       await this.checkGlobalSlots(this.processId(), false);
 
@@ -453,12 +453,12 @@ export class SlotsSectionComponent {
 
       // 1. Check if ANY slots exist (page size 1 — we only need totalElements)
       const anySlotsTask = firstValueFrom(
-        this.interviewService.getSlotsByProcessId(processId, undefined, undefined, undefined, undefined, 0, 1),
+        this.interviewApi.getSlotsByProcessId(processId, undefined, undefined, undefined, undefined, 0, 1),
       );
 
       // 2. Fetch all future slots to count unbooked ones globally (across all months)
       const unbookedTask = firstValueFrom(
-        this.interviewService.getSlotsByProcessId(processId, undefined, undefined, new Date().toISOString(), undefined, 0, 1000),
+        this.interviewApi.getSlotsByProcessId(processId, undefined, undefined, new Date().toISOString(), undefined, 0, 1000),
       );
 
       // 3. Run both in parallel — they are independent queries
@@ -518,7 +518,7 @@ export class SlotsSectionComponent {
 
       // 1. Fetch all slots for the target month
       const response = await firstValueFrom(
-        this.interviewService.getSlotsByProcessId(processId, year, month, undefined, undefined, 0, 1000),
+        this.interviewApi.getSlotsByProcessId(processId, year, month, undefined, undefined, 0, 1000),
       );
       const allSlots = response.content ?? [];
 
@@ -609,7 +609,7 @@ export class SlotsSectionComponent {
     if (this.locationChangedTemplateId() !== undefined) return;
 
     try {
-      const res = await firstValueFrom(this.emailTemplateService.getTemplates(100, 0));
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(100, 0));
       const template = res.content?.find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED');
       if (template?.emailTemplateId) {
         this.locationChangedTemplateId.set(template.emailTemplateId);

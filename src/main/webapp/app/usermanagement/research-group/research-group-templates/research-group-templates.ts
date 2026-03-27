@@ -25,7 +25,7 @@ export class ResearchGroupTemplates {
   protected pageSize = signal<number>(10);
   protected total = signal<number>(0);
 
-  protected readonly emailTemplateService = inject(EmailTemplateResourceApi);
+  protected readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);
@@ -91,7 +91,7 @@ export class ResearchGroupTemplates {
 
   async delete(templateId: string): Promise<void> {
     try {
-      await firstValueFrom(this.emailTemplateService.deleteTemplate(templateId));
+      await firstValueFrom(this.emailTemplateApi.deleteTemplate(templateId));
       this.toastService.showSuccess({ detail: this.translate.instant(`${this.translationKey}.deleteSuccess`) });
     } catch {
       this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.deleteFailed`) });
@@ -110,7 +110,7 @@ export class ResearchGroupTemplates {
 
   private async loadPage(): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateService.getTemplates(this.pageSize(), this.pageNumber()));
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageSize(), this.pageNumber()));
 
       this.responseData.set(res.content ?? []);
       this.total.set(res.totalElements ?? 0);

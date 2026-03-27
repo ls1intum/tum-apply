@@ -26,14 +26,14 @@ export class OnboardingOrchestratorService {
   private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
   private readonly dialog = inject(DialogService);
-  private readonly profOnboardingResourceService = inject(ProfOnboardingResourceApi);
+  private readonly profOnboardingApi = inject(ProfOnboardingResourceApi);
 
   // Prevents opening multiple dialogs concurrently.
   private opened = false;
 
   private readonly checkTrigger$ = new Subject<void>();
   private readonly checkResult = toSignal<ProfOnboardingDTO | undefined>(
-    this.checkTrigger$.pipe(switchMap(() => this.profOnboardingResourceService.check().pipe(take(1)))),
+    this.checkTrigger$.pipe(switchMap(() => this.profOnboardingApi.check().pipe(take(1)))),
     { initialValue: undefined },
   );
 

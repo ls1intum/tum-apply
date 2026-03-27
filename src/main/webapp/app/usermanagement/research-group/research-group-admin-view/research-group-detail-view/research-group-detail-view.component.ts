@@ -70,8 +70,8 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     return this.departmentOptions().find(opt => opt.value === deptId);
   });
 
-  readonly ResearchGroupService = inject(ResearchGroupResourceApi);
-  private readonly departmentService = inject(DepartmentResourceApi);
+  readonly researchGroupApi = inject(ResearchGroupResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -84,7 +84,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   async loadDepartments(): Promise<void> {
     try {
-      const departments = await firstValueFrom(this.departmentService.getDepartments());
+      const departments = await firstValueFrom(this.departmentApi.getDepartments());
       this.departments.set(departments);
     } catch {
       this.toastService.showErrorKey('researchGroup.detailView.errors.loadDepartments');
@@ -125,7 +125,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         departmentId: formValue.departmentId ?? undefined,
       };
 
-      await firstValueFrom(this.ResearchGroupService.updateResearchGroup(researchGroupId, updateData));
+      await firstValueFrom(this.researchGroupApi.updateResearchGroup(researchGroupId, updateData));
 
       this.toastService.showSuccessKey('researchGroup.detailView.success.updated');
     } catch {
@@ -144,7 +144,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     }
 
     try {
-      const researchGroup = await firstValueFrom(this.ResearchGroupService.getResearchGroup(researchGroupId));
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
     } catch {
       this.toastService.showErrorKey('researchGroup.detailView.errors.view');

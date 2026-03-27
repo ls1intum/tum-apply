@@ -191,8 +191,8 @@ export class IntervieweeSectionComponent {
   });
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApi);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
+  private readonly applicationApi = inject(ApplicationEvaluationResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -219,7 +219,7 @@ export class IntervieweeSectionComponent {
 
     try {
       this.processingAdd.set(true);
-      await firstValueFrom(this.interviewService.addApplicantsToInterview(processId, dto));
+      await firstValueFrom(this.interviewApi.addApplicantsToInterview(processId, dto));
       this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
       this.closeAddModal();
       void this.loadInterviewees();
@@ -237,7 +237,7 @@ export class IntervieweeSectionComponent {
 
     try {
       this.loadingInterviewees.set(true);
-      const data = await firstValueFrom(this.interviewService.getIntervieweesByProcessId(processId));
+      const data = await firstValueFrom(this.interviewApi.getIntervieweesByProcessId(processId));
       this.interviewees.set(data);
     } catch {
       this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
@@ -276,7 +276,7 @@ export class IntervieweeSectionComponent {
     try {
       this.sendingBulk.set(true);
       const result = await firstValueFrom(
-        this.interviewService.sendInvitations(processId, {
+        this.interviewApi.sendInvitations(processId, {
           onlyUninvited: true,
         }),
       );
@@ -293,7 +293,7 @@ export class IntervieweeSectionComponent {
     try {
       this.loadingApplicants.set(true);
       const result = await firstValueFrom(
-        this.applicationService.getApplicationsDetails(
+        this.applicationApi.getApplicationsDetails(
           this.pageNumber(),
           this.pageSize(),
           'appliedAt',
@@ -371,7 +371,7 @@ export class IntervieweeSectionComponent {
     if (interviewee?.scheduledSlot?.id == null || processId === '') return;
 
     try {
-      await firstValueFrom(this.interviewService.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
+      await firstValueFrom(this.interviewApi.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
 
@@ -424,7 +424,7 @@ export class IntervieweeSectionComponent {
     try {
       this.sendingInvitationId.set(intervieweeId);
       const result = await firstValueFrom(
-        this.interviewService.sendInvitations(processId, {
+        this.interviewApi.sendInvitations(processId, {
           intervieweeIds: [intervieweeId],
         }),
       );

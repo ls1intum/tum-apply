@@ -30,33 +30,33 @@ describe('JobDetailComponent', () => {
   const mockRouter = createRouterMock();
 
   let location: Location;
-  let jobService: {
+  let jobApi: {
     getJobDetails: ReturnType<typeof vi.fn>;
     changeJobState: ReturnType<typeof vi.fn>;
     deleteJob: ReturnType<typeof vi.fn>;
   };
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService = createToastServiceMock();
-  let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
-  let pdfExportService: {
+  let researchGroupApi: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
+  let pdfExportApi: {
     exportJobToPDF: ReturnType<typeof vi.fn>;
     exportJobPreviewToPDF: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     location = { back: vi.fn() } as unknown as Location;
-    jobService = {
+    jobApi = {
       getJobDetails: vi.fn(),
       changeJobState: vi.fn(),
       deleteJob: vi.fn(),
     };
     mockAccountService = createAccountServiceMock();
 
-    researchGroupService = {
+    researchGroupApi = {
       getResourceGroupDetails: vi.fn().mockReturnValue(of({ description: 'RG Desc' })),
     };
 
-    pdfExportService = {
+    pdfExportApi = {
       exportJobToPDF: vi.fn(),
       exportJobPreviewToPDF: vi.fn(),
     };
@@ -65,10 +65,10 @@ describe('JobDetailComponent', () => {
       imports: [JobDetailComponent],
       providers: [
         { provide: Location, useValue: location },
-        { provide: JobResourceApi, useValue: jobService },
-        { provide: ResearchGroupResourceApi, useValue: researchGroupService },
+        { provide: JobResourceApi, useValue: jobApi },
+        { provide: ResearchGroupResourceApi, useValue: researchGroupApi },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
-        { provide: PdfExportResourceApi, useValue: pdfExportService },
+        { provide: PdfExportResourceApi, useValue: pdfExportApi },
         provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
         provideAccountServiceMock(mockAccountService),
@@ -168,28 +168,28 @@ describe('JobDetailComponent', () => {
   });
 
   it('should close job successfully', async () => {
-    jobService.changeJobState.mockReturnValue(of({}));
+    jobApi.changeJobState.mockReturnValue(of({}));
     await component.onCloseJob();
-    expect(jobService.changeJobState).toHaveBeenCalledWith('job123', 'CLOSED');
+    expect(jobApi.changeJobState).toHaveBeenCalledWith('job123', 'CLOSED');
     expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
   });
 
   it('should handle close job error', async () => {
-    jobService.changeJobState.mockReturnValue(throwError(() => new Error('fail')));
+    jobApi.changeJobState.mockReturnValue(throwError(() => new Error('fail')));
     await component.onCloseJob();
     expect(mockToastService.showError).toHaveBeenCalled();
   });
 
   it('should delete job successfully', async () => {
-    jobService.deleteJob.mockReturnValue(of({}));
+    jobApi.deleteJob.mockReturnValue(of({}));
     await component.onDeleteJob();
-    expect(jobService.deleteJob).toHaveBeenCalledWith('job123');
+    expect(jobApi.deleteJob).toHaveBeenCalledWith('job123');
     expect(mockToastService.showSuccess).toHaveBeenCalled();
   });
 
   it('should handle delete job error', async () => {
-    jobService.deleteJob.mockReturnValue(throwError(() => new Error('boom')));
+    jobApi.deleteJob.mockReturnValue(throwError(() => new Error('boom')));
     await component.onDeleteJob();
     expect(mockToastService.showError).toHaveBeenCalled();
   });
@@ -203,16 +203,16 @@ describe('JobDetailComponent', () => {
       createdAt: new Date().toISOString(),
       lastModifiedAt: new Date().toISOString(),
     } as JobDetailDTO;
-    jobService.getJobDetails.mockReturnValue(of(dto));
+    jobApi.getJobDetails.mockReturnValue(of(dto));
 
     await component.init();
 
-    expect(jobService.getJobDetails).toHaveBeenCalledWith('job123');
+    expect(jobApi.getJobDetails).toHaveBeenCalledWith('job123');
     expect(component.dataLoaded()).toBe(true);
   });
 
   it('should handle init error with HttpErrorResponse', async () => {
-    jobService.getJobDetails.mockReturnValue(throwError(() => new Error('fail')));
+    jobApi.getJobDetails.mockReturnValue(throwError(() => new Error('fail')));
     await component.init();
     expect(mockToastService.showError).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
@@ -225,8 +225,8 @@ describe('JobDetailComponent', () => {
     expect(component.dataLoaded()).toBe(true);
   });
 
-  it('should handle error when researchGroupService fails', async () => {
-    researchGroupService.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
+  it('should handle error when researchGroupApi fails', async () => {
+    researchGroupApi.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
     const form: JobFormDTO = { title: 'FormJob' } as JobFormDTO;
     await (component as unknown as { loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void> }).loadJobDetailsFromForm(form);
     expect(mockToastService.showError).toHaveBeenCalled();
@@ -302,8 +302,8 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: JobResourceApi, useValue: jobService },
-          { provide: ResearchGroupResourceApi, useValue: researchGroupService },
+          { provide: JobResourceApi, useValue: jobApi },
+          { provide: ResearchGroupResourceApi, useValue: researchGroupApi },
           { provide: ActivatedRoute, useValue: invalidRoute },
           provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
@@ -477,7 +477,7 @@ describe('JobDetailComponent', () => {
 
   it('should handle HttpErrorResponse in init()', async () => {
     const httpError = new HttpErrorResponse({ status: 500, statusText: 'Server Error' });
-    jobService.getJobDetails.mockReturnValue(throwError(() => httpError));
+    jobApi.getJobDetails.mockReturnValue(throwError(() => httpError));
     await component.init();
     expect(mockToastService.showError).toHaveBeenCalledWith({
       detail: expect.stringContaining('500'),
@@ -585,8 +585,8 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: JobResourceApi, useValue: jobService },
-          { provide: ResearchGroupResourceApi, useValue: researchGroupService },
+          { provide: JobResourceApi, useValue: jobApi },
+          { provide: ResearchGroupResourceApi, useValue: researchGroupApi },
           { provide: ActivatedRoute, useValue: routeNoJobId },
           provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
@@ -600,7 +600,7 @@ describe('JobDetailComponent', () => {
     const fixture2 = TestBed.createComponent(JobDetailComponent);
     const comp2 = fixture2.componentInstance;
 
-    jobService.getJobDetails.mockReturnValue(of({ title: 'FallbackJob' } as JobDetails));
+    jobApi.getJobDetails.mockReturnValue(of({ title: 'FallbackJob' } as JobDetails));
 
     await comp2.init();
 
@@ -676,7 +676,7 @@ describe('JobDetailComponent', () => {
       state: 'CLOSED',
     };
 
-    const spy = vi.spyOn(researchGroupService, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
+    const spy = vi.spyOn(researchGroupApi, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
 
     await (
       component as unknown as {
@@ -738,12 +738,12 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; filename="test.pdf"') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobToPDF.mockReturnValue(of(mockResponse));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object));
+      expect(pdfExportApi.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
     it('should download PDF for preview job', async () => {
@@ -751,14 +751,14 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; filename="preview.pdf"') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
 
       const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
       fixture.componentRef.setInput('previewData', signal(previewJob));
 
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
+      expect(pdfExportApi.exportJobPreviewToPDF).toHaveBeenCalled();
     });
 
     it('should show error when preview formData is missing', async () => {
@@ -770,7 +770,7 @@ describe('JobDetailComponent', () => {
     });
 
     it('should handle error in preview PDF generation', async () => {
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
+      pdfExportApi.exportJobPreviewToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
 
       const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
       fixture.componentRef.setInput('previewData', signal(previewJob));
@@ -780,7 +780,7 @@ describe('JobDetailComponent', () => {
     });
 
     it('should handle error in normal PDF generation', async () => {
-      pdfExportService.exportJobToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
+      pdfExportApi.exportJobToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
@@ -793,12 +793,12 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue(null) },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobToPDF.mockReturnValue(of(mockResponse));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledOnce();
+      expect(pdfExportApi.exportJobToPDF).toHaveBeenCalledOnce();
     });
 
     it('should use default filename when regex does not match Content-Disposition', async () => {
@@ -806,12 +806,12 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobToPDF.mockReturnValue(of(mockResponse));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledOnce();
+      expect(pdfExportApi.exportJobToPDF).toHaveBeenCalledOnce();
     });
 
     it('should use default filename when regex does not match in preview mode', async () => {
@@ -820,7 +820,7 @@ describe('JobDetailComponent', () => {
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
 
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
 
       const previewJob: JobFormDTO = {
         title: 'Preview',
@@ -831,7 +831,7 @@ describe('JobDetailComponent', () => {
 
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalledOnce();
+      expect(pdfExportApi.exportJobPreviewToPDF).toHaveBeenCalledOnce();
     });
   });
 });

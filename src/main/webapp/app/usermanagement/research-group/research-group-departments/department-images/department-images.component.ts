@@ -57,8 +57,8 @@ export class DepartmentImages {
   readonly inUseImages = computed(() => this.defaultImages().filter(image => image.isInUse === true));
   readonly notInUseImages = computed(() => this.defaultImages().filter(image => image.isInUse !== true));
 
-  private readonly imageService = inject(ImageResourceApi);
-  private readonly departmentService = inject(DepartmentResourceApi);
+  private readonly imageApi = inject(ImageResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly preselectedDepartmentId = signal<string>('');
@@ -70,7 +70,7 @@ export class DepartmentImages {
 
   async loadDepartments(): Promise<void> {
     try {
-      const departments = await firstValueFrom(this.departmentService.getDepartments());
+      const departments = await firstValueFrom(this.departmentApi.getDepartments());
       this.departments.set(departments);
       this.applyPreselectedDepartment();
     } catch {
@@ -91,7 +91,7 @@ export class DepartmentImages {
       return;
     }
     try {
-      const images = await firstValueFrom(this.imageService.getDefaultJobBanners(departmentId));
+      const images = await firstValueFrom(this.imageApi.getDefaultJobBanners(departmentId));
       this.defaultImages.set(images);
     } catch {
       this.defaultImages.set([]);
@@ -105,7 +105,7 @@ export class DepartmentImages {
       this.toastService.showErrorKey('researchGroup.departments.images.error.noDepartment');
       return EMPTY;
     }
-    return this.imageService.uploadDefaultJobBanner(departmentId, file);
+    return this.imageApi.uploadDefaultJobBanner(departmentId, file);
   };
 
   onImageUploaded(uploadedImage: ImageDTO): void {
@@ -122,7 +122,7 @@ export class DepartmentImages {
     }
 
     try {
-      await firstValueFrom(this.imageService.deleteImage(imageId));
+      await firstValueFrom(this.imageApi.deleteImage(imageId));
       this.defaultImages.update(images => images.filter(image => image.imageId !== imageId));
       this.toastService.showSuccessKey('researchGroup.departments.images.success.imageDeleted');
     } catch {

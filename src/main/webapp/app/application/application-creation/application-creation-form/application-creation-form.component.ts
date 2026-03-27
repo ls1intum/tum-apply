@@ -339,7 +339,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceService = inject(ApplicationResourceApi);
+  private readonly applicationResourceApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
@@ -348,7 +348,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
-  private readonly jobResourceService = inject(JobResourceApi);
+  private readonly jobResourceApi = inject(JobResourceApi);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -418,7 +418,7 @@ export default class ApplicationCreationFormComponent {
       this.applicationState.set('SAVED');
 
       // Fetch job title for display
-      firstValueFrom(this.jobResourceService.getJobDetails(jobId))
+      firstValueFrom(this.jobResourceApi.getJobDetails(jobId))
         .then(jobDetails => {
           if (jobDetails.title) {
             this.title.set(jobDetails.title);
@@ -433,7 +433,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
-    const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+    const application = await firstValueFrom(this.applicationResourceApi.getApplicationById(applicationId));
 
     if (application.applicationState !== 'SAVED') {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
@@ -446,7 +446,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO> {
-    const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
+    const application = await firstValueFrom(this.applicationResourceApi.createApplication(jobId));
 
     if (application.applicationState !== 'SAVED') {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
@@ -511,7 +511,7 @@ export default class ApplicationCreationFormComponent {
     const updateApplication = this.mapPagesToDTO(state) as UpdateApplicationDTO;
 
     try {
-      await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
+      await firstValueFrom(this.applicationResourceApi.updateApplication(updateApplication));
 
       // Clear local storage on successful server save
       this.clearLocalStorage();
@@ -538,7 +538,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
+    firstValueFrom(this.applicationResourceApi.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })

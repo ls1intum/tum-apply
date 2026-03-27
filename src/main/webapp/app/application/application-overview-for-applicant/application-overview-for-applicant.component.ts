@@ -192,7 +192,7 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
-  private readonly applicationService = inject(ApplicationResourceApi);
+  private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
 
   private applicantId = signal<string>('');
@@ -211,7 +211,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
     try {
       const page = await firstValueFrom(
-        this.applicationService.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
+        this.applicationApi.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
       );
       this.pageData.set(page.content ?? []);
       this.total.set(page.totalElements ?? 0);
@@ -235,7 +235,7 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    this.applicationService.deleteApplication(applicationId).subscribe({
+    this.applicationApi.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });
         const event = this.lastLazyLoadEvent();
@@ -249,7 +249,7 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onWithdrawApplication(applicationId: string): void {
-    this.applicationService.withdrawApplication(applicationId).subscribe({
+    this.applicationApi.withdrawApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
         const event = this.lastLazyLoadEvent();

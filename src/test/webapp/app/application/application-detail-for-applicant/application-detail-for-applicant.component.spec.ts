@@ -26,7 +26,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
 
   const routeMock = createActivatedRouteMock(paramId ? { application_id: paramId } : {});
   const translate: TranslateServiceMock = createTranslateServiceMock();
-  const pdfExportService = createPdfExportResourceApiMock();
+  const pdfExportApi = createPdfExportResourceApiMock();
   const toast: ToastServiceMock = createToastServiceMock();
   const router: RouterMock = createRouterMock();
   const location: LocationMock = createLocationMock();
@@ -35,7 +35,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
     providers: [
       provideActivatedRouteMock(routeMock),
       provideApplicationResourceApiMock(applicationService),
-      providePdfExportResourceApiMock(pdfExportService),
+      providePdfExportResourceApiMock(pdfExportApi),
       provideTranslateMock(translate),
       provideToastServiceMock(toast),
       provideRouterMock(router),
@@ -46,7 +46,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
 
   const fixture = TestBed.createComponent(ApplicationDetailForApplicantComponent);
   const component = fixture.componentInstance;
-  return { component, applicationService, pdfExportService, translate, toast, router, location, routeMock };
+  return { component, applicationService, pdfExportApi, translate, toast, router, location, routeMock };
 }
 
 const DEFAULT_APPLICATION_DETAIL: ApplicationDetailDTO = {
@@ -237,7 +237,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   });
 
   it('downloads PDF and uses filename from header', async () => {
-    const { component, pdfExportService } = setupTest('APP10', {
+    const { component, pdfExportApi } = setupTest('APP10', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP10' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
@@ -257,11 +257,11 @@ describe('ApplicationDetailForApplicantComponent', () => {
       headers: { get: (name: string) => (name === 'Content-Disposition' ? 'attachment; filename="app10.pdf"' : null) },
       body: new Blob(['content']),
     } as { headers: { get: (name: string) => string | null }; body: Blob };
-    pdfExportService.exportApplicationToPDF.mockReturnValue(of(response));
+    pdfExportApi.exportApplicationToPDF.mockReturnValue(of(response));
 
     await component.onDownloadPDF();
 
-    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalledWith(
+    expect(pdfExportApi.exportApplicationToPDF).toHaveBeenCalledWith(
       expect.objectContaining({
         application: expect.any(Object),
         labels: expect.any(Object),
@@ -272,7 +272,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   });
 
   it('falls back to default filename when header missing', async () => {
-    const { component, pdfExportService } = setupTest('APP11', {
+    const { component, pdfExportApi } = setupTest('APP11', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP11' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
@@ -286,11 +286,11 @@ describe('ApplicationDetailForApplicantComponent', () => {
       headers: { get: () => null },
       body: new Blob(['c']),
     };
-    pdfExportService.exportApplicationToPDF.mockReturnValue(of(response));
+    pdfExportApi.exportApplicationToPDF.mockReturnValue(of(response));
 
     await component.onDownloadPDF();
 
-    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalledWith(
+    expect(pdfExportApi.exportApplicationToPDF).toHaveBeenCalledWith(
       expect.objectContaining({
         application: expect.any(Object),
         labels: expect.any(Object),

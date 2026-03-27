@@ -129,7 +129,7 @@ describe('ResearchGroupAddMembersComponent', () => {
   });
 
   describe('Load users', () => {
-    it('should not call userService on init when there is no search query', () => {
+    it('should not call userApi on init when there is no search query', () => {
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
       expect(component.users()).toEqual([]);
       expect(component.totalRecords()).toBe(0);

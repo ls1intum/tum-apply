@@ -74,8 +74,8 @@ export class ResearchGroupInfoComponent {
 
   // Services
   private accountService = inject(AccountService);
-  private researchGroupService = inject(ResearchGroupResourceApi);
-  private departmentService = inject(DepartmentResourceApi);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
+  private departmentApi = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private translate = inject(TranslateService);
 
@@ -116,7 +116,7 @@ export class ResearchGroupInfoComponent {
         city: formValue.city ?? '',
       };
 
-      await firstValueFrom(this.researchGroupService.updateResearchGroup(researchGroupId, updateData));
+      await firstValueFrom(this.researchGroupApi.updateResearchGroup(researchGroupId, updateData));
 
       this.toastService.showSuccess({
         detail: this.translate.instant(`${this.translationKey}.toasts.updated`),
@@ -142,7 +142,7 @@ export class ResearchGroupInfoComponent {
         return;
       }
 
-      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
 
       // Fetch department info if departmentId exists
@@ -164,7 +164,7 @@ export class ResearchGroupInfoComponent {
    */
   private async loadDepartmentInfo(departmentId: string): Promise<void> {
     try {
-      const department = await firstValueFrom(this.departmentService.getDepartmentById(departmentId));
+      const department = await firstValueFrom(this.departmentApi.getDepartmentById(departmentId));
       this.departmentName.set(department.name ?? null);
       this.schoolName.set(department.school?.name ?? null);
     } catch {

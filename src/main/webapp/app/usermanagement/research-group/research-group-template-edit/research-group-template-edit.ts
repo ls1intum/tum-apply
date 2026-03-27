@@ -41,7 +41,7 @@ import { AccountService } from '../../../core/auth/account.service';
 export class ResearchGroupTemplateEdit {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
-  readonly emailTemplateService = inject(EmailTemplateResourceApi);
+  readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   readonly translate = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly accountService = inject(AccountService);
@@ -328,9 +328,9 @@ export class ResearchGroupTemplateEdit {
 
     try {
       if (form.emailTemplateId != null) {
-        await firstValueFrom(this.emailTemplateService.updateTemplate(form));
+        await firstValueFrom(this.emailTemplateApi.updateTemplate(form));
       } else {
-        const created = await firstValueFrom(this.emailTemplateService.createTemplate(form));
+        const created = await firstValueFrom(this.emailTemplateApi.createTemplate(form));
         this.formModel.set({ ...form, emailTemplateId: created.emailTemplateId });
         this.skipNextAutosave = true;
       }
@@ -350,7 +350,7 @@ export class ResearchGroupTemplateEdit {
   // Load and sanitize template data from server
   private async load(templateId: string): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateService.getTemplate(templateId));
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplate(templateId));
       const safeTemplate: EmailTemplateDTO = {
         ...res,
         english: res.english ?? { subject: '', body: '' },

@@ -51,7 +51,7 @@ export class ResearchGroupImagesComponent {
   readonly inUseCount = computed(() => this.inUseImages().length);
   readonly notInUseCount = computed(() => this.notInUseImages().length);
 
-  private readonly imageService = inject(ImageResourceApi);
+  private readonly imageApi = inject(ImageResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
 
@@ -70,8 +70,8 @@ export class ResearchGroupImagesComponent {
       const researchGroupId = this.selectedResearchGroupId();
       const images = await firstValueFrom(
         researchGroupId === ''
-          ? this.imageService.getResearchGroupJobBanners()
-          : this.imageService.getResearchGroupJobBannersByResearchGroup(researchGroupId),
+          ? this.imageApi.getResearchGroupJobBanners()
+          : this.imageApi.getResearchGroupJobBannersByResearchGroup(researchGroupId),
       );
 
       this.allImages.set(images);
@@ -100,8 +100,8 @@ export class ResearchGroupImagesComponent {
   uploadImage = (file: File): Observable<ImageDTO> => {
     const researchGroupId = this.selectedResearchGroupId();
     return researchGroupId === ''
-      ? this.imageService.uploadJobBanner(file)
-      : this.imageService.uploadJobBannerForResearchGroup(researchGroupId, file);
+      ? this.imageApi.uploadJobBanner(file)
+      : this.imageApi.uploadJobBannerForResearchGroup(researchGroupId, file);
   };
 
   /**
@@ -113,7 +113,7 @@ export class ResearchGroupImagesComponent {
     }
 
     try {
-      await firstValueFrom(this.imageService.deleteImage(imageId));
+      await firstValueFrom(this.imageApi.deleteImage(imageId));
       this.allImages.update(images => images.filter(img => img.imageId !== imageId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.imageDeleted`);
     } catch {

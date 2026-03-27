@@ -144,11 +144,11 @@ export class ResearchGroupCreationFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly config = inject(DynamicDialogConfig, { optional: true });
   private readonly ref = inject(DynamicDialogRef, { optional: true });
-  private readonly researchGroupService = inject(ResearchGroupResourceApi);
-  private readonly profOnboardingService = inject(ProfOnboardingResourceApi);
-  private readonly schoolService = inject(SchoolResourceApi);
-  private readonly departmentService = inject(DepartmentResourceApi);
-  private readonly userService = inject(UserResourceApi);
+  private readonly researchGroupApi = inject(ResearchGroupResourceApi);
+  private readonly profOnboardingApi = inject(ProfOnboardingResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
+  private readonly userApi = inject(UserResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly ADMIN_LOADER_DELAY_MS = 250;
   private adminLoaderTimeout: number | undefined = undefined;
@@ -163,8 +163,8 @@ export class ResearchGroupCreationFormComponent {
   async loadSchoolsAndDepartments(): Promise<void> {
     try {
       const [schools, departments] = await Promise.all([
-        firstValueFrom(this.schoolService.getAllSchools()),
-        firstValueFrom(this.departmentService.getDepartments()),
+        firstValueFrom(this.schoolApi.getAllSchools()),
+        firstValueFrom(this.departmentApi.getDepartments()),
       ]);
       this.schools.set(schools);
       this.departments.set(departments);
@@ -279,7 +279,7 @@ export class ResearchGroupCreationFormComponent {
 
     try {
       const response = await firstValueFrom(
-        this.userService.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
+        this.userApi.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
       );
       if (requestId !== this.latestAdminSearchRequestId) {
         return;
@@ -336,13 +336,13 @@ export class ResearchGroupCreationFormComponent {
 
       if (isAdminMode) {
         // Admin creates research group directly as ACTIVE
-        result = await firstValueFrom(this.researchGroupService.createResearchGroupAsAdmin(requestData));
+        result = await firstValueFrom(this.researchGroupApi.createResearchGroupAsAdmin(requestData));
         this.toastService.showSuccessKey('researchGroup.adminView.success.create');
       } else {
         // Professor creates research group as DRAFT (requires approval)
-        result = await firstValueFrom(this.researchGroupService.createProfessorResearchGroupRequest(requestData));
+        result = await firstValueFrom(this.researchGroupApi.createProfessorResearchGroupRequest(requestData));
         // Mark onboarding as confirmed after successful research group request submission
-        await firstValueFrom(this.profOnboardingService.confirmOnboarding());
+        await firstValueFrom(this.profOnboardingApi.confirmOnboarding());
         this.toastService.showSuccessKey('onboarding.professorRequest.success');
       }
 
@@ -416,7 +416,7 @@ export class ResearchGroupCreationFormComponent {
     }
 
     try {
-      const currentUser = await firstValueFrom(this.userService.getCurrentUser());
+      const currentUser = await firstValueFrom(this.userApi.getCurrentUser());
       const firstName = this.normalizePrefillValue(currentUser.firstName);
       const lastName = this.normalizePrefillValue(currentUser.lastName);
       const email = this.normalizePrefillValue(currentUser.email);

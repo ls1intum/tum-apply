@@ -101,7 +101,7 @@ export class IntervieweeAssessmentComponent {
 
   // Services
   private readonly router = inject(Router);
-  private readonly interviewService = inject(InterviewResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly serverRating = signal<number | undefined>(undefined);
   private readonly isInitializing = signal<boolean>(true);
@@ -140,7 +140,7 @@ export class IntervieweeAssessmentComponent {
     const dto: UpdateAssessmentDTO = { notes };
 
     try {
-      const updated = await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
+      const updated = await firstValueFrom(this.interviewApi.updateAssessment(processId, intervieweeId, dto));
 
       this.interviewee.set(updated);
       this.toastService.showSuccessKey('interview.assessment.notes.saved');
@@ -173,7 +173,7 @@ export class IntervieweeAssessmentComponent {
     this.isInitializing.set(true);
 
     try {
-      const data = await firstValueFrom(this.interviewService.getIntervieweeDetails(processId, intervieweeId));
+      const data = await firstValueFrom(this.interviewApi.getIntervieweeDetails(processId, intervieweeId));
 
       this.interviewee.set(data);
       this.rating.set(data.rating ?? undefined);
@@ -191,7 +191,7 @@ export class IntervieweeAssessmentComponent {
     const dto: UpdateAssessmentDTO = rating === undefined ? { clearRating: true } : { rating };
 
     try {
-      await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
+      await firstValueFrom(this.interviewApi.updateAssessment(processId, intervieweeId, dto));
       this.serverRating.set(rating);
     } catch {
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');

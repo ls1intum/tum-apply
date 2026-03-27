@@ -142,7 +142,7 @@ export class InterviewBookingComponent {
 
   // Services
   private readonly route = inject(ActivatedRoute);
-  private readonly bookingService = inject(InterviewBookingResourceApi);
+  private readonly bookingApi = inject(InterviewBookingResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
@@ -188,7 +188,7 @@ export class InterviewBookingComponent {
     if (processId === null) return;
 
     try {
-      await firstValueFrom(this.bookingService.bookSlot(processId, { slotId: slot.id }));
+      await firstValueFrom(this.bookingApi.bookSlot(processId, { slotId: slot.id }));
       this.toastService.showSuccessKey('interview.booking.bookingSuccess');
       this.selectedSlot.set(null);
       // Reload data to show confirmation
@@ -267,7 +267,7 @@ export class InterviewBookingComponent {
     try {
       this.loading.set(true);
       this.error.set(false);
-      const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month, 0, 100));
+      const data = await firstValueFrom(this.bookingApi.getBookingData(processId, year, month, 0, 100));
 
       // Auto-select first available month on initial load using first slot's date
       if (!this.initialized()) {

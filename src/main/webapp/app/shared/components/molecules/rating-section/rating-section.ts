@@ -15,7 +15,7 @@ import { SubSection } from '../../atoms/sub-section/sub-section';
   templateUrl: './rating-section.html',
 })
 export class RatingSection {
-  ratingService = inject(RatingResourceApi);
+  ratingApi = inject(RatingResourceApi);
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
@@ -57,7 +57,7 @@ export class RatingSection {
   private async loadRatings(applicationId: string): Promise<void> {
     this.isInitializing.set(true);
     try {
-      const response = await firstValueFrom(this.ratingService.getRatings(applicationId));
+      const response = await firstValueFrom(this.ratingApi.getRatings(applicationId));
       this.ratings.set(response);
 
       // Initialize myRating from server (e.g. response.currentUserRating)
@@ -73,9 +73,9 @@ export class RatingSection {
 
   private async upsertMyRating(applicationId: string, value: number | undefined): Promise<void> {
     try {
-      await firstValueFrom(this.ratingService.updateRating(applicationId, value));
+      await firstValueFrom(this.ratingApi.updateRating(applicationId, value));
 
-      const refreshed = await firstValueFrom(this.ratingService.getRatings(applicationId));
+      const refreshed = await firstValueFrom(this.ratingApi.getRatings(applicationId));
       this.ratings.set(refreshed);
 
       // Sync myRating and serverCurrent with the refreshed data

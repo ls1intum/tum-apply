@@ -47,8 +47,8 @@ export class ResearchGroupAddMembersComponent {
   users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
-  userService = inject(UserResourceApi);
-  researchGroupService = inject(ResearchGroupResourceApi);
+  userApi = inject(UserResourceApi);
+  researchGroupApi = inject(ResearchGroupResourceApi);
   toastService = inject(ToastService);
 
   public readonly MIN_SEARCH_LENGTH = 3;
@@ -113,7 +113,7 @@ export class ResearchGroupAddMembersComponent {
     const requestId = ++this.latestRequestId;
 
     try {
-      const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
+      const response = await lastValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
       // If another newer request has been started, ignore the response of this (stale) one
       if (requestId !== this.latestRequestId) {
         return;
@@ -183,7 +183,7 @@ export class ResearchGroupAddMembersComponent {
       const researchGroupId = this.researchGroupId();
 
       const data = { keycloakUsers: Array.from(this.selectedUsers().values()), researchGroupId };
-      await lastValueFrom(this.researchGroupService.addMembersToResearchGroup(data));
+      await lastValueFrom(this.researchGroupApi.addMembersToResearchGroup(data));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
     } catch (err) {

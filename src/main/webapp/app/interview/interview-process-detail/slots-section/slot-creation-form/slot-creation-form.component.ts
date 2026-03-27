@@ -141,7 +141,7 @@ export class SlotCreationFormComponent {
   readonly minDate = new Date();
 
   // Dependencies
-  private readonly interviewService = inject(InterviewResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
 
   /**
@@ -317,7 +317,7 @@ export class SlotCreationFormComponent {
         };
       });
 
-      const createdSlots = await firstValueFrom(this.interviewService.createSlots(this.processId(), { slots: slotsToCreate }));
+      const createdSlots = await firstValueFrom(this.interviewApi.createSlots(this.processId(), { slots: slotsToCreate }));
 
       this.toastService.showSuccessKey('interview.slots.create.success');
       this.success.emit(createdSlots);
@@ -464,7 +464,7 @@ export class SlotCreationFormComponent {
     }
 
     try {
-      const conflictData = await firstValueFrom(this.interviewService.getConflictDataForDate(this.processId(), dateStr));
+      const conflictData = await firstValueFrom(this.interviewApi.getConflictDataForDate(this.processId(), dateStr));
       this.conflictDataByDate.update(map => {
         const newMap = new Map(map);
         newMap.set(dateStr, conflictData);

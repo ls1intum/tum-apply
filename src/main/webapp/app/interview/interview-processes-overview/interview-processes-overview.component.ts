@@ -107,7 +107,7 @@ export class InterviewProcessesOverviewComponent {
   private readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
@@ -189,8 +189,8 @@ export class InterviewProcessesOverviewComponent {
       this.loading.set(true);
       this.error.set(false);
       const [overviewData, upcomingData] = await Promise.all([
-        firstValueFrom(this.interviewService.getInterviewOverview()),
-        firstValueFrom(this.interviewService.getUpcomingInterviews()),
+        firstValueFrom(this.interviewApi.getInterviewOverview()),
+        firstValueFrom(this.interviewApi.getUpcomingInterviews()),
       ]);
       const processesWithImages = overviewData.map((process, index) => ({
         ...process,

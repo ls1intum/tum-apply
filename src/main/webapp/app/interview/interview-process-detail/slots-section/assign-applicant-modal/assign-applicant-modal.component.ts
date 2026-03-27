@@ -75,7 +75,7 @@ export class AssignApplicantModalComponent {
   private locale = computed(() => getLocale(this.translateService));
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -100,7 +100,7 @@ export class AssignApplicantModalComponent {
     }
 
     try {
-      const updatedSlot = await firstValueFrom(this.interviewService.assignSlotToInterviewee(slotId, { applicationId }));
+      const updatedSlot = await firstValueFrom(this.interviewApi.assignSlotToInterviewee(slotId, { applicationId }));
       this.toastService.showSuccessKey('interview.assign.success');
       this.applicantAssigned.emit(updatedSlot);
       this.closeModal();
@@ -169,7 +169,7 @@ export class AssignApplicantModalComponent {
   private async fetchInterviewees(): Promise<void> {
     try {
       const processId = this.processId();
-      const data = await firstValueFrom(this.interviewService.getIntervieweesByProcessId(processId));
+      const data = await firstValueFrom(this.interviewApi.getIntervieweesByProcessId(processId));
       this.interviewees.set(data);
     } catch {
       this.toastService.showErrorKey('interview.assign.error.loadFailed');

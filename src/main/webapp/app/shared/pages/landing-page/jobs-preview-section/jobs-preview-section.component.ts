@@ -15,7 +15,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
   templateUrl: './jobs-preview-section.component.html',
 })
 export class JobsPreviewSectionComponent {
-  readonly jobService = inject(JobResourceApi);
+  readonly jobApi = inject(JobResourceApi);
   readonly toastService = inject(ToastService);
   readonly router = inject(Router);
 
@@ -31,7 +31,7 @@ export class JobsPreviewSectionComponent {
   async loadJobs(): Promise<void> {
     try {
       const jobs = await firstValueFrom(
-        this.jobService.getAvailableJobs(this.pageSize(), 0, undefined, undefined, undefined, 'startDate', 'DESC'),
+        this.jobApi.getAvailableJobs(this.pageSize(), 0, undefined, undefined, undefined, 'startDate', 'DESC'),
       );
       this.jobs.set(jobs.content ?? []);
     } catch {

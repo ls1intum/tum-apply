@@ -36,7 +36,7 @@ export class ImageUploadButtonComponent {
   readonly isUploading = signal<boolean>(false);
 
   // Services
-  readonly imageService = inject(ImageResourceApi);
+  readonly imageApi = inject(ImageResourceApi);
 
   // Constants
   readonly DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -121,7 +121,7 @@ export class ImageUploadButtonComponent {
     // Upload the image
     try {
       this.isUploading.set(true);
-      const uploadObservable = this.uploadFn()?.(file) ?? this.imageService.uploadJobBanner(file);
+      const uploadObservable = this.uploadFn()?.(file) ?? this.imageApi.uploadJobBanner(file);
       const uploadedImage = await firstValueFrom(uploadObservable);
       this.imageUploaded.emit(uploadedImage);
     } catch {

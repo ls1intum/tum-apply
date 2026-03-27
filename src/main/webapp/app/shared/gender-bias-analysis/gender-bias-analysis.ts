@@ -20,7 +20,7 @@ export class GenderBiasAnalysisService {
   private readonly lastLanguages = new Map<string, string>();
   private readonly firstLoads = new Set<string>();
 
-  private readonly apiService = inject(GenderBiasAnalysisResourceApi);
+  private readonly genderBiasApi = inject(GenderBiasAnalysisResourceApi);
 
   getAnalysisForField(fieldId: string): Observable<GenderBiasAnalysisResponse | undefined> {
     if (!this.analyses.has(fieldId)) {
@@ -47,7 +47,7 @@ export class GenderBiasAnalysisService {
   }
 
   analyzeHtmlContent(request: GenderBiasAnalysisRequest): Observable<GenderBiasAnalysisResponse> {
-    return this.apiService.analyzeHtmlContent(request);
+    return this.genderBiasApi.analyzeHtmlContent(request);
   }
 
   triggerAnalysis(fieldId: string, text: string, language: string): void {

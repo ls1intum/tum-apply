@@ -32,7 +32,7 @@ export interface NotificationGroup {
 export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
-  protected emailSettingService = inject(EmailSettingResourceApi);
+  protected emailSettingApi = inject(EmailSettingResourceApi);
   protected toastService = inject(ToastService);
 
   // to control that switches are only displayed when settings are loaded
@@ -87,7 +87,7 @@ export class EmailSettingsComponent {
 
   async loadSettings(role: RolesEnum): Promise<void> {
     try {
-      const settings = await firstValueFrom(this.emailSettingService.getEmailSettings());
+      const settings = await firstValueFrom(this.emailSettingApi.getEmailSettings());
 
       const updatedGroups = this.roleSettings()
         .get(role)
@@ -119,7 +119,7 @@ export class EmailSettingsComponent {
         enabled: group.enabled,
       }));
 
-      void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
+      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings));
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
     }

@@ -50,8 +50,8 @@ export class DepartmentEditDialogComponent {
 
   private readonly config = inject(DynamicDialogConfig);
   private readonly ref = inject(DynamicDialogRef);
-  private readonly departmentService = inject(DepartmentResourceApi);
-  private readonly schoolService = inject(SchoolResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -70,7 +70,7 @@ export class DepartmentEditDialogComponent {
 
   async loadSchools(): Promise<void> {
     try {
-      const schools = await firstValueFrom(this.schoolService.getAllSchools());
+      const schools = await firstValueFrom(this.schoolApi.getAllSchools());
       this.schools.set(schools);
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.errors.loadSchoolsFailed`);
@@ -97,10 +97,10 @@ export class DepartmentEditDialogComponent {
     try {
       const departmentId = this.departmentId();
       if (this.isEditMode() && departmentId) {
-        await firstValueFrom(this.departmentService.updateDepartment(departmentId, dto));
+        await firstValueFrom(this.departmentApi.updateDepartment(departmentId, dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.updated`);
       } else {
-        await firstValueFrom(this.departmentService.createDepartment(dto));
+        await firstValueFrom(this.departmentApi.createDepartment(dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.created`);
       }
       this.ref.close(true);
