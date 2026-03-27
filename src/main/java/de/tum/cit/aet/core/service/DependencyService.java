@@ -264,30 +264,14 @@ public class DependencyService {
      */
     private List<DependencyDTO> enrichWithVulnerabilities(List<DependencyDTO> deps) {
         List<DependencyDTO> enriched = new ArrayList<>(deps.size());
-
-        // Separate managed deps (version not resolved, OSV cannot analyze them)
-        List<DependencyDTO> analyzable = new ArrayList<>();
-        List<DependencyDTO> managed = new ArrayList<>();
-        for (DependencyDTO dep : deps) {
-            if ("managed".equals(dep.version())) {
-                managed.add(dep);
-            } else {
-                analyzable.add(dep);
-            }
-        }
-
-        // Query OSV.dev only for dependencies with a concrete version
-        for (int i = 0; i < analyzable.size(); i += OSV_BATCH_SIZE) {
-            List<DependencyDTO> batch = analyzable.subList(i, Math.min(i + OSV_BATCH_SIZE, analyzable.size()));
+        for (int i = 0; i < deps.size(); i += OSV_BATCH_SIZE) {
+            List<DependencyDTO> batch = deps.subList(i, Math.min(i + OSV_BATCH_SIZE, deps.size()));
             Map<String, List<VulnerabilityDTO>> vulnMap = queryOsv(batch);
             for (DependencyDTO dep : batch) {
                 List<VulnerabilityDTO> vulns = vulnMap.getOrDefault(dep.purl(), List.of());
                 enriched.add(new DependencyDTO(dep.name(), dep.group(), dep.version(), dep.source(), dep.purl(), vulns));
             }
         }
-
-        // Add managed deps as-is (no vulnerability data, version unresolved)
-        enriched.addAll(managed);
         return enriched;
     }
 
@@ -340,10 +324,70 @@ public class DependencyService {
 
             List<VulnerabilityDTO> list = new ArrayList<>();
             for (JsonNode v : vulns) {
-                list.add(new VulnerabilityDTO(v.path("id").asText("UNKNOWN"), v.path("summary").asText(null), extractSeverity(v)));
+                String id = v.path("id").asText("UNKNOWN");
+                String summary = v.path("summary").asText(null);
+                String severity = extractSeverity(v);
+
+                // If severity could not be determined from the batch response,
+                // fetch the full vulnerability details from OSV
+                if ("LOW".equals(severity) && !hasSeverityData(v)) {
+                    JsonNode fullVuln = fetchFullVulnerability(id);
+                    if (fullVuln != null) {
+                        severity = extractSeverity(fullVuln);
+                        if (summary == null) {
+                            summary = fullVuln.path("summary").asText(null);
+                        }
+                    }
+                }
+
+                list.add(new VulnerabilityDTO(id, summary, severity));
             }
             result.put(batch.get(j).purl(), list);
         }
+    }
+
+    /**
+     * Checks whether a vulnerability JSON node contains any severity source data.
+     * Used to distinguish a genuine LOW severity from a missing-data fallback.
+     */
+    private boolean hasSeverityData(JsonNode vuln) {
+        JsonNode sev = vuln.get("severity");
+        if (sev != null && sev.isArray() && !sev.isEmpty()) return true;
+
+        JsonNode db = vuln.get("database_specific");
+        if (db != null && db.has("severity")) return true;
+
+        JsonNode affected = vuln.get("affected");
+        if (affected != null && affected.isArray()) {
+            for (JsonNode a : affected) {
+                JsonNode eco = a.get("ecosystem_specific");
+                if (eco != null && eco.has("severity")) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Fetches the full vulnerability details from the OSV.dev individual vulnerability endpoint.
+     *
+     * @param id the vulnerability ID (e.g. "GHSA-xxxx-xxxx-xxxx")
+     * @return the full vulnerability JSON node, or {@code null} if the fetch fails
+     */
+    private JsonNode fetchFullVulnerability(String id) {
+        try {
+            String response = webClient
+                .get()
+                .uri("https://api.osv.dev/v1/vulns/" + id)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+            if (response != null) {
+                return objectMapper.readTree(response);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to fetch full vulnerability details for {}", id, e);
+        }
+        return null;
     }
 
     /**
@@ -354,16 +398,16 @@ public class DependencyService {
      * @return the severity string: one of "CRITICAL", "HIGH", "MEDIUM", or "LOW"
      */
     private String extractSeverity(JsonNode vuln) {
-        // 1) Try CVSS numeric score or vector string from the severity array
-        String severity = severityFromCvss(vuln);
+        // 1) Prefer database_specific.severity (authoritative from source DB like GitHub/GHSA)
+        String severity = severityFromDatabaseSpecific(vuln);
         if (severity != null) return severity;
 
-        // 2) Fall back to database_specific.severity (e.g. GitHub advisories)
-        severity = severityFromDatabaseSpecific(vuln);
-        if (severity != null) return severity;
-
-        // 3) Fall back to affected[].ecosystem_specific.severity
+        // 2) Try affected[].ecosystem_specific.severity
         severity = severityFromEcosystemSpecific(vuln);
+        if (severity != null) return severity;
+
+        // 3) Fall back to computing severity from CVSS vector string
+        severity = severityFromCvss(vuln);
         if (severity != null) return severity;
 
         // 4) Default to LOW if no severity source is available
@@ -379,12 +423,62 @@ public class DependencyService {
             Double numericScore = parseDouble(score);
             if (numericScore != null) return cvssToSeverity(numericScore);
 
-            if (s.path("type").asText("").startsWith("CVSS")) {
+            String type = s.path("type").asText("");
+            if (type.startsWith("CVSS")) {
+                // Try CVSS v3 base score computation
                 Double baseScore = computeCvssV3BaseScore(score);
                 if (baseScore != null) return cvssToSeverity(baseScore);
+
+                // For CVSS v4 or other versions, extract severity from the vector's
+                // base metrics if possible (approximate via macrovector approach)
+                if (score.startsWith("CVSS:4")) {
+                    String v4Severity = extractCvssV4SeverityFromVector(score);
+                    if (v4Severity != null) return v4Severity;
+                }
             }
         }
         return null;
+    }
+
+    /**
+     * Approximates CVSS v4 severity from the vector string by analyzing the base metric values.
+     * Uses a simplified heuristic since the full CVSS v4 scoring algorithm is significantly more complex.
+     *
+     * @param vector the CVSS v4 vector string (e.g. "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/...")
+     * @return the approximate severity string, or {@code null} if the vector cannot be parsed
+     */
+    private String extractCvssV4SeverityFromVector(String vector) {
+        Map<String, String> metrics = new HashMap<>();
+        for (String segment : vector.split("/")) {
+            int colon = segment.indexOf(':');
+            if (colon > 0 && colon < segment.length() - 1) {
+                metrics.put(segment.substring(0, colon), segment.substring(colon + 1));
+            }
+        }
+
+        // Check vulnerable system impact (VC, VI, VA) — the primary impact metrics in CVSS v4
+        String vc = metrics.getOrDefault("VC", "N");
+        String vi = metrics.getOrDefault("VI", "N");
+        String va = metrics.getOrDefault("VA", "N");
+        boolean anyHighImpact = "H".equals(vc) || "H".equals(vi) || "H".equals(va);
+        boolean anyLowImpact = "L".equals(vc) || "L".equals(vi) || "L".equals(va);
+
+        // Check attack complexity and privileges
+        boolean networkAccessible = "N".equals(metrics.getOrDefault("AV", ""));
+        boolean lowComplexity = "L".equals(metrics.getOrDefault("AC", ""));
+        boolean noPrivileges = "N".equals(metrics.getOrDefault("PR", ""));
+        boolean noUserInteraction = "N".equals(metrics.getOrDefault("UI", ""));
+
+        if (anyHighImpact && networkAccessible && lowComplexity && noPrivileges && noUserInteraction) {
+            return "CRITICAL";
+        }
+        if (anyHighImpact) {
+            return "HIGH";
+        }
+        if (anyLowImpact) {
+            return "MEDIUM";
+        }
+        return "LOW";
     }
 
     private String severityFromDatabaseSpecific(JsonNode vuln) {

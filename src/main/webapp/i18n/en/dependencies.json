@@ -45,7 +45,7 @@
     "refreshVulnerabilities": "Refresh",
     "showVulnerableOnly": "Vulnerable",
     "secure": "Secure",
-    "notAnalyzed": "Not Analyzed",
+
     "severityCritical": "Critical",
     "severityHigh": "High",
     "severityMedium": "Medium",

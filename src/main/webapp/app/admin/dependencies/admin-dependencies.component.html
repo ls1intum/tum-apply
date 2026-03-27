@@ -155,8 +155,6 @@
           }
         </div>
       </div>
-    } @else if (dep.version === 'managed') {
-      <jhi-tag [text]="'dependencies.notAnalyzed' | translate" color="secondary" />
     } @else {
       <jhi-tag [text]="'dependencies.secure' | translate" color="success" [icon]="faShieldAlt" />
     }
