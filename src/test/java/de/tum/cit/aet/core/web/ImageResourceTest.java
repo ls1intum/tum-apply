@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.DepartmentImage;
@@ -39,6 +38,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Integration tests for {@link ImageResource}.

@@ -7,14 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { UserDataExportExceptionCauseSuppressedInner } from './userDataExportExceptionCauseSuppressedInner';
 import { UserDataExportExceptionCauseStackTraceInner } from './userDataExportExceptionCauseStackTraceInner';
 
 
-export interface UserDataExportExceptionCause { 
+export interface UserDataExportExceptionCauseSuppressedInner { 
     stackTrace?: Array<UserDataExportExceptionCauseStackTraceInner>;
     message?: string;
-    suppressed?: Array<UserDataExportExceptionCauseSuppressedInner>;
     localizedMessage?: string;
 }
 
