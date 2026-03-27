@@ -45,8 +45,6 @@ import { ApplicationResourceApi } from '../../../generated/api/application-resou
 import { UpdateApplicationDTO } from '../../../generated/models/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
 
-import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
-import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/models/application-for-applicant-dto';
 const applyflow = 'entity.toast.applyFlow';
 
 @Component({
