@@ -30,8 +30,8 @@ group = "de.tum.cit.aet"
 // Version configuration based on profile:
 // - prod: Production release version (currently deployed)
 // - dev/test: Development version (next release, one step ahead)
-def prodVersion = "1.2.0"    // Current production version
-def devVersion = "1.2.1"     // Next development version (one step ahead)
+def prodVersion = "1.2.1"    // Current production version
+def devVersion = "1.2.2"     // Next development version (one step ahead)
 
 // Profile detection: supports both -Pprod (Dockerfile) and -Pprofile=prod,api-docs
 def activeProfile = project.hasProperty('profile') ? project.property('profile') : 'dev'
