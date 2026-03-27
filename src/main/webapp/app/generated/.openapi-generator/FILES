@@ -1,3 +1,5 @@
+api/admin-dependency-resource-api.ts
+api/admin-dependency-resource-resources.ts
 api/ai-resource-api.ts
 api/applicant-resource-api.ts
 api/applicant-resource-resources.ts
@@ -77,6 +79,8 @@ models/department-creation-dto.ts
 models/department-dto.ts
 models/department-short-dto.ts
 models/department.ts
+models/dependencies-overview-dto.ts
+models/dependency-dto.ts
 models/document-dictionary.ts
 models/document-information-holder-dto.ts
 models/document.ts
@@ -159,3 +163,4 @@ models/user-profile-dto.ts
 models/user-research-group-role.ts
 models/user-short-dto.ts
 models/user.ts
+models/vulnerability-dto.ts
