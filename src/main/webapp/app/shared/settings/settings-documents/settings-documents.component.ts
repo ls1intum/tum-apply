@@ -290,9 +290,7 @@ export class SettingsDocumentsComponent {
       this.hasInitialLimitsSet.set(false);
 
       const profile = await firstValueFrom(this.applicantService.getApplicantProfile());
-      const profileDocumentIds = await firstValueFrom(
-        this.applicantService.getApplicantProfileDocumentIds(),
-      );
+      const profileDocumentIds = await firstValueFrom(this.applicantService.getApplicantProfileDocumentIds());
       this.applyProfileDocumentIds(profileDocumentIds);
 
       this.form.patchValue({

@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { InterviewSlotDTO } from 'app/generated/models/interview-slot-dto';
 import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
+import { IntervieweeDTOStateEnum } from 'app/generated/models/interviewee-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -50,7 +51,9 @@ export class AssignApplicantModalComponent {
   selectedApplicantId = signal<string | null>(null);
 
   // Filters out already scheduled and completed interviewees (UNCONTACTED + INVITED are assignable)
-  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED'));
+  availableInterviewees = computed(() =>
+    this.interviewees().filter(i => i.state !== IntervieweeDTOStateEnum.Scheduled && i.state !== IntervieweeDTOStateEnum.Completed),
+  );
 
   // Returns true if an applicant is selected
   canAssign = computed(() => this.selectedApplicantId() !== null);
@@ -146,7 +149,7 @@ export class AssignApplicantModalComponent {
 
   // Returns true if the interviewee already has a scheduled slot
   isDisabled(interviewee: IntervieweeDTO): boolean {
-    return interviewee.state === 'SCHEDULED';
+    return interviewee.state === IntervieweeDTOStateEnum.Scheduled;
   }
 
   // Handles visibility changes from the dialog component

@@ -3,7 +3,6 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 import { InterviewProcessDetailComponent } from 'app/interview/interview-process-detail/interview-process-detail.component';
 
 import { errorRoute } from './layouts/error/error.route';
-import { UserShortDTO } from './generated/models/user-short-dto';
 
 const routes: Routes = [
   // ======================================================================================
@@ -151,12 +150,7 @@ const routes: Routes = [
     path: 'settings',
     canActivate: [UserRouteAccessService],
     data: {
-      authorities: [
-        'ADMIN',
-        'PROFESSOR',
-        'APPLICANT',
-        'EMPLOYEE',
-      ],
+      authorities: ['ADMIN', 'PROFESSOR', 'APPLICANT', 'EMPLOYEE'],
     },
     loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
     title: 'global.routes.settings',

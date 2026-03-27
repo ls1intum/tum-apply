@@ -5,6 +5,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { RejectDTOReasonEnum } from 'app/generated/models/reject-dto';
 
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -14,7 +15,6 @@ import { AcceptDTO } from '../../../../generated/models/accept-dto';
 import { RejectDTO } from '../../../../generated/models/reject-dto';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
 
-import { RejectDTOReasonEnum } from 'app/generated/models/reject-dto';
 type ReasonEnum = RejectDTOReasonEnum;
 
 @Component({

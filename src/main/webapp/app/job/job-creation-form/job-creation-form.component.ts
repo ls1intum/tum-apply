@@ -50,11 +50,16 @@ import {
   JobFormDTOSubjectAreaEnum,
 } from 'app/generated/models/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
+import {
+  JobFormDTOFundingTypeEnum,
+  JobFormDTOLocationEnum,
+  JobFormDTOStateEnum,
+  JobFormDTOSubjectAreaEnum,
+} from 'app/generated/models/job-form-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
-import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOStateEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/models/job-form-dto';
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 

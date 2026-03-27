@@ -13,7 +13,6 @@ import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
 import { EmailTemplateOverviewDTO } from '../../../generated/models/email-template-overview-dto';
 import { AccountService } from '../../../core/auth/account.service';
-import { UserShortDTO } from '../../../generated/models/user-short-dto';
 
 @Component({
   selector: 'jhi-research-group-templates',
