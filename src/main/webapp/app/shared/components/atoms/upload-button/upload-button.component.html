@@ -10,7 +10,13 @@
   <ng-template #empty>
     <div class="flex justify-center flex-col gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
       <div class="flex w-full justify-center mb-4">
-        <span class="flex border items-center justify-center rounded-pill border-primary size-17">
+        <span class="flex items-center justify-center size-17 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+              tabindex="0"
+              role="button"
+              aria-label="Select file to upload"
+              (click)="fileupload_component.choose()"
+              (keydown.enter)="fileupload_component.choose()"
+              (keydown.space)="$event.preventDefault(); fileupload_component.choose()">
           <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg"></fa-icon>
         </span>
       </div>
