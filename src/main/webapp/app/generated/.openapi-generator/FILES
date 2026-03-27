@@ -1,3 +1,4 @@
+api/admin-dependency-resource-api.ts
 api/admin-dependency-resource-resources.ts
 api/ai-resource-api.ts
 api/applicant-resource-api.ts
@@ -151,11 +152,11 @@ models/update-avatar-dto.ts
 models/update-password-dto.ts
 models/update-slot-location-dto.ts
 models/update-user-name-dto.ts
+models/upload-documents_request.ts
 models/user-booking-info-dto.ts
 models/user-data-export-exception.ts
 models/user-data-export-exception_cause.ts
 models/user-data-export-exception_cause_stack-trace_inner.ts
-models/user-data-export-exception_cause_suppressed_inner.ts
 models/user-dto.ts
 models/user-for-application-detail-dto.ts
 models/user-profile-dto.ts
