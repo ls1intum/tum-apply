@@ -19,5 +19,10 @@ export interface OtpCompleteDTO {
 
 export type OtpCompleteDTOPurposeEnum = 'LOGIN' | 'REGISTER';
 
+export const OtpCompleteDTOPurposeEnum = {
+  Login: 'LOGIN' as const,
+  Register: 'REGISTER' as const,
+} as const;
+
 export const OtpCompleteDTOPurposeEnumValues = ['LOGIN', 'REGISTER'] as const;
 

@@ -247,8 +247,16 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         List<CodegenOperation> getOperations = new ArrayList<>();
         List<CodegenOperation> mutationOperations = new ArrayList<>();
 
+        boolean hasBlobResponse = false;
         for (CodegenOperation op : ops) {
             op.vendorExtensions.put("x-use-inject", useInjectFunction);
+
+            // Detect binary/blob response types (e.g., file downloads)
+            boolean isBlobResponse = "Blob".equals(op.returnType);
+            op.vendorExtensions.put("x-is-blob-response", isBlobResponse);
+            if (isBlobResponse) {
+                hasBlobResponse = true;
+            }
 
             if ("GET".equalsIgnoreCase(op.httpMethod)) {
                 op.vendorExtensions.put("x-is-get", true);
@@ -278,6 +286,7 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         operations.put("mutationOperations", mutationOperations);
         operations.put("hasGetOperations", !getOperations.isEmpty());
         operations.put("hasMutationOperations", !mutationOperations.isEmpty());
+        operations.put("hasBlobResponse", hasBlobResponse);
 
         // Build tsImports: map each imported model class to its kebab-case filename
         Set<String> modelImports = new LinkedHashSet<>();
@@ -387,6 +396,31 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
             return camel;
         }
         return Character.toUpperCase(camel.charAt(0)) + camel.substring(1);
+    }
+
+    /**
+     * Converts enum values to PascalCase for use as const object keys.
+     * Examples: SAVED → Saved, IN_REVIEW → InReview, APPLICANT_FOUND → ApplicantFound
+     */
+    @Override
+    public String toEnumVarName(String value, String datatype) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        // number
+        if ("number".equals(datatype)) {
+            return super.toEnumVarName(value, datatype);
+        }
+        // Convert UPPER_SNAKE_CASE to PascalCase
+        String[] parts = value.split("_");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                sb.append(Character.toUpperCase(part.charAt(0)));
+                sb.append(part.substring(1).toLowerCase());
+            }
+        }
+        return sb.toString();
     }
 
     @Override

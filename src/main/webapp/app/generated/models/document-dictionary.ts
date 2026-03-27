@@ -24,5 +24,13 @@ export interface DocumentDictionary {
 
 export type DocumentDictionaryDocumentTypeEnum = 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM';
 
+export const DocumentDictionaryDocumentTypeEnum = {
+  BachelorTranscript: 'BACHELOR_TRANSCRIPT' as const,
+  MasterTranscript: 'MASTER_TRANSCRIPT' as const,
+  Reference: 'REFERENCE' as const,
+  Cv: 'CV' as const,
+  Custom: 'CUSTOM' as const,
+} as const;
+
 export const DocumentDictionaryDocumentTypeEnumValues = ['BACHELOR_TRANSCRIPT', 'MASTER_TRANSCRIPT', 'REFERENCE', 'CV', 'CUSTOM'] as const;
 

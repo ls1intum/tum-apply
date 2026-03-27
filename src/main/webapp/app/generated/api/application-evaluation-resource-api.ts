@@ -12,7 +12,7 @@
  * ApplicationEvaluationResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AcceptDTO } from '../models/accept-dto';
@@ -42,10 +42,10 @@ export class ApplicationEvaluationResourceApi {
      * 
      * @param applicationId 
      */
-    downloadAll(applicationId: string): Observable<Blob> {
+    downloadAll(applicationId: string): Observable<HttpResponse<Blob>> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/documents-download`;
-        return this.http.get<Blob>(url);
+        return this.http.get(url, { responseType: 'blob', observe: 'response' });
     }
 
     /**

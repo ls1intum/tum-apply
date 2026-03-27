@@ -19,5 +19,15 @@ export interface DataExportStatusDTO {
 
 export type DataExportStatusDTOStatusEnum = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'DOWNLOADED' | 'DOWNLOADED_DELETED' | 'DELETED' | 'FAILED';
 
+export const DataExportStatusDTOStatusEnum = {
+  Requested: 'REQUESTED' as const,
+  InCreation: 'IN_CREATION' as const,
+  EmailSent: 'EMAIL_SENT' as const,
+  Downloaded: 'DOWNLOADED' as const,
+  DownloadedDeleted: 'DOWNLOADED_DELETED' as const,
+  Deleted: 'DELETED' as const,
+  Failed: 'FAILED' as const,
+} as const;
+
 export const DataExportStatusDTOStatusEnumValues = ['REQUESTED', 'IN_CREATION', 'EMAIL_SENT', 'DOWNLOADED', 'DOWNLOADED_DELETED', 'DELETED', 'FAILED'] as const;
 

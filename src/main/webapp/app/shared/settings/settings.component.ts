@@ -41,12 +41,12 @@ export class SettingsComponent {
     const baseTabs: TabItem[] = [{ id: 'general', translationKey: 'settings.tabs.general' }];
 
     // Hide notifications tab for admins
-    if (this.role() !== 'ADMIN') {
+    if (this.role() !== UserShortDTORolesEnum.Admin) {
       baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications' });
     }
 
     // Add Personal Information and documents tabs only for applicants
-    if (this.role() === 'APPLICANT') {
+    if (this.role() === UserShortDTORolesEnum.Applicant) {
       baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
       baseTabs.push({ id: 'documents', translationKey: 'settings.tabs.documents' });
     }

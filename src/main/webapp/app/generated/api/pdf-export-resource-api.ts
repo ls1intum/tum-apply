@@ -12,7 +12,7 @@
  * PdfExportResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApplicationPDFRequest } from '../models/application-pdf-request';
@@ -28,9 +28,9 @@ export class PdfExportResourceApi {
      * 
      * @param applicationPDFRequest 
      */
-    exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest): Observable<Blob> {
+    exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest): Observable<HttpResponse<Blob>> {
         const url = `${this.basePath}/api/export/application/pdf`;
-        return this.http.post<Blob>(url, applicationPDFRequest);
+        return this.http.post(url, applicationPDFRequest, { responseType: 'blob', observe: 'response' });
     }
 
     /**
@@ -38,9 +38,9 @@ export class PdfExportResourceApi {
      * 
      * @param jobPreviewRequest 
      */
-    exportJobPreviewToPDF(jobPreviewRequest: JobPreviewRequest): Observable<Blob> {
+    exportJobPreviewToPDF(jobPreviewRequest: JobPreviewRequest): Observable<HttpResponse<Blob>> {
         const url = `${this.basePath}/api/export/job/preview/pdf`;
-        return this.http.post<Blob>(url, jobPreviewRequest);
+        return this.http.post(url, jobPreviewRequest, { responseType: 'blob', observe: 'response' });
     }
 
     /**
@@ -49,10 +49,10 @@ export class PdfExportResourceApi {
      * @param id 
      * @param requestBody 
      */
-    exportJobToPDF(id: string, requestBody: { [key: string]: string; }): Observable<Blob> {
+    exportJobToPDF(id: string, requestBody: { [key: string]: string; }): Observable<HttpResponse<Blob>> {
         const idPath = encodeURIComponent(String(id));
         const url = `${this.basePath}/api/export/job/${idPath}/pdf`;
-        return this.http.post<Blob>(url, requestBody);
+        return this.http.post(url, requestBody, { responseType: 'blob', observe: 'response' });
     }
 
 }

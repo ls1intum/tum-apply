@@ -20,5 +20,12 @@ export interface UserResearchGroupRole {
 
 export type UserResearchGroupRoleRoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN' | 'EMPLOYEE';
 
+export const UserResearchGroupRoleRoleEnum = {
+  Applicant: 'APPLICANT' as const,
+  Professor: 'PROFESSOR' as const,
+  Admin: 'ADMIN' as const,
+  Employee: 'EMPLOYEE' as const,
+} as const;
+
 export const UserResearchGroupRoleRoleEnumValues = ['APPLICANT', 'PROFESSOR', 'ADMIN', 'EMPLOYEE'] as const;
 

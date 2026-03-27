@@ -1,4 +1,5 @@
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 
 import { FilterField, FilterOption } from '../shared/filter';
 
@@ -8,24 +9,24 @@ export const filterFields: FilterField[] = [
     'evaluation.filterOptions.status',
     'status',
     [
-      new FilterOption('', 'IN_REVIEW', 'evaluation.statusBadge.IN_REVIEW'),
-      new FilterOption('', 'SENT', 'evaluation.statusBadge.SENT'),
-      new FilterOption('', 'ACCEPTED', 'evaluation.statusBadge.ACCEPTED'),
-      new FilterOption('', 'REJECTED', 'evaluation.statusBadge.REJECTED'),
-      new FilterOption('', 'INTERVIEW', 'evaluation.statusBadge.INTERVIEW'),
-      new FilterOption('', 'JOB_CLOSED', 'evaluation.statusBadge.JOB_CLOSED'),
+      new FilterOption('', ApplicationDetailDTOApplicationStateEnum.InReview, 'evaluation.statusBadge.IN_REVIEW'),
+      new FilterOption('', ApplicationDetailDTOApplicationStateEnum.Sent, 'evaluation.statusBadge.SENT'),
+      new FilterOption('', ApplicationDetailDTOApplicationStateEnum.Accepted, 'evaluation.statusBadge.ACCEPTED'),
+      new FilterOption('', ApplicationDetailDTOApplicationStateEnum.Rejected, 'evaluation.statusBadge.REJECTED'),
+      new FilterOption('', ApplicationDetailDTOApplicationStateEnum.Interview, 'evaluation.statusBadge.INTERVIEW'),
+      new FilterOption('', ApplicationDetailDTOApplicationStateEnum.JobClosed, 'evaluation.statusBadge.JOB_CLOSED'),
     ],
     [],
   ),
 ];
 
 export const availableStatusOptions: { key: string; label: string }[] = [
-  { key: 'SENT', label: 'evaluation.statusBadge.SENT' },
-  { key: 'IN_REVIEW', label: 'evaluation.statusBadge.IN_REVIEW' },
-  { key: 'INTERVIEW', label: 'evaluation.statusBadge.INTERVIEW' },
-  { key: 'ACCEPTED', label: 'evaluation.statusBadge.ACCEPTED' },
-  { key: 'REJECTED', label: 'evaluation.statusBadge.REJECTED' },
-  { key: 'JOB_CLOSED', label: 'evaluation.statusBadge.JOB_CLOSED' },
+  { key: ApplicationDetailDTOApplicationStateEnum.Sent, label: 'evaluation.statusBadge.SENT' },
+  { key: ApplicationDetailDTOApplicationStateEnum.InReview, label: 'evaluation.statusBadge.IN_REVIEW' },
+  { key: ApplicationDetailDTOApplicationStateEnum.Interview, label: 'evaluation.statusBadge.INTERVIEW' },
+  { key: ApplicationDetailDTOApplicationStateEnum.Accepted, label: 'evaluation.statusBadge.ACCEPTED' },
+  { key: ApplicationDetailDTOApplicationStateEnum.Rejected, label: 'evaluation.statusBadge.REJECTED' },
+  { key: ApplicationDetailDTOApplicationStateEnum.JobClosed, label: 'evaluation.statusBadge.JOB_CLOSED' },
 ];
 
 export const sortableFields: SortOption[] = [

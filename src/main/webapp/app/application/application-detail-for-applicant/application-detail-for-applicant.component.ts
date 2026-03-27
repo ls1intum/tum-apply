@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
@@ -23,6 +22,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
 import { ApplicationDetailDTO } from '../../generated/models/application-detail-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from '../../generated/models/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/models/application-document-ids-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
@@ -79,7 +79,7 @@ export default class ApplicationDetailForApplicantComponent {
     if (!app) return null;
 
     // Edit button for SAVED state
-    if (['SAVED'].includes(app.applicationState)) {
+    if (app.applicationState === ApplicationDetailDTOApplicationStateEnum.Saved) {
       return {
         label: 'button.edit',
         icon: 'pencil',
@@ -112,7 +112,7 @@ export default class ApplicationDetailForApplicantComponent {
     }
 
     // Add Withdraw button for SENT/IN_REVIEW states
-    if (['SENT', 'IN_REVIEW'].includes(app.applicationState)) {
+    if ([ApplicationDetailDTOApplicationStateEnum.Sent, ApplicationDetailDTOApplicationStateEnum.InReview].includes(app.applicationState)) {
       items.push({
         label: 'button.withdraw',
         icon: 'withdraw',
@@ -124,7 +124,7 @@ export default class ApplicationDetailForApplicantComponent {
     }
 
     // Add Delete button for SAVED state
-    if (['SAVED'].includes(app.applicationState)) {
+    if (app.applicationState === ApplicationDetailDTOApplicationStateEnum.Saved) {
       items.push({
         label: 'button.delete',
         icon: 'trash',
@@ -198,7 +198,6 @@ export default class ApplicationDetailForApplicantComponent {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private pdfExportService = inject(PdfExportResourceApi);
-  private http = inject(HttpClient);
   private translate = inject(TranslateService);
 
   private currentLang = toSignal(this.translate.onLangChange);
@@ -274,7 +273,7 @@ export default class ApplicationDetailForApplicantComponent {
       };
     }
 
-    this.http.post('/api/export/application/pdf', req, { observe: 'response', responseType: 'blob' }).subscribe(response => {
+    this.pdfExportService.exportApplicationToPDF(req).subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 

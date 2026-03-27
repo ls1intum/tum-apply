@@ -3,7 +3,7 @@
  * {{classname}} - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient{{#operations}}{{#hasBlobResponse}}, HttpResponse{{/hasBlobResponse}}{{/operations}} } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 {{#tsImports}}
@@ -24,7 +24,7 @@ export class {{classname}} {
      * @param {{paramName}} {{description}}
 {{/allParams}}
      */
-    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^-last}}, {{/-last}}{{/allParams}}): Observable<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}> {
+    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^-last}}, {{/-last}}{{/allParams}}): Observable<{{#vendorExtensions.x-is-blob-response}}HttpResponse<Blob>{{/vendorExtensions.x-is-blob-response}}{{^vendorExtensions.x-is-blob-response}}{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}{{/vendorExtensions.x-is-blob-response}}> {
 {{#pathParams}}
 {{^vendorExtensions.x-is-numeric}}
         const {{paramName}}Path = encodeURIComponent(String({{paramName}}));
@@ -48,6 +48,31 @@ export class {{classname}} {
 {{^hasQueryParams}}
         const url = `${this.basePath}{{{vendorExtensions.xPathTemplate}}}`;
 {{/hasQueryParams}}
+{{#vendorExtensions.x-is-blob-response}}
+{{#hasFormParams}}
+        const formData = new FormData();
+{{#formParams}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+{{#isArray}}
+            {{paramName}}.forEach(item => formData.append('{{baseName}}', item));
+{{/isArray}}
+{{^isArray}}
+            formData.append('{{baseName}}', {{paramName}});
+{{/isArray}}
+        }
+{{/formParams}}
+        return this.http.{{httpMethod}}(url, formData, { responseType: 'blob', observe: 'response' });
+{{/hasFormParams}}
+{{^hasFormParams}}
+{{#bodyParam}}
+        return this.http.{{httpMethod}}(url, {{paramName}}, { responseType: 'blob', observe: 'response' });
+{{/bodyParam}}
+{{^bodyParam}}
+        return this.http.{{httpMethod}}(url{{#isBodyAllowed}}, null{{/isBodyAllowed}}, { responseType: 'blob', observe: 'response' });
+{{/bodyParam}}
+{{/hasFormParams}}
+{{/vendorExtensions.x-is-blob-response}}
+{{^vendorExtensions.x-is-blob-response}}
 {{#hasFormParams}}
         const formData = new FormData();
 {{#formParams}}
@@ -70,6 +95,7 @@ export class {{classname}} {
         return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url{{#isBodyAllowed}}, null{{/isBodyAllowed}});
 {{/bodyParam}}
 {{/hasFormParams}}
+{{/vendorExtensions.x-is-blob-response}}
     }
 
 {{/operation}}

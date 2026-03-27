@@ -124,7 +124,7 @@ export default class ApplicationCreationFormComponent {
   jobId = signal<string>('');
   applicantId = signal<string>('');
   applicationId = signal<string>('');
-  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>('SAVED');
+  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   savingBadgeCalculatedClass = computed<string>(
@@ -415,7 +415,7 @@ export default class ApplicationCreationFormComponent {
     if (jobId !== null) {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
-      this.applicationState.set('SAVED');
+      this.applicationState.set(ApplicationForApplicantDTOApplicationStateEnum.Saved);
 
       // Fetch job title for display
       firstValueFrom(this.jobResourceService.getJobDetails(jobId))
@@ -435,7 +435,7 @@ export default class ApplicationCreationFormComponent {
   async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
     const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
 
-    if (application.applicationState !== 'SAVED') {
+    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', applicationId]);
       throw new Error('Application is not editable.');
@@ -448,7 +448,7 @@ export default class ApplicationCreationFormComponent {
   async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO> {
     const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
 
-    if (application.applicationState !== 'SAVED') {
+    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', application.applicationId]);
       throw new Error('Application is not editable.');
@@ -491,7 +491,7 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
-    void this.sendCreateApplicationData('SENT', true);
+    void this.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTOApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
@@ -517,7 +517,7 @@ export default class ApplicationCreationFormComponent {
       this.clearLocalStorage();
 
       // After application is sent, reload user data to update header with latest names
-      if (state === 'SENT') {
+      if (state === ApplicationForApplicantDTOApplicationStateEnum.Sent) {
         await this.accountService.loadUser();
       }
 

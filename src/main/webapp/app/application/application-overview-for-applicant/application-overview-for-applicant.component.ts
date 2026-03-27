@@ -16,6 +16,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicationOverviewDTO } from 'app/generated/models/application-overview-dto';
+import { ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/models/application-overview-dto';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
@@ -130,7 +131,7 @@ export default class ApplicationOverviewForApplicantComponent {
       const applicationId = application.applicationId;
 
       // Edit action - only for SAVED applications
-      if (application.applicationState === 'SAVED') {
+      if (application.applicationState === ApplicationOverviewDTOApplicationStateEnum.Saved) {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -142,7 +143,7 @@ export default class ApplicationOverviewForApplicantComponent {
       }
 
       // Withdraw action - for SENT or IN_REVIEW applications
-      if (['SENT', 'IN_REVIEW'].includes(application.applicationState ?? '')) {
+      if ([ApplicationOverviewDTOApplicationStateEnum.Sent, ApplicationOverviewDTOApplicationStateEnum.InReview].includes(application.applicationState as ApplicationOverviewDTOApplicationStateEnum)) {
         items.push({
           label: 'button.withdraw',
           icon: 'withdraw',
@@ -155,7 +156,7 @@ export default class ApplicationOverviewForApplicantComponent {
       }
 
       // Delete action - only for SAVED applications
-      if (application.applicationState === 'SAVED') {
+      if (application.applicationState === ApplicationOverviewDTOApplicationStateEnum.Saved) {
         items.push({
           label: 'button.delete',
           icon: 'trash',

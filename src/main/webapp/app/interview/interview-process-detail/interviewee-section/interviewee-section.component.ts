@@ -9,6 +9,8 @@ import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/models/application-evaluation-detail-dto';
 import { AddIntervieweesDTO } from 'app/generated/models/add-interviewees-dto';
 import { IntervieweeDTO } from 'app/generated/models/interviewee-dto';
+import { IntervieweeDTOStateEnum } from 'app/generated/models/interviewee-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/models/application-detail-dto';
 import { SendInvitationsResultDTO } from 'app/generated/models/send-invitations-result-dto';
 import { CancelInterviewDTO } from 'app/generated/models/cancel-interview-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -111,32 +113,32 @@ export class IntervieweeSectionComponent {
       {
         key: 'UNCONTACTED',
         labelKey: 'interview.interviewees.filter.UNCONTACTED',
-        count: all.filter(i => i.state === 'UNCONTACTED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Uncontacted).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.UNCONTACTED',
       },
       {
         key: 'INVITED',
         labelKey: 'interview.interviewees.filter.INVITED',
-        count: all.filter(i => i.state === 'INVITED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Invited).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.INVITED',
       },
       {
         key: 'SCHEDULED',
         labelKey: 'interview.interviewees.filter.SCHEDULED',
-        count: all.filter(i => i.state === 'SCHEDULED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Scheduled).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.SCHEDULED',
       },
       {
         key: 'COMPLETED',
         labelKey: 'interview.interviewees.filter.COMPLETED',
-        count: all.filter(i => i.state === 'COMPLETED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Completed).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.COMPLETED',
       },
     ];
   });
 
   // Computed: Count of uncontacted interviewees (for bulk send button)
-  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === 'UNCONTACTED').length);
+  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === IntervieweeDTOStateEnum.Uncontacted).length);
 
   // Computed: Filtered Interviewees
   filteredInterviewees = computed(() => {
@@ -255,7 +257,7 @@ export class IntervieweeSectionComponent {
       return;
     }
 
-    if (interviewee.state === 'INVITED') {
+    if (interviewee.state === IntervieweeDTOStateEnum.Invited) {
       this.pendingResendId.set(interviewee.id);
       this.showResendDialog.set(true);
     } else {
@@ -298,7 +300,7 @@ export class IntervieweeSectionComponent {
           this.pageSize(),
           'appliedAt',
           'DESC',
-          ['IN_REVIEW'],
+          [ApplicationDetailDTOApplicationStateEnum.InReview],
           [this.jobTitle()],
           undefined,
         ),
