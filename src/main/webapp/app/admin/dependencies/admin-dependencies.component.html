@@ -134,7 +134,7 @@
           [color]="dep.severityTagColor"
           [icon]="faExclamationTriangle"
         />
-        <div class="flex flex-wrap gap-1">
+        <div class="flex flex-wrap items-center gap-1">
           @for (vuln of isVulnerabilityExpanded(dep) ? dep.vulnerabilities : dep.vulnerabilities.slice(0, 3); track vuln.id) {
             <a
               [href]="'https://osv.dev/vulnerability/' + vuln.id"
@@ -145,16 +145,16 @@
               <jhi-tag [text]="vuln.id ?? ''" color="info" />
             </a>
           }
+          @if (dep.vulnerabilities.length > 3) {
+            <jhi-button
+              [label]="isVulnerabilityExpanded(dep) ? ('dependencies.showLess' | translate) : '+' + (dep.vulnerabilities.length - 3)"
+              variant="text"
+              severity="primary"
+              size="xs"
+              (click)="$event.stopPropagation(); toggleVulnerabilityExpansion(dep)"
+            />
+          }
         </div>
-        @if (dep.vulnerabilities.length > 3) {
-          <jhi-button
-            [label]="isVulnerabilityExpanded(dep) ? ('dependencies.showLess' | translate) : '+' + (dep.vulnerabilities.length - 3)"
-            variant="text"
-            severity="primary"
-            size="xs"
-            (click)="$event.stopPropagation(); toggleVulnerabilityExpansion(dep)"
-          />
-        }
       </div>
     } @else {
       <jhi-tag [text]="'dependencies.secure' | translate" color="success" [icon]="faShieldAlt" />
