@@ -181,6 +181,11 @@ export class AdminDependenciesComponent {
   private readonly dependencyService = inject(AdminDependencyResourceApiService);
   private readonly toastService = inject(ToastService);
 
+  /** Loads the dependencies overview on component initialization. */
+  constructor() {
+    void this.loadDependencies();
+  }
+
   /**
    * Toggles the expanded state of the vulnerability list for a dependency.
    *
@@ -206,11 +211,6 @@ export class AdminDependenciesComponent {
    */
   isVulnerabilityExpanded(dep: DependencyDTO): boolean {
     return this.expandedVulnerabilities().has(`${dep.group}:${dep.name}`);
-  }
-
-  /** Loads the dependencies overview on component initialization. */
-  constructor() {
-    void this.loadDependencies();
   }
 
   /**
