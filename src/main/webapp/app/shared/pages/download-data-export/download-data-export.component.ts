@@ -34,7 +34,9 @@ export class DownloadDataExportComponent {
   private async downloadDataExport(token: string): Promise<void> {
     this.isDownloading.set(true);
     try {
-      const response = await firstValueFrom(this.http.get(`/api/users/data-export/download/${encodeURIComponent(token)}`, { observe: 'response', responseType: 'blob' }));
+      const response = await firstValueFrom(
+        this.http.get(`/api/users/data-export/download/${encodeURIComponent(token)}`, { observe: 'response', responseType: 'blob' }),
+      );
       const blob = response.body as Blob;
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'data-export.zip';
