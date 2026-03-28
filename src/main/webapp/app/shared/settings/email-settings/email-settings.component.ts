@@ -82,6 +82,23 @@ export class EmailSettingsComponent {
           },
         ],
       ],
+      [
+        UserShortDTORolesEnum.Employee,
+        [
+          {
+            groupKey: 'settings.notifications.professor.new.title',
+            descriptionKey: 'settings.notifications.professor.new.description',
+            emailTypes: [EmailTypeEnum.ApplicationReceived],
+            enabled: false,
+          },
+          {
+            groupKey: 'settings.notifications.professor.accepted.title',
+            descriptionKey: 'settings.notifications.professor.accepted.description',
+            emailTypes: [EmailTypeEnum.ApplicationAccepted],
+            enabled: false,
+          },
+        ],
+      ],
     ]),
   );
 
