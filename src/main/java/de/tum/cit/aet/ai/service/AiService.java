@@ -10,6 +10,7 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -37,15 +38,19 @@ public class AiService {
 
     /**
      * Chat options for fast, deterministic responses.
+     * Uses the generic ChatOptions interface to avoid sending unsupported parameters
+     * (like 'stop') to reasoning models such as gpt-5-mini.
      */
-    private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
-        .maxCompletionTokens(MAX_COMPLETION_TOKENS)
-        .reasoningEffort("low")
-        .build();
+    private final ChatOptions chatOptions;
 
     public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
+        this.chatOptions = AzureOpenAiChatOptions.builder()
+            .maxCompletionTokens(MAX_COMPLETION_TOKENS)
+            .reasoningEffort("low")
+            .stop(null)
+            .build();
     }
 
     /**
@@ -66,7 +71,7 @@ public class AiService {
 
         return chatClient
             .prompt()
-            .options(FAST_CHAT_OPTIONS)
+            .options(chatOptions)
             .user(u ->
                 u
                     .text(jobGenerationResource)
@@ -100,7 +105,7 @@ public class AiService {
 
         return chatClient
             .prompt()
-            .options(FAST_CHAT_OPTIONS)
+            .options(chatOptions)
             .user(u ->
                 u
                     .text(translationResource)
