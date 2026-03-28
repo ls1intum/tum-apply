@@ -301,8 +301,8 @@
     "hoursPerWeek": "{{workload}} h/week",
     "notificationsCta": {
       "title": "No matching job yet?",
-      "description": "Enable notifications for new jobs.",
-      "link": "Go to Settings"
+      "description": "Enable notifications for new jobs. Click",
+      "link": "here"
     },
     "errors": {
       "loadFilter": {
