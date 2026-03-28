@@ -58,8 +58,6 @@ spring:
           options:
             deployment-name: gpt-5-mini
             temperature: 1.0
-            reasoning-effort: low
-            max-completion-tokens: 2000
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: prod
