@@ -87,7 +87,7 @@ export class SettingsComponent {
 
     effect(() => {
       const requestedTab = this.queryParamMap().get('tab');
-      if (requestedTab && this.tabs().some(tab => tab.id === requestedTab)) {
+      if (requestedTab != null && this.tabs().some(tab => tab.id === requestedTab)) {
         this.activeTab.set(requestedTab as SettingsTab);
       }
     });
