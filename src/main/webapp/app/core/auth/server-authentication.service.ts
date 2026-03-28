@@ -2,15 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  AuthSessionInfoDTO,
-  AuthenticationResourceApiService,
-  EmailVerificationResourceApiService,
-  OtpCompleteDTO,
-  UserProfileDTO,
-} from 'app/generated';
-
-import PurposeEnum = OtpCompleteDTO.PurposeEnum;
+import { AuthSessionInfoDTO } from 'app/generated/model/auth-session-info-dto';
+import { AuthenticationResourceApi } from 'app/generated/api/authentication-resource-api';
+import { EmailVerificationResourceApi } from 'app/generated/api/email-verification-resource-api';
+import { OtpCompleteDTOPurposeEnum } from 'app/generated/model/otp-complete-dto';
+import { UserProfileDTO } from 'app/generated/model/user-profile-dto';
 
 /**
  * Purpose
@@ -38,8 +34,8 @@ export class ServerAuthenticationService {
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly translationKey = 'auth.common.toast';
-  private readonly authenticationApi = inject(AuthenticationResourceApiService);
-  private readonly emailVerificationApi = inject(EmailVerificationResourceApiService);
+  private readonly authenticationApi = inject(AuthenticationResourceApi);
+  private readonly emailVerificationApi = inject(EmailVerificationResourceApi);
 
   private windowListenersActive = false;
 
@@ -94,7 +90,7 @@ export class ServerAuthenticationService {
    * @returns Promise resolving to AuthSessionInfoDTO containing session information.
    * @throws Error if verification fails or orchestrator is busy.
    */
-  async verifyOtp(email: string, code: string, purpose: PurposeEnum, profile?: UserProfileDTO): Promise<AuthSessionInfoDTO> {
+  async verifyOtp(email: string, code: string, purpose: OtpCompleteDTOPurposeEnum, profile?: UserProfileDTO): Promise<AuthSessionInfoDTO> {
     const response: AuthSessionInfoDTO = await firstValueFrom(
       this.authenticationApi.otpComplete({
         email,

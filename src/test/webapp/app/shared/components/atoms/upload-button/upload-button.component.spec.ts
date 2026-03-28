@@ -12,13 +12,13 @@ import rxjs, { of } from 'rxjs';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import {
-  ApplicationResourceApiServiceMock,
-  createApplicationResourceApiServiceMock,
-  provideApplicationResourceApiServiceMock,
+  ApplicationResourceApiMock,
+  createApplicationResourceApiMock,
+  provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
 
 describe('UploadButtonComponent', () => {
-  let applicationService: ApplicationResourceApiServiceMock;
+  let applicationApi: ApplicationResourceApiMock;
   let toastService: ToastServiceMock;
 
   function createUploadButtonFixture(inputs: {
@@ -37,12 +37,12 @@ describe('UploadButtonComponent', () => {
   }
 
   beforeEach(async () => {
-    applicationService = createApplicationResourceApiServiceMock();
+    applicationApi = createApplicationResourceApiMock();
     toastService = createToastServiceMock();
     await TestBed.configureTestingModule({
       imports: [UploadButtonComponent],
       providers: [
-        provideApplicationResourceApiServiceMock(applicationService),
+        provideApplicationResourceApiMock(applicationApi),
         provideToastServiceMock(toastService),
         provideHttpClientMock(),
         provideFontAwesomeTesting(),
@@ -120,7 +120,7 @@ describe('UploadButtonComponent', () => {
 
     await component.deleteDictionary(doc1);
 
-    expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('1');
+    expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('1');
     expect(component.documentIds()).toEqual([doc2]);
   });
 
@@ -132,7 +132,7 @@ describe('UploadButtonComponent', () => {
 
     const error = new Error('Delete failed');
 
-    vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => error));
+    vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => error));
 
     vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(error);
 
@@ -164,7 +164,7 @@ describe('UploadButtonComponent', () => {
 
     await component.renameDocument({ id: doc.id, name: 'newName', size: doc.size });
 
-    expect(applicationService.renameDocument).toHaveBeenCalledWith('1', 'newName');
+    expect(applicationApi.renameDocument).toHaveBeenCalledWith('1', 'newName');
     expect(component.documentIds()).toEqual([renamedDoc]);
   });
 
@@ -176,7 +176,7 @@ describe('UploadButtonComponent', () => {
 
     await component.renameDocument(doc);
 
-    expect(applicationService.renameDocument).not.toHaveBeenCalled();
+    expect(applicationApi.renameDocument).not.toHaveBeenCalled();
   });
 
   it('should show error toast if renaming fails', async () => {
@@ -185,7 +185,7 @@ describe('UploadButtonComponent', () => {
 
     const toastSpy = vi.spyOn(toastService, 'showErrorKey');
 
-    vi.spyOn(applicationService, 'renameDocument').mockReturnValue(rxjs.throwError(() => new Error('Rename failed')));
+    vi.spyOn(applicationApi, 'renameDocument').mockReturnValue(rxjs.throwError(() => new Error('Rename failed')));
 
     vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Rename failed'));
 
@@ -251,7 +251,7 @@ describe('UploadButtonComponent', () => {
     const component = fixture.componentInstance;
     fixture.detectChanges();
 
-    const renameSpy = vi.spyOn(applicationService, 'renameDocument');
+    const renameSpy = vi.spyOn(applicationApi, 'renameDocument');
 
     const docWithUndefinedName = { id: '1', name: undefined } as any;
     await component.renameDocument(docWithUndefinedName);
@@ -340,7 +340,7 @@ describe('UploadButtonComponent', () => {
 
     expect(component.documentIds()).toEqual([]);
     expect(component.queuedFiles()).toEqual([]);
-    expect(applicationService.deleteDocumentFromApplication).not.toHaveBeenCalled();
+    expect(applicationApi.deleteDocumentFromApplication).not.toHaveBeenCalled();
   });
 
   it('should replace a deferred renamed placeholder by id without leaving the old queued file behind', async () => {
@@ -411,16 +411,16 @@ describe('UploadButtonComponent', () => {
       component.pendingDuplicateFile.set(newFile);
 
       // Mock delete and upload
-      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation((): rxjs.Observable<any> => of({}));
-      vi.spyOn(applicationService, 'uploadDocuments').mockImplementation(
+      vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockImplementation((): rxjs.Observable<any> => of({}));
+      vi.spyOn(applicationApi, 'uploadDocuments').mockImplementation(
         (): rxjs.Observable<any> => of([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]),
       );
 
       await component.onConfirmDuplicate();
 
       // Expect delete then upload
-      expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
-      expect(applicationService.uploadDocuments).toHaveBeenCalledTimes(1);
+      expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
+      expect(applicationApi.uploadDocuments).toHaveBeenCalledTimes(1);
 
       // Check if list updated
       expect(component.documentIds()).toEqual([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]);
@@ -443,7 +443,7 @@ describe('UploadButtonComponent', () => {
 
       await component.onConfirmDuplicate();
 
-      expect(applicationService.deleteDocumentFromApplication).not.toHaveBeenCalled();
+      expect(applicationApi.deleteDocumentFromApplication).not.toHaveBeenCalled();
     });
 
     it('should handle error when deleting existing document during replace', async () => {
@@ -460,14 +460,14 @@ describe('UploadButtonComponent', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Mock delete failure
-      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
+      vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
       vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Delete failed'));
 
       await component.onConfirmDuplicate();
 
-      expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
+      expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
       expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
-      expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
+      expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
     });
@@ -484,10 +484,10 @@ describe('UploadButtonComponent', () => {
 
       // Subject to control when the delete completes
       const deleteSubject = new rxjs.Subject<any>();
-      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation(
+      vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockImplementation(
         (): rxjs.Observable<any> => deleteSubject.asObservable(),
       );
-      vi.spyOn(applicationService, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([]));
+      vi.spyOn(applicationApi, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([]));
 
       // Start the replace process
       const replacePromise = component.onConfirmDuplicate();
@@ -512,10 +512,10 @@ describe('UploadButtonComponent', () => {
 
     component.selectedFiles.set(undefined);
     await component.onUpload();
-    expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
+    expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
 
     component.selectedFiles.set([]);
     await component.onUpload();
-    expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
+    expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
   });
 });

@@ -5,9 +5,9 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
-import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { PageResponseDTOUserShortDTO } from 'app/generated/model/page-response-dto-user-short-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -17,7 +17,7 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { KeycloakUserDTO } from 'app/generated';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ResearchGroupAddMembersComponent', () => {
@@ -94,8 +94,8 @@ describe('ResearchGroupAddMembersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupAddMembersComponent],
       providers: [
-        { provide: UserResourceApiService, useValue: mockUserService },
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
+        { provide: UserResourceApi, useValue: mockUserService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
         provideHttpClientMock(),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
@@ -129,7 +129,7 @@ describe('ResearchGroupAddMembersComponent', () => {
   });
 
   describe('Load users', () => {
-    it('should not call userService on init when there is no search query', () => {
+    it('should not call userApi on init when there is no search query', () => {
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
       expect(component.users()).toEqual([]);
       expect(component.totalRecords()).toBe(0);

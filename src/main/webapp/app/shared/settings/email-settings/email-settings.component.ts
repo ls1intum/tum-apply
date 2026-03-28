@@ -6,15 +6,15 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
+import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import TranslateDirective from '../../language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailSettingResourceApiService } from '../../../generated/api/emailSettingResourceApi.service';
-import { EmailSetting } from '../../../generated/model/emailSetting';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
+import { EmailSettingResourceApi } from '../../../generated/api/email-setting-resource-api';
+import { EmailSetting } from '../../../generated/model/email-setting';
 
-import EmailTypeEnum = EmailSetting.EmailTypeEnum;
-import RolesEnum = UserShortDTO.RolesEnum;
+type RolesEnum = UserShortDTORolesEnum;
 
 export interface NotificationGroup {
   groupKey: string; // Title of the group (short)
@@ -32,7 +32,7 @@ export interface NotificationGroup {
 export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
-  protected emailSettingService = inject(EmailSettingResourceApiService);
+  protected emailSettingApi = inject(EmailSettingResourceApi);
   protected toastService = inject(ToastService);
 
   // to control that switches are only displayed when settings are loaded
@@ -49,7 +49,7 @@ export class EmailSettingsComponent {
   protected roleSettings: WritableSignal<Map<RolesEnum, NotificationGroup[]>> = signal(
     new Map<RolesEnum, NotificationGroup[]>([
       [
-        RolesEnum.Applicant,
+        UserShortDTORolesEnum.Applicant,
         [
           {
             groupKey: 'settings.notifications.applicant.submission.title',
@@ -66,7 +66,24 @@ export class EmailSettingsComponent {
         ],
       ],
       [
-        RolesEnum.Professor,
+        UserShortDTORolesEnum.Professor,
+        [
+          {
+            groupKey: 'settings.notifications.professor.new.title',
+            descriptionKey: 'settings.notifications.professor.new.description',
+            emailTypes: [EmailTypeEnum.ApplicationReceived],
+            enabled: false,
+          },
+          {
+            groupKey: 'settings.notifications.professor.accepted.title',
+            descriptionKey: 'settings.notifications.professor.accepted.description',
+            emailTypes: [EmailTypeEnum.ApplicationAccepted],
+            enabled: false,
+          },
+        ],
+      ],
+      [
+        UserShortDTORolesEnum.Employee,
         [
           {
             groupKey: 'settings.notifications.professor.new.title',
@@ -87,7 +104,7 @@ export class EmailSettingsComponent {
 
   async loadSettings(role: RolesEnum): Promise<void> {
     try {
-      const settings = await firstValueFrom(this.emailSettingService.getEmailSettings());
+      const settings = await firstValueFrom(this.emailSettingApi.getEmailSettings());
 
       const updatedGroups = this.roleSettings()
         .get(role)
@@ -119,7 +136,7 @@ export class EmailSettingsComponent {
         enabled: group.enabled,
       }));
 
-      void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
+      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings));
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
     }

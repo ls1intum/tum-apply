@@ -1,22 +1,19 @@
 import { Provider } from '@angular/core';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
-import { AuthenticationResourceApiService } from 'app/generated/api/authenticationResourceApi.service';
-import { EmailVerificationResourceApiService } from 'app/generated/api/emailVerificationResourceApi.service';
+import { AuthenticationResourceApi } from 'app/generated/api/authentication-resource-api';
+import { EmailVerificationResourceApi } from 'app/generated/api/email-verification-resource-api';
 
 export const mockSessionInfo = { expiresIn: 60 };
 
-export type AuthenticationResourceApiServiceMock = Pick<
-  AuthenticationResourceApiService,
-  'login' | 'otpComplete' | 'logout' | 'refresh'
-> & {
+export type AuthenticationResourceApiMock = Pick<AuthenticationResourceApi, 'login' | 'otpComplete' | 'logout' | 'refresh'> & {
   login: ReturnType<typeof vi.fn>;
   otpComplete: ReturnType<typeof vi.fn>;
   logout: ReturnType<typeof vi.fn>;
   refresh: ReturnType<typeof vi.fn>;
 };
 
-export function createAuthenticationResourceApiServiceMock(): AuthenticationResourceApiServiceMock {
+export function createAuthenticationResourceApiMock(): AuthenticationResourceApiMock {
   return {
     login: vi.fn().mockReturnValue(of(mockSessionInfo)),
     otpComplete: vi.fn().mockReturnValue(of(mockSessionInfo)),
@@ -25,24 +22,24 @@ export function createAuthenticationResourceApiServiceMock(): AuthenticationReso
   };
 }
 
-export function provideAuthenticationResourceApiServiceMock(
-  mock: AuthenticationResourceApiServiceMock = createAuthenticationResourceApiServiceMock(),
+export function provideAuthenticationResourceApiMock(
+  mock: AuthenticationResourceApiMock = createAuthenticationResourceApiMock(),
 ): Provider {
-  return { provide: AuthenticationResourceApiService, useValue: mock };
+  return { provide: AuthenticationResourceApi, useValue: mock };
 }
 
-export type EmailVerificationResourceApiServiceMock = Pick<EmailVerificationResourceApiService, 'send'> & {
+export type EmailVerificationResourceApiMock = Pick<EmailVerificationResourceApi, 'send'> & {
   send: ReturnType<typeof vi.fn>;
 };
 
-export function createEmailVerificationResourceApiServiceMock(): EmailVerificationResourceApiServiceMock {
+export function createEmailVerificationResourceApiMock(): EmailVerificationResourceApiMock {
   return {
     send: vi.fn().mockReturnValue(of(undefined)),
   };
 }
 
-export function provideEmailVerificationResourceApiServiceMock(
-  mock: EmailVerificationResourceApiServiceMock = createEmailVerificationResourceApiServiceMock(),
+export function provideEmailVerificationResourceApiMock(
+  mock: EmailVerificationResourceApiMock = createEmailVerificationResourceApiMock(),
 ): Provider {
-  return { provide: EmailVerificationResourceApiService, useValue: mock };
+  return { provide: EmailVerificationResourceApi, useValue: mock };
 }

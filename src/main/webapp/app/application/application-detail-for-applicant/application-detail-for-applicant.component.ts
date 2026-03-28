@@ -11,18 +11,18 @@ import { DocumentViewerComponent } from 'app/shared/components/atoms/document-vi
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
+import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 import { formatGradeDisplay, getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { createMenuActionSignals } from 'app/shared/util/util';
-import { ApplicationPDFRequest } from 'app/generated';
+import { ApplicationPDFRequest } from 'app/generated/model/application-pdf-request';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
-import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
+import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
+import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
+import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
@@ -191,12 +191,12 @@ export default class ApplicationDetailForApplicantComponent {
   });
 
   readonly dropDownOptions = DropDownOptions;
-  private applicationService = inject(ApplicationResourceApiService);
+  private applicationApi = inject(ApplicationResourceApi);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
-  private pdfExportService = inject(PdfExportResourceApiService);
+  private pdfExportApi = inject(PdfExportResourceApi);
   private translate = inject(TranslateService);
 
   private currentLang = toSignal(this.translate.onLangChange);
@@ -221,7 +221,7 @@ export default class ApplicationDetailForApplicantComponent {
     }
 
     try {
-      const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(this.applicationId()));
+      const application = await firstValueFrom(this.applicationApi.getApplicationForDetailPage(this.applicationId()));
       this.actualDetailData.set(application);
       this.actualDetailDataExists.set(true);
     } catch {
@@ -229,7 +229,7 @@ export default class ApplicationDetailForApplicantComponent {
     }
 
     try {
-      const ids = await firstValueFrom(this.applicationService.getDocumentDictionaryIds(this.applicationId()));
+      const ids = await firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()));
       this.actualDocumentData.set(ids);
       this.actualDocumentDataExists.set(true);
     } catch {
@@ -265,14 +265,14 @@ export default class ApplicationDetailForApplicantComponent {
       };
     } else {
       const applicationId = this.applicationId();
-      const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(applicationId));
+      const application = await firstValueFrom(this.applicationApi.getApplicationForDetailPage(applicationId));
       req = {
         application,
         labels,
       };
     }
 
-    this.pdfExportService.exportApplicationToPDF(req, 'response').subscribe(response => {
+    this.pdfExportApi.exportApplicationToPDF(req).subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 
@@ -313,7 +313,7 @@ export default class ApplicationDetailForApplicantComponent {
   onDeleteApplication(): void {
     const applicationId = this.applicationId();
     if (applicationId) {
-      this.applicationService.deleteApplication(applicationId).subscribe({
+      this.applicationApi.deleteApplication(applicationId).subscribe({
         next: () => {
           this.toastService.showSuccessKey(`${this.translationKey}.applicationDeleted`);
           void this.router.navigate(['/application/overview']);
@@ -328,7 +328,7 @@ export default class ApplicationDetailForApplicantComponent {
   onWithdrawApplication(): void {
     const applicationId = this.applicationId();
     if (applicationId) {
-      this.applicationService.withdrawApplication(applicationId).subscribe({
+      this.applicationApi.withdrawApplication(applicationId).subscribe({
         next: () => {
           this.toastService.showSuccessKey(`${this.translationKey}.applicationWithdrawn`);
           // Refresh the application data to show updated state

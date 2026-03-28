@@ -12,7 +12,7 @@ import {
   provideGenderBiasAnalysisServiceMock,
 } from 'util/gender-bias-analysis.service.mock';
 import { BehaviorSubject } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { ContentChange } from 'ngx-quill';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): ContentChange {

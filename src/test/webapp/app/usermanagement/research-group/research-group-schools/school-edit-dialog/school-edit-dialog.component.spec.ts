@@ -8,7 +8,7 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -19,13 +19,13 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 describe('SchoolEditDialogComponent', () => {
   let component: SchoolEditDialogComponent;
   let fixture: ComponentFixture<SchoolEditDialogComponent>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockSchoolApi: ReturnType<typeof createSchoolResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogRef: ReturnType<typeof createDynamicDialogRefMock>;
   let mockDialogConfig: ReturnType<typeof createDynamicDialogConfigMock>;
 
   beforeEach(async () => {
-    mockSchoolService = createSchoolResourceApiServiceMock();
+    mockSchoolApi = createSchoolResourceApiMock();
     mockToastService = createToastServiceMock();
     mockDialogRef = createDynamicDialogRefMock();
     mockDialogConfig = createDynamicDialogConfigMock();
@@ -33,7 +33,7 @@ describe('SchoolEditDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SchoolEditDialogComponent],
       providers: [
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideSchoolResourceApiMock(mockSchoolApi),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideToastServiceMock(mockToastService),
@@ -85,17 +85,17 @@ describe('SchoolEditDialogComponent', () => {
     it('should not submit if form is invalid', async () => {
       createComponent();
       await component.onSubmit();
-      expect(mockSchoolService.createSchool).not.toHaveBeenCalled();
+      expect(mockSchoolApi.createSchool).not.toHaveBeenCalled();
     });
 
     it('should create school successfully', async () => {
       createComponent();
       component.form.patchValue({ name: 'New School', abbreviation: 'NS' });
-      mockSchoolService.createSchool.mockReturnValue(of({}));
+      mockSchoolApi.createSchool.mockReturnValue(of({}));
 
       await component.onSubmit();
 
-      expect(mockSchoolService.createSchool).toHaveBeenCalledWith({ name: 'New School', abbreviation: 'NS' });
+      expect(mockSchoolApi.createSchool).toHaveBeenCalledWith({ name: 'New School', abbreviation: 'NS' });
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.schools.createDialog.success.created');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
@@ -106,11 +106,11 @@ describe('SchoolEditDialogComponent', () => {
       };
       createComponent();
       component.form.patchValue({ name: 'Updated School', abbreviation: 'UPD' });
-      mockSchoolService.updateSchool.mockReturnValue(of({}));
+      mockSchoolApi.updateSchool.mockReturnValue(of({}));
 
       await component.onSubmit();
 
-      expect(mockSchoolService.updateSchool).toHaveBeenCalledWith('s1', { name: 'Updated School', abbreviation: 'UPD' });
+      expect(mockSchoolApi.updateSchool).toHaveBeenCalledWith('s1', { name: 'Updated School', abbreviation: 'UPD' });
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.schools.createDialog.success.updated');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
@@ -119,7 +119,7 @@ describe('SchoolEditDialogComponent', () => {
       createComponent();
       component.form.patchValue({ name: 'New School', abbreviation: 'NS' });
       const error = new HttpErrorResponse({ status: 409 });
-      mockSchoolService.createSchool.mockReturnValue(throwError(() => error));
+      mockSchoolApi.createSchool.mockReturnValue(throwError(() => error));
 
       await component.onSubmit();
 
@@ -130,7 +130,7 @@ describe('SchoolEditDialogComponent', () => {
       createComponent();
       component.form.patchValue({ name: 'New School', abbreviation: 'NS' });
       const error = new HttpErrorResponse({ status: 500 });
-      mockSchoolService.createSchool.mockReturnValue(throwError(() => error));
+      mockSchoolApi.createSchool.mockReturnValue(throwError(() => error));
 
       await component.onSubmit();
 

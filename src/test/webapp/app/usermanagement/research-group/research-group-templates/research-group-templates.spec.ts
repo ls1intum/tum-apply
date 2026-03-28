@@ -3,16 +3,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
-import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateOverviewDTO } from 'app/generated/model/emailTemplateOverviewDTO';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { EmailTemplateOverviewDTO, EmailTemplateOverviewDTOEmailTypeEnum } from 'app/generated/model/email-template-overview-dto';
 import { createRouterMock, provideRouterMock } from '../../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
-class EmailTemplateResourceApiServiceMock {
+class EmailTemplateResourceApiMock {
   getTemplates = vi.fn();
   deleteTemplate = vi.fn();
 }
@@ -20,7 +20,7 @@ class EmailTemplateResourceApiServiceMock {
 describe('ResearchGroupTemplates', () => {
   let fixture: ComponentFixture<ResearchGroupTemplates>;
   let component: ResearchGroupTemplates;
-  let api: EmailTemplateResourceApiServiceMock;
+  let api: EmailTemplateResourceApiMock;
   let mockToast: ToastServiceMock;
   let mockRouter = createRouterMock();
   let mockTranslate = createTranslateServiceMock();
@@ -42,7 +42,7 @@ describe('ResearchGroupTemplates', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupTemplates],
       providers: [
-        { provide: EmailTemplateResourceApiService, useClass: EmailTemplateResourceApiServiceMock },
+        { provide: EmailTemplateResourceApi, useClass: EmailTemplateResourceApiMock },
         provideRouterMock(mockRouter),
         provideToastServiceMock(mockToast),
         provideTranslateMock(mockTranslate),
@@ -51,7 +51,7 @@ describe('ResearchGroupTemplates', () => {
       ],
     })
       .overrideComponent(ResearchGroupTemplates, {
-        remove: { providers: [EmailTemplateResourceApiService] },
+        remove: { providers: [EmailTemplateResourceApi] },
       })
       .compileComponents();
 
@@ -59,7 +59,7 @@ describe('ResearchGroupTemplates', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    api = TestBed.inject(EmailTemplateResourceApiService) as unknown as EmailTemplateResourceApiServiceMock;
+    api = TestBed.inject(EmailTemplateResourceApi) as unknown as EmailTemplateResourceApiMock;
   });
 
   afterEach(() => {
@@ -71,7 +71,7 @@ describe('ResearchGroupTemplates', () => {
   describe('loadPage()', () => {
     it('loads templates successfully', async () => {
       const templates: EmailTemplateOverviewDTO[] = [
-        { templateName: 't1', emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent, isDefault: false },
+        { templateName: 't1', emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent, isDefault: false },
       ];
       mockGetTemplates(templates, 1);
 
@@ -144,13 +144,13 @@ describe('ResearchGroupTemplates', () => {
     it.each([
       {
         desc: 'default template with name',
-        templateDto: { templateName: 'welcome', emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent, isDefault: true },
+        templateDto: { templateName: 'welcome', emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent, isDefault: true },
         expectedDisplay: 'researchGroup.emailTemplates.default.APPLICATION_SENT-welcome',
         expectedCreatedBy: 'researchGroup.emailTemplates.systemDefault',
       },
       {
         desc: 'default template without name',
-        templateDto: { templateName: undefined, emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationAccepted, isDefault: true },
+        templateDto: { templateName: undefined, emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationAccepted, isDefault: true },
         expectedDisplay: 'researchGroup.emailTemplates.default.APPLICATION_ACCEPTED',
         expectedCreatedBy: 'researchGroup.emailTemplates.systemDefault',
       },
@@ -158,7 +158,7 @@ describe('ResearchGroupTemplates', () => {
         desc: 'non-default template with first/last name',
         templateDto: {
           templateName: 'manual',
-          emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent,
+          emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent,
           isDefault: false,
           firstName: 'Alice',
           lastName: 'Smith',
@@ -193,14 +193,14 @@ describe('ResearchGroupTemplates', () => {
   });
 
   it('should set isEmployee to true for employees', () => {
-    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTORolesEnum.Employee] } : u));
     fixture.detectChanges();
 
     expect(component['isEmployee']()).toBe(true);
   });
 
   it('should set isEmployee to false for non-employees', () => {
-    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Professor] } : u));
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTORolesEnum.Professor] } : u));
     fixture.detectChanges();
 
     expect(component['isEmployee']()).toBe(false);
