@@ -302,7 +302,7 @@
     "notificationsCta": {
       "title": "Keine passende Stelle dabei?",
       "description": "Aktiviere Benachrichtigungen für neue Jobs.",
-      "link": "Klicke hier"
+      "link": "Zu den Einstellungen"
     },
     "errors": {
       "loadFilter": {

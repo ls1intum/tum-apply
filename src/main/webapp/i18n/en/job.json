@@ -302,7 +302,7 @@
     "notificationsCta": {
       "title": "No matching job yet?",
       "description": "Enable notifications for new jobs.",
-      "link": "Click here"
+      "link": "Go to Settings"
     },
     "errors": {
       "loadFilter": {

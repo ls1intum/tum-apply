@@ -22,7 +22,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -37,7 +36,6 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private final InternalCommentRepository internalCommentRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public void contribute(ExportContext context, UserDataExportBuilder builder) {
         if (!context.hasApplicantRole() || !applicantRepository.existsById(context.user().getUserId())) {
             return;
