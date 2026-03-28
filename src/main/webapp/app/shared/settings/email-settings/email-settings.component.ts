@@ -139,7 +139,6 @@ export class EmailSettingsComponent {
       const subscriptions = await firstValueFrom(this.applicantResourceApiService.getSubjectAreaSubscriptions());
       const selectedSubjectAreas = this.sortSubjectAreas(subscriptions as SubjectArea[]);
       this.selectedSubjectAreas.set(selectedSubjectAreas);
-      this.subjectAreasEnabled.set(selectedSubjectAreas.length > 0);
     } catch {
       this.selectedSubjectAreas.set([]);
       this.subjectAreasEnabled.set(false);
