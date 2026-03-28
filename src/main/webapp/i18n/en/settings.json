@@ -39,6 +39,7 @@
           "description": "Receive emails about new job postings. After enabling, you can choose your preferred subject areas.",
           "placeholder": "Add Subject Area",
           "filterPlaceholder": "Search Subject Area...",
+          "removeLabel": "Remove {{subjectArea}}",
           "selectedCount": "{{count}} selected",
           "empty": "No subject areas available.",
           "emptyFilter": "No subject areas match your search.",

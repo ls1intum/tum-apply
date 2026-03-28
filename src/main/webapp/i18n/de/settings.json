@@ -39,6 +39,7 @@
           "description": "Erhalte E-Mails über neue Stellenausschreibungen. Nach der Aktivierung kannst du deine bevorzugten Fachbereiche auswählen.",
           "placeholder": "Fachbereiche hinzufügen",
           "filterPlaceholder": "Fachbereich suchen...",
+          "removeLabel": "{{subjectArea}} entfernen",
           "selectedCount": "{{count}} ausgewählt",
           "empty": "Keine Fachbereiche verfügbar.",
           "emptyFilter": "Keine Fachbereiche für diese Suche gefunden.",

@@ -82,6 +82,13 @@
                             type="button"
                             class="inline-flex size-3 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-background-surface-alt hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
                             [disabled]="subjectAreaSaving()"
+                            [attr.aria-label]="
+                              'settings.notifications.applicant.subjectAreas.removeLabel'
+                                | translate
+                                  : {
+                                      subjectArea: (subjectArea.name | translate),
+                                    }
+                            "
                             (click)="removeSubjectArea(subjectArea.value)"
                           >
                             <fa-icon class="text-sm" [icon]="['fas', 'xmark']" />

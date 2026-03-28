@@ -176,6 +176,10 @@ export class FilterMultiselect {
   }
 
   closeDropdown(): void {
+    if (!this.isOpen()) {
+      return;
+    }
+
     this.isOpen.set(false);
     this.openChange.emit(false);
   }
