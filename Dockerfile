@@ -97,6 +97,7 @@ COPY --from=war_file ${WAR_FILE_PATH}/*.war tum-apply.war
 
 # Copy build files needed by the admin dependencies page to parse project dependencies at runtime
 COPY --from=builder /opt/tum-apply/build.gradle build.gradle
+COPY --from=builder /opt/tum-apply/gradle.properties gradle.properties
 COPY --from=builder /opt/tum-apply/package.json package.json
 
 EXPOSE 8080
