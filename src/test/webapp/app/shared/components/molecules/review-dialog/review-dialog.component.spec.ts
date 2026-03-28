@@ -6,6 +6,7 @@ import { SelectOption } from 'app/shared/components/atoms/select/select.componen
 import { provideNoopAnimations } from '@angular/platform-browser/animations'; // DialogModule of PrimeNG still uses legacy animations (@animation.start)
 import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { RejectDTOReasonEnum } from 'app/generated/model/reject-dto';
 
 describe('ReviewDialogComponent', () => {
   let fixture: ComponentFixture<ReviewDialogComponent>;
@@ -55,7 +56,7 @@ describe('ReviewDialogComponent', () => {
     });
 
     it('should be true if a reason is selected', () => {
-      component.selectedRejectReason.set({ name: 'test', value: 'JOB_FILLED' });
+      component.selectedRejectReason.set({ name: 'test', value: RejectDTOReasonEnum.JobFilled });
       expect(component.canReject()).toBe(true);
     });
   });
@@ -113,7 +114,7 @@ describe('ReviewDialogComponent', () => {
     it('should reset notifyApplicant, closeJob, and selectedRejectReason', () => {
       component.notifyApplicant.set(false);
       component.closeJob.set(true);
-      component.selectedRejectReason.set({ name: 'test', value: 'JOB_FILLED' });
+      component.selectedRejectReason.set({ name: 'test', value: RejectDTOReasonEnum.JobFilled });
 
       component.resetDialogState();
 
@@ -125,7 +126,7 @@ describe('ReviewDialogComponent', () => {
 
   describe('onSelectChange', () => {
     it('should update selectedRejectReason', () => {
-      const option: SelectOption = { name: 'reason', value: 'JOB_FILLED' };
+      const option: SelectOption = { name: 'reason', value: RejectDTOReasonEnum.JobFilled };
       component.onSelectChange(option);
       expect(component.selectedRejectReason()).toEqual(option);
     });
@@ -165,14 +166,14 @@ describe('ReviewDialogComponent', () => {
       const spy = vi.fn();
       component.reject.subscribe(spy);
 
-      const option: SelectOption = { name: 'reason', value: 'FAILED_REQUIREMENTS' };
+      const option: SelectOption = { name: 'reason', value: RejectDTOReasonEnum.FailedRequirements };
       component.selectedRejectReason.set(option);
       component.notifyApplicant.set(false);
 
       component.onReject();
 
       expect(spy).toHaveBeenCalledWith({
-        reason: 'FAILED_REQUIREMENTS',
+        reason: RejectDTOReasonEnum.FailedRequirements,
         notifyApplicant: false,
       });
     });

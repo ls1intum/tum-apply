@@ -9,7 +9,8 @@ import ApplicationCreationPage2Component, {
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { provideHttpClient as provideHttpClientMock } from '@angular/common/http';
-import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
+import { ApplicationForApplicantDTO, ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
@@ -303,12 +304,12 @@ describe('ApplicationPage2Component', () => {
       },
       job: {
         jobId: 'id-123',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         professorName: 'Pr. Test',
         title: 'Job title',
-        subjectArea: 'COMPUTER_SCIENCE',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
     };
 
     it('should map all applicant fields correctly when provided', () => {

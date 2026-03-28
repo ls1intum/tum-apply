@@ -214,8 +214,8 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   private fb = inject(FormBuilder);
-  private jobResourceApi = inject(JobResourceApi);
-  private imageResourceApi = inject(ImageResourceApi);
+  private jobApi = inject(JobResourceApi);
+  private imageApi = inject(ImageResourceApi);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
   private router = inject(Router);
@@ -532,7 +532,7 @@ export class JobCreationFormComponent {
     if (!jobData) return;
 
     try {
-      const saved = await firstValueFrom(this.jobResourceApi.updateJob(this.jobId(), jobData));
+      const saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), jobData));
       // refresh local truth from server response
       this.applyServerJobForm(saved);
       this.toastService.showSuccessKey('toast.published');
@@ -573,7 +573,7 @@ export class JobCreationFormComponent {
     this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
     try {
-      const researchGroupImages = await firstValueFrom(this.imageResourceApi.getResearchGroupJobBanners());
+      const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
     } catch {
       // If refresh fails, add to local array
@@ -617,14 +617,14 @@ export class JobCreationFormComponent {
     if (!imageId) return;
 
     try {
-      await firstValueFrom(this.imageResourceApi.deleteImage(imageId));
+      await firstValueFrom(this.imageApi.deleteImage(imageId));
 
       if (this.selectedImage()?.imageId === imageId) {
         this.clearImageSelection();
       }
 
       try {
-        const researchGroupImages = await firstValueFrom(this.imageResourceApi.getResearchGroupJobBanners());
+        const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
         this.researchGroupImages.set(researchGroupImages);
       } catch {
         this.researchGroupImages.set(this.researchGroupImages().filter(img => img.imageId !== imageId));
@@ -649,13 +649,13 @@ export class JobCreationFormComponent {
   async loadImages(): Promise<void> {
     try {
       try {
-        const defaults = await firstValueFrom(this.imageResourceApi.getMyDefaultJobBanners());
+        const defaults = await firstValueFrom(this.imageApi.getMyDefaultJobBanners());
         this.defaultImages.set(defaults);
       } catch {
         this.defaultImages.set([]);
       }
 
-      const researchGroupImages = await firstValueFrom(this.imageResourceApi.getResearchGroupJobBanners());
+      const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
@@ -1013,7 +1013,7 @@ export class JobCreationFormComponent {
 
         this.jobId.set(jobId);
         const [job] = await Promise.all([
-          firstValueFrom(this.jobResourceApi.getJobById(jobId)),
+          firstValueFrom(this.jobApi.getJobById(jobId)),
           loadImagesPromise,
           this.loadSupervisingProfessors(),
         ]);
@@ -1221,9 +1221,9 @@ export class JobCreationFormComponent {
       let saved: JobFormDTO;
 
       if (this.jobId()) {
-        saved = await firstValueFrom(this.jobResourceApi.updateJob(this.jobId(), currentData));
+        saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), currentData));
       } else {
-        saved = await firstValueFrom(this.jobResourceApi.createJob(currentData));
+        saved = await firstValueFrom(this.jobApi.createJob(currentData));
         this.jobId.set(saved.jobId ?? '');
       }
 

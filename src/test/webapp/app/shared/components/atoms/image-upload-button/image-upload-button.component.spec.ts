@@ -53,7 +53,7 @@ describe('ImageUploadButtonComponent', () => {
 
   let component: ImageUploadButtonComponent;
   let fixture: ComponentFixture<ImageUploadButtonComponent>;
-  let mockImageService: ReturnType<typeof createImageResourceApiMock>;
+  let mockImageApi: ReturnType<typeof createImageResourceApiMock>;
 
   // Common test files
   let validJpegFile: File;
@@ -61,11 +61,11 @@ describe('ImageUploadButtonComponent', () => {
   let svgFile: File;
 
   beforeEach(async () => {
-    mockImageService = createImageResourceApiMock();
+    mockImageApi = createImageResourceApiMock();
 
     await TestBed.configureTestingModule({
       imports: [ImageUploadButtonComponent],
-      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideImageResourceApiMock(mockImageService)],
+      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideImageResourceApiMock(mockImageApi)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ImageUploadButtonComponent);
@@ -141,7 +141,7 @@ describe('ImageUploadButtonComponent', () => {
         name: 'upload failure',
         getFile: () => validJpegFile,
         expectedError: { type: 'uploadFailed', errorKey: 'imageUpload.error.uploadFailed' },
-        setupSpy: () => mockImageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
+        setupSpy: () => mockImageApi.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
       },
     ])('should emit error when $name', async ({ getFile, expectedError, setupSpy }) => {
       const spy = setupSpy?.();
@@ -166,7 +166,7 @@ describe('ImageUploadButtonComponent', () => {
       { name: 'non-input target', event: { target: document.createElement('div') } as unknown as Event },
     ])('should handle $name gracefully', async ({ event }) => {
       await component.onImageSelected(event);
-      expect(mockImageService.uploadJobBanner).not.toHaveBeenCalled();
+      expect(mockImageApi.uploadJobBanner).not.toHaveBeenCalled();
     });
   });
 
@@ -178,7 +178,7 @@ describe('ImageUploadButtonComponent', () => {
     it('should upload image successfully using default upload function', async () => {
       const mockEvent = createMockFileEvent(validJpegFile);
       const mockImage: ImageDTO = { imageId: 'uploaded123', url: '/images/uploaded.jpg', imageType: 'JOB_BANNER' };
-      mockImageService.uploadJobBanner.mockReturnValueOnce(of(mockImage));
+      mockImageApi.uploadJobBanner.mockReturnValueOnce(of(mockImage));
 
       let emittedImage: ImageDTO | undefined;
       const subscription = component.imageUploaded.subscribe(image => {

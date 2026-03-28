@@ -160,9 +160,9 @@ export class ApplicationDetailComponent {
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
 
-  private readonly evaluationResourceApi = inject(ApplicationEvaluationResourceApi);
-  private readonly applicationResourceApi = inject(ApplicationResourceApi);
-  private readonly interviewResourceApi = inject(InterviewResourceApi);
+  private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
+  private readonly applicationApi = inject(ApplicationResourceApi);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
@@ -207,7 +207,7 @@ export class ApplicationDetailComponent {
 
   async loadAllJobNames(): Promise<void> {
     try {
-      const jobNames = await firstValueFrom(this.evaluationResourceApi.getAllJobNames());
+      const jobNames = await firstValueFrom(this.evaluationApi.getAllJobNames());
       this.allAvailableJobNames.set(jobNames.sort());
     } catch {
       this.allAvailableJobNames.set([]);
@@ -309,7 +309,7 @@ export class ApplicationDetailComponent {
     }
 
     try {
-      const processes = await firstValueFrom(this.interviewResourceApi.getInterviewOverview());
+      const processes = await firstValueFrom(this.interviewApi.getInterviewOverview());
       const matchingProcess = processes.find(p => p.jobId === application.jobId);
 
       if (!matchingProcess) {
@@ -319,7 +319,7 @@ export class ApplicationDetailComponent {
 
       // 2. Add applicant to the found process
       await firstValueFrom(
-        this.interviewResourceApi.addApplicantsToInterview(matchingProcess.processId, {
+        this.interviewApi.addApplicantsToInterview(matchingProcess.processId, {
           applicationIds: [application.applicationDetailDTO.applicationId],
         }),
       );
@@ -354,7 +354,7 @@ export class ApplicationDetailComponent {
         this.rejectOtherApplicationsOfJob(application.jobId ?? '');
       }
       this.reviewDialogVisible.set(false);
-      await firstValueFrom(this.evaluationResourceApi.acceptApplication(application.applicationDetailDTO.applicationId, acceptDTO));
+      await firstValueFrom(this.evaluationApi.acceptApplication(application.applicationDetailDTO.applicationId, acceptDTO));
     }
   }
 
@@ -364,7 +364,7 @@ export class ApplicationDetailComponent {
     if (application) {
       this.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.Rejected);
       this.reviewDialogVisible.set(false);
-      await firstValueFrom(this.evaluationResourceApi.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
+      await firstValueFrom(this.evaluationApi.rejectApplication(application.applicationDetailDTO.applicationId, rejectDTO));
     }
   }
 
@@ -373,7 +373,7 @@ export class ApplicationDetailComponent {
 
     if (application?.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Sent) {
       this.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.InReview);
-      await firstValueFrom(this.evaluationResourceApi.markApplicationAsInReview(application.applicationDetailDTO.applicationId));
+      await firstValueFrom(this.evaluationApi.markApplicationAsInReview(application.applicationDetailDTO.applicationId));
     }
   }
 
@@ -423,7 +423,7 @@ export class ApplicationDetailComponent {
     try {
       // Fetch the updated application with server-calculated average rating
       const result = await firstValueFrom(
-        this.evaluationResourceApi.getApplicationsDetailsWindow(
+        this.evaluationApi.getApplicationsDetailsWindow(
           id,
           1, // windowSize = 1 to get just this application
           this.sortBy(),
@@ -486,7 +486,7 @@ export class ApplicationDetailComponent {
       const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
-        this.evaluationResourceApi.getApplicationsDetails(
+        this.evaluationApi.getApplicationsDetails(
           offset,
           limit,
           this.sortBy(),
@@ -511,7 +511,7 @@ export class ApplicationDetailComponent {
 
       const search = this.searchQuery();
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
-        this.evaluationResourceApi.getApplicationsDetailsWindow(
+        this.evaluationApi.getApplicationsDetailsWindow(
           applicationId,
           CAROUSEL_SIZE,
           this.sortBy(),
@@ -636,7 +636,7 @@ export class ApplicationDetailComponent {
   }
 
   private updateDocumentInformation(applicationId: string): void {
-    firstValueFrom(this.applicationResourceApi.getDocumentDictionaryIds(applicationId))
+    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(applicationId))
       .then(ids => {
         this.currentDocumentIds.set(ids);
       })

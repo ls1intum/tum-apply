@@ -7,6 +7,7 @@ import { SlotsSectionComponent } from 'app/interview/interview-process-detail/sl
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
+import { IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';
@@ -33,7 +34,7 @@ const bookedFutureSlot: InterviewSlotDTO = {
     firstName: 'Jane',
     lastName: 'Doe',
     email: 'jane@example.com',
-    state: 'SCHEDULED',
+    state: IntervieweeDTOStateEnum.Scheduled,
   },
 };
 
@@ -296,7 +297,7 @@ describe('SlotsSectionComponent', () => {
         endDateTime: '2027-06-15T10:00:00',
         location: 'Room 101',
         isBooked: true,
-        interviewee: { id: 'iee-new', firstName: 'New', lastName: 'Person', email: 'new@example.com', state: 'SCHEDULED' },
+        interviewee: { id: 'iee-new', firstName: 'New', lastName: 'Person', email: 'new@example.com', state: IntervieweeDTOStateEnum.Scheduled },
       };
 
       const slotAssignedSpy = vi.spyOn(component.slotAssigned, 'emit');

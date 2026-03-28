@@ -41,7 +41,7 @@ export class DocumentSection {
 
   readonly NUMBER_OF_DOCUMENTS = 3;
 
-  evaluationResourceApi = inject(ApplicationEvaluationResourceApi);
+  evaluationApi = inject(ApplicationEvaluationResourceApi);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
@@ -94,7 +94,7 @@ export class DocumentSection {
     }
 
     try {
-      const response: HttpResponse<Blob> = await firstValueFrom(this.evaluationResourceApi.downloadAll(applicationId));
+      const response: HttpResponse<Blob> = await firstValueFrom(this.evaluationApi.downloadAll(applicationId));
 
       const blob = response.body;
 

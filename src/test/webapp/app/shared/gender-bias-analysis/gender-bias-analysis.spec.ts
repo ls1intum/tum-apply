@@ -11,13 +11,13 @@ import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gende
 
 describe('GenderBiasAnalysisService', () => {
   let service: GenderBiasAnalysisService;
-  let apiServiceMock: GenderBiasAnalysisResourceApiMock;
+  let genderBiasAnalysisApiMock: GenderBiasAnalysisResourceApiMock;
 
   beforeEach(() => {
-    apiServiceMock = createGenderBiasAnalysisResourceApiMock();
+    genderBiasAnalysisApiMock = createGenderBiasAnalysisResourceApiMock();
 
     TestBed.configureTestingModule({
-      providers: [GenderBiasAnalysisService, provideGenderBiasAnalysisResourceApiMock(apiServiceMock)],
+      providers: [GenderBiasAnalysisService, provideGenderBiasAnalysisResourceApiMock(genderBiasAnalysisApiMock)],
     });
 
     service = TestBed.inject(GenderBiasAnalysisService);
@@ -96,7 +96,7 @@ describe('GenderBiasAnalysisService', () => {
         biasedWords: [{ word: 'he', type: 'male' }],
       };
 
-      apiServiceMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
+      genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
 
       let result: GenderBiasAnalysisResponse | undefined;
       const analysis = service.getAnalysisForField(fieldId);
@@ -110,8 +110,8 @@ describe('GenderBiasAnalysisService', () => {
       vi.runAllTimers();
 
       expect(result).toEqual(mockResponse);
-      expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-      expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
         text: 'Test text',
         language: 'en',
       });
@@ -121,7 +121,7 @@ describe('GenderBiasAnalysisService', () => {
       vi.useFakeTimers();
       const fieldId = 'test-field';
 
-      apiServiceMock.analyzeHtmlContent = vi.fn().mockReturnValue(throwError(() => new Error('API error')));
+      genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(throwError(() => new Error('API error')));
 
       let result: GenderBiasAnalysisResponse | undefined;
       const analysis = service.getAnalysisForField(fieldId);
@@ -145,7 +145,7 @@ describe('GenderBiasAnalysisService', () => {
         biasedWords: [],
       };
 
-      apiServiceMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
+      genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
 
       let result: GenderBiasAnalysisResponse | undefined;
       service.analyzeHtmlContent(request).subscribe(value => {
@@ -153,8 +153,8 @@ describe('GenderBiasAnalysisService', () => {
       });
 
       expect(result).toEqual(mockResponse);
-      expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-      expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith(request);
+      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith(request);
     });
   });
 
@@ -184,14 +184,14 @@ describe('GenderBiasAnalysisService', () => {
 
         // Advance time by less than debounce time
         vi.advanceTimersByTime(200);
-        expect(apiServiceMock.analyzeHtmlContent).not.toHaveBeenCalled();
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).not.toHaveBeenCalled();
 
         // Advance time to complete debounce
         vi.advanceTimersByTime(300);
 
         // Should only call API once with the last value
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'Test 3',
           language: 'en',
         });
@@ -215,7 +215,7 @@ describe('GenderBiasAnalysisService', () => {
         service.triggerAnalysis(fieldId, 'Test 3', 'en');
         vi.advanceTimersByTime(500);
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
       });
     });
 
@@ -231,8 +231,8 @@ describe('GenderBiasAnalysisService', () => {
 
         vi.runAllTimers();
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'First text',
           language: 'en',
         });
@@ -253,8 +253,8 @@ describe('GenderBiasAnalysisService', () => {
         service.triggerAnalysis(fieldId, 'Test', 'de');
         vi.runAllTimers();
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'Test',
           language: 'de',
         });
@@ -278,8 +278,8 @@ describe('GenderBiasAnalysisService', () => {
         service.triggerAnalysis(fieldId, 'Test', 'en');
         vi.runAllTimers();
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'Test',
           language: 'en',
         });
@@ -315,12 +315,12 @@ describe('GenderBiasAnalysisService', () => {
 
         vi.runAllTimers();
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'Text 1',
           language: 'en',
         });
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'Text 2',
           language: 'de',
         });
@@ -348,12 +348,12 @@ describe('GenderBiasAnalysisService', () => {
 
         vi.runAllTimers();
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'Text',
           language: 'de',
         });
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledWith({
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
           text: 'New text',
           language: 'en',
         });
@@ -375,7 +375,7 @@ describe('GenderBiasAnalysisService', () => {
         service.triggerAnalysis(fieldId2, 'Text 2', 'en');
         vi.runAllTimers();
 
-        expect(apiServiceMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
+        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
       });
     });
   });

@@ -10,8 +10,8 @@ import { JhiMenuItem } from 'app/shared/components/atoms/menu/menu.component';
 import { User } from 'app/core/auth/account.service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { JobDetailDTO } from 'app/generated/model/job-detail-dto';
-import { JobFormDTO, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { JobDetailDTO, JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
+import { JobFormDTO, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { signal } from '@angular/core';
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
@@ -103,7 +103,7 @@ describe('JobDetailComponent', () => {
     component.jobDetails.set({
       applicationId: 'app42',
       title: '',
-      jobState: '',
+      jobState: undefined,
       supervisingProfessor: '',
       researchGroup: '',
       createdAt: '',
@@ -117,7 +117,7 @@ describe('JobDetailComponent', () => {
     component.jobDetails.set({
       applicationId: 'app88',
       title: '',
-      jobState: '',
+      jobState: undefined,
       supervisingProfessor: '',
       researchGroup: '',
       createdAt: '',
@@ -170,7 +170,7 @@ describe('JobDetailComponent', () => {
   it('should close job successfully', async () => {
     jobApi.changeJobState.mockReturnValue(of({}));
     await component.onCloseJob();
-    expect(jobApi.changeJobState).toHaveBeenCalledWith('job123', 'CLOSED');
+    expect(jobApi.changeJobState).toHaveBeenCalledWith('job123', JobDetailDTOStateEnum.Closed);
     expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
   });
@@ -197,7 +197,7 @@ describe('JobDetailComponent', () => {
   it('should load job details via init()', async () => {
     const dto: JobDetailDTO = {
       title: 'JobTitle',
-      state: 'DRAFT',
+      state: JobDetailDTOStateEnum.Draft,
       supervisingProfessorName: 'ProfX',
       researchGroup: { name: 'RG', researchGroupId: 'rg1' },
       createdAt: new Date().toISOString(),
@@ -233,7 +233,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should compute jobStateText and jobStateColor correctly', () => {
-    component.jobDetails.set({ jobState: 'DRAFT' } as JobDetails);
+    component.jobDetails.set({ jobState: JobDetailDTOStateEnum.Draft } as JobDetails);
     expect(component.jobStateText()).toBe('jobState.draft');
     expect(component.jobStateColor()).toBe('info');
   });
@@ -241,7 +241,7 @@ describe('JobDetailComponent', () => {
   it('should map JobDetailDTO to JobDetails', () => {
     const dto: JobDetailDTO = {
       title: 'Mapped',
-      state: 'PUBLISHED',
+      state: JobDetailDTOStateEnum.Published,
       supervisingProfessorName: 'Prof',
       researchGroup: { name: 'RG', researchGroupId: 'rg1' },
       createdAt: new Date().toISOString(),
@@ -254,7 +254,7 @@ describe('JobDetailComponent', () => {
       }
     ).mapToJobDetails(dto, user);
     expect(result.title).toBe('Mapped');
-    expect(result.jobState).toBe('PUBLISHED');
+    expect(result.jobState).toBe(JobDetailDTOStateEnum.Published);
   });
 
   it('should compute primaryActionButton for non-research-group user', () => {
@@ -264,7 +264,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should compute getMenuItems for DRAFT and set showDeleteDialog to true', () => {
-    const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Draft } as JobDetails;
     component.jobDetails.set(job);
     const menuItems = component.menuItems();
     const deleteItem = menuItems.find((item: JhiMenuItem) => item.label === component.deleteButtonLabel);
@@ -275,7 +275,7 @@ describe('JobDetailComponent', () => {
   it('should compute primaryActionButton for PUBLISHED and set showCloseDialog to true', () => {
     // mock professor ownership
     vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
-    const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Published } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.primaryActionButton();
     btn?.onClick();
@@ -287,7 +287,7 @@ describe('JobDetailComponent', () => {
 
     const job = {
       belongsToResearchGroup: false,
-      jobState: 'PUBLISHED',
+      jobState: JobDetailDTOStateEnum.Published,
     } as JobDetails;
 
     component.jobDetails.set(job);
@@ -371,12 +371,12 @@ describe('JobDetailComponent', () => {
     ).mapToJobDetails(form, user, { jobDescriptionEN: 'RG D' }, { jobDescriptionDE: 'RG D' }, true);
 
     expect(result.title).toBe('Form Job');
-    expect(result.jobState).toBe('DRAFT');
+    expect(result.jobState).toBe(JobDetailDTOStateEnum.Draft);
     expect(result.supervisingProfessor).toBe(user?.name);
   });
 
   it('should handle unknown job state in jobStateText and jobStateColor', () => {
-    component.jobDetails.set({ jobState: 'UNKNOWN_STATE' } as JobDetails);
+    component.jobDetails.set({ jobState: 'UNKNOWN_STATE' } as unknown as JobDetails);
     expect(component.jobStateText()).toBe('jobState.unknown');
     expect(component.jobStateColor()).toBe('info');
   });
@@ -467,7 +467,7 @@ describe('JobDetailComponent', () => {
 
   it('should trigger onEditJob from computed button', () => {
     const spy = vi.spyOn(component, 'onEditJob');
-    const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Draft } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.primaryActionButton();
     expect(btn?.label).toBe('button.edit');
@@ -516,7 +516,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should return null when jobDetails do not match any button case', () => {
-    const job = { belongsToResearchGroup: true, jobState: 'CLOSED' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Closed } as JobDetails;
     component.jobDetails.set(job);
     const result = component.primaryActionButton();
     expect(result).toBeNull();
@@ -612,7 +612,7 @@ describe('JobDetailComponent', () => {
     component.jobDetails.set(null);
     expect(component.jobStateText()).toBe('Unknown');
 
-    component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as JobDetails);
+    component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as unknown as JobDetails);
     expect(component.jobStateText()).toBe('jobState.unknown');
   });
 
@@ -620,14 +620,14 @@ describe('JobDetailComponent', () => {
     const dto: JobDetailDTO = {
       jobId: 'j1',
       title: '',
-      state: 'DRAFT',
+      state: JobDetailDTOStateEnum.Draft,
       supervisingProfessorName: '',
       researchGroup: { name: 'RG1', researchGroupId: 'rg1' },
       createdAt: '',
       lastModifiedAt: '',
       workload: 15 as unknown as number,
       contractDuration: 9 as unknown as number,
-      subjectArea: 'COMPUTER_SCIENCE',
+      subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
     };
 
     const user = mockAccountService.loadedUser();
@@ -649,8 +649,8 @@ describe('JobDetailComponent', () => {
       jobDescriptionDE: 'Some description',
       subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
-      location: 'GARCHING',
-      state: 'CLOSED',
+      location: JobFormDTOLocationEnum.Garching,
+      state: JobDetailDTOStateEnum.Closed,
     };
 
     const result = (
@@ -672,8 +672,8 @@ describe('JobDetailComponent', () => {
       title: 'Form Job',
       subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
-      location: 'GARCHING',
-      state: 'CLOSED',
+      location: JobFormDTOLocationEnum.Garching,
+      state: JobDetailDTOStateEnum.Closed,
     };
 
     const spy = vi.spyOn(researchGroupApi, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
@@ -697,7 +697,7 @@ describe('JobDetailComponent', () => {
 
     const dto: JobDetailDTO = {
       title: 'RG Job',
-      state: 'PUBLISHED',
+      state: JobDetailDTOStateEnum.Published,
       supervisingProfessorName: 'ProfX',
       researchGroup: { name: 'RGX', researchGroupId: 'rgX' },
       createdAt: new Date().toISOString(),
@@ -719,7 +719,7 @@ describe('JobDetailComponent', () => {
       fixture.componentRef.setInput('previewData', undefined);
 
       component.jobDetails.set({
-        jobState: 'PUBLISHED',
+        jobState: JobDetailDTOStateEnum.Published,
         belongsToResearchGroup: false,
       } as any);
 

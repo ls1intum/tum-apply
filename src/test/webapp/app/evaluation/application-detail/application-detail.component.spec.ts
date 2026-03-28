@@ -6,7 +6,9 @@ import { ApplicationDetailComponent } from 'app/evaluation/application-detail/ap
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+import { RejectDTOReasonEnum } from 'app/generated/model/reject-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -15,7 +17,7 @@ import { provideRouterMock } from '../../../util/router.mock';
 import { ToastService } from 'app/service/toast-service';
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
-function makeDetailApp(id: string, state: string = 'SENT'): ApplicationEvaluationDetailDTO {
+function makeDetailApp(id: string, state: string = ApplicationDetailDTOApplicationStateEnum.Sent): ApplicationEvaluationDetailDTO {
   return {
     jobId: 'job-1',
     applicationDetailDTO: {
@@ -179,14 +181,14 @@ describe('ApplicationDetailComponent', () => {
         name: 'accept application and close dialog',
         seed: () => component.currentApplication.set(makeDetailApp('1')),
         act: () => component.acceptApplication({ closeJob: false }),
-        expectState: 'ACCEPTED',
+        expectState: ApplicationDetailDTOApplicationStateEnum.Accepted,
         apiSpy: () => evaluationApi.acceptApplication,
       },
       {
         name: 'reject application and close dialog',
         seed: () => component.currentApplication.set(makeDetailApp('2')),
-        act: () => component.rejectApplication({ reason: 'FAILED_REQUIREMENTS' }),
-        expectState: 'REJECTED',
+        act: () => component.rejectApplication({ reason: RejectDTOReasonEnum.FailedRequirements }),
+        expectState: ApplicationDetailDTOApplicationStateEnum.Rejected,
         apiSpy: () => evaluationApi.rejectApplication,
       },
     ])('should $name', async ({ seed, act, expectState, apiSpy }: any) => {
@@ -208,26 +210,26 @@ describe('ApplicationDetailComponent', () => {
 
     it('should reject other applications when closing job', async () => {
       component.applications.set([
-        makeDetailApp('1', 'SENT'),
-        makeDetailApp('2', 'IN_REVIEW'),
-        makeDetailApp('3', 'ACCEPTED'),
-        makeDetailApp('4', 'REJECTED'),
+        makeDetailApp('1', ApplicationDetailDTOApplicationStateEnum.Sent),
+        makeDetailApp('2', ApplicationDetailDTOApplicationStateEnum.InReview),
+        makeDetailApp('3', ApplicationDetailDTOApplicationStateEnum.Accepted),
+        makeDetailApp('4', ApplicationDetailDTOApplicationStateEnum.Rejected),
       ]);
       component.currentApplication.set(component.applications()[0]);
       await component.acceptApplication({ closeJob: true });
       const apps = component.applications();
-      expect(apps[1].applicationDetailDTO.applicationState).toBe('REJECTED');
-      expect(apps[3].applicationDetailDTO.applicationState).toBe('REJECTED');
+      expect(apps[1].applicationDetailDTO.applicationState).toBe(ApplicationDetailDTOApplicationStateEnum.Rejected);
+      expect(apps[3].applicationDetailDTO.applicationState).toBe(ApplicationDetailDTOApplicationStateEnum.Rejected);
     });
   });
 
   // ---------------- REVIEW ENABLE / DISABLE ----------------
   describe('Review Enable / Disable', () => {
     it.each([
-      ['ACCEPTED', false],
-      ['REJECTED', false],
-      ['SENT', true],
-      ['IN_REVIEW', true],
+      [ApplicationDetailDTOApplicationStateEnum.Accepted, false],
+      [ApplicationDetailDTOApplicationStateEnum.Rejected, false],
+      [ApplicationDetailDTOApplicationStateEnum.Sent, true],
+      [ApplicationDetailDTOApplicationStateEnum.InReview, true],
     ])('canReview for %s', (state, expected) => {
       component.currentApplication.set(makeDetailApp('x', state as any));
       expect(component.canReview()).toBe(expected);
@@ -237,17 +239,17 @@ describe('ApplicationDetailComponent', () => {
   // ---------------- STATE MANAGEMENT ----------------
   describe('State Management', () => {
     it('should update currentApplicationState properly', () => {
-      const app = makeDetailApp('1', 'SENT');
+      const app = makeDetailApp('1', ApplicationDetailDTOApplicationStateEnum.Sent);
       component.applications.set([app]);
       component.currentApplication.set(app);
-      component.updateCurrentApplicationState('ACCEPTED');
-      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe('ACCEPTED');
+      component.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.Accepted);
+      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe(ApplicationDetailDTOApplicationStateEnum.Accepted);
     });
 
     it('should handle undefined currentApplication safely', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       component.currentApplication.set(undefined);
-      component.updateCurrentApplicationState('REJECTED');
+      component.updateCurrentApplicationState(ApplicationDetailDTOApplicationStateEnum.Rejected);
       expect(consoleSpy).toHaveBeenCalledWith('Current application is undefined');
       consoleSpy.mockRestore();
     });
@@ -655,7 +657,7 @@ describe('ApplicationDetailComponent', () => {
 
       const spyRejectOthers = vi.spyOn(testComp, 'rejectOtherApplicationsOfJob');
 
-      const base = makeDetailApp('1', 'SENT');
+      const base = makeDetailApp('1', ApplicationDetailDTOApplicationStateEnum.Sent);
       const app = {
         ...base,
         jobId: undefined,
@@ -663,10 +665,10 @@ describe('ApplicationDetailComponent', () => {
       } as unknown as ApplicationEvaluationDetailDTO;
 
       component.currentApplication.set(app);
-      component.applications.set([app, makeDetailApp('2', 'SENT')]);
+      component.applications.set([app, makeDetailApp('2', ApplicationDetailDTOApplicationStateEnum.Sent)]);
       await component.acceptApplication({ closeJob: true });
       expect(spyRejectOthers).toHaveBeenCalledWith('');
-      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe('ACCEPTED');
+      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe(ApplicationDetailDTOApplicationStateEnum.Accepted);
     });
 
     it('should map translation keys to enum values, falling back when key not found', () => {
@@ -690,7 +692,7 @@ describe('ApplicationDetailComponent', () => {
     it('should load applications with filters and search set', async () => {
       const mockRes = { applications: [makeDetailApp('1')], totalRecords: 5 };
       evaluationApi.getApplicationsDetails.mockReturnValueOnce(of(mockRes));
-      component.selectedStatusFilters.set(['SENT']);
+      component.selectedStatusFilters.set([ApplicationDetailDTOApplicationStateEnum.Sent]);
       component.selectedJobFilters.set(['AI Lab']);
       component.searchQuery.set('test-search');
 
@@ -707,7 +709,7 @@ describe('ApplicationDetailComponent', () => {
         10,
         component.sortBy(),
         component.sortDirection(),
-        ['SENT'],
+        [ApplicationDetailDTOApplicationStateEnum.Sent],
         ['AI Lab'],
         'test-search',
       );
@@ -750,7 +752,7 @@ describe('ApplicationDetailComponent', () => {
         windowIndex: 1,
       };
       evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(of(mockRes));
-      component.selectedStatusFilters.set(['SENT']);
+      component.selectedStatusFilters.set([ApplicationDetailDTOApplicationStateEnum.Sent]);
       component.selectedJobFilters.set(['AI Lab']);
       component.searchQuery.set('test-search');
 
@@ -775,7 +777,7 @@ describe('ApplicationDetailComponent', () => {
         7,
         component.sortBy(),
         component.sortDirection(),
-        ['SENT'],
+        [ApplicationDetailDTOApplicationStateEnum.Sent],
         ['AI Lab'],
         'test-search',
       );

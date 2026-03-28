@@ -109,7 +109,7 @@ export class PersonalInformationSettingsComponent {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-  applicantResourceApi = inject(ApplicantResourceApi);
+  applicantApi = inject(ApplicantResourceApi);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -204,7 +204,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(this.applicantResourceApi.getApplicantProfile());
+      const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
@@ -286,7 +286,7 @@ export class PersonalInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      const updatedProfile = await firstValueFrom(this.applicantResourceApi.updateApplicantPersonalInformation(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
       this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));

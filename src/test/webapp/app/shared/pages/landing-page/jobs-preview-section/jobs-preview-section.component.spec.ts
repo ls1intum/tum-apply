@@ -7,6 +7,7 @@ import { JobsPreviewSectionComponent } from 'app/shared/pages/landing-page/jobs-
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { JobCardDTOLocationEnum } from 'app/generated/model/job-card-dto';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -26,7 +27,7 @@ describe('JobsPreviewSectionComponent', () => {
     jobId: 'job1',
     title: 'Job 1',
     subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
-    location: 'Garching',
+    location: JobCardDTOLocationEnum.Garching,
     professorName: 'Prof. John',
     workload: 20,
     startDate: '2025-09-01',

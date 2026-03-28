@@ -14,14 +14,14 @@ import {
   provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
-import { ApplicationDetailDTO } from 'app/generated/model/application-detail-dto';
+import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { createPdfExportResourceApiMock, providePdfExportResourceApiMock } from 'util/pdf-export-resource-api.service.mock';
 
-function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiMock>) {
-  const applicationService: ApplicationResourceApiMock = {
+function setupTest(paramId: string | null, appApiOverrides?: Partial<ApplicationResourceApiMock>) {
+  const applicationApi: ApplicationResourceApiMock = {
     ...createApplicationResourceApiMock(),
-    ...(appServiceOverrides ?? {}),
+    ...(appApiOverrides ?? {}),
   };
 
   const routeMock = createActivatedRouteMock(paramId ? { application_id: paramId } : {});
@@ -34,7 +34,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
   TestBed.configureTestingModule({
     providers: [
       provideActivatedRouteMock(routeMock),
-      provideApplicationResourceApiMock(applicationService),
+      provideApplicationResourceApiMock(applicationApi),
       providePdfExportResourceApiMock(pdfExportApi),
       provideTranslateMock(translate),
       provideToastServiceMock(toast),
@@ -46,12 +46,12 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
 
   const fixture = TestBed.createComponent(ApplicationDetailForApplicantComponent);
   const component = fixture.componentInstance;
-  return { component, applicationService, pdfExportApi, translate, toast, router, location, routeMock };
+  return { component, applicationApi, pdfExportApi, translate, toast, router, location, routeMock };
 }
 
 const DEFAULT_APPLICATION_DETAIL: ApplicationDetailDTO = {
   applicationId: 'APP1',
-  applicationState: 'SENT',
+  applicationState: ApplicationDetailDTOApplicationStateEnum.Sent,
   jobId: 'JOB123',
   researchGroup: '',
   supervisingProfessorName: '',
@@ -83,7 +83,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const appData = { jobId: 'JOB123', id: 'APP1' };
     const docIds = { transcriptId: 'D1' };
     let component: ApplicationDetailForApplicantComponent;
-    let applicationService: ApplicationResourceApiMock;
+    let applicationApi: ApplicationResourceApiMock;
     let toast: ToastServiceMock;
 
     beforeEach(async () => {
@@ -93,7 +93,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
         getDocumentDictionaryIds: vi.fn((applicationId: string) => of(docIds)),
       });
       component = setup.component;
-      applicationService = setup.applicationService;
+      applicationApi = setup.applicationApi;
       toast = setup.toast;
       // Act
       await component.init();
@@ -102,8 +102,8 @@ describe('ApplicationDetailForApplicantComponent', () => {
     it('sets applicationId and invokes both fetch services', () => {
       // Assert
       expect(component.applicationId()).toBe('APP1');
-      expect(applicationService.getApplicationForDetailPage).toHaveBeenCalledWith('APP1');
-      expect(applicationService.getDocumentDictionaryIds).toHaveBeenCalledWith('APP1');
+      expect(applicationApi.getApplicationForDetailPage).toHaveBeenCalledWith('APP1');
+      expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalledWith('APP1');
     });
 
     it('stores application and document data in signals', () => {
@@ -128,13 +128,13 @@ describe('ApplicationDetailForApplicantComponent', () => {
   });
 
   it('handles application fetch error', async () => {
-    const { component, toast, applicationService } = setupTest('APP2', {
+    const { component, toast, applicationApi } = setupTest('APP2', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchApplicationFailed');
-    expect(applicationService.getDocumentDictionaryIds).toHaveBeenCalled();
+    expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalled();
   });
 
   it('handles document ID fetch error', async () => {
@@ -186,32 +186,32 @@ describe('ApplicationDetailForApplicantComponent', () => {
 
   it('deletes application successfully', () => {
     const delete$ = of(void 0);
-    const { component, applicationService, toast, router } = setupTest('APP6', {
+    const { component, applicationApi, toast, router } = setupTest('APP6', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP6' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       deleteApplication: vi.fn((applicationId: string) => delete$),
     });
     component.applicationId.set('APP6');
     component.onDeleteApplication();
-    expect(applicationService.deleteApplication).toHaveBeenCalledWith('APP6');
+    expect(applicationApi.deleteApplication).toHaveBeenCalledWith('APP6');
     expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationDeleted');
     expect(router.navigate).toHaveBeenCalledWith(['/application/overview']);
   });
 
   it('handles delete application error', () => {
-    const { component, applicationService, toast } = setupTest('APP7', {
+    const { component, applicationApi, toast } = setupTest('APP7', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP7' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       deleteApplication: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
     });
     component.applicationId.set('APP7');
     component.onDeleteApplication();
-    expect(applicationService.deleteApplication).toHaveBeenCalled();
+    expect(applicationApi.deleteApplication).toHaveBeenCalled();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorDeletingApplication');
   });
 
   it('withdraws application successfully and re-inits', () => {
-    const { component, applicationService, toast } = setupTest('APP8', {
+    const { component, applicationApi, toast } = setupTest('APP8', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP8' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       withdrawApplication: vi.fn((applicationId: string) => of(void 0)),
@@ -219,20 +219,20 @@ describe('ApplicationDetailForApplicantComponent', () => {
     component.applicationId.set('APP8');
     const initSpy = vi.spyOn(component, 'init');
     component.onWithdrawApplication();
-    expect(applicationService.withdrawApplication).toHaveBeenCalledWith('APP8');
+    expect(applicationApi.withdrawApplication).toHaveBeenCalledWith('APP8');
     expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationWithdrawn');
     expect(initSpy).toHaveBeenCalled();
   });
 
   it('handles withdraw application error', () => {
-    const { component, applicationService, toast } = setupTest('APP9', {
+    const { component, applicationApi, toast } = setupTest('APP9', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP9' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       withdrawApplication: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
     });
     component.applicationId.set('APP9');
     component.onWithdrawApplication();
-    expect(applicationService.withdrawApplication).toHaveBeenCalled();
+    expect(applicationApi.withdrawApplication).toHaveBeenCalled();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorWithdrawingApplication');
   });
 

@@ -121,7 +121,7 @@ describe('ResearchGroupTemplateEdit', () => {
   describe('performAutoSave()', () => {
     const baseDto: EmailTemplateDTO = {
       templateName: 'X',
-      emailType: 'APPLICATION_ACCEPTED',
+      emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
       isDefault: false,
       english: { subject: '', body: '' },
       german: { subject: '', body: '' },
@@ -169,7 +169,7 @@ describe('ResearchGroupTemplateEdit', () => {
       mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTORolesEnum.Employee] } : u));
       component.formModel.set({
         templateName: 'Valid',
-        emailType: 'APPLICATION_ACCEPTED',
+        emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
         isDefault: false,
         english: { subject: '', body: '' },
         german: { subject: '', body: '' },
@@ -254,8 +254,8 @@ describe('ResearchGroupTemplateEdit', () => {
     });
 
     it('returns preselected option matching current emailType', () => {
-      component.formModel.update(prev => ({ ...prev, emailType: 'APPLICATION_ACCEPTED' }));
-      expect(component.preselectedEmailType()!.value).toBe('APPLICATION_ACCEPTED');
+      component.formModel.update(prev => ({ ...prev, emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted }));
+      expect(component.preselectedEmailType()!.value).toBe(EmailTemplateDTOEmailTypeEnum.ApplicationAccepted);
     });
   });
 
@@ -280,7 +280,7 @@ describe('ResearchGroupTemplateEdit', () => {
     ])('$name', ({ html, expectedContent }) => {
       const dto: EmailTemplateDTO = {
         templateName: 'T',
-        emailType: 'APPLICATION_ACCEPTED',
+        emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
         isDefault: false,
         english: { subject: '', body: html },
         german: { subject: '', body: html },
@@ -295,7 +295,7 @@ describe('ResearchGroupTemplateEdit', () => {
     ])('handles undefined $field safely', ({ getter }) => {
       const dto: EmailTemplateDTO = {
         templateName: 'T',
-        emailType: 'APPLICATION_ACCEPTED',
+        emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
         isDefault: false,
         english: undefined,
         german: undefined,
@@ -327,7 +327,7 @@ describe('ResearchGroupTemplateEdit', () => {
         name: 'sets SAVING and schedules autosave when valid form',
         formModel: {
           templateName: 'Valid',
-          emailType: 'APPLICATION_ACCEPTED' as const,
+          emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
           isDefault: false,
           english: { subject: '', body: '' },
           german: { subject: '', body: '' },
@@ -350,7 +350,7 @@ describe('ResearchGroupTemplateEdit', () => {
       const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
       component.formModel.set({
         templateName: 'AutoSave',
-        emailType: 'APPLICATION_ACCEPTED',
+        emailType: EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
         isDefault: false,
         english: { subject: '', body: '' },
         german: { subject: '', body: '' },

@@ -123,8 +123,8 @@ export class ResearchGroupDepartmentsComponent {
   });
 
   private toastService = inject(ToastService);
-  private readonly departmentResourceApi = inject(DepartmentResourceApi);
-  private readonly schoolResourceApi = inject(SchoolResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
@@ -153,7 +153,7 @@ export class ResearchGroupDepartmentsComponent {
   async loadDepartments(): Promise<void> {
     try {
       const pageResponse = await firstValueFrom(
-        this.departmentResourceApi.getDepartmentsForAdmin(
+        this.departmentApi.getDepartmentsForAdmin(
           this.pageSize(),
           this.pageNumber(),
           this.selectedSchoolFilters(),
@@ -223,7 +223,7 @@ export class ResearchGroupDepartmentsComponent {
     if (departmentId == null) {
       return;
     }
-    this.departmentResourceApi.deleteDepartment(departmentId).subscribe({
+    this.departmentApi.deleteDepartment(departmentId).subscribe({
       next: () => {
         this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteSuccess`);
         void this.loadDepartments();
@@ -253,7 +253,7 @@ export class ResearchGroupDepartmentsComponent {
 
   private async loadSchools(): Promise<void> {
     try {
-      const schools = await firstValueFrom(this.schoolResourceApi.getAllSchools());
+      const schools = await firstValueFrom(this.schoolApi.getAllSchools());
       this.schools.set(schools);
     } catch {
       // non-fatal, availableSchools will be empty

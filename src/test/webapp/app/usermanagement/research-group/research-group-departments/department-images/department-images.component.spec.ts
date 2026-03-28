@@ -17,8 +17,8 @@ const createFile = () => new File(['content'], 'banner.png', { type: 'image/png'
 describe('DepartmentImages', () => {
   let component: DepartmentImages;
   let fixture: ComponentFixture<DepartmentImages>;
-  let mockImageService: ReturnType<typeof createImageResourceApiMock>;
-  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiMock>;
+  let mockImageApi: ReturnType<typeof createImageResourceApiMock>;
+  let mockDepartmentApi: ReturnType<typeof createDepartmentResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let routeMock: ReturnType<typeof createActivatedRouteMock>;
 
@@ -38,13 +38,13 @@ describe('DepartmentImages', () => {
   };
 
   beforeEach(async () => {
-    mockImageService = createImageResourceApiMock();
-    mockImageService.getDefaultJobBanners.mockReturnValue(of([]));
-    mockImageService.uploadDefaultJobBanner.mockReturnValue(of(imageNotInUse));
-    mockImageService.deleteImage.mockReturnValue(of({}));
+    mockImageApi = createImageResourceApiMock();
+    mockImageApi.getDefaultJobBanners.mockReturnValue(of([]));
+    mockImageApi.uploadDefaultJobBanner.mockReturnValue(of(imageNotInUse));
+    mockImageApi.deleteImage.mockReturnValue(of({}));
 
-    mockDepartmentService = createDepartmentResourceApiMock();
-    mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
+    mockDepartmentApi = createDepartmentResourceApiMock();
+    mockDepartmentApi.getDepartments.mockReturnValue(of(mockDepartments));
 
     mockToastService = createToastServiceMock();
     routeMock = createActivatedRouteMock();
@@ -52,8 +52,8 @@ describe('DepartmentImages', () => {
     await TestBed.configureTestingModule({
       imports: [DepartmentImages],
       providers: [
-        provideImageResourceApiMock(mockImageService),
-        provideDepartmentResourceApiMock(mockDepartmentService),
+        provideImageResourceApiMock(mockImageApi),
+        provideDepartmentResourceApiMock(mockDepartmentApi),
         provideToastServiceMock(mockToastService),
         provideActivatedRouteMock(routeMock),
         provideTranslateMock(),
@@ -70,12 +70,12 @@ describe('DepartmentImages', () => {
 
     it('loads departments and applies preselected department', async () => {
       routeMock.setQueryParams({ departmentId: 'd1' });
-      mockImageService.getDefaultJobBanners.mockReturnValue(of([imageInUse]));
+      mockImageApi.getDefaultJobBanners.mockReturnValue(of([imageInUse]));
 
       await createComponent();
 
       expect(component.selectedDepartment()?.value).toBe('d1');
-      expect(mockImageService.getDefaultJobBanners).toHaveBeenCalledWith('d1');
+      expect(mockImageApi.getDefaultJobBanners).toHaveBeenCalledWith('d1');
       expect(component.defaultImages()).toEqual([imageInUse]);
     });
 
@@ -85,11 +85,11 @@ describe('DepartmentImages', () => {
       await createComponent();
 
       expect(component.selectedDepartmentId()).toBe('');
-      expect(mockImageService.getDefaultJobBanners).not.toHaveBeenCalled();
+      expect(mockImageApi.getDefaultJobBanners).not.toHaveBeenCalled();
     });
 
     it('shows an error toast when departments fail to load', async () => {
-      mockDepartmentService.getDepartments.mockReturnValue(throwError(() => new Error('Error')));
+      mockDepartmentApi.getDepartments.mockReturnValue(throwError(() => new Error('Error')));
 
       await createComponent();
 
@@ -102,13 +102,13 @@ describe('DepartmentImages', () => {
 
       const option = { name: 'Dept 2', value: 'd2' };
       component.selectedDepartment.set(option);
-      mockImageService.getDefaultJobBanners.mockClear();
+      mockImageApi.getDefaultJobBanners.mockClear();
 
       const applyPreselected = (component as unknown as { applyPreselectedDepartment: () => void }).applyPreselectedDepartment;
       applyPreselected.call(component);
 
       expect(component.selectedDepartment()).toBe(option);
-      expect(mockImageService.getDefaultJobBanners).not.toHaveBeenCalled();
+      expect(mockImageApi.getDefaultJobBanners).not.toHaveBeenCalled();
     });
 
     it('filters out departments missing name or id in options', async () => {
@@ -147,18 +147,18 @@ describe('DepartmentImages', () => {
       await component.loadDefaultImages();
 
       expect(component.defaultImages()).toEqual([]);
-      expect(mockImageService.getDefaultJobBanners).not.toHaveBeenCalled();
+      expect(mockImageApi.getDefaultJobBanners).not.toHaveBeenCalled();
     });
 
     it('loads images for the selected department', async () => {
       await createComponent();
       const option = { name: 'Dept 1', value: 'd1' };
       component.selectedDepartment.set(option);
-      mockImageService.getDefaultJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
+      mockImageApi.getDefaultJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
 
       await component.loadDefaultImages();
 
-      expect(mockImageService.getDefaultJobBanners).toHaveBeenCalledWith('d1');
+      expect(mockImageApi.getDefaultJobBanners).toHaveBeenCalledWith('d1');
       expect(component.defaultImages()).toEqual([imageInUse, imageNotInUse]);
     });
 
@@ -166,7 +166,7 @@ describe('DepartmentImages', () => {
       await createComponent();
       const option = { name: 'Dept 1', value: 'd1' };
       component.selectedDepartment.set(option);
-      mockImageService.getDefaultJobBanners.mockReturnValue(throwError(() => new Error('Error')));
+      mockImageApi.getDefaultJobBanners.mockReturnValue(throwError(() => new Error('Error')));
 
       await component.loadDefaultImages();
 
@@ -186,7 +186,7 @@ describe('DepartmentImages', () => {
 
       expect(completed).toBe(true);
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.images.error.noDepartment');
-      expect(mockImageService.uploadDefaultJobBanner).not.toHaveBeenCalled();
+      expect(mockImageApi.uploadDefaultJobBanner).not.toHaveBeenCalled();
     });
 
     it('uploads a default image for the selected department', async () => {
@@ -200,7 +200,7 @@ describe('DepartmentImages', () => {
         received = value;
       });
 
-      expect(mockImageService.uploadDefaultJobBanner).toHaveBeenCalledWith('d1', file);
+      expect(mockImageApi.uploadDefaultJobBanner).toHaveBeenCalledWith('d1', file);
       expect(received).toEqual(imageNotInUse);
     });
 
@@ -229,7 +229,7 @@ describe('DepartmentImages', () => {
 
       await component.onDeleteImage(undefined);
 
-      expect(mockImageService.deleteImage).not.toHaveBeenCalled();
+      expect(mockImageApi.deleteImage).not.toHaveBeenCalled();
     });
 
     it('deletes an image and updates list', async () => {
@@ -238,14 +238,14 @@ describe('DepartmentImages', () => {
 
       await component.onDeleteImage('i1');
 
-      expect(mockImageService.deleteImage).toHaveBeenCalledWith('i1');
+      expect(mockImageApi.deleteImage).toHaveBeenCalledWith('i1');
       expect(component.defaultImages()).toEqual([imageNotInUse]);
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.departments.images.success.imageDeleted');
     });
 
     it('shows an error toast when delete fails', async () => {
       await createComponent();
-      mockImageService.deleteImage.mockReturnValue(throwError(() => new Error('Error')));
+      mockImageApi.deleteImage.mockReturnValue(throwError(() => new Error('Error')));
 
       await component.onDeleteImage('i1');
 

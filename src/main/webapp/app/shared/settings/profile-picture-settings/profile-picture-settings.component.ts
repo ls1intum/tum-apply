@@ -67,9 +67,9 @@ export class ProfilePictureSettingsComponent {
   currentProfilePictureUrl = computed<string | null>(() => normalizeOptionalString(this.accountService.loadedUser()?.avatar));
 
   private readonly accountService = inject(AccountService);
-  private readonly imageResourceApi = inject(ImageResourceApi);
+  private readonly imageApi = inject(ImageResourceApi);
   private readonly toastService = inject(ToastService);
-  private readonly userResourceApi = inject(UserResourceApi);
+  private readonly userApi = inject(UserResourceApi);
 
   onAddPictureClick(): void {
     this.fileInput().nativeElement.click();
@@ -95,7 +95,7 @@ export class ProfilePictureSettingsComponent {
    */
   async onResetPicture(): Promise<void> {
     try {
-      await firstValueFrom(this.userResourceApi.updateAvatar({}));
+      await firstValueFrom(this.userApi.updateAvatar({}));
       this.accountService.setAvatar(undefined);
       this.toastService.showSuccessKey('settings.profilePicture.deleted');
     } catch {
@@ -118,7 +118,7 @@ export class ProfilePictureSettingsComponent {
     if (!blob) return;
 
     try {
-      const uploadedImage = await firstValueFrom(this.imageResourceApi.uploadProfilePicture(blob));
+      const uploadedImage = await firstValueFrom(this.imageApi.uploadProfilePicture(blob));
       const avatarUrl = normalizeOptionalString(uploadedImage.url);
       if (avatarUrl === null) {
         this.toastService.showErrorKey('settings.profilePicture.saveFailed');

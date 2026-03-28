@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { SlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-card/slot-card.component';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
+import { IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
@@ -28,7 +29,7 @@ const bookedSlot: InterviewSlotDTO = {
     firstName: 'Jane',
     lastName: 'Doe',
     email: 'jane@example.com',
-    state: 'SCHEDULED',
+    state: IntervieweeDTOStateEnum.Scheduled,
   },
 };
 

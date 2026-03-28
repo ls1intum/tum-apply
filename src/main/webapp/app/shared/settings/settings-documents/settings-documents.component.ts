@@ -10,6 +10,7 @@ import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+import { DocumentDictionaryDocumentTypeEnum } from 'app/generated/model/document-dictionary';
 import { AccountService } from 'app/core/auth/account.service';
 import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
@@ -413,10 +414,10 @@ export class SettingsDocumentsComponent {
   }
 
   private async saveQueuedDocuments(): Promise<void> {
-    await this.uploadQueuedByType('BACHELOR_TRANSCRIPT', this.queuedBachelorFiles(), this.bachelorDocuments);
-    await this.uploadQueuedByType('MASTER_TRANSCRIPT', this.queuedMasterFiles(), this.masterDocuments);
-    await this.uploadQueuedByType('CV', this.queuedCvFiles(), this.cvDocuments);
-    await this.uploadQueuedByType('REFERENCE', this.queuedReferenceFiles(), this.referenceDocuments);
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.BachelorTranscript, this.queuedBachelorFiles(), this.bachelorDocuments);
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.MasterTranscript, this.queuedMasterFiles(), this.masterDocuments);
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.Reference, this.queuedReferenceFiles(), this.referenceDocuments);
   }
 
   private async saveDeferredDocumentChanges(): Promise<void> {
@@ -453,7 +454,7 @@ export class SettingsDocumentsComponent {
   }
 
   private async uploadQueuedByType(
-    documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    documentType: DocumentDictionaryDocumentTypeEnum,
     files: File[],
     targetSignal: {
       set: (_value: DocumentInformationHolderDTO[] | undefined) => void;
@@ -474,7 +475,7 @@ export class SettingsDocumentsComponent {
   }
 
   private uploadApplicantProfileDocument(
-    documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    documentType: DocumentDictionaryDocumentTypeEnum,
     file: File,
   ): Observable<DocumentInformationHolderDTO[]> {
     const formData = new FormData();

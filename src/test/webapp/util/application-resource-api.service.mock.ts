@@ -6,7 +6,8 @@ import {
   ApplicationForApplicantDTOApplicationStateEnum,
 } from 'app/generated/model/application-for-applicant-dto';
 import { of } from 'rxjs';
-import { ApplicationOverviewDTO } from 'app/generated/model/application-overview-dto';
+import { ApplicationOverviewDTO, ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/model/application-overview-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 
 export type ApplicationResourceApiMock = {
   createApplication: ReturnType<typeof vi.fn>;
@@ -27,9 +28,9 @@ export const createMockApplicationDTO = (applicationState: ApplicationForApplica
   applicationId: '456',
   job: {
     jobId: '123',
-    location: 'GARCHING',
+    location: JobFormDTOLocationEnum.Garching,
     professorName: 'Prof. Dr. Abc',
-    subjectArea: 'COMPUTER_SCIENCE',
+    subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
     title: 'Sophisticated Studies',
   },
   applicant: {
@@ -44,7 +45,7 @@ const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDT
   applicationId: '123',
   jobTitle: 'Software Engineer',
   researchGroup: 'Research Group A',
-  applicationState: 'SENT',
+  applicationState: ApplicationOverviewDTOApplicationStateEnum.Sent,
   createdAt: '2025-01-01T12:00:00Z',
   ...overrides,
 });

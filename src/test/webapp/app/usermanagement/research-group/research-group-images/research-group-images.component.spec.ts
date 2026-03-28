@@ -15,7 +15,7 @@ const createFile = () => new File(['content'], 'banner.png', { type: 'image/png'
 describe('ResearchGroupImagesComponent', () => {
   let component: ResearchGroupImagesComponent;
   let fixture: ComponentFixture<ResearchGroupImagesComponent>;
-  let mockImageService: ReturnType<typeof createImageResourceApiMock>;
+  let mockImageApi: ReturnType<typeof createImageResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let routeMock: ReturnType<typeof createActivatedRouteMock>;
 
@@ -30,12 +30,12 @@ describe('ResearchGroupImagesComponent', () => {
   };
 
   beforeEach(async () => {
-    mockImageService = createImageResourceApiMock();
-    mockImageService.getResearchGroupJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
-    mockImageService.getResearchGroupJobBannersByResearchGroup.mockReturnValue(of([imageNotInUse]));
-    mockImageService.uploadJobBanner.mockReturnValue(of(imageNotInUse));
-    mockImageService.uploadJobBannerForResearchGroup.mockReturnValue(of(imageInUse));
-    mockImageService.deleteImage.mockReturnValue(of({}));
+    mockImageApi = createImageResourceApiMock();
+    mockImageApi.getResearchGroupJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
+    mockImageApi.getResearchGroupJobBannersByResearchGroup.mockReturnValue(of([imageNotInUse]));
+    mockImageApi.uploadJobBanner.mockReturnValue(of(imageNotInUse));
+    mockImageApi.uploadJobBannerForResearchGroup.mockReturnValue(of(imageInUse));
+    mockImageApi.deleteImage.mockReturnValue(of({}));
 
     mockToastService = createToastServiceMock();
     routeMock = createActivatedRouteMock();
@@ -43,7 +43,7 @@ describe('ResearchGroupImagesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupImagesComponent],
       providers: [
-        provideImageResourceApiMock(mockImageService),
+        provideImageResourceApiMock(mockImageApi),
         provideToastServiceMock(mockToastService),
         provideActivatedRouteMock(routeMock),
         provideTranslateMock(),
@@ -62,8 +62,8 @@ describe('ResearchGroupImagesComponent', () => {
       await createComponent();
 
       expect(component.selectedResearchGroupId()).toBe('');
-      expect(mockImageService.getResearchGroupJobBanners).toHaveBeenCalled();
-      expect(mockImageService.getResearchGroupJobBannersByResearchGroup).not.toHaveBeenCalled();
+      expect(mockImageApi.getResearchGroupJobBanners).toHaveBeenCalled();
+      expect(mockImageApi.getResearchGroupJobBannersByResearchGroup).not.toHaveBeenCalled();
       expect(component.allImages()).toEqual([imageInUse, imageNotInUse]);
       expect(component.isLoading()).toBe(false);
     });
@@ -74,13 +74,13 @@ describe('ResearchGroupImagesComponent', () => {
       await createComponent();
 
       expect(component.selectedResearchGroupId()).toBe('rg-1');
-      expect(mockImageService.getResearchGroupJobBannersByResearchGroup).toHaveBeenCalledWith('rg-1');
-      expect(mockImageService.getResearchGroupJobBanners).not.toHaveBeenCalled();
+      expect(mockImageApi.getResearchGroupJobBannersByResearchGroup).toHaveBeenCalledWith('rg-1');
+      expect(mockImageApi.getResearchGroupJobBanners).not.toHaveBeenCalled();
       expect(component.allImages()).toEqual([imageNotInUse]);
     });
 
     it('shows error toast when loading images fails', async () => {
-      mockImageService.getResearchGroupJobBanners.mockReturnValue(throwError(() => new Error('Error')));
+      mockImageApi.getResearchGroupJobBanners.mockReturnValue(throwError(() => new Error('Error')));
 
       await createComponent();
 
@@ -112,8 +112,8 @@ describe('ResearchGroupImagesComponent', () => {
         result = value;
       });
 
-      expect(mockImageService.uploadJobBanner).toHaveBeenCalledWith(file);
-      expect(mockImageService.uploadJobBannerForResearchGroup).not.toHaveBeenCalled();
+      expect(mockImageApi.uploadJobBanner).toHaveBeenCalledWith(file);
+      expect(mockImageApi.uploadJobBannerForResearchGroup).not.toHaveBeenCalled();
       expect(result).toEqual(imageNotInUse);
     });
 
@@ -127,8 +127,8 @@ describe('ResearchGroupImagesComponent', () => {
         result = value;
       });
 
-      expect(mockImageService.uploadJobBannerForResearchGroup).toHaveBeenCalledWith('rg-1', file);
-      expect(mockImageService.uploadJobBanner).not.toHaveBeenCalled();
+      expect(mockImageApi.uploadJobBannerForResearchGroup).toHaveBeenCalledWith('rg-1', file);
+      expect(mockImageApi.uploadJobBanner).not.toHaveBeenCalled();
       expect(result).toEqual(imageInUse);
     });
 
@@ -158,7 +158,7 @@ describe('ResearchGroupImagesComponent', () => {
 
       await component.deleteImage('');
 
-      expect(mockImageService.deleteImage).not.toHaveBeenCalled();
+      expect(mockImageApi.deleteImage).not.toHaveBeenCalled();
     });
 
     it('deletes image and updates list', async () => {
@@ -167,14 +167,14 @@ describe('ResearchGroupImagesComponent', () => {
 
       await component.deleteImage('i1');
 
-      expect(mockImageService.deleteImage).toHaveBeenCalledWith('i1');
+      expect(mockImageApi.deleteImage).toHaveBeenCalledWith('i1');
       expect(component.allImages()).toEqual([imageNotInUse]);
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.imageLibrary.success.imageDeleted');
     });
 
     it('shows error toast when delete fails', async () => {
       await createComponent();
-      mockImageService.deleteImage.mockReturnValue(throwError(() => new Error('Error')));
+      mockImageApi.deleteImage.mockReturnValue(throwError(() => new Error('Error')));
 
       await component.deleteImage('i1');
 

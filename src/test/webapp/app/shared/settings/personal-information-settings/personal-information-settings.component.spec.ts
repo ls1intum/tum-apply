@@ -54,7 +54,7 @@ describe('PersonalInformationSettingsComponent', () => {
     return component;
   };
 
-  const applicantResourceApiServiceMock = createApplicantResourceApiMock();
+  const applicantApiMock = createApplicantResourceApiMock();
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
   const translateServiceMock = createTranslateServiceMock();
@@ -68,8 +68,8 @@ describe('PersonalInformationSettingsComponent', () => {
       email: 'ada@example.com',
       authorities: [],
     });
-    applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(of(createProfile()));
-    applicantResourceApiServiceMock.updateApplicantPersonalInformation.mockReturnValue(of(createProfile()));
+    applicantApiMock.getApplicantProfile.mockReturnValue(of(createProfile()));
+    applicantApiMock.updateApplicantPersonalInformation.mockReturnValue(of(createProfile()));
 
     instantMock.mockReset();
     instantMock.mockImplementation((key: string | string[]) => (Array.isArray(key) ? key.join(',') : key));
@@ -77,7 +77,7 @@ describe('PersonalInformationSettingsComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       providers: [
-        provideApplicantResourceApiMock(applicantResourceApiServiceMock),
+        provideApplicantResourceApiMock(applicantApiMock),
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(translateServiceMock),
@@ -90,8 +90,8 @@ describe('PersonalInformationSettingsComponent', () => {
     it('should load and map the applicant profile on construction', async () => {
       const component = await createComponent();
 
-      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledWith();
+      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledWith();
       expect(component.loadedProfile()).toEqual(createProfile());
       expect(component.data()).toEqual({
         firstName: 'Ada',
@@ -127,11 +127,11 @@ describe('PersonalInformationSettingsComponent', () => {
     });
 
     it('should show an error toast when loading personal information fails', async () => {
-      applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(throwError(() => new Error('load failed')));
+      applicantApiMock.getApplicantProfile.mockReturnValue(throwError(() => new Error('load failed')));
 
       const component = await createComponent();
 
-      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.personalInformation.loadFailed');
       expect(component.loadedProfile()).toBeUndefined();
@@ -155,7 +155,7 @@ describe('PersonalInformationSettingsComponent', () => {
       profile.city = undefined;
       profile.country = undefined;
 
-      applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(of(profile));
+      applicantApiMock.getApplicantProfile.mockReturnValue(of(profile));
 
       const component = await createComponent();
 
@@ -277,7 +277,7 @@ describe('PersonalInformationSettingsComponent', () => {
       updatedProfile.city = 'Berlin';
       updatedProfile.country = 'DE';
 
-      applicantResourceApiServiceMock.updateApplicantPersonalInformation.mockReturnValue(of(updatedProfile));
+      applicantApiMock.updateApplicantPersonalInformation.mockReturnValue(of(updatedProfile));
 
       const component = await createComponent();
       vi.clearAllMocks();
@@ -298,8 +298,8 @@ describe('PersonalInformationSettingsComponent', () => {
 
       await component.onSave();
 
-      expect(applicantResourceApiServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
-      expect(applicantResourceApiServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
         user: {
           userId: 'user-1',
           email: undefined,
@@ -361,8 +361,8 @@ describe('PersonalInformationSettingsComponent', () => {
 
       await component.onSave();
 
-      expect(applicantResourceApiServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
-      expect(applicantResourceApiServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
         user: {
           userId: 'user-1',
           email: 'ada@example.com',
@@ -393,14 +393,14 @@ describe('PersonalInformationSettingsComponent', () => {
     });
 
     it('should show an error toast when saving personal information fails', async () => {
-      applicantResourceApiServiceMock.updateApplicantPersonalInformation.mockReturnValue(throwError(() => new Error('save failed')));
+      applicantApiMock.updateApplicantPersonalInformation.mockReturnValue(throwError(() => new Error('save failed')));
 
       const component = await createComponent();
       vi.clearAllMocks();
 
       await component.onSave();
 
-      expect(applicantResourceApiServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.personalInformation.saveFailed');
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();

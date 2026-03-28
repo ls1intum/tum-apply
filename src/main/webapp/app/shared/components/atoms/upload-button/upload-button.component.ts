@@ -8,21 +8,14 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { DocumentDictionaryDocumentTypeEnum } from 'app/generated/model/document-dictionary';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ButtonComponent } from '../button/button.component';
 
-const DocumentType = {
-  BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
-  MASTER_TRANSCRIPT: 'MASTER_TRANSCRIPT',
-  REFERENCE: 'REFERENCE',
-  CV: 'CV',
-  CUSTOM: 'CUSTOM',
-} as const;
-
-export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
+export type DocumentType = DocumentDictionaryDocumentTypeEnum;
 
 /**
  * Generic PDF upload control used by applicant document flows.

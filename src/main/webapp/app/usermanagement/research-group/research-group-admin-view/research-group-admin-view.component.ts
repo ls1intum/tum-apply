@@ -5,13 +5,13 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { ResearchGroupAdminDTO } from 'app/generated/model/research-group-admin-dto';
+import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/model/research-group-admin-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
-import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { Sort, SortDirection, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -42,12 +42,12 @@ export class ResearchGroupAdminView {
   searchQuery = signal<string>('');
 
   sortBy = signal<string>('state');
-  sortDirection = signal<'ASC' | 'DESC'>('DESC');
+  sortDirection = signal<SortDirection>('DESC');
 
   readonly availableStatusOptions: { key: string; label: string }[] = [
-    { key: 'DRAFT', label: `${I18N_BASE}.groupState.draft` },
-    { key: 'ACTIVE', label: `${I18N_BASE}.groupState.active` },
-    { key: 'DENIED', label: `${I18N_BASE}.groupState.denied` },
+    { key: ResearchGroupAdminDTOStatusEnum.Draft, label: `${I18N_BASE}.groupState.draft` },
+    { key: ResearchGroupAdminDTOStatusEnum.Active, label: `${I18N_BASE}.groupState.active` },
+    { key: ResearchGroupAdminDTOStatusEnum.Denied, label: `${I18N_BASE}.groupState.denied` },
   ];
 
   readonly stateTextMap = computed<Record<string, string>>(() =>
@@ -60,9 +60,9 @@ export class ResearchGroupAdminView {
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
   readonly stateSeverityMap = signal<Record<string, ButtonColor>>({
-    DRAFT: 'contrast',
-    ACTIVE: 'success',
-    DENIED: 'danger',
+    [ResearchGroupAdminDTOStatusEnum.Draft]: 'contrast',
+    [ResearchGroupAdminDTOStatusEnum.Active]: 'success',
+    [ResearchGroupAdminDTOStatusEnum.Denied]: 'danger',
   });
 
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -74,7 +74,7 @@ export class ResearchGroupAdminView {
 
   currentResearchGroupId = signal<string | undefined>(undefined);
 
-  readonly selectedStatusFilters = signal<('DRAFT' | 'ACTIVE' | 'DENIED')[]>([]);
+  readonly selectedStatusFilters = signal<ResearchGroupAdminDTOStatusEnum[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const stateTpl = this.stateTemplate();
@@ -120,7 +120,7 @@ export class ResearchGroupAdminView {
       }
       const items: JhiMenuItem[] = [];
 
-      if (group.status !== 'DENIED') {
+      if (group.status !== ResearchGroupAdminDTOStatusEnum.Denied) {
         items.push({
           label: 'researchGroup.members.manageMembers',
           icon: 'users',
@@ -140,7 +140,7 @@ export class ResearchGroupAdminView {
         },
       });
 
-      if (group.status === 'ACTIVE') {
+      if (group.status === ResearchGroupAdminDTOStatusEnum.Active) {
         items.push({
           label: 'button.withdraw',
           icon: 'withdraw',
@@ -152,7 +152,7 @@ export class ResearchGroupAdminView {
         });
       }
 
-      if (group.status === 'DRAFT') {
+      if (group.status === ResearchGroupAdminDTOStatusEnum.Draft) {
         items.push({
           label: 'button.confirm',
           icon: 'check',
@@ -173,7 +173,7 @@ export class ResearchGroupAdminView {
         });
       }
 
-      if (group.status === 'DENIED') {
+      if (group.status === ResearchGroupAdminDTOStatusEnum.Denied) {
         items.push({
           label: 'button.confirm',
           icon: 'check',
@@ -318,9 +318,9 @@ export class ResearchGroupAdminView {
     }
   }
 
-  private mapTranslationKeysToEnumValues(translationKeys: string[]): ('DRAFT' | 'ACTIVE' | 'DENIED')[] {
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): ResearchGroupAdminDTOStatusEnum[] {
     const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
-    return translationKeys.map(key => (keyMap.get(key) ?? key) as 'DRAFT' | 'ACTIVE' | 'DENIED');
+    return translationKeys.map(key => (keyMap.get(key) ?? key) as ResearchGroupAdminDTOStatusEnum);
   }
 
   private async loadResearchGroups(): Promise<void> {

@@ -18,7 +18,7 @@ import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activa
 
 describe('ApplicationOverviewForApplicantComponent', () => {
   let accountService: AccountServiceMock;
-  let applicationService: ApplicationResourceApiMock;
+  let applicationApi: ApplicationResourceApiMock;
   let toastService: ToastServiceMock;
   let router: Router;
   let fixture: ComponentFixture<ApplicationOverviewForApplicantComponent>;
@@ -27,7 +27,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
   beforeEach(async () => {
     accountService = createAccountServiceMock();
 
-    applicationService = createApplicationResourceApiMock();
+    applicationApi = createApplicationResourceApiMock();
 
     toastService = createToastServiceMock();
 
@@ -35,7 +35,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       imports: [ApplicationOverviewForApplicantComponent],
       providers: [
         provideAccountServiceMock(accountService),
-        provideApplicationResourceApiMock(applicationService),
+        provideApplicationResourceApiMock(applicationApi),
         provideToastServiceMock(toastService),
         provideRouter([]),
         provideTranslateMock(),
@@ -81,7 +81,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
       expect(comp.loading()).toBe(false);
       expect(comp.lastLazyLoadEvent()).toEqual(mockLazyLoadEvent);
-      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(comp.pageSize(), 0, comp.sortBy(), comp.sortDirection());
+      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(comp.pageSize(), 0, comp.sortBy(), comp.sortDirection());
       expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
     });
 
@@ -90,20 +90,20 @@ describe('ApplicationOverviewForApplicantComponent', () => {
         first: 20,
         rows: 10,
       };
-      applicationService.getApplicationPages = vi.fn().mockReturnValue(of([]));
+      applicationApi.getApplicationPages = vi.fn().mockReturnValue(of([]));
 
       await comp.loadPage(event);
 
-      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 2, comp.sortBy(), comp.sortDirection());
+      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(10, 2, comp.sortBy(), comp.sortDirection());
     });
 
     it('should use default values when first and rows are undefined', async () => {
       const event: TableLazyLoadEvent = {};
-      applicationService.getApplicationPages = vi.fn().mockReturnValue(of([]));
+      applicationApi.getApplicationPages = vi.fn().mockReturnValue(of([]));
 
       await comp.loadPage(event);
 
-      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 0, 'createdAt', 'DESC');
+      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(10, 0, 'createdAt', 'DESC');
     });
 
     it('should set loading to false after load completes', async () => {
@@ -114,7 +114,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
     it('should handle error when loading page fails', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      applicationService.getApplicationPages = vi.fn().mockReturnValue(throwError(() => new Error('Load failed')));
+      applicationApi.getApplicationPages = vi.fn().mockReturnValue(throwError(() => new Error('Load failed')));
 
       await comp.loadPage(mockLazyLoadEvent);
 
@@ -156,18 +156,18 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
     it('should delete application and show success toast', async () => {
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
-      applicationService.deleteApplication = vi.fn().mockReturnValue(of({}));
+      applicationApi.deleteApplication = vi.fn().mockReturnValue(of({}));
 
       comp.onDeleteApplication('app-delete');
 
-      expect(applicationService.deleteApplication).toHaveBeenCalledWith('app-delete');
+      expect(applicationApi.deleteApplication).toHaveBeenCalledWith('app-delete');
       expect(toastService.showSuccess).toHaveBeenCalledWith({ detail: 'Application successfully deleted' });
       expect(loadPageSpy).toHaveBeenCalledWith(comp.lastLazyLoadEvent());
     });
 
     it('should show error toast when delete fails', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      applicationService.deleteApplication = vi.fn().mockReturnValue(throwError(() => new Error('Delete failed')));
+      applicationApi.deleteApplication = vi.fn().mockReturnValue(throwError(() => new Error('Delete failed')));
 
       comp.onDeleteApplication('app-delete');
 
@@ -179,7 +179,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     it('should not reload page if lastLazyLoadEvent is undefined', async () => {
       comp.lastLazyLoadEvent.set(undefined);
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
-      applicationService.deleteApplication = vi.fn().mockReturnValue(of({}));
+      applicationApi.deleteApplication = vi.fn().mockReturnValue(of({}));
 
       comp.onDeleteApplication('app-delete');
 
@@ -199,14 +199,14 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
       comp.onWithdrawApplication('app-withdraw');
 
-      expect(applicationService.withdrawApplication).toHaveBeenCalledWith('app-withdraw');
+      expect(applicationApi.withdrawApplication).toHaveBeenCalledWith('app-withdraw');
       expect(toastService.showSuccess).toHaveBeenCalledWith({ detail: 'Application successfully withdrawn' });
       expect(loadPageSpy).toHaveBeenCalledWith(comp.lastLazyLoadEvent());
     });
 
     it('should show error toast when withdraw fails', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      applicationService.withdrawApplication = vi.fn().mockReturnValue(throwError(() => new Error('Withdraw failed')));
+      applicationApi.withdrawApplication = vi.fn().mockReturnValue(throwError(() => new Error('Withdraw failed')));
 
       comp.onWithdrawApplication('app-withdraw');
 

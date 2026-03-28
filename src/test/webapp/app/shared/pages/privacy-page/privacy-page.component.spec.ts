@@ -6,13 +6,14 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PrivacyPageComponent } from 'app/shared/pages/privacy-page/privacy-page.component';
 import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
+import { DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
 
 import { createToastServiceMock, provideToastServiceMock } from 'src/test/webapp/util/toast-service.mock';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { WritableSignal } from '@angular/core';
 import { createAccountServiceMock, provideAccountServiceMock } from 'src/test/webapp/util/account.service.mock';
 
-type ExportStatus = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'COMPLETED' | null;
+type ExportStatus = DataExportStatusDTOStatusEnum | undefined;
 
 type TestComponentAccess = {
   currentExportStatus: WritableSignal<ExportStatus>;
@@ -38,7 +39,7 @@ describe('PrivacyPageComponent', () => {
   beforeEach(async () => {
     mockToast.showErrorKey = vi.fn();
     mockToast.showInfoKey = vi.fn();
-    serviceMocks.getDataExportStatus.mockReturnValue(of({ status: null, cooldownSeconds: 0 }));
+    serviceMocks.getDataExportStatus.mockReturnValue(of({ status: undefined, cooldownSeconds: 0 }));
     serviceMocks.requestDataExport.mockReturnValue(of({}));
     accountServiceMock = createAccountServiceMock();
 
@@ -77,21 +78,21 @@ describe('PrivacyPageComponent', () => {
 
   describe('Export Functionality', () => {
     it('should request data export, set status, and show info toast', async () => {
-      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: 'IN_CREATION', cooldownSeconds: 0 }));
+      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.InCreation, cooldownSeconds: 0 }));
 
       await component.exportUserData();
 
       expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
-      expect(componentAccess.currentExportStatus()).toBe('IN_CREATION');
+      expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.InCreation);
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.inCreation');
       expect(mockToast.showInfoKey).toHaveBeenCalledWith('privacy.export.requested');
     });
 
     it('should no-op when button is disabled', async () => {
-      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: 'IN_CREATION', cooldownSeconds: 0 }));
-      componentAccess.currentExportStatus.set('IN_CREATION');
-      expect(componentAccess.currentExportStatus()).toBe('IN_CREATION');
+      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.InCreation, cooldownSeconds: 0 }));
+      componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
+      expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.InCreation);
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       await component.exportUserData();
       expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
@@ -173,13 +174,13 @@ describe('PrivacyPageComponent', () => {
     });
 
     it('should return undefined tooltip when button is enabled', () => {
-      componentAccess.currentExportStatus.set(null);
+      componentAccess.currentExportStatus.set(undefined);
       componentAccess.cooldownSeconds.set(0);
       expect(componentAccess.tooltip()).toBeUndefined();
     });
 
     it('should update tooltip on language change', () => {
-      componentAccess.currentExportStatus.set('IN_CREATION');
+      componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
       const instantSpy = vi.spyOn(mockTranslate, 'instant');
       instantSpy.mockReturnValue('inCreation tooltip');
       expect(componentAccess.tooltip()).toBe('inCreation tooltip');
@@ -206,12 +207,12 @@ describe('PrivacyPageComponent', () => {
 
     it('should set cooldownSeconds to 0 when API returns explicit undefined cooldownSeconds', async () => {
       // API returns cooldownSeconds explicitly set to undefined
-      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: 'COMPLETED', cooldownSeconds: undefined } as any));
+      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as any));
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(true);
 
       await (component as any).refreshStatus();
 
-      expect(componentAccess.currentExportStatus()).toBe('COMPLETED');
+      expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.EmailSent);
       expect(componentAccess.cooldownSeconds()).toBe(0);
     });
   });

@@ -6,9 +6,10 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 import { AddIntervieweesDTO } from 'app/generated/model/add-interviewees-dto';
-import { IntervieweeDTO } from 'app/generated/model/interviewee-dto';
+import { IntervieweeDTO, IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { SendInvitationsResultDTO } from 'app/generated/model/send-invitations-result-dto';
 import { CancelInterviewDTO } from 'app/generated/model/cancel-interview-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -27,7 +28,7 @@ import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
 // Filter key type for interviewee states
-type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
+type FilterKey = 'ALL' | IntervieweeDTOStateEnum;
 
 // Row data structure for the applicant selection table
 interface ApplicantRow {
@@ -109,34 +110,34 @@ export class IntervieweeSectionComponent {
         tooltipKey: 'interview.interviewees.filter.tooltip.ALL',
       },
       {
-        key: 'UNCONTACTED',
+        key: IntervieweeDTOStateEnum.Uncontacted,
         labelKey: 'interview.interviewees.filter.UNCONTACTED',
-        count: all.filter(i => i.state === 'UNCONTACTED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Uncontacted).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.UNCONTACTED',
       },
       {
-        key: 'INVITED',
+        key: IntervieweeDTOStateEnum.Invited,
         labelKey: 'interview.interviewees.filter.INVITED',
-        count: all.filter(i => i.state === 'INVITED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Invited).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.INVITED',
       },
       {
-        key: 'SCHEDULED',
+        key: IntervieweeDTOStateEnum.Scheduled,
         labelKey: 'interview.interviewees.filter.SCHEDULED',
-        count: all.filter(i => i.state === 'SCHEDULED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Scheduled).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.SCHEDULED',
       },
       {
-        key: 'COMPLETED',
+        key: IntervieweeDTOStateEnum.Completed,
         labelKey: 'interview.interviewees.filter.COMPLETED',
-        count: all.filter(i => i.state === 'COMPLETED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Completed).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.COMPLETED',
       },
     ];
   });
 
   // Computed: Count of uncontacted interviewees (for bulk send button)
-  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === 'UNCONTACTED').length);
+  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === IntervieweeDTOStateEnum.Uncontacted).length);
 
   // Computed: Filtered Interviewees
   filteredInterviewees = computed(() => {
@@ -192,7 +193,7 @@ export class IntervieweeSectionComponent {
 
   // Services
   private readonly interviewApi = inject(InterviewResourceApi);
-  private readonly applicationApi = inject(ApplicationEvaluationResourceApi);
+  private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -255,7 +256,7 @@ export class IntervieweeSectionComponent {
       return;
     }
 
-    if (interviewee.state === 'INVITED') {
+    if (interviewee.state === IntervieweeDTOStateEnum.Invited) {
       this.pendingResendId.set(interviewee.id);
       this.showResendDialog.set(true);
     } else {
@@ -293,12 +294,12 @@ export class IntervieweeSectionComponent {
     try {
       this.loadingApplicants.set(true);
       const result = await firstValueFrom(
-        this.applicationApi.getApplicationsDetails(
+        this.evaluationApi.getApplicationsDetails(
           this.pageNumber(),
           this.pageSize(),
           'appliedAt',
           'DESC',
-          ['IN_REVIEW'],
+          [ApplicationDetailDTOApplicationStateEnum.InReview],
           [this.jobTitle()],
           undefined,
         ),

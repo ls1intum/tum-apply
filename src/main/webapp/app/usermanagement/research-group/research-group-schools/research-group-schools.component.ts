@@ -72,7 +72,7 @@ export class ResearchGroupSchoolsComponent {
   });
 
   private toastService = inject(ToastService);
-  private readonly schoolResourceApi = inject(SchoolResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
 
@@ -91,7 +91,7 @@ export class ResearchGroupSchoolsComponent {
   async loadSchools(): Promise<void> {
     try {
       const pageResponse = await firstValueFrom(
-        this.schoolResourceApi.getSchoolsForAdmin(
+        this.schoolApi.getSchoolsForAdmin(
           this.pageSize(),
           this.pageNumber(),
           this.searchQuery(),
@@ -157,7 +157,7 @@ export class ResearchGroupSchoolsComponent {
       return;
     }
     try {
-      await firstValueFrom(this.schoolResourceApi.deleteSchool(schoolId));
+      await firstValueFrom(this.schoolApi.deleteSchool(schoolId));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteSuccess`);
       await this.loadSchools();
     } catch {

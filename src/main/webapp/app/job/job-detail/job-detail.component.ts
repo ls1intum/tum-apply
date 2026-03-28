@@ -29,7 +29,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { createMenuActionSignals } from 'app/shared/util/util';
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
-import { JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
@@ -41,10 +41,10 @@ export interface JobDetails {
   title: string;
   subjectArea: JobFormDTOSubjectAreaEnum;
   researchArea: string;
-  location: string;
+  location: JobFormDTOLocationEnum;
   workload: string;
   contractDuration: string;
-  fundingType: string;
+  fundingType: JobFormDTOFundingTypeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
@@ -60,7 +60,7 @@ export interface JobDetails {
   researchGroupPostalCode: string;
   researchGroupCity: string;
 
-  jobState: string | undefined;
+  jobState: JobDetailDTOStateEnum | undefined;
   belongsToResearchGroup: boolean;
 
   applicationId?: string;
@@ -279,7 +279,7 @@ export class JobDetailComponent {
   readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
   readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
-  private jobResourceApi = inject(JobResourceApi);
+  private jobApi = inject(JobResourceApi);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
@@ -347,7 +347,7 @@ export class JobDetailComponent {
 
   async onCloseJob(): Promise<void> {
     try {
-      await firstValueFrom(this.jobResourceApi.changeJobState(this.jobId(), JobDetailDTOStateEnum.Closed));
+      await firstValueFrom(this.jobApi.changeJobState(this.jobId(), JobDetailDTOStateEnum.Closed));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
       this.location.back();
     } catch (error) {
@@ -359,7 +359,7 @@ export class JobDetailComponent {
 
   async onDeleteJob(): Promise<void> {
     try {
-      await firstValueFrom(this.jobResourceApi.deleteJob(this.jobId()));
+      await firstValueFrom(this.jobApi.deleteJob(this.jobId()));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
       this.location.back();
     } catch (error) {
@@ -437,7 +437,7 @@ export class JobDetailComponent {
         return;
       }
 
-      const job = await firstValueFrom(this.jobResourceApi.getJobDetails(this.jobId()));
+      const job = await firstValueFrom(this.jobApi.getJobDetails(this.jobId()));
       this.loadJobDetails(job);
       this.dataLoaded.set(true);
     } catch (error) {
@@ -514,10 +514,10 @@ export class JobDetailComponent {
       title: data.title,
       subjectArea: data.subjectArea as JobFormDTOSubjectAreaEnum,
       researchArea: data.researchArea ?? '',
-      location: data.location ?? '',
+      location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
-      fundingType: data.fundingType ?? '',
+      fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,

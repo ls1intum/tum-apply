@@ -91,7 +91,7 @@ export class ApplicationOverviewComponent {
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
 
-  private readonly evaluationResourceApi = inject(ApplicationEvaluationResourceApi);
+  private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
@@ -129,7 +129,7 @@ export class ApplicationOverviewComponent {
 
   async loadAllJobNames(): Promise<void> {
     try {
-      const jobNames = await firstValueFrom(this.evaluationResourceApi.getAllJobNames());
+      const jobNames = await firstValueFrom(this.evaluationApi.getAllJobNames());
       this.allAvailableJobNames.set(jobNames.sort());
     } catch {
       this.allAvailableJobNames.set([]);
@@ -199,7 +199,7 @@ export class ApplicationOverviewComponent {
       const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
 
       const res = await firstValueFrom(
-        this.evaluationResourceApi.getApplicationsOverviews(
+        this.evaluationApi.getApplicationsOverviews(
           offset,
           limit,
           sortBy,

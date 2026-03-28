@@ -6,6 +6,7 @@ import { convertToParamMap, Params, Router } from '@angular/router';
 import { ApplicationOverviewComponent } from 'app/evaluation/application-overview/application-overview.component';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/application-evaluation-overview-dto';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
@@ -20,7 +21,7 @@ function makeOverview(id: string, partial?: Partial<ApplicationEvaluationOvervie
     applicationId: id,
     name: `Name ${id}`,
     jobName: `Job ${id}`,
-    state: 'SENT',
+    state: ApplicationDetailDTOApplicationStateEnum.Sent,
     appliedAt: '2025-10-01T00:00:00Z',
     createdAt: '2025-10-01T00:00:00Z',
     ...partial,

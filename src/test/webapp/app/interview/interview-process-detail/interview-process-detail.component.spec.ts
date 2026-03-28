@@ -9,6 +9,7 @@ import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
+import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock } from 'util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock, ActivatedRouteMock } from 'util/activated-route.mock';
@@ -27,7 +28,7 @@ describe('InterviewProcessDetailComponent', () => {
     jobId: 'job-1',
     processId: 'process-1',
     jobTitle: 'Software Engineer',
-    jobState: 'ACTIVE',
+    jobState: JobDetailDTOStateEnum.Published,
     isClosed: false,
     totalSlots: 10,
     totalInterviews: 5,
@@ -85,7 +86,7 @@ describe('InterviewProcessDetailComponent', () => {
       expect(mockInterviewService.getInterviewProcessDetails).toHaveBeenCalledWith('process-1');
       expect(component.jobTitle()).toBe('Software Engineer');
       expect(component.jobId()).toBe('job-1');
-      expect(component.jobState()).toBe('ACTIVE');
+      expect(component.jobState()).toBe(JobDetailDTOStateEnum.Published);
       expect(component.invitedCount()).toBe(4);
     });
 
@@ -103,10 +104,10 @@ describe('InterviewProcessDetailComponent', () => {
 
   describe('Computed Properties', () => {
     it.each([
-      { jobState: 'CLOSED', expected: true },
-      { jobState: 'APPLICANT_FOUND', expected: true },
-      { jobState: 'ACTIVE', expected: false },
-      { jobState: 'DRAFT', expected: false },
+      { jobState: JobDetailDTOStateEnum.Closed, expected: true },
+      { jobState: JobDetailDTOStateEnum.ApplicantFound, expected: true },
+      { jobState: JobDetailDTOStateEnum.Published, expected: false },
+      { jobState: JobDetailDTOStateEnum.Draft, expected: false },
     ])('should return isJobClosed=$expected when jobState=$jobState', async ({ jobState, expected }) => {
       const response: InterviewOverviewDTO = {
         jobId: 'job-1',

@@ -83,19 +83,19 @@ export class ReviewDialogComponent {
   rejectReasons: SelectOption[] = [
     {
       name: 'evaluation.rejectReasons.jobFilled',
-      value: 'JOB_FILLED',
+      value: RejectDTOReasonEnum.JobFilled,
     },
     {
       name: 'evaluation.rejectReasons.jobOutdated',
-      value: 'JOB_OUTDATED',
+      value: RejectDTOReasonEnum.JobOutdated,
     },
     {
       name: 'evaluation.rejectReasons.failedRequirements',
-      value: 'FAILED_REQUIREMENTS',
+      value: RejectDTOReasonEnum.FailedRequirements,
     },
     {
       name: 'evaluation.rejectReasons.otherReason',
-      value: 'OTHER_REASON',
+      value: RejectDTOReasonEnum.OtherReason,
     },
   ];
 

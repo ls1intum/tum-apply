@@ -124,7 +124,7 @@ export default class ApplicationCreationFormComponent {
   jobId = signal<string>('');
   applicantId = signal<string>('');
   applicationId = signal<string>('');
-  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>('SAVED');
+  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   savingBadgeCalculatedClass = computed<string>(
@@ -339,7 +339,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceApi = inject(ApplicationResourceApi);
+  private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
@@ -348,7 +348,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
-  private readonly jobResourceApi = inject(JobResourceApi);
+  private readonly jobApi = inject(JobResourceApi);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -415,10 +415,10 @@ export default class ApplicationCreationFormComponent {
     if (jobId !== null) {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
-      this.applicationState.set('SAVED');
+      this.applicationState.set(ApplicationForApplicantDTOApplicationStateEnum.Saved);
 
       // Fetch job title for display
-      firstValueFrom(this.jobResourceApi.getJobDetails(jobId))
+      firstValueFrom(this.jobApi.getJobDetails(jobId))
         .then(jobDetails => {
           if (jobDetails.title) {
             this.title.set(jobDetails.title);
@@ -433,9 +433,9 @@ export default class ApplicationCreationFormComponent {
   }
 
   async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
-    const application = await firstValueFrom(this.applicationResourceApi.getApplicationById(applicationId));
+    const application = await firstValueFrom(this.applicationApi.getApplicationById(applicationId));
 
-    if (application.applicationState !== 'SAVED') {
+    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', applicationId]);
       throw new Error('Application is not editable.');
@@ -446,9 +446,9 @@ export default class ApplicationCreationFormComponent {
   }
 
   async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO> {
-    const application = await firstValueFrom(this.applicationResourceApi.createApplication(jobId));
+    const application = await firstValueFrom(this.applicationApi.createApplication(jobId));
 
-    if (application.applicationState !== 'SAVED') {
+    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', application.applicationId]);
       throw new Error('Application is not editable.');
@@ -491,7 +491,7 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
-    void this.sendCreateApplicationData('SENT', true);
+    void this.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
   }
 
   async sendCreateApplicationData(state: ApplicationForApplicantDTOApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
@@ -511,13 +511,13 @@ export default class ApplicationCreationFormComponent {
     const updateApplication = this.mapPagesToDTO(state) as UpdateApplicationDTO;
 
     try {
-      await firstValueFrom(this.applicationResourceApi.updateApplication(updateApplication));
+      await firstValueFrom(this.applicationApi.updateApplication(updateApplication));
 
       // Clear local storage on successful server save
       this.clearLocalStorage();
 
       // After application is sent, reload user data to update header with latest names
-      if (state === 'SENT') {
+      if (state === ApplicationForApplicantDTOApplicationStateEnum.Sent) {
         await this.accountService.loadUser();
       }
 
@@ -538,7 +538,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    firstValueFrom(this.applicationResourceApi.getDocumentDictionaryIds(this.applicationId()))
+    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })
@@ -655,7 +655,7 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  private mapPagesToDTO(state?: ApplicationDetailDTOApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
+  private mapPagesToDTO(state?: ApplicationDetailDTOApplicationStateEnum): UpdateApplicationDTO | ApplicationDetailDTO {
     const p1 = this.personalInfoData();
     const p2 = this.educationData();
     const p3 = this.applicationDetailsData();

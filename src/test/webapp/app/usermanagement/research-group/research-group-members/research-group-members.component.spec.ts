@@ -24,7 +24,7 @@ import {
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
   let fixture: ComponentFixture<ResearchGroupMembersComponent>;
-  let mockResearchGroupService: ResearchGroupResourceApiMock;
+  let mockResearchGroupApi: ResearchGroupResourceApiMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockActivatedRoute: ActivatedRouteMock;
@@ -50,9 +50,9 @@ describe('ResearchGroupMembersComponent', () => {
   };
 
   beforeEach(async () => {
-    mockResearchGroupService = createResearchGroupResourceApiMock();
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of({ content: [], totalElements: 0 }));
-    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [], totalElements: 0 }));
+    mockResearchGroupApi = createResearchGroupResourceApiMock();
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of({ content: [], totalElements: 0 }));
+    mockResearchGroupApi.getResearchGroupMembersById.mockReturnValue(of({ content: [], totalElements: 0 }));
     mockActivatedRoute = createActivatedRouteMock();
     mockToastService = createToastServiceMock();
     mockAccountService = createAccountServiceMock();
@@ -62,7 +62,7 @@ describe('ResearchGroupMembersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
       providers: [
-        provideResearchGroupResourceApiMock(mockResearchGroupService),
+        provideResearchGroupResourceApiMock(mockResearchGroupApi),
         provideAccountServiceMock(mockAccountService),
         provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
@@ -87,24 +87,24 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should load members automatically via table lazy load on component init', () => {
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
     fixture.detectChanges();
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
   it('should load members by ID if route param is present', () => {
     const groupId = '123';
-    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
 
     mockActivatedRoute.setParams({ id: groupId });
     fixture.detectChanges();
 
-    expect(mockResearchGroupService.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
   });
 
   it('should load members by ID if query param is present', () => {
     const groupId = '456';
-    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
 
     mockActivatedRoute.setQueryParams({ researchGroupId: groupId });
 
@@ -112,7 +112,7 @@ describe('ResearchGroupMembersComponent', () => {
     mockActivatedRoute.setParams({});
     fixture.detectChanges();
 
-    expect(mockResearchGroupService.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
   });
 
   it('should initialize with default values', () => {
@@ -155,38 +155,38 @@ describe('ResearchGroupMembersComponent', () => {
       first: 20,
       rows: 10,
     };
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     component.loadOnTableEmit(event);
 
     expect(component.pageNumber()).toBe(2); // 20 / 10 = 2
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 2);
+    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 2);
   });
 
   it('should handle undefined first and rows values in table emit with fallback to defaults', () => {
     const event: TableLazyLoadEvent = {};
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     component.loadOnTableEmit(event);
 
     expect(component.pageNumber()).toBe(0);
     expect(component.pageSize()).toBe(10);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
   it('should load members successfully', async () => {
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     await component.loadMembers();
 
     expect(component.members()).toEqual(mockPageResponse.content);
     expect(component.total()).toBe(mockPageResponse.totalElements);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
   it('should handle empty or undefined response when loading members', async () => {
     const emptyResponse: PageResponseDTOUserShortDTO = {};
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(emptyResponse));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(emptyResponse));
 
     await component.loadMembers();
 
@@ -195,7 +195,7 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should handle error and show error toast when loading members fails', async () => {
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(throwError(() => new Error('API Error')));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(throwError(() => new Error('API Error')));
 
     await component.loadMembers();
 
@@ -204,33 +204,33 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should remove member successfully', async () => {
-    mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     await component.removeMember(mockUserData);
 
-    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
-    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
+    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
+    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
     expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeSuccess', {
       memberName: 'John Doe',
     });
     expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle error and show error toast when removing member fails', async () => {
-    mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+    mockResearchGroupApi.removeMemberFromResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
 
     await component.removeMember(mockUserData);
 
-    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
-    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
+    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
+    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeFailed', {
       memberName: 'John Doe',
     });
     expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockResearchGroupService.getResearchGroupMembers).not.toHaveBeenCalled(); // No refresh on error
+    expect(mockResearchGroupApi.getResearchGroupMembers).not.toHaveBeenCalled(); // No refresh on error
   });
 
   it('should transform members data correctly in tableData computed and identify current user', () => {
@@ -278,13 +278,13 @@ describe('ResearchGroupMembersComponent', () => {
       lastName: 'Doe',
       roles: [UserShortDTORolesEnum.Professor],
     };
-    mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+    mockResearchGroupApi.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     await component.removeMember(memberWithoutId);
 
-    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('');
-    expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
+    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledWith('');
+    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
   });
 
   it('should format role with proper capitalization', () => {
@@ -304,7 +304,7 @@ describe('ResearchGroupMembersComponent', () => {
 
     beforeEach(() => {
       dialogService = TestBed.inject(DialogService);
-      mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+      mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
       fixture.detectChanges();
       vi.clearAllMocks();
     });
@@ -318,7 +318,7 @@ describe('ResearchGroupMembersComponent', () => {
       component.openAddMembersModal();
 
       expect(dialogService.open).toHaveBeenCalled();
-      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+      expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledTimes(1);
     });
 
     it('should open add members modal and NOT reload members on close if NOT added', () => {
@@ -330,7 +330,7 @@ describe('ResearchGroupMembersComponent', () => {
       component.openAddMembersModal();
 
       expect(dialogService.open).toHaveBeenCalled();
-      expect(mockResearchGroupService.getResearchGroupMembers).not.toHaveBeenCalled();
+      expect(mockResearchGroupApi.getResearchGroupMembers).not.toHaveBeenCalled();
     });
   });
 
@@ -380,21 +380,21 @@ describe('ResearchGroupMembersComponent', () => {
   });
 
   it('should load and set the research group name', async () => {
-    mockResearchGroupService.getResearchGroup.mockReturnValue(of({ name: 'AI Lab' } as ResearchGroupDTO));
+    mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ name: 'AI Lab' } as ResearchGroupDTO));
 
     await component['loadResearchGroupName']('group-1');
 
-    expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledWith('group-1');
+    expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledWith('group-1');
     expect(component.researchGroupName()).toBe('AI Lab');
   });
 
   it('should clear research group name when loading fails', async () => {
-    mockResearchGroupService.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+    mockResearchGroupApi.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
     component.researchGroupName.set('Existing Name');
 
     await component['loadResearchGroupName']('group-2');
 
-    expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledWith('group-2');
+    expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledWith('group-2');
     expect(component.researchGroupName()).toBeUndefined();
   });
 
