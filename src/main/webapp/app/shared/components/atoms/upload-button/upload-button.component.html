@@ -15,7 +15,6 @@
           tabindex="0"
           role="button"
           aria-label="Select file to upload"
-          (click)="fileupload_component.choose()"
           (keydown.enter)="fileupload_component.choose()"
           (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
         >
@@ -23,7 +22,7 @@
         </span>
       </div>
       <p class="text-sm text-color text-center mt-0" jhiTranslate="entity.upload.instruction"></p>
-      <p class="text-xs text-color text-center mt-0 mb-0"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
+      <p class="text-xs text-color text-center mt-0 mb-0"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
     </div>
   </ng-template>
 
