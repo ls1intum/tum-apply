@@ -67,6 +67,7 @@ spring:
           options:
             deployment-name: gpt-5-mini
             temperature: 1.0
+            reasoning-effort: low
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
