@@ -190,10 +190,7 @@ export class EmailSettingsComponent {
     const previousSelection = this.selectedSubjectAreas();
 
     // Check if the selection actually changed to avoid unnecessary API calls.
-    if (
-      previousSelection.length === nextSelection.length &&
-      previousSelection.every((subjectArea, index) => subjectArea === nextSelection[index])
-    ) {
+    if (JSON.stringify(previousSelection) === JSON.stringify(nextSelection)) {
       return;
     }
 
