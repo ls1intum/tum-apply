@@ -41,12 +41,11 @@
 
             <div
               class="transition-all duration-100 ease-in-out"
-              [class.overflow-visible]="subjectAreasEnabled()"
-              [class.overflow-hidden]="!subjectAreasEnabled()"
               [class.mt-4]="subjectAreasEnabled()"
               [class.mt-0]="!subjectAreasEnabled()"
               [class.max-h-[80rem]]="subjectAreasEnabled()"
               [class.max-h-0]="!subjectAreasEnabled()"
+              [class.overflow-hidden]="!subjectAreasEnabled()"
               [class.opacity-100]="subjectAreasEnabled()"
               [class.opacity-0]="!subjectAreasEnabled()"
               [attr.aria-hidden]="!subjectAreasEnabled()"
