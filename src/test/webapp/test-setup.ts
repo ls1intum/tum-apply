@@ -27,3 +27,68 @@ window.addEventListener('error', event => {
     event.stopPropagation();
   }
 });
+
+// Provide a lightweight, no-op IntersectionObserver mock for jsdom tests.
+// Some components use IntersectionObserver (e.g. progress-stepper) which isn't available in the
+// jsdom environment used by Vitest. A simple mock prevents ReferenceError and is sufficient
+// for unit tests that don't require real intersection behavior.
+if (typeof (globalThis as any).IntersectionObserver === 'undefined') {
+  class MockIntersectionObserver {
+    callback: any;
+    root: Element | null;
+    rootMargin: string;
+    thresholds: number | number[];
+    constructor(callback: any, options?: any) {
+      this.callback = callback;
+      this.root = options?.root ?? null;
+      this.rootMargin = options?.rootMargin ?? '0px';
+      this.thresholds = options?.threshold ?? 0;
+    }
+    observe() {
+      // no-op
+    }
+    unobserve() {
+      // no-op
+    }
+    disconnect() {
+      // no-op
+    }
+    takeRecords() {
+      return [];
+    }
+  }
+  (globalThis as any).IntersectionObserver = MockIntersectionObserver;
+  (globalThis as any).IntersectionObserverEntry = class {};
+}
+
+declare global {
+  function runSilently<T>(fn: () => T): T;
+}
+
+/**
+ * Silences all console output (error, warn, info) for the duration of a function.
+ */
+globalThis.runSilently = (fn: () => any): any => {
+  // 1. Setup spies for all noisy methods
+  const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+  const restore = () => {
+    errorSpy.mockRestore();
+    warnSpy.mockRestore();
+    infoSpy.mockRestore();
+  };
+
+  try {
+    const result = fn();
+    if (result instanceof Promise) {
+      return result.finally(restore);
+    }
+    restore();
+    return result;
+  } catch (error) {
+    restore();
+    throw error;
+  }
+};

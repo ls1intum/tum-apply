@@ -139,7 +139,7 @@ describe('UploadButtonComponent', () => {
     const document = { id: '1', name: 'doc1', size: 1234 };
     component.documentIds.set([document]);
 
-    await component.deleteDictionary(document);
+    await runSilently(() => component.deleteDictionary(document));
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.delete_failed');
   });
@@ -236,7 +236,7 @@ describe('UploadButtonComponent', () => {
 
     const firstValueFromSpy = vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Simulated upload failure'));
 
-    await component.onUpload();
+    await runSilently(() => component.onUpload());
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.upload_failed');
 
