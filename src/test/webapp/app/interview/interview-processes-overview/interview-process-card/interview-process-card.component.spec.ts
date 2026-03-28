@@ -57,8 +57,8 @@ describe('InterviewProcessCardComponent', () => {
 
   describe('Process Status', () => {
     it.each([
-      { process: activeProcess, expectedStatus: JobDetailDTOStateEnum.Published, expectedIsClosed: false },
-      { process: closedProcess, expectedStatus: JobDetailDTOStateEnum.Closed, expectedIsClosed: true },
+      { process: activeProcess, expectedStatus: 'ACTIVE', expectedIsClosed: false },
+      { process: closedProcess, expectedStatus: 'CLOSED', expectedIsClosed: true },
     ])('should return $expectedStatus when isClosed is $expectedIsClosed', ({ process, expectedStatus, expectedIsClosed }) => {
       fixture.componentRef.setInput('process', process);
       fixture.detectChanges();

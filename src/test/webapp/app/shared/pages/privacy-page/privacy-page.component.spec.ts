@@ -113,7 +113,7 @@ describe('PrivacyPageComponent', () => {
       await component.exportUserData();
 
       expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed409');
-      expect(componentAccess.currentExportStatus()).toBeNull();
+      expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
 
     it('should show 429 toast on rate limit', async () => {
@@ -122,7 +122,7 @@ describe('PrivacyPageComponent', () => {
       await component.exportUserData();
 
       expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed429');
-      expect(componentAccess.currentExportStatus()).toBeNull();
+      expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
 
     it('should show generic toast on other HttpErrorResponse', async () => {
@@ -131,7 +131,7 @@ describe('PrivacyPageComponent', () => {
       await component.exportUserData();
 
       expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
-      expect(componentAccess.currentExportStatus()).toBeNull();
+      expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
 
     it('should show generic toast on non-Http error', async () => {
@@ -140,7 +140,7 @@ describe('PrivacyPageComponent', () => {
       await component.exportUserData();
 
       expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
-      expect(componentAccess.currentExportStatus()).toBeNull();
+      expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
 
     it('should show requestFailed toast when exportUserData throws non-HTTP error', async () => {
@@ -149,7 +149,7 @@ describe('PrivacyPageComponent', () => {
       await component.exportUserData();
 
       expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
-      expect(componentAccess.currentExportStatus()).toBeNull();
+      expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
   });
 
