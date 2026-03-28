@@ -3,7 +3,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
 import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
@@ -18,11 +18,6 @@ import { FilterChange, FilterMultiselect } from '../../components/atoms/filter-m
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
 import RolesEnum = UserShortDTO.RolesEnum;
 type SubjectArea = Applicant.SubjectAreaSubscriptionsEnum;
-
-interface SubjectAreaOption {
-  name: string;
-  value: SubjectArea;
-}
 
 export interface NotificationGroup {
   groupKey: string; // Title of the group (short)
@@ -45,7 +40,6 @@ export class EmailSettingsComponent {
   protected emailSettingService = inject(EmailSettingResourceApiService);
   protected applicantResourceApiService = inject(ApplicantResourceApiService);
   protected toastService = inject(ToastService);
-  protected translateService = inject(TranslateService);
   protected readonly RolesEnum = RolesEnum;
 
   // to control that switches are only displayed when settings are loaded
@@ -54,7 +48,7 @@ export class EmailSettingsComponent {
   protected subjectAreaDropdownOpen = signal(false);
   protected subjectAreasEnabled = signal(false);
   protected selectedSubjectAreas = signal<SubjectArea[]>([]);
-  protected readonly subjectAreaOptions: SubjectAreaOption[] = DropDownOptions.subjectAreas.map(option => ({
+  protected readonly subjectAreaOptions = DropDownOptions.subjectAreas.map(option => ({
     name: option.name,
     value: option.value as SubjectArea,
   }));
@@ -66,9 +60,7 @@ export class EmailSettingsComponent {
   );
   protected readonly selectedSubjectAreaOptions = computed(() => {
     const selectedAreas = new Set(this.selectedSubjectAreas());
-    return this.subjectAreaOptions
-      .filter(option => selectedAreas.has(option.value))
-      .sort((left, right) => this.translateService.instant(left.name).localeCompare(this.translateService.instant(right.name)));
+    return this.subjectAreaOptions.filter(option => selectedAreas.has(option.value));
   });
 
   protected readonly roleEffect = effect(() => {
@@ -158,16 +150,13 @@ export class EmailSettingsComponent {
   async loadSettings(role: RolesEnum): Promise<void> {
     this.loaded.set(false);
 
-    // Notification groups and subject-area subscriptions come from different endpoints.
-    await Promise.allSettled([
-      this.loadEmailNotificationGroups(role),
-      role === RolesEnum.Applicant
-        ? this.loadSubjectAreaSubscriptions()
-        : Promise.resolve().then(() => {
-            this.selectedSubjectAreas.set([]);
-            this.subjectAreasEnabled.set(false);
-          }),
-    ]);
+    await this.loadEmailNotificationGroups(role);
+    if (role === RolesEnum.Applicant) {
+      await this.loadSubjectAreaSubscriptions();
+    } else {
+      this.selectedSubjectAreas.set([]);
+      this.subjectAreasEnabled.set(false);
+    }
 
     this.loaded.set(true);
   }
@@ -206,6 +195,7 @@ export class EmailSettingsComponent {
 
     // Update local state optimistically and sync only the delta with the backend.
     this.selectedSubjectAreas.set(nextSelection);
+    this.subjectAreasEnabled.set(nextSelection.length > 0);
     this.subjectAreaSaving.set(true);
 
     try {
@@ -217,6 +207,7 @@ export class EmailSettingsComponent {
       ]);
     } catch {
       this.selectedSubjectAreas.set(previousSelection);
+      this.subjectAreasEnabled.set(previousSelection.length > 0);
       this.toastService.showError({ summary: 'Error', detail: 'updating the subject area subscriptions' });
       await this.loadSubjectAreaSubscriptions();
     } finally {
@@ -228,8 +219,18 @@ export class EmailSettingsComponent {
     await this.onSubjectAreasChange(this.selectedSubjectAreas().filter(selectedSubjectArea => selectedSubjectArea !== subjectArea));
   }
 
-  onSubjectAreasToggleChanged(enabled: boolean): void {
-    this.subjectAreasEnabled.set(enabled);
+  async onSubjectAreasToggleChanged(enabled: boolean): Promise<void> {
+    if (enabled) {
+      this.subjectAreasEnabled.set(true);
+      return;
+    }
+
+    if (this.selectedSubjectAreas().length === 0) {
+      this.subjectAreasEnabled.set(false);
+      return;
+    }
+
+    await this.onSubjectAreasChange([]);
   }
 
   onSubjectAreaFilterChange(filterChange: FilterChange): void {
