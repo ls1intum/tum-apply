@@ -8,10 +8,10 @@ import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingRe
 import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { EmailSetting } from 'app/generated/model/emailSetting';
-import { ApplicantSubjectAreaSubscriptionDTO } from 'app/generated/model/applicantSubjectAreaSubscriptionDTO';
+import { Applicant } from 'app/generated/model/applicant';
 import RolesEnum = UserShortDTO.RolesEnum;
 import EmailTypeEnum = EmailSetting.EmailTypeEnum;
-import SubjectAreaEnum = ApplicantSubjectAreaSubscriptionDTO.SubjectAreaEnum;
+import SubjectAreaEnum = Applicant.SubjectAreaSubscriptionsEnum;
 
 describe('EmailSettingsComponent', () => {
   let fixture: ComponentFixture<EmailSettingsComponent>;
@@ -111,9 +111,7 @@ describe('EmailSettingsComponent', () => {
 
     it('should load subject area subscriptions for applicants', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
-      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(
-        of([{ subjectArea: SubjectAreaEnum.Mathematics }, { subjectArea: SubjectAreaEnum.ComputerScience }]),
-      );
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.Mathematics, SubjectAreaEnum.ComputerScience]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
@@ -208,7 +206,7 @@ describe('EmailSettingsComponent', () => {
     it('should restore the previous selection when the update fails', async () => {
       component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
       applicantResourceApiServiceMock.addSubjectAreaSubscription.mockReturnValue(throwError(() => new Error('fail')));
-      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([{ subjectArea: SubjectAreaEnum.ComputerScience }]));
+      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
 
       await component.onSubjectAreasChange([SubjectAreaEnum.Mathematics]);
 
