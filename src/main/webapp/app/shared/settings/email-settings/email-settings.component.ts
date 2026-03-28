@@ -137,7 +137,7 @@ export class EmailSettingsComponent {
   async loadSubjectAreaSubscriptions(): Promise<void> {
     try {
       const subscriptions = await firstValueFrom(this.applicantResourceApiService.getSubjectAreaSubscriptions());
-      const selectedSubjectAreas = this.sortSubjectAreas((subscriptions ?? []) as SubjectArea[]);
+      const selectedSubjectAreas = this.sortSubjectAreas(subscriptions as SubjectArea[]);
       this.selectedSubjectAreas.set(selectedSubjectAreas);
       this.subjectAreasEnabled.set(selectedSubjectAreas.length > 0);
     } catch {
@@ -161,21 +161,26 @@ export class EmailSettingsComponent {
     this.loaded.set(true);
   }
 
-  async onToggleChanged(group: NotificationGroup): Promise<void> {
+  onToggleChanged(group: NotificationGroup): void {
     const role = this.currentRole();
+    const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
+      emailType,
+      enabled: group.enabled,
+    }));
 
     try {
-      const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
-        emailType,
-        enabled: group.enabled,
-      }));
+      void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings)).catch(async () => {
+        this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
 
-      await firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings));
+        if (role) {
+          await this.loadEmailNotificationGroups(role);
+        }
+      });
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
 
       if (role) {
-        await this.loadEmailNotificationGroups(role);
+        void this.loadEmailNotificationGroups(role);
       }
     }
   }
@@ -184,7 +189,11 @@ export class EmailSettingsComponent {
     const nextSelection = this.sortSubjectAreas(subjectAreas ?? []);
     const previousSelection = this.selectedSubjectAreas();
 
-    if (this.areSubjectAreasEqual(previousSelection, nextSelection)) {
+    // Check if the selection actually changed to avoid unnecessary API calls.
+    if (
+      previousSelection.length === nextSelection.length &&
+      previousSelection.every((subjectArea, index) => subjectArea === nextSelection[index])
+    ) {
       return;
     }
 
@@ -195,19 +204,19 @@ export class EmailSettingsComponent {
 
     // Update local state optimistically and sync only the delta with the backend.
     this.selectedSubjectAreas.set(nextSelection);
-    this.subjectAreasEnabled.set(nextSelection.length > 0);
     this.subjectAreaSaving.set(true);
 
     try {
-      await Promise.all([
-        ...subjectAreasToAdd.map(subjectArea => firstValueFrom(this.applicantResourceApiService.addSubjectAreaSubscription(subjectArea))),
-        ...subjectAreasToRemove.map(subjectArea =>
-          firstValueFrom(this.applicantResourceApiService.removeSubjectAreaSubscription(subjectArea)),
-        ),
-      ]);
+      const updateRequests = subjectAreasToAdd
+        .map(subjectArea => firstValueFrom(this.applicantResourceApiService.addSubjectAreaSubscription(subjectArea)))
+        .concat(
+          subjectAreasToRemove.map(subjectArea =>
+            firstValueFrom(this.applicantResourceApiService.removeSubjectAreaSubscription(subjectArea)),
+          ),
+        );
+      await Promise.all(updateRequests);
     } catch {
       this.selectedSubjectAreas.set(previousSelection);
-      this.subjectAreasEnabled.set(previousSelection.length > 0);
       this.toastService.showError({ summary: 'Error', detail: 'updating the subject area subscriptions' });
       await this.loadSubjectAreaSubscriptions();
     } finally {
@@ -219,18 +228,10 @@ export class EmailSettingsComponent {
     await this.onSubjectAreasChange(this.selectedSubjectAreas().filter(selectedSubjectArea => selectedSubjectArea !== subjectArea));
   }
 
-  async onSubjectAreasToggleChanged(enabled: boolean): Promise<void> {
-    if (enabled) {
-      this.subjectAreasEnabled.set(true);
-      return;
-    }
-
-    if (this.selectedSubjectAreas().length === 0) {
-      this.subjectAreasEnabled.set(false);
-      return;
-    }
-
-    await this.onSubjectAreasChange([]);
+  // TODO: Temporary UI-only toggle for this PR. In the follow-up email-settings PR,
+  // this switch will be wired to EmailType.NEW_JOB_POSTING_IN_SUBSCRIBED_SUBJECT_AREA instead of local visibility state.
+  onSubjectAreasToggleChanged(enabled: boolean): void {
+    this.subjectAreasEnabled.set(enabled);
   }
 
   onSubjectAreaFilterChange(filterChange: FilterChange): void {
@@ -245,9 +246,5 @@ export class EmailSettingsComponent {
   private sortSubjectAreas(subjectAreas: readonly SubjectArea[]): SubjectArea[] {
     const subjectAreaSet = new Set(subjectAreas);
     return this.subjectAreaOptions.filter(option => subjectAreaSet.has(option.value)).map(option => option.value);
-  }
-
-  private areSubjectAreasEqual(left: readonly SubjectArea[], right: readonly SubjectArea[]): boolean {
-    return left.length === right.length && left.every((subjectArea, index) => subjectArea === right[index]);
   }
 }

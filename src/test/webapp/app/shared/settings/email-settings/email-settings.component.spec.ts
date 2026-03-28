@@ -154,7 +154,7 @@ describe('EmailSettingsComponent', () => {
 
       emailSettingServiceMock.updateEmailSettings.mockReturnValue(of(undefined));
 
-      await component.onToggleChanged(group);
+      component.onToggleChanged(group);
 
       expect(emailSettingServiceMock.updateEmailSettings).toHaveBeenCalledWith([
         { emailType: EmailTypeEnum.ApplicationSent, enabled: true },
@@ -174,7 +174,7 @@ describe('EmailSettingsComponent', () => {
         enabled: false,
       };
 
-      await component.onToggleChanged(group);
+      component.onToggleChanged(group);
 
       expect(toastServiceMock.showError).toHaveBeenCalledWith({
         summary: 'Error',
@@ -225,38 +225,30 @@ describe('EmailSettingsComponent', () => {
   });
 
   describe('onSubjectAreasToggleChanged', () => {
-    it('should enable the subject areas selector locally when toggled on', async () => {
-      await component.onSubjectAreasToggleChanged(true);
+    it('should enable the subject areas selector locally when toggled on', () => {
+      component.onSubjectAreasToggleChanged(true);
       expect(component['subjectAreasEnabled']()).toBe(true);
     });
 
-    it('should remove all subject area subscriptions when toggled off', async () => {
+    it('should only hide the subject areas selector when toggled off', () => {
       component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
       component['subjectAreasEnabled'].set(true);
-      applicantResourceApiServiceMock.removeSubjectAreaSubscription.mockReturnValue(of(undefined));
 
-      await component.onSubjectAreasToggleChanged(false);
+      component.onSubjectAreasToggleChanged(false);
 
-      expect(applicantResourceApiServiceMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.ComputerScience);
-      expect(applicantResourceApiServiceMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.Mathematics);
-      expect(component['selectedSubjectAreas']()).toEqual([]);
+      expect(applicantResourceApiServiceMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
+      expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
       expect(component['subjectAreasEnabled']()).toBe(false);
     });
 
-    it('should restore the previous state when disabling subject areas fails', async () => {
+    it('should preserve the existing subject areas when toggled back on', () => {
       component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
-      component['subjectAreasEnabled'].set(true);
-      applicantResourceApiServiceMock.removeSubjectAreaSubscription.mockReturnValue(throwError(() => new Error('fail')));
-      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
+      component['subjectAreasEnabled'].set(false);
 
-      await component.onSubjectAreasToggleChanged(false);
+      component.onSubjectAreasToggleChanged(true);
 
       expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience]);
       expect(component['subjectAreasEnabled']()).toBe(true);
-      expect(toastServiceMock.showError).toHaveBeenCalledWith({
-        summary: 'Error',
-        detail: 'updating the subject area subscriptions',
-      });
     });
   });
 
