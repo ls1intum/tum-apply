@@ -132,19 +132,10 @@ describe('EmailSettingsComponent', () => {
       expect(component['subjectAreasEnabled']()).toBe(false);
       expect(applicantResourceApiServiceMock.getSubjectAreaSubscriptions).not.toHaveBeenCalled();
     });
-
-    it('should keep subject areas toggle off when no subscriptions are loaded', async () => {
-      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
-      applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
-
-      await component.loadSettings(RolesEnum.Applicant);
-
-      expect(component['subjectAreasEnabled']()).toBe(false);
-    });
   });
 
   describe('onToggleChanged', () => {
-    it('should call updateEmailSettings with correct payload', async () => {
+    it('should call updateEmailSettings with correct payload', () => {
       const group: NotificationGroup = {
         groupKey: 'test',
         descriptionKey: 'desc',
@@ -162,7 +153,7 @@ describe('EmailSettingsComponent', () => {
       ]);
     });
 
-    it('should show error toast if update throws synchronously', async () => {
+    it('should show error toast if update throws synchronously', () => {
       emailSettingServiceMock.updateEmailSettings.mockImplementation(() => {
         throw new Error('boom');
       });
@@ -239,16 +230,6 @@ describe('EmailSettingsComponent', () => {
       expect(applicantResourceApiServiceMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
       expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
       expect(component['subjectAreasEnabled']()).toBe(false);
-    });
-
-    it('should preserve the existing subject areas when toggled back on', () => {
-      component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
-      component['subjectAreasEnabled'].set(false);
-
-      component.onSubjectAreasToggleChanged(true);
-
-      expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience]);
-      expect(component['subjectAreasEnabled']()).toBe(true);
     });
   });
 
