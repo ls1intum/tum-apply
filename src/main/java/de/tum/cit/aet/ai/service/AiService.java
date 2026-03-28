@@ -41,6 +41,7 @@ public class AiService {
     private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
         .maxCompletionTokens(MAX_COMPLETION_TOKENS)
         .reasoningEffort("low")
+        .stop(null)
         .build();
 
     public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
