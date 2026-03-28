@@ -151,7 +151,12 @@ const routes: Routes = [
     path: 'settings',
     canActivate: [UserRouteAccessService],
     data: {
-      authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Applicant, UserShortDTORolesEnum.Employee],
+      authorities: [
+        UserShortDTORolesEnum.Admin,
+        UserShortDTORolesEnum.Professor,
+        UserShortDTORolesEnum.Applicant,
+        UserShortDTORolesEnum.Employee,
+      ],
     },
     loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
     title: 'global.routes.settings',

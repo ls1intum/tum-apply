@@ -8,7 +8,6 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { AccountService } from 'app/core/auth/account.service';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
-
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import TranslateDirective from '../../../language/translate.directive';

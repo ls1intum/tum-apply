@@ -242,7 +242,9 @@ export class AuthFacadeService {
 
   private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {
     const user = this.accountService.user();
-    const isProfessorOrEmployee = (user?.authorities?.includes(UserShortDTORolesEnum.Professor) ?? false) || (user?.authorities?.includes(UserShortDTORolesEnum.Employee) ?? false);
+    const isProfessorOrEmployee =
+      (user?.authorities?.includes(UserShortDTORolesEnum.Professor) ?? false) ||
+      (user?.authorities?.includes(UserShortDTORolesEnum.Employee) ?? false);
 
     const targetRoute = isProfessorOrEmployee ? '/professor' : '/';
     const redirectUrl = window.location.origin + targetRoute;

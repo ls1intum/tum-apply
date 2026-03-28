@@ -319,7 +319,9 @@ export class JobCreationFormComponent {
   });
 
   /** Computed: Returns the job DTO ready for publishing, or undefined if forms are invalid */
-  publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO(JobFormDTOStateEnum.Published) : undefined));
+  publishableJobData = computed<JobFormDTO | undefined>(() =>
+    this.allFormsValid() ? this.createJobDTO(JobFormDTOStateEnum.Published) : undefined,
+  );
 
   /** Computed: Detects if there are unsaved changes by comparing current data with last saved */
   hasUnsavedChanges = computed(() => {
