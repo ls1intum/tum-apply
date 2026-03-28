@@ -300,8 +300,7 @@
     },
     "hoursPerWeek": "{{workload}} h/Woche",
     "notificationsCta": {
-      "title": "Keine passende Stelle dabei?",
-      "description": "Aktiviere Benachrichtigungen für neue Jobs. Klicke",
+      "text": "Keine passende Stelle dabei? Aktiviere Benachrichtigungen für neue Jobs. Klicke {{link}}.",
       "link": "hier"
     },
     "errors": {

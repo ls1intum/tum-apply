@@ -65,11 +65,9 @@
   [tableStyle]="{ width: '100%' }"
 />
 @if (this.canManageSubjectAreaSubscriptions()) {
-  <div class="mx-auto mt-5 mb-8 max-w-3xl text-center text-sm text-text-secondary">
-    <span jhiTranslate="jobOverviewPage.notificationsCta.title"></span>
-    <span jhiTranslate="jobOverviewPage.notificationsCta.description"></span>
-    <a class="font-medium text-primary hover:underline" [routerLink]="['/settings']" [queryParams]="{ tab: 'notifications' }">{{
-      'jobOverviewPage.notificationsCta.link' | translate
-    }}</a>
-  </div>
+  <div
+    class="mx-auto mt-5 mb-8 max-w-3xl text-center text-sm text-text-secondary"
+    jhiTranslate="jobOverviewPage.notificationsCta.text"
+    [translateValues]="notificationsCtaTranslateValues()"
+  ></div>
 }
