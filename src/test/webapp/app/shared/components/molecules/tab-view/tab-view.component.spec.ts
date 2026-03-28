@@ -1,4 +1,4 @@
-import { Component, QueryList } from '@angular/core';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
@@ -107,21 +107,16 @@ describe('TabViewComponent', () => {
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  it('should return null when projected tab panels resolve to a nullish array', () => {
+  it('should return null when no tab panels are projected', () => {
     createComponent(DEFAULT_TABS);
 
-    const tabPanelsMock: Pick<QueryList<TabPanelTemplateDirective>, 'toArray'> = {
-      toArray: () => undefined as unknown as TabPanelTemplateDirective[],
-    };
-    component.tabPanels = tabPanelsMock as unknown as QueryList<TabPanelTemplateDirective>;
-
-    expect(component.findTemplate('general')).toBeNull();
+    expect(component.findTemplate('nonexistent')).toBeNull();
   });
 
   it('should return the matching projected template for a tab id', () => {
     const hostFixture = createHostComponent();
     const tabViewComponent = getHostTabViewComponent(hostFixture);
-    const expectedTemplate = tabViewComponent.tabPanels?.toArray()[0].template ?? null;
+    const expectedTemplate = tabViewComponent.tabPanels()[0]?.template ?? null;
 
     expect(tabViewComponent.findTemplate('general')).toBe(expectedTemplate);
   });

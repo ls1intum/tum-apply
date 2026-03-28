@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
@@ -66,6 +65,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.core.type.TypeReference;
 
 class InterviewResourceTest extends AbstractResourceTest {
 
@@ -170,7 +170,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         interviewProcess = interviewProcessRepository.save(interviewProcess);
 
         // Shared test applicant and interviewee
-        testApplicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        testApplicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
         testApplicant.getUser().setAvatar("/images/profiles/applicant-avatar.jpg");
         userRepository.save(testApplicant.getUser());
         testApplication = ApplicationTestData.savedSent(applicationRepository, job, testApplicant);
@@ -676,7 +676,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentWithRatingOnlyAsProfessorReturnsUpdatedDetails() {
             // Arrange - create new interviewee since we modify it
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(2, null, null);
@@ -704,7 +704,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentAsEmployeeReturnsUpdatedDetails() {
             // Arrange
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, null, "Good candidate.");
@@ -728,7 +728,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentWithNotesOnlyReturnsUpdatedDetails() {
             // Arrange
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null, "Good candidate with strong technical skills.");
@@ -755,7 +755,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentWithClearRatingRemovesRating() {
             // Arrange - create interviewee with existing rating
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             interviewee.setRating(AssessmentRating.GOOD);
@@ -859,7 +859,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         void assignSlotSuccessfullyAssignsInterviewee() {
             // Arrange
             InterviewSlot slot = createTestSlot();
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
 
             Interviewee interviewee = new Interviewee();
@@ -947,7 +947,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         void assignSlotReturnsBadRequestWhenIntervieweeAlreadyHasSlot() {
             // Arrange - Create first slot and assign it
             InterviewSlot slot1 = createTestSlot();
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
 
             Interviewee interviewee = new Interviewee();
@@ -996,7 +996,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             );
 
             InterviewSlot slot = createTestSlot();
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
 
             Interviewee interviewee = new Interviewee();
@@ -1048,14 +1048,14 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @BeforeEach
         void setupInterviewees() {
-            applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
             interviewee1 = new Interviewee();
             interviewee1.setInterviewProcess(interviewProcess);
             interviewee1.setApplication(app1);
             interviewee1 = intervieweeRepository.save(interviewee1);
 
-            applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
             interviewee2 = new Interviewee();
             interviewee2.setInterviewProcess(interviewProcess);
@@ -1238,7 +1238,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
         void addApplicantsAsProfessorOrEmployeeCreatesInterviewees(String role) {
             UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
 
             AddIntervieweesDTO dto = new AddIntervieweesDTO(List.of(application.getApplicationId()));

@@ -2,7 +2,6 @@ package de.tum.cit.aet.application.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
@@ -30,6 +29,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
+import tools.jackson.core.type.TypeReference;
 
 class ApplicantResourceTest extends AbstractResourceTest {
 
@@ -56,7 +56,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
     }
 
     @Nested

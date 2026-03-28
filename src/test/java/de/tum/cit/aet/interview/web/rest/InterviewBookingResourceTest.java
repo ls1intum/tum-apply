@@ -120,7 +120,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
         interviewProcess = interviewProcessRepository.save(interviewProcess);
 
         // Create applicant user and application
-        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
         applicantUser = applicant.getUser();
         application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
     }
