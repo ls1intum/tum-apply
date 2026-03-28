@@ -1,0 +1,29 @@
+---
+sidebar_label: Overview
+---
+
+# Overview
+
+TUMApply uses **Keycloak** as its central identity provider for authentication, token issuance, and identity federation via OpenID Connect (OIDC). Authorization (roles, access checks, data ownership) is handled within the TUMApply server, not in Keycloak.
+
+For the local development Keycloak setup, see the [Developer Documentation](/developer/auth/keycloak/keycloak-overview).
+
+---
+
+## Role Separation
+
+| **Responsibility** | **Location** |
+|---|---|
+| Authentication (login, tokens) | Keycloak |
+| Authorization (roles, access checks) | Spring Boot / DB |
+| User creation on first login | TUMApply server |
+| Role storage | Database |
+
+---
+
+## External References
+
+- [Official Keycloak Documentation](https://www.keycloak.org/documentation)
+- [Keycloak Server Administration Guide](https://www.keycloak.org/docs/latest/server_admin/)
+- [Keycloak API Documentation](https://www.keycloak.org/docs-api/latest/rest-api/index.html)
+- [Keycloak Release Notes](https://www.keycloak.org/docs/latest/release_notes/)

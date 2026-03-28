@@ -1,0 +1,142 @@
+---
+sidebar_label: Pull Request Guidelines
+---
+
+# Pull Request Guidelines
+
+All code changes — whether features or bugfixes — must go through a Pull Request (PR) on GitHub before being merged into the `main` branch.
+
+PRs should be:
+
+- Focused and not introduce too many new features in one go
+- Code + Test reviewed by at least one other developer
+
+---
+
+## When to Create a Pull Request
+
+- After finishing a new feature, bugfix, or refactor
+- PRs must not remain open for more than a week
+
+---
+
+## Naming Convention
+
+Use one of the following tags, followed by a short, user-friendly description:
+
+| **Tag** | **Use Case** |
+|---|---|
+| `Bugfix:` | For bugfixes |
+| `Development:` | For introducing features or tech improvements |
+| `Documentation:` | For changes in the documentation |
+| `Test:` | For writing only tests |
+| `General:` | For anything not fitting the above categories |
+
+:::info[Format]
+The header must start with one of the tags above, followed by a colon and a capital letter. After the capital letter, the rest of the header should be in lowercase only.
+:::
+
+**Examples:**
+
+```
+Development: Add application dashboard page
+Bugfix: Fix resend OTP code during registration
+Documentation: Update developer setup guide
+Test: Add evaluation module integration tests
+General: Clean up unused imports
+```
+
+---
+
+## Linking Issues & Project Tracking
+
+Every PR **must be linked to a GitHub Issue**. If no issue exists for your change, create one first using the appropriate issue template.
+
+### Creating & Linking an Issue
+
+1. Go to the repository's **Issues** tab and create a new issue using the relevant template
+2. In your PR description, reference the issue (e.g., `Closes #1234`)
+
+---
+
+## How to Fill the Pull Request Template
+
+- Keep only the relevant sections (feature summary, testing steps, etc.)
+- Remove any unused checklist points or empty sections
+
+---
+
+## Review & Merge Process
+
+1. Create the PR
+2. Make sure all GitHub Workflows are passing
+3. Ask one other developer to review your PR
+4. The reviewer should check both the code and manually test the changes if applicable
+5. If the reviewer only checked for one of the two then you need a second review from another developer for the other aspect (code or manual test)
+6. After approval, contact Aniruddh for the final merge
+
+---
+
+### Adding to the TUMApply Project
+
+Both the **issue** and the **PR** should be added to the **TUMApply** GitHub Project. You can do this from the right-hand sidebar of the issue or PR page.
+
+Once added to the project, fill in the following fields where possible:
+
+| **Field** | **Required** | **Description** |
+|---|---|---|
+| **Iteration** | Yes | Select the **current sprint** |
+| **Priority** | If possible | Set the priority level — see [Priority Scale](#priority-scale) below |
+| **Size** | If possible | Estimate the PR complexity — see [Size Reference](#size-reference) below |
+| **Screen** | If possible | Which screen(s) are affected by this change |
+| **Role** | If possible | Which user role(s) are affected (e.g., Applicant, Professor, Admin) |
+
+:::warning
+Do not skip the iteration field — every issue and PR must be assigned to the current sprint at minimum.
+:::
+
+---
+
+## Priority Scale
+
+Use the following table to determine the **Priority** field when adding your PR to the TUMApply project:
+
+| **Priority** | **Expected Handling** |
+|---|---|
+| **Critical** | Fix within **1–2 days** |
+| **High** | Must be fixed **within the current sprint** |
+| **Medium** | Fixed **if time allows in the sprint** |
+| **Low** | **Future consideration** |
+
+---
+
+## Size Reference
+
+Use the following table to determine the **Size** field when adding your PR to the TUMApply project:
+
+| **Size** | **Lines of Code (LOC)** | **Code Change Scope** | **Example Changes** |
+|---|---|---|---|
+| **XS (Extra Small)** | Up to 50 LOC | Extremely trivial | Fixing a typo, small text change, comment-only change, renaming a variable, one-liner code changes |
+| **S (Small)** | Up to 200 LOC | Trivial, no real logic change | Fixing bugs, small component adjustments, linting-only changes, adding a utility function |
+| **M (Medium)** | 201 – 500 LOC | Moderate scope | Minor documentation fixes, performance optimizations, moderate refactoring |
+| **L (Large)** | 501 – 1000 LOC | Large scope new features | Feature enhancements |
+| **XL (X-Large)** | More than 1000 LOC | Client and server heavy changes | Major features or core architecture changes, refactoring multiple modules or subsystems |
+
+:::tip
+Aim to keep PRs in the **XS to M** range. Large and XL pull requests are harder to review, more likely to introduce bugs, and slow down the merge process. If your change grows beyond Medium, consider splitting it into smaller, self-contained PRs.
+:::
+
+---
+
+## Summary Checklist
+
+- [ ] Always create a PR for any change
+- [ ] Link the PR to a GitHub Issue (create one if it doesn't exist)
+- [ ] Add both the issue and PR to the **TUMApply** project
+- [ ] Set the iteration to the current sprint, and fill in priority, size, screen, and role where possible
+- [ ] Follow the naming conventions
+- [ ] Keep PRs small and focused
+- [ ] Do not leave PRs open longer than a week
+- [ ] Make sure all GitHub Actions are passing
+- [ ] Get 1 dev review for Code and manual test
+- [ ] Notify Aniruddh for the merge

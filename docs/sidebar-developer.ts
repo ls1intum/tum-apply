@@ -5,51 +5,10 @@ const sidebars: SidebarsConfig = {
     'intro',
     {
       type: 'category',
-      label: 'Introduction',
-      items: [
-        'intro/features',
-        'intro/personas',
-      ],
-    },
-    {
-      type: 'category',
       label: 'Getting Started',
       items: [
         'setup/dev-environment',
-        'setup/database-setup',
-        'setup/environment-variables',
         'setup/spring-ai',
-        'setup/openapi',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Authentication & Authorization',
-      items: [
-        'auth/authentication-flow',
-        'auth/authorization',
-        {
-          type: 'category',
-          label: 'Keycloak',
-          items: [
-            'auth/keycloak/keycloak-overview',
-            'auth/keycloak/keycloak-realm-and-clients',
-            'auth/keycloak/keycloak-impersonation',
-            'auth/keycloak/development-setup',
-            'auth/keycloak/production-setup',
-          ],
-        },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Modules',
-      items: [
-        'modules/application',
-        'modules/job',
-        'modules/evaluation',
-        'modules/notification',
-        'modules/user-management',
       ],
     },
     {
@@ -58,6 +17,11 @@ const sidebars: SidebarsConfig = {
       items: [
         'general/general-documentation',
         'general/client-best-practices',
+        'general/branch-guidelines',
+        'general/pr-guidelines',
+        'general/writing-documentation',
+        'general/liquibase-guidelines',
+        'general/openapi',
         'theming/color-theming',
         'errors/error-handling',
       ],
@@ -72,19 +36,27 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Deployment',
+      label: 'Infrastructure & CI/CD',
       items: [
-        'deployment/build-production',
-        'deployment/docker',
-        'deployment/environment-config',
+        'deployment/environment-variables',
+        'deployment/testserver',
       ],
     },
     {
       type: 'category',
-      label: 'Privacy & Data',
+      label: 'Authentication & Authorization',
       items: [
-        'privacy/data-export',
-        'privacy/data-retention',
+        'auth/authentication-flow',
+        'auth/authorization',
+        {
+          type: 'category',
+          label: 'Keycloak',
+          items: [
+            'auth/keycloak/keycloak-overview',
+            'auth/keycloak/development-setup',
+            'auth/keycloak/test-users',
+          ],
+        },
       ],
     },
   ],

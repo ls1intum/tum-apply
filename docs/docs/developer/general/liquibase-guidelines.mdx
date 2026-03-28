@@ -1,0 +1,144 @@
+---
+sidebar_label: Liquibase Guidelines
+---
+
+# Liquibase Guidelines
+
+TUMApply uses [Liquibase](https://www.liquibase.org/) to manage database schema changes. All changelog files are located in `src/main/resources/config/liquibase/changelog/` and registered in `master.xml`.
+
+---
+
+## File Naming
+
+Each changelog file must follow the numbering convention used in the project. The file name starts with the changelog number (zero-padded) followed by an overall description of the migration:
+
+```
+00000000000030_migrate_field_of_studies_to_subject_area.xml
+```
+
+- The number must be the **next available number** after the last entry in `master.xml`
+- Use **snake_case** for the description
+- The description should summarize the **overall purpose** of all changesets in the file
+
+---
+
+## Changeset Rules
+
+### One file per migration
+
+Keep all related changesets in a **single file**. Do not split a logical migration across multiple files when it can be expressed as multiple changesets in one file.
+
+### Author
+
+Always set the `author` attribute to **your own name**:
+
+```xml
+<changeSet id="030_drop_default_field_of_studies_from_research_groups" author="celine">
+```
+
+### Changeset IDs
+
+Each changeset ID should start with the **same changelog number** as the file, followed by a **specific description** of what that individual changeset does:
+
+```xml
+<changeSet id="030_drop_default_field_of_studies_from_research_groups" author="celine">
+<changeSet id="030_migrate_job_field_of_studies_to_enum" author="celine">
+<changeSet id="030_rename_job_field_of_studies_to_subject_area" author="celine">
+<changeSet id="030_make_subject_area_nullable" author="celine">
+```
+
+### PreConditions
+
+Use `<preConditions onFail="MARK_RAN">` to make changesets safe to re-run and to guard against schema states that may already exist:
+
+```xml
+<preConditions onFail="MARK_RAN">
+  <columnExists tableName="jobs" columnName="field_of_studies"/>
+</preConditions>
+```
+
+---
+
+## Registering in master.xml
+
+After creating your changelog file, **add it to `master.xml`** at the bottom (before the JHipster needle comments):
+
+```xml
+<include file="changelog/00000000000030_migrate_field_of_studies_to_subject_area.xml"
+         relativeToChangelogFile="true"/>
+```
+
+:::warning
+Forgetting to add your file to `master.xml` means your migration will not run. Always verify this step.
+:::
+
+---
+
+## Full Example
+
+**File:** `00000000000030_migrate_field_of_studies_to_subject_area.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="030_drop_default_field_of_studies_from_research_groups" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="research_groups" columnName="default_field_of_studies"/>
+    </preConditions>
+    <dropColumn tableName="research_groups" columnName="default_field_of_studies"/>
+  </changeSet>
+
+  <changeSet id="030_migrate_job_field_of_studies_to_enum" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+    </preConditions>
+    <sql>
+      UPDATE jobs
+      SET field_of_studies = UPPER(REPLACE(REPLACE(field_of_studies, ' ', '_'), '-', '_'));
+    </sql>
+  </changeSet>
+
+  <changeSet id="030_rename_job_field_of_studies_to_subject_area" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="field_of_studies"/>
+      <not>
+        <columnExists tableName="jobs" columnName="subject_area"/>
+      </not>
+    </preConditions>
+    <renameColumn
+      tableName="jobs"
+      oldColumnName="field_of_studies"
+      newColumnName="subject_area"
+      columnDataType="VARCHAR(255)"
+    />
+  </changeSet>
+
+  <changeSet id="030_make_subject_area_nullable" author="celine">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="jobs" columnName="subject_area"/>
+    </preConditions>
+    <dropNotNullConstraint tableName="jobs" columnName="subject_area"
+      columnDataType="VARCHAR(255)"/>
+    <sql>
+      UPDATE jobs SET subject_area = NULL WHERE subject_area = '';
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>
+```
+
+---
+
+## Summary
+
+- [ ] Use the next available changelog number
+- [ ] Set `author` to your own name
+- [ ] Keep all related changesets in one file
+- [ ] Use the changelog number as prefix in each changeset ID with a specific description
+- [ ] Add `preConditions` to guard against re-run issues
+- [ ] Register the file in `master.xml`

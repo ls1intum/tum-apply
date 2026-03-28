@@ -2,10 +2,10 @@
 sidebar_label: Development Setup
 ---
 
-# Keycloak Development Setup
+# Development Setup
 
 This document provides instructions for running and managing the Keycloak instance used for local development in
-TUMApply only. For production Keycloak setup and configuration, please refer to the [Production Setup](./production-setup).
+TUMApply only. For production Keycloak setup and configuration, please refer to the [Production Setup](/admin/keycloak/production-setup).
 
 ---
 
@@ -57,10 +57,6 @@ docker logs -f tumapply-keycloak-1
 
 To stop the Keycloak docker container run the following command:
 
-:::danger
-This command will remove all data.
-:::
-
 ```bash
 docker compose -f src/main/docker/keycloak.yml down
 ```
@@ -68,6 +64,10 @@ docker compose -f src/main/docker/keycloak.yml down
 ### 🔄 Reset Keycloak
 
 To reset the Keycloak volume and re-import the realm configuration:
+
+:::danger
+This command will remove all data.
+:::
 
 ```bash
 docker compose -f src/main/docker/keycloak.yml down && docker compose -f src/main/docker/keycloak.yml up --build
@@ -93,24 +93,6 @@ docker compose -f src/main/docker/keycloak.yml up --build
 
 ---
 
-## 👥 Test Users
-
-The following test users are included for local development and testing purposes:
-
-| Username     | Password    | Role / Description              |
-| ------------ | ----------- | ------------------------------- |
-| `admin1`     | `admin`     | System administrator test user  |
-| `professor1` | `professor` | Professor test user             |
-| `professor2` | `professor` | Second professor test user      |
-| `applicant1` | `applicant` | Applicant test user             |
-| `applicant2` | `applicant` | Applicant test user (external)  |
-| `applicant3` | `applicant` | Applicant test user (long name) |
-
-The realm also contains the service account users `service-account-realm-management` and
-`service-account-tumapply-otp-admin`, which are used by the server and should not be used for normal login/testing.
-
----
-
 ## ⚠️ Common Issues
 
 :::warning[Common Issues]
@@ -133,4 +115,4 @@ removed.
 It should **not** be used for persistent or shared data.
 :::
 
-For production Keycloak setup and management, please refer to the [Production Setup](./production-setup).
+For production Keycloak setup and management, please refer to the [Production Setup](/admin/keycloak/production-setup).

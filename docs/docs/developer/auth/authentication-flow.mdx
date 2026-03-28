@@ -2,7 +2,7 @@
 sidebar_label: Authentication Flow
 ---
 
-# 🔐 Authentication Flow in TUMApply
+# Authentication Flow
 
 This document provides an overview of the authentication setup and login flow in **TUMApply**, using **Keycloak** and
 OAuth 2.0 / OIDC.
@@ -29,22 +29,6 @@ These users can authenticate with a password and receive a valid access token (J
 To start Keycloak, please follow the instructions in the [Keycloak Setup](./keycloak/development-setup)
 document.
 
-## 🧪 Testing Login with Bruno
-
-You can use [Bruno](https://www.usebruno.com/) for testing login via password grant:
-
-1. Load the collection in `docs/TUMapply API/Authentication/collection.bru`
-2. Use the POST `Keycloak Token` request
-3. You should receive an access token:
-
-```json
-{
-  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6...",
-  "expires_in": 300,
-  "token_type": "Bearer"
-}
-```
-
 ## 🧠 What's in the Token?
 
 Use [jwt.io](https://jwt.io) to inspect the decoded token.
@@ -69,28 +53,6 @@ Example decoded JWT:
 :::info
 The user's **role is not synced from Keycloak**, but instead assigned and managed inside the TUMApply **database**.
 :::
-
-## 👤 `/api/users/me` Endpoint
-
-Returns current user's details and roles.
-
-- If user exists: returns full data
-- If new user: creates one with `APPLICANT` role
-- If not authenticated: returns 401
-
-Example response:
-
-```json
-{
-  "userId": "...",
-  "email": "admin1@tumapply.local",
-  "roles": ["APPLICANT"],
-  "researchGroup": {
-    "researchGroupId": "...",
-    "name": "Data Science Group"
-  }
-}
-```
 
 ## ✅ Summary
 
