@@ -39,7 +39,6 @@ model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
-model/applicantSubjectAreaSubscriptionDTO.ts
 model/application.ts
 model/applicationDetailDTO.ts
 model/applicationDocumentIdsDTO.ts

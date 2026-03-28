@@ -18,8 +18,6 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ApplicantDTO } from '../model/applicantDTO';
 // @ts-ignore
-import { ApplicantSubjectAreaSubscriptionDTO } from '../model/applicantSubjectAreaSubscriptionDTO';
-// @ts-ignore
 import { ApplicationDocumentIdsDTO } from '../model/applicationDocumentIdsDTO';
 // @ts-ignore
 import { DocumentInformationHolderDTO } from '../model/documentInformationHolderDTO';
