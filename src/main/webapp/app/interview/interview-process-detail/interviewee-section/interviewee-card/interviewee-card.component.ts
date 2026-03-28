@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { map } from 'rxjs';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { IntervieweeDTO, IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -22,6 +22,9 @@ import { formatFullName } from 'app/shared/util/name.util';
   templateUrl: './interviewee-card.component.html',
 })
 export class IntervieweeCardComponent {
+  // Enum exposed for template access
+  readonly IntervieweeState = IntervieweeDTOStateEnum;
+
   // Inputs
   interviewee = input.required<IntervieweeDTO>();
   processId = input.required<string>();
@@ -56,9 +59,6 @@ export class IntervieweeCardComponent {
     this.currentLang();
     return !this.hasSlots() ? this.translateService.instant('interview.interviewees.invitation.noSlots.detail') : '';
   });
-
-  // Constants
-  protected readonly IntervieweeState = IntervieweeDTO.StateEnum;
 
   // Services
   private readonly router = inject(Router);

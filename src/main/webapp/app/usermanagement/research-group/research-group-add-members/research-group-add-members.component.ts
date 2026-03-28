@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -45,8 +47,8 @@ export class ResearchGroupAddMembersComponent {
   users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
-  userService = inject(UserResourceApiService);
-  researchGroupService = inject(ResearchGroupResourceApiService);
+  userApi = inject(UserResourceApi);
+  researchGroupApi = inject(ResearchGroupResourceApi);
   toastService = inject(ToastService);
 
   public readonly MIN_SEARCH_LENGTH = 3;
@@ -111,7 +113,7 @@ export class ResearchGroupAddMembersComponent {
     const requestId = ++this.latestRequestId;
 
     try {
-      const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
+      const response = await lastValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
       // If another newer request has been started, ignore the response of this (stale) one
       if (requestId !== this.latestRequestId) {
         return;
@@ -181,7 +183,7 @@ export class ResearchGroupAddMembersComponent {
       const researchGroupId = this.researchGroupId();
 
       const data = { keycloakUsers: Array.from(this.selectedUsers().values()), researchGroupId };
-      await lastValueFrom(this.researchGroupService.addMembersToResearchGroup(data));
+      await lastValueFrom(this.researchGroupApi.addMembersToResearchGroup(data));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
     } catch (err) {

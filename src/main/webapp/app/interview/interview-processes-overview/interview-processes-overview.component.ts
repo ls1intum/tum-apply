@@ -8,9 +8,9 @@ import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
-import { UpcomingInterviewDTO } from 'app/generated/model/upcomingInterviewDTO';
-import { InterviewResourceApiService } from 'app/generated';
+import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
+import { UpcomingInterviewDTO } from 'app/generated/model/upcoming-interview-dto';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { MonthNavigationComponent } from 'app/interview/interview-process-detail/slots-section/month-navigation/month-navigation.component';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
@@ -107,7 +107,7 @@ export class InterviewProcessesOverviewComponent {
   private readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
@@ -189,8 +189,8 @@ export class InterviewProcessesOverviewComponent {
       this.loading.set(true);
       this.error.set(false);
       const [overviewData, upcomingData] = await Promise.all([
-        firstValueFrom(this.interviewService.getInterviewOverview()),
-        firstValueFrom(this.interviewService.getUpcomingInterviews()),
+        firstValueFrom(this.interviewApi.getInterviewOverview()),
+        firstValueFrom(this.interviewApi.getUpcomingInterviews()),
       ]);
       const processesWithImages = overviewData.map((process, index) => ({
         ...process,

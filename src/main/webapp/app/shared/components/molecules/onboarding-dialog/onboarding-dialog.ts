@@ -9,7 +9,7 @@ import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-d
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { ProfOnboardingResourceApiService } from '../../../../generated/api/profOnboardingResourceApi.service';
+import { ProfOnboardingResourceApi } from '../../../../generated/api/prof-onboarding-resource-api';
 import { ResearchGroupCreationFormComponent } from '../research-group-creation-form/research-group-creation-form.component';
 
 import { EmployeeRequestAccessFormComponent } from './employee-request-access-form/employee-request-access-form.component';
@@ -26,7 +26,7 @@ import { EmployeeRequestAccessFormComponent } from './employee-request-access-fo
 })
 export class OnboardingDialog {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
-  private readonly api = inject(ProfOnboardingResourceApiService);
+  private readonly api = inject(ProfOnboardingResourceApi);
   private readonly translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);
 

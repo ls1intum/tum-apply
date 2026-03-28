@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
-import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -16,7 +16,7 @@ describe('OnboardingDialog', () => {
 
   let mockDialogService: DialogServiceMock;
   let mockDialogRef: DynamicDialogRefMock;
-  let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
+  let mockProfOnboardingService: Partial<ProfOnboardingResourceApi>;
 
   beforeEach(async () => {
     mockDialogService = createDialogServiceMock();
@@ -33,7 +33,7 @@ describe('OnboardingDialog', () => {
         provideTranslateMock(),
         provideDialogServiceMock(mockDialogService),
         provideDynamicDialogRefMock(mockDialogRef),
-        { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
+        { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
       ],
     }).compileComponents();
 

@@ -1,23 +1,23 @@
 @switch (state()) {
-  @case ('SAVED') {
+  @case (AppState.Saved) {
     <jhi-tag [text]="'entity.applicationOverview.state.draft' | translate" color="info" width="7rem" />
   }
-  @case ('SENT') {
+  @case (AppState.Sent) {
     <jhi-tag [text]="'entity.applicationOverview.state.submitted' | translate" color="secondary" width="7rem" />
   }
-  @case ('ACCEPTED') {
+  @case (AppState.Accepted) {
     <jhi-tag [text]="'entity.applicationOverview.state.accepted' | translate" color="success" width="7rem" />
   }
-  @case ('IN_REVIEW') {
+  @case (AppState.InReview) {
     <jhi-tag [text]="'entity.applicationOverview.state.inReview' | translate" color="warn" width="7rem" />
   }
-  @case ('REJECTED') {
+  @case (AppState.Rejected) {
     <jhi-tag [text]="'entity.applicationOverview.state.rejected' | translate" color="danger" width="7rem" />
   }
-  @case ('WITHDRAWN') {
+  @case (AppState.Withdrawn) {
     <jhi-tag [text]="'entity.applicationOverview.state.withdrawn' | translate" color="contrast" width="7rem" />
   }
-  @case ('JOB_CLOSED') {
+  @case (AppState.JobClosed) {
     <jhi-tag [text]="'entity.applicationOverview.state.closed' | translate" color="contrast" width="7rem" />
   }
   @default {

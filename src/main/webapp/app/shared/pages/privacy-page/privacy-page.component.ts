@@ -4,13 +4,14 @@ import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
-import { UserDataExportResourceApiService } from 'app/generated/api/api';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
+import { DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { AccountService } from 'app/core/auth/account.service';
 
 import TranslateDirective from '../../language/translate.directive';
 
-type ExportStatus = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'COMPLETED' | null;
+type ExportStatus = DataExportStatusDTOStatusEnum | undefined;
 
 @Component({
   selector: 'jhi-privacy-page',
@@ -22,7 +23,7 @@ type ExportStatus = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'COMPLETED' | n
 })
 export class PrivacyPageComponent {
   readonly exportButtonDisabled = computed(
-    () => !this.signedIn() || this.currentExportStatus() === 'IN_CREATION' || this.cooldownSeconds() > 0,
+    () => !this.signedIn() || this.currentExportStatus() === DataExportStatusDTOStatusEnum.InCreation || this.cooldownSeconds() > 0,
   );
 
   readonly tooltip = computed(() => {
@@ -31,7 +32,7 @@ export class PrivacyPageComponent {
 
     if (!this.signedIn()) {
       return this.translateService.instant('privacy.export.tooltip.notLoggedIn');
-    } else if (this.currentExportStatus() === 'IN_CREATION') {
+    } else if (this.currentExportStatus() === DataExportStatusDTOStatusEnum.InCreation) {
       return this.translateService.instant('privacy.export.tooltip.inCreation');
     } else if (this.cooldownSeconds() > 0) {
       const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
@@ -41,11 +42,11 @@ export class PrivacyPageComponent {
 
   readonly translateService = inject(TranslateService);
   readonly currentLang = signal<string>(this.translateService.getCurrentLang());
-  readonly currentExportStatus = signal<ExportStatus>(null);
+  readonly currentExportStatus = signal<ExportStatus>(undefined);
   readonly cooldownSeconds = signal<number>(0);
   readonly signedIn = computed(() => this.accountService.signedIn());
 
-  protected readonly userDataExportService = inject(UserDataExportResourceApiService);
+  protected readonly userDataExportApi = inject(UserDataExportResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -66,14 +67,14 @@ export class PrivacyPageComponent {
       return;
     }
 
-    this.currentExportStatus.set('IN_CREATION');
+    this.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
 
     try {
-      await firstValueFrom(this.userDataExportService.requestDataExport());
+      await firstValueFrom(this.userDataExportApi.requestDataExport());
       await this.refreshStatus();
       this.toastService.showInfoKey('privacy.export.requested');
     } catch (error) {
-      this.currentExportStatus.set(null);
+      this.currentExportStatus.set(undefined);
       if (error instanceof HttpErrorResponse) {
         switch (error.status) {
           case 409:
@@ -96,8 +97,8 @@ export class PrivacyPageComponent {
       return;
     }
     try {
-      const status = await firstValueFrom(this.userDataExportService.getDataExportStatus());
-      this.currentExportStatus.set((status.status as ExportStatus) ?? null);
+      const status = await firstValueFrom(this.userDataExportApi.getDataExportStatus());
+      this.currentExportStatus.set(status.status as ExportStatus);
       this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
     } catch {
       // ignore status fetch errors

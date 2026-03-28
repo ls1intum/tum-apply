@@ -1,6 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
+import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
 import { TranslateDirective } from 'app/shared/language';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';

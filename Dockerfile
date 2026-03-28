@@ -17,6 +17,8 @@ WORKDIR /opt/tum-apply
 COPY gradlew gradlew.bat ./
 COPY build.gradle gradle.properties settings.gradle ./
 COPY gradle gradle/
+# copy openapi generator subproject (required by settings.gradle)
+COPY openapi-generator-angular21/build.gradle openapi-generator-angular21/build.gradle
 # copy npm related files and install node modules
 # (from https://stackoverflow.com/questions/63961934/how-to-use-docker-build-cache-when-version-bumping-a-react-app)
 COPY package.json package-lock.json ./
@@ -92,6 +94,11 @@ ENV LANGUAGE=en_US.UTF-8
 WORKDIR /opt/tum-apply
 
 COPY --from=war_file ${WAR_FILE_PATH}/*.war tum-apply.war
+
+# Copy build files needed by the admin dependencies page to parse project dependencies at runtime
+COPY --from=builder /opt/tum-apply/build.gradle build.gradle
+COPY --from=builder /opt/tum-apply/gradle.properties gradle.properties
+COPY --from=builder /opt/tum-apply/package.json package.json
 
 EXPOSE 8080
 

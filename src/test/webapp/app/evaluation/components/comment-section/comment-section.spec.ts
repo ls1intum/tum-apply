@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { CommentSection } from 'app/shared/components/molecules/comment-section/comment-section';
-import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
+import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
 
@@ -39,7 +39,7 @@ describe('CommentSection', () => {
     await TestBed.configureTestingModule({
       imports: [CommentSection],
       providers: [
-        { provide: InternalCommentResourceApiService, useValue: mockCommentApi },
+        { provide: InternalCommentResourceApi, useValue: mockCommentApi },
         provideToastServiceMock(mockToast),
         provideAccountServiceMock(mockAccount),
       ],
@@ -71,7 +71,7 @@ describe('CommentSection', () => {
       TestBed.configureTestingModule({
         imports: [CommentSection],
         providers: [
-          { provide: InternalCommentResourceApiService, useValue: mockCommentApi },
+          { provide: InternalCommentResourceApi, useValue: mockCommentApi },
           provideToastServiceMock(mockToast),
           provideAccountServiceMock(accountServiceWithNoUser),
         ],

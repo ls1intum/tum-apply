@@ -3,7 +3,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
+import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
+import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
@@ -11,7 +12,7 @@ const activeProcess: InterviewOverviewDTO = {
   jobId: 'job-1',
   processId: 'process-1',
   jobTitle: 'Software Engineer',
-  jobState: 'ACTIVE',
+  jobState: JobDetailDTOStateEnum.Published,
   isClosed: false,
   totalSlots: 10,
   totalInterviews: 5,
@@ -25,7 +26,7 @@ const closedProcess: InterviewOverviewDTO = {
   jobId: 'job-2',
   processId: 'process-2',
   jobTitle: 'Data Scientist',
-  jobState: 'CLOSED',
+  jobState: JobDetailDTOStateEnum.Closed,
   isClosed: true,
   totalSlots: 5,
   totalInterviews: 3,
@@ -93,7 +94,7 @@ describe('InterviewProcessCardComponent', () => {
           jobId: 'job-warn',
           processId: 'process-warn',
           jobTitle: 'Designer',
-          jobState: 'ACTIVE',
+          jobState: JobDetailDTOStateEnum.Published,
           isClosed: false,
           totalSlots,
           totalInterviews: 0,
@@ -129,7 +130,7 @@ describe('InterviewProcessCardComponent', () => {
         jobId: 'job-6',
         processId: 'process-6',
         jobTitle: 'PM',
-        jobState: 'ACTIVE',
+        jobState: JobDetailDTOStateEnum.Published,
         isClosed: false,
         totalSlots: 15,
         totalInterviews: 5,
