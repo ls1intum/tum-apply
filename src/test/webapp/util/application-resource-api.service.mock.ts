@@ -1,11 +1,15 @@
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
 import { of } from 'rxjs';
-import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
+import { ApplicationOverviewDTO, ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/model/application-overview-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 
-export type ApplicationResourceApiServiceMock = {
+export type ApplicationResourceApiMock = {
   createApplication: ReturnType<typeof vi.fn>;
   getApplicationById: ReturnType<typeof vi.fn>;
   getApplicationForDetailPage: ReturnType<typeof vi.fn>;
@@ -19,16 +23,14 @@ export type ApplicationResourceApiServiceMock = {
   deleteDocumentFromApplication: ReturnType<typeof vi.fn>;
 };
 
-export const createMockApplicationDTO = (
-  applicationState: ApplicationForApplicantDTO.ApplicationStateEnum,
-): ApplicationForApplicantDTO => ({
+export const createMockApplicationDTO = (applicationState: ApplicationForApplicantDTOApplicationStateEnum): ApplicationForApplicantDTO => ({
   applicationState: applicationState,
   applicationId: '456',
   job: {
     jobId: '123',
-    location: 'GARCHING',
+    location: JobFormDTOLocationEnum.Garching,
     professorName: 'Prof. Dr. Abc',
-    subjectArea: 'COMPUTER_SCIENCE',
+    subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
     title: 'Sophisticated Studies',
   },
   applicant: {
@@ -43,7 +45,7 @@ const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDT
   applicationId: '123',
   jobTitle: 'Software Engineer',
   researchGroup: 'Research Group A',
-  applicationState: 'SENT',
+  applicationState: ApplicationOverviewDTOApplicationStateEnum.Sent,
   createdAt: '2025-01-01T12:00:00Z',
   ...overrides,
 });
@@ -53,11 +55,11 @@ export const createMockApplicationOverviewPages = () => [
   createMockApplicationOverview({ applicationId: '2' }),
 ];
 
-export function createApplicationResourceApiServiceMock(): ApplicationResourceApiServiceMock {
+export function createApplicationResourceApiMock(): ApplicationResourceApiMock {
   const mockApplicationOverviewPages = createMockApplicationOverviewPages();
   return {
-    createApplication: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
-    getApplicationById: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
+    createApplication: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved))),
+    getApplicationById: vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved))),
     getApplicationForDetailPage: vi.fn().mockReturnValue(of({})),
     updateApplication: vi.fn().mockReturnValue(of({})),
     withdrawApplication: vi.fn().mockReturnValue(of({})),
@@ -70,8 +72,6 @@ export function createApplicationResourceApiServiceMock(): ApplicationResourceAp
   };
 }
 
-export function provideApplicationResourceApiServiceMock(
-  mock: ApplicationResourceApiServiceMock = createApplicationResourceApiServiceMock(),
-): Provider {
-  return { provide: ApplicationResourceApiService, useValue: mock };
+export function provideApplicationResourceApiMock(mock: ApplicationResourceApiMock = createApplicationResourceApiMock()): Provider {
+  return { provide: ApplicationResourceApi, useValue: mock };
 }

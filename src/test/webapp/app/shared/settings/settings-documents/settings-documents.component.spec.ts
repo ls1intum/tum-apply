@@ -3,10 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, Subject, throwError } from 'rxjs';
 
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
-import { createApplicantResourceApiServiceMock, provideApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
+import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -19,7 +21,7 @@ describe('SettingsDocumentsComponent', () => {
     loadProfile(this: SettingsDocumentsComponent): Promise<void>;
   };
 
-  const createProfile = (): ApplicantDTO => ({
+  const createProfile = (): Mutable<ApplicantDTO> => ({
     user: {
       userId: 'user-1',
       firstName: 'Ada',
@@ -76,7 +78,7 @@ describe('SettingsDocumentsComponent', () => {
     }
   };
 
-  const applicantResourceApiServiceMock = createApplicantResourceApiServiceMock();
+  const applicantApiMock = createApplicantResourceApiMock();
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
   const translateServiceMock = createTranslateServiceMock();
@@ -93,17 +95,17 @@ describe('SettingsDocumentsComponent', () => {
       authorities: [],
     });
 
-    applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(of(createProfile()));
-    applicantResourceApiServiceMock.getApplicantProfileDocumentIds.mockReturnValue(of(createDocumentIds()));
-    applicantResourceApiServiceMock.updateApplicantDocumentSettings.mockReturnValue(of(createProfile()));
-    applicantResourceApiServiceMock.deleteApplicantProfileDocument.mockReturnValue(of(undefined));
-    applicantResourceApiServiceMock.renameApplicantProfileDocument.mockReturnValue(of(undefined));
+    applicantApiMock.getApplicantProfile.mockReturnValue(of(createProfile()));
+    applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(createDocumentIds()));
+    applicantApiMock.updateApplicantDocumentSettings.mockReturnValue(of(createProfile()));
+    applicantApiMock.deleteApplicantProfileDocument.mockReturnValue(of(undefined));
+    applicantApiMock.renameApplicantProfileDocument.mockReturnValue(of(undefined));
     httpClientMock.post.mockReturnValue(of([]));
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       providers: [
-        provideApplicantResourceApiServiceMock(applicantResourceApiServiceMock),
+        provideApplicantResourceApiMock(applicantApiMock),
         provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(translateServiceMock),
@@ -117,8 +119,8 @@ describe('SettingsDocumentsComponent', () => {
     it('should load profile data and document ids on construction', async () => {
       const component = await createComponent();
 
-      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantResourceApiServiceMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
       expect(component.hasLoaded()).toBe(true);
       expect(component.form.getRawValue()).toMatchObject({
         bachelorDegreeName: 'BSc Computer Science',
@@ -133,7 +135,7 @@ describe('SettingsDocumentsComponent', () => {
     });
 
     it('should show an error toast when loading document settings fails', async () => {
-      applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(throwError(() => new Error('load failed')));
+      applicantApiMock.getApplicantProfile.mockReturnValue(throwError(() => new Error('load failed')));
 
       const component = await createComponent();
 
@@ -149,7 +151,7 @@ describe('SettingsDocumentsComponent', () => {
       profile.masterGrade = '';
       profile.masterGradeUpperLimit = '';
       profile.masterGradeLowerLimit = '';
-      applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(of(profile));
+      applicantApiMock.getApplicantProfile.mockReturnValue(of(profile));
 
       const component = await createComponent();
 
@@ -176,8 +178,8 @@ describe('SettingsDocumentsComponent', () => {
         masterGrade: undefined,
       };
       const documentIds: ApplicationDocumentIdsDTO = {};
-      applicantResourceApiServiceMock.getApplicantProfile.mockReturnValue(of(profile));
-      applicantResourceApiServiceMock.getApplicantProfileDocumentIds.mockReturnValue(of(documentIds));
+      applicantApiMock.getApplicantProfile.mockReturnValue(of(profile));
+      applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(documentIds));
 
       const component = await createComponent();
 
@@ -344,14 +346,14 @@ describe('SettingsDocumentsComponent', () => {
 
       await component.saveAll();
 
-      expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
+      expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
         expect.objectContaining({
           user: expect.objectContaining({ userId: 'user-1' }),
           masterDegreeName: 'Updated Master Degree',
         }),
       );
-      expect(applicantResourceApiServiceMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantResourceApiServiceMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
       expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.documents.saved');
       expect(component.saving()).toBe(false);
     });
@@ -375,7 +377,7 @@ describe('SettingsDocumentsComponent', () => {
 
       await component.saveAll();
 
-      expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
+      expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
         expect.objectContaining({
           bachelorDegreeName: undefined,
           bachelorUniversity: undefined,
@@ -413,11 +415,8 @@ describe('SettingsDocumentsComponent', () => {
 
       await component.saveAll();
 
-      expect(applicantResourceApiServiceMock.deleteApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1');
-      expect(applicantResourceApiServiceMock.renameApplicantProfileDocument).toHaveBeenCalledWith(
-        'reference-doc-1',
-        'reference-renamed.pdf',
-      );
+      expect(applicantApiMock.deleteApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1');
+      expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('reference-doc-1', 'reference-renamed.pdf');
       expect(httpClientMock.post).toHaveBeenCalledOnce();
       expect(httpClientMock.post).toHaveBeenCalledWith('/api/applicants/profile/documents/REFERENCE', expect.any(FormData));
       const uploadCall = httpClientMock.post.mock.calls[0];
@@ -434,17 +433,17 @@ describe('SettingsDocumentsComponent', () => {
 
       await component.saveAll();
 
-      expect(applicantResourceApiServiceMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
+      expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
       expect(component.saving()).toBe(false);
     });
 
     it('should show an error toast when saving document settings fails', async () => {
-      applicantResourceApiServiceMock.updateApplicantDocumentSettings.mockReturnValue(throwError(() => new Error('save failed')));
+      applicantApiMock.updateApplicantDocumentSettings.mockReturnValue(throwError(() => new Error('save failed')));
 
       const component = await createComponent();
       vi.clearAllMocks();
-      applicantResourceApiServiceMock.updateApplicantDocumentSettings.mockReturnValue(throwError(() => new Error('save failed')));
+      applicantApiMock.updateApplicantDocumentSettings.mockReturnValue(throwError(() => new Error('save failed')));
       component.form.patchValue({
         bachelorDegreeName: 'Updated Degree',
       });

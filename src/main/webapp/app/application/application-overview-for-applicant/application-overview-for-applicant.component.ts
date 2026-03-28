@@ -14,8 +14,9 @@ import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicationOverviewDTO } from 'app/generated/model/application-overview-dto';
+import { ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/model/application-overview-dto';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
@@ -130,7 +131,7 @@ export default class ApplicationOverviewForApplicantComponent {
       const applicationId = application.applicationId;
 
       // Edit action - only for SAVED applications
-      if (application.applicationState === 'SAVED') {
+      if (application.applicationState === ApplicationOverviewDTOApplicationStateEnum.Saved) {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -142,7 +143,14 @@ export default class ApplicationOverviewForApplicantComponent {
       }
 
       // Withdraw action - for SENT or IN_REVIEW applications
-      if (['SENT', 'IN_REVIEW'].includes(application.applicationState ?? '')) {
+      if (
+        (
+          [
+            ApplicationOverviewDTOApplicationStateEnum.Sent,
+            ApplicationOverviewDTOApplicationStateEnum.InReview,
+          ] as ApplicationOverviewDTOApplicationStateEnum[]
+        ).includes(application.applicationState as ApplicationOverviewDTOApplicationStateEnum)
+      ) {
         items.push({
           label: 'button.withdraw',
           icon: 'withdraw',
@@ -155,7 +163,7 @@ export default class ApplicationOverviewForApplicantComponent {
       }
 
       // Delete action - only for SAVED applications
-      if (application.applicationState === 'SAVED') {
+      if (application.applicationState === ApplicationOverviewDTOApplicationStateEnum.Saved) {
         items.push({
           label: 'button.delete',
           icon: 'trash',
@@ -184,7 +192,7 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
-  private readonly applicationService = inject(ApplicationResourceApiService);
+  private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
 
   private applicantId = signal<string>('');
@@ -203,7 +211,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
     try {
       const page = await firstValueFrom(
-        this.applicationService.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
+        this.applicationApi.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
       );
       this.pageData.set(page.content ?? []);
       this.total.set(page.totalElements ?? 0);
@@ -227,7 +235,7 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    this.applicationService.deleteApplication(applicationId).subscribe({
+    this.applicationApi.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });
         const event = this.lastLazyLoadEvent();
@@ -241,7 +249,7 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onWithdrawApplication(applicationId: string): void {
-    this.applicationService.withdrawApplication(applicationId).subscribe({
+    this.applicationApi.withdrawApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
         const event = this.lastLazyLoadEvent();

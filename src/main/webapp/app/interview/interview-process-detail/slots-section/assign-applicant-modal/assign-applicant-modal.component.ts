@@ -3,9 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { InterviewResourceApiService } from 'app/generated';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
+import { IntervieweeDTO } from 'app/generated/model/interviewee-dto';
+import { IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -50,7 +51,9 @@ export class AssignApplicantModalComponent {
   selectedApplicantId = signal<string | null>(null);
 
   // Filters out already scheduled and completed interviewees (UNCONTACTED + INVITED are assignable)
-  availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED' && i.state !== 'COMPLETED'));
+  availableInterviewees = computed(() =>
+    this.interviewees().filter(i => i.state !== IntervieweeDTOStateEnum.Scheduled && i.state !== IntervieweeDTOStateEnum.Completed),
+  );
 
   // Returns true if an applicant is selected
   canAssign = computed(() => this.selectedApplicantId() !== null);
@@ -72,7 +75,7 @@ export class AssignApplicantModalComponent {
   private locale = computed(() => getLocale(this.translateService));
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -97,7 +100,7 @@ export class AssignApplicantModalComponent {
     }
 
     try {
-      const updatedSlot = await firstValueFrom(this.interviewService.assignSlotToInterviewee(slotId, { applicationId }));
+      const updatedSlot = await firstValueFrom(this.interviewApi.assignSlotToInterviewee(slotId, { applicationId }));
       this.toastService.showSuccessKey('interview.assign.success');
       this.applicantAssigned.emit(updatedSlot);
       this.closeModal();
@@ -146,7 +149,7 @@ export class AssignApplicantModalComponent {
 
   // Returns true if the interviewee already has a scheduled slot
   isDisabled(interviewee: IntervieweeDTO): boolean {
-    return interviewee.state === 'SCHEDULED';
+    return interviewee.state === IntervieweeDTOStateEnum.Scheduled;
   }
 
   // Handles visibility changes from the dialog component
@@ -166,7 +169,7 @@ export class AssignApplicantModalComponent {
   private async fetchInterviewees(): Promise<void> {
     try {
       const processId = this.processId();
-      const data = await firstValueFrom(this.interviewService.getIntervieweesByProcessId(processId));
+      const data = await firstValueFrom(this.interviewApi.getIntervieweesByProcessId(processId));
       this.interviewees.set(data);
     } catch {
       this.toastService.showErrorKey('interview.assign.error.loadFailed');

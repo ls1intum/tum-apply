@@ -1,6 +1,6 @@
 import { Component, input, output, signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
+import { CancelInterviewDTO } from 'app/generated/model/cancel-interview-dto';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';

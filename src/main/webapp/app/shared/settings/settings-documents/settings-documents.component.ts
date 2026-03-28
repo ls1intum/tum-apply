@@ -5,14 +5,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+import { DocumentDictionaryDocumentTypeEnum } from 'app/generated/model/document-dictionary';
 import { AccountService } from 'app/core/auth/account.service';
 import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
 import { deepEqual } from 'app/core/util/deepequal-util';
@@ -135,7 +136,7 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
-  private applicantService = inject(ApplicantResourceApiService);
+  private applicantApi = inject(ApplicantResourceApi);
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
@@ -256,7 +257,7 @@ export class SettingsDocumentsComponent {
         masterGrade: this.form.get('masterGrade')?.value ?? undefined,
       };
 
-      await firstValueFrom(this.applicantService.updateApplicantDocumentSettings(applicantDTO));
+      await firstValueFrom(this.applicantApi.updateApplicantDocumentSettings(applicantDTO));
       await this.saveDeferredDocumentChanges();
       await this.loadProfile();
 
@@ -289,10 +290,8 @@ export class SettingsDocumentsComponent {
     try {
       this.hasInitialLimitsSet.set(false);
 
-      const profile = await firstValueFrom(this.applicantService.getApplicantProfile('body', false, { transferCache: false }));
-      const profileDocumentIds = await firstValueFrom(
-        this.applicantService.getApplicantProfileDocumentIds('body', false, { transferCache: false }),
-      );
+      const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
+      const profileDocumentIds = await firstValueFrom(this.applicantApi.getApplicantProfileDocumentIds());
       this.applyProfileDocumentIds(profileDocumentIds);
 
       this.form.patchValue({
@@ -415,10 +414,14 @@ export class SettingsDocumentsComponent {
   }
 
   private async saveQueuedDocuments(): Promise<void> {
-    await this.uploadQueuedByType('BACHELOR_TRANSCRIPT', this.queuedBachelorFiles(), this.bachelorDocuments);
-    await this.uploadQueuedByType('MASTER_TRANSCRIPT', this.queuedMasterFiles(), this.masterDocuments);
-    await this.uploadQueuedByType('CV', this.queuedCvFiles(), this.cvDocuments);
-    await this.uploadQueuedByType('REFERENCE', this.queuedReferenceFiles(), this.referenceDocuments);
+    await this.uploadQueuedByType(
+      DocumentDictionaryDocumentTypeEnum.BachelorTranscript,
+      this.queuedBachelorFiles(),
+      this.bachelorDocuments,
+    );
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.MasterTranscript, this.queuedMasterFiles(), this.masterDocuments);
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
+    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.Reference, this.queuedReferenceFiles(), this.referenceDocuments);
   }
 
   private async saveDeferredDocumentChanges(): Promise<void> {
@@ -446,16 +449,16 @@ export class SettingsDocumentsComponent {
     });
 
     for (const documentId of deletedIds) {
-      await firstValueFrom(this.applicantService.deleteApplicantProfileDocument(documentId));
+      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
     }
 
     for (const document of renamedDocs) {
-      await firstValueFrom(this.applicantService.renameApplicantProfileDocument(document.id, document.newName));
+      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(document.id, document.newName));
     }
   }
 
   private async uploadQueuedByType(
-    documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    documentType: DocumentDictionaryDocumentTypeEnum,
     files: File[],
     targetSignal: {
       set: (_value: DocumentInformationHolderDTO[] | undefined) => void;
@@ -476,7 +479,7 @@ export class SettingsDocumentsComponent {
   }
 
   private uploadApplicantProfileDocument(
-    documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'CV' | 'REFERENCE',
+    documentType: DocumentDictionaryDocumentTypeEnum,
     file: File,
   ): Observable<DocumentInformationHolderDTO[]> {
     const formData = new FormData();

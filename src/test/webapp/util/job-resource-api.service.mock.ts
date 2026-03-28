@@ -1,8 +1,8 @@
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 
-export type JobResourceApiServiceMock = {
+export type JobResourceApiMock = {
   getJobDetails: ReturnType<typeof vi.fn>;
   getAvailableJobs: ReturnType<typeof vi.fn>;
   getJobsForCurrentResearchGroup: ReturnType<typeof vi.fn>;
@@ -13,7 +13,7 @@ export type JobResourceApiServiceMock = {
   changeJobState: ReturnType<typeof vi.fn>;
 };
 
-export function createJobResourceApiServiceMock(): JobResourceApiServiceMock {
+export function createJobResourceApiMock(): JobResourceApiMock {
   return {
     getJobDetails: vi.fn(),
     getAvailableJobs: vi.fn(),
@@ -26,6 +26,6 @@ export function createJobResourceApiServiceMock(): JobResourceApiServiceMock {
   };
 }
 
-export function provideJobResourceApiServiceMock(mock: JobResourceApiServiceMock = createJobResourceApiServiceMock()): Provider {
-  return { provide: JobResourceApiService, useValue: mock };
+export function provideJobResourceApiMock(mock: JobResourceApiMock = createJobResourceApiMock()): Provider {
+  return { provide: JobResourceApi, useValue: mock };
 }

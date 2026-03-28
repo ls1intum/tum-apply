@@ -1,0 +1,92 @@
+{{>licenseInfo}}
+/**
+ * {{classname}} - API service
+ * @generated from OpenAPI specification
+ */
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+{{#tsImports}}
+import { {{classname}} } from '../model/{{filename}}';
+{{/tsImports}}
+
+@Injectable({ providedIn: 'root' })
+export class {{classname}} {
+    private readonly http = inject(HttpClient);
+    private readonly basePath = '{{contextPath}}';
+
+{{#operations}}
+{{#operation}}
+    /**
+     * {{summary}}
+     * {{notes}}
+{{#allParams}}
+     * @param {{paramName}} {{description}}
+{{/allParams}}
+     */
+    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^-last}}, {{/-last}}{{/allParams}}): Observable<{{#isResponseFile}}HttpResponse<Blob>{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}{{/isResponseFile}}> {
+{{#pathParams}}
+{{^vendorExtensions.x-is-numeric}}
+        const {{paramName}}Path = encodeURIComponent(String({{paramName}}));
+{{/vendorExtensions.x-is-numeric}}
+{{/pathParams}}
+{{#hasQueryParams}}
+        const queryParams = new URLSearchParams();
+{{#queryParams}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+{{#isArray}}
+            {{paramName}}.forEach(item => queryParams.append('{{baseName}}', String(item)));
+{{/isArray}}
+{{^isArray}}
+            queryParams.set('{{baseName}}', String({{paramName}}));
+{{/isArray}}
+        }
+{{/queryParams}}
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}{{{vendorExtensions.xPathTemplate}}}${queryString ? `?${queryString}` : ''}`;
+{{/hasQueryParams}}
+{{^hasQueryParams}}
+        const url = `${this.basePath}{{{vendorExtensions.xPathTemplate}}}`;
+{{/hasQueryParams}}
+{{#hasFormParams}}
+        const formData = new FormData();
+{{#formParams}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+{{#isArray}}
+            {{paramName}}.forEach(item => formData.append('{{baseName}}', item));
+{{/isArray}}
+{{^isArray}}
+            formData.append('{{baseName}}', {{paramName}});
+{{/isArray}}
+        }
+{{/formParams}}
+{{#isResponseFile}}
+        return this.http.{{httpMethod}}(url, formData, { responseType: 'blob', observe: 'response' });
+{{/isResponseFile}}
+{{^isResponseFile}}
+        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url, formData);
+{{/isResponseFile}}
+{{/hasFormParams}}
+{{^hasFormParams}}
+{{#bodyParam}}
+{{#isResponseFile}}
+        return this.http.{{httpMethod}}(url, {{paramName}}, { responseType: 'blob', observe: 'response' });
+{{/isResponseFile}}
+{{^isResponseFile}}
+        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url, {{paramName}});
+{{/isResponseFile}}
+{{/bodyParam}}
+{{^bodyParam}}
+{{#isResponseFile}}
+        return this.http.{{httpMethod}}(url{{#isBodyAllowed}}, null{{/isBodyAllowed}}, { responseType: 'blob', observe: 'response' });
+{{/isResponseFile}}
+{{^isResponseFile}}
+        return this.http.{{httpMethod}}<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}void{{/returnType}}>(url{{#isBodyAllowed}}, null{{/isBodyAllowed}});
+{{/isResponseFile}}
+{{/bodyParam}}
+{{/hasFormParams}}
+    }
+
+{{/operation}}
+{{/operations}}
+}

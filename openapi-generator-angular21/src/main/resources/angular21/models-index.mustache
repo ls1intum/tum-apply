@@ -1,0 +1,10 @@
+{{>licenseInfo}}
+/**
+ * Models index
+ * @generated from OpenAPI specification
+ */
+{{#models}}
+{{#model}}
+export * from './{{classFilename}}';
+{{/model}}
+{{/models}}
