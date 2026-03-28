@@ -8,8 +8,8 @@ import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -37,11 +37,11 @@ public class AiService {
 
     /**
      * Chat options for fast, deterministic responses.
-     * Uses ChatOptions to avoid Spring AI sending unsupported parameters
-     * (like 'stop') to reasoning models such as gpt-5-mini.
+     * Uses maxCompletionTokens (not maxTokens) as reasoning models like gpt-5-mini
+     * reject the legacy 'max_tokens' parameter.
      */
-    private static final ChatOptions FAST_CHAT_OPTIONS = ChatOptions.builder()
-        .maxTokens(MAX_COMPLETION_TOKENS)
+    private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
+        .maxCompletionTokens(MAX_COMPLETION_TOKENS)
         .build();
 
     public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
