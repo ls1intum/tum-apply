@@ -34,7 +34,7 @@
       </div>
 
       <!-- Explanation -->
-      <jhi-info-box severity="info">
+      <jhi-info-box class="block mb-6" [severity]="analysisResult?.coding === 'non-inclusive-coded' ? 'warning' : 'info'">
         <div class="leading-relaxed" [innerHTML]="explanationTranslationKey() | translate"></div>
       </jhi-info-box>
 
