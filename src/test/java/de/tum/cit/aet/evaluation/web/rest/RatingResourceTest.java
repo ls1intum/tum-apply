@@ -27,9 +27,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -76,7 +75,7 @@ class RatingResourceTest extends AbstractResourceTest {
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
         otherProfessor = UserTestData.savedProfessor(userRepository, researchGroup);
 
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
 
         publishedJob = JobTestData.saved(
             jobRepository,
@@ -192,7 +191,6 @@ class RatingResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        @WithMockUser
         void allEndpointsWithoutProfessorRoleReturn403() {
             Void getResult = api.getAndRead(ratingsUrl(), Map.of(), Void.class, 403);
             assertThat(getResult).isNull();

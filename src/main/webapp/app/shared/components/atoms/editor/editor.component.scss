@@ -43,3 +43,13 @@
   align-items: center;
   flex-wrap: wrap;
 }
+
+.gender-badge-warn {
+  background-color: var(--p-warn-hover-color-outlined);
+  color: var(--p-text-primary);
+}
+
+.gender-badge-secondary {
+  background-color: var(--p-secondary-hover-color-outlined);
+  color: var(--p-text-primary);
+}
