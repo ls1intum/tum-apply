@@ -416,10 +416,7 @@ describe('SettingsDocumentsComponent', () => {
       await component.saveAll();
 
       expect(applicantApiMock.deleteApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1');
-      expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith(
-        'reference-doc-1',
-        'reference-renamed.pdf',
-      );
+      expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('reference-doc-1', 'reference-renamed.pdf');
       expect(httpClientMock.post).toHaveBeenCalledOnce();
       expect(httpClientMock.post).toHaveBeenCalledWith('/api/applicants/profile/documents/REFERENCE', expect.any(FormData));
       const uploadCall = httpClientMock.post.mock.calls[0];

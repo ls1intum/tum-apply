@@ -9,7 +9,10 @@ import ApplicationCreationPage2Component, {
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { provideHttpClient as provideHttpClientMock } from '@angular/common/http';
-import { ApplicationForApplicantDTO, ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';

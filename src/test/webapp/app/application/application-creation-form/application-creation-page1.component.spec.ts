@@ -11,7 +11,10 @@ import { selectGender } from 'app/shared/constants/genders';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
-import { ApplicationForApplicantDTO, ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 
 describe('ApplicationPage1Component', () => {

@@ -207,7 +207,9 @@ describe('PrivacyPageComponent', () => {
 
     it('should set cooldownSeconds to 0 when API returns explicit undefined cooldownSeconds', async () => {
       // API returns cooldownSeconds explicitly set to undefined
-      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as any));
+      serviceMocks.getDataExportStatus.mockReturnValue(
+        of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as any),
+      );
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(true);
 
       await (component as any).refreshStatus();

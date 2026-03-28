@@ -297,7 +297,13 @@ describe('SlotsSectionComponent', () => {
         endDateTime: '2027-06-15T10:00:00',
         location: 'Room 101',
         isBooked: true,
-        interviewee: { id: 'iee-new', firstName: 'New', lastName: 'Person', email: 'new@example.com', state: IntervieweeDTOStateEnum.Scheduled },
+        interviewee: {
+          id: 'iee-new',
+          firstName: 'New',
+          lastName: 'Person',
+          email: 'new@example.com',
+          state: IntervieweeDTOStateEnum.Scheduled,
+        },
       };
 
       const slotAssignedSpy = vi.spyOn(component.slotAssigned, 'emit');

@@ -6,7 +6,10 @@ import ApplicationCreationPage3Component, {
   getPage3FromApplication,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { ApplicationForApplicantDTO, ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 

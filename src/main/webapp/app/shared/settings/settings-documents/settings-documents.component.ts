@@ -414,7 +414,11 @@ export class SettingsDocumentsComponent {
   }
 
   private async saveQueuedDocuments(): Promise<void> {
-    await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.BachelorTranscript, this.queuedBachelorFiles(), this.bachelorDocuments);
+    await this.uploadQueuedByType(
+      DocumentDictionaryDocumentTypeEnum.BachelorTranscript,
+      this.queuedBachelorFiles(),
+      this.bachelorDocuments,
+    );
     await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.MasterTranscript, this.queuedMasterFiles(), this.masterDocuments);
     await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
     await this.uploadQueuedByType(DocumentDictionaryDocumentTypeEnum.Reference, this.queuedReferenceFiles(), this.referenceDocuments);

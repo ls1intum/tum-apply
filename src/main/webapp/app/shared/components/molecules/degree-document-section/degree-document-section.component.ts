@@ -47,5 +47,9 @@ export class DegreeDocumentSectionComponent {
   readonly gradeLabelKey = computed(() => `entity.applicationPage2.label.${this.degreeType()}Grade`);
   readonly gradeTooltipKey = computed(() => `entity.applicationPage2.tooltip.${this.degreeType()}Grade`);
   readonly uploadKey = computed(() => `entity.upload.upload_instruction.${this.documentType()}`);
-  readonly documentType = computed(() => (this.degreeType() === 'bachelor' ? DocumentDictionaryDocumentTypeEnum.BachelorTranscript : DocumentDictionaryDocumentTypeEnum.MasterTranscript));
+  readonly documentType = computed(() =>
+    this.degreeType() === 'bachelor'
+      ? DocumentDictionaryDocumentTypeEnum.BachelorTranscript
+      : DocumentDictionaryDocumentTypeEnum.MasterTranscript,
+  );
 }

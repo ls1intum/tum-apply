@@ -91,13 +91,7 @@ export class ResearchGroupSchoolsComponent {
   async loadSchools(): Promise<void> {
     try {
       const pageResponse = await firstValueFrom(
-        this.schoolApi.getSchoolsForAdmin(
-          this.pageSize(),
-          this.pageNumber(),
-          this.searchQuery(),
-          this.sortBy(),
-          this.sortDirection(),
-        ),
+        this.schoolApi.getSchoolsForAdmin(this.pageSize(), this.pageNumber(), this.searchQuery(), this.sortBy(), this.sortDirection()),
       );
 
       const typedResponse = pageResponse as SchoolPageResponse;

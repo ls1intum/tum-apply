@@ -8,7 +8,13 @@ import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { User } from 'app/core/auth/account.service';
-import { JobFormDTO, JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum, JobFormDTOStateEnum } from 'app/generated/model/job-form-dto';
+import {
+  JobFormDTO,
+  JobFormDTOFundingTypeEnum,
+  JobFormDTOLocationEnum,
+  JobFormDTOSubjectAreaEnum,
+  JobFormDTOStateEnum,
+} from 'app/generated/model/job-form-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ImageDTOImageTypeEnum } from 'app/generated/model/image-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
