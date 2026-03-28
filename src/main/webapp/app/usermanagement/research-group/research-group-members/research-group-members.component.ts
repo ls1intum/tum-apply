@@ -108,7 +108,7 @@ export class ResearchGroupMembersComponent {
     });
   });
 
-  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes('EMPLOYEE') ?? false);
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Employee) ?? false);
 
   private researchGroupApi = inject(ResearchGroupResourceApi);
   private toastService = inject(ToastService);

@@ -12,6 +12,7 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import 'quill-mention/autoregister';
 import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/model/email-template-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -133,9 +134,14 @@ export class ResearchGroupTemplateEdit {
     },
   };
 
-  readonly allowedSelectOptions = ['APPLICATION_ACCEPTED'];
+  readonly allowedSelectOptions = [EmailTemplateDTOEmailTypeEnum.ApplicationAccepted];
 
-  readonly allSelectOptions = ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED', 'APPLICATION_SENT', 'RESEARCH_GROUP_MEMBER_ADDED'];
+  readonly allSelectOptions = [
+    EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
+    EmailTemplateDTOEmailTypeEnum.ApplicationRejected,
+    EmailTemplateDTOEmailTypeEnum.ApplicationSent,
+    EmailTemplateDTOEmailTypeEnum.ResearchGroupMemberAdded,
+  ];
 
   readonly TEMPLATE_VARIABLES = [
     'APPLICANT_FIRST_NAME',
@@ -193,7 +199,7 @@ export class ResearchGroupTemplateEdit {
 
     if (isNonDefault && (nameMissing || typeMissing)) return;
 
-    const isEmployee = this.accountService.userAuthorities?.includes('EMPLOYEE');
+    const isEmployee = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Employee);
     if (isEmployee) return;
 
     this.savingState.set('SAVING');

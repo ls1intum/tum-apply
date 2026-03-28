@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { AuthSessionInfoDTO } from 'app/generated/model/auth-session-info-dto';
+import { OtpCompleteDTOPurposeEnum } from 'app/generated/model/otp-complete-dto';
 import { UserProfileDTO } from 'app/generated/model/user-profile-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastMessageInput, ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -144,7 +146,7 @@ export class AuthFacadeService {
   /** Verify an OTP code and start a server session, then redirect. */
   async verifyOtp(code: string, registration = false): Promise<boolean> {
     const email = this.authOrchestrator.email();
-    const purpose = registration ? 'REGISTER' : 'LOGIN';
+    const purpose = registration ? OtpCompleteDTOPurposeEnum.Register : OtpCompleteDTOPurposeEnum.Login;
     const profile: UserProfileDTO | undefined = registration
       ? {
           firstName: this.authOrchestrator.firstName(),
@@ -240,7 +242,7 @@ export class AuthFacadeService {
 
   private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {
     const user = this.accountService.user();
-    const isProfessorOrEmployee = (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
+    const isProfessorOrEmployee = (user?.authorities?.includes(UserShortDTORolesEnum.Professor) ?? false) || (user?.authorities?.includes(UserShortDTORolesEnum.Employee) ?? false);
 
     const targetRoute = isProfessorOrEmployee ? '/professor' : '/';
     const redirectUrl = window.location.origin + targetRoute;

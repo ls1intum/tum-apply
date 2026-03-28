@@ -11,5 +11,7 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
   styleUrl: './application-state-for-applicants.component.scss',
 })
 export class ApplicationStateForApplicantsComponent {
+  readonly AppState = ApplicationDetailDTOApplicationStateEnum;
+
   state = input.required<ApplicationDetailDTOApplicationStateEnum>();
 }

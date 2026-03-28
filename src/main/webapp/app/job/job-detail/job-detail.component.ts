@@ -31,6 +31,7 @@ import { createMenuActionSignals } from 'app/shared/util/util';
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 import { JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import * as DropDownOptions from '../dropdown-options';
 type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
@@ -296,7 +297,7 @@ export class JobDetailComponent {
   });
 
   isProfessorOrEmployee(): boolean {
-    return this.accountService.hasAnyAuthority(['PROFESSOR', 'EMPLOYEE']);
+    return this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee]);
   }
 
   onEditResearchGroup(): void {

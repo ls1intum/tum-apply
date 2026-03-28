@@ -5,6 +5,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -37,7 +38,7 @@ export class ResearchGroupTemplates {
 
   protected readonly isEmployee = computed<boolean>(() => {
     const currentUserAuthorities = this.accountService.userAuthorities;
-    return currentUserAuthorities?.includes('EMPLOYEE') ?? false;
+    return currentUserAuthorities?.includes(UserShortDTORolesEnum.Employee) ?? false;
   });
 
   protected readonly columns = computed<DynamicTableColumn[]>(() => {

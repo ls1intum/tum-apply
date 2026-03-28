@@ -38,14 +38,14 @@ const routes: Routes = [
   {
     path: 'job/create',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'global.routes.job.creation',
   },
   {
     path: 'job/edit/:job_id',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'global.routes.job.edit',
   },
@@ -59,7 +59,7 @@ const routes: Routes = [
   {
     path: 'my-positions',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () => import('./job/my-positions/my-positions-page.component').then(m => m.MyPositionsPageComponent),
     title: 'global.routes.job.myPositions',
   },
@@ -95,14 +95,14 @@ const routes: Routes = [
   {
     path: 'application/overview',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'APPLICANT'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Applicant] },
     loadComponent: () => import('./application/application-overview-for-applicant/application-overview-for-applicant.component'),
     title: 'global.routes.application.overview',
   },
   {
     path: 'application/detail/:application_id',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'APPLICANT'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Applicant] },
     loadComponent: () => import('./application/application-detail-for-applicant/application-detail-for-applicant.component'),
     title: 'global.routes.application.detail',
   },
@@ -113,7 +113,7 @@ const routes: Routes = [
   {
     path: 'evaluation/overview',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./evaluation/application-overview/application-overview.component').then(m => m.ApplicationOverviewComponent),
     title: 'global.routes.evaluation.overview',
@@ -121,7 +121,7 @@ const routes: Routes = [
   {
     path: 'evaluation/application',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN', 'PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () => import('./evaluation/application-detail/application-detail.component').then(m => m.ApplicationDetailComponent),
     title: 'global.routes.evaluation.detail',
   },
@@ -151,7 +151,7 @@ const routes: Routes = [
     path: 'settings',
     canActivate: [UserRouteAccessService],
     data: {
-      authorities: ['ADMIN', 'PROFESSOR', 'APPLICANT', 'EMPLOYEE'],
+      authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Applicant, UserShortDTORolesEnum.Employee],
     },
     loadComponent: () => import('./shared/settings/settings.component').then(m => m.SettingsComponent),
     title: 'global.routes.settings',
@@ -163,7 +163,7 @@ const routes: Routes = [
   {
     path: 'research-group/admin-view',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-admin-view/research-group-admin-view.component').then(
         m => m.ResearchGroupAdminView,
@@ -173,7 +173,7 @@ const routes: Routes = [
   {
     path: 'research-group/detail/:researchGroupId',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component').then(
         m => m.ResearchGroupDetailViewComponent,
@@ -183,7 +183,7 @@ const routes: Routes = [
   {
     path: 'research-group/departments',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-departments/research-group-departments.component').then(
         m => m.ResearchGroupDepartmentsComponent,
@@ -193,7 +193,7 @@ const routes: Routes = [
   {
     path: 'research-group/schools',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-schools/research-group-schools.component').then(
         m => m.ResearchGroupSchoolsComponent,
@@ -203,7 +203,7 @@ const routes: Routes = [
   {
     path: 'research-group/departments/images',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-departments/department-images/department-images.component').then(
         m => m.DepartmentImages,
@@ -213,7 +213,7 @@ const routes: Routes = [
   {
     path: 'research-group/admin-view/images',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
         m => m.ResearchGroupImagesComponent,
@@ -223,7 +223,7 @@ const routes: Routes = [
   {
     path: 'research-group/templates',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-templates/research-group-templates').then(m => m.ResearchGroupTemplates),
     title: 'global.routes.researchGroup.templates',
@@ -231,7 +231,7 @@ const routes: Routes = [
   {
     path: 'research-group/images',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
         m => m.ResearchGroupImagesComponent,
@@ -241,7 +241,7 @@ const routes: Routes = [
   {
     path: 'research-group/template/new',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
         m => m.ResearchGroupTemplateEdit,
@@ -251,7 +251,7 @@ const routes: Routes = [
   {
     path: 'research-group/template/:templateId/edit',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-template-edit/research-group-template-edit').then(
         m => m.ResearchGroupTemplateEdit,
@@ -261,7 +261,7 @@ const routes: Routes = [
   {
     path: 'research-group/:id/members',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['ADMIN'] },
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
@@ -271,7 +271,7 @@ const routes: Routes = [
   {
     path: 'research-group/members',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['PROFESSOR', 'ADMIN', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
@@ -281,7 +281,7 @@ const routes: Routes = [
   {
     path: 'research-group/info',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['PROFESSOR', 'EMPLOYEE'] },
+    data: { authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-info/research-group-info.component').then(m => m.ResearchGroupInfoComponent),
     title: 'global.routes.researchGroup.info',
@@ -312,7 +312,7 @@ const routes: Routes = [
           ),
         title: 'global.routes.interview.overview',
         data: {
-          authorities: ['PROFESSOR', 'ADMIN', 'EMPLOYEE'],
+          authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Employee],
         },
       },
       {
@@ -324,7 +324,7 @@ const routes: Routes = [
         path: 'process/:processId/interviewee/:intervieweeId/assessment',
         canActivate: [UserRouteAccessService],
         data: {
-          authorities: ['PROFESSOR', 'ADMIN', 'EMPLOYEE'],
+          authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Employee],
         },
         loadComponent: () =>
           import('./interview/interviewee-assessment/interviewee-assessment.component').then(m => m.IntervieweeAssessmentComponent),
@@ -335,7 +335,7 @@ const routes: Routes = [
   {
     path: 'interview-booking/:processId',
     canActivate: [UserRouteAccessService],
-    data: { authorities: ['APPLICANT'] },
+    data: { authorities: [UserShortDTORolesEnum.Applicant] },
     loadComponent: () => import('./interview/interview-booking/interview-booking.component').then(m => m.InterviewBookingComponent),
     title: 'interview.booking.title',
   },

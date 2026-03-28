@@ -21,8 +21,6 @@ plugins {
   id "org.liquibase.gradle" version "${liquibasePluginVersion}"
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "${springdocPluginVersion}"
-  // openapi code generation is handled via a custom JavaExec task in gradle/openapi.gradle
-  // using the angular21 custom generator (de.tum.cit.aet:openapi-generator-angular21)
 }
 
 group = "de.tum.cit.aet"

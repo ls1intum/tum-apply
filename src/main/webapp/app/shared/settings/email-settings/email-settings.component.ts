@@ -49,35 +49,35 @@ export class EmailSettingsComponent {
   protected roleSettings: WritableSignal<Map<RolesEnum, NotificationGroup[]>> = signal(
     new Map<RolesEnum, NotificationGroup[]>([
       [
-        'APPLICANT',
+        UserShortDTORolesEnum.Applicant,
         [
           {
             groupKey: 'settings.notifications.applicant.submission.title',
             descriptionKey: 'settings.notifications.applicant.submission.description',
-            emailTypes: ['APPLICATION_SENT', 'APPLICATION_WITHDRAWN'],
+            emailTypes: [EmailTypeEnum.ApplicationSent, EmailTypeEnum.ApplicationWithdrawn],
             enabled: false,
           },
           {
             groupKey: 'settings.notifications.applicant.outcome.title',
             descriptionKey: 'settings.notifications.applicant.outcome.description',
-            emailTypes: ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED'],
+            emailTypes: [EmailTypeEnum.ApplicationAccepted, EmailTypeEnum.ApplicationRejected],
             enabled: false,
           },
         ],
       ],
       [
-        'PROFESSOR',
+        UserShortDTORolesEnum.Professor,
         [
           {
             groupKey: 'settings.notifications.professor.new.title',
             descriptionKey: 'settings.notifications.professor.new.description',
-            emailTypes: ['APPLICATION_RECEIVED'],
+            emailTypes: [EmailTypeEnum.ApplicationReceived],
             enabled: false,
           },
           {
             groupKey: 'settings.notifications.professor.accepted.title',
             descriptionKey: 'settings.notifications.professor.accepted.description',
-            emailTypes: ['APPLICATION_ACCEPTED'],
+            emailTypes: [EmailTypeEnum.ApplicationAccepted],
             enabled: false,
           },
         ],

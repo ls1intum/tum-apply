@@ -44,7 +44,7 @@ export class SidebarComponent {
     const authorities = this.accountService.user()?.authorities;
     return authorities
       ?.map((authority: string) =>
-        authority === 'PROFESSOR' || authority === 'EMPLOYEE'
+        authority === UserShortDTORolesEnum.Professor || authority === UserShortDTORolesEnum.Employee
           ? categoryConfig.PROFESSOR_EMPLOYEE
           : categoryConfig[authority as UserShortDTORolesEnum],
       )

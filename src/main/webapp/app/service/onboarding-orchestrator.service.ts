@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { filter, map, startWith, switchMap, take } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { AccountService } from '../core/auth/account.service';
@@ -52,7 +53,7 @@ export class OnboardingOrchestratorService {
         const isLoggedIn = loggedIn();
         const url = this.currentUrl();
         const onProfessorPage = typeof url === 'string' && url.startsWith('/professor');
-        const isApplicant = this.accountService.hasAnyAuthority(['APPLICANT']);
+        const isApplicant = this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]);
 
         if (!isLoggedIn || this.opened || !isApplicant || !onProfessorPage) {
           return;

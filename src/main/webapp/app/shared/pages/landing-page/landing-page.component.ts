@@ -1,6 +1,7 @@
 import { Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from 'app/core/auth/account.service';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { HeroSectionComponent } from './hero-section/hero-section.component';
 import { ApplicationStepsSectionComponent } from './application-steps-section/application-steps-section.component';
@@ -30,7 +31,7 @@ export class LandingPageComponent {
 
   private redirectEffect = effect(() => {
     const user = this.accountService.user();
-    if (user && this.accountService.hasAnyAuthority(['PROFESSOR', 'EMPLOYEE'])) {
+    if (user && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee])) {
       void this.router.navigate(['/professor']);
     }
   });

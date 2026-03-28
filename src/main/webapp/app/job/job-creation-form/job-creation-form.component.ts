@@ -50,6 +50,7 @@ import {
   JobFormDTOSubjectAreaEnum,
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -318,7 +319,7 @@ export class JobCreationFormComponent {
   });
 
   /** Computed: Returns the job DTO ready for publishing, or undefined if forms are invalid */
-  publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
+  publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO(JobFormDTOStateEnum.Published) : undefined));
 
   /** Computed: Detects if there are unsaved changes by comparing current data with last saved */
   hasUnsavedChanges = computed(() => {
@@ -438,7 +439,7 @@ export class JobCreationFormComponent {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
-    return this.createJobDTO('DRAFT');
+    return this.createJobDTO(JobFormDTOStateEnum.Draft);
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -696,7 +697,7 @@ export class JobCreationFormComponent {
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
 
-        state: 'DRAFT',
+        state: JobFormDTOStateEnum.Draft,
       };
       this.autoScrollStreaming();
 
@@ -1086,7 +1087,7 @@ export class JobCreationFormComponent {
       });
     }
 
-    this.lastSavedData.set(this.createJobDTO('DRAFT'));
+    this.lastSavedData.set(this.createJobDTO(JobFormDTOStateEnum.Draft));
   }
 
   /**
@@ -1096,7 +1097,7 @@ export class JobCreationFormComponent {
     try {
       const response = await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
       const options = response
-        .filter(member => member.roles?.includes('PROFESSOR') && member.userId)
+        .filter(member => member.roles?.includes(UserShortDTORolesEnum.Professor) && member.userId)
         .map(member => {
           const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
           const fallback = (member.email ?? member.userId ?? '').trim();
@@ -1144,7 +1145,7 @@ export class JobCreationFormComponent {
     if (!options.length) return undefined;
 
     const currentUserId = this.userId();
-    const isCurrentUserProfessor = this.accountService.userAuthorities?.includes('PROFESSOR');
+    const isCurrentUserProfessor = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Professor);
 
     if (isCurrentUserProfessor && currentUserId) {
       const match = options.find(option => option.value === currentUserId);
@@ -1212,7 +1213,7 @@ export class JobCreationFormComponent {
   private async performAutoSave(): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
-    const currentData = this.createJobDTO('DRAFT');
+    const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
 
     try {
       let saved: JobFormDTO;
