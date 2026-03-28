@@ -41,12 +41,12 @@ export class JobCardListComponent {
   DropdownOptions = DropdownOptions;
 
   readonly accountService = inject(AccountService);
-  readonly notificationsSettingsHref = this.router.serializeUrl(
-    this.router.createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } }),
-  );
   readonly selectedSubjectAreaFilters = signal<JobFormDTO.SubjectAreaEnum[]>([]);
   readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
+  readonly notificationsSettingsHref = inject(Router).serializeUrl(
+    inject(Router).createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } }),
+  );
 
   readonly allSubjectAreas = this.DropdownOptions.subjectAreas.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
@@ -73,7 +73,6 @@ export class JobCardListComponent {
     };
   });
 
-  private readonly router = inject(Router);
   private jobService = inject(JobResourceApiService);
   private readonly toastService = inject(ToastService);
 
