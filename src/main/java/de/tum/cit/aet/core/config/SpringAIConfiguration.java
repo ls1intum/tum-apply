@@ -1,24 +1,29 @@
 package de.tum.cit.aet.core.config;
 
+import com.azure.ai.openai.OpenAIClientBuilder;
+import com.azure.core.http.HttpPipelineCallContext;
+import com.azure.core.http.HttpPipelineNextPolicy;
+import com.azure.core.http.HttpPipelineNextSyncPolicy;
+import com.azure.core.http.HttpResponse;
+import com.azure.core.http.policy.HttpPipelinePolicy;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.azure.openai.AzureOpenAiChatModel;
-import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Configuration for Spring AI chat clients.
- * This configuration is enabled when either Atlas or Hyperion modules are enabled.
- * Manual configuration without auto-configuration.
+ *
+ * <p>Adds an {@link OpenAIClientBuilder} customizer that injects an HTTP pipeline policy
+ * to strip unsupported parameters ({@code "stop"}) from the request body. This is required
+ * because reasoning models (e.g., gpt-5-mini) reject the {@code stop} parameter, but
+ * Spring AI 2.0 always includes it in the serialized Azure SDK request.</p>
  */
 @Configuration
 @Profile("!openapi")
@@ -27,12 +32,21 @@ public class SpringAIConfiguration {
     private static final Logger log = LoggerFactory.getLogger(SpringAIConfiguration.class);
 
     /**
-     * Default Chat Client for AI features.
-     * Uses the manually configured Azure OpenAI model if available.
+     * Customizes the Azure OpenAI client builder to add a pipeline policy that strips
+     * the {@code "stop"} parameter from chat completion requests.
      *
-     * <p>Wraps Azure OpenAI models in a {@link ReasoningModelSafeChatModel} that strips
-     * unsupported parameters ({@code stop}, {@code max_tokens}) before each request.
-     * Reasoning models like gpt-5-mini reject these parameters with a 400 error.</p>
+     * <p>This bean is picked up by Spring AI's Azure OpenAI auto-configuration and applied
+     * before the {@link com.azure.ai.openai.OpenAIClient} is built.</p>
+     *
+     * @return the customizer that adds the stop-stripping policy
+     */
+    @Bean
+    public org.springframework.ai.model.azure.openai.autoconfigure.AzureOpenAIClientBuilderCustomizer stripStopParameterCustomizer() {
+        return builder -> builder.addPolicy(new StripStopParameterPolicy());
+    }
+
+    /**
+     * Default Chat Client for AI features.
      *
      * @param chatModels chat models that can be used (optional)
      * @return a configured ChatClient with default options, or null if model is not available
@@ -50,63 +64,42 @@ public class SpringAIConfiguration {
             );
         }
         ChatModel chatModel = chatModels.getFirst();
-
-        // Wrap Azure models to strip unsupported parameters for reasoning models
-        if (chatModel instanceof AzureOpenAiChatModel azureModel) {
-            AzureOpenAiChatOptions defaultOptions = azureModel.getDefaultOptions();
-            defaultOptions.setStop(null);
-            defaultOptions.setStopSequences(null);
-            defaultOptions.setMaxTokens(null);
-            chatModel = new ReasoningModelSafeChatModel(azureModel);
-        }
-
         return ChatClient.builder(chatModel).build();
     }
 
     /**
-     * Wraps an {@link AzureOpenAiChatModel} to sanitize prompt options before each call,
-     * removing parameters that reasoning models (e.g., gpt-5-mini) do not support.
-     *
-     * <p>Spring AI 2.0 merges default and per-request options internally, which can
-     * re-introduce {@code stop} even after clearing it on the default options.
-     * This wrapper intercepts every call/stream and strips the problematic fields
-     * from the merged options before they reach the Azure SDK.</p>
+     * Azure HTTP pipeline policy that removes the {@code "stop"} field from the JSON request body
+     * of chat completion API calls. This prevents 400 errors from reasoning models that
+     * do not support the {@code stop} parameter.
      */
-    private static class ReasoningModelSafeChatModel implements ChatModel {
+    private static class StripStopParameterPolicy implements HttpPipelinePolicy {
 
-        private final AzureOpenAiChatModel delegate;
-
-        ReasoningModelSafeChatModel(AzureOpenAiChatModel delegate) {
-            this.delegate = delegate;
+        @Override
+        public Mono<HttpResponse> process(HttpPipelineCallContext context, HttpPipelineNextPolicy next) {
+            stripStopFromBody(context);
+            return next.process();
         }
 
         @Override
-        public ChatResponse call(Prompt prompt) {
-            return delegate.call(sanitizePrompt(prompt));
+        public HttpResponse processSync(HttpPipelineCallContext context, HttpPipelineNextSyncPolicy next) {
+            stripStopFromBody(context);
+            return next.processSync();
         }
 
-        @Override
-        public Flux<ChatResponse> stream(Prompt prompt) {
-            return delegate.stream(sanitizePrompt(prompt));
-        }
-
-        @Override
-        public ChatOptions getDefaultOptions() {
-            return delegate.getDefaultOptions();
-        }
-
-        /**
-         * Strips unsupported parameters from prompt options.
-         * Reasoning models reject 'stop' and 'max_tokens' (they only accept 'max_completion_tokens').
-         */
-        private Prompt sanitizePrompt(Prompt prompt) {
-            ChatOptions options = prompt.getOptions();
-            if (options instanceof AzureOpenAiChatOptions azureOptions) {
-                azureOptions.setStop(null);
-                azureOptions.setStopSequences(null);
-                azureOptions.setMaxTokens(null);
+        private void stripStopFromBody(HttpPipelineCallContext context) {
+            var request = context.getHttpRequest();
+            var body = request.getBodyAsBinaryData();
+            if (body == null) {
+                return;
             }
-            return prompt;
+            String json = body.toString();
+            if (json.contains("\"stop\"")) {
+                // Remove "stop": null, "stop": [], or "stop": ["..."] patterns
+                String cleaned = json.replaceAll(",?\\s*\"stop\"\\s*:\\s*(null|\\[[^]]*])", "");
+                // Clean up leading comma if stop was the first field
+                cleaned = cleaned.replaceAll("\\{\\s*,", "{");
+                request.setBody(cleaned);
+            }
         }
     }
 }
