@@ -105,11 +105,11 @@ export class InterviewResourceApi {
      */
     getConflictDataForDate(processId: string, date: string): Observable<ConflictDataDTO> {
         const processIdPath = encodeURIComponent(String(processId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (date !== undefined && date !== null) {
-            queryParams['date'] = String(date);
+            queryParams.set('date', String(date));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/interviews/processes/${processIdPath}/slots/conflict-data${queryString ? `?${queryString}` : ''}`;
         return this.http.get<ConflictDataDTO>(url);
     }
@@ -171,26 +171,26 @@ export class InterviewResourceApi {
      */
     getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number): Observable<PageResponseDTOInterviewSlotDTO> {
         const processIdPath = encodeURIComponent(String(processId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (year !== undefined && year !== null) {
-            queryParams['year'] = String(year);
+            queryParams.set('year', String(year));
         }
         if (month !== undefined && month !== null) {
-            queryParams['month'] = String(month);
+            queryParams.set('month', String(month));
         }
         if (afterDateTime !== undefined && afterDateTime !== null) {
-            queryParams['afterDateTime'] = String(afterDateTime);
+            queryParams.set('afterDateTime', String(afterDateTime));
         }
         if (beforeDateTime !== undefined && beforeDateTime !== null) {
-            queryParams['beforeDateTime'] = String(beforeDateTime);
+            queryParams.set('beforeDateTime', String(beforeDateTime));
         }
         if (page !== undefined && page !== null) {
-            queryParams['page'] = String(page);
+            queryParams.set('page', String(page));
         }
         if (size !== undefined && size !== null) {
-            queryParams['size'] = String(size);
+            queryParams.set('size', String(size));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/interviews/processes/${processIdPath}/slots${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOInterviewSlotDTO>(url);
     }

@@ -62,11 +62,11 @@ export class DepartmentResourceApi {
      * @param schoolId 
      */
     getDepartments(schoolId?: string): Observable<Array<DepartmentDTO>> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (schoolId !== undefined && schoolId !== null) {
-            queryParams['schoolId'] = String(schoolId);
+            queryParams.set('schoolId', String(schoolId));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/departments${queryString ? `?${queryString}` : ''}`;
         return this.http.get<Array<DepartmentDTO>>(url);
     }
@@ -82,26 +82,26 @@ export class DepartmentResourceApi {
      * @param direction 
      */
     getDepartmentsForAdmin(pageSize?: number, pageNumber?: number, schoolNames?: Array<string>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTODepartmentDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
         if (schoolNames !== undefined && schoolNames !== null) {
-            queryParams['schoolNames'] = schoolNames.join(',');
+            schoolNames.forEach(item => queryParams.append('schoolNames', String(item)));
         }
         if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
+            queryParams.set('searchQuery', String(searchQuery));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/departments/admin/search${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTODepartmentDTO>(url);
     }

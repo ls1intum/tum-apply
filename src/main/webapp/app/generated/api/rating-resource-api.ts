@@ -41,11 +41,11 @@ export class RatingResourceApi {
      */
     updateRating(applicationId: string, rating?: number): Observable<RatingOverviewDTO> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (rating !== undefined && rating !== null) {
-            queryParams['rating'] = String(rating);
+            queryParams.set('rating', String(rating));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/applications/${applicationIdPath}/ratings${queryString ? `?${queryString}` : ''}`;
         return this.http.put<RatingOverviewDTO>(url, null);
     }

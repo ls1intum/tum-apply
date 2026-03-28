@@ -91,20 +91,20 @@ export class ApplicationResourceApi {
      * @param direction 
      */
     getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageApplicationOverviewDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/applications/pages${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageApplicationOverviewDTO>(url);
     }
@@ -128,11 +128,11 @@ export class ApplicationResourceApi {
      */
     renameDocument(documentDictionaryId: string, newName: string): Observable<void> {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (newName !== undefined && newName !== null) {
-            queryParams['newName'] = String(newName);
+            queryParams.set('newName', String(newName));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/applications/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
         return this.http.put<void>(url, null);
     }

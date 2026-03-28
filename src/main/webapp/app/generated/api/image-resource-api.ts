@@ -39,11 +39,11 @@ export class ImageResourceApi {
      * @param departmentId 
      */
     getDefaultJobBanners(departmentId?: string): Observable<Array<ImageDTO>> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (departmentId !== undefined && departmentId !== null) {
-            queryParams['departmentId'] = String(departmentId);
+            queryParams.set('departmentId', String(departmentId));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/images/defaults/job-banners${queryString ? `?${queryString}` : ''}`;
         return this.http.get<Array<ImageDTO>>(url);
     }
@@ -54,11 +54,11 @@ export class ImageResourceApi {
      * @param schoolId 
      */
     getDefaultJobBannersBySchool(schoolId: string): Observable<Array<ImageDTO>> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (schoolId !== undefined && schoolId !== null) {
-            queryParams['schoolId'] = String(schoolId);
+            queryParams.set('schoolId', String(schoolId));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/images/defaults/job-banners/by-school${queryString ? `?${queryString}` : ''}`;
         return this.http.get<Array<ImageDTO>>(url);
     }
@@ -96,11 +96,11 @@ export class ImageResourceApi {
      * @param researchGroupId 
      */
     getResearchGroupJobBannersByResearchGroup(researchGroupId: string): Observable<Array<ImageDTO>> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (researchGroupId !== undefined && researchGroupId !== null) {
-            queryParams['researchGroupId'] = String(researchGroupId);
+            queryParams.set('researchGroupId', String(researchGroupId));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/images/research-group/job-banners/by-research-group${queryString ? `?${queryString}` : ''}`;
         return this.http.get<Array<ImageDTO>>(url);
     }
@@ -112,11 +112,11 @@ export class ImageResourceApi {
      * @param file 
      */
     uploadDefaultJobBanner(departmentId: string, file: Blob): Observable<ImageDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (departmentId !== undefined && departmentId !== null) {
-            queryParams['departmentId'] = String(departmentId);
+            queryParams.set('departmentId', String(departmentId));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/images/upload/default-job-banner${queryString ? `?${queryString}` : ''}`;
         const formData = new FormData();
         if (file !== undefined && file !== null) {
@@ -146,11 +146,11 @@ export class ImageResourceApi {
      * @param file 
      */
     uploadJobBannerForResearchGroup(researchGroupId: string, file: Blob): Observable<ImageDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (researchGroupId !== undefined && researchGroupId !== null) {
-            queryParams['researchGroupId'] = String(researchGroupId);
+            queryParams.set('researchGroupId', String(researchGroupId));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/images/upload/job-banner/by-research-group${queryString ? `?${queryString}` : ''}`;
         const formData = new FormData();
         if (file !== undefined && file !== null) {

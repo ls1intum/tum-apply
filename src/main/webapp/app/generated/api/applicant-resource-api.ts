@@ -92,11 +92,11 @@ export class ApplicantResourceApi {
      */
     renameApplicantProfileDocument(documentDictionaryId: string, newName: string): Observable<void> {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (newName !== undefined && newName !== null) {
-            queryParams['newName'] = String(newName);
+            queryParams.set('newName', String(newName));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
         return this.http.put<void>(url, null);
     }

@@ -69,29 +69,29 @@ export class ApplicationEvaluationResourceApi {
      * @param search 
      */
     getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (offset !== undefined && offset !== null) {
-            queryParams['offset'] = String(offset);
+            queryParams.set('offset', String(offset));
         }
         if (limit !== undefined && limit !== null) {
-            queryParams['limit'] = String(limit);
+            queryParams.set('limit', String(limit));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
         if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
+            status.forEach(item => queryParams.append('status', String(item)));
         }
         if (job !== undefined && job !== null) {
-            queryParams['job'] = job.join(',');
+            job.forEach(item => queryParams.append('job', String(item)));
         }
         if (search !== undefined && search !== null) {
-            queryParams['search'] = String(search);
+            queryParams.set('search', String(search));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/evaluation/application-details${queryString ? `?${queryString}` : ''}`;
         return this.http.get<ApplicationEvaluationDetailListDTO>(url);
     }
@@ -108,29 +108,29 @@ export class ApplicationEvaluationResourceApi {
      * @param search 
      */
     getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (applicationId !== undefined && applicationId !== null) {
-            queryParams['applicationId'] = String(applicationId);
+            queryParams.set('applicationId', String(applicationId));
         }
         if (windowSize !== undefined && windowSize !== null) {
-            queryParams['windowSize'] = String(windowSize);
+            queryParams.set('windowSize', String(windowSize));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
         if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
+            status.forEach(item => queryParams.append('status', String(item)));
         }
         if (job !== undefined && job !== null) {
-            queryParams['job'] = job.join(',');
+            job.forEach(item => queryParams.append('job', String(item)));
         }
         if (search !== undefined && search !== null) {
-            queryParams['search'] = String(search);
+            queryParams.set('search', String(search));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/evaluation/application-details/window${queryString ? `?${queryString}` : ''}`;
         return this.http.get<ApplicationEvaluationDetailListDTO>(url);
     }
@@ -147,29 +147,29 @@ export class ApplicationEvaluationResourceApi {
      * @param search 
      */
     getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationOverviewListDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (offset !== undefined && offset !== null) {
-            queryParams['offset'] = String(offset);
+            queryParams.set('offset', String(offset));
         }
         if (limit !== undefined && limit !== null) {
-            queryParams['limit'] = String(limit);
+            queryParams.set('limit', String(limit));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
         if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
+            status.forEach(item => queryParams.append('status', String(item)));
         }
         if (job !== undefined && job !== null) {
-            queryParams['job'] = job.join(',');
+            job.forEach(item => queryParams.append('job', String(item)));
         }
         if (search !== undefined && search !== null) {
-            queryParams['search'] = String(search);
+            queryParams.set('search', String(search));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/evaluation/applications${queryString ? `?${queryString}` : ''}`;
         return this.http.get<ApplicationEvaluationOverviewListDTO>(url);
     }

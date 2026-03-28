@@ -36,14 +36,14 @@ export class JobResourceApi {
      */
     changeJobState(jobId: string, jobState: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'APPLICANT_FOUND', shouldRejectRemainingApplications?: boolean): Observable<JobFormDTO> {
         const jobIdPath = encodeURIComponent(String(jobId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (jobState !== undefined && jobState !== null) {
-            queryParams['jobState'] = String(jobState);
+            queryParams.set('jobState', String(jobState));
         }
         if (shouldRejectRemainingApplications !== undefined && shouldRejectRemainingApplications !== null) {
-            queryParams['shouldRejectRemainingApplications'] = String(shouldRejectRemainingApplications);
+            queryParams.set('shouldRejectRemainingApplications', String(shouldRejectRemainingApplications));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/jobs/changeState/${jobIdPath}${queryString ? `?${queryString}` : ''}`;
         return this.http.put<JobFormDTO>(url, null);
     }
@@ -91,32 +91,32 @@ export class JobResourceApi {
      * @param searchQuery 
      */
     getAvailableJobs(pageSize?: number, pageNumber?: number, subjectAreas?: Array<'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string): Observable<PageJobCardDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
         if (subjectAreas !== undefined && subjectAreas !== null) {
-            queryParams['subjectAreas'] = subjectAreas.join(',');
+            subjectAreas.forEach(item => queryParams.append('subjectAreas', String(item)));
         }
         if (locations !== undefined && locations !== null) {
-            queryParams['locations'] = locations.join(',');
+            locations.forEach(item => queryParams.append('locations', String(item)));
         }
         if (professorNames !== undefined && professorNames !== null) {
-            queryParams['professorNames'] = professorNames.join(',');
+            professorNames.forEach(item => queryParams.append('professorNames', String(item)));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
         if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
+            queryParams.set('searchQuery', String(searchQuery));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/jobs/available${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageJobCardDTO>(url);
     }
@@ -154,26 +154,26 @@ export class JobResourceApi {
      * @param searchQuery 
      */
     getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string): Observable<PageCreatedJobDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
         if (states !== undefined && states !== null) {
-            queryParams['states'] = states.join(',');
+            states.forEach(item => queryParams.append('states', String(item)));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
         if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
+            queryParams.set('searchQuery', String(searchQuery));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/jobs/research-group${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageCreatedJobDTO>(url);
     }

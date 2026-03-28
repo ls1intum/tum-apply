@@ -47,20 +47,20 @@ export class InterviewBookingResourceApi {
      */
     getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number): Observable<BookingDTO> {
         const processIdPath = encodeURIComponent(String(processId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (year !== undefined && year !== null) {
-            queryParams['year'] = String(year);
+            queryParams.set('year', String(year));
         }
         if (month !== undefined && month !== null) {
-            queryParams['month'] = String(month);
+            queryParams.set('month', String(month));
         }
         if (page !== undefined && page !== null) {
-            queryParams['page'] = String(page);
+            queryParams.set('page', String(page));
         }
         if (size !== undefined && size !== null) {
-            queryParams['size'] = String(size);
+            queryParams.set('size', String(size));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/interviews/booking/${processIdPath}${queryString ? `?${queryString}` : ''}`;
         return this.http.get<BookingDTO>(url);
     }

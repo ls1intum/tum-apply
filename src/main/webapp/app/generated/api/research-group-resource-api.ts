@@ -99,14 +99,14 @@ export class ResearchGroupResourceApi {
      * @param pageNumber 
      */
     getAllResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/research-groups${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOResearchGroupDTO>(url);
     }
@@ -118,14 +118,14 @@ export class ResearchGroupResourceApi {
      * @param pageNumber 
      */
     getDraftResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/research-groups/draft${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOResearchGroupDTO>(url);
     }
@@ -148,14 +148,14 @@ export class ResearchGroupResourceApi {
      * @param pageNumber 
      */
     getResearchGroupMembers(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOUserShortDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/research-groups/members${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOUserShortDTO>(url);
     }
@@ -169,14 +169,14 @@ export class ResearchGroupResourceApi {
      */
     getResearchGroupMembersById(researchGroupId: string, pageSize?: number, pageNumber?: number): Observable<PageResponseDTOUserShortDTO> {
         const researchGroupIdPath = encodeURIComponent(String(researchGroupId));
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/research-groups/${researchGroupIdPath}/members${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOUserShortDTO>(url);
     }
@@ -201,26 +201,26 @@ export class ResearchGroupResourceApi {
      * @param direction 
      */
     getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTOResearchGroupAdminDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
         if (status !== undefined && status !== null) {
-            queryParams['status'] = status.join(',');
+            status.forEach(item => queryParams.append('status', String(item)));
         }
         if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
+            queryParams.set('searchQuery', String(searchQuery));
         }
         if (sortBy !== undefined && sortBy !== null) {
-            queryParams['sortBy'] = String(sortBy);
+            queryParams.set('sortBy', String(sortBy));
         }
         if (direction !== undefined && direction !== null) {
-            queryParams['direction'] = String(direction);
+            queryParams.set('direction', String(direction));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/research-groups/admin${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOResearchGroupAdminDTO>(url);
     }

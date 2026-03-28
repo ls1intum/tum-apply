@@ -34,17 +34,17 @@ export class UserResourceApi {
      * @param searchQuery 
      */
     getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string): Observable<PageResponseDTOKeycloakUserDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
-            queryParams['pageSize'] = String(pageSize);
+            queryParams.set('pageSize', String(pageSize));
         }
         if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams['pageNumber'] = String(pageNumber);
+            queryParams.set('pageNumber', String(pageNumber));
         }
         if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams['searchQuery'] = String(searchQuery);
+            queryParams.set('searchQuery', String(searchQuery));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/users/available-for-research-group${queryString ? `?${queryString}` : ''}`;
         return this.http.get<PageResponseDTOKeycloakUserDTO>(url);
     }

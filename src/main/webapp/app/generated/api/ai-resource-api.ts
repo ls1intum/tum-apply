@@ -30,11 +30,11 @@ export class AiResourceApi {
      * @param jobFormDTO 
      */
     generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO): Observable<Array<string>> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (lang !== undefined && lang !== null) {
-            queryParams['lang'] = String(lang);
+            queryParams.set('lang', String(lang));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/generateJobApplicationDraftStream${queryString ? `?${queryString}` : ''}`;
         return this.http.put<Array<string>>(url, jobFormDTO);
     }
@@ -47,14 +47,14 @@ export class AiResourceApi {
      * @param body 
      */
     translateJobDescriptionForJob(jobId: string, toLang: string, body: string): Observable<AIJobDescriptionTranslationDTO> {
-        const queryParams: Record<string, string> = {};
+        const queryParams = new URLSearchParams();
         if (jobId !== undefined && jobId !== null) {
-            queryParams['jobId'] = String(jobId);
+            queryParams.set('jobId', String(jobId));
         }
         if (toLang !== undefined && toLang !== null) {
-            queryParams['toLang'] = String(toLang);
+            queryParams.set('toLang', String(toLang));
         }
-        const queryString = new URLSearchParams(queryParams).toString();
+        const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/translateJobDescriptionForJob${queryString ? `?${queryString}` : ''}`;
         return this.http.put<AIJobDescriptionTranslationDTO>(url, body);
     }
