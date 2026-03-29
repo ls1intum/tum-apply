@@ -10,11 +10,13 @@ import { createAccountServiceMock, provideAccountServiceMock } from '../../../ut
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
 describe('SettingsComponent', () => {
   let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
   let translateMock: ReturnType<typeof createTranslateServiceMock>;
   let themeServiceMock: ReturnType<typeof createThemeServiceMock>;
+  const activatedRouteMock = createActivatedRouteMock();
 
   const emailSettingServiceMock = {
     getEmailSettings: vi.fn(),
@@ -49,6 +51,7 @@ describe('SettingsComponent', () => {
         provideTranslateMock(translateMock),
         provideThemeServiceMock(themeServiceMock),
         provideToastServiceMock(toastServiceMock),
+        provideActivatedRouteMock(activatedRouteMock),
         provideFontAwesomeTesting(),
         { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
         { provide: UserDataExportResourceApi, useValue: userDataExportServiceMock },
