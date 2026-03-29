@@ -1,10 +1,12 @@
 ---
-sidebar_label: Spring AI Setup
+sidebar_label: Local LLM Setup
 ---
 
-## Local LLM Setup (Using LM Studio)
+# Local LLM Setup
 
-This guide explains how to set up a local LLM (Large Language Model) service for development purposes using LM Studio.
+TUMApply uses Spring AI for AI-powered features like job description generation and translation. To run these locally, you need a local LLM instance.
+
+This guide explains how to set up a local LLM service for development using LM Studio.
 
 ### Prerequisites
 
@@ -104,11 +106,28 @@ Calling the API requires authentication
    2. show progress status
    3. show the generated prediction
 
+### Lightweight Alternative
+
+If `gpt-oss-20b` demands too much RAM for your machine, you can use a smaller model instead:
+
+**GUI:** Search for `google/gemma-3-1b` in the Discover tab and download it.
+
+**CLI:**
+
+```bash
+lms get google/gemma-3-1b
+lms load google/gemma-3-1b --context-length 32000
+```
+
+:::note
+The lighter model will produce lower-quality results but is sufficient for local development and testing the AI integration.
+:::
+
 ### Performance Considerations
 
 :::tip[Performance Considerations]
 - **Model Size**: Larger models provide better results but require more RAM and processing power. The `gpt-oss-20b`
-  model is a good balance for development.
+  model is a good balance for development. Use `google/gemma-3-1b` if your machine cannot handle it.
 - **Context Length**: The `--context-length 32000` parameter controls how much text the model can process at once.
   Adjust based on your hardware capabilities.
 - **GPU Acceleration**: LM Studio automatically uses GPU acceleration when available (Metal on macOS, CUDA on

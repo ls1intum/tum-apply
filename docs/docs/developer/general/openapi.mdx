@@ -1,0 +1,64 @@
+---
+sidebar_label: OpenAPI
+---
+
+# OpenAPI
+
+TUMApply uses [OpenAPI Generator](https://openapi-generator.tech) to generate client code from the server-side API.
+
+---
+
+## Development Workflow
+
+We follow a **server-first** approach:
+
+1. **Develop the server-side endpoint** — implement the REST controller, DTOs, and service logic
+2. **Generate the OpenAPI spec** — extract the spec from the server annotations
+3. **Generate the client code** — produce TypeScript API services and model interfaces from the spec
+4. **Use only the generated code on the client** — always import API services and models from `src/main/webapp/app/generated`
+
+:::warning
+Do not create custom interfaces or service wrappers on the client to call API endpoints. Always use the generated API services and model interfaces. If a generated endpoint is not compatible with your use case, discuss it with an admin — exceptions can be made on a case-by-case basis.
+:::
+
+---
+
+## Structure
+
+- `openapi/openapi.yaml`: The central OpenAPI definition file
+- Generated client files go to: `src/main/webapp/app/generated`
+
+---
+
+## Generate OpenAPI Spec from Annotations
+
+To generate a new `openapi.yaml` from the Spring annotations in the codebase, run:
+
+```bash
+./gradlew generateApiDocs -x webapp
+```
+
+This outputs the updated spec to `openapi/openapi.yaml` based on the server-side code annotations.
+
+---
+
+## Generate Client API Services
+
+To generate the TypeScript Angular client services based on the `openapi.yaml` file, run:
+
+```bash
+./gradlew openApiGenerate
+```
+
+This generates the API services and model interfaces into `src/main/webapp/app/generated`.
+
+---
+
+## Notes
+
+:::tip
+- Always validate `openapi.yaml` in tools like [Swagger Editor](https://editor.swagger.io)
+- Follow consistent naming for paths and parameters
+- Define enums explicitly (avoid using `string` if enum is expected)
+- Use `operationId` consistently for better client generation
+:::
