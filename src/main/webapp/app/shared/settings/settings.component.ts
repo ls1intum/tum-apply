@@ -86,8 +86,8 @@ export class SettingsComponent {
     this.role.set(authorities?.map(authority => authority as UserShortDTORolesEnum)[0]);
 
     effect(() => {
-      const requestedTab = this.queryParamMap().get('tab');
-      if (requestedTab != null && this.tabs().some(tab => tab.id === requestedTab)) {
+      const requestedTab = this.queryParamMap().get('tab') ?? undefined;
+      if (requestedTab !== undefined && this.tabs().some(tab => tab.id === requestedTab)) {
         this.activeTab.set(requestedTab as SettingsTab);
       }
     });

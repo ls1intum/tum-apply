@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, Signal, computed, effect, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { firstValueFrom, map } from 'rxjs';
@@ -44,9 +44,7 @@ export class JobCardListComponent {
   readonly selectedSubjectAreaFilters = signal<JobFormDTOSubjectAreaEnum[]>([]);
   readonly selectedLocationFilters = signal<JobFormDTOLocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
-  readonly notificationsSettingsHref = inject(Router).serializeUrl(
-    inject(Router).createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } }),
-  );
+  readonly notificationsSettingsHref: Signal<string>;
 
   readonly allSubjectAreas = this.DropdownOptions.subjectAreas.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
@@ -69,10 +67,14 @@ export class JobCardListComponent {
     // Recompute the translated link text when the active language changes.
     this.currentLanguage();
     return {
-      link: `<a class="font-medium text-primary hover:underline" href="${this.notificationsSettingsHref}">${this.translateService.instant('jobOverviewPage.notificationsCta.link')}</a>`,
+      link: `<a class="font-medium text-primary hover:underline" href="${this.notificationsSettingsHref()}">${this.translateService.instant('jobOverviewPage.notificationsCta.link')}</a>`,
     };
   });
+  readonly canManageSubjectAreaSubscriptions = computed(
+    () => this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]),
+  );
 
+  private readonly router = inject(Router);
   private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
@@ -89,6 +91,9 @@ export class JobCardListComponent {
   });
 
   constructor() {
+    this.notificationsSettingsHref = computed(() =>
+      this.router.serializeUrl(this.router.createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } })),
+    );
     void this.loadAllFilter();
   }
 
@@ -173,9 +178,5 @@ export class JobCardListComponent {
     ];
 
     return headerImages[index % headerImages.length];
-  }
-
-  canManageSubjectAreaSubscriptions(): boolean {
-    return this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]);
   }
 }
