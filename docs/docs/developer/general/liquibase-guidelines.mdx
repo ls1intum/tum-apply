@@ -38,13 +38,19 @@ Always set the `author` attribute to **your own name**:
 
 ### Changeset IDs
 
-Each changeset ID should start with the **same changelog number** as the file, followed by a **specific description** of what that individual changeset does:
+Each changeset ID should start with the **same changelog number** as the file, followed by a **specific description** of what that individual changeset does.
+
+When a file contains **multiple changesets**, append a letter suffix (`a`, `b`, `c`, etc.) to the number to distinguish them. For files with a **single changeset**, the letter suffix is not necessary.
 
 ```xml
-<changeSet id="030_drop_default_field_of_studies_from_research_groups" author="celine">
-<changeSet id="030_migrate_job_field_of_studies_to_enum" author="celine">
-<changeSet id="030_rename_job_field_of_studies_to_subject_area" author="celine">
-<changeSet id="030_make_subject_area_nullable" author="celine">
+<!-- File 030 with multiple changesets → use 030a, 030b, 030c, 030d -->
+<changeSet id="030a_drop_default_field_of_studies_from_research_groups" author="celine">
+<changeSet id="030b_migrate_job_field_of_studies_to_enum" author="celine">
+<changeSet id="030c_rename_job_field_of_studies_to_subject_area" author="celine">
+<changeSet id="030d_make_subject_area_nullable" author="celine">
+
+<!-- File 031 with a single changeset → no letter needed -->
+<changeSet id="031_add_status_column_to_application" author="celine">
 ```
 
 ### PreConditions
@@ -86,14 +92,14 @@ Forgetting to add your file to `master.xml` means your migration will not run. A
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="030_drop_default_field_of_studies_from_research_groups" author="celine">
+  <changeSet id="030a_drop_default_field_of_studies_from_research_groups" author="celine">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="research_groups" columnName="default_field_of_studies"/>
     </preConditions>
     <dropColumn tableName="research_groups" columnName="default_field_of_studies"/>
   </changeSet>
 
-  <changeSet id="030_migrate_job_field_of_studies_to_enum" author="celine">
+  <changeSet id="030b_migrate_job_field_of_studies_to_enum" author="celine">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="jobs" columnName="field_of_studies"/>
     </preConditions>
@@ -103,7 +109,7 @@ Forgetting to add your file to `master.xml` means your migration will not run. A
     </sql>
   </changeSet>
 
-  <changeSet id="030_rename_job_field_of_studies_to_subject_area" author="celine">
+  <changeSet id="030c_rename_job_field_of_studies_to_subject_area" author="celine">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="jobs" columnName="field_of_studies"/>
       <not>
@@ -118,7 +124,7 @@ Forgetting to add your file to `master.xml` means your migration will not run. A
     />
   </changeSet>
 
-  <changeSet id="030_make_subject_area_nullable" author="celine">
+  <changeSet id="030d_make_subject_area_nullable" author="celine">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="jobs" columnName="subject_area"/>
     </preConditions>
@@ -139,6 +145,6 @@ Forgetting to add your file to `master.xml` means your migration will not run. A
 - [ ] Use the next available changelog number
 - [ ] Set `author` to your own name
 - [ ] Keep all related changesets in one file
-- [ ] Use the changelog number as prefix in each changeset ID with a specific description
+- [ ] Use the changelog number as prefix in each changeset ID with a letter suffix for multiple changesets (`030a`, `030b`, etc.)
 - [ ] Add `preConditions` to guard against re-run issues
 - [ ] Register the file in `master.xml`

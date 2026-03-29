@@ -2,26 +2,37 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   adminSidebar: [
-    'intro',
     {
       type: 'category',
-      label: 'Keycloak',
+      label: 'Admins',
+      collapsed: false,
+      link: {
+        type: 'generated-index',
+        description:
+          'All information for admins: Keycloak management, privacy & data retention, and production infrastructure.',
+      },
       items: [
-        'keycloak/overview',
-        'keycloak/keycloak-realm-and-clients',
-        'keycloak/keycloak-impersonation',
-        'keycloak/production-setup',
+        {
+          type: 'category',
+          label: 'Keycloak',
+          items: [
+            'keycloak/overview',
+            'keycloak/keycloak-realm-and-clients',
+            'keycloak/keycloak-impersonation',
+            'keycloak/production-setup',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Privacy & Data',
+          items: [
+            'privacy/data-export',
+            'privacy/data-retention',
+          ],
+        },
+        'production-deployment',
       ],
     },
-    {
-      type: 'category',
-      label: 'Privacy & Data',
-      items: [
-        'privacy/data-export',
-        'privacy/data-retention',
-      ],
-    },
-    'production-deployment',
   ],
 };
 

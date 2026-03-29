@@ -1,0 +1,357 @@
+---
+sidebar_label: Client Styling
+---
+
+# Client Styling
+
+Styling patterns and best practices for the TUMApply Angular client using Tailwind CSS, PrimeNG, and SCSS.
+
+---
+
+## NEVER Hard-Code Colors
+
+```html
+<!-- ✅ GOOD — Use semantic color tokens -->
+<div class="border-border-default bg-background-surface">...</div>
+<div class="text-text-primary bg-background-default">...</div>
+<a class="text-primary-default hover:underline">...</a>
+
+<!-- Semantic tokens in conditional classes -->
+<div [class]="isError ? 'bg-negative-default text-text-on-danger' : 'bg-info-default text-text-on-info'"></div>
+```
+
+```html
+<!-- ❌ WRONG — Hard-coded Tailwind colors -->
+<div class="border-blue-300 bg-blue-50">...</div>
+<div class="text-gray-700 bg-amber-100">...</div>
+<div class="text-blue-600 hover:underline">...</div>
+
+<!-- Hard-coded colors in conditional classes -->
+<div [class]="isError ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"></div>
+```
+
+**Why:** Hard-coded colors break dark mode, custom themes (blossom, aquabloom), and maintainability.
+
+See [Color Theming Documentation](../theming/color-theming) for complete reference.
+
+---
+
+## Avoid Inline Styles
+
+```html
+<!-- ✅ GOOD — Use Tailwind utility classes -->
+<span class="font-bold">Text</span>
+
+<!-- Complex layouts use Tailwind grid utilities -->
+<div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,13.75rem),1fr))] gap-4">...</div>
+
+<!-- Conditional styling with class binding -->
+<p [class.text-text-disabled]="isDisabled()">...</p>
+```
+
+```html
+<!-- ❌ WRONG -->
+<span style="font-weight: bold">Text</span>
+
+<div style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.75rem), 1fr))">...</div>
+
+<!-- Mixing inline styles with bindings -->
+<p [style.color]="'var(--p-text-disabled)'">...</p>
+```
+
+---
+
+## Use Conditional Class Bindings Correctly
+
+```html
+<!-- ✅ GOOD — Single conditional class -->
+<div [class.active]="isActive()">...</div>
+<div [class.disabled]="disabled()">...</div>
+<div [class.error]="inputState() === 'invalid'">...</div>
+```
+
+```html
+<!-- ✅ GOOD — Multiple conditional classes -->
+<div class="card" [class.disabled]="disabled()" [class.placeholder]="placeholder()">...</div>
+```
+
+```html
+<!-- ❌ AVOID — Using ngClass -->
+<div [ngClass]="{ active: isActive() }">...</div>
+<div
+  [ngClass]="{
+    'border-negative-default': hasError(),
+    'border-warning-default': hasWarning()
+  }"
+>
+  ...
+</div>
+
+<!-- ✅ Use [class.xyz] for simple conditions -->
+<div [class.active]="isActive()">...</div>
+
+<!-- ✅ Use computed() for complex conditions (see next section) -->
+<div [class]="borderClasses()">...</div>
+```
+
+**Why avoid `ngClass`?** With `computed()` signals and `[class]` binding, there's no need for the object-based `ngClass` syntax. Computed signals are more maintainable and type-safe.
+
+---
+
+## Use Computed Signals for Complex Conditional Styling
+
+When you have complex conditional logic determining which classes to apply, use `computed()` to derive the class string.
+
+```typescript
+// Component
+status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+hasWarning = signal(false);
+
+// Computed class string
+statusClasses = computed(() => {
+  const status = this.status();
+  const baseClasses = 'px-4 py-2 rounded-lg border';
+
+  if (status === 'error') {
+    return `${baseClasses} bg-negative-surface border-negative-default text-text-on-danger`;
+  }
+  if (status === 'success') {
+    return `${baseClasses} bg-positive-surface border-positive-default text-text-on-success`;
+  }
+  if (status === 'loading') {
+    return `${baseClasses} bg-info-surface border-info-default text-text-on-info`;
+  }
+  if (this.hasWarning()) {
+    return `${baseClasses} bg-warning-surface border-warning-default text-text-on-warning`;
+  }
+  return `${baseClasses} bg-background-surface border-border-default`;
+});
+```
+
+```html
+<div [class]="statusClasses()">Status message</div>
+```
+
+**When to use computed for styling:**
+
+- More than 3-4 conditional branches
+- Same conditions used in multiple places
+- Complex logic that would clutter the template
+- Dynamic combinations of multiple state signals
+
+❌ **AVOID** — Complex logic directly in template:
+
+```html
+<!-- Hard to read and maintain -->
+<div
+  [class]="status() === 'error' ? 'bg-negative-surface border-negative-default' :
+           status() === 'success' ? 'bg-positive-surface border-positive-default' :
+           status() === 'loading' ? 'bg-info-surface border-info-default' :
+           hasWarning() ? 'bg-warning-surface border-warning-default' : 'bg-background-surface'"
+></div>
+```
+
+---
+
+## Don't Mix CSS Variables with Tailwind Arbitrary Values
+
+```html
+<!-- ✅ GOOD — Use the semantic token directly -->
+<i class="text-primary-default"></i> <span class="text-text-tertiary"></span>
+```
+
+```html
+<!-- ❌ WRONG -->
+<i class="text-[var(--p-primary-400)]"></i> <span class="text-[var(--p-text-tertiary)]"></span>
+```
+
+**Why:** The semantic tokens are already mapped in `_tokens.scss`. Using arbitrary values bypasses the system.
+
+---
+
+## Use Custom Arbitrary Values for Specific Needs
+
+✅ **ACCEPTABLE** — Specific layout needs:
+
+```html
+<!-- When standard Tailwind values don't fit -->
+<div class="max-w-[75rem]">...</div>
+<div class="w-[30%]">...</div>
+<div class="min-w-[16.5rem]">...</div>
+```
+
+✅ **ACCEPTABLE** — Complex calculations (keep them readable):
+
+```html
+<!-- Complex but necessary calculations -->
+<div class="w-[calc(100%+2rem)] lg:w-[calc(100%+8rem)]">...</div>
+
+<!-- Grid with specific patterns -->
+<div class="grid-cols-[repeat(auto-fit,minmax(13.75rem,1fr))]">...</div>
+```
+
+:::tip
+For frequently used custom values, consider adding them to the Tailwind config instead.
+:::
+
+---
+
+## Structure Responsive Classes Consistently
+
+**Order:** Base classes → `sm:` → `md:` → `lg:` → `xl:` → `2xl:`
+
+```html
+<!-- ✅ GOOD — Mobile-first, ordered by breakpoint -->
+<div class="flex flex-col gap-4 md:flex-row md:gap-6 lg:gap-8">...</div>
+
+<div class="text-sm md:text-base lg:text-lg">...</div>
+```
+
+❌ **WRONG** — Mixed breakpoints:
+
+```html
+<div class="lg:gap-8 flex-col gap-4 md:flex-row md:gap-6 flex">...</div>
+```
+
+---
+
+## Styling PrimeNG Components
+
+PrimeNG components use `styleClass` (and variants like `dialogStyleClass`, `contentStyleClass`, etc.) to accept custom CSS classes.
+
+### When to Use `styleClass` vs Global Overrides
+
+**Use `styleClass` for:**
+
+- Component-specific, one-off styling unique to a particular usage
+- Layout and spacing adjustments (margins, padding, width, alignment)
+- Conditional styling based on component state
+
+**Use `prime-ng-overrides.scss` for:**
+
+- Application-wide PrimeNG component defaults (all buttons, all dialogs, etc.)
+- PrimeNG CSS variable customizations (`--p-stepper-step-number-size`, etc.)
+- Theme-related adjustments that apply globally
+- Fixing PrimeNG internal DOM structure styling (`.p-carousel-indicators`, etc.)
+
+**Example decision tree:**
+
+```
+Is this styling needed in multiple places across the app?
+├─ YES → Is it modifying PrimeNG internals (.p-* classes)?
+│  ├─ YES → Add to prime-ng-overrides.scss
+│  └─ NO  → Use Tailwind in styleClass
+└─ NO  → Use Tailwind in styleClass
+```
+
+### Using `styleClass` (Component-Specific Styling)
+
+✅ **GOOD** — Tailwind utilities only:
+
+```html
+<!-- Simple Tailwind classes -->
+<p-progressSpinner styleClass="w-10 h-10" strokeWidth="4" />
+<p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
+<jhi-message severity="warn" styleClass="mb-3" [message]="'...'" />
+
+<!-- With semantic tokens -->
+<p-dialog [styleClass]="'max-w-4xl bg-background-surface border-border-default'" />
+```
+
+✅ **GOOD** — Use computed for dynamic styling:
+
+```typescript
+// Component
+mode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
+
+dialogClasses = computed(() => {
+  const base = 'p-6 rounded-lg shadow-lg';
+  const modeClass =
+    this.mode() === 'REJECT'
+      ? 'border-2 border-negative-default bg-negative-surface'
+      : 'border-2 border-positive-default bg-positive-surface';
+  return `${base} ${modeClass}`;
+});
+```
+
+```html
+<p-dialog [styleClass]="dialogClasses()" />
+```
+
+### Using `prime-ng-overrides.scss` (Global Defaults)
+
+✅ **GOOD** — Application-wide defaults:
+
+```scss
+// prime-ng-overrides.scss
+
+:root {
+  // Override PrimeNG design tokens globally
+  --p-stepper-step-number-size: 1.75rem;
+  --p-stepper-step-number-font-size: 1rem;
+  --p-accordion-header-background: var(--p-background-default);
+}
+
+// Style all tags globally
+.p-tag {
+  border: 0.1rem solid var(--p-border-default) !important;
+}
+
+// Fix PrimeNG internal structure for specific components
+.p-select-filter.p-component.p-inputtext {
+  border: 0.1rem solid var(--p-border-default);
+
+  &:enabled:focus {
+    border-color: var(--p-primary-color);
+  }
+}
+```
+
+---
+
+## Avoid Redundant Styling
+
+Before adding Tailwind utilities, **check if the styling is already applied** by base styles or component defaults.
+
+```html
+<!-- ✅ GOOD - Only override when needed -->
+<p class="text-lg">Larger description text</p>
+<!-- Only add classes when you need to CHANGE the default -->
+
+<h1 class="text-text-secondary">Subtitle-style heading</h1>
+<!-- Only override when design requires different styling -->
+
+<!-- ❌ WRONG - Redundant classes -->
+<p class="text-base text-text-primary">Description text</p>
+<!-- p elements are ALREADY text-base and text-text-primary by default -->
+```
+
+### How to Check for Redundancy
+
+1. **Open browser DevTools** (F12) and inspect the element
+2. **Check "Computed" tab** to see what styles are already applied
+3. **Only add classes that actually change something** from the existing state
+4. **Remove the class** and see if the design changes - if not, it's redundant
+
+### When to Add Styling
+
+✅ **ADD styling when:**
+
+- The design explicitly requires different styling than defaults
+- You need to override base styles for a specific reason
+- Layout or spacing needs adjustment
+
+❌ **DON'T ADD styling when:**
+
+- The element already looks correct without it
+- You're duplicating base styles
+- You're "just in case" adding classes
+
+**Keep it minimal.** Redundant classes clutter templates, hurt performance, and make maintenance harder.
+
+---
+
+## Related Documentation
+
+- [Client Guidelines](./angular-guidelines) — Component patterns, signals, and TypeScript best practices
+- [Color Theming & Styling](../theming/color-theming) — Complete theming guide

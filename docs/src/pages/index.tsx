@@ -23,13 +23,13 @@ const sections = [
     title: 'Developers',
     icon: '💻',
     description: 'Setup, architecture, and contribution guidelines.',
-    link: '/developer/intro',
+    link: '/developer/category/developers',
   },
   {
     title: 'Admins',
     icon: '🔧',
     description: 'Platform administration, user management, and configuration.',
-    link: '/admin/intro',
+    link: '/admin/category/admins',
   },
 ];
 

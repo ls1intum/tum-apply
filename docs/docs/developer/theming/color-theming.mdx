@@ -2,7 +2,7 @@
 sidebar_label: Color Theming
 ---
 
-# 🎨 Color System & Theming
+# Color Theming
 
 TUMApply uses a comprehensive theming system built on **PrimeNG Themes** and **Tailwind CSS v4**. The system supports multiple themes with automatic dark mode detection and seamless switching.
 
@@ -156,6 +156,17 @@ The `dark:` variant works with the `.tum-apply-dark-mode` class applied to `<htm
 
 ## 🎨 Theme Customization
 
+### Shared vs Theme-Specific Config
+
+All three presets import shared configuration from `shared-theme-config.ts`:
+
+- **`shared-theme-config.ts`** — primitives (border radius), component overrides, and shared color schemes. Changes here apply to **all themes automatically**.
+- **`tumapplypreset.ts`**, **`custompreset.ts`**, **`aquabloom.ts`** — each defines its own **color palette** (primary, secondary, etc.). Changes to colors in one preset do **not** propagate to the others.
+
+:::warning
+If you add or change a color in one preset (e.g., a new primary shade in `tumapplypreset.ts`), you must add the equivalent in `custompreset.ts` and `aquabloom.ts` as well. Otherwise, those themes will fall back to PrimeNG defaults and look inconsistent.
+:::
+
 ### Modifying Existing Themes
 
 **Edit color definitions in:**
@@ -181,19 +192,7 @@ export const TUMApplyPreset = definePreset(Aura, {
 
 ### Component-Specific Overrides
 
-**Edit:** `src/main/webapp/content/scss/prime-ng-overrides.scss`
-
-```scss
-:root {
-  --p-stepper-step-number-size: 1.75rem;
-  --p-accordion-header-background: var(--p-background-default);
-}
-
-// Custom classes
-.p-tag {
-  border: 0.1rem solid var(--p-border-default) !important;
-}
-```
+For PrimeNG component overrides using `styleClass` vs `prime-ng-overrides.scss`, see the [Client Styling](../general/client-styling-guidelines#styling-primeng-components) page.
 
 ### Adding New Tailwind Tokens
 
@@ -228,5 +227,6 @@ Users can switch themes via the UI. The `ThemeService` handles:
 
 ## 📚 Related Documentation
 
-- See [Client Best Practices](../general/client-best-practices) for client-side best practices
+- See [Client Styling Guidelines](../general/client-styling-guidelines) for styling best practices
+- See [Client Guidelines](../general/angular-guidelines) for Angular and TypeScript patterns
 - Component library structure in `src/main/webapp/app/shared/components/`

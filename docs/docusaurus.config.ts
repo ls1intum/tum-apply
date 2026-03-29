@@ -143,12 +143,12 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/developer/intro',
+          to: '/developer/category/developers',
           label: 'Developers',
           position: 'left',
         },
         {
-          to: '/admin/intro',
+          to: '/admin/category/admins',
           label: 'Admins',
           position: 'left',
         },
