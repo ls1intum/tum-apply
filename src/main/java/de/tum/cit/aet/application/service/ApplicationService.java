@@ -656,13 +656,10 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantFirstName, application::setApplicantFirstName, extracted.firstName());
         setIfEmpty(application::getApplicantLastName, application::setApplicantLastName, extracted.lastName());
         setIfEmpty(application::getApplicantPhoneNumber, application::setApplicantPhoneNumber, extracted.phoneNumber());
-        setIfEmpty(application::getApplicantGender, application::setApplicantGender, extracted.gender());
-        setIfEmpty(application::getApplicantNationality, application::setApplicantNationality, extracted.nationality());
         setIfEmpty(application::getApplicantWebsite, application::setApplicantWebsite, extracted.website());
         setIfEmpty(application::getApplicantLinkedinUrl, application::setApplicantLinkedinUrl, extracted.linkedinUrl());
         setIfEmpty(application::getApplicantStreet, application::setApplicantStreet, extracted.street());
         setIfEmpty(application::getApplicantCity, application::setApplicantCity, extracted.city());
-        setIfEmpty(application::getApplicantCountry, application::setApplicantCountry, extracted.country());
         setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());
         setIfEmpty(
             application::getApplicantBachelorDegreeName,
@@ -678,13 +675,6 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
         setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
         setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
-
-        // Handle date of birth separately since it's a LocalDate field
-        if (application.getApplicantBirthday() == null && extracted.dateOfBirth() != null && !extracted.dateOfBirth().isBlank()) {
-            try {
-                application.setApplicantBirthday(LocalDate.parse(extracted.dateOfBirth()));
-            } catch (DateTimeParseException _) {}
-        }
 
         applicationRepository.save(application);
     }
