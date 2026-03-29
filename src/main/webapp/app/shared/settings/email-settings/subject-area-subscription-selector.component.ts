@@ -3,6 +3,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { FilterChange, FilterMultiselect } from '../../components/atoms/filter-multiselect/filter-multiselect';
+
 import TranslateDirective from '../../language/translate.directive';
 import { SubjectArea } from './subject-area-subscriptions.store';
 
