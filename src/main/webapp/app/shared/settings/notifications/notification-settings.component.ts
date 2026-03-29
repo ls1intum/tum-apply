@@ -34,7 +34,7 @@ export interface NotificationGroup {
     TranslateModule,
     TranslateDirective,
   ],
-  templateUrl: './email-settings.component.html',
+  templateUrl: './notification-settings.component.html',
 })
 export class NotificationSettingsComponent {
   currentRole = input<RolesEnum | undefined>();

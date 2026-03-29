@@ -10,7 +10,7 @@ import { SelectComponent, SelectOption } from '../components/atoms/select/select
 import TranslateDirective from '../language/translate.directive';
 import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
-import { NotificationSettingsComponent } from './email-settings/email-settings.component';
+import { NotificationSettingsComponent } from './notifications/notification-settings.component';
 import { PersonalInformationSettingsComponent } from './personal-information-settings';
 import { ProfilePictureSettingsComponent } from './profile-picture-settings/profile-picture-settings.component';
 import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
