@@ -35,7 +35,7 @@ const sidebars: SidebarsConfig = {
           label: 'Server Guidelines',
           items: [
             'server-guidelines/server-guidelines',
-            'server-guidelines/server-testing',
+            'server-guidelines/server-tests',
             'server-guidelines/api-testing',
             'server-guidelines/database-guidelines',
             'server-guidelines/liquibase-guidelines',
@@ -48,7 +48,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'client-guidelines/angular-guidelines',
             'client-guidelines/client-styling-guidelines',
-            'client-guidelines/client-testing',
+            'client-guidelines/client-tests',
             'client-guidelines/language-guidelines',
             'client-guidelines/color-theming',
           ],
