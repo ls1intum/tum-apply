@@ -316,8 +316,7 @@ describe('JobDetailComponent', () => {
 
     const fixture2 = TestBed.createComponent(JobDetailComponent);
     const comp2 = fixture2.componentInstance;
-    await comp2.init();
-
+    await runSilently(() => comp2.init());
     expect(location.back).toHaveBeenCalled();
   });
 
@@ -602,7 +601,7 @@ describe('JobDetailComponent', () => {
 
     jobApi.getJobDetails.mockReturnValue(of({ title: 'FallbackJob' } as JobDetails));
 
-    await comp2.init();
+    await runSilently(() => comp2.init());
 
     expect(comp2['userId']()).toBe('');
     expect(comp2['jobId']()).toBe('');
