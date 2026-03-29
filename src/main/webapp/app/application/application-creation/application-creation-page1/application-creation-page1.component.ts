@@ -85,21 +85,11 @@ export default class ApplicationCreationPage1Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  cvValid = signal<boolean>(false);
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
   computedDocumentIdsCvSet = computed(() => {
     const docInfoHolder = this.documentIdsCv();
     return docInfoHolder ? [docInfoHolder] : undefined;
-  });
-
-  isCvSectionVisible = computed(() => !!this.applicationIdForDocuments());
-
-  isPageValid = computed(() => {
-    const formValid = this.page1Form().valid;
-    if (this.isCvSectionVisible()) {
-      return formValid && this.cvValid();
-    }
-    return formValid;
   });
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
@@ -189,14 +179,14 @@ export default class ApplicationCreationPage1Component {
           ...normalizedValue,
         });
         this.changed.emit(true);
-        this.valid.emit(this.isPageValid());
+        this.valid.emit(form.valid && this.cvValid());
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(this.isPageValid());
+        this.valid.emit(form.valid && this.cvValid());
       });
 
-      this.valid.emit(this.isPageValid());
+      this.valid.emit(form.valid && this.cvValid());
 
       onCleanup(() => {
         valueSubscription.unsubscribe();
@@ -211,7 +201,6 @@ export default class ApplicationCreationPage1Component {
     } else {
       this.cvValid.set(true);
     }
-    this.valid.emit(this.isPageValid());
   }
 
   emitChanged(): void {
