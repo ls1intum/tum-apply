@@ -10,9 +10,6 @@ import { FilterChange } from '../../components/atoms/filter-multiselect/filter-m
 export type SubjectArea = ApplicantSubjectAreaSubscriptionsEnum;
 
 export class SubjectAreaSubscriptionsStore {
-  private readonly applicantApi = inject(ApplicantResourceApi);
-  private readonly toastService = inject(ToastService);
-
   readonly saving = signal(false);
   readonly enabled = signal(false);
   readonly selected = signal<SubjectArea[]>([]);
@@ -30,6 +27,9 @@ export class SubjectAreaSubscriptionsStore {
     const selectedAreas = new Set(this.selected());
     return this.options.filter(option => selectedAreas.has(option.value));
   });
+
+  private readonly applicantApi = inject(ApplicantResourceApi);
+  private readonly toastService = inject(ToastService);
 
   async load(): Promise<void> {
     try {
