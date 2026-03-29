@@ -38,6 +38,9 @@
         "images": "TUMApply - My Images",
         "info": "TUMApply - My Group"
       },
+      "admin": {
+        "dependencies": "TUMApply - Dependencies"
+      },
       "about-us": "TumApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
@@ -246,13 +249,6 @@
       }
     },
     "upload": {
-      "upload_instruction_standard": "Please upload",
-      "upload_instruction": {
-        "BACHELOR_TRANSCRIPT": "Please upload your Bachelor Certificate",
-        "MASTER_TRANSCRIPT": "Please upload your Master Certificate",
-        "REFERENCE": "Please upload your References",
-        "CV": "Please upload your CV"
-      },
       "add": "Add",
       "deleteDocument": {
         "confirm": {

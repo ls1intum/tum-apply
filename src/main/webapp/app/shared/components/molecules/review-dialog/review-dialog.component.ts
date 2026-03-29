@@ -5,16 +5,17 @@ import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { RejectDTOReasonEnum } from 'app/generated/model/reject-dto';
 
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
-import { AcceptDTO } from '../../../../generated/model/acceptDTO';
-import { RejectDTO } from '../../../../generated/model/rejectDTO';
+import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/application-evaluation-detail-dto';
+import { AcceptDTO } from '../../../../generated/model/accept-dto';
+import { RejectDTO } from '../../../../generated/model/reject-dto';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
 
-import ReasonEnum = RejectDTO.ReasonEnum;
+type ReasonEnum = RejectDTOReasonEnum;
 
 @Component({
   selector: 'jhi-review-dialog',
@@ -82,19 +83,19 @@ export class ReviewDialogComponent {
   rejectReasons: SelectOption[] = [
     {
       name: 'evaluation.rejectReasons.jobFilled',
-      value: 'JOB_FILLED',
+      value: RejectDTOReasonEnum.JobFilled,
     },
     {
       name: 'evaluation.rejectReasons.jobOutdated',
-      value: 'JOB_OUTDATED',
+      value: RejectDTOReasonEnum.JobOutdated,
     },
     {
       name: 'evaluation.rejectReasons.failedRequirements',
-      value: 'FAILED_REQUIREMENTS',
+      value: RejectDTOReasonEnum.FailedRequirements,
     },
     {
       name: 'evaluation.rejectReasons.otherReason',
-      value: 'OTHER_REASON',
+      value: RejectDTOReasonEnum.OtherReason,
     },
   ];
 

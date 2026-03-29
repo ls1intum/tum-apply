@@ -38,6 +38,9 @@
         "images": "TUMApply - Meine Bilder",
         "info": "TUMApply - Meine Gruppe"
       },
+      "admin": {
+        "dependencies": "TUMApply - Abhängigkeiten"
+      },
       "about-us": "TumApply - Über uns",
       "interview": {
         "overview": "TUMApply - Interviewübersicht",
@@ -246,13 +249,6 @@
       }
     },
     "upload": {
-      "upload_instruction_standard": "Bitte hochladen",
-      "upload_instruction": {
-        "BACHELOR_TRANSCRIPT": "Bitte lade dein Bachelor-Zeugnis hoch",
-        "MASTER_TRANSCRIPT": "Bitte lade dein Master-Zeugnis hoch",
-        "REFERENCE": "Bitte lade deine Empfehlungsschreiben hoch",
-        "CV": "Bitte lade deinen Lebenslauf hoch"
-      },
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",

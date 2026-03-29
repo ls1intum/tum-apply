@@ -18,6 +18,7 @@ const getAllOpenApiFiles = (dir: string): string[] => {
 };
 
 const stripLeadingUnderscoresAndTrailingDigitsFromAllMethods = (sourceFile: any, renamedMethodsInFile: number) => {
+    // Handle methods in classes (API service classes)
     for (const clazz of sourceFile.getClasses()) {
         for (const method of clazz.getMethods()) {
             const oldName = method.getName();
@@ -27,6 +28,17 @@ const stripLeadingUnderscoresAndTrailingDigitsFromAllMethods = (sourceFile: any,
                 renamedMethodsInFile++;
                 console.log(`🔄 [${sourceFile.getBaseName()}] ${oldName} → ${newName}`);
             }
+        }
+    }
+    // Handle standalone exported functions (resource functions)
+    for (const func of sourceFile.getFunctions()) {
+        const oldName = func.getName();
+        if (!oldName) continue;
+        const newName = oldName.replace(/^_+/, "").replace(/\d+$/, "");
+        if (newName !== oldName) {
+            func.getNameNode()?.rename(newName);
+            renamedMethodsInFile++;
+            console.log(`🔄 [${sourceFile.getBaseName()}] ${oldName} → ${newName}`);
         }
     }
     return renamedMethodsInFile;
@@ -86,19 +98,6 @@ const main = async () => {
         }
 
         renamedMethodsInFile = stripLeadingUnderscoresAndTrailingDigitsFromAllMethods(sourceFile, renamedMethodsInFile);
-
-        // Sort properties in model classes alphabetically
-        if (sourceFile.getFilePath().includes('/model/')) {
-            for (const clazz of sourceFile.getClasses()) {
-                const properties = clazz.getProperties();
-                if (properties.length > 1) {
-                    const propStructures = properties.map(p => p.getStructure());
-                    properties.forEach(p => p.remove());
-                    propStructures.sort((a, b) => a.name.localeCompare(b.name));
-                    propStructures.forEach(struct => clazz.addProperty(struct));
-                }
-            }
-        }
 
         const path = sourceFile.getFilePath();
         const content = sourceFile.getFullText();

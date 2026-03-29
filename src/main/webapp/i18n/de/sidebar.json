@@ -38,7 +38,8 @@
     },
     "system": {
       "system": "System",
-      "systemsettings": "Systemeinstellungen"
+      "systemsettings": "Systemeinstellungen",
+      "dependencies": "Abhängigkeiten"
     }
   }
 }

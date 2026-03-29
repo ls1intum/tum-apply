@@ -17,7 +17,7 @@ import { postalCodeValidator } from '../../../shared/validators/custom-validator
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;

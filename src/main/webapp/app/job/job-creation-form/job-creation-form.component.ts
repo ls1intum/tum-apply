@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Language, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -26,23 +25,32 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
-import { AiResourceApiService } from 'app/generated';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
-import { JobDTO } from 'app/generated/model/jobDTO';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { ImageDTO } from 'app/generated/model/imageDTO';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobDTO } from 'app/generated/model/job-dto';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { ImageDTO } from 'app/generated/model/image-dto';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
   ImageUploadButtonComponent,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import {
+  JobFormDTOFundingTypeEnum,
+  JobFormDTOLocationEnum,
+  JobFormDTOStateEnum,
+  JobFormDTOSubjectAreaEnum,
+} from 'app/generated/model/job-form-dto';
+import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -69,7 +77,6 @@ type JobFormMode = 'create' | 'edit';
   styleUrls: ['./job-creation-form.component.scss'],
   imports: [
     CommonModule,
-    TooltipModule,
     ReactiveFormsModule,
     FormsModule,
     FontAwesomeModule,
@@ -95,8 +102,9 @@ type JobFormMode = 'create' | 'edit';
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
     CheckboxComponent,
+    AiAssistantCardComponent,
   ],
-  providers: [JobResourceApiService],
+  providers: [JobResourceApi],
 })
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
@@ -206,17 +214,32 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceApiService);
-  private imageResourceService = inject(ImageResourceApiService);
+  private jobApi = inject(JobResourceApi);
+  private imageApi = inject(ImageResourceApi);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private aiService = inject(AiResourceApiService);
+  private aiApi = inject(AiResourceApi);
   private aiStreamingService = inject(AiStreamingService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
+  private genderBiasAnalysisService = inject(GenderBiasAnalysisService);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI SCORE SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Latest gender decoder result for the job description */
+  readonly jobDescriptionAnalysis = toSignal(this.genderBiasAnalysisService.getAnalysisForField('jobDescription'), {
+    initialValue: undefined,
+  });
+
+  /** Score shown in the AI sidebar */
+  readonly aiScore = computed(() =>
+    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()),
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -296,7 +319,9 @@ export class JobCreationFormComponent {
   });
 
   /** Computed: Returns the job DTO ready for publishing, or undefined if forms are invalid */
-  publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
+  publishableJobData = computed<JobFormDTO | undefined>(() =>
+    this.allFormsValid() ? this.createJobDTO(JobFormDTOStateEnum.Published) : undefined,
+  );
 
   /** Computed: Detects if there are unsaved changes by comparing current data with last saved */
   hasUnsavedChanges = computed(() => {
@@ -416,7 +441,7 @@ export class JobCreationFormComponent {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
     this.imageFormValueSignal();
-    return this.createJobDTO('DRAFT');
+    return this.createJobDTO(JobFormDTOStateEnum.Draft);
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -507,7 +532,7 @@ export class JobCreationFormComponent {
     if (!jobData) return;
 
     try {
-      const saved = await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
+      const saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), jobData));
       // refresh local truth from server response
       this.applyServerJobForm(saved);
       this.toastService.showSuccessKey('toast.published');
@@ -548,7 +573,7 @@ export class JobCreationFormComponent {
     this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
     try {
-      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+      const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
     } catch {
       // If refresh fails, add to local array
@@ -592,14 +617,14 @@ export class JobCreationFormComponent {
     if (!imageId) return;
 
     try {
-      await firstValueFrom(this.imageResourceService.deleteImage(imageId));
+      await firstValueFrom(this.imageApi.deleteImage(imageId));
 
       if (this.selectedImage()?.imageId === imageId) {
         this.clearImageSelection();
       }
 
       try {
-        const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+        const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
         this.researchGroupImages.set(researchGroupImages);
       } catch {
         this.researchGroupImages.set(this.researchGroupImages().filter(img => img.imageId !== imageId));
@@ -624,13 +649,13 @@ export class JobCreationFormComponent {
   async loadImages(): Promise<void> {
     try {
       try {
-        const defaults = await firstValueFrom(this.imageResourceService.getMyDefaultJobBanners());
+        const defaults = await firstValueFrom(this.imageApi.getMyDefaultJobBanners());
         this.defaultImages.set(defaults);
       } catch {
         this.defaultImages.set([]);
       }
 
-      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+      const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
@@ -667,14 +692,14 @@ export class JobCreationFormComponent {
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTO.SubjectAreaEnum,
+        subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTOSubjectAreaEnum,
         supervisingProfessor: this.userId(),
-        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
+        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTOLocationEnum,
 
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
 
-        state: JobFormDTO.StateEnum.Draft,
+        state: JobFormDTOStateEnum.Draft,
       };
       this.autoScrollStreaming();
 
@@ -887,7 +912,7 @@ export class JobCreationFormComponent {
    * @param state - The job state ('DRAFT' or 'PUBLISHED')
    * @returns The complete job form DTO
    */
-  private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
+  private createJobDTO(state: JobFormDTOStateEnum): JobFormDTO {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
@@ -910,9 +935,9 @@ export class JobCreationFormComponent {
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
-      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTO.SubjectAreaEnum,
+      subjectArea: basicInfoValue.subjectArea?.value as JobFormDTOSubjectAreaEnum,
       supervisingProfessor: supervisingProfessorId ?? '',
-      location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
+      location: basicInfoValue.location?.value as JobFormDTOLocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
@@ -921,7 +946,7 @@ export class JobCreationFormComponent {
       endDate: positionDetailsValue.applicationDeadline ?? '',
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
-      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
+      fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
@@ -988,7 +1013,7 @@ export class JobCreationFormComponent {
 
         this.jobId.set(jobId);
         const [job] = await Promise.all([
-          firstValueFrom(this.jobResourceService.getJobById(jobId)),
+          firstValueFrom(this.jobApi.getJobById(jobId)),
           loadImagesPromise,
           this.loadSupervisingProfessors(),
         ]);
@@ -1064,7 +1089,7 @@ export class JobCreationFormComponent {
       });
     }
 
-    this.lastSavedData.set(this.createJobDTO('DRAFT'));
+    this.lastSavedData.set(this.createJobDTO(JobFormDTOStateEnum.Draft));
   }
 
   /**
@@ -1072,9 +1097,9 @@ export class JobCreationFormComponent {
    */
   private async loadSupervisingProfessors(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.researchGroupService.getResearchGroupProfessors());
+      const response = await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
       const options = response
-        .filter(member => (member.roles ?? []).includes('PROFESSOR') && member.userId)
+        .filter(member => member.roles?.includes(UserShortDTORolesEnum.Professor) && member.userId)
         .map(member => {
           const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
           const fallback = (member.email ?? member.userId ?? '').trim();
@@ -1122,7 +1147,7 @@ export class JobCreationFormComponent {
     if (!options.length) return undefined;
 
     const currentUserId = this.userId();
-    const isCurrentUserProfessor = this.accountService.userAuthorities?.includes('PROFESSOR');
+    const isCurrentUserProfessor = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Professor);
 
     if (isCurrentUserProfessor && currentUserId) {
       const match = options.find(option => option.value === currentUserId);
@@ -1190,15 +1215,15 @@ export class JobCreationFormComponent {
   private async performAutoSave(): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
-    const currentData = this.createJobDTO('DRAFT');
+    const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
 
     try {
       let saved: JobFormDTO;
 
       if (this.jobId()) {
-        saved = await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), currentData));
+        saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), currentData));
       } else {
-        saved = await firstValueFrom(this.jobResourceService.createJob(currentData));
+        saved = await firstValueFrom(this.jobApi.createJob(currentData));
         this.jobId.set(saved.jobId ?? '');
       }
 
@@ -1233,7 +1258,7 @@ export class JobCreationFormComponent {
 
     this.isTranslating.set(true);
     try {
-      const response = await firstValueFrom(this.aiService.translateJobDescriptionForJob(jobId, targetLang, text));
+      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, text));
 
       const translatedText = (response.translatedText ?? '').trim();
       if (!translatedText) return;
