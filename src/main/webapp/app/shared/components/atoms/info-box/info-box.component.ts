@@ -62,9 +62,9 @@ export class InfoBoxComponent {
     const baseClasses = 'flex items-center gap-3 p-4 border-l-4 rounded-sm';
     const severityClasses: Record<InfoBoxSeverity, string> = {
       primary: 'bg-background-surface border-primary',
-      secondary: 'bg-[var(--p-border-default)] border-[var(--p-text-disabled)]',
-      danger: 'bg-background-surface border-negative',
-      warning: 'bg-background-surface border-warning',
+      secondary: 'bg-border-default border-text-disabled',
+      danger: 'bg-background-surface border-negative-default',
+      warning: 'bg-[var(--p-warn-hover-color-outlined)] border-warning-default',
       info: 'bg-background-surface border-primary',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
@@ -78,9 +78,9 @@ export class InfoBoxComponent {
     const baseClasses = 'text-xl mt-0.5';
     const severityClasses: Record<InfoBoxSeverity, string> = {
       primary: 'text-primary',
-      secondary: 'text-[var(--p-text-disabled)]',
-      danger: 'text-negative',
-      warning: 'text-warning',
+      secondary: 'text-text-disabled',
+      danger: 'text-negative-default',
+      warning: 'text-warning-default',
       info: 'text-primary',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
