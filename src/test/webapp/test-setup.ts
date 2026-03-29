@@ -12,11 +12,13 @@ export class ZonelessTestModule {}
 
 getTestBed().initTestEnvironment([BrowserTestingModule, ZonelessTestModule], platformBrowserTesting());
 
-// Suppress JSDOM CSS parsing errors for CSS custom properties in shorthand properties
-// This is a known limitation of jsdom/cssstyle that doesn't affect test functionality
+// ─── CSS Error Suppression ───────────────────────────────────────────────────
+/**
+ * Suppresses JSDOM CSS parsing errors caused by CSS custom properties in shorthand properties.
+ * This is a known limitation of jsdom/cssstyle that does not affect test functionality.
+ */
 window.addEventListener('error', event => {
   const errorMessage = event.error?.message || event.message || '';
-  // Suppress CSS custom property parsing errors from cssstyle
   if (
     errorMessage.includes("Cannot create property 'border-width'") ||
     errorMessage.includes("Cannot create property 'border-style'") ||
@@ -28,53 +30,57 @@ window.addEventListener('error', event => {
   }
 });
 
-// Provide a lightweight, no-op IntersectionObserver mock for jsdom tests.
-// Some components use IntersectionObserver (e.g. progress-stepper) which isn't available in the
-// jsdom environment used by Vitest. A simple mock prevents ReferenceError and is sufficient
-// for unit tests that don't require real intersection behavior.
-if (typeof (globalThis as any).IntersectionObserver === 'undefined') {
-  class MockIntersectionObserver {
-    callback: any;
-    root: Element | null;
-    rootMargin: string;
-    thresholds: number | number[];
-    constructor(callback: any, options?: any) {
-      this.callback = callback;
+// ─── IntersectionObserver Mock ───────────────────────────────────────────────
+/**
+ * No-op {@link IntersectionObserver} mock for the jsdom test environment.
+ *
+ * Some components (e.g. progress-stepper) rely on IntersectionObserver, which is
+ * not available in jsdom. This mock prevents {@link ReferenceError} and is
+ * sufficient for unit tests that do not require real intersection behavior.
+ */
+if (typeof globalThis.IntersectionObserver === 'undefined') {
+  class MockIntersectionObserver implements IntersectionObserver {
+    readonly root: Element | Document | null;
+    readonly rootMargin: string;
+    readonly thresholds: ReadonlyArray<number>;
+
+    constructor(_callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
       this.root = options?.root ?? null;
       this.rootMargin = options?.rootMargin ?? '0px';
-      this.thresholds = options?.threshold ?? 0;
+      this.thresholds = Array.isArray(options?.threshold) ? options.threshold : [options?.threshold ?? 0];
     }
-    observe() {
-      // no-op
-    }
-    unobserve() {
-      // no-op
-    }
-    disconnect() {
-      // no-op
-    }
-    takeRecords() {
+
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+    takeRecords(): IntersectionObserverEntry[] {
       return [];
     }
   }
-  (globalThis as any).IntersectionObserver = MockIntersectionObserver;
-  (globalThis as any).IntersectionObserverEntry = class {};
+  globalThis.IntersectionObserver = MockIntersectionObserver;
 }
 
+// ─── Console Silencer Utility ────────────────────────────────────────────────
 declare global {
   function runSilently<T>(fn: () => T): T;
 }
 
 /**
- * Silences all console output (error, warn, info) for the duration of a function.
+ * Silences all console output ({@link console.error}, {@link console.warn},
+ * {@link console.info}) for the duration of the given function.
+ *
+ * Works with both synchronous and asynchronous functions. Console methods are
+ * restored after the function completes, even if it throws.
+ *
+ * @param fn - The function to execute silently.
+ * @returns The return value of {@link fn}.
  */
-globalThis.runSilently = (fn: () => any): any => {
-  // 1. Setup spies for all noisy methods
+globalThis.runSilently = <T>(fn: () => T): T => {
   const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
-  const restore = () => {
+  const restore = (): void => {
     errorSpy.mockRestore();
     warnSpy.mockRestore();
     infoSpy.mockRestore();
@@ -83,7 +89,7 @@ globalThis.runSilently = (fn: () => any): any => {
   try {
     const result = fn();
     if (result instanceof Promise) {
-      return result.finally(restore);
+      return result.finally(restore) as T;
     }
     restore();
     return result;
