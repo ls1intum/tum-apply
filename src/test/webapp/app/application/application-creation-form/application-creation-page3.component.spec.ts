@@ -6,7 +6,11 @@ import ApplicationCreationPage3Component, {
   getPage3FromApplication,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ApplicationPage3Component', () => {
@@ -186,13 +190,13 @@ describe('ApplicationPage3Component', () => {
       motivation: 'Because I love coding',
       specialSkills: 'Angular, TypeScript',
       projects: 'Built multiple apps',
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
       job: {
         jobId: 'id-123',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         professorName: 'profName',
         title: 'title',
-        subjectArea: 'COMPUTER_SCIENCE',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
     };
 

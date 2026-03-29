@@ -3,7 +3,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { IntervieweeCardComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-card/interviewee-card.component';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { IntervieweeDTO, IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -11,7 +11,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 const uncontactedInterviewee: IntervieweeDTO = {
   id: 'iee-1',
   applicationId: 'app-1',
-  state: 'UNCONTACTED',
+  state: IntervieweeDTOStateEnum.Uncontacted,
   user: {
     userId: 'user-1',
     firstName: 'Alice',
@@ -24,7 +24,7 @@ const uncontactedInterviewee: IntervieweeDTO = {
 const scheduledInterviewee: IntervieweeDTO = {
   id: 'iee-2',
   applicationId: 'app-2',
-  state: 'SCHEDULED',
+  state: IntervieweeDTOStateEnum.Scheduled,
   user: {
     userId: 'user-2',
     firstName: 'Bob',
@@ -42,7 +42,7 @@ const scheduledInterviewee: IntervieweeDTO = {
 const virtualInterviewee: IntervieweeDTO = {
   id: 'iee-3',
   applicationId: 'app-3',
-  state: 'SCHEDULED',
+  state: IntervieweeDTOStateEnum.Scheduled,
   user: {
     userId: 'user-3',
     firstName: 'Charlie',

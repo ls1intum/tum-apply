@@ -9,7 +9,7 @@ import { ToastService } from 'app/service/toast-service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
-import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { Sort, SortDirection, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -20,8 +20,8 @@ import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/use
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { CreatedJobDTO } from '../../generated/model/createdJobDTO';
-import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
+import { CreatedJobDTO, CreatedJobDTOStateEnum } from '../../generated/model/created-job-dto';
+import { JobResourceApi } from '../../generated/api/job-resource-api';
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
@@ -52,7 +52,7 @@ export class MyPositionsPageComponent {
   searchQuery = signal<string>('');
 
   sortBy = signal<string>('lastModifiedAt');
-  sortDirection = signal<'ASC' | 'DESC'>('DESC');
+  sortDirection = signal<SortDirection>('DESC');
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'myPositionsPage.tableColumn.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
@@ -63,10 +63,10 @@ export class MyPositionsPageComponent {
   ];
 
   readonly availableStatusOptions: { key: string; label: string }[] = [
-    { key: 'DRAFT', label: 'jobState.draft' },
-    { key: 'PUBLISHED', label: 'jobState.published' },
-    { key: 'CLOSED', label: 'jobState.closed' },
-    { key: 'APPLICANT_FOUND', label: 'jobState.applicantFound' },
+    { key: CreatedJobDTOStateEnum.Draft, label: 'jobState.draft' },
+    { key: CreatedJobDTOStateEnum.Published, label: 'jobState.published' },
+    { key: CreatedJobDTOStateEnum.Closed, label: 'jobState.closed' },
+    { key: CreatedJobDTOStateEnum.ApplicantFound, label: 'jobState.applicantFound' },
   ];
 
   readonly stateTextMap = computed<Record<string, string>>(() =>
@@ -130,7 +130,7 @@ export class MyPositionsPageComponent {
       const items: JhiMenuItem[] = [];
 
       // Edit action - different behavior for DRAFT vs PUBLISHED
-      if (job.state === 'DRAFT') {
+      if (job.state === CreatedJobDTOStateEnum.Draft) {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -139,7 +139,7 @@ export class MyPositionsPageComponent {
             this.onEditJob(job.jobId);
           },
         });
-      } else if (job.state === 'PUBLISHED') {
+      } else if (job.state === CreatedJobDTOStateEnum.Published) {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -152,7 +152,7 @@ export class MyPositionsPageComponent {
       }
 
       // Delete/Close action - based on state
-      if (job.state === 'DRAFT') {
+      if (job.state === CreatedJobDTOStateEnum.Draft) {
         items.push({
           label: 'button.delete',
           icon: 'trash',
@@ -162,7 +162,7 @@ export class MyPositionsPageComponent {
             this.showDeleteDialog.set(true);
           },
         });
-      } else if (job.state === 'PUBLISHED') {
+      } else if (job.state === CreatedJobDTOStateEnum.Published) {
         items.push({
           label: 'button.close',
           icon: 'xmark',
@@ -187,7 +187,7 @@ export class MyPositionsPageComponent {
     };
   });
 
-  private jobService = inject(JobResourceApiService);
+  private jobApi = inject(JobResourceApi);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);
@@ -251,7 +251,7 @@ export class MyPositionsPageComponent {
 
   async onDeleteJob(jobId: string): Promise<void> {
     try {
-      await firstValueFrom(this.jobService.deleteJob(jobId));
+      await firstValueFrom(this.jobApi.deleteJob(jobId));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
       await this.loadJobs();
     } catch (error) {
@@ -263,7 +263,7 @@ export class MyPositionsPageComponent {
 
   async onCloseJob(jobId: string): Promise<void> {
     try {
-      await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
+      await firstValueFrom(this.jobApi.changeJobState(jobId, CreatedJobDTOStateEnum.Closed));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
       await this.loadJobs();
     } catch (error) {
@@ -307,7 +307,7 @@ export class MyPositionsPageComponent {
         return;
       }
       const pageData = await firstValueFrom(
-        this.jobService.getJobsForCurrentResearchGroup(
+        this.jobApi.getJobsForCurrentResearchGroup(
           this.pageSize(),
           this.page(),
           emptyToUndef(this.selectedStatusFilters()),

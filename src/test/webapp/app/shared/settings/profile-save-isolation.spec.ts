@@ -4,12 +4,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
-import { createApplicantResourceApiServiceMock } from 'util/applicant-resource-api.service.mock';
+import { createApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
@@ -17,7 +19,7 @@ import { createDialogServiceMock, provideDialogServiceMock } from '../../../util
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('Profile save isolation', () => {
-  const baseProfile: ApplicantDTO = {
+  const baseProfile: Mutable<ApplicantDTO> = {
     user: {
       userId: 'user-1',
       firstName: 'Ada',
@@ -46,14 +48,14 @@ describe('Profile save isolation', () => {
     masterGradeLowerLimit: '4.0',
   };
 
-  const baseDocumentIds: ApplicationDocumentIdsDTO = {
+  const baseDocumentIds: Mutable<ApplicationDocumentIdsDTO> = {
     bachelorDocumentDictionaryIds: [{ id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 }],
     masterDocumentDictionaryIds: [{ id: 'master-doc-1', name: 'master.pdf', size: 100 }],
     cvDocumentDictionaryId: { id: 'cv-doc-1', name: 'cv.pdf', size: 100 },
     referenceDocumentDictionaryIds: [{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }],
   };
 
-  const applicationResourceServiceMock = createApplicantResourceApiServiceMock();
+  const applicantApiMock = createApplicantResourceApiMock();
 
   const accountServiceMock = createAccountServiceMock();
   const toastServiceMock = createToastServiceMock();
@@ -61,7 +63,7 @@ describe('Profile save isolation', () => {
   const httpClientMock = {
     post: vi.fn(),
   };
-  const cloneValue = <T>(value: T): T => structuredClone(value);
+  const cloneValue = <T>(value: T): Mutable<T> => structuredClone(value) as Mutable<T>;
   const createDocumentsComponent = async (): Promise<SettingsDocumentsComponent> => {
     const component = TestBed.runInInjectionContext(() => new SettingsDocumentsComponent());
     await component['loadProfile']();
@@ -70,20 +72,20 @@ describe('Profile save isolation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    applicationResourceServiceMock.getApplicantProfile.mockReturnValue(of(baseProfile));
-    applicationResourceServiceMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicationResourceServiceMock.updateApplicantPersonalInformation.mockReturnValue(of(baseProfile));
-    applicationResourceServiceMock.updateApplicantDocumentSettings.mockReturnValue(of(baseProfile));
-    applicationResourceServiceMock.uploadApplicantDocuments.mockReturnValue(of([]));
-    applicationResourceServiceMock.deleteApplicantProfileDocument.mockReturnValue(of(undefined));
-    applicationResourceServiceMock.renameApplicantProfileDocument.mockReturnValue(of(undefined));
+    applicantApiMock.getApplicantProfile.mockReturnValue(of(baseProfile));
+    applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
+    applicantApiMock.updateApplicantPersonalInformation.mockReturnValue(of(baseProfile));
+    applicantApiMock.updateApplicantDocumentSettings.mockReturnValue(of(baseProfile));
+    applicantApiMock.uploadApplicantDocuments.mockReturnValue(of([]));
+    applicantApiMock.deleteApplicantProfileDocument.mockReturnValue(of(undefined));
+    applicantApiMock.renameApplicantProfileDocument.mockReturnValue(of(undefined));
     httpClientMock.post.mockReset();
     httpClientMock.post.mockReturnValue(of([]));
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, TranslateModule.forRoot()],
       providers: [
-        { provide: ApplicantResourceApiService, useValue: applicationResourceServiceMock },
+        { provide: ApplicantResourceApi, useValue: applicantApiMock },
         { provide: HttpClient, useValue: httpClientMock },
         provideDialogServiceMock(dialogServiceMock),
         provideAccountServiceMock(accountServiceMock),
@@ -99,22 +101,22 @@ describe('Profile save isolation', () => {
     const profileAfterBothSaves = cloneValue(profileAfterPersonalSave);
     profileAfterBothSaves.bachelorGrade = '1.0';
 
-    applicationResourceServiceMock.getApplicantProfile.mockReset();
-    applicationResourceServiceMock.getApplicantProfile
+    applicantApiMock.getApplicantProfile.mockReset();
+    applicantApiMock.getApplicantProfile
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(profileAfterPersonalSave))
       .mockReturnValueOnce(of(profileAfterBothSaves));
-    applicationResourceServiceMock.getApplicantProfileDocumentIds.mockReset();
-    applicationResourceServiceMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicationResourceServiceMock.updateApplicantPersonalInformation.mockReset();
-    applicationResourceServiceMock.updateApplicantDocumentSettings.mockReset();
-    applicationResourceServiceMock.updateApplicantPersonalInformation
+    applicantApiMock.getApplicantProfileDocumentIds.mockReset();
+    applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
+    applicantApiMock.updateApplicantPersonalInformation.mockReset();
+    applicantApiMock.updateApplicantDocumentSettings.mockReset();
+    applicantApiMock.updateApplicantPersonalInformation
       .mockReturnValueOnce(of(profileAfterPersonalSave))
       .mockReturnValueOnce(of(profileAfterPersonalSave));
-    applicationResourceServiceMock.updateApplicantDocumentSettings.mockReturnValueOnce(of(profileAfterBothSaves));
+    applicantApiMock.updateApplicantDocumentSettings.mockReturnValueOnce(of(profileAfterBothSaves));
 
     const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
     await personalComponent.loadPersonalInformation();
@@ -131,7 +133,7 @@ describe('Profile save isolation', () => {
     await personalComponent.onSave();
     await documentsComponent.saveAll();
 
-    expect(applicationResourceServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
+    expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
       expect.objectContaining({
         user: expect.objectContaining({
           userId: accountServiceMock.userId,
@@ -139,7 +141,7 @@ describe('Profile save isolation', () => {
         bachelorGrade: '1.0',
       }),
     );
-    expect(applicationResourceServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+    expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
       expect.objectContaining({
         user: expect.objectContaining({
           firstName: 'Grace',
@@ -154,22 +156,22 @@ describe('Profile save isolation', () => {
     const profileAfterBothSaves = cloneValue(profileAfterDocumentsSave);
     profileAfterBothSaves.user!.firstName = 'Grace';
 
-    applicationResourceServiceMock.getApplicantProfile.mockReset();
-    applicationResourceServiceMock.getApplicantProfile
+    applicantApiMock.getApplicantProfile.mockReset();
+    applicantApiMock.getApplicantProfile
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(baseProfile))
       .mockReturnValueOnce(of(profileAfterDocumentsSave))
       .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicationResourceServiceMock.getApplicantProfileDocumentIds.mockReset();
-    applicationResourceServiceMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicationResourceServiceMock.updateApplicantDocumentSettings.mockReset();
-    applicationResourceServiceMock.updateApplicantPersonalInformation.mockReset();
-    applicationResourceServiceMock.updateApplicantDocumentSettings
+    applicantApiMock.getApplicantProfileDocumentIds.mockReset();
+    applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
+    applicantApiMock.updateApplicantDocumentSettings.mockReset();
+    applicantApiMock.updateApplicantPersonalInformation.mockReset();
+    applicantApiMock.updateApplicantDocumentSettings
       .mockReturnValueOnce(of(profileAfterDocumentsSave))
       .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicationResourceServiceMock.updateApplicantPersonalInformation.mockReturnValueOnce(of(profileAfterBothSaves));
+    applicantApiMock.updateApplicantPersonalInformation.mockReturnValueOnce(of(profileAfterBothSaves));
 
     const documentsComponent = await createDocumentsComponent();
 
@@ -186,14 +188,14 @@ describe('Profile save isolation', () => {
     await documentsComponent.saveAll();
     await personalComponent.onSave();
 
-    expect(applicationResourceServiceMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+    expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
       expect.objectContaining({
         user: expect.objectContaining({
           firstName: 'Grace',
         }),
       }),
     );
-    expect(applicationResourceServiceMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
+    expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
       expect.objectContaining({
         bachelorGrade: '1.0',
         user: expect.objectContaining({
@@ -211,8 +213,8 @@ describe('Profile save isolation', () => {
     profileWithManualLimits.bachelorGradeUpperLimit = '100%';
     profileWithManualLimits.bachelorGradeLowerLimit = '60%';
 
-    applicationResourceServiceMock.getApplicantProfile.mockReset();
-    applicationResourceServiceMock.getApplicantProfile.mockReturnValue(of(profileWithManualLimits));
+    applicantApiMock.getApplicantProfile.mockReset();
+    applicantApiMock.getApplicantProfile.mockReturnValue(of(profileWithManualLimits));
 
     const documentsComponent = await createDocumentsComponent();
 
@@ -276,10 +278,10 @@ describe('Profile save isolation', () => {
       throw new Error('Expected initial CV document');
     }
 
-    cvDocuments[0].name = 'cv-renamed.pdf';
+    (cvDocuments[0] as Mutable<(typeof cvDocuments)[0]>).name = 'cv-renamed.pdf';
 
     await documentsComponent.saveAll();
 
-    expect(applicationResourceServiceMock.renameApplicantProfileDocument).toHaveBeenCalledWith('cv-doc-1', 'cv-renamed.pdf');
+    expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('cv-doc-1', 'cv-renamed.pdf');
   });
 });

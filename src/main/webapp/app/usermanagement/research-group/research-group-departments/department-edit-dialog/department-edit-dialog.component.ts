@@ -2,8 +2,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DepartmentResourceApiService, SchoolResourceApiService } from 'app/generated';
-import { SchoolShortDTO } from 'app/generated/model/models';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -49,8 +50,8 @@ export class DepartmentEditDialogComponent {
 
   private readonly config = inject(DynamicDialogConfig);
   private readonly ref = inject(DynamicDialogRef);
-  private readonly departmentService = inject(DepartmentResourceApiService);
-  private readonly schoolService = inject(SchoolResourceApiService);
+  private readonly departmentApi = inject(DepartmentResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -69,7 +70,7 @@ export class DepartmentEditDialogComponent {
 
   async loadSchools(): Promise<void> {
     try {
-      const schools = await firstValueFrom(this.schoolService.getAllSchools());
+      const schools = await firstValueFrom(this.schoolApi.getAllSchools());
       this.schools.set(schools);
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.errors.loadSchoolsFailed`);
@@ -96,10 +97,10 @@ export class DepartmentEditDialogComponent {
     try {
       const departmentId = this.departmentId();
       if (this.isEditMode() && departmentId) {
-        await firstValueFrom(this.departmentService.updateDepartment(departmentId, dto));
+        await firstValueFrom(this.departmentApi.updateDepartment(departmentId, dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.updated`);
       } else {
-        await firstValueFrom(this.departmentService.createDepartment(dto));
+        await firstValueFrom(this.departmentApi.createDepartment(dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.created`);
       }
       this.ref.close(true);

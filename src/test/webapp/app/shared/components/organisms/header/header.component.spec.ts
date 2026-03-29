@@ -8,7 +8,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { User } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
@@ -22,7 +22,7 @@ import {
 import { setupWindowMatchMediaMock, createThemeServiceMock, provideThemeServiceMock, ThemeServiceMock } from 'util/theme.service.mock';
 
 type HeaderComponentTestInstance = Omit<HeaderComponent, 'routeAuthorities' | 'isProfessorPage'> & {
-  routeAuthorities: () => UserShortDTO.RolesEnum[] | string[];
+  routeAuthorities: () => UserShortDTORolesEnum[] | string[];
   isProfessorPage: () => boolean;
 };
 
@@ -162,7 +162,7 @@ describe('HeaderComponent', () => {
       router.url = '/some-other-route';
       accountService.setAuthorities([]);
       router.routerState.snapshot.root.data = {
-        authorities: [UserShortDTO.RolesEnum.Professor],
+        authorities: [UserShortDTORolesEnum.Professor],
       };
 
       fixture = TestBed.createComponent(HeaderComponent);
@@ -184,7 +184,7 @@ describe('HeaderComponent', () => {
       ).firstChild = {
         firstChild: {
           firstChild: null,
-          data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+          data: { authorities: [UserShortDTORolesEnum.Professor] },
         },
         data: {},
       };
@@ -212,7 +212,7 @@ describe('HeaderComponent', () => {
       ).firstChild = {
         firstChild: {
           firstChild: null,
-          data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+          data: { authorities: [UserShortDTORolesEnum.Professor] },
         },
         data: {},
       };

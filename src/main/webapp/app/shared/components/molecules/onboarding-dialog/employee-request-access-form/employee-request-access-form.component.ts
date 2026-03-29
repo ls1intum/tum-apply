@@ -8,8 +8,8 @@ import { ButtonComponent } from 'app/shared/components//atoms/button/button.comp
 import { ConfirmDialog } from 'app/shared/components//atoms/confirm-dialog/confirm-dialog';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ToastService } from 'app/service/toast-service';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 
 import { OnboardingDialog } from '../onboarding-dialog';
@@ -34,8 +34,8 @@ export class EmployeeRequestAccessFormComponent {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
-  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
+  private readonly researchGroupApi = inject(ResearchGroupResourceApi);
+  private readonly profOnboardingApi = inject(ProfOnboardingResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -80,9 +80,9 @@ export class EmployeeRequestAccessFormComponent {
 
     try {
       const requestData = { professorName };
-      await firstValueFrom(this.researchGroupService.createEmployeeResearchGroupRequest(requestData));
+      await firstValueFrom(this.researchGroupApi.createEmployeeResearchGroupRequest(requestData));
 
-      await firstValueFrom(this.profOnboardingService.confirmOnboarding());
+      await firstValueFrom(this.profOnboardingApi.confirmOnboarding());
 
       this.toastService.showSuccessKey('onboarding.employeeRequest.success');
       this.ref?.close();

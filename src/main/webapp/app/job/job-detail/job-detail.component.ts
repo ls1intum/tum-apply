@@ -17,32 +17,34 @@ import { BackButtonComponent } from 'app/shared/components/atoms/back-button/bac
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
-import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
-import { JobPreviewRequest, UserShortDTO } from 'app/generated';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobDetailDTO } from 'app/generated/model/job-detail-dto';
+import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
+import { JobPreviewRequest } from 'app/generated/model/job-preview-request';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { createMenuActionSignals } from 'app/shared/util/util';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import * as DropDownOptions from '../dropdown-options';
-
-import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
+type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
 export interface JobDetails {
   supervisingProfessor: string;
   researchGroup: string;
   title: string;
-  subjectArea: JobFormDTO.SubjectAreaEnum;
+  subjectArea: JobFormDTOSubjectAreaEnum;
   researchArea: string;
-  location: string;
+  location: JobFormDTOLocationEnum;
   workload: string;
   contractDuration: string;
-  fundingType: string;
+  fundingType: JobFormDTOFundingTypeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
@@ -58,7 +60,7 @@ export interface JobDetails {
   researchGroupPostalCode: string;
   researchGroupCity: string;
 
-  jobState: string | undefined;
+  jobState: JobDetailDTOStateEnum | undefined;
   belongsToResearchGroup: boolean;
 
   applicationId?: string;
@@ -115,7 +117,7 @@ export class JobDetailComponent {
     return this.translate.instant('jobDetailPage.noData');
   });
 
-  pdfExportService = inject(PdfExportResourceApiService);
+  pdfExportApi = inject(PdfExportResourceApi);
 
   readonly primaryActionButton = computed<ActionButton | null>(() => {
     if (this.previewData()) {
@@ -137,7 +139,7 @@ export class JobDetailComponent {
             disabled: false,
             shouldTranslate: true,
           };
-        case ApplicationStateEnum.Saved:
+        case ApplicationForApplicantDTOApplicationStateEnum.Saved:
           return {
             label: 'button.edit',
             severity: 'primary',
@@ -161,7 +163,7 @@ export class JobDetailComponent {
       }
     }
     // Case 2: DRAFT → show Edit button
-    if (job.jobState === 'DRAFT') {
+    if (job.jobState === JobDetailDTOStateEnum.Draft) {
       return {
         label: 'button.edit',
         severity: 'primary',
@@ -174,7 +176,7 @@ export class JobDetailComponent {
       };
     }
     // Case 3: PUBLISHED and belongs to professor → show Close button
-    if (job.jobState === 'PUBLISHED' && this.isOwnerOfJob(job)) {
+    if (job.jobState === JobDetailDTOStateEnum.Published && this.isOwnerOfJob(job)) {
       return {
         label: this.closeButtonLabel,
         severity: this.closeButtonSeverity,
@@ -195,17 +197,17 @@ export class JobDetailComponent {
   });
 
   readonly stateTextMap = new Map<string, string>([
-    ['DRAFT', 'jobState.draft'],
-    ['PUBLISHED', 'jobState.published'],
-    ['CLOSED', 'jobState.closed'],
-    ['APPLICANT_FOUND', 'jobState.applicantFound'],
+    [JobDetailDTOStateEnum.Draft, 'jobState.draft'],
+    [JobDetailDTOStateEnum.Published, 'jobState.published'],
+    [JobDetailDTOStateEnum.Closed, 'jobState.closed'],
+    [JobDetailDTOStateEnum.ApplicantFound, 'jobState.applicantFound'],
   ]);
 
   readonly stateSeverityMap = new Map<string, 'success' | 'info' | 'contrast' | 'secondary'>([
-    ['DRAFT', 'info'],
-    ['PUBLISHED', 'secondary'],
-    ['CLOSED', 'contrast'],
-    ['APPLICANT_FOUND', 'success'],
+    [JobDetailDTOStateEnum.Draft, 'info'],
+    [JobDetailDTOStateEnum.Published, 'secondary'],
+    [JobDetailDTOStateEnum.Closed, 'contrast'],
+    [JobDetailDTOStateEnum.ApplicantFound, 'success'],
   ]);
 
   readonly currentJobState = computed<string | undefined>(() => {
@@ -254,7 +256,7 @@ export class JobDetailComponent {
     if (!job) return items;
 
     // Case 2: DRAFT → add Delete button to menu
-    if (job.jobState === 'DRAFT' && job.belongsToResearchGroup) {
+    if (job.jobState === JobDetailDTOStateEnum.Draft && job.belongsToResearchGroup) {
       items.push({
         label: this.deleteButtonLabel,
         icon: this.deleteButtonIcon,
@@ -277,13 +279,13 @@ export class JobDetailComponent {
   readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
   readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
-  private jobResourceService = inject(JobResourceApiService);
+  private jobApi = inject(JobResourceApi);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
@@ -295,7 +297,7 @@ export class JobDetailComponent {
   });
 
   isProfessorOrEmployee(): boolean {
-    return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);
+    return this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee]);
   }
 
   onEditResearchGroup(): void {
@@ -345,7 +347,7 @@ export class JobDetailComponent {
 
   async onCloseJob(): Promise<void> {
     try {
-      await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), 'CLOSED'));
+      await firstValueFrom(this.jobApi.changeJobState(this.jobId(), JobDetailDTOStateEnum.Closed));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
       this.location.back();
     } catch (error) {
@@ -357,7 +359,7 @@ export class JobDetailComponent {
 
   async onDeleteJob(): Promise<void> {
     try {
-      await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
+      await firstValueFrom(this.jobApi.deleteJob(this.jobId()));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
       this.location.back();
     } catch (error) {
@@ -384,15 +386,9 @@ export class JobDetailComponent {
       };
 
       try {
-        const response = await firstValueFrom(this.pdfExportService.exportJobPreviewToPDF(req, 'response'));
-
+        const response = await firstValueFrom(this.pdfExportApi.exportJobPreviewToPDF(req));
         const contentDisposition = response.headers.get('Content-Disposition');
-        let filename = 'job.pdf';
-
-        if (contentDisposition) {
-          filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
-        }
-
+        const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
         const blob = response.body;
         if (blob) {
           const url = window.URL.createObjectURL(blob);
@@ -411,15 +407,9 @@ export class JobDetailComponent {
     const jobId = this.jobId();
 
     try {
-      const response = await firstValueFrom(this.pdfExportService.exportJobToPDF(jobId, labels, 'response'));
-
+      const response = await firstValueFrom(this.pdfExportApi.exportJobToPDF(jobId, labels));
       const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = 'job.pdf';
-
-      if (contentDisposition) {
-        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
-      }
-
+      const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
       const blob = response.body;
       if (blob) {
         const url = window.URL.createObjectURL(blob);
@@ -447,7 +437,7 @@ export class JobDetailComponent {
         return;
       }
 
-      const job = await firstValueFrom(this.jobResourceService.getJobDetails(this.jobId()));
+      const job = await firstValueFrom(this.jobApi.getJobDetails(this.jobId()));
       this.loadJobDetails(job);
       this.dataLoaded.set(true);
     } catch (error) {
@@ -522,12 +512,12 @@ export class JobDetailComponent {
       supervisingProfessor,
       researchGroup,
       title: data.title,
-      subjectArea: data.subjectArea as JobFormDTO.SubjectAreaEnum,
+      subjectArea: data.subjectArea as JobFormDTOSubjectAreaEnum,
       researchArea: data.researchArea ?? '',
-      location: data.location ?? '',
+      location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
-      fundingType: data.fundingType ?? '',
+      fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,
@@ -543,7 +533,7 @@ export class JobDetailComponent {
       researchGroupPostalCode,
       researchGroupCity,
 
-      jobState: isForm ? 'DRAFT' : jobDetailDTO.state,
+      jobState: isForm ? JobDetailDTOStateEnum.Draft : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
 
       applicationId: jobDetailDTO.applicationId ?? undefined,
@@ -558,7 +548,7 @@ export class JobDetailComponent {
     let researchGroupDetails;
     try {
       researchGroupDetails = await firstValueFrom(
-        this.researchGroupService.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
+        this.researchGroupApi.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
       );
     } catch {
       this.toastService.showError({ detail: `Error loading research Group details.` });
