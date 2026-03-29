@@ -26,8 +26,8 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Privacy & Data',
           items: [
-            'privacy/data-export',
-            'privacy/data-retention',
+            'privacy-and-data/data-export',
+            'privacy-and-data/data-retention',
           ],
         },
         'production-deployment',

@@ -26,6 +26,21 @@ With a specific Dockerized database:
 SPRING_PROFILES_INCLUDE=mysql ./gradlew test -x webapp
 ```
 
+### Coverage Report
+
+To keep high coverage, inspect the coverage report while making a PR:
+
+1. Generate the report:
+   ```bash
+   ./gradlew test jacocoTestReport -x webapp
+   ```
+2. Open the report:
+   ```bash
+   open build/reports/jacoco/test/html/index.html
+   ```
+
+Test reports are also available under `build/reports/tests/`.
+
 ---
 
 ## Test Naming & Structure

@@ -36,6 +36,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'server-guidelines/server-guidelines',
             'server-guidelines/server-testing',
+            'server-guidelines/api-testing',
             'server-guidelines/database-guidelines',
             'server-guidelines/liquibase-guidelines',
             'server-guidelines/error-handling',

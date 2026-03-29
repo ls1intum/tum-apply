@@ -82,7 +82,7 @@ const config: Config = {
       '@docusaurus/plugin-content-docs',
       {
         id: 'professors',
-        path: 'docs/professors',
+        path: 'docs/professors-and-employees',
         routeBasePath: 'professors',
         sidebarPath: './sidebar-professors.ts',
         editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
@@ -102,7 +102,7 @@ const config: Config = {
       '@docusaurus/plugin-content-docs',
       {
         id: 'admin',
-        path: 'docs/admin',
+        path: 'docs/admins',
         routeBasePath: 'admin',
         sidebarPath: './sidebar-admin.ts',
         editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',

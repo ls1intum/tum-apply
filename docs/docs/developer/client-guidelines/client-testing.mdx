@@ -16,9 +16,22 @@ Test files are located in `src/test/webapp/` and follow a **mirror structure** m
 
 | **Command** | **Description** |
 |---|---|
-| `npm run vitest` | Watch mode |
-| `npm run vitest:run` | Single run |
-| `npm run vitest:coverage` | With coverage report |
+| `npm run test` | Run tests with coverage |
+| `npm run test:ci` | Run tests with CI coverage thresholds |
+| `npm run test:ui` | Run tests with Vitest UI |
+
+### Coverage Report
+
+To keep high coverage, inspect the coverage report while making a PR:
+
+1. Generate the report:
+   ```bash
+   npm run test
+   ```
+2. Open the report:
+   ```bash
+   open build/test-results/lcov-report/index.html
+   ```
 
 ---
 
@@ -256,7 +269,7 @@ This is especially useful for testing different user roles, status values, or in
 ## Coverage & Quality
 
 - Ensure at least **80% line coverage**
-- Run `npm run vitest:coverage` for coverage reports
+- Run `npm run test` to generate coverage reports
 - Prefer testing through user interactions over testing internal methods directly
 
 ---
