@@ -2,6 +2,7 @@ package de.tum.cit.aet.application.service;
 
 import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
 
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -28,8 +29,12 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
@@ -635,5 +640,63 @@ public class ApplicationService {
 
         currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
         return application;
+    }
+
+    /**
+     * Applies AI-extracted PDF data to an application, only updating fields that
+     * are currently null or blank. This ensures existing data is never overwritten.
+     *
+     * @param applicationId the ID of the application to update
+     * @param extracted     the extracted data from the AI service
+     */
+    @Transactional
+    public void applyExtractedPdfData(String applicationId, ExtractedApplicationDataDTO extracted) {
+        Application application = assertCanManageApplication(UUID.fromString(applicationId));
+
+        setIfEmpty(application::getApplicantFirstName, application::setApplicantFirstName, extracted.firstName());
+        setIfEmpty(application::getApplicantLastName, application::setApplicantLastName, extracted.lastName());
+        setIfEmpty(application::getApplicantPhoneNumber, application::setApplicantPhoneNumber, extracted.phoneNumber());
+        setIfEmpty(application::getApplicantGender, application::setApplicantGender, extracted.gender());
+        setIfEmpty(application::getApplicantNationality, application::setApplicantNationality, extracted.nationality());
+        setIfEmpty(application::getApplicantWebsite, application::setApplicantWebsite, extracted.website());
+        setIfEmpty(application::getApplicantLinkedinUrl, application::setApplicantLinkedinUrl, extracted.linkedinUrl());
+        setIfEmpty(application::getApplicantStreet, application::setApplicantStreet, extracted.street());
+        setIfEmpty(application::getApplicantCity, application::setApplicantCity, extracted.city());
+        setIfEmpty(application::getApplicantCountry, application::setApplicantCountry, extracted.country());
+        setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());
+        setIfEmpty(
+            application::getApplicantBachelorDegreeName,
+            application::setApplicantBachelorDegreeName,
+            extracted.bachelorDegreeName()
+        );
+        setIfEmpty(
+            application::getApplicantBachelorUniversity,
+            application::setApplicantBachelorUniversity,
+            extracted.bachelorUniversity()
+        );
+        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.bachelorGrade());
+        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
+        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
+        setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
+
+        // Handle date of birth separately since it's a LocalDate field
+        if (application.getApplicantBirthday() == null && extracted.dateOfBirth() != null && !extracted.dateOfBirth().isBlank()) {
+            try {
+                application.setApplicantBirthday(LocalDate.parse(extracted.dateOfBirth()));
+            } catch (DateTimeParseException _) {}
+        }
+
+        applicationRepository.save(application);
+    }
+
+    /**
+     * Sets a value on the application only if the current value is null or blank
+     * and the new value is non-null and non-blank.
+     */
+    private void setIfEmpty(Supplier<String> getter, Consumer<String> setter, String newValue) {
+        String current = getter.get();
+        if ((current == null || current.isBlank()) && newValue != null && !newValue.isBlank()) {
+            setter.accept(newValue);
+        }
     }
 }

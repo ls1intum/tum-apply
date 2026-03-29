@@ -179,6 +179,7 @@ repositories {
 }
 
 dependencies {
+  implementation 'org.apache.pdfbox:pdfbox:3.0.3'
   // Defines low-level streaming API, and includes JSON-specific implementations
   // Jackson BOM for version management of Jackson 3.x modules
   implementation platform("tools.jackson:jackson-bom:${jacksonBomVersion}")

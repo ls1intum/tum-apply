@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.service.support.DocumentDictionaryOwnerSetter;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class DocumentDictionaryService {
 
+    private final DocumentService documentService;
     private CurrentUserService currentUserService;
     private DocumentDictionaryRepository documentDictionaryRepository;
 
@@ -232,6 +235,18 @@ public class DocumentDictionaryService {
     }
 
     /**
+     * Downloads a document by its associated DocumentDictionary ID.
+     *
+     * @param documentDictionaryId the UUID of the DocumentDictionary
+     * @return the file as a downloadable HTTP resource
+     */
+    public Resource downloadDocument(UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = findDocumentDictionaryById(documentDictionaryId);
+        verifyAccess(documentDictionary);
+        return documentService.download(documentDictionary.getDocument());
+    }
+
+    /**
      * Asserts that the current user can manage the applicant with the given ID.
      *
      * @param documentId the id of the document to check
@@ -257,5 +272,59 @@ public class DocumentDictionaryService {
         }
 
         return documentDictionary;
+    }
+
+    /**
+     * Verifies that the current user has access to the given document dictionary.
+     * <p>
+     * Access is granted based on the following hierarchy:
+     * <ul>
+     *   <li>If the document is associated with an application:
+     *     <ul>
+     *       <li>Professors and employees must have access to the associated job</li>
+     *       <li>Other users must be the applicant or an admin</li>
+     *     </ul>
+     *   </li>
+     *   <li>If the document is associated with a custom field answer:
+     *     <ul>
+     *       <li>Professors and employees must have access to the application's job</li>
+     *       <li>Other users must be the applicant or an admin</li>
+     *     </ul>
+     *   </li>
+     *   <li>If the document is associated with an applicant directly, the current user must be that applicant or an admin</li>
+     * </ul>
+     * <p>
+     * If the document has no owner association, an {@link AccessDeniedException} is thrown.
+     *
+     * @param documentDictionary the document dictionary to verify access for
+     * @throws AccessDeniedException if the current user does not have access or if the document has no owner association
+     */
+    private void verifyAccess(DocumentDictionary documentDictionary) {
+        if (documentDictionary.getApplication() != null) {
+            Application application = documentDictionary.getApplication();
+            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
+                currentUserService.verifyJobAccess(application.getJob());
+                return;
+            }
+            currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+            return;
+        }
+
+        if (documentDictionary.getCustomFieldAnswer() != null) {
+            Application application = documentDictionary.getCustomFieldAnswer().getApplication();
+            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
+                currentUserService.verifyJobAccess(application.getJob());
+                return;
+            }
+            currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+            return;
+        }
+
+        if (documentDictionary.getApplicant() != null) {
+            currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplicant().getUserId());
+            return;
+        }
+
+        throw new AccessDeniedException("Cannot verify access for document without owner association");
     }
 }
