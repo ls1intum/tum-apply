@@ -9,14 +9,12 @@
 >
   <ng-template #empty>
     <div
-      class="flex w-full cursor-pointer items-center justify-center"
+      class="flex w-full items-center justify-center gap-3 cursor-pointer"
       (click)="fileupload_component.choose()"
       [class.flex-col]="!compact()"
-      [class.gap-3]="compact()"
     >
       <span
         class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
-        [class.mb-4]="!compact()"
         tabindex="0"
         role="button"
         aria-label="Select file to upload"
