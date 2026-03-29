@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, computed, input, output, viewChild } from '@angular/core';
+import { Component, computed, input, output, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -16,8 +16,6 @@ export interface SubjectAreaOption {
   selector: 'jhi-subject-area-subscription-selector',
   imports: [FilterMultiselect, FontAwesomeModule, TranslateModule, TranslateDirective],
   templateUrl: './subject-area-subscription-selector.component.html',
-  styleUrl: './subject-area-subscription-selector.component.scss',
-  encapsulation: ViewEncapsulation.None,
 })
 export class SubjectAreaSubscriptionSelectorComponent {
   saving = input<boolean>(false);

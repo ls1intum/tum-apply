@@ -1,6 +1,7 @@
-<div class="subject-area-subscription-selector">
-  <div class="subject-area-filter">
+<div class="flex flex-col gap-3">
+  <div class="relative">
     <jhi-filter-multiselect
+      class="[&_.filter-button]:justify-between [&_.filter-trigger]:min-w-0 [&_.filter-trigger]:flex-1 [&_.trigger-placeholder]:hidden [&_.trigger-summary]:hidden [&_.chip-row]:hidden [&_.filter-icon]:ml-auto [&_.filter-icon]:shrink-0 [&_.filter-button:hover]:border-[var(--color-border-hover)] [&_.selected-chips-list]:hidden"
       filterId="subject-areas"
       [filterLabel]="'settings.notifications.applicant.subjectAreas.placeholder'"
       [filterSearchPlaceholder]="'settings.notifications.applicant.subjectAreas.filterPlaceholder'"
@@ -10,7 +11,10 @@
       [showSelectedChipsInTrigger]="false"
       (filterChange)="onFilterChange($event)"
     />
-    <div class="subject-area-filter-placeholder" aria-hidden="true">
+    <div
+      class="pointer-events-none absolute inset-y-1/2 left-3 right-8 -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap text-[length:var(--p-select-sm-font-size)] text-text-secondary"
+      aria-hidden="true"
+    >
       {{ 'settings.notifications.applicant.subjectAreas.placeholder' | translate }}
     </div>
   </div>

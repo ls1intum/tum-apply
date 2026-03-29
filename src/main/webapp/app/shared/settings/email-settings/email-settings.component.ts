@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
@@ -43,7 +42,7 @@ export class NotificationSettingsComponent {
   protected readonly emailSettingApi = inject(EmailSettingResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly RolesEnum = RolesEnum;
-  protected readonly subjectAreaSubscriptions = new SubjectAreaSubscriptionsStore(inject(ApplicantResourceApi), this.toastService);
+  protected readonly subjectAreaSubscriptions = new SubjectAreaSubscriptionsStore();
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);

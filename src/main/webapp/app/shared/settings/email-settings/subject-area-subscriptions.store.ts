@@ -1,4 +1,4 @@
-import { computed, signal } from '@angular/core';
+import { computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
@@ -10,6 +10,9 @@ import { FilterChange } from '../../components/atoms/filter-multiselect/filter-m
 export type SubjectArea = ApplicantSubjectAreaSubscriptionsEnum;
 
 export class SubjectAreaSubscriptionsStore {
+  private readonly applicantApi = inject(ApplicantResourceApi);
+  private readonly toastService = inject(ToastService);
+
   readonly saving = signal(false);
   readonly enabled = signal(false);
   readonly selected = signal<SubjectArea[]>([]);
@@ -27,11 +30,6 @@ export class SubjectAreaSubscriptionsStore {
     const selectedAreas = new Set(this.selected());
     return this.options.filter(option => selectedAreas.has(option.value));
   });
-
-  constructor(
-    private readonly applicantApi: ApplicantResourceApi,
-    private readonly toastService: ToastService,
-  ) {}
 
   async load(): Promise<void> {
     try {
