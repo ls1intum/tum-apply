@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import { NotificationSettingsComponent, NotificationGroup } from 'app/shared/settings/email-settings/email-settings.component';
+import { NotificationSettingsComponent, NotificationGroup } from 'app/shared/settings/notifications/notification-settings.component';
 import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
