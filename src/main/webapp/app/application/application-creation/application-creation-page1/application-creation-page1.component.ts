@@ -11,7 +11,6 @@ import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
-
 import { selectGender } from 'app/shared/constants/genders';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
@@ -167,6 +166,11 @@ export default class ApplicationCreationPage1Component {
     });
   });
 
+  private initializeCvDocs = effect(() => {
+    const cvDocs = this.computedDocumentIdsCvSet();
+    this.cvDocsSetValidity(cvDocs);
+  });
+
   constructor() {
     effect(onCleanup => {
       const form = this.page1Form();
@@ -200,11 +204,6 @@ export default class ApplicationCreationPage1Component {
       });
     });
   }
-
-  private initializeCvDocs = effect(() => {
-    const cvDocs = this.computedDocumentIdsCvSet();
-    this.cvDocsSetValidity(cvDocs);
-  });
 
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
     if (cvDocs === undefined || cvDocs.length === 0) {

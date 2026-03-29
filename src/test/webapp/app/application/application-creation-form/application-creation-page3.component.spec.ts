@@ -38,7 +38,6 @@ describe('ApplicationPage3Component', () => {
     });
   });
 
-
   describe('Validation Status', () => {
     it('should have invalid form status when required fields are empty', () => {
       comp.data.set({

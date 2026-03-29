@@ -80,7 +80,6 @@ export default class ApplicationCreationPage3Component {
     initialValue: this.page3Form.status,
   });
 
-
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;
     const raw = this.formValue();
@@ -107,11 +106,9 @@ export default class ApplicationCreationPage3Component {
     this.hasInitialized.set(true);
   });
 
-
   emitChanged(): void {
     this.changed.emit(true);
   }
-
 
   setDesiredStartDate($event: string | undefined): void {
     const currentData = this.data();
