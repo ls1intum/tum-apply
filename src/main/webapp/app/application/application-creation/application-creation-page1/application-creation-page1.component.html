@@ -2,11 +2,11 @@
   <p jhiTranslate="entity.applicationPage1.description"></p>
   @if (applicationIdForDocuments(); as applicationId) {
     <p-divider layout="horizontal">
-      <span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span>
+      <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
     </p-divider>
     <div class="w-full mb-6">
       <label>
-        <span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span>
+        <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
         <span class="required"> *</span>
         <fa-icon
           class="icon"
@@ -16,7 +16,6 @@
         />
       </label>
       <jhi-upload-button
-        uploadKey="entity.upload.upload_instruction.CV"
         documentType="CV"
         [applicationId]="applicationId"
         [documentIds]="computedDocumentIdsCvSet()"
