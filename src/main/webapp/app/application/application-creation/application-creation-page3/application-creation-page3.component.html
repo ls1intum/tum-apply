@@ -28,9 +28,8 @@
     }
 
     @if (applicationIdForDocuments(); as applicationId) {
-      <div class="flex flex-col lg:flex-row lg:gap-8">
         <!-- Reference Upload -->
-        <div class="flex-1">
+        <div class="w-full mb-6">
           <label>
             <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
             <fa-icon
@@ -46,7 +45,6 @@
             [documentIds]="documentIdsReferences()"
             [compact]="true"
           />
-        </div>
       </div>
     }
 
