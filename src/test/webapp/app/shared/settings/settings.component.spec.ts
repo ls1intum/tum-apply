@@ -2,19 +2,21 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SettingsComponent } from 'app/shared/settings/settings.component';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { createThemeServiceMock, provideThemeServiceMock, setupWindowMatchMediaMock } from '../../../util/theme.service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
-import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
+import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
-import { UserDataExportResourceApiService } from 'app/generated';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
 describe('SettingsComponent', () => {
   let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
   let translateMock: ReturnType<typeof createTranslateServiceMock>;
   let themeServiceMock: ReturnType<typeof createThemeServiceMock>;
+  const activatedRouteMock = createActivatedRouteMock();
 
   const emailSettingServiceMock = {
     getEmailSettings: vi.fn(),
@@ -49,9 +51,10 @@ describe('SettingsComponent', () => {
         provideTranslateMock(translateMock),
         provideThemeServiceMock(themeServiceMock),
         provideToastServiceMock(toastServiceMock),
+        provideActivatedRouteMock(activatedRouteMock),
         provideFontAwesomeTesting(),
-        { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
-        { provide: UserDataExportResourceApiService, useValue: userDataExportServiceMock },
+        { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
+        { provide: UserDataExportResourceApi, useValue: userDataExportServiceMock },
       ],
     });
   });
@@ -67,11 +70,11 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test User',
         email: 'user@test.com',
-        authorities: [UserShortDTO.RolesEnum.Professor],
+        authorities: [UserShortDTORolesEnum.Professor],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      expect(component.role()).toBe(UserShortDTO.RolesEnum.Professor);
+      expect(component.role()).toBe(UserShortDTORolesEnum.Professor);
     });
 
     it('should keep role undefined if no user is loaded', () => {
@@ -101,7 +104,7 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test Applicant',
         email: 'applicant@test.com',
-        authorities: [UserShortDTO.RolesEnum.Applicant],
+        authorities: [UserShortDTORolesEnum.Applicant],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
@@ -119,7 +122,7 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test Professor',
         email: 'professor@test.com',
-        authorities: [UserShortDTO.RolesEnum.Professor],
+        authorities: [UserShortDTORolesEnum.Professor],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
@@ -136,7 +139,7 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test Admin',
         email: 'admin@test.com',
-        authorities: [UserShortDTO.RolesEnum.Admin],
+        authorities: [UserShortDTORolesEnum.Admin],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
@@ -153,7 +156,7 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test Applicant',
         email: 'applicant@test.com',
-        authorities: [UserShortDTO.RolesEnum.Applicant],
+        authorities: [UserShortDTORolesEnum.Applicant],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
@@ -173,7 +176,7 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test Applicant',
         email: 'applicant@test.com',
-        authorities: [UserShortDTO.RolesEnum.Applicant],
+        authorities: [UserShortDTORolesEnum.Applicant],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
@@ -256,7 +259,7 @@ describe('SettingsComponent', () => {
         id: 'u1',
         name: 'Test Applicant',
         email: 'applicant@test.com',
-        authorities: [UserShortDTO.RolesEnum.Applicant],
+        authorities: [UserShortDTORolesEnum.Applicant],
       });
 
       const component = TestBed.createComponent(SettingsComponent).componentInstance;

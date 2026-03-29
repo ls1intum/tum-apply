@@ -38,7 +38,8 @@
     },
     "system": {
       "system": "System",
-      "systemsettings": "System Settings"
+      "systemsettings": "System Settings",
+      "dependencies": "Dependencies"
     }
   }
 }

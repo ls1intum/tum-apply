@@ -11,7 +11,12 @@ import { selectGender } from 'app/shared/constants/genders';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -28,6 +33,7 @@ describe('ApplicationPage1Component', () => {
         provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClientMock(),
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(ApplicationCreationPage1Component);
@@ -130,12 +136,13 @@ describe('ApplicationPage1Component', () => {
         country: 'us',
         postalCode: '12345',
       },
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
       job: {
         jobId: '2345',
         professorName: 'Professor Name',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         title: 'Example Job',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
     };
 
@@ -237,16 +244,50 @@ describe('ApplicationPage1Component', () => {
 
   it('getPage1FromApplication handles missing fields gracefully', () => {
     const app: ApplicationForApplicantDTO = {
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
       job: {
         jobId: '2345',
         professorName: 'Professor Name',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         title: 'Example Job',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
     };
     const page1 = getPage1FromApplication(app);
     expect(page1.firstName).toBe('');
     expect(page1.gender).toBeUndefined();
+  });
+
+  describe('CV Validation', () => {
+    it('should set cvValid to false when cvDocs is undefined or empty', () => {
+      comp.cvDocsSetValidity(undefined);
+      expect(comp.cvValid()).toBe(false);
+
+      comp.cvDocsSetValidity([]);
+      expect(comp.cvValid()).toBe(false);
+    });
+
+    it('should set cvValid to true when cvDocs is provided', () => {
+      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
+      expect(comp.cvValid()).toBe(true);
+    });
+  });
+
+  describe('Document Input Handling', () => {
+    it('should return array with doc if documentIdsCv is defined', () => {
+      const doc = { id: '1', size: 1 };
+
+      fixture.componentRef.setInput('documentIdsCv', doc);
+      fixture.detectChanges();
+
+      expect(comp.computedDocumentIdsCvSet()).toEqual([doc]);
+    });
+
+    it('should return undefined if documentIdsCv is undefined', () => {
+      fixture.componentRef.setInput('documentIdsCv', undefined);
+      fixture.detectChanges();
+
+      expect(comp.computedDocumentIdsCvSet()).toBeUndefined();
+    });
   });
 });

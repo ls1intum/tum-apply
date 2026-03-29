@@ -11,9 +11,9 @@ import { SubSection } from '../../atoms/sub-section/sub-section';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
-import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicationDocumentIdsDTO';
-import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
-import { ApplicationEvaluationResourceApiService } from '../../../../generated/api/applicationEvaluationResourceApi.service';
+import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
+import { DocumentInformationHolderDTO } from '../../../../generated/model/document-information-holder-dto';
+import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 
 export interface DocumentHolder {
@@ -41,7 +41,7 @@ export class DocumentSection {
 
   readonly NUMBER_OF_DOCUMENTS = 3;
 
-  evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
+  evaluationApi = inject(ApplicationEvaluationResourceApi);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
@@ -94,11 +94,7 @@ export class DocumentSection {
     }
 
     try {
-      const response: HttpResponse<Blob> = await firstValueFrom(
-        this.evaluationResourceService.downloadAll(applicationId, 'response', false, {
-          httpHeaderAccept: 'application/zip',
-        }),
-      );
+      const response: HttpResponse<Blob> = await firstValueFrom(this.evaluationApi.downloadAll(applicationId));
 
       const blob = response.body;
 

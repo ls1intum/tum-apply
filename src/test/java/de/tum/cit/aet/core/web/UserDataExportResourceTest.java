@@ -373,7 +373,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     void annotatedEntitiesMustHaveRuntimeCsvCoverage() throws Exception {
         Set<String> settingsEntries = readZipEntries(processExportAndGetZipPath(savedUser("settings-coverage@tum.de")));
 
-        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
         User applicantUser = applicant.getUser();
         Set<String> applicantEntries = readZipEntries(processExportAndGetZipPath(applicantUser));
 

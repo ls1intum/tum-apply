@@ -6,7 +6,11 @@ import ApplicationCreationPage3Component, {
   getPage3FromApplication,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ApplicationPage3Component', () => {
@@ -34,39 +38,6 @@ describe('ApplicationPage3Component', () => {
     });
   });
 
-  describe('CV Validation', () => {
-    it('should set cvValid to false when cvDocs is undefined or empty', () => {
-      comp.cvDocsSetValidity(undefined);
-      expect(comp.cvValid()).toBe(false);
-
-      comp.cvDocsSetValidity([]);
-      expect(comp.cvValid()).toBe(false);
-    });
-
-    it('should set cvValid to true when cvDocs is provided', () => {
-      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
-      expect(comp.cvValid()).toBe(true);
-    });
-  });
-
-  describe('Document Input Handling', () => {
-    it('should return array with doc if documentIdsCv is defined', () => {
-      const doc = { id: '1', size: 1 };
-
-      fixture.componentRef.setInput('documentIdsCv', doc);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toEqual([doc]);
-    });
-
-    it('should return undefined if documentIdsCv is undefined', () => {
-      fixture.componentRef.setInput('documentIdsCv', undefined);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toBeUndefined();
-    });
-  });
-
   describe('Validation Status', () => {
     it('should have invalid form status when required fields are empty', () => {
       comp.data.set({
@@ -81,8 +52,7 @@ describe('ApplicationPage3Component', () => {
       expect(comp.formStatus()).toBe('INVALID');
     });
 
-    it('should have valid form status when required fields are filled and CV is set', () => {
-      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
+    it('should have valid form status when required fields are filled', () => {
       comp.data.set({
         experiences: '<p>Experience</p>',
         motivation: '<p>Motivation</p>',
@@ -93,7 +63,6 @@ describe('ApplicationPage3Component', () => {
       fixture.detectChanges();
 
       expect(comp.formStatus()).toBe('VALID');
-      expect(comp.cvValid()).toBe(true);
     });
   });
 
@@ -186,12 +155,13 @@ describe('ApplicationPage3Component', () => {
       motivation: 'Because I love coding',
       specialSkills: 'Angular, TypeScript',
       projects: 'Built multiple apps',
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
       job: {
         jobId: 'id-123',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         professorName: 'profName',
         title: 'title',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
     };
 

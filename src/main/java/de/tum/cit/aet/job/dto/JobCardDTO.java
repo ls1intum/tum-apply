@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -14,8 +15,8 @@ public record JobCardDTO(
     @NotNull String title,
     @NotNull Campus location,
     @NotNull String professorName,
+    @NotNull SubjectArea subjectArea,
     String avatar,
-    String departmentName,
     UUID applicationId,
     ApplicationState applicationState,
     Integer workload,
@@ -30,8 +31,8 @@ public record JobCardDTO(
         @NotNull String title,
         @NotNull Campus location,
         @NotNull String professorName,
+        @NotNull SubjectArea subjectArea,
         String avatar,
-        String departmentName,
         UUID applicationId,
         ApplicationState applicationState,
         Integer workload,
@@ -45,8 +46,8 @@ public record JobCardDTO(
             title,
             location,
             professorName,
+            subjectArea,
             avatar,
-            departmentName,
             applicationId,
             applicationState,
             workload,

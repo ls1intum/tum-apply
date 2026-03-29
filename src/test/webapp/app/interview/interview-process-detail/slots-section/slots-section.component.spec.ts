@@ -4,8 +4,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { SlotsSectionComponent } from 'app/interview/interview-process-detail/slots-section/slots-section.component';
-import { InterviewResourceApiService, EmailTemplateResourceApiService } from 'app/generated';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
+import { IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';
@@ -32,15 +34,15 @@ const bookedFutureSlot: InterviewSlotDTO = {
     firstName: 'Jane',
     lastName: 'Doe',
     email: 'jane@example.com',
-    state: 'SCHEDULED',
+    state: IntervieweeDTOStateEnum.Scheduled,
   },
 };
 
 describe('SlotsSectionComponent', () => {
   let fixture: ComponentFixture<SlotsSectionComponent>;
   let component: SlotsSectionComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
-  let mockEmailTemplateService: Partial<EmailTemplateResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
+  let mockEmailTemplateService: Partial<EmailTemplateResourceApi>;
   let toastMock: ToastServiceMock;
 
   beforeEach(async () => {
@@ -62,8 +64,8 @@ describe('SlotsSectionComponent', () => {
         provideToastServiceMock(toastMock),
         provideBreakpointObserverMock(),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
-        { provide: EmailTemplateResourceApiService, useValue: mockEmailTemplateService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
+        { provide: EmailTemplateResourceApi, useValue: mockEmailTemplateService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -295,7 +297,13 @@ describe('SlotsSectionComponent', () => {
         endDateTime: '2027-06-15T10:00:00',
         location: 'Room 101',
         isBooked: true,
-        interviewee: { id: 'iee-new', firstName: 'New', lastName: 'Person', email: 'new@example.com', state: 'SCHEDULED' },
+        interviewee: {
+          id: 'iee-new',
+          firstName: 'New',
+          lastName: 'Person',
+          email: 'new@example.com',
+          state: IntervieweeDTOStateEnum.Scheduled,
+        },
       };
 
       const slotAssignedSpy = vi.spyOn(component.slotAssigned, 'emit');

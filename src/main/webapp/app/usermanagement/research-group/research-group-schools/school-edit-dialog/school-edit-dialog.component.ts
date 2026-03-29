@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -29,7 +29,7 @@ export class SchoolEditDialogComponent {
 
   private readonly config = inject(DynamicDialogConfig);
   private readonly ref = inject(DynamicDialogRef);
-  private readonly schoolService = inject(SchoolResourceApiService);
+  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -58,10 +58,10 @@ export class SchoolEditDialogComponent {
     try {
       const schoolId = this.schoolId();
       if (this.isEditMode() && schoolId) {
-        await firstValueFrom(this.schoolService.updateSchool(schoolId, dto));
+        await firstValueFrom(this.schoolApi.updateSchool(schoolId, dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.updated`);
       } else {
-        await firstValueFrom(this.schoolService.createSchool(dto));
+        await firstValueFrom(this.schoolApi.createSchool(dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.created`);
       }
       this.ref.close(true);

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -7,13 +7,16 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateDirective } from 'app/shared/language';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
-
-import { selectGender } from '../../../shared/constants/genders';
-import { postalCodeValidator } from '../../../shared/validators/custom-validators';
-import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
-import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
+import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'primeng/tooltip';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
+import { selectGender } from 'app/shared/constants/genders';
+import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -66,6 +69,9 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     StringInputComponent,
     TranslateModule,
     TranslateDirective,
+    UploadButtonComponent,
+    FontAwesomeModule,
+    TooltipModule,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -73,8 +79,18 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
 export default class ApplicationCreationPage1Component {
   data = model.required<ApplicationCreationPage1Data>();
 
+  applicationIdForDocuments = input<string | undefined>();
+  documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
+
   valid = output<boolean>();
   changed = output<boolean>();
+
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
+
+  computedDocumentIdsCvSet = computed(() => {
+    const docInfoHolder = this.documentIdsCv();
+    return docInfoHolder ? [docInfoHolder] : undefined;
+  });
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
@@ -140,6 +156,11 @@ export default class ApplicationCreationPage1Component {
     });
   });
 
+  private initializeCvDocs = effect(() => {
+    const cvDocs = this.computedDocumentIdsCvSet();
+    this.cvDocsSetValidity(cvDocs);
+  });
+
   constructor() {
     effect(onCleanup => {
       const form = this.page1Form();
@@ -158,20 +179,28 @@ export default class ApplicationCreationPage1Component {
           ...normalizedValue,
         });
         this.changed.emit(true);
-        this.valid.emit(form.valid);
+        this.valid.emit(form.valid && this.cvValid());
       });
 
       const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
+        this.valid.emit(form.valid && this.cvValid());
       });
 
-      this.valid.emit(form.valid);
+      this.valid.emit(form.valid && this.cvValid());
 
       onCleanup(() => {
         valueSubscription.unsubscribe();
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
+    if (cvDocs === undefined || cvDocs.length === 0) {
+      this.cvValid.set(false);
+    } else {
+      this.cvValid.set(true);
+    }
   }
 
   emitChanged(): void {

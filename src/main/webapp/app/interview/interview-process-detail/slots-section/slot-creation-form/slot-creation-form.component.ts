@@ -1,4 +1,4 @@
-import { Component, QueryList, ViewChildren, computed, inject, input, model, output, signal } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal, viewChildren } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
@@ -8,12 +8,12 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { TooltipModule } from 'primeng/tooltip';
-import { InterviewResourceApiService } from 'app/generated';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { ConflictDataDTO } from 'app/generated/model/conflictDataDTO';
-import { ExistingSlotDTO } from 'app/generated/model/existingSlotDTO';
-import { SlotInput } from 'app/generated/model/slotInput';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
+import { ConflictDataDTO } from 'app/generated/model/conflict-data-dto';
+import { ExistingSlotDTO } from 'app/generated/model/existing-slot-dto';
+import { SlotInput } from 'app/generated/model/slot-input';
 import { firstValueFrom } from 'rxjs';
 import { DateSlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -48,7 +48,7 @@ import { toLocalDateString } from 'app/shared/util/date-time.util';
   templateUrl: './slot-creation-form.component.html',
 })
 export class SlotCreationFormComponent {
-  @ViewChildren(DateSlotCardComponent) dateCards!: QueryList<DateSlotCardComponent>;
+  readonly dateCards = viewChildren(DateSlotCardComponent);
 
   // Inputs
   readonly visible = model.required<boolean>();
@@ -141,7 +141,7 @@ export class SlotCreationFormComponent {
   readonly minDate = new Date();
 
   // Dependencies
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
 
   /**
@@ -253,7 +253,7 @@ export class SlotCreationFormComponent {
    * Copies the slots from the first selected date to all other selected dates.
    */
   copySlotsToAllDays(): void {
-    const cards = this.dateCards.toArray();
+    const cards = this.dateCards();
     if (cards.length < 2) {
       return;
     }
@@ -317,7 +317,7 @@ export class SlotCreationFormComponent {
         };
       });
 
-      const createdSlots = await firstValueFrom(this.interviewService.createSlots(this.processId(), { slots: slotsToCreate }));
+      const createdSlots = await firstValueFrom(this.interviewApi.createSlots(this.processId(), { slots: slotsToCreate }));
 
       this.toastService.showSuccessKey('interview.slots.create.success');
       this.success.emit(createdSlots);
@@ -464,7 +464,7 @@ export class SlotCreationFormComponent {
     }
 
     try {
-      const conflictData = await firstValueFrom(this.interviewService.getConflictDataForDate(this.processId(), dateStr));
+      const conflictData = await firstValueFrom(this.interviewApi.getConflictDataForDate(this.processId(), dateStr));
       this.conflictDataByDate.update(map => {
         const newMap = new Map(map);
         newMap.set(dateStr, conflictData);

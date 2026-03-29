@@ -10,12 +10,12 @@ import { of, Subject, throwError } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateService } from '@ngx-translate/core';
 import { SavingStates } from 'app/shared/constants/saving-states';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 import { HttpResponse } from '@angular/common/http';
-import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-import { UpdateApplicationDTO } from 'app/generated/model/updateApplicationDTO';
-import { UserDTO } from 'app/generated/model/userDTO';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
+import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto';
+import { UserDTO } from 'app/generated/model/user-dto';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationCreationPage1Data } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
 import { ProgressStepperComponent } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
@@ -31,16 +31,12 @@ import {
 } from 'util/auth-orchestrator.service.mock';
 import { createLocalStorageServiceMock, provideLocalStorageServiceMock, LocalStorageServiceMock } from 'util/local-storage.service.mock';
 import {
-  createApplicationResourceApiServiceMock,
-  provideApplicationResourceApiServiceMock,
-  ApplicationResourceApiServiceMock,
+  createApplicationResourceApiMock,
+  provideApplicationResourceApiMock,
+  ApplicationResourceApiMock,
   createMockApplicationDTO,
 } from 'util/application-resource-api.service.mock';
-import {
-  createJobResourceApiServiceMock,
-  provideJobResourceApiServiceMock,
-  JobResourceApiServiceMock,
-} from 'util/job-resource-api.service.mock';
+import { createJobResourceApiMock, provideJobResourceApiMock, JobResourceApiMock } from 'util/job-resource-api.service.mock';
 import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {
@@ -68,7 +64,7 @@ function createProgressStepperMock(): ProgressStepperComponent {
 
 interface TestBedConfig {
   accountService: AccountServiceMock;
-  applicationResourceApiService: ApplicationResourceApiServiceMock;
+  applicationApi: ApplicationResourceApiMock;
   router: RouterMock;
   location: LocationMock;
   toast: ToastServiceMock;
@@ -78,7 +74,7 @@ interface TestBedConfig {
   authOrchestrator: AuthOrchestratorServiceMock;
   localStorageService: LocalStorageServiceMock;
   translateService: TranslateServiceMock;
-  jobResourceService: JobResourceApiServiceMock;
+  jobApi: JobResourceApiMock;
 }
 
 async function configureTestBed(config: TestBedConfig) {
@@ -86,7 +82,7 @@ async function configureTestBed(config: TestBedConfig) {
     imports: [ApplicationCreationFormComponent],
     providers: [
       provideAccountServiceMock(config.accountService as any),
-      provideApplicationResourceApiServiceMock(config.applicationResourceApiService),
+      provideApplicationResourceApiMock(config.applicationApi),
       provideRouterMock(config.router),
       provideLocationMock(config.location),
       provideToastServiceMock(config.toast),
@@ -95,7 +91,7 @@ async function configureTestBed(config: TestBedConfig) {
       provideDialogServiceMock(config.dialogService),
       provideAuthOrchestratorServiceMock(config.authOrchestrator),
       provideLocalStorageServiceMock(config.localStorageService),
-      provideJobResourceApiServiceMock(config.jobResourceService),
+      provideJobResourceApiMock(config.jobApi),
       provideTranslateMock(config.translateService),
       provideFontAwesomeTesting(),
     ],
@@ -123,7 +119,7 @@ function createValidPersonalInfoData(overrides?: Partial<ApplicationCreationPage
 
 describe('ApplicationForm', () => {
   let accountService: AccountServiceMock;
-  let applicationResourceApiService: ApplicationResourceApiServiceMock;
+  let applicationApi: ApplicationResourceApiMock;
   let toast: ToastServiceMock;
   let router: RouterMock;
   let location: LocationMock;
@@ -133,14 +129,14 @@ describe('ApplicationForm', () => {
   let localStorageService: LocalStorageServiceMock;
   let translateService: TranslateServiceMock;
   let activatedRoute: ActivatedRouteMock;
-  let jobResourceService: JobResourceApiServiceMock;
+  let jobApi: JobResourceApiMock;
 
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
   beforeEach(async () => {
     accountService = createAccountServiceMock();
 
-    applicationResourceApiService = createApplicationResourceApiServiceMock();
+    applicationApi = createApplicationResourceApiMock();
 
     toast = createToastServiceMock();
     router = createRouterMock();
@@ -158,14 +154,14 @@ describe('ApplicationForm', () => {
 
     translateService = createTranslateServiceMock();
 
-    jobResourceService = createJobResourceApiServiceMock();
-    jobResourceService.getJobDetails = vi.fn().mockReturnValue({ title: 'Test Job' });
+    jobApi = createJobResourceApiMock();
+    jobApi.getJobDetails = vi.fn().mockReturnValue({ title: 'Test Job' });
 
     activatedRoute = createActivatedRouteMock({}, { job: '123', application: '456' });
 
     await configureTestBed({
       accountService,
-      applicationResourceApiService,
+      applicationApi,
       router,
       location,
       toast,
@@ -175,7 +171,7 @@ describe('ApplicationForm', () => {
       authOrchestrator,
       localStorageService,
       translateService,
-      jobResourceService,
+      jobApi,
     });
     fixture = TestBed.createComponent(ApplicationCreationFormComponent);
     comp = fixture.componentInstance;
@@ -204,7 +200,7 @@ describe('ApplicationForm', () => {
     TestBed.resetTestingModule();
     await configureTestBed({
       accountService,
-      applicationResourceApiService,
+      applicationApi,
       router,
       location,
       toast,
@@ -214,14 +210,14 @@ describe('ApplicationForm', () => {
       authOrchestrator,
       localStorageService,
       translateService,
-      jobResourceService,
+      jobApi,
     });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
     const freshComp = freshFixture.componentInstance;
 
     const mockApp = {
-      ...createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+      ...createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved),
       applicationId: 'new-app',
     };
     const initCreateSpy = vi.spyOn(freshComp, 'initPageCreateApplication').mockResolvedValue(mockApp);
@@ -236,7 +232,7 @@ describe('ApplicationForm', () => {
     TestBed.resetTestingModule();
     await configureTestBed({
       accountService,
-      applicationResourceApiService,
+      applicationApi,
       router,
       location,
       toast,
@@ -246,7 +242,7 @@ describe('ApplicationForm', () => {
       authOrchestrator,
       localStorageService,
       translateService,
-      jobResourceService,
+      jobApi,
     });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
@@ -307,7 +303,7 @@ describe('ApplicationForm', () => {
     await new Promise(resolve => setTimeout(resolve, 10));
     await fixture.whenStable();
 
-    expect(sendSpy).toHaveBeenCalledWith('SENT', true);
+    expect(sendSpy).toHaveBeenCalledWith(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
   });
 
   describe('initPageForLocalStorage', () => {
@@ -383,7 +379,7 @@ describe('ApplicationForm', () => {
       const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
       const mockJobDetails = { title: 'Senior Software Engineer' };
 
-      jobResourceService.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
+      jobApi.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
 
       comp.initPageForLocalStorageCase('job-456');
 
@@ -396,7 +392,7 @@ describe('ApplicationForm', () => {
       expect(loadDataSpy).toHaveBeenCalledWith('job-456');
       expect(comp.applicationState()).toBe('SAVED');
       expect(comp.title()).toBe('Senior Software Engineer');
-      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-456');
+      expect(jobApi.getJobDetails).toHaveBeenCalledWith('job-456');
     });
 
     it('should handle missing title in jobDetails in initPageForLocalStorageCase', async () => {
@@ -406,7 +402,7 @@ describe('ApplicationForm', () => {
       // Reset title to empty string
       comp.title = signal('');
 
-      jobResourceService.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
+      jobApi.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
 
       comp.initPageForLocalStorageCase('job-789');
 
@@ -419,13 +415,13 @@ describe('ApplicationForm', () => {
       expect(loadDataSpy).toHaveBeenCalledWith('job-789');
       expect(comp.applicationState()).toBe('SAVED');
       expect(comp.title()).toBe(''); // Title should remain empty since jobDetails has no title
-      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-789');
+      expect(jobApi.getJobDetails).toHaveBeenCalledWith('job-789');
     });
 
     it('should handle error when fetching jobDetails in initPageForLocalStorageCase', async () => {
       const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
 
-      jobResourceService.getJobDetails = vi.fn().mockReturnValue(throwError(() => new Error('Job fetch failed')));
+      jobApi.getJobDetails = vi.fn().mockReturnValue(throwError(() => new Error('Job fetch failed')));
 
       comp.initPageForLocalStorageCase('job-error');
 
@@ -438,7 +434,7 @@ describe('ApplicationForm', () => {
       expect(loadDataSpy).toHaveBeenCalledWith('job-error');
       expect(comp.applicationState()).toBe('SAVED');
       // Error should be silently caught (no toast shown for non-critical operation)
-      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-error');
+      expect(jobApi.getJobDetails).toHaveBeenCalledWith('job-error');
     });
   });
 
@@ -564,7 +560,7 @@ describe('ApplicationForm', () => {
       const result = await comp.sendCreateApplicationData('SAVED', false);
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorApplicationId');
-      expect(applicationResourceApiService.updateApplication).not.toHaveBeenCalled();
+      expect(applicationApi.updateApplication).not.toHaveBeenCalled();
       expect(result).toBe(false);
     });
 
@@ -575,7 +571,7 @@ describe('ApplicationForm', () => {
       const result = await comp.sendCreateApplicationData('SAVED', false);
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.authRequired');
-      expect(applicationResourceApiService.updateApplication).not.toHaveBeenCalled();
+      expect(applicationApi.updateApplication).not.toHaveBeenCalled();
       expect(result).toBe(false);
     });
 
@@ -584,14 +580,14 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(false);
 
       // Mock mapPagesToDTO
-      const mockUpdateDTO = { applicationId: 'app-456', applicationState: 'SENT' };
+      const mockUpdateDTO = { applicationId: 'app-456', applicationState: ApplicationForApplicantDTOApplicationStateEnum.Sent };
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
       const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+      applicationApi.updateApplication = vi.fn().mockReturnValue(
         of(
           new HttpResponse({
             body: {},
@@ -600,9 +596,9 @@ describe('ApplicationForm', () => {
         ),
       );
 
-      const result = await comp.sendCreateApplicationData('SENT', true);
+      const result = await comp.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
 
-      expect(applicationResourceApiService.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
+      expect(applicationApi.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
       expect(clearLocalStorageSpy).toHaveBeenCalled();
       expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.submitted');
       expect(router.navigate).toHaveBeenCalledWith(['/application/overview']);
@@ -621,7 +617,7 @@ describe('ApplicationForm', () => {
       const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+      applicationApi.updateApplication = vi.fn().mockReturnValue(
         of(
           new HttpResponse({
             body: {},
@@ -632,7 +628,7 @@ describe('ApplicationForm', () => {
 
       const result = await comp.sendCreateApplicationData('SAVED', false);
 
-      expect(applicationResourceApiService.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
+      expect(applicationApi.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
       expect(clearLocalStorageSpy).toHaveBeenCalled();
       expect(toast.showSuccessKey).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
@@ -651,11 +647,11 @@ describe('ApplicationForm', () => {
       const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to throw an error
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
+      applicationApi.updateApplication = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
 
       const result = await comp.sendCreateApplicationData('SAVED', false);
 
-      expect(applicationResourceApiService.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
+      expect(applicationApi.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
       expect(clearLocalStorageSpy).not.toHaveBeenCalled(); // Should NOT clear on error
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.saveFailed');
       expect(result).toBe(false);
@@ -666,10 +662,10 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(false);
 
       // Mock mapPagesToDTO
-      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
+      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: ApplicationForApplicantDTOApplicationStateEnum.Sent });
       spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+      applicationApi.updateApplication = vi.fn().mockReturnValue(
         of(
           new HttpResponse({
             body: {},
@@ -678,9 +674,9 @@ describe('ApplicationForm', () => {
         ),
       );
 
-      const result = await comp.sendCreateApplicationData('SENT', false);
+      const result = await comp.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, false);
 
-      expect(comp['mapPagesToDTO']).toHaveBeenCalledWith('SENT');
+      expect(comp['mapPagesToDTO']).toHaveBeenCalledWith(ApplicationForApplicantDTOApplicationStateEnum.Sent);
       expect(result).toBe(true);
     });
 
@@ -689,11 +685,11 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(false);
 
       // Mock mapPagesToDTO
-      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
+      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: ApplicationForApplicantDTOApplicationStateEnum.Sent });
       spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+      applicationApi.updateApplication = vi.fn().mockReturnValue(
         of(
           new HttpResponse({
             body: {},
@@ -705,7 +701,7 @@ describe('ApplicationForm', () => {
       // Mock accountService.loadUser
       accountService.loadUser = vi.fn().mockResolvedValue(undefined);
 
-      const result = await comp.sendCreateApplicationData('SENT', false);
+      const result = await comp.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, false);
 
       expect(accountService.loadUser).toHaveBeenCalledOnce();
       expect(result).toBe(true);
@@ -720,7 +716,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+      applicationApi.updateApplication = vi.fn().mockReturnValue(
         of(
           new HttpResponse({
             body: {},
@@ -784,10 +780,10 @@ describe('ApplicationForm', () => {
     });
 
     it('should return UpdateApplicationDTO with all fields when state is provided', () => {
-      const result = comp['mapPagesToDTO']('SENT') as UpdateApplicationDTO;
+      const result = comp['mapPagesToDTO'](ApplicationForApplicantDTOApplicationStateEnum.Sent) as UpdateApplicationDTO;
 
       expect(result.applicationId).toBe('app-123');
-      expect(result.applicationState).toBe('SENT');
+      expect(result.applicationState).toBe(ApplicationForApplicantDTOApplicationStateEnum.Sent);
       expect(result.applicant?.user.userId).toBe('user-456');
       expect(result.applicant?.user.email).toBe('john@example.com');
       expect(result.applicant?.user.firstName).toBe('John');
@@ -822,8 +818,8 @@ describe('ApplicationForm', () => {
     });
 
     it('should handle SENT state', () => {
-      const result = comp['mapPagesToDTO']('SENT');
-      expect(result.applicationState).toBe('SENT');
+      const result = comp['mapPagesToDTO'](ApplicationForApplicantDTOApplicationStateEnum.Sent);
+      expect(result.applicationState).toBe(ApplicationForApplicantDTOApplicationStateEnum.Sent);
     });
   });
 
@@ -999,7 +995,7 @@ describe('ApplicationForm', () => {
       comp.applicationState.set('SAVED');
 
       const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(
-        createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+        createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved),
       );
       const sendDataSpy = spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
@@ -1029,7 +1025,7 @@ describe('ApplicationForm', () => {
       comp.applicationId.set('old-app-id');
 
       const mockApplication = {
-        ...createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+        ...createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved),
         applicationId: undefined,
       };
 
@@ -1684,7 +1680,7 @@ describe('ApplicationForm', () => {
       await fixture.whenStable();
 
       // Should create application
-      expect(applicationResourceApiService.createApplication).toHaveBeenCalledWith('123');
+      expect(applicationApi.createApplication).toHaveBeenCalledWith('123');
 
       // Should set applicationId
       expect(comp.applicationId()).toBe('456');
@@ -1701,20 +1697,20 @@ describe('ApplicationForm', () => {
       expect(toast.showErrorKey).not.toHaveBeenCalled();
 
       // Should return the application
-      expect(result).toEqual(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
+      expect(result).toEqual(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved));
     });
 
     it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
-      const mockApplication = createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Sent);
+      const mockApplication = createMockApplicationDTO(ApplicationDetailDTOApplicationStateEnum.Sent);
 
       // Reconfigure the existing mock
-      applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
+      applicationApi.createApplication = vi.fn().mockReturnValue(of(mockApplication));
       await expect(comp.initPageCreateApplication('job-456')).rejects.toThrow('Application is not editable.');
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(applicationResourceApiService.createApplication).toHaveBeenCalledWith('job-456');
+      expect(applicationApi.createApplication).toHaveBeenCalledWith('job-456');
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', '456']);
     });
@@ -1722,10 +1718,10 @@ describe('ApplicationForm', () => {
     it('should handle application with undefined applicationId', async () => {
       // Reconfigure the existing mock
       let mockApplication = {
-        ...createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+        ...createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved),
         applicationId: undefined,
       };
-      applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
+      applicationApi.createApplication = vi.fn().mockReturnValue(of(mockApplication));
 
       const result = await comp.initPageCreateApplication('job-456');
 
@@ -1745,9 +1741,9 @@ describe('ApplicationForm', () => {
     });
 
     it('should handle SAVED state as non-editable', async () => {
-      applicationResourceApiService.createApplication = vi
+      applicationApi.createApplication = vi
         .fn()
-        .mockReturnValue(of(createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Sent)));
+        .mockReturnValue(of(createMockApplicationDTO(ApplicationDetailDTOApplicationStateEnum.Sent)));
 
       await expect(comp.initPageCreateApplication('job-456')).rejects.toThrow('Application is not editable.');
 
@@ -1758,26 +1754,26 @@ describe('ApplicationForm', () => {
 
   describe('initPageLoadExistingApplication', () => {
     it('should load application and return it when application state is SAVED', async () => {
-      applicationResourceApiService.getApplicationById = vi
+      applicationApi.getApplicationById = vi
         .fn()
-        .mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
+        .mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved)));
 
       const result = await comp.initPageLoadExistingApplication('existing-app-123');
 
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(applicationResourceApiService.getApplicationById).toHaveBeenCalledWith('existing-app-123');
+      expect(applicationApi.getApplicationById).toHaveBeenCalledWith('existing-app-123');
       expect(comp.applicationId()).toBe('existing-app-123');
       expect(toast.showErrorKey).not.toHaveBeenCalled();
       // Should NOT navigate away
       expect(router.navigate).not.toHaveBeenCalled();
-      expect(result).toEqual(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
+      expect(result).toEqual(createMockApplicationDTO(ApplicationForApplicantDTOApplicationStateEnum.Saved));
     });
 
     it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
-      const mockApplication = createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Sent);
+      const mockApplication = createMockApplicationDTO(ApplicationDetailDTOApplicationStateEnum.Sent);
 
-      applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
+      applicationApi.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
       // Should throw an error
       await expect(comp.initPageLoadExistingApplication('existing-app-456')).rejects.toThrow('Application is not editable.');
@@ -1785,16 +1781,16 @@ describe('ApplicationForm', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(applicationResourceApiService.getApplicationById).toHaveBeenCalledWith('existing-app-456');
+      expect(applicationApi.getApplicationById).toHaveBeenCalledWith('existing-app-456');
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-456']);
       expect(comp.applicationId()).not.toBe('existing-app-456');
     });
 
     it('should handle REJECTED application state as not editable', async () => {
-      const mockApplication = createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Rejected);
+      const mockApplication = createMockApplicationDTO(ApplicationDetailDTOApplicationStateEnum.Rejected);
 
-      applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
+      applicationApi.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
       await expect(comp.initPageLoadExistingApplication('456')).rejects.toThrow('Application is not editable.');
 
@@ -1808,7 +1804,7 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       comp.applicationId.set('app-123');
 
-      const getDocumentDictionaryIdsSpy = vi.spyOn(applicationResourceApiService, 'getDocumentDictionaryIds');
+      const getDocumentDictionaryIdsSpy = vi.spyOn(applicationApi, 'getDocumentDictionaryIds');
       getDocumentDictionaryIdsSpy.mockClear();
 
       comp.updateDocumentInformation();
@@ -1825,7 +1821,7 @@ describe('ApplicationForm', () => {
       comp.applicationId.set('app-456');
 
       const mockDocumentIds = { documentId1: 'doc-1', documentId2: 'doc-2' };
-      applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(of(mockDocumentIds));
+      applicationApi.getDocumentDictionaryIds = vi.fn().mockReturnValue(of(mockDocumentIds));
 
       comp.updateDocumentInformation();
 
@@ -1833,7 +1829,7 @@ describe('ApplicationForm', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Should call getDocumentDictionaryIds
-      expect(applicationResourceApiService.getDocumentDictionaryIds).toHaveBeenCalledWith('app-456');
+      expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalledWith('app-456');
 
       // Should set documentIds
       expect(comp.documentIds()).toEqual(mockDocumentIds);
@@ -1843,7 +1839,7 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(false);
       comp.applicationId.set('app-error');
 
-      applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
+      applicationApi.getDocumentDictionaryIds = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
 
       comp.updateDocumentInformation();
 
@@ -1861,7 +1857,7 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       comp.applicationId.set('app-any-id');
 
-      const getDocumentSpy = vi.spyOn(applicationResourceApiService, 'getDocumentDictionaryIds');
+      const getDocumentSpy = vi.spyOn(applicationApi, 'getDocumentDictionaryIds');
       const errorSpy = vi.spyOn(toast, 'showErrorKey');
       getDocumentSpy.mockClear();
 

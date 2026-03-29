@@ -5,17 +5,17 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, Subject, throwError } from 'rxjs';
 
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
-import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { provideTranslateMock } from 'util/translate.mock';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
-import { KeycloakUserDTO } from 'app/generated/model/keycloakUserDTO';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
+import { UserShortDTO } from 'app/generated/model/user-short-dto';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
@@ -35,11 +35,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
 
   let mockDialogRef: DynamicDialogRefMock;
   let mockDialogConfig: Partial<DynamicDialogConfig>;
-  let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
-  let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
-  let mockSchoolService: Partial<SchoolResourceApiService>;
-  let mockDepartmentService: Partial<DepartmentResourceApiService>;
-  let mockUserService: Partial<UserResourceApiService>;
+  let mockResearchGroupService: Partial<ResearchGroupResourceApi>;
+  let mockProfOnboardingService: Partial<ProfOnboardingResourceApi>;
+  let mockSchoolService: Partial<SchoolResourceApi>;
+  let mockDepartmentService: Partial<DepartmentResourceApi>;
+  let mockUserService: Partial<UserResourceApi>;
   let mockGetCurrentUser: ReturnType<typeof vi.fn>;
   let getAvailableUsersForResearchGroupMock: ReturnType<typeof vi.fn>;
   let mockToastService: ToastServiceMock;
@@ -53,11 +53,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     mockResearchGroupService = {
       createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
       createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
-    } as unknown as ResearchGroupResourceApiService;
+    } as unknown as ResearchGroupResourceApi;
 
     mockProfOnboardingService = {
       confirmOnboarding: vi.fn(() => of(undefined)),
-    } as unknown as ProfOnboardingResourceApiService;
+    } as unknown as ProfOnboardingResourceApi;
 
     mockSchoolService = {
       getAllSchools: vi.fn(() =>
@@ -66,7 +66,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
           { schoolId: 'school-2', name: 'Test School 2' } as Partial<SchoolShortDTO> as SchoolShortDTO,
         ]),
       ),
-    } as unknown as SchoolResourceApiService;
+    } as unknown as SchoolResourceApi;
 
     mockDepartmentService = {
       getDepartments: vi.fn(() =>
@@ -83,15 +83,15 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
           } as Partial<DepartmentDTO> as DepartmentDTO,
         ]),
       ),
-    } as unknown as DepartmentResourceApiService;
+    } as unknown as DepartmentResourceApi;
 
     mockGetCurrentUser = vi.fn(() => of({} as UserShortDTO));
     getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
     mockUserService = {
-      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApiService['getCurrentUser'],
+      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApi['getCurrentUser'],
       getAvailableUsersForResearchGroup:
-        getAvailableUsersForResearchGroupMock as unknown as UserResourceApiService['getAvailableUsersForResearchGroup'],
-    } as unknown as UserResourceApiService;
+        getAvailableUsersForResearchGroupMock as unknown as UserResourceApi['getAvailableUsersForResearchGroup'],
+    } as unknown as UserResourceApi;
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
@@ -102,11 +102,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideHttpClientMock(),
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
-        { provide: SchoolResourceApiService, useValue: mockSchoolService },
-        { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
-        { provide: UserResourceApiService, useValue: mockUserService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+        { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
+        { provide: SchoolResourceApi, useValue: mockSchoolService },
+        { provide: DepartmentResourceApi, useValue: mockDepartmentService },
+        { provide: UserResourceApi, useValue: mockUserService },
       ],
     }).compileComponents();
 

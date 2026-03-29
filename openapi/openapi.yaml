@@ -3,6 +3,26 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
+  /api/admin/dependencies:
+    get:
+      tags: [admin-dependency-resource]
+      operationId: getOverview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/admin/dependencies/refresh:
+    get:
+      tags: [admin-dependency-resource]
+      operationId: refresh_1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -164,6 +184,77 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
+  /api/applicants/subject-area-subscriptions:
+    get:
+      tags: [applicant-resource]
+      operationId: getSubjectAreaSubscriptions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+                    ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING,
+                    BIOCHEMISTRY, BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY,
+                    CHEMISTRY, COMPUTER_ENGINEERING, COMPUTER_SCIENCE, COMPUTER_VISION,
+                    DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY, ELECTRICAL_ENGINEERING,
+                    ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+                    ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+                    FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES,
+                    INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS,
+                    MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS, MECHANICAL_ENGINEERING,
+                    MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY, PHYSICS, PSYCHOLOGY,
+                    SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS, TELECOMMUNICATIONS,
+                    URBAN_PLANNING]
+  /api/applicants/subject-area-subscriptions/{subjectArea}:
+    post:
+      tags: [applicant-resource]
+      operationId: addSubjectAreaSubscription
+      parameters:
+      - name: subjectArea
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
+      responses:
+        '200': {description: OK}
+    delete:
+      tags: [applicant-resource]
+      operationId: removeSubjectAreaSubscription
+      parameters:
+      - name: subjectArea
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
+      responses:
+        '200': {description: OK}
   /api/applications:
     put:
       tags: [application-resource]
@@ -371,14 +462,6 @@ paths:
         content:
           multipart/form-data:
             schema: {$ref: '#/components/schemas/MultipartUploadRequest'}
-          application/json:
-            schema:
-              type: object
-              properties:
-                files:
-                  type: array
-                  items: {type: string, format: binary}
-              required: [files]
       responses:
         '200':
           description: OK
@@ -2395,6 +2478,22 @@ components:
         masterUniversity: {type: string}
         postalCode: {type: string}
         street: {type: string}
+        subjectAreaSubscriptions:
+          type: array
+          items:
+            type: string
+            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
+              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
+              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
+              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
+              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
+              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
+          uniqueItems: true
         submittedApplications:
           type: array
           items: {$ref: '#/components/schemas/Application'}
@@ -2761,6 +2860,30 @@ components:
       properties:
         departmentId: {type: string, format: uuid}
         name: {type: string}
+    DependenciesOverviewDTO:
+      type: object
+      properties:
+        clientCount: {type: integer, format: int32}
+        criticalCount: {type: integer, format: int32}
+        dependencies:
+          type: array
+          items: {$ref: '#/components/schemas/DependencyDTO'}
+        highCount: {type: integer, format: int32}
+        lowCount: {type: integer, format: int32}
+        mediumCount: {type: integer, format: int32}
+        serverCount: {type: integer, format: int32}
+        totalVulnerabilities: {type: integer, format: int32}
+    DependencyDTO:
+      type: object
+      properties:
+        group: {type: string}
+        name: {type: string}
+        purl: {type: string}
+        source: {type: string}
+        version: {type: string}
+        vulnerabilities:
+          type: array
+          items: {$ref: '#/components/schemas/VulnerabilityDTO'}
     Document:
       type: object
       properties:
@@ -3048,7 +3171,6 @@ components:
             INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
-        departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location:
@@ -3059,9 +3181,22 @@ components:
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
         startDate: {type: string, format: date}
+        subjectArea:
+          type: string
+          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
+            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
+            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
+            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
+            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
+            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
+            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
+            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
+            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
+            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
+            TELECOMMUNICATIONS, URBAN_PLANNING]
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [jobId, location, professorName, title]
+      required: [jobId, location, professorName, subjectArea, title]
     JobDTO:
       type: object
       properties:
@@ -3669,6 +3804,26 @@ components:
                   className: {type: string}
                   nativeMethod: {type: boolean}
             message: {type: string}
+            suppressed:
+              type: array
+              items:
+                type: object
+                properties:
+                  stackTrace:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classLoaderName: {type: string}
+                        moduleName: {type: string}
+                        moduleVersion: {type: string}
+                        methodName: {type: string}
+                        fileName: {type: string}
+                        lineNumber: {type: integer, format: int32}
+                        className: {type: string}
+                        nativeMethod: {type: boolean}
+                  message: {type: string}
+                  localizedMessage: {type: string}
             localizedMessage: {type: string}
         localizedMessage: {type: string}
         message: {type: string}
@@ -3748,3 +3903,9 @@ components:
             enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         universityId: {type: string}
         userId: {type: string, format: uuid}
+    VulnerabilityDTO:
+      type: object
+      properties:
+        id: {type: string}
+        severity: {type: string}
+        summary: {type: string}

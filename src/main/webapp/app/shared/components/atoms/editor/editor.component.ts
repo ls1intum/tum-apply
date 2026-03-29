@@ -7,7 +7,7 @@ import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
-import { GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
@@ -54,13 +54,13 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly fieldIdChanges$ = toObservable(this.fieldId);
 
   readonly analysisResult = toSignal(this.fieldIdChanges$.pipe(switchMap(fieldId => this.genderBiasService.getAnalysisForField(fieldId))), {
-    initialValue: null,
+    initialValue: undefined,
   });
 
   showAnalysisModal = signal(false);
 
   readonly shouldShowButton = computed(() => {
-    return this.showGenderDecoderButton() && this.analysisResult() !== null;
+    return this.showGenderDecoderButton() && this.analysisResult() !== undefined;
   });
 
   // Check if error message should be displayed

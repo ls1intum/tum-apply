@@ -6,9 +6,9 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-import { ProfessorDTO } from 'app/generated/model/professorDTO';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
+import { ProfessorDTO } from 'app/generated/model/professor-dto';
 
 describe('ApplicationCarouselComponent', () => {
   let fixture: ComponentFixture<ApplicationCarouselComponent>;
@@ -19,7 +19,7 @@ describe('ApplicationCarouselComponent', () => {
     jobId: `job-${id}`,
     researchGroup: `Group ${id}`,
     supervisingProfessorName: `Prof. ${id}`,
-    applicationState: ApplicationDetailDTO.ApplicationStateEnum.Sent,
+    applicationState: ApplicationDetailDTOApplicationStateEnum.Sent,
   });
 
   const mockProfessor = (id: string): ProfessorDTO => ({

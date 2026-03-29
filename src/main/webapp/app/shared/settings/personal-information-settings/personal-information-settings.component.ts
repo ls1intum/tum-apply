@@ -7,8 +7,8 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
@@ -95,7 +95,7 @@ export class PersonalInformationSettingsComponent {
     return !deepEqual(this.toSnapshot(this.data()), initial);
   });
 
-  disabledEmail = computed<boolean>(() => this.accountService.signedIn());
+  readonly disabledEmail = true;
 
   readonly minDate = new Date(1900, 0, 1);
   readonly maxDate = (() => {
@@ -109,7 +109,7 @@ export class PersonalInformationSettingsComponent {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-  applicantResourceService = inject(ApplicantResourceApiService);
+  applicantApi = inject(ApplicantResourceApi);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -143,7 +143,7 @@ export class PersonalInformationSettingsComponent {
     return this.formbuilder.group({
       firstName: [currentData.firstName],
       lastName: [currentData.lastName],
-      email: [{ value: currentData.email, disabled: this.disabledEmail() }, Validators.email],
+      email: [{ value: currentData.email, disabled: this.disabledEmail }, Validators.email],
       phoneNumber: [currentData.phoneNumber],
 
       street: [currentData.street],
@@ -204,7 +204,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(this.applicantResourceService.getApplicantProfile('body', false, { transferCache: false }));
+      const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
@@ -214,7 +214,9 @@ export class PersonalInformationSettingsComponent {
         phoneNumber: profile.user.phoneNumber ?? '',
         gender: profile.user.gender != null ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
         nationality:
-          profile.user.nationality != null ? { value: profile.user.nationality, name: `countries.${profile.user.nationality}` } : undefined,
+          profile.user.nationality != null
+            ? { value: profile.user.nationality, name: `nationalities.${profile.user.nationality}` }
+            : undefined,
         dateOfBirth: profile.user.birthday ?? '',
         website: profile.user.website ?? '',
         linkedIn: profile.user.linkedinUrl ?? '',
@@ -284,7 +286,7 @@ export class PersonalInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      const updatedProfile = await firstValueFrom(this.applicantResourceService.updateApplicantPersonalInformation(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
       this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));

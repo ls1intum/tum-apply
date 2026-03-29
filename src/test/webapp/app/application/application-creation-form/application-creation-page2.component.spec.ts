@@ -7,13 +7,18 @@ import ApplicationCreationPage2Component, {
   getPage2FromApplication,
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { provideHttpClient as provideHttpClientMock } from '@angular/common/http';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
+import { outputToObservable } from '@angular/core/rxjs-interop';
 
 const DEFAULT_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
   bachelorDegreeName: '',
@@ -232,6 +237,59 @@ describe('ApplicationPage2Component', () => {
     });
   });
 
+  describe('Document Validation', () => {
+    it.each([
+      { type: 'bachelor', expected: true, desc: 'provided', value: [{ id: '1', size: 1 }] },
+      { type: 'bachelor', expected: false, desc: 'undefined', value: undefined },
+      { type: 'bachelor', expected: false, desc: 'empty', value: [] },
+      { type: 'master', expected: true, desc: 'provided', value: [{ id: '2', size: 2 }] },
+      { type: 'master', expected: false, desc: 'undefined', value: undefined },
+      { type: 'master', expected: false, desc: 'empty', value: [] },
+    ])('should compute $type-DocsValid to $expected when $type docs are $desc', ({ type, expected, value }) => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture();
+
+      if (type === 'bachelor') {
+        componentInstance.documentIdsBachelorTranscript.set(value as DocumentInformationHolderDTO[]);
+        fixture.detectChanges();
+        expect(componentInstance.bachelorDocsValid()).toBe(expected);
+      } else {
+        componentInstance.documentIdsMasterTranscript.set(value as DocumentInformationHolderDTO[]);
+        fixture.detectChanges();
+        expect(componentInstance.masterDocsValid()).toBe(expected);
+      }
+    });
+
+    it.each([
+      {
+        desc: 'both transcripts are present',
+        expected: true,
+        bachelorDocs: [{ id: 'b-1', size: 1 }],
+        masterDocs: [{ id: 'm-1', size: 1 }],
+      },
+      {
+        desc: 'transcripts are missing',
+        expected: false,
+        bachelorDocs: [],
+        masterDocs: [],
+      },
+    ])('should emit valid=$expected when form data is valid and $desc', async ({ expected, bachelorDocs, masterDocs }) => {
+      const { componentInstance, fixture } = createApplicationPage2Fixture({
+        data: VALID_PAGE2_FORM_DATA,
+        documentIdsBachelorTranscript: bachelorDocs,
+        documentIdsMasterTranscript: masterDocs,
+      });
+
+      const valid = outputToObservable(componentInstance.valid);
+      const validPromise = firstValueFrom(valid);
+
+      fixture.detectChanges();
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      const result = await validPromise;
+      expect(result).toBe(expected);
+    });
+  });
+
   describe('getPage2FromApplication', () => {
     const standardApplicationForApplicantDTO: ApplicationForApplicantDTO = {
       applicant: {
@@ -249,11 +307,12 @@ describe('ApplicationPage2Component', () => {
       },
       job: {
         jobId: 'id-123',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         professorName: 'Pr. Test',
         title: 'Job title',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
     };
 
     it('should map all applicant fields correctly when provided', () => {

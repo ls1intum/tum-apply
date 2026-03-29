@@ -5,7 +5,9 @@ import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.application.service.ApplicantService;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
+import de.tum.cit.aet.usermanagement.service.SubjectAreaSubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -34,10 +36,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicantResource {
 
     private final ApplicantService applicantService;
+    private final SubjectAreaSubscriptionService subscriptionService;
 
     @Autowired
-    public ApplicantResource(ApplicantService applicantService) {
+    public ApplicantResource(ApplicantService applicantService, SubjectAreaSubscriptionService subscriptionService) {
         this.applicantService = applicantService;
+        this.subscriptionService = subscriptionService;
     }
 
     /**
@@ -156,5 +160,45 @@ public class ApplicantResource {
         log.info("PUT /api/applicants/profile/documents/{}/name - Renaming applicant profile document", documentDictionaryId);
         applicantService.renameApplicantProfileDocument(documentDictionaryId, newName);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Retrieves all subject area subscriptions for the authenticated applicant.
+     *
+     * @return list of subject area subscriptions for the current user
+     */
+    @ApplicantOrAdmin
+    @GetMapping("/subject-area-subscriptions")
+    public ResponseEntity<List<SubjectArea>> getSubjectAreaSubscriptions() {
+        log.info("GET /api/applicants/subject-area-subscriptions - Retrieving subject area subscriptions for current user");
+        return ResponseEntity.ok(subscriptionService.getSubscriptionsForCurrentUser());
+    }
+
+    /**
+     * Adds a subject area subscription for the authenticated applicant.
+     *
+     * @param subjectArea the subject area to subscribe to
+     * @return 204 No Content when subscription is successful
+     */
+    @ApplicantOrAdmin
+    @PostMapping("/subject-area-subscriptions/{subjectArea}")
+    public ResponseEntity<Void> addSubjectAreaSubscription(@PathVariable SubjectArea subjectArea) {
+        log.info("POST /api/applicants/subject-area-subscriptions/{} - Adding subject area subscription for current user", subjectArea);
+        subscriptionService.addSubscription(subjectArea);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Removes a subject area subscription for the authenticated applicant.
+     *
+     * @param subjectArea the subject area to unsubscribe from
+     * @return 204 No Content when deletion is successful
+     */
+    @ApplicantOrAdmin
+    @DeleteMapping("/subject-area-subscriptions/{subjectArea}")
+    public ResponseEntity<Void> removeSubjectAreaSubscription(@PathVariable SubjectArea subjectArea) {
+        log.info("DELETE /api/applicants/subject-area-subscriptions/{} - Removing subject area subscription for current user", subjectArea);
+        subscriptionService.removeSubscription(subjectArea);
+        return ResponseEntity.noContent().build();
     }
 }

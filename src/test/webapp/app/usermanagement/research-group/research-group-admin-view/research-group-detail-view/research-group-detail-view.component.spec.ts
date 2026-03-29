@@ -5,10 +5,10 @@ import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activa
 import { Router } from '@angular/router';
 
 import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideRouterMock } from 'util/router.mock';
@@ -61,8 +61,8 @@ describe('ResearchGroupDetailViewComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupDetailViewComponent],
       providers: [
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+        { provide: DepartmentResourceApi, useValue: mockDepartmentService },
         provideActivatedRouteMock(mockActivatedRoute),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
