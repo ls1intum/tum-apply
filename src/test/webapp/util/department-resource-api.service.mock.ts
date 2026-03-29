@@ -1,8 +1,8 @@
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { Provider } from '@angular/core';
 import { vi, Mock } from 'vitest';
 
-export interface DepartmentResourceApiServiceMock {
+export interface DepartmentResourceApiMock {
   createDepartment: Mock;
   deleteDepartment: Mock;
   getDepartmentById: Mock;
@@ -11,7 +11,7 @@ export interface DepartmentResourceApiServiceMock {
   updateDepartment: Mock;
 }
 
-export function createDepartmentResourceApiServiceMock(): DepartmentResourceApiServiceMock {
+export function createDepartmentResourceApiMock(): DepartmentResourceApiMock {
   return {
     createDepartment: vi.fn(),
     deleteDepartment: vi.fn(),
@@ -22,8 +22,6 @@ export function createDepartmentResourceApiServiceMock(): DepartmentResourceApiS
   };
 }
 
-export function provideDepartmentResourceApiServiceMock(
-  mock: DepartmentResourceApiServiceMock = createDepartmentResourceApiServiceMock(),
-): Provider {
-  return { provide: DepartmentResourceApiService, useValue: mock };
+export function provideDepartmentResourceApiMock(mock: DepartmentResourceApiMock = createDepartmentResourceApiMock()): Provider {
+  return { provide: DepartmentResourceApi, useValue: mock };
 }

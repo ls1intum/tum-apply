@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { UserDataExportResourceApiService } from 'app/generated';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -17,7 +17,7 @@ export class DownloadDataExportComponent {
   downloadSuccess = signal(false);
 
   private readonly route = inject(ActivatedRoute);
-  private readonly userDataExportService = inject(UserDataExportResourceApiService);
+  private readonly userDataExportApi = inject(UserDataExportResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -32,7 +32,7 @@ export class DownloadDataExportComponent {
   private async downloadDataExport(token: string): Promise<void> {
     this.isDownloading.set(true);
     try {
-      const response = await firstValueFrom(this.userDataExportService.downloadDataExport(token, 'response'));
+      const response = await firstValueFrom(this.userDataExportApi.downloadDataExport(token));
       const blob = response.body as Blob;
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'data-export.zip';

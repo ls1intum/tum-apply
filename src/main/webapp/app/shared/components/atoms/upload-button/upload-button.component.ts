@@ -7,22 +7,15 @@ import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { DocumentDictionaryDocumentTypeEnum } from 'app/generated/model/document-dictionary';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ButtonComponent } from '../button/button.component';
 
-const DocumentType = {
-  BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
-  MASTER_TRANSCRIPT: 'MASTER_TRANSCRIPT',
-  REFERENCE: 'REFERENCE',
-  CV: 'CV',
-  CUSTOM: 'CUSTOM',
-} as const;
-
-export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
+export type DocumentType = DocumentDictionaryDocumentTypeEnum;
 
 /**
  * Generic PDF upload control used by applicant document flows.
@@ -38,18 +31,18 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
   selector: 'jhi-upload-button',
   imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
   templateUrl: './upload-button.component.html',
-  styleUrl: './upload-button.component.scss',
   standalone: true,
 })
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 25;
+  readonly inputClass =
+    'w-full px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
+  readonly rowClass = 'transition-colors hover:bg-background-surface';
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
-  uploadKey = input<string>('entity.upload.upload_instruction_standard');
   documentType = input.required<DocumentType>();
   applicationId = input.required<string>();
-  markAsRequired = input<boolean>(false);
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
@@ -72,7 +65,7 @@ export class UploadButtonComponent {
   showDuplicateDialog = signal(false);
   showReplacementDialog = signal(false);
 
-  private applicationService = inject(ApplicationResourceApiService);
+  private applicationApi = inject(ApplicationResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
 
@@ -128,7 +121,7 @@ export class UploadButtonComponent {
         this.removeQueuedFileFor(existingDoc.id);
       } else {
         try {
-          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
+          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(existingDoc.id));
           const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
           this.documentIds.set(updatedList);
         } catch {
@@ -164,7 +157,7 @@ export class UploadButtonComponent {
     } else {
       for (const doc of existingDocs) {
         try {
-          await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
+          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(doc.id));
         } catch {
           this.toastService.showErrorKey('entity.upload.error.replace_failed');
           return;
@@ -186,7 +179,7 @@ export class UploadButtonComponent {
     this.isUploading.set(true);
     try {
       const uploadedPromises = files.map(file =>
-        firstValueFrom(this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), file)),
+        firstValueFrom(this.applicationApi.uploadDocuments(this.applicationId(), this.documentType(), file)),
       );
       const uploadResults = await Promise.all(uploadedPromises);
       const allUploadedIds = uploadResults.flat();
@@ -213,7 +206,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationService.deleteDocumentFromApplication(documentId));
+      await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
       this.documentIds.set(updatedList);
     } catch {
@@ -255,7 +248,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
+      await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
       const updatedDocs =
         this.documentIds()?.map(doc =>
           doc.id === documentId

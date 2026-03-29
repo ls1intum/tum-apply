@@ -5,9 +5,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { InterviewBookingResourceApiService } from 'app/generated/api/interviewBookingResourceApi.service';
-import { BookingDTO } from 'app/generated/model/bookingDTO';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { InterviewBookingResourceApi } from 'app/generated/api/interview-booking-resource-api';
+import { BookingDTO } from 'app/generated/model/booking-dto';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -142,7 +142,7 @@ export class InterviewBookingComponent {
 
   // Services
   private readonly route = inject(ActivatedRoute);
-  private readonly bookingService = inject(InterviewBookingResourceApiService);
+  private readonly bookingApi = inject(InterviewBookingResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
@@ -188,7 +188,7 @@ export class InterviewBookingComponent {
     if (processId === null) return;
 
     try {
-      await firstValueFrom(this.bookingService.bookSlot(processId, { slotId: slot.id }));
+      await firstValueFrom(this.bookingApi.bookSlot(processId, { slotId: slot.id }));
       this.toastService.showSuccessKey('interview.booking.bookingSuccess');
       this.selectedSlot.set(null);
       // Reload data to show confirmation
@@ -267,7 +267,7 @@ export class InterviewBookingComponent {
     try {
       this.loading.set(true);
       this.error.set(false);
-      const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month, 0, 100));
+      const data = await firstValueFrom(this.bookingApi.getBookingData(processId, year, month, 0, 100));
 
       // Auto-select first available month on initial load using first slot's date
       if (!this.initialized()) {

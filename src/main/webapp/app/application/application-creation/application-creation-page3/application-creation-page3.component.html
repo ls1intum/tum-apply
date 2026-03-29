@@ -42,7 +42,6 @@
             />
           </label>
           <jhi-upload-button
-            uploadKey="entity.upload.upload_instruction.CV"
             documentType="CV"
             [applicationId]="applicationId"
             [documentIds]="computedDocumentIdsCvSet()"
@@ -62,12 +61,7 @@
               tooltipPosition="top"
             />
           </label>
-          <jhi-upload-button
-            uploadKey="entity.upload.upload_instruction.REFERENCE"
-            documentType="REFERENCE"
-            [applicationId]="applicationId"
-            [documentIds]="documentIdsReferences()"
-          />
+          <jhi-upload-button documentType="REFERENCE" [applicationId]="applicationId" [documentIds]="documentIdsReferences()" />
         </div>
       </div>
     }

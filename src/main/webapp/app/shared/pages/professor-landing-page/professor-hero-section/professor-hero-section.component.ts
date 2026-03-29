@@ -10,6 +10,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 @Component({
   selector: 'jhi-professor-hero-section',
@@ -41,7 +42,7 @@ export class ProfessorHeroSectionComponent {
 
   async navigateToGetStarted(): Promise<void> {
     if (this.accountService.signedIn()) {
-      const isProfessorOrEmployee = this.accountService.hasAnyAuthority(['PROFESSOR', 'EMPLOYEE']);
+      const isProfessorOrEmployee = this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee]);
       if (isProfessorOrEmployee) {
         await this.router.navigate(['/my-positions']);
       } else {

@@ -4,20 +4,20 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
+import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
+import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
-import { Applicant } from 'app/generated/model/applicant';
-import { EmailSetting } from 'app/generated/model/emailSetting';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import * as DropDownOptions from 'app/job/dropdown-options';
 
 import TranslateDirective from '../../language/translate.directive';
 import { FilterChange, FilterMultiselect } from '../../components/atoms/filter-multiselect/filter-multiselect';
 
-import EmailTypeEnum = EmailSetting.EmailTypeEnum;
-import RolesEnum = UserShortDTO.RolesEnum;
-type SubjectArea = Applicant.SubjectAreaSubscriptionsEnum;
+const RolesEnum = UserShortDTORolesEnum;
+type RolesEnum = UserShortDTORolesEnum;
+type SubjectArea = ApplicantSubjectAreaSubscriptionsEnum;
 
 export interface NotificationGroup {
   groupKey: string; // Title of the group (short)
@@ -37,8 +37,8 @@ export interface NotificationGroup {
 export class EmailSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
-  protected emailSettingService = inject(EmailSettingResourceApiService);
-  protected applicantResourceApiService = inject(ApplicantResourceApiService);
+  protected applicantApi = inject(ApplicantResourceApi);
+  protected emailSettingApi = inject(EmailSettingResourceApi);
   protected toastService = inject(ToastService);
   protected readonly RolesEnum = RolesEnum;
 
@@ -73,7 +73,7 @@ export class EmailSettingsComponent {
   protected roleSettings: WritableSignal<Map<RolesEnum, NotificationGroup[]>> = signal(
     new Map<RolesEnum, NotificationGroup[]>([
       [
-        RolesEnum.Applicant,
+        UserShortDTORolesEnum.Applicant,
         [
           {
             groupKey: 'settings.notifications.applicant.submission.title',
@@ -90,7 +90,24 @@ export class EmailSettingsComponent {
         ],
       ],
       [
-        RolesEnum.Professor,
+        UserShortDTORolesEnum.Professor,
+        [
+          {
+            groupKey: 'settings.notifications.professor.new.title',
+            descriptionKey: 'settings.notifications.professor.new.description',
+            emailTypes: [EmailTypeEnum.ApplicationReceived],
+            enabled: false,
+          },
+          {
+            groupKey: 'settings.notifications.professor.accepted.title',
+            descriptionKey: 'settings.notifications.professor.accepted.description',
+            emailTypes: [EmailTypeEnum.ApplicationAccepted],
+            enabled: false,
+          },
+        ],
+      ],
+      [
+        UserShortDTORolesEnum.Employee,
         [
           {
             groupKey: 'settings.notifications.professor.new.title',
@@ -111,7 +128,7 @@ export class EmailSettingsComponent {
 
   async loadEmailNotificationGroups(role: RolesEnum): Promise<void> {
     try {
-      const settings = await firstValueFrom(this.emailSettingService.getEmailSettings());
+      const settings = await firstValueFrom(this.emailSettingApi.getEmailSettings());
 
       const updatedGroups = this.roleSettings()
         .get(role)
@@ -136,7 +153,7 @@ export class EmailSettingsComponent {
 
   async loadSubjectAreaSubscriptions(): Promise<void> {
     try {
-      const subscriptions = await firstValueFrom(this.applicantResourceApiService.getSubjectAreaSubscriptions());
+      const subscriptions = await firstValueFrom(this.applicantApi.getSubjectAreaSubscriptions());
       const selectedSubjectAreas = this.sortSubjectAreas(subscriptions as SubjectArea[]);
       this.selectedSubjectAreas.set(selectedSubjectAreas);
     } catch {
@@ -162,13 +179,13 @@ export class EmailSettingsComponent {
 
   onToggleChanged(group: NotificationGroup): void {
     const role = this.currentRole();
-    const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
+    const updatedSettings: EmailSettingDTO[] = group.emailTypes.map(emailType => ({
       emailType,
       enabled: group.enabled,
     }));
 
     try {
-      void firstValueFrom(this.emailSettingService.updateEmailSettings(updatedSettings)).catch(async () => {
+      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(async () => {
         this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
 
         if (role) {
@@ -204,10 +221,10 @@ export class EmailSettingsComponent {
 
     try {
       const updateRequests = subjectAreasToAdd
-        .map(subjectArea => firstValueFrom(this.applicantResourceApiService.addSubjectAreaSubscription(subjectArea)))
+        .map(subjectArea => firstValueFrom(this.applicantApi.addSubjectAreaSubscription(subjectArea)))
         .concat(
           subjectAreasToRemove.map(subjectArea =>
-            firstValueFrom(this.applicantResourceApiService.removeSubjectAreaSubscription(subjectArea)),
+            firstValueFrom(this.applicantApi.removeSubjectAreaSubscription(subjectArea)),
           ),
         );
       await Promise.all(updateRequests);

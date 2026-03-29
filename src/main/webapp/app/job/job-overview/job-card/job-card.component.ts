@@ -6,16 +6,15 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TranslateDirective } from 'app/shared/language';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { JobCardDTOApplicationStateEnum, JobCardDTOSubjectAreaEnum } from 'app/generated/model/job-card-dto';
 
 import * as DropDownOptions from '../../dropdown-options';
-export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
+export type ApplicationStatusExtended = JobCardDTOApplicationStateEnum | 'NOT_YET_APPLIED';
 
 export const ApplicationStatusExtended = {
-  ...JobCardDTO.ApplicationStateEnum,
   NotYetApplied: 'NOT_YET_APPLIED' as ApplicationStatusExtended,
 };
 
@@ -27,7 +26,7 @@ export const ApplicationStatusExtended = {
 export class JobCardComponent {
   jobId = input<string>('');
   jobTitle = input<string>('');
-  subjectArea = input<JobCardDTO.SubjectAreaEnum>();
+  subjectArea = input<JobCardDTOSubjectAreaEnum>();
   researchArea = input<string>('');
   location = input<string>('');
   professor = input<string>('');
@@ -70,8 +69,6 @@ export class JobCardComponent {
     }
     return duration;
   });
-
-  ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;
 
   private router = inject(Router);
 

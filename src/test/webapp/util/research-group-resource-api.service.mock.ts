@@ -1,8 +1,8 @@
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { Provider } from '@angular/core';
 import { vi, Mock } from 'vitest';
 
-export interface ResearchGroupResourceApiServiceMock {
+export interface ResearchGroupResourceApiMock {
   activateResearchGroup: Mock;
   createEmployeeResearchGroupRequest: Mock;
   createProfessorResearchGroupRequest: Mock;
@@ -21,7 +21,7 @@ export interface ResearchGroupResourceApiServiceMock {
   withdrawResearchGroup: Mock;
 }
 
-export function createResearchGroupResourceApiServiceMock(): ResearchGroupResourceApiServiceMock {
+export function createResearchGroupResourceApiMock(): ResearchGroupResourceApiMock {
   return {
     activateResearchGroup: vi.fn(),
     createEmployeeResearchGroupRequest: vi.fn(),
@@ -42,8 +42,6 @@ export function createResearchGroupResourceApiServiceMock(): ResearchGroupResour
   };
 }
 
-export function provideResearchGroupResourceApiServiceMock(
-  mock: ResearchGroupResourceApiServiceMock = createResearchGroupResourceApiServiceMock(),
-): Provider {
-  return { provide: ResearchGroupResourceApiService, useValue: mock };
+export function provideResearchGroupResourceApiMock(mock: ResearchGroupResourceApiMock = createResearchGroupResourceApiMock()): Provider {
+  return { provide: ResearchGroupResourceApi, useValue: mock };
 }

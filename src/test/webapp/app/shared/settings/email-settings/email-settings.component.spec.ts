@@ -2,16 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { EmailSettingsComponent, NotificationGroup } from 'app/shared/settings/email-settings/email-settings.component';
-import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
-import { ApplicantResourceApiService } from 'app/generated/api/applicantResourceApi.service';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { EmailSetting } from 'app/generated/model/emailSetting';
-import { Applicant } from 'app/generated/model/applicant';
-import RolesEnum = UserShortDTO.RolesEnum;
-import EmailTypeEnum = EmailSetting.EmailTypeEnum;
-import SubjectAreaEnum = Applicant.SubjectAreaSubscriptionsEnum;
+import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
+import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
+
+const RolesEnum = UserShortDTORolesEnum;
+const EmailTypeEnum = EmailSettingDTOEmailTypeEnum;
+const SubjectAreaEnum = ApplicantSubjectAreaSubscriptionsEnum;
 
 describe('EmailSettingsComponent', () => {
   let fixture: ComponentFixture<EmailSettingsComponent>;
@@ -34,8 +35,8 @@ describe('EmailSettingsComponent', () => {
     TestBed.configureTestingModule({
       imports: [EmailSettingsComponent, TranslateModule.forRoot()],
       providers: [
-        { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
-        { provide: ApplicantResourceApiService, useValue: applicantResourceApiServiceMock },
+        { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
+        { provide: ApplicantResourceApi, useValue: applicantResourceApiServiceMock },
         provideToastServiceMock(toastServiceMock),
       ],
     });
@@ -49,7 +50,7 @@ describe('EmailSettingsComponent', () => {
   describe('loadSettings', () => {
     it('should update settings and mark loaded when service returns values', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSetting[]>([
+        of<EmailSettingDTO[]>([
           { emailType: EmailTypeEnum.ApplicationSent, enabled: true },
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
@@ -65,7 +66,7 @@ describe('EmailSettingsComponent', () => {
 
     it('should mark group disabled if any relevant type is disabled', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSetting[]>([
+        of<EmailSettingDTO[]>([
           { emailType: EmailTypeEnum.ApplicationSent, enabled: false },
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
@@ -94,7 +95,7 @@ describe('EmailSettingsComponent', () => {
 
     it('should treat undefined enabled values as true', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSetting[]>([
+        of<EmailSettingDTO[]>([
           { emailType: EmailTypeEnum.ApplicationSent, enabled: undefined },
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
@@ -110,7 +111,7 @@ describe('EmailSettingsComponent', () => {
     });
 
     it('should load subject area subscriptions for applicants', async () => {
-      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSettingDTO[]>([]));
       applicantResourceApiServiceMock.getSubjectAreaSubscriptions.mockReturnValue(
         of([SubjectAreaEnum.Mathematics, SubjectAreaEnum.ComputerScience]),
       );
@@ -122,7 +123,7 @@ describe('EmailSettingsComponent', () => {
     });
 
     it('should clear subject area subscriptions for non-applicants', async () => {
-      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSetting[]>([]));
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSettingDTO[]>([]));
       component['selectedSubjectAreas'].set([SubjectAreaEnum.ComputerScience]);
       component['subjectAreasEnabled'].set(true);
 
