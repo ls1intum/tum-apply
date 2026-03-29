@@ -1,4 +1,4 @@
-import { computed, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
@@ -9,20 +9,37 @@ import { FilterChange } from '../../components/atoms/filter-multiselect/filter-m
 
 export type SubjectArea = ApplicantSubjectAreaSubscriptionsEnum;
 
+/**
+ * Component-scoped store for the applicant's subject area notification preferences.
+ *
+ * Responsibilities:
+ * - load the current server-side selection
+ * - expose derived values for the multiselect and tag UI
+ * - persist incremental add/remove changes
+ * - keep local UI state consistent during loading and rollback scenarios
+ */
+@Injectable()
 export class SubjectAreaSubscriptionsStore {
   readonly saving = signal(false);
   readonly enabled = signal(false);
   readonly selected = signal<SubjectArea[]>([]);
+
   readonly options = DropDownOptions.subjectAreas.map(option => ({
     name: option.name,
     value: option.value as SubjectArea,
   }));
+
+  /** Raw option labels used by the filter multiselect component. */
   readonly filterOptions: string[] = this.options.map(option => option.name);
+
+  /** Selected labels mapped back into the multiselect's string-based API. */
   readonly selectedFilterValues = computed(() =>
     this.selected()
       .map(subjectArea => DropDownOptions.subjectAreaValueToNameMap.get(subjectArea))
       .filter((subjectAreaName): subjectAreaName is string => subjectAreaName !== undefined),
   );
+
+  /** Selected option objects used by the custom tag renderer below the selector. */
   readonly selectedOptions = computed(() => {
     const selectedAreas = new Set(this.selected());
     return this.options.filter(option => selectedAreas.has(option.value));
@@ -31,21 +48,34 @@ export class SubjectAreaSubscriptionsStore {
   private readonly applicantApi = inject(ApplicantResourceApi);
   private readonly toastService = inject(ToastService);
 
+  /**
+   * Loads the persisted subscriptions for the current applicant.
+   *
+   * On failure, the store is reset so the UI does not keep stale values.
+   */
   async load(): Promise<void> {
     try {
       const subscriptions = await firstValueFrom(this.applicantApi.getSubjectAreaSubscriptions());
       this.selected.set(this.sortSubjectAreas(subscriptions as SubjectArea[]));
     } catch {
       this.reset();
-      this.toastService.showError({ summary: 'Error', detail: 'loading the subject area subscriptions' });
+      this.toastService.showErrorKey('settings.notifications.applicant.subjectAreas.loadFailed');
     }
   }
 
+  /** Clears both the selected values and the local enabled state. */
   reset(): void {
     this.selected.set([]);
     this.enabled.set(false);
   }
 
+  /**
+   * Persists the next selection by diffing it against the current one and only
+   * sending the required add/remove requests.
+   *
+   * The local state is updated optimistically. On failure, the previous state is
+   * restored and the latest server state is reloaded.
+   */
   async updateSelection(subjectAreas: SubjectArea[] | null | undefined): Promise<void> {
     const nextSelection = this.sortSubjectAreas(subjectAreas ?? []);
     const previousSelection = this.selected();
@@ -69,7 +99,7 @@ export class SubjectAreaSubscriptionsStore {
       await Promise.all(updateRequests);
     } catch {
       this.selected.set(previousSelection);
-      this.toastService.showError({ summary: 'Error', detail: 'updating the subject area subscriptions' });
+      this.toastService.showErrorKey('settings.notifications.applicant.subjectAreas.saveFailed');
       await this.load();
     } finally {
       this.saving.set(false);
@@ -80,10 +110,12 @@ export class SubjectAreaSubscriptionsStore {
     await this.updateSelection(this.selected().filter(selectedSubjectArea => selectedSubjectArea !== subjectArea));
   }
 
+  /** Toggles the visibility of the selector UI without persisting anything. */
   setEnabled(enabled: boolean): void {
     this.enabled.set(enabled);
   }
 
+  /** Adapts the multiselect output into domain values understood by the store. */
   onFilterChange(filterChange: FilterChange): void {
     void this.updateSelection(DropDownOptions.mapSubjectAreaNames(filterChange.selectedValues) as SubjectArea[]);
   }

@@ -82,10 +82,7 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      expect(toastServiceMock.showError).toHaveBeenCalledWith({
-        summary: 'Error',
-        detail: 'loading the notification settings',
-      });
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.loadFailed');
       expect(component['loaded']()).toBe(true);
     });
 
@@ -162,10 +159,7 @@ describe('NotificationSettingsComponent', () => {
 
       component.onToggleChanged(group);
 
-      expect(toastServiceMock.showError).toHaveBeenCalledWith({
-        summary: 'Error',
-        detail: 'updating the notification settings',
-      });
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
     });
   });
 
@@ -203,10 +197,7 @@ describe('NotificationSettingsComponent', () => {
 
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience]);
       expect(subjectAreaSubscriptions().enabled()).toBe(true);
-      expect(toastServiceMock.showError).toHaveBeenCalledWith({
-        summary: 'Error',
-        detail: 'updating the subject area subscriptions',
-      });
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.applicant.subjectAreas.saveFailed');
     });
   });
 

@@ -25,6 +25,14 @@
     },
 
     "notifications": {
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Benachrichtigungseinstellungen. Bitte versuche es erneut."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Aktualisieren der Benachrichtigungseinstellungen. Bitte versuche es erneut."
+      },
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
@@ -43,7 +51,15 @@
           "selectedCount": "{{count}} ausgewählt",
           "empty": "Keine Fachbereiche verfügbar.",
           "emptyFilter": "Keine Fachbereiche für diese Suche gefunden.",
-          "emptySelection": "Noch keine Fachbereiche ausgewählt."
+          "emptySelection": "Noch keine Fachbereiche ausgewählt.",
+          "loadFailed": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Fehler beim Laden der Fachbereich-Abonnements. Bitte versuche es erneut."
+          },
+          "saveFailed": {
+            "summary": "Speichern fehlgeschlagen",
+            "detail": "Fehler beim Aktualisieren der Fachbereich-Abonnements. Bitte versuche es erneut."
+          }
         }
       },
       "professor": {

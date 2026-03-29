@@ -23,7 +23,7 @@
     <div class="flex flex-wrap gap-1">
       @for (subjectArea of selectedOptions(); track subjectArea.value) {
         <div
-          class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[var(--color-border-hover)]"
+          class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[--color-border-hover]"
           [class.opacity-60]="saving()"
         >
           <span [jhiTranslate]="subjectArea.name"></span>

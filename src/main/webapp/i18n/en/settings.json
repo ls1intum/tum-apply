@@ -25,6 +25,14 @@
     },
 
     "notifications": {
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load notification settings. Please try again."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to update notification settings. Please try again."
+      },
       "applicant": {
         "submission": {
           "title": "Application Submission",
@@ -43,7 +51,15 @@
           "selectedCount": "{{count}} selected",
           "empty": "No subject areas available.",
           "emptyFilter": "No subject areas match your search.",
-          "emptySelection": "No subject areas selected yet."
+          "emptySelection": "No subject areas selected yet.",
+          "loadFailed": {
+            "summary": "Load failed",
+            "detail": "Failed to load selected subject areas. Please try again."
+          },
+          "saveFailed": {
+            "summary": "Save failed",
+            "detail": "Failed to update selected subject areas. Please try again."
+          }
         }
       },
       "professor": {

@@ -34,6 +34,7 @@ export interface NotificationGroup {
     TranslateModule,
     TranslateDirective,
   ],
+  providers: [SubjectAreaSubscriptionsStore],
   templateUrl: './notification-settings.component.html',
 })
 export class NotificationSettingsComponent {
@@ -42,7 +43,7 @@ export class NotificationSettingsComponent {
   protected readonly emailSettingApi = inject(EmailSettingResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly RolesEnum = RolesEnum;
-  protected readonly subjectAreaSubscriptions = new SubjectAreaSubscriptionsStore();
+  protected readonly subjectAreaSubscriptions = inject(SubjectAreaSubscriptionsStore);
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
@@ -131,7 +132,7 @@ export class NotificationSettingsComponent {
         this.roleSettings.set(newMap);
       }
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'loading the notification settings' });
+      this.toastService.showErrorKey('settings.notifications.loadFailed');
     }
   }
 
@@ -157,14 +158,14 @@ export class NotificationSettingsComponent {
 
     try {
       void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(async () => {
-        this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
+        this.toastService.showErrorKey('settings.notifications.saveFailed');
 
         if (role) {
           await this.loadEmailNotificationGroups(role);
         }
       });
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
+      this.toastService.showErrorKey('settings.notifications.saveFailed');
 
       if (role) {
         void this.loadEmailNotificationGroups(role);
