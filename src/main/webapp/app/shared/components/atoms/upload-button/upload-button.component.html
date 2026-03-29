@@ -79,12 +79,14 @@
               <tr [class]="rowClass">
                 <td>
                   <span class="inline-flex justify-center w-full h-full">
-                    <fa-icon
-                      icon="file-circle-check"
-                      class="text-positive-default"
+                    <fa-layers
                       [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate"
                       tooltipPosition="top"
-                    />
+                    >
+                      <fa-icon icon="file" class="text-primary" />
+                      <fa-icon icon="circle" class="text-white" transform="shrink-5 down-4 right-5" />
+                      <fa-icon icon="circle-check" class="text-positive-default" transform="shrink-7 down-4 right-5" />
+                    </fa-layers>
                   </span>
                 </td>
                 <td class="pr-3">
