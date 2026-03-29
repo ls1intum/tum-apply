@@ -9,7 +9,7 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div class="filter-trigger">
-      @if (!showSelectedStateInTrigger() || !hasSelectedItems()) {
+      @if (!hasSelectedItems()) {
         <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
       } @else {
         @if (showChipsCounterOnly()) {
@@ -109,7 +109,7 @@
     </div>
   }
 
-  @if (!showSelectedChipsInTrigger() && showSelectedChipsBelow() && hasSelectedItems()) {
+  @if (!showSelectedChipsInTrigger() && hasSelectedItems()) {
     <div class="selected-chips-list">
       @for (option of selectedOptions(); track option.value) {
         <p-chip

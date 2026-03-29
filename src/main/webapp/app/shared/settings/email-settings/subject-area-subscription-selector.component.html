@@ -1,0 +1,49 @@
+<div class="subject-area-subscription-selector">
+  <div class="subject-area-filter">
+    <jhi-filter-multiselect
+      filterId="subject-areas"
+      [filterLabel]="'settings.notifications.applicant.subjectAreas.placeholder'"
+      [filterSearchPlaceholder]="'settings.notifications.applicant.subjectAreas.filterPlaceholder'"
+      [filterOptions]="filterOptions()"
+      [selectedValuesInput]="selectedValues()"
+      [shouldTranslateOptions]="true"
+      [showSelectedChipsInTrigger]="false"
+      (filterChange)="onFilterChange($event)"
+    />
+    <div class="subject-area-filter-placeholder" aria-hidden="true">
+      {{ 'settings.notifications.applicant.subjectAreas.placeholder' | translate }}
+    </div>
+  </div>
+
+  @if (!isDropdownOpen() && selectedOptions().length) {
+    <div class="flex flex-wrap gap-1">
+      @for (subjectArea of selectedOptions(); track subjectArea.value) {
+        <div
+          class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[var(--color-border-hover)]"
+          [class.opacity-60]="saving()"
+        >
+          <span [jhiTranslate]="subjectArea.name"></span>
+          <span class="flex items-center">
+            <button
+              type="button"
+              class="inline-flex size-3 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-background-surface-alt hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
+              [disabled]="saving()"
+              [attr.aria-label]="
+                'settings.notifications.applicant.subjectAreas.removeLabel'
+                  | translate
+                    : {
+                        subjectArea: (subjectArea.name | translate),
+                      }
+              "
+              (click)="onRemoveSubjectArea(subjectArea.value)"
+            >
+              <fa-icon class="text-sm" [icon]="['fas', 'xmark']" />
+            </button>
+          </span>
+        </div>
+      }
+    </div>
+  } @else if (!isDropdownOpen()) {
+    <p class="text-text-secondary" jhiTranslate="settings.notifications.applicant.subjectAreas.emptySelection"></p>
+  }
+</div>

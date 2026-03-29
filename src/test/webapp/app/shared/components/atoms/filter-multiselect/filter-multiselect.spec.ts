@@ -200,15 +200,6 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.isOpen()).toBe(false);
   });
 
-  it('should not emit openChange when dropdown is already closed', () => {
-    const filterFixture = createFilterMultiselectFixture();
-    const openChangeSpy = vi.spyOn(filterFixture.componentInstance.openChange, 'emit');
-
-    filterFixture.componentInstance.closeDropdown();
-
-    expect(openChangeSpy).not.toHaveBeenCalled();
-  });
-
   it('should toggle option selection and emit change with filterId in correct order', () => {
     const filterFixture = createFilterMultiselectFixture({ filterId: 'custom-filter-id' });
 

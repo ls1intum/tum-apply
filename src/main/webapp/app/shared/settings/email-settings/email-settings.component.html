@@ -13,7 +13,7 @@
                 <p class="mt-3 text-md text-text-secondary" [jhiTranslate]="group.descriptionKey"></p>
               </div>
 
-              <p-toggleSwitch class="shrink-0" [(ngModel)]="group.enabled" (ngModelChange)="onToggleChanged(group)" />
+              <jhi-toggle-switch class="shrink-0" [(model)]="group.enabled" (modelChange)="onToggleChanged(group)" />
             </div>
           </section>
         }
@@ -31,75 +31,36 @@
                 <p class="mt-3 text-md text-text-secondary" jhiTranslate="settings.notifications.applicant.subjectAreas.description"></p>
               </div>
 
-              <p-toggleSwitch
+              <jhi-toggle-switch
                 class="shrink-0"
-                [ngModel]="subjectAreasEnabled()"
-                [disabled]="subjectAreaSaving()"
-                (ngModelChange)="onSubjectAreasToggleChanged($event)"
+                [model]="subjectAreaSubscriptions.enabled()"
+                [disabled]="subjectAreaSubscriptions.saving()"
+                (modelChange)="subjectAreaSubscriptions.setEnabled($event)"
               />
             </div>
 
             <div
               class="transition-all duration-100 ease-in-out"
-              [class.mt-4]="subjectAreasEnabled()"
-              [class.mt-0]="!subjectAreasEnabled()"
-              [class.max-h-[80rem]]="subjectAreasEnabled()"
-              [class.max-h-0]="!subjectAreasEnabled()"
-              [class.overflow-hidden]="!subjectAreasEnabled()"
-              [class.opacity-100]="subjectAreasEnabled()"
-              [class.opacity-0]="!subjectAreasEnabled()"
-              [attr.aria-hidden]="!subjectAreasEnabled()"
+              [class.mt-4]="subjectAreaSubscriptions.enabled()"
+              [class.mt-0]="!subjectAreaSubscriptions.enabled()"
+              [class.max-h-[80rem]]="subjectAreaSubscriptions.enabled()"
+              [class.max-h-0]="!subjectAreaSubscriptions.enabled()"
+              [class.overflow-hidden]="!subjectAreaSubscriptions.enabled()"
+              [class.opacity-100]="subjectAreaSubscriptions.enabled()"
+              [class.opacity-0]="!subjectAreaSubscriptions.enabled()"
+              [attr.aria-hidden]="!subjectAreaSubscriptions.enabled()"
             >
               <div class="flex flex-col gap-3">
-                <!-- Searchable multi-select used to add or remove subject areas -->
-                <div [class.opacity-60]="subjectAreaSaving()" [class.pointer-events-none]="subjectAreaSaving()">
-                  <jhi-filter-multiselect
-                    filterId="subject-areas"
-                    [filterLabel]="'settings.notifications.applicant.subjectAreas.placeholder'"
-                    [filterSearchPlaceholder]="'settings.notifications.applicant.subjectAreas.filterPlaceholder'"
-                    [filterOptions]="subjectAreaFilterOptions"
-                    [selectedValuesInput]="selectedSubjectAreaFilterValues()"
-                    [shouldTranslateOptions]="true"
-                    [showSelectedStateInTrigger]="false"
-                    [showSelectedChipsInTrigger]="false"
-                    [showSelectedChipsBelow]="false"
-                    (openChange)="onSubjectAreaDropdownOpenChange($event)"
-                    (filterChange)="onSubjectAreaFilterChange($event)"
+                <div [class.opacity-60]="subjectAreaSubscriptions.saving()" [class.pointer-events-none]="subjectAreaSubscriptions.saving()">
+                  <jhi-subject-area-subscription-selector
+                    [saving]="subjectAreaSubscriptions.saving()"
+                    [filterOptions]="subjectAreaSubscriptions.filterOptions"
+                    [selectedValues]="subjectAreaSubscriptions.selectedFilterValues()"
+                    [selectedOptions]="subjectAreaSubscriptions.selectedOptions()"
+                    (filterChange)="subjectAreaSubscriptions.onFilterChange($event)"
+                    (removeSubjectArea)="subjectAreaSubscriptions.remove($event)"
                   />
                 </div>
-
-                <!-- Selected subject areas are shown as separate removable tags below the trigger -->
-                @if (!subjectAreaDropdownOpen() && selectedSubjectAreaOptions().length) {
-                  <div class="flex flex-wrap gap-1">
-                    @for (subjectArea of selectedSubjectAreaOptions(); track subjectArea.value) {
-                      <div
-                        class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[var(--color-border-hover)]"
-                        [class.opacity-60]="subjectAreaSaving()"
-                      >
-                        <span [jhiTranslate]="subjectArea.name"></span>
-                        <span class="flex items-center">
-                          <button
-                            type="button"
-                            class="inline-flex size-3 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-background-surface-alt hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
-                            [disabled]="subjectAreaSaving()"
-                            [attr.aria-label]="
-                              'settings.notifications.applicant.subjectAreas.removeLabel'
-                                | translate
-                                  : {
-                                      subjectArea: (subjectArea.name | translate),
-                                    }
-                            "
-                            (click)="removeSubjectArea(subjectArea.value)"
-                          >
-                            <fa-icon class="text-sm" [icon]="['fas', 'xmark']" />
-                          </button>
-                        </span>
-                      </div>
-                    }
-                  </div>
-                } @else if (!subjectAreaDropdownOpen()) {
-                  <p class="text-text-secondary" jhiTranslate="settings.notifications.applicant.subjectAreas.emptySelection"></p>
-                }
               </div>
             </div>
           </div>

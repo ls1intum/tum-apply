@@ -56,7 +56,6 @@
   .filter-button {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 0.375rem 0.75rem;
     border: var(--p-border-default) solid 0.1rem;
     background: var(--p-background-default);
@@ -66,18 +65,11 @@
     color: var(--p-text-secondary);
     font-size: var(--p-select-sm-font-size);
 
-    .filter-trigger {
-      flex: 1;
-      min-width: 0;
-    }
-
     span {
       margin-right: 1rem;
     }
 
     .filter-icon {
-      margin-left: auto;
-      flex-shrink: 0;
       transition: transform 0.2s ease;
 
       &.rotated {
@@ -86,7 +78,7 @@
     }
 
     &:hover {
-      border-color: var(--color-border-hover);
+      border-color: var(--p-neutral-hover-color-outlined);
     }
   }
 

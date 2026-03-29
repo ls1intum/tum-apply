@@ -37,9 +37,7 @@ export class FilterMultiselect {
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
-  showSelectedStateInTrigger = input<boolean>(true);
   showSelectedChipsInTrigger = input<boolean>(true);
-  showSelectedChipsBelow = input<boolean>(true);
   selectedValuesInput = input<string[] | undefined>(undefined);
   focusedIndexOptionList = signal<number>(-1);
 
@@ -52,7 +50,6 @@ export class FilterMultiselect {
 
   // gives the selected values back to the parent component
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
-  openChange = output<boolean>();
 
   filteredOptions = computed(() => {
     const search = this.searchTerm().toLowerCase().trim();
@@ -117,7 +114,6 @@ export class FilterMultiselect {
   });
   toggleDropdown(): void {
     this.isOpen.update(current => !current);
-    this.openChange.emit(this.isOpen());
     if (this.isOpen()) {
       this.searchTerm.set('');
       this.calculateDropdownAlignment();
@@ -176,12 +172,7 @@ export class FilterMultiselect {
   }
 
   closeDropdown(): void {
-    if (!this.isOpen()) {
-      return;
-    }
-
     this.isOpen.set(false);
-    this.openChange.emit(false);
   }
 
   removeOption(value: string): void {
