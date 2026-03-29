@@ -3,8 +3,8 @@ import { firstValueFrom } from 'rxjs';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
-import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
+import { RatingOverviewDTO } from 'app/generated/model/rating-overview-dto';
+import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
 
 import TranslateDirective from '../../../language/translate.directive';
 import { SubSection } from '../../atoms/sub-section/sub-section';
@@ -15,7 +15,7 @@ import { SubSection } from '../../atoms/sub-section/sub-section';
   templateUrl: './rating-section.html',
 })
 export class RatingSection {
-  ratingService = inject(RatingResourceApiService);
+  ratingApi = inject(RatingResourceApi);
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
@@ -57,7 +57,7 @@ export class RatingSection {
   private async loadRatings(applicationId: string): Promise<void> {
     this.isInitializing.set(true);
     try {
-      const response = await firstValueFrom(this.ratingService.getRatings(applicationId));
+      const response = await firstValueFrom(this.ratingApi.getRatings(applicationId));
       this.ratings.set(response);
 
       // Initialize myRating from server (e.g. response.currentUserRating)
@@ -73,9 +73,9 @@ export class RatingSection {
 
   private async upsertMyRating(applicationId: string, value: number | undefined): Promise<void> {
     try {
-      await firstValueFrom(this.ratingService.updateRating(applicationId, value));
+      await firstValueFrom(this.ratingApi.updateRating(applicationId, value));
 
-      const refreshed = await firstValueFrom(this.ratingService.getRatings(applicationId));
+      const refreshed = await firstValueFrom(this.ratingApi.getRatings(applicationId));
       this.ratings.set(refreshed);
 
       // Sync myRating and serverCurrent with the refreshed data

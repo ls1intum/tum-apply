@@ -9,15 +9,15 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { TranslateDirective } from 'app/shared/language';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
-import { JobCardDTO } from '../../../generated/model/jobCardDTO';
-import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { JobCardDTO } from '../../../generated/model/job-card-dto';
+import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 
 @Component({
@@ -41,8 +41,8 @@ export class JobCardListComponent {
   DropdownOptions = DropdownOptions;
 
   readonly accountService = inject(AccountService);
-  readonly selectedSubjectAreaFilters = signal<JobFormDTO.SubjectAreaEnum[]>([]);
-  readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
+  readonly selectedSubjectAreaFilters = signal<JobFormDTOSubjectAreaEnum[]>([]);
+  readonly selectedLocationFilters = signal<JobFormDTOLocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
   readonly notificationsSettingsHref = inject(Router).serializeUrl(
     inject(Router).createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } }),
@@ -73,7 +73,7 @@ export class JobCardListComponent {
     };
   });
 
-  private jobService = inject(JobResourceApiService);
+  private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
   private readonly loadJobsEffect = effect(() => {
@@ -132,7 +132,7 @@ export class JobCardListComponent {
 
   async loadAllFilter(): Promise<void> {
     try {
-      const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
+      const filterOptions = await firstValueFrom(this.jobApi.getAllFilters());
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
       this.allSupervisorNames.set([]);
@@ -143,7 +143,7 @@ export class JobCardListComponent {
   async loadJobs(): Promise<void> {
     try {
       const pageData = await firstValueFrom(
-        this.jobService.getAvailableJobs(
+        this.jobApi.getAvailableJobs(
           this.pageSize(),
           this.page(),
           emptyToUndef(this.selectedSubjectAreaFilters()),
@@ -176,6 +176,6 @@ export class JobCardListComponent {
   }
 
   canManageSubjectAreaSubscriptions(): boolean {
-    return this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Applicant]);
+    return this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]);
   }
 }

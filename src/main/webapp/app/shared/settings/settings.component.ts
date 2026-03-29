@@ -2,11 +2,11 @@ import { Component, DestroyRef, computed, effect, inject, signal } from '@angula
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
@@ -36,18 +36,18 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'docum
 })
 export class SettingsComponent {
   readonly activeTab = signal<SettingsTab>('general');
-  readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
+  readonly role = signal<UserShortDTORolesEnum | undefined>(undefined);
 
   readonly tabs = computed<TabItem[]>(() => {
     const baseTabs: TabItem[] = [{ id: 'general', translationKey: 'settings.tabs.general' }];
 
     // Hide notifications tab for admins
-    if (this.role() !== UserShortDTO.RolesEnum.Admin) {
+    if (this.role() !== UserShortDTORolesEnum.Admin) {
       baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications' });
     }
 
     // Add Personal Information and documents tabs only for applicants
-    if (this.role() === UserShortDTO.RolesEnum.Applicant) {
+    if (this.role() === UserShortDTORolesEnum.Applicant) {
       baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
       baseTabs.push({ id: 'documents', translationKey: 'settings.tabs.documents' });
     }
@@ -83,7 +83,7 @@ export class SettingsComponent {
 
   constructor() {
     const authorities = this.accountService.loadedUser()?.authorities;
-    this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
+    this.role.set(authorities?.map(authority => authority as UserShortDTORolesEnum)[0]);
 
     effect(() => {
       const requestedTab = this.queryParamMap().get('tab');

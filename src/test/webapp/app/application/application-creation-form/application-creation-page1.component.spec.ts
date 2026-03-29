@@ -11,7 +11,11 @@ import { selectGender } from 'app/shared/constants/genders';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { AbstractControl } from '@angular/forms';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import {
+  ApplicationForApplicantDTO,
+  ApplicationForApplicantDTOApplicationStateEnum,
+} from 'app/generated/model/application-for-applicant-dto';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -130,13 +134,13 @@ describe('ApplicationPage1Component', () => {
         country: 'us',
         postalCode: '12345',
       },
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
       job: {
         jobId: '2345',
         professorName: 'Professor Name',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         title: 'Example Job',
-        subjectArea: 'COMPUTER_SCIENCE',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
     };
 
@@ -238,13 +242,13 @@ describe('ApplicationPage1Component', () => {
 
   it('getPage1FromApplication handles missing fields gracefully', () => {
     const app: ApplicationForApplicantDTO = {
-      applicationState: 'SAVED',
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
       job: {
         jobId: '2345',
         professorName: 'Professor Name',
-        location: 'GARCHING',
+        location: JobFormDTOLocationEnum.Garching,
         title: 'Example Job',
-        subjectArea: 'COMPUTER_SCIENCE',
+        subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       },
     };
     const page1 = getPage1FromApplication(app);

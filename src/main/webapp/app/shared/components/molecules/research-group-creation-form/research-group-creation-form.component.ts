@@ -3,15 +3,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupRequestDTO';
-import { KeycloakUserDTO } from 'app/generated/model/keycloakUserDTO';
-import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
-import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ResearchGroupRequestDTO } from 'app/generated/model/research-group-request-dto';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
+import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -144,11 +144,11 @@ export class ResearchGroupCreationFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly config = inject(DynamicDialogConfig, { optional: true });
   private readonly ref = inject(DynamicDialogRef, { optional: true });
-  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
-  private readonly schoolService = inject(SchoolResourceApiService);
-  private readonly departmentService = inject(DepartmentResourceApiService);
-  private readonly userService = inject(UserResourceApiService);
+  private readonly researchGroupApi = inject(ResearchGroupResourceApi);
+  private readonly profOnboardingApi = inject(ProfOnboardingResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
+  private readonly userApi = inject(UserResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly ADMIN_LOADER_DELAY_MS = 250;
   private adminLoaderTimeout: number | undefined = undefined;
@@ -163,8 +163,8 @@ export class ResearchGroupCreationFormComponent {
   async loadSchoolsAndDepartments(): Promise<void> {
     try {
       const [schools, departments] = await Promise.all([
-        firstValueFrom(this.schoolService.getAllSchools()),
-        firstValueFrom(this.departmentService.getDepartments()),
+        firstValueFrom(this.schoolApi.getAllSchools()),
+        firstValueFrom(this.departmentApi.getDepartments()),
       ]);
       this.schools.set(schools);
       this.departments.set(departments);
@@ -278,9 +278,7 @@ export class ResearchGroupCreationFormComponent {
     }, this.ADMIN_LOADER_DELAY_MS);
 
     try {
-      const response = await firstValueFrom(
-        this.userService.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery),
-      );
+      const response = await firstValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery));
       if (requestId !== this.latestAdminSearchRequestId) {
         return;
       }
@@ -336,13 +334,13 @@ export class ResearchGroupCreationFormComponent {
 
       if (isAdminMode) {
         // Admin creates research group directly as ACTIVE
-        result = await firstValueFrom(this.researchGroupService.createResearchGroupAsAdmin(requestData));
+        result = await firstValueFrom(this.researchGroupApi.createResearchGroupAsAdmin(requestData));
         this.toastService.showSuccessKey('researchGroup.adminView.success.create');
       } else {
         // Professor creates research group as DRAFT (requires approval)
-        result = await firstValueFrom(this.researchGroupService.createProfessorResearchGroupRequest(requestData));
+        result = await firstValueFrom(this.researchGroupApi.createProfessorResearchGroupRequest(requestData));
         // Mark onboarding as confirmed after successful research group request submission
-        await firstValueFrom(this.profOnboardingService.confirmOnboarding());
+        await firstValueFrom(this.profOnboardingApi.confirmOnboarding());
         this.toastService.showSuccessKey('onboarding.professorRequest.success');
       }
 
@@ -416,7 +414,7 @@ export class ResearchGroupCreationFormComponent {
     }
 
     try {
-      const currentUser = await firstValueFrom(this.userService.getCurrentUser());
+      const currentUser = await firstValueFrom(this.userApi.getCurrentUser());
       const firstName = this.normalizePrefillValue(currentUser.firstName);
       const lastName = this.normalizePrefillValue(currentUser.lastName);
       const email = this.normalizePrefillValue(currentUser.email);
