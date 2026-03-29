@@ -66,6 +66,7 @@ spring:
         chat:
           options:
             deployment-name: gpt-5-mini
+            reasoning-effort: low
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:

@@ -8,8 +8,8 @@ import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -38,10 +38,8 @@ public class AiService {
     /**
      * Chat options for fast, deterministic responses.
      */
-    private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
-        .maxCompletionTokens(MAX_COMPLETION_TOKENS)
-        .reasoningEffort("low")
-        .stop(null)
+    private static final ChatOptions FAST_CHAT_OPTIONS = ChatOptions.builder()
+        .maxTokens(MAX_COMPLETION_TOKENS)
         .build();
 
     public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
