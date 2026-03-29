@@ -6,6 +6,9 @@ import { vi } from 'vitest';
 export type ApplicantResourceApiMock = {
   getApplicantProfile: ReturnType<typeof vi.fn>;
   getApplicantProfileDocumentIds: ReturnType<typeof vi.fn>;
+  getSubjectAreaSubscriptions: ReturnType<typeof vi.fn>;
+  addSubjectAreaSubscription: ReturnType<typeof vi.fn>;
+  removeSubjectAreaSubscription: ReturnType<typeof vi.fn>;
   updateApplicantProfile: ReturnType<typeof vi.fn>;
   updateApplicantPersonalInformation: ReturnType<typeof vi.fn>;
   updateApplicantDocumentSettings: ReturnType<typeof vi.fn>;
@@ -19,6 +22,9 @@ export function createApplicantResourceApiMock(): ApplicantResourceApiMock {
   return {
     getApplicantProfile: vi.fn().mockReturnValue(of({ user: {} })),
     getApplicantProfileDocumentIds: vi.fn().mockReturnValue(of({})),
+    getSubjectAreaSubscriptions: vi.fn().mockReturnValue(of([])),
+    addSubjectAreaSubscription: vi.fn().mockReturnValue(of(void 0)),
+    removeSubjectAreaSubscription: vi.fn().mockReturnValue(of(void 0)),
     updateApplicantProfile: vi.fn().mockReturnValue(of({ user: {} })),
     updateApplicantPersonalInformation: vi.fn().mockReturnValue(of({ user: {} })),
     updateApplicantDocumentSettings: vi.fn().mockReturnValue(of({ user: {} })),
