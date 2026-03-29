@@ -299,6 +299,10 @@
       "viewJobDetails": "View details for {{title}}"
     },
     "hoursPerWeek": "{{workload}} h/week",
+    "notificationsCta": {
+      "text": "No suitable job? Enable notifications for new job postings. Click {{link}}.",
+      "link": "here"
+    },
     "errors": {
       "loadFilter": {
         "summary": "Error",

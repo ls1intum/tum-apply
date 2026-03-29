@@ -299,6 +299,10 @@
       "viewJobDetails": "Details anzeigen für {{title}}"
     },
     "hoursPerWeek": "{{workload}} h/Woche",
+    "notificationsCta": {
+      "text": "Keine passende Stelle dabei? Aktiviere Benachrichtigungen für neue Jobs. Klicke {{link}}.",
+      "link": "hier"
+    },
     "errors": {
       "loadFilter": {
         "summary": "Fehler",
