@@ -2,23 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ResearchGroupDepartmentsComponent } from 'app/usermanagement/research-group/research-group-departments/research-group-departments.component';
-import { DepartmentDTO } from 'app/generated/model/models';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createDialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
-import { createDepartmentResourceApiServiceMock, provideDepartmentResourceApiServiceMock } from 'util/department-resource-api.service.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createDepartmentResourceApiMock, provideDepartmentResourceApiMock } from 'util/department-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { DepartmentEditDialogComponent } from 'app/usermanagement/research-group/research-group-departments/department-edit-dialog/department-edit-dialog.component';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 
 describe('ResearchGroupDepartmentsComponent', () => {
   let component: ResearchGroupDepartmentsComponent;
   let fixture: ComponentFixture<ResearchGroupDepartmentsComponent>;
-  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiServiceMock>;
+  let mockDepartmentApi: ReturnType<typeof createDepartmentResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogService: ReturnType<typeof createDialogServiceMock>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockSchoolApi: ReturnType<typeof createSchoolResourceApiMock>;
   let mockRouter: ReturnType<typeof createRouterMock>;
 
   const mockDepartments: DepartmentDTO[] = [
@@ -35,12 +35,12 @@ describe('ResearchGroupDepartmentsComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockDepartmentService = createDepartmentResourceApiServiceMock();
-    mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(of({ content: mockDepartments, totalElements: mockDepartments.length }));
-    mockDepartmentService.deleteDepartment.mockReturnValue(of({}));
+    mockDepartmentApi = createDepartmentResourceApiMock();
+    mockDepartmentApi.getDepartmentsForAdmin.mockReturnValue(of({ content: mockDepartments, totalElements: mockDepartments.length }));
+    mockDepartmentApi.deleteDepartment.mockReturnValue(of({}));
 
-    mockSchoolService = createSchoolResourceApiServiceMock();
-    mockSchoolService.getAllSchools.mockReturnValue(of([{ schoolId: 's1', name: 'School 1', abbreviation: 'S1' }]));
+    mockSchoolApi = createSchoolResourceApiMock();
+    mockSchoolApi.getAllSchools.mockReturnValue(of([{ schoolId: 's1', name: 'School 1', abbreviation: 'S1' }]));
 
     mockToastService = createToastServiceMock();
     mockDialogService = createDialogServiceMock();
@@ -49,8 +49,8 @@ describe('ResearchGroupDepartmentsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupDepartmentsComponent],
       providers: [
-        provideDepartmentResourceApiServiceMock(mockDepartmentService),
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideDepartmentResourceApiMock(mockDepartmentApi),
+        provideSchoolResourceApiMock(mockSchoolApi),
         provideDialogServiceMock(mockDialogService),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
@@ -81,13 +81,13 @@ describe('ResearchGroupDepartmentsComponent', () => {
     });
 
     it('should handle load departments error', async () => {
-      mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(throwError(() => new Error('Error')));
+      mockDepartmentApi.getDepartmentsForAdmin.mockReturnValue(throwError(() => new Error('Error')));
       await expect(component.loadDepartments()).resolves.toBeUndefined();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.loadFailed');
     });
 
     it('should handle load schools error and leave availableSchools empty', async () => {
-      mockSchoolService.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
+      mockSchoolApi.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
 
       // Re-create component so constructor triggers failing loadSchools
       const failingFixture = TestBed.createComponent(ResearchGroupDepartmentsComponent);
@@ -106,7 +106,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
     });
 
     it('should default undefined page response fields to empty and zero', async () => {
-      mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(of({}));
+      mockDepartmentApi.getDepartmentsForAdmin.mockReturnValue(of({}));
 
       await component.loadDepartments();
 
@@ -131,37 +131,37 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
   describe('search & filter & sort', () => {
     it('calls API with search query', async () => {
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
       await component.onSearchEmit('Dept');
       await Promise.resolve();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, [], 'Dept', 'name', 'DESC');
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, [], 'Dept', 'name', 'DESC');
     });
 
     it('calls API with filter values', async () => {
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
       await component.onFilterEmit({ filterId: 'school', selectedValues: ['School 1'] });
       await Promise.resolve();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, ['School 1'], '', 'name', 'DESC');
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, ['School 1'], '', 'name', 'DESC');
     });
 
     it('does not reload when filter id is not school', async () => {
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
 
       await component.onFilterEmit({ filterId: 'other', selectedValues: ['X'] });
       await Promise.resolve();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).not.toHaveBeenCalled();
+      expect(mockDepartmentApi.getDepartmentsForAdmin).not.toHaveBeenCalled();
       expect(component.selectedSchoolFilters()).toEqual([]);
     });
 
     it('calls API on sort change', async () => {
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
       await component.loadOnSortEmit({ field: 'school.name', direction: 'DESC' });
       await Promise.resolve();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, [], '', 'school.name', 'DESC');
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledWith(10, 0, [], '', 'school.name', 'DESC');
     });
   });
 
@@ -171,7 +171,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
       // clear previous calls triggered by constructor
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
 
       component.onCreateDepartment();
 
@@ -182,7 +182,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
         }),
       );
       // Should reload departments once after dialog closed with true
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
     });
 
     it('should not reload if create dialog cancelled', () => {
@@ -190,11 +190,11 @@ describe('ResearchGroupDepartmentsComponent', () => {
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
       // clear previous calls triggered by constructor
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
 
       component.onCreateDepartment();
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledTimes(0);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(0);
     });
 
     it('should open edit dialog and reload on success', async () => {
@@ -203,7 +203,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
       // clear previous calls triggered by constructor and initial load
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
 
       component.onEditDepartment('1');
 
@@ -213,7 +213,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
           data: { department: mockDepartments[0] },
         }),
       );
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
     });
 
     it('should not reload when edit dialog closes without updates', async () => {
@@ -221,11 +221,11 @@ describe('ResearchGroupDepartmentsComponent', () => {
       const mockDialogRef = { onClose: of(false) };
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
 
       component.onEditDepartment('1');
 
-      expect(mockDepartmentService.getDepartmentsForAdmin).not.toHaveBeenCalled();
+      expect(mockDepartmentApi.getDepartmentsForAdmin).not.toHaveBeenCalled();
     });
 
     it('should not open edit dialog if id is missing', () => {
@@ -262,20 +262,20 @@ describe('ResearchGroupDepartmentsComponent', () => {
     });
 
     it('should delete department and reload', () => {
-      mockDepartmentService.deleteDepartment.mockReturnValue(of({}));
+      mockDepartmentApi.deleteDepartment.mockReturnValue(of({}));
 
       // clear previous load calls
-      mockDepartmentService.getDepartmentsForAdmin.mockClear();
+      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
 
       component.onDeleteDepartment('1');
 
-      expect(mockDepartmentService.deleteDepartment).toHaveBeenCalledWith('1');
+      expect(mockDepartmentApi.deleteDepartment).toHaveBeenCalledWith('1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.deleteSuccess');
-      expect(mockDepartmentService.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
     });
 
     it('should handle delete error', () => {
-      mockDepartmentService.deleteDepartment.mockReturnValue(throwError(() => new Error('Error')));
+      mockDepartmentApi.deleteDepartment.mockReturnValue(throwError(() => new Error('Error')));
 
       component.onDeleteDepartment('1');
 
@@ -284,7 +284,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
     it('should not delete if id is missing', () => {
       component.onDeleteDepartment(undefined);
-      expect(mockDepartmentService.deleteDepartment).not.toHaveBeenCalled();
+      expect(mockDepartmentApi.deleteDepartment).not.toHaveBeenCalled();
     });
   });
 });

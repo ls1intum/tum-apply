@@ -1,10 +1,12 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
@@ -34,18 +36,18 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'docum
 })
 export class SettingsComponent {
   readonly activeTab = signal<SettingsTab>('general');
-  readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
+  readonly role = signal<UserShortDTORolesEnum | undefined>(undefined);
 
   readonly tabs = computed<TabItem[]>(() => {
     const baseTabs: TabItem[] = [{ id: 'general', translationKey: 'settings.tabs.general' }];
 
     // Hide notifications tab for admins
-    if (this.role() !== UserShortDTO.RolesEnum.Admin) {
+    if (this.role() !== UserShortDTORolesEnum.Admin) {
       baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications' });
     }
 
     // Add Personal Information and documents tabs only for applicants
-    if (this.role() === UserShortDTO.RolesEnum.Applicant) {
+    if (this.role() === UserShortDTORolesEnum.Applicant) {
       baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
       baseTabs.push({ id: 'documents', translationKey: 'settings.tabs.documents' });
     }
@@ -73,13 +75,22 @@ export class SettingsComponent {
   protected readonly themeService = inject(ThemeService);
   protected readonly accountService = inject(AccountService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly queryParamMap = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
   // Internal subscription used for the cooldown interval
   private exportCooldownSub: Subscription | null = null;
 
   constructor() {
     const authorities = this.accountService.loadedUser()?.authorities;
-    this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
+    this.role.set(authorities?.map(authority => authority as UserShortDTORolesEnum)[0]);
+
+    effect(() => {
+      const requestedTab = this.queryParamMap().get('tab') ?? undefined;
+      if (requestedTab !== undefined && this.tabs().some(tab => tab.id === requestedTab)) {
+        this.activeTab.set(requestedTab as SettingsTab);
+      }
+    });
 
     this.destroyRef.onDestroy(() => {
       this.exportCooldownSub?.unsubscribe();

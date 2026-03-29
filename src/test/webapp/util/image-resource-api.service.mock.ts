@@ -1,8 +1,8 @@
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 
-export type ImageResourceApiServiceMock = {
+export type ImageResourceApiMock = {
   getMyDefaultJobBanners: ReturnType<typeof vi.fn>;
   getDefaultJobBanners: ReturnType<typeof vi.fn>;
   getResearchGroupJobBanners: ReturnType<typeof vi.fn>;
@@ -14,7 +14,7 @@ export type ImageResourceApiServiceMock = {
   getDefaultJobBannersBySchool: ReturnType<typeof vi.fn>;
 };
 
-export function createImageResourceApiServiceMock(): ImageResourceApiServiceMock {
+export function createImageResourceApiMock(): ImageResourceApiMock {
   return {
     getMyDefaultJobBanners: vi.fn(),
     getDefaultJobBanners: vi.fn(),
@@ -28,6 +28,6 @@ export function createImageResourceApiServiceMock(): ImageResourceApiServiceMock
   };
 }
 
-export function provideImageResourceApiServiceMock(mock: ImageResourceApiServiceMock = createImageResourceApiServiceMock()): Provider {
-  return { provide: ImageResourceApiService, useValue: mock };
+export function provideImageResourceApiMock(mock: ImageResourceApiMock = createImageResourceApiMock()): Provider {
+  return { provide: ImageResourceApi, useValue: mock };
 }

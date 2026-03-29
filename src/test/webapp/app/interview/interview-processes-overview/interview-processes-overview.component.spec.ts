@@ -5,9 +5,10 @@ import { of, throwError } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { InterviewProcessesOverviewComponent } from 'app/interview/interview-processes-overview/interview-processes-overview.component';
-import { InterviewResourceApiService } from 'app/generated';
-import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
-import { UpcomingInterviewDTO } from 'app/generated/model/upcomingInterviewDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
+import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
+import { UpcomingInterviewDTO } from 'app/generated/model/upcoming-interview-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { provideBreakpointObserverMock } from 'util/breakpoint-observer.mock';
@@ -17,7 +18,7 @@ const mockProcess: InterviewOverviewDTO = {
   jobId: 'job-1',
   processId: 'process-1',
   jobTitle: 'Software Engineer',
-  jobState: 'ACTIVE',
+  jobState: JobDetailDTOStateEnum.Published,
   isClosed: false,
   totalSlots: 10,
   totalInterviews: 5,
@@ -41,7 +42,7 @@ const mockUpcomingInterview: UpcomingInterviewDTO = {
 describe('InterviewProcessesOverviewComponent', () => {
   let fixture: ComponentFixture<InterviewProcessesOverviewComponent>;
   let component: InterviewProcessesOverviewComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
   let routerMock: RouterMock;
 
   beforeEach(async () => {
@@ -59,7 +60,7 @@ describe('InterviewProcessesOverviewComponent', () => {
         provideRouterMock(routerMock),
         provideBreakpointObserverMock(),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -103,7 +104,7 @@ describe('InterviewProcessesOverviewComponent', () => {
         jobId: 'job-1',
         processId: 'process-1',
         jobTitle: 'Software Engineer',
-        jobState: 'ACTIVE',
+        jobState: JobDetailDTOStateEnum.Published,
         isClosed: false,
         totalSlots: 10,
         totalInterviews: 5,
@@ -127,7 +128,7 @@ describe('InterviewProcessesOverviewComponent', () => {
         jobId: 'job-1',
         processId: 'process-1',
         jobTitle: 'Software Engineer',
-        jobState: 'ACTIVE',
+        jobState: JobDetailDTOStateEnum.Published,
         isClosed: false,
         totalSlots: 10,
         totalInterviews: 5,
@@ -313,7 +314,7 @@ describe('InterviewProcessesOverviewComponent', () => {
         jobId: 'job-1',
         processId: 'proc-1',
         jobTitle: 'Dev',
-        jobState: 'ACTIVE',
+        jobState: JobDetailDTOStateEnum.Published,
         isClosed: false,
         totalSlots: 10,
         totalInterviews: 5,

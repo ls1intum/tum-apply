@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, catchError, debounceTime, merge, of, shareReplay, switchMap } from 'rxjs';
-import { GenderBiasAnalysisRequest, GenderBiasAnalysisResourceApiService, GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisRequest } from 'app/generated/model/gender-bias-analysis-request';
+import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 const DEFAULT_INCLUSIVE_WEIGHT = 1;
@@ -18,7 +20,7 @@ export class GenderBiasAnalysisService {
   private readonly lastLanguages = new Map<string, string>();
   private readonly firstLoads = new Set<string>();
 
-  private readonly apiService = inject(GenderBiasAnalysisResourceApiService);
+  private readonly genderBiasApi = inject(GenderBiasAnalysisResourceApi);
 
   getAnalysisForField(fieldId: string): Observable<GenderBiasAnalysisResponse | undefined> {
     if (!this.analyses.has(fieldId)) {
@@ -45,7 +47,7 @@ export class GenderBiasAnalysisService {
   }
 
   analyzeHtmlContent(request: GenderBiasAnalysisRequest): Observable<GenderBiasAnalysisResponse> {
-    return this.apiService.analyzeHtmlContent(request);
+    return this.genderBiasApi.analyzeHtmlContent(request);
   }
 
   triggerAnalysis(fieldId: string, text: string, language: string): void {

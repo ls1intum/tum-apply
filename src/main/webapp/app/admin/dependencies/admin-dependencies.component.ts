@@ -14,10 +14,10 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { ToastService } from 'app/service/toast-service';
-import { AdminDependencyResourceApiService } from 'app/generated/api/adminDependencyResourceApi.service';
-import { DependenciesOverviewDTO } from 'app/generated/model/dependenciesOverviewDTO';
-import { DependencyDTO } from 'app/generated/model/dependencyDTO';
-import { VulnerabilityDTO } from 'app/generated/model/vulnerabilityDTO';
+import { AdminDependencyResourceApi } from 'app/generated/api/admin-dependency-resource-api';
+import { DependenciesOverviewDTO } from 'app/generated/model/dependencies-overview-dto';
+import { DependencyDTO } from 'app/generated/model/dependency-dto';
+import { VulnerabilityDTO } from 'app/generated/model/vulnerability-dto';
 
 /**
  * Admin page component for displaying the project's software dependencies
@@ -178,7 +178,7 @@ export class AdminDependenciesComponent {
   /** Icon used for vulnerability warning badges in the security column. */
   protected readonly faExclamationTriangle = faExclamationTriangle;
 
-  private readonly dependencyService = inject(AdminDependencyResourceApiService);
+  private readonly dependencyApi = inject(AdminDependencyResourceApi);
   private readonly toastService = inject(ToastService);
 
   /** Loads the dependencies overview on component initialization. */
@@ -221,7 +221,7 @@ export class AdminDependenciesComponent {
   async loadDependencies(): Promise<void> {
     this.isLoading.set(true);
     try {
-      const overview = await firstValueFrom(this.dependencyService.getOverview());
+      const overview = await firstValueFrom(this.dependencyApi.getOverview());
       this.dependenciesOverview.set(overview);
     } catch {
       this.toastService.showErrorKey('dependencies.toast.loadError');
@@ -238,7 +238,7 @@ export class AdminDependenciesComponent {
   async refreshVulnerabilities(): Promise<void> {
     this.isRefreshing.set(true);
     try {
-      const overview = await firstValueFrom(this.dependencyService.refresh());
+      const overview = await firstValueFrom(this.dependencyApi.refresh());
       this.dependenciesOverview.set(overview);
       this.toastService.showSuccessKey('dependencies.toast.vulnerabilityRefreshSuccess');
     } catch {

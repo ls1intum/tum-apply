@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { RatingSection } from 'app/shared/components/molecules/rating-section/rating-section';
-import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
-import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
+import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
+import { RatingOverviewDTO } from 'app/generated/model/rating-overview-dto';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { provideAccountServiceMock } from '../../../../util/account.service.mock';
 
@@ -26,11 +26,7 @@ describe('RatingSection', () => {
 
     await TestBed.configureTestingModule({
       imports: [RatingSection],
-      providers: [
-        { provide: RatingResourceApiService, useValue: mockRatingApi },
-        provideToastServiceMock(mockToast),
-        provideAccountServiceMock(),
-      ],
+      providers: [{ provide: RatingResourceApi, useValue: mockRatingApi }, provideToastServiceMock(mockToast), provideAccountServiceMock()],
     })
       .overrideComponent(RatingSection, { set: { template: '' } })
       .compileComponents();

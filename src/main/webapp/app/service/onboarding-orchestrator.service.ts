@@ -6,11 +6,12 @@ import { Subject } from 'rxjs';
 import { filter, map, startWith, switchMap, take } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { AccountService } from '../core/auth/account.service';
-import { ProfOnboardingResourceApiService } from '../generated/api/profOnboardingResourceApi.service';
-import { ProfOnboardingDTO } from '../generated/model/profOnboardingDTO';
+import { ProfOnboardingResourceApi } from '../generated/api/prof-onboarding-resource-api';
+import { ProfOnboardingDTO } from '../generated/model/prof-onboarding-dto';
 
 /**
  * Orchestrates the professor onboarding dialog on the client.
@@ -26,14 +27,14 @@ export class OnboardingOrchestratorService {
   private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
   private readonly dialog = inject(DialogService);
-  private readonly profOnboardingResourceService = inject(ProfOnboardingResourceApiService);
+  private readonly profOnboardingApi = inject(ProfOnboardingResourceApi);
 
   // Prevents opening multiple dialogs concurrently.
   private opened = false;
 
   private readonly checkTrigger$ = new Subject<void>();
   private readonly checkResult = toSignal<ProfOnboardingDTO | undefined>(
-    this.checkTrigger$.pipe(switchMap(() => this.profOnboardingResourceService.check().pipe(take(1)))),
+    this.checkTrigger$.pipe(switchMap(() => this.profOnboardingApi.check().pipe(take(1)))),
     { initialValue: undefined },
   );
 
@@ -52,7 +53,7 @@ export class OnboardingOrchestratorService {
         const isLoggedIn = loggedIn();
         const url = this.currentUrl();
         const onProfessorPage = typeof url === 'string' && url.startsWith('/professor');
-        const isApplicant = this.accountService.hasAnyAuthority(['APPLICANT']);
+        const isApplicant = this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]);
 
         if (!isLoggedIn || this.opened || !isApplicant || !onProfessorPage) {
           return;

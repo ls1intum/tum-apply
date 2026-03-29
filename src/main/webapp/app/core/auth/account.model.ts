@@ -1,12 +1,11 @@
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
-
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 export interface User {
   id: string;
   email: string;
   name: string;
   anonymous: boolean;
   bearer: string;
-  authorities?: UserShortDTO.RolesEnum[];
+  authorities?: UserShortDTORolesEnum[];
 }
 
 export const ANONYMOUS_USER: User = {

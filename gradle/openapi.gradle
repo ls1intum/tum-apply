@@ -7,8 +7,16 @@ buildscript {
   }
   dependencies {
     classpath "org.yaml:snakeyaml:${rootProject.property('snakeyamlVersion')}"
-    classpath "org.openapitools:openapi-generator-gradle-plugin:${rootProject.property('openapiGeneratorClasspathVersion')}"
   }
+}
+
+configurations {
+  openapiGeneratorCli
+}
+
+dependencies {
+  openapiGeneratorCli "org.openapitools:openapi-generator-cli:7.20.0"
+  openapiGeneratorCli project(":openapi-generator-angular21")
 }
 
 openApi {
@@ -46,22 +54,21 @@ openApi {
 // 5. Post-process the generated files to remove leading underscores and numeric suffixes from method names
 // 6. Remove unused imports from the generated TypeScript files to satisfy our tsconfig.
 
-openApiGenerate {
-  generatorName = "typescript-angular"
-  inputSpec.set(file("${rootDir}/openapi/openapi.yaml").toURI().toString())
-  outputDir = "${rootDir}/src/main/webapp/app/generated"
-  apiPackage = "api"
-  modelPackage = "model"
-  // sets are not properly converted to JSON objects, so we need to use Array instead https://github.com/OpenAPITools/openapi-generator/issues/14055
-  // empty responses should be void, not object
-  typeMappings = [
-    set: 'Array',
-  ]
-  languageSpecificPrimitives = ['void']
-  configOptions = [
-    serviceSuffix    : "ApiService",
-    supportsES6      : "true",
-    serviceFileSuffix: "Api.service"
+tasks.register('openApiGenerate', JavaExec) {
+  description = 'Generate Angular client using the custom angular21 OpenAPI generator'
+  classpath = configurations.openapiGeneratorCli
+  mainClass = 'org.openapitools.codegen.OpenAPIGenerator'
+  args = [
+    'generate',
+    '-g', 'angular21',
+    '-i', file("${rootDir}/openapi/openapi.yaml").absolutePath,
+    '-o', "${rootDir}/src/main/webapp/app/generated",
+    '--api-package', 'api',
+    '--model-package', 'model',
+    // sets are not properly converted to JSON objects, so we need to use Array instead https://github.com/OpenAPITools/openapi-generator/issues/14055
+    '--type-mappings', 'set=Array',
+    '--language-specific-primitives', 'void',
+    '--additional-properties', 'useHttpResource=true,useInjectFunction=true,separateResources=true,readonlyModels=true,supportsES6=true',
   ]
 }
 
@@ -250,8 +257,12 @@ tasks.named("openApiGenerate") {
   doFirst {
     def openapiDir = file("$rootDir/src/main/webapp/app/generated")
     if (openapiDir.exists()) {
-      delete fileTree(dir: openapiDir, exclude: ".openapi-generator-ignore")
-      println "✔ Deleted everything under openapi/ except .openapi-generator-ignore"
+      openapiDir.eachFile { f ->
+        if (f.name != '.openapi-generator-ignore') {
+          delete f
+        }
+      }
+      println "✔ Deleted everything under generated/ except .openapi-generator-ignore"
     }
   }
 }
