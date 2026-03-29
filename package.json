@@ -111,7 +111,7 @@
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "24.12.0",
     "@types/quill": "2.0.14",
-    "@vitest/coverage-v8": "4.0.18",
+    "@vitest/coverage-v8": "4.1.0",
     "angular-eslint": "21.2.0",
     "autoprefixer": "10.4.27",
     "concurrently": "9.2.1",
@@ -137,7 +137,7 @@
     "typescript-eslint": "8.56.1",
     "vite": "7.3.1",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.0.18"
+    "vitest": "4.1.0"
   },
   "engines": {
     "node": ">=24.2.0",
