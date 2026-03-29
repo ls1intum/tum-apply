@@ -116,7 +116,7 @@ describe('EmailSettingsComponent', () => {
       );
 
       await component.loadSettings(RolesEnum.Applicant);
-
+      component.onSubjectAreasToggleChanged(true);
       expect(component['selectedSubjectAreas']()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
       expect(component['subjectAreasEnabled']()).toBe(true);
     });
