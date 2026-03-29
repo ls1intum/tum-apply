@@ -1,0 +1,286 @@
+---
+sidebar_label: Client Tests
+---
+
+# Client Tests
+
+We use **Vitest** as the primary testing framework and **NgMocks** for mocking Angular dependencies. Aim for isolated tests that are fast, reliable, and easy to maintain.
+
+Test files are located in `src/test/webapp/` and follow a **mirror structure** matching the source code package structure.
+
+**CI coverage thresholds:** 80% statements, 70% branches, 80% functions, 80% lines.
+
+---
+
+## Running Tests
+
+| **Command** | **Description** |
+|---|---|
+| `npm run test` | Run tests with coverage |
+| `npm run test:ci` | Run tests with CI coverage thresholds |
+| `npm run test:ui` | Run tests with Vitest UI |
+
+### Coverage Report
+
+To keep high coverage, inspect the coverage report while making a PR:
+
+1. Generate the report:
+   ```bash
+   npm run test
+   ```
+2. Open the report:
+   ```bash
+   open build/test-results/lcov-report/index.html
+   ```
+
+---
+
+## Basic Test Structure
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MockComponent, MockPipe, MockDirective, MockProvider } from 'ng-mocks';
+
+describe('LoginComponent', () => {
+  let fixture: ComponentFixture<LoginComponent>;
+  let component: LoginComponent;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        LoginComponent,
+        MockPipe(SomePipeUsedInTemplate),
+        MockComponent(SomeComponentUsedInTemplate),
+        MockDirective(SomeDirectiveUsedInTemplate),
+      ],
+      providers: [
+        MockProvider(SomeServiceUsedInComponent),
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(LoginComponent);
+    component = fixture.componentInstance;
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('should initialize', () => {
+    fixture.detectChanges();
+    expect(component).not.toBeUndefined();
+  });
+});
+```
+
+---
+
+## Test Isolation
+
+Always test a component in isolation:
+
+- Do not import entire production modules
+- Use `MockPipe`, `MockComponent`, `MockDirective`, and `MockProvider` for dependencies
+- Only use real dependencies if absolutely necessary
+- Prefer stubs for child components
+
+```typescript
+// ✅ GOOD — mock individual dependencies (fast, isolated)
+imports: [
+  LoginComponent,
+  MockPipe(TranslatePipe),
+  MockComponent(ChildComponent),
+  MockDirective(SomeDirective),
+],
+providers: [
+  MockProvider(AuthService),
+],
+
+// ❌ BAD — imports full modules (slow, fragile)
+imports: [SharedModule, TranslateModule.forRoot()]
+```
+
+:::tip
+Replacing full module imports with individual mocks can make tests run **25x faster** and use significantly less memory.
+:::
+
+---
+
+## Mocking Services
+
+**Mock services** if they just return data from the server:
+
+```typescript
+providers: [MockProvider(ApplicationService)]
+```
+
+**Keep the real service** if it has important logic — but mock HTTP requests instead. This tests both the component-service interaction and the service logic:
+
+```typescript
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+
+describe('ApplicationComponent', () => {
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ApplicationComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+    vi.restoreAllMocks();
+  });
+
+  it('should make get request', fakeAsync(() => {
+    const returnedFromApi = { id: 1, name: 'Test Application' };
+
+    component.loadApplication()
+      .subscribe((data) => expect(data.body).toEqual(returnedFromApi));
+
+    const req = httpMock.expectOne({ method: 'GET', url: '/api/applications/1' });
+    req.flush(returnedFromApi);
+    tick();
+  }));
+});
+```
+
+---
+
+## Things to Avoid
+
+- **Never use `NO_ERRORS_SCHEMA`** — it bypasses Angular's checks and may hide issues. Use stubs/mocks instead.
+- **Never use `overrideTemplate()`** — templates are part of component behavior and must be tested.
+- **Never import full modules** like `SharedModule` or `TranslateModule.forRoot()` — mock individual dependencies instead.
+
+---
+
+## Simulating User Interactions
+
+Prefer user-interaction tests over testing internal methods directly. If a component loads and displays data when the user clicks a button, simulate the click and assert the result:
+
+```typescript
+it('should submit application on button click', () => {
+  const emitSpy = vi.spyOn(component.confirmed, 'emit');
+  const submitSpy = vi.spyOn(component, 'submitApplication');
+
+  const button = fixture.debugElement.nativeElement.querySelector('#submit-button');
+  button.click();
+  fixture.detectChanges();
+
+  expect(submitSpy).toHaveBeenCalledOnce();
+  expect(emitSpy).toHaveBeenCalledOnce();
+});
+```
+
+---
+
+## Spy, Stub, Mock
+
+| **Type** | **Purpose** | **Example** |
+|---|---|---|
+| Spy | Observes calls, no replacement | `vi.spyOn(component, 'clear')` |
+| Stub | Spy + returns fixed values | `vi.spyOn(component, 'getCount').mockReturnValue(42)` |
+| Mock | Full custom implementation | `vi.fn().mockImplementation(() => 'custom')` |
+
+:::warning
+Reset mocks with `vi.restoreAllMocks()` in `afterEach`. This is important when mocks are shared across multiple tests. Only works if mocks are created with `vi.spyOn` — avoid manually assigning `vi.fn()` to component methods.
+:::
+
+---
+
+## Expectations
+
+Make expectations as specific as possible. Extract values from `expect` statements and use the matcher that provides the most meaningful error message on failure.
+
+### General Rules
+
+| **Avoid** | **Prefer** |
+|---|---|
+| `expect(user == undefined).toBeTrue()` | `expect(user).toBeUndefined()` |
+| `expect(list != null).toBeTrue()` | `expect(list).not.toBeNull()` |
+| `expect(value).not.toBeDefined()` | `expect(value).toBeUndefined()` |
+| `expect(value).toBeDefined()` | `expect(value).toEqual(expectedObject)` |
+| `expect(spy).toHaveBeenCalled()` | `expect(spy).toHaveBeenCalledOnce()` |
+| `expect(value).not.toBe('something')` | `expect(value).toBe('expected-value')` |
+
+### Common Patterns
+
+| **Situation** | **Solution** |
+|---|---|
+| Boolean value | `expect(value).toBeTrue()` / `expect(value).toBeFalse()` |
+| Same reference | `expect(object).toBe(referenceObject)` |
+| CSS element exists | `expect(element).not.toBeNull()` |
+| CSS element does not exist | `expect(element).toBeNull()` |
+| Value is undefined | `expect(value).toBeUndefined()` |
+| Class object should match | `expect(classObject).toEqual(expectedObject)` |
+| Spy not called | `expect(spy).not.toHaveBeenCalled()` |
+| Spy called once | `expect(spy).toHaveBeenCalledOnce()` |
+| Spy called with value | `expect(spy).toHaveBeenCalledOnce()` + `expect(spy).toHaveBeenCalledWith(value)` |
+
+For multiple calls, verify each call separately:
+
+```typescript
+expect(spy).toHaveBeenCalledTimes(3);
+expect(spy).toHaveBeenNthCalledWith(1, firstValue);
+expect(spy).toHaveBeenNthCalledWith(2, secondValue);
+expect(spy).toHaveBeenNthCalledWith(3, thirdValue);
+```
+
+:::info
+Never use `expect(value).not.toBeDefined()` or `expect(value).toBeNil()` as they might not catch all failures under certain conditions.
+:::
+
+---
+
+## Combine Similar Tests with `it.each`
+
+When you have multiple test cases that follow the same pattern, use `it.each` instead of writing separate `it` blocks. This reduces duplication and makes it easy to add new cases:
+
+```typescript
+it.each([
+  ['APPLICANT', true],
+  ['PROFESSOR', true],
+  ['EMPLOYEE', true],
+  ['ADMIN', false],
+])('should show apply button for role %s: %s', (role, expected) => {
+  component.userRole.set(role);
+  fixture.detectChanges();
+
+  const button = fixture.nativeElement.querySelector('#apply-button');
+  if (expected) {
+    expect(button).not.toBeNull();
+  } else {
+    expect(button).toBeNull();
+  }
+});
+```
+
+This is especially useful for testing different user roles, status values, or input variations.
+
+---
+
+## Coverage & Quality
+
+- Ensure at least **80% line coverage**
+- Run `npm run test` to generate coverage reports
+- Prefer testing through user interactions over testing internal methods directly
+
+---
+
+## Clean-Up
+
+Always clean up after each test to prevent memory leaks and flaky tests:
+
+```typescript
+afterEach(() => {
+  httpMock.verify();       // Ensures all expected HTTP requests were made
+  vi.restoreAllMocks();    // Resets spies/mocks
+});
+```

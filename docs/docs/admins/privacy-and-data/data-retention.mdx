@@ -1,0 +1,88 @@
+---
+sidebar_label: Data Retention
+---
+
+# Data Retention
+
+TUMApply automatically deletes or anonymizes inactive user accounts and old application data via scheduled jobs. This ensures GDPR compliance without manual intervention.
+
+---
+
+## Overview
+
+There are two retention mechanisms:
+
+| **Mechanism** | **Target** | **Default Threshold** | **Default Schedule** |
+|---|---|---|---|
+| User Retention | Inactive non-admin users | 365 days of inactivity | Daily at 03:17 UTC |
+| Applicant Retention | Old application records | 188 days (6 months minimum) | Daily at 02:37 UTC |
+
+Both support **dry-run mode** (log-only, no actual deletion) and **runtime limits** to keep execution safe.
+
+---
+
+## User Retention
+
+Targets users who have not been active for the configured inactivity period.
+
+**What happens:**
+- **28 days before deletion**: a warning email is sent to the user
+- **On deletion day**: the account and related data are cleaned up
+
+**Cleanup behavior by role:**
+
+- **Applicants**: applications, reviews, ratings, comments, interview data, uploaded documents, and profile data are deleted
+- **Professors / Employees**: data is anonymized and reassigned to a placeholder "deleted user" account (configurable via the `DELETED_USER_*` variables below)
+- **Admins**: always skipped — admin accounts are never deleted
+
+---
+
+## Applicant Retention
+
+Targets old application records independently of user accounts. The minimum threshold is **188 days** (enforced in code to comply with GDPR).
+
+**What is deleted per application:**
+- Reviews, comments, document dictionaries, interviewee records
+- Associated uploaded documents
+- The application record itself
+
+:::info
+Applicant retention is **disabled by default** and runs in **dry-run mode**. To enable it on production, set both `APPLICANT_RETENTION_ENABLED=true` and `APPLICANT_RETENTION_DRY_RUN=false` in GitHub Variables.
+:::
+
+---
+
+## Configuration
+
+All retention properties are managed via **GitHub Variables** on testserver and production:
+
+### User Retention
+
+| **Variable** | **Description** | **Default** |
+|---|---|---|
+| `USER_RETENTION_ENABLED` | Enable/disable scheduled user cleanup | `true` |
+| `USER_RETENTION_DRY_RUN` | Log planned deletions without applying them | `false` |
+| `USER_RETENTION_INACTIVE_DAYS_BEFORE_DELETION` | Days of inactivity before a user is eligible for deletion | `365` |
+| `USER_RETENTION_BATCH_SIZE` | Number of users processed per batch | `300` |
+| `USER_RETENTION_MAX_RUNTIME_MINUTES` | Maximum execution time per run | `10` |
+| `USER_RETENTION_CRON` | Cron schedule | `0 17 3 * * *` |
+| `USER_RETENTION_DELETED_USER_ID` | UUID of the placeholder user for anonymized data | `00000000-0000-0000-0000-000000000100` |
+| `USER_RETENTION_DELETED_USER_EMAIL` | Placeholder email | `deleted@user` |
+| `USER_RETENTION_DELETED_USER_FIRST_NAME` | Placeholder first name | `Deleted` |
+| `USER_RETENTION_DELETED_USER_LAST_NAME` | Placeholder last name | `User` |
+| `USER_RETENTION_DELETED_USER_LANGUAGE` | Placeholder language | `en` |
+
+### Applicant Retention
+
+| **Variable** | **Description** | **Default** |
+|---|---|---|
+| `APPLICANT_RETENTION_ENABLED` | Enable/disable scheduled applicant data cleanup | `false` |
+| `APPLICANT_RETENTION_DRY_RUN` | Log planned deletions without applying them | `true` |
+| `APPLICANT_RETENTION_DAYS_BEFORE_DELETION` | Days before application data is eligible for deletion (minimum: 188) | `188` |
+| `APPLICANT_RETENTION_BATCH_SIZE` | Number of applications processed per batch | `300` |
+| `APPLICANT_RETENTION_MAX_RUNTIME_MINUTES` | Maximum execution time per run | `10` |
+| `APPLICANT_RETENTION_CRON` | Cron schedule | `0 37 2 * * *` |
+
+:::tip
+Retention runs produce detailed logs for traceability and auditing. Check the server logs to verify that retention jobs are running as expected.
+:::

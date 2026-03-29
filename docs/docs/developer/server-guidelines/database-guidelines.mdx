@@ -1,0 +1,281 @@
+---
+sidebar_label: Database & Performance
+---
+
+# Database & Performance
+
+Best practices for database design, JPA patterns, SQL queries, and performance optimization in TUMApply.
+
+---
+
+## Fetching Strategy
+
+Use `FetchType.LAZY` by default for **all** entity relationships, including `@ManyToOne` and `@OneToOne`.
+
+```java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "job_posting_id")
+private JobPosting jobPosting;
+```
+
+:::info
+The default for `@OneToMany` and `@ManyToMany` is already LAZY. The default for `@OneToOne` and `@ManyToOne` is EAGER — always explicitly set these to LAZY.
+:::
+
+### Dynamic Fetching
+
+Since all relationships use `FetchType.LAZY`, explicitly load related data when needed:
+
+**@EntityGraph** — for auto-constructed Spring Data queries:
+
+```java
+@EntityGraph(type = LOAD, attributePaths = { "applications", "applications.documents" })
+Job findWithEagerApplicationsById(UUID jobId);
+```
+
+**JOIN FETCH** — for custom `@Query` annotations:
+
+```java
+@Query("""
+    SELECT a FROM Application a
+    LEFT JOIN FETCH a.documents
+    LEFT JOIN FETCH a.applicant
+    WHERE a.job.id = :jobId
+    """)
+List<Application> findByJobIdWithDocumentsAndApplicant(@Param("jobId") UUID jobId);
+```
+
+### JOIN FETCH Limits
+
+- Limit `JOIN FETCH` to **max 3 associations** per query — overusing it leads to large result sets
+- Never use `FetchType.EAGER` on `@OneToMany` or `@ManyToMany`
+- Don't combine `LEFT JOIN FETCH` with `Pageable` — split into separate queries instead
+
+---
+
+## Entity Relationships
+
+### OneToOne
+
+```java
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(unique = true)
+private ApplicantProfile profile;
+```
+
+### OneToMany / ManyToOne
+
+```java
+// Job.java (parent)
+@OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+@JsonIgnoreProperties(value = "job", allowSetters = true)
+private Set<Application> applications = new HashSet<>();
+
+// Application.java (child)
+@ManyToOne(fetch = FetchType.LAZY)
+@JsonIgnoreProperties("applications")
+private Job job;
+```
+
+### ManyToMany
+
+```java
+@ManyToMany
+@JoinTable(name = "job_subject_area",
+    joinColumns = @JoinColumn(name = "job_id"),
+    inverseJoinColumns = @JoinColumn(name = "subject_area_id"))
+private Set<SubjectArea> subjectAreas = new HashSet<>();
+```
+
+:::warning
+For all relationships, always mark associated elements with `@JsonIgnoreProperties()` to prevent infinite loops during JSON serialization.
+:::
+
+### Lazy Relationship Special Handling
+
+- Lazy `@OneToOne` requires `@JoinColumn` and only works in one direction (child side, where the foreign key lives)
+- Lazy `@ManyToOne` requires `@JoinColumn`
+- Lazy `@OneToMany` and `@ManyToMany` work without further changes
+
+---
+
+## Cascade Types
+
+| **Cascade Type** | **Behavior** | **When to Use** |
+|---|---|---|
+| `CascadeType.ALL` | Propagates all operations | Only when the child cannot exist independently of the parent |
+| `CascadeType.PERSIST` | Saving a parent automatically saves new children | When children are always created together with the parent |
+| `CascadeType.MERGE` | Updating the parent also saves child changes | When child updates should follow parent updates |
+| `CascadeType.REMOVE` | Deleting the parent deletes all children | When children must be cleaned up with the parent |
+
+:::warning
+Only use `CascadeType.ALL` if the child cannot exist independently. If the parent is deleted, all children are also deleted.
+:::
+
+---
+
+## Collections
+
+Use **`Set`** (unordered, no duplicates) unless you specifically need ordering:
+
+```java
+@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+private Set<Application> applications = new HashSet<>();
+```
+
+Use **`List`** + `@OrderColumn` for ordered collections. Always use `cascade = CascadeType.ALL` and `orphanRemoval = true`:
+
+```java
+@OneToMany(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
+@OrderColumn
+private List<Evaluation> evaluations = new ArrayList<>();
+```
+
+:::warning
+Hibernate does not auto-create the order column. You must define it via a Liquibase migration.
+:::
+
+---
+
+## SQL Best Practices
+
+- Always annotate query parameters with `@Param`
+- Format SQL using `"""` Java text blocks in uppercase
+- Prefer JOINs over subqueries for performance
+- Avoid unnecessary fetches or oversized queries
+
+```java
+@Query("""
+    SELECT a FROM Application a
+    JOIN FETCH a.evaluations
+    WHERE a.jobPosting.id = :id
+    """)
+List<Application> findByJobPostingIdWithEvaluations(@Param("id") Long id);
+```
+
+---
+
+## Data Economy
+
+### Database-Level Filtering
+
+Always filter in SQL, not in-memory:
+
+```java
+@Query("""
+    SELECT jp FROM JobPosting jp
+    WHERE jp.professor.id = :professorId
+    AND jp.deadline >= :today
+    """)
+List<JobPosting> findActivePostingsByProfessor(
+    @Param("professorId") Long professorId,
+    @Param("today") LocalDate today
+);
+```
+
+### Use DTOs or Projections
+
+Only fetch required fields instead of full entities:
+
+```java
+@Query("""
+    SELECT new tumapply.dto.JobPostingPreviewDTO(jp.id, jp.title, jp.deadline)
+    FROM JobPosting jp
+    WHERE jp.active = true
+    """)
+List<JobPostingPreviewDTO> findAllActiveJobPostingPreviews();
+```
+
+### Avoid Rarely Used Columns on Frequently Queried Tables
+
+For tables fetched often (e.g., `User`), avoid adding columns that are rarely used. Introduce a separate table and query additional data only when needed.
+
+---
+
+## Paging
+
+Never return unbounded lists:
+
+```java
+Page<Application> findByJobPostingId(Long jobPostingId, Pageable pageable);
+```
+
+Prefer `Slice` over `Page` when total counts are not needed — `Page` always triggers an additional count query:
+
+```java
+Slice<Application> findByJobId(UUID jobId, Pageable pageable);
+```
+
+---
+
+## Indexing
+
+Indexes are critical for columns frequently used in `WHERE` clauses, `JOIN` conditions, or sorting:
+
+```sql
+CREATE INDEX idx_application_job_id ON application(job_id);
+```
+
+While indexes speed up reads, they increase storage and can slow down writes. Evaluate tradeoffs carefully.
+
+---
+
+## JSON Columns
+
+When data is self-contained and always fetched with its parent, storing it as JSON simplifies the schema:
+
+```java
+@JdbcTypeCode(SqlTypes.JSON)
+@Column(name = "settings_json", columnDefinition = "json")
+private UserSettingsData settings;
+```
+
+Use when you don't need to filter or sort by inner fields and the structure may change over time.
+
+---
+
+## Transaction Scope
+
+- Avoid long-running or nested transactions
+- Keep transactions short and focused on one purpose
+- Only use `@Transactional` if a method performs `save` or `delete` on **two or more** repositories — do not use it for single-repository operations or read-only queries
+
+---
+
+## Data Type Guidelines
+
+- Use `datetime(3)` instead of `timestamp` — ensures consistent millisecond support across MySQL
+- Use nullable fields sparingly and only when explicitly necessary
+- Prefer default values over `null`
+
+---
+
+## Common Issues
+
+### LazyInitializationException
+
+Occurs when lazy-loaded data is accessed outside a Hibernate session. Use `JOIN FETCH`:
+
+```java
+@Query("SELECT a FROM Application a LEFT JOIN FETCH a.evaluations WHERE a.id = :id")
+Optional<Application> findByIdWithEvaluations(@Param("id") Long id);
+```
+
+### JpaSystemException: null index column
+
+Happens with `@OrderColumn` lists. Save each child without the parent set, then reattach:
+
+```java
+evaluation.setApplication(null);
+evaluation = evaluationRepository.save(evaluation);
+
+evaluation.setApplication(application);
+application.getEvaluations().add(evaluation);
+applicationRepository.save(application);
+```
+
+---
+
+## Database Migrations
+
+Any database schema changes must be accompanied by Liquibase changesets. See the [Liquibase Guidelines](./liquibase-guidelines) for naming conventions, changeset structure, and how to register migrations.
