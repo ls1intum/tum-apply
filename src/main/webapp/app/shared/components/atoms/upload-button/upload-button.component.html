@@ -8,21 +8,28 @@
   #fileupload_component
 >
   <ng-template #empty>
-    <div class="flex flex-col justify-center gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
-      <div class="flex justify-center w-full mb-4">
-        <span
-          class="flex items-center justify-center size-17 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
-          tabindex="0"
-          role="button"
-          aria-label="Select file to upload"
-          (keydown.enter)="fileupload_component.choose()"
-          (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
-        >
-          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
-        </span>
+    <div
+      class="flex w-full cursor-pointer items-center justify-center"
+      (click)="fileupload_component.choose()"
+      [class.gap-3]="compact()"
+      [class.flex-col]="!compact()"
+      [class.gap-0.5]="!compact()"
+    >
+      <span
+        class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+        [class.mb-4]="!compact()"
+        tabindex="0"
+        role="button"
+        aria-label="Select file to upload"
+        (keydown.enter)="fileupload_component.choose()"
+        (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
+      >
+        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
+      </span>
+      <div class="text-color" [class.text-center]="!compact()">
+        <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
+        <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
       </div>
-      <p class="text-sm text-color text-center mt-0" jhiTranslate="entity.upload.instruction"></p>
-      <p class="text-xs text-color text-center mt-0 mb-0"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
     </div>
   </ng-template>
 

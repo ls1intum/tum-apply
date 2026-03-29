@@ -10,14 +10,14 @@ import { selectNationality } from 'app/shared/language/nationalities';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 
-import { selectGender } from '../../../shared/constants/genders';
-import { postalCodeValidator } from '../../../shared/validators/custom-validators';
-import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
-import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
-import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
+import { selectGender } from 'app/shared/constants/genders';
+import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
