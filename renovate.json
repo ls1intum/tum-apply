@@ -9,7 +9,9 @@
   "timezone": "Europe/Berlin",
   "minimumReleaseAge": "14 days",
   "semanticCommits": "disabled",
-  "prTitle": "`General`: Update {{depName}} to {{newVersion}}",
+  "commitMessageAction": "`General`: Update",
+  "commitMessageTopic": "{{{depName}}}",
+  "commitMessageExtra": "to {{newVersion}}",
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": [
