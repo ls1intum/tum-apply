@@ -95,7 +95,7 @@ class TemplateProcessingServiceTest {
         void withJobPublicationContextInjectsApplicantAndJobVariables() throws Exception {
             EmailTemplateTranslation translation = translation(
                 "${APPLICANT_FIRST_NAME} ${APPLICANT_LAST_NAME} ${JOB_TITLE} ${RESEARCH_GROUP_NAME} " +
-                "${SUPERVISING_PROFESSOR_FIRST_NAME} ${SUPERVISING_PROFESSOR_LAST_NAME} ${JOB_ID} ${url}",
+                    "${SUPERVISING_PROFESSOR_FIRST_NAME} ${SUPERVISING_PROFESSOR_LAST_NAME} ${JOB_ID} ${url}",
                 Language.ENGLISH,
                 "jobPublication"
             );
@@ -104,7 +104,16 @@ class TemplateProcessingServiceTest {
 
             String result = service.renderTemplate(translation, mockJobPublicationContext());
 
-            assertThat(result).contains("Alice", "Smith", "JobTitle", "RG", "John", "Doe", BASE_URL, "123e4567-e89b-12d3-a456-426614174000");
+            assertThat(result).contains(
+                "Alice",
+                "Smith",
+                "JobTitle",
+                "RG",
+                "John",
+                "Doe",
+                BASE_URL,
+                "123e4567-e89b-12d3-a456-426614174000"
+            );
         }
 
         @Test
