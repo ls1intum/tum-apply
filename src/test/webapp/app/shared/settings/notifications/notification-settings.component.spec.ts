@@ -82,6 +82,7 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.loadFailed');
       expect(component['loaded']()).toBe(true);
     });
@@ -139,6 +140,7 @@ describe('NotificationSettingsComponent', () => {
 
       component.onToggleChanged(group);
 
+      expect(emailSettingServiceMock.updateEmailSettings).toHaveBeenCalledOnce();
       expect(emailSettingServiceMock.updateEmailSettings).toHaveBeenCalledWith([
         { emailType: EmailTypeEnum.ApplicationSent, enabled: true },
         { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
@@ -159,6 +161,7 @@ describe('NotificationSettingsComponent', () => {
 
       component.onToggleChanged(group);
 
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
     });
   });
@@ -172,7 +175,9 @@ describe('NotificationSettingsComponent', () => {
 
       await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.Mathematics]);
 
+      expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledOnce();
       expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.Mathematics);
+      expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledOnce();
       expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.ComputerScience);
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.Mathematics]);
       expect(subjectAreaSubscriptions().enabled()).toBe(true);
@@ -197,6 +202,7 @@ describe('NotificationSettingsComponent', () => {
 
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience]);
       expect(subjectAreaSubscriptions().enabled()).toBe(true);
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.applicant.subjectAreas.saveFailed');
     });
   });
@@ -235,6 +241,7 @@ describe('NotificationSettingsComponent', () => {
       fixture.detectChanges();
       await Promise.resolve();
 
+      expect(spy).toHaveBeenCalledOnce();
       expect(spy).toHaveBeenCalledWith(RolesEnum.Applicant);
     });
   });

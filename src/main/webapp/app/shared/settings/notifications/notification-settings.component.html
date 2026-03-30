@@ -34,24 +34,16 @@
               <jhi-toggle-switch
                 class="shrink-0"
                 [model]="subjectAreaSubscriptions.enabled()"
-                [disabled]="subjectAreaSubscriptions.saving()"
                 (modelChange)="subjectAreaSubscriptions.setEnabled($event)"
               />
             </div>
 
             <div
-              class="transition-all duration-100 ease-in-out"
-              [class.mt-4]="subjectAreaSubscriptions.enabled()"
-              [class.mt-0]="!subjectAreaSubscriptions.enabled()"
-              [class.max-h-[80rem]]="subjectAreaSubscriptions.enabled()"
-              [class.max-h-0]="!subjectAreaSubscriptions.enabled()"
-              [class.overflow-hidden]="!subjectAreaSubscriptions.enabled()"
-              [class.opacity-100]="subjectAreaSubscriptions.enabled()"
-              [class.opacity-0]="!subjectAreaSubscriptions.enabled()"
+              [class]="'transition-all duration-100 ease-in-out ' + animationClasses()"
               [attr.aria-hidden]="!subjectAreaSubscriptions.enabled()"
             >
               <div class="flex flex-col gap-3">
-                <div [class.opacity-60]="subjectAreaSubscriptions.saving()" [class.pointer-events-none]="subjectAreaSubscriptions.saving()">
+                <div [class.pointer-events-none]="subjectAreaSubscriptions.saving()">
                   <jhi-subject-area-subscription-selector
                     [saving]="subjectAreaSubscriptions.saving()"
                     [filterOptions]="subjectAreaSubscriptions.filterOptions"

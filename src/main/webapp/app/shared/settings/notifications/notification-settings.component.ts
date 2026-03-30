@@ -1,4 +1,4 @@
-import { Component, WritableSignal, effect, inject, input, signal } from '@angular/core';
+import { Component, WritableSignal, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
@@ -47,6 +47,10 @@ export class NotificationSettingsComponent {
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
+
+  protected readonly animationClasses = computed(() =>
+    this.subjectAreaSubscriptions.enabled() ? 'mt-4 max-h-[80rem] opacity-100' : 'mt-0 max-h-0 opacity-0 overflow-hidden',
+  );
 
   protected readonly roleEffect = effect(() => {
     const role = this.currentRole();

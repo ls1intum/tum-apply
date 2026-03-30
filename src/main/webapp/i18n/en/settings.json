@@ -68,8 +68,8 @@
           "description": "Receive an email when a new application is received for your job posting."
         },
         "accepted": {
-          "title": "Application Accepted (BCC)",
-          "description": "Receive an email when an application for one of your job postings is accepted."
+          "title": "Application Accepted",
+          "description": "Receive a copy of the acceptance email sent to the applicant when an application for one of your job postings is accepted."
         }
       }
     },

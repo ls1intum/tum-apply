@@ -76,7 +76,7 @@ export class SubjectAreaSubscriptionsStore {
    * The local state is updated optimistically. On failure, the previous state is
    * restored and the latest server state is reloaded.
    */
-  async updateSelection(subjectAreas: SubjectArea[] | null | undefined): Promise<void> {
+  async updateSelection(subjectAreas: SubjectArea[] | undefined): Promise<void> {
     const nextSelection = this.sortSubjectAreas(subjectAreas ?? []);
     const previousSelection = this.selected();
 

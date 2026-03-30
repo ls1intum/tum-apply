@@ -68,8 +68,8 @@
           "description": "Erhalte eine E-Mail, wenn eine neue Bewerbung für deine Stelle eingeht."
         },
         "accepted": {
-          "title": "Bewerbung angenommen (BCC)",
-          "description": "Erhalte eine E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
+          "title": "Bewerbung angenommen",
+          "description": "Erhalte eine Kopie der Annahme-E-Mail, die an den Bewerber gesendet wird, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     },
