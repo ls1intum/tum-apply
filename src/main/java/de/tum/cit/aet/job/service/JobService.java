@@ -122,8 +122,7 @@ public class JobService {
         }
 
         Job savedJob = jobRepository.save(job);
-        if (savedJob.getState() == JobState.PUBLISHED && (oldState == null || oldState == JobState.DRAFT)) {
-            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+        if (savedJob.getState() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             notifySubjectAreaSubscribers(savedJob);
         }
         return JobFormDTO.getFromEntity(savedJob);
@@ -386,8 +385,7 @@ public class JobService {
 
         // Save job entity first (single repository write)
         Job savedJob = jobRepository.save(job);
-        if (savedJob.getState() == JobState.PUBLISHED && (oldState == null || oldState == JobState.DRAFT)) {
-            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+        if (savedJob.getState() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             notifySubjectAreaSubscribers(savedJob);
         }
 

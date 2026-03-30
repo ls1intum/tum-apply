@@ -115,7 +115,6 @@ class JobServiceTest {
 
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
             verify(sender).sendAsync(emailCaptor.capture());
-            verify(interviewService).createInterviewProcessForJob(draftJob.getJobId());
 
             Email sentEmail = emailCaptor.getValue();
             assertThat(result.state()).isEqualTo(JobState.PUBLISHED);
@@ -140,7 +139,7 @@ class JobServiceTest {
 
             assertThat(result.state()).isEqualTo(JobState.PUBLISHED);
             verify(sender, never()).sendAsync(any());
-            verify(interviewService).createInterviewProcessForJob(draftJob.getJobId());
+            verify(interviewService, never()).createInterviewProcessForJob(any());
         }
     }
 }
