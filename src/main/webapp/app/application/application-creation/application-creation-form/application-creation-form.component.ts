@@ -560,12 +560,12 @@ export default class ApplicationCreationFormComponent {
 
   onEducationDataExtracted(extracted: ExtractedApplicationDataDTO): void {
     this.educationData.update(current => {
-      current.bachelorDegreeName = current.bachelorDegreeName || extracted.bachelorDegreeName || '';
-      current.bachelorDegreeUniversity = current.bachelorDegreeUniversity || extracted.bachelorUniversity || '';
-      current.bachelorGrade = current.bachelorGrade || extracted.bachelorGrade || '';
-      current.masterDegreeName = current.masterDegreeName || extracted.masterDegreeName || '';
-      current.masterDegreeUniversity = current.masterDegreeUniversity || extracted.masterUniversity || '';
-      current.masterGrade = current.masterGrade || extracted.masterGrade || '';
+      if (current.bachelorDegreeName === '') current.bachelorDegreeName = extracted.bachelorDegreeName ?? '';
+      if (current.bachelorDegreeUniversity === '') current.bachelorDegreeUniversity = extracted.bachelorUniversity ?? '';
+      if (current.bachelorGrade === '') current.bachelorGrade = extracted.bachelorGrade ?? '';
+      if (current.masterDegreeName === '') current.masterDegreeName = extracted.masterDegreeName ?? '';
+      if (current.masterDegreeUniversity === '') current.masterDegreeUniversity = extracted.masterUniversity ?? '';
+      if (current.masterGrade === '') current.masterGrade = extracted.masterGrade ?? '';
       return current;
     });
   }

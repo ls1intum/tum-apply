@@ -116,11 +116,7 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-  private aiApi = inject(AiResourceApi);
-  private toastService = inject(ToastService);
-
   isExtractingAi = signal<boolean>(false);
-
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
@@ -168,6 +164,9 @@ export default class ApplicationCreationPage1Component {
       linkedIn: [currentData.linkedIn],
     });
   });
+
+  private aiApi = inject(AiResourceApi);
+  private toastService = inject(ToastService);
 
   private initializeCvDocs = effect(() => {
     const cvDocs = this.computedDocumentIdsCvSet();
@@ -240,7 +239,7 @@ export default class ApplicationCreationPage1Component {
     const appId = this.applicationIdForDocuments();
     const cvDocs = this.computedDocumentIdsCvSet();
 
-    if (!appId || !cvDocs || cvDocs.length === 0) {
+    if (appId == null || cvDocs == null || cvDocs.length === 0) {
       return;
     }
 
@@ -255,14 +254,14 @@ export default class ApplicationCreationPage1Component {
     try {
       const extractedData = await firstValueFrom(this.aiApi.extractPdfData(appId, docId));
       const patch: Record<string, string> = {};
-      if (extractedData.firstName) patch['firstName'] = extractedData.firstName;
-      if (extractedData.lastName) patch['lastName'] = extractedData.lastName;
-      if (extractedData.phoneNumber) patch['phoneNumber'] = extractedData.phoneNumber;
-      if (extractedData.website) patch['website'] = extractedData.website;
-      if (extractedData.linkedinUrl) patch['linkedIn'] = extractedData.linkedinUrl;
-      if (extractedData.street) patch['street'] = extractedData.street;
-      if (extractedData.city) patch['city'] = extractedData.city;
-      if (extractedData.postalCode) patch['postcode'] = extractedData.postalCode;
+      if (extractedData.firstName != null) patch['firstName'] = extractedData.firstName;
+      if (extractedData.lastName != null) patch['lastName'] = extractedData.lastName;
+      if (extractedData.phoneNumber != null) patch['phoneNumber'] = extractedData.phoneNumber;
+      if (extractedData.website != null) patch['website'] = extractedData.website;
+      if (extractedData.linkedinUrl != null) patch['linkedIn'] = extractedData.linkedinUrl;
+      if (extractedData.street != null) patch['street'] = extractedData.street;
+      if (extractedData.city != null) patch['city'] = extractedData.city;
+      if (extractedData.postalCode != null) patch['postcode'] = extractedData.postalCode;
 
       this.page1Form().patchValue(patch);
       this.educationDataExtracted.emit(extractedData);
