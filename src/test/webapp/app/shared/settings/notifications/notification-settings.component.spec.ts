@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { NotificationSettingsComponent, NotificationGroup } from 'app/shared/settings/notifications/notification-settings.component';
 import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
+import { provideTranslateMock } from '../../../../util/translate.mock';
 import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
@@ -31,11 +31,12 @@ describe('NotificationSettingsComponent', () => {
     vi.clearAllMocks();
 
     TestBed.configureTestingModule({
-      imports: [NotificationSettingsComponent, TranslateModule.forRoot()],
+      imports: [NotificationSettingsComponent],
       providers: [
         { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
         provideApplicantResourceApiMock(applicantApiMock),
         provideToastServiceMock(toastServiceMock),
+        provideTranslateMock(),
       ],
     });
 
