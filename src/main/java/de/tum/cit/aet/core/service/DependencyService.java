@@ -248,7 +248,9 @@ public class DependencyService {
      * @param result the list to append parsed dependencies to
      */
     private void addNpmDeps(JsonNode node, List<DependencyDTO> result) {
-        if (node == null) { return; }
+        if (node == null) {
+            return;
+        }
         node
             .properties()
             .forEach(entry -> {
@@ -294,11 +296,15 @@ public class DependencyService {
         try {
             // 1) Send the batch request to OSV.dev
             String response = sendOsvRequest(batch);
-            if (response == null) { return result; }
+            if (response == null) {
+                return result;
+            }
 
             // 2) Validate the response structure
             JsonNode results = objectMapper.readTree(response).get("results");
-            if (results == null || !results.isArray()) { return result; }
+            if (results == null || !results.isArray()) {
+                return result;
+            }
 
             // 3) Parse each result entry into vulnerability DTOs
             parseOsvResults(results, batch, result);
@@ -328,7 +334,9 @@ public class DependencyService {
     private void parseOsvResults(JsonNode results, List<DependencyDTO> batch, Map<String, List<VulnerabilityDTO>> result) {
         for (int j = 0; j < results.size() && j < batch.size(); j++) {
             JsonNode vulns = results.get(j).get("vulns");
-            if (vulns == null || !vulns.isArray() || vulns.isEmpty()) { continue; }
+            if (vulns == null || !vulns.isArray() || vulns.isEmpty()) {
+                continue;
+            }
 
             List<VulnerabilityDTO> list = new ArrayList<>();
             for (JsonNode v : vulns) {
