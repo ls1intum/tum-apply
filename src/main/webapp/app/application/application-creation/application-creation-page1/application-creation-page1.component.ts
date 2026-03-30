@@ -17,6 +17,11 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { firstValueFrom } from 'rxjs';
+import { ToastService } from 'app/service/toast-service';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -72,6 +77,8 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     UploadButtonComponent,
     FontAwesomeModule,
     TooltipModule,
+    ButtonComponent,
+    ProgressSpinnerComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -107,6 +114,10 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
+  private aiApi = inject(AiResourceApi);
+  private toastService = inject(ToastService);
+
+  isExtractingAi = signal<boolean>(false);
 
   currentLang = toSignal(this.translate.onLangChange);
 
@@ -221,5 +232,41 @@ export default class ApplicationCreationPage1Component {
       [field]: value,
     });
     this.emitChanged();
+  }
+
+  async extractAiData(): Promise<void> {
+    const appId = this.applicationIdForDocuments();
+    const cvDocs = this.computedDocumentIdsCvSet();
+
+    if (!appId || !cvDocs || cvDocs.length === 0) {
+      return;
+    }
+
+    const docId = cvDocs[0].id;
+
+    if (!docId) {
+      return;
+    }
+
+    this.isExtractingAi.set(true);
+
+    try {
+      const extractedData = await firstValueFrom(this.aiApi.extractPdfData(appId, docId));
+      const patch: Record<string, string> = {};
+      if (extractedData.firstName) patch['firstName'] = extractedData.firstName;
+      if (extractedData.lastName) patch['lastName'] = extractedData.lastName;
+      if (extractedData.phoneNumber) patch['phoneNumber'] = extractedData.phoneNumber;
+      if (extractedData.website) patch['website'] = extractedData.website;
+      if (extractedData.linkedinUrl) patch['linkedIn'] = extractedData.linkedinUrl;
+      if (extractedData.street) patch['street'] = extractedData.street;
+      if (extractedData.city) patch['city'] = extractedData.city;
+      if (extractedData.postalCode) patch['postcode'] = extractedData.postalCode;
+
+      this.page1Form().patchValue(patch);
+    } catch {
+      this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+    } finally {
+      this.isExtractingAi.set(false);
+    }
   }
 }

@@ -23,6 +23,30 @@
         [allowMultiple]="false"
         [compact]="true"
       />
+
+      <div class="mt-4 flex flex-col gap-3">
+        <p class="m-0 text-sm leading-6 text-text-tertiary">
+          {{ 'entity.applicationPage1.aiExtractionHelper' | translate }}
+        </p>
+        @if (isExtractingAi()) {
+          <div class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-default px-3 h-10">
+            <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+            <span class="text-sm font-semibold text-text-primary whitespace-nowrap">{{
+              'entity.applicationPage1.aiExtractionLoading' | translate
+            }}</span>
+          </div>
+        } @else {
+          <jhi-button
+            [label]="'entity.applicationPage1.aiExtractionButton'"
+            [shouldTranslate]="true"
+            severity="primary"
+            icon="custom-sparkle"
+            styleClass="!w-full !justify-center !whitespace-nowrap"
+            (click)="extractAiData()"
+            [disabled]="!cvValid()"
+          />
+        }
+      </div>
     </div>
   }
 
