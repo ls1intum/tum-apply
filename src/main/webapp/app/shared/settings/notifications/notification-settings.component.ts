@@ -1,19 +1,20 @@
-import { Component, WritableSignal, effect, inject, input, signal } from '@angular/core';
-import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { Component, WritableSignal, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { EmailSettingEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting';
+import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
+import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { ToastService } from 'app/service/toast-service';
+import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
 
 import TranslateDirective from '../../language/translate.directive';
-import { ToastService } from '../../../service/toast-service';
-import { EmailSettingResourceApi } from '../../../generated/api/email-setting-resource-api';
-import { EmailSetting } from '../../../generated/model/email-setting';
 
+import { SubjectAreaSubscriptionsStore } from './subject-area-subscriptions.store';
+import { SubjectAreaSubscriptionSelectorComponent } from './subject-area-subscription-selector.component';
+
+const RolesEnum = UserShortDTORolesEnum;
 type RolesEnum = UserShortDTORolesEnum;
 
 export interface NotificationGroup {
@@ -24,25 +25,37 @@ export interface NotificationGroup {
 }
 
 @Component({
-  selector: 'jhi-email-settings',
-  imports: [DividerModule, FontAwesomeModule, FormsModule, ToggleSwitchModule, TooltipModule, TranslateModule, TranslateDirective],
-  templateUrl: './email-settings.component.html',
-  styleUrl: './email-settings.component.scss',
+  selector: 'jhi-notification-settings',
+  imports: [
+    FontAwesomeModule,
+    FormsModule,
+    SubjectAreaSubscriptionSelectorComponent,
+    ToggleSwitchComponent,
+    TranslateModule,
+    TranslateDirective,
+  ],
+  providers: [SubjectAreaSubscriptionsStore],
+  templateUrl: './notification-settings.component.html',
 })
-export class EmailSettingsComponent {
+export class NotificationSettingsComponent {
   currentRole = input<RolesEnum | undefined>();
 
-  protected emailSettingApi = inject(EmailSettingResourceApi);
-  protected toastService = inject(ToastService);
+  protected readonly emailSettingApi = inject(EmailSettingResourceApi);
+  protected readonly toastService = inject(ToastService);
+  protected readonly RolesEnum = RolesEnum;
+  protected readonly subjectAreaSubscriptions = inject(SubjectAreaSubscriptionsStore);
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
+
+  protected readonly animationClasses = computed(() =>
+    this.subjectAreaSubscriptions.enabled() ? 'mt-4 max-h-[80rem] opacity-100' : 'mt-0 max-h-0 opacity-0 overflow-hidden',
+  );
 
   protected readonly roleEffect = effect(() => {
     const role = this.currentRole();
     if (!role) return;
 
-    // Only run once
     void this.loadSettings(role);
   });
 
@@ -102,7 +115,7 @@ export class EmailSettingsComponent {
     ]),
   );
 
-  async loadSettings(role: RolesEnum): Promise<void> {
+  async loadEmailNotificationGroups(role: RolesEnum): Promise<void> {
     try {
       const settings = await firstValueFrom(this.emailSettingApi.getEmailSettings());
 
@@ -123,22 +136,44 @@ export class EmailSettingsComponent {
         this.roleSettings.set(newMap);
       }
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'loading the notification settings' });
-    } finally {
-      this.loaded.set(true);
+      this.toastService.showErrorKey('settings.notifications.loadFailed');
     }
   }
 
-  onToggleChanged(group: NotificationGroup): void {
-    try {
-      const updatedSettings: EmailSetting[] = group.emailTypes.map(emailType => ({
-        emailType,
-        enabled: group.enabled,
-      }));
+  async loadSettings(role: RolesEnum): Promise<void> {
+    this.loaded.set(false);
 
-      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings));
+    await this.loadEmailNotificationGroups(role);
+    if (role === RolesEnum.Applicant) {
+      await this.subjectAreaSubscriptions.load();
+    } else {
+      this.subjectAreaSubscriptions.reset();
+    }
+
+    this.loaded.set(true);
+  }
+
+  onToggleChanged(group: NotificationGroup): void {
+    const role = this.currentRole();
+    const updatedSettings: EmailSettingDTO[] = group.emailTypes.map(emailType => ({
+      emailType,
+      enabled: group.enabled,
+    }));
+
+    try {
+      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(async () => {
+        this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+        if (role) {
+          await this.loadEmailNotificationGroups(role);
+        }
+      });
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'updating the notification settings' });
+      this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+      if (role) {
+        void this.loadEmailNotificationGroups(role);
+      }
     }
   }
 }

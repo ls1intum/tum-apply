@@ -505,6 +505,7 @@ export const sharedLightColorScheme = {
   },
   border: {
     default: '{neutral.200}',
+    hover: '{neutral.400}',
   },
   divider: {
     default: '{neutral.200}',
