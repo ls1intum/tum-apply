@@ -1,15 +1,24 @@
-<p>Liebe Bewerberin, lieber Bewerber,</p>
+<p>Sehr geehrte*r ${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!},</p>
 
 <p>
-  eine neue Stelle passend zu deinem abonnierten Fachbereich wurde soeben veröffentlicht:
-  <strong>${JOB_TITLE!}</strong>.
+  eine neue Position passend zu deinem abonnierten Fachbereich wurde soeben in unserer Forschungsgruppe
+  <strong>${RESEARCH_GROUP_NAME!}</strong> veröffentlicht.
 </p>
 
 <p>
-  Die Position wird von <strong>${RESEARCH_GROUP_NAME!}</strong> unter der Betreuung von
-  <strong>${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}</strong> angeboten.
+  Es handelt sich um die Position <strong>${JOB_TITLE!}</strong>, die von
+  <strong>${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}</strong> betreut wird.
 </p>
 
-<p>Du kannst die veröffentlichte Stelle jetzt in TUMApply ansehen.</p>
+<p>Du kannst die veröffentlichte Stelle jetzt in TUMApply ansehen und entscheiden, ob du dich darauf bewerben möchtest.</p>
+
+<p style="margin: 20px 0">
+  <a
+    href="${url!}/job/detail/${JOB_ID!}"
+    style="display: inline-block; padding: 10px 18px; background-color: #1872dd; color: #ffffff; text-decoration: none; border-radius: 5px"
+  >
+    Stelle ansehen
+  </a>
+</p>
 
 <p>Mit freundlichen Grüßen<br />Dein ${RESEARCH_GROUP_NAME!} Team</p>

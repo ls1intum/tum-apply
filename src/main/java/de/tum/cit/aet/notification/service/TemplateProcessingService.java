@@ -205,6 +205,7 @@ public class TemplateProcessingService {
      * @param job       the job object
      */
     private void addJobData(Map<String, Object> dataModel, Job job) {
+        dataModel.put(TemplateVariable.JOB_ID.getValue(), job.getJobId());
         dataModel.put(TemplateVariable.JOB_TITLE.getValue(), job.getTitle());
 
         User supervisingProfessor = job.getSupervisingProfessor();

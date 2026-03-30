@@ -78,8 +78,6 @@ class JobServiceTest {
     @InjectMocks
     private JobService jobService;
 
-    private ResearchGroup researchGroup;
-    private User professor;
     private User applicantUser;
     private Applicant applicant;
     private Job draftJob;
@@ -88,9 +86,9 @@ class JobServiceTest {
     void setUp() {
         School school = SchoolTestData.newSchoolAll("School of Computation, Information and Technology", "CIT");
         Department department = DepartmentTestData.newDepartmentAll("Computer Science", school);
-        researchGroup = ResearchGroupTestData.newRgWithDepartment(department);
+        ResearchGroup researchGroup = ResearchGroupTestData.newRgWithDepartment(department);
 
-        professor = UserTestData.newProfessor(researchGroup);
+        User professor = UserTestData.newProfessor(researchGroup);
         professor.setUserId(UUID.randomUUID());
         professor.setSelectedLanguage(Language.ENGLISH.getCode());
 
