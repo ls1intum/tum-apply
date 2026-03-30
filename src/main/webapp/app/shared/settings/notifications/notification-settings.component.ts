@@ -174,9 +174,19 @@ export class NotificationSettingsComponent {
             enabled,
           },
         ]),
-      ).catch(async () => await this.handleNotificationSaveFailure(role));
+      ).catch(async () => {
+        this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+        if (role) {
+          await this.loadEmailNotificationGroups(role);
+        }
+      });
     } catch {
-      void this.handleNotificationSaveFailure(role);
+      this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+      if (role) {
+        void this.loadEmailNotificationGroups(role);
+      }
     }
   }
 
@@ -188,17 +198,19 @@ export class NotificationSettingsComponent {
     }));
 
     try {
-      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(async () => await this.handleNotificationSaveFailure(role));
+      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(async () => {
+        this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+        if (role) {
+          await this.loadEmailNotificationGroups(role);
+        }
+      });
     } catch {
-      void this.handleNotificationSaveFailure(role);
-    }
-  }
+      this.toastService.showErrorKey('settings.notifications.saveFailed');
 
-  private async handleNotificationSaveFailure(role: RolesEnum | undefined): Promise<void> {
-    this.toastService.showErrorKey('settings.notifications.saveFailed');
-
-    if (role) {
-      await this.loadEmailNotificationGroups(role);
+      if (role) {
+        void this.loadEmailNotificationGroups(role);
+      }
     }
   }
 }
