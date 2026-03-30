@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, input, model, output, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -27,7 +27,6 @@ import { ToastService } from 'app/service/toast-service';
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
 const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
-
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
