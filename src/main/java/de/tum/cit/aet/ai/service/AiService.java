@@ -5,15 +5,24 @@ import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Set;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -134,17 +143,30 @@ public class AiService {
     }
 
     /**
-     * Extracts applicant data from the provided PDF file
+     * Extracts applicant data from the provided PDF file by converting it to an image
+     * first, since the Azure OpenAI endpoint only accepts image inputs.
      *
      * @param pdfFile the PDF file resource to be analyzed
      * @return the parsed data from the document
      */
     private ExtractedApplicationDataDTO extractPdfData(Resource pdfFile) {
-        return chatClient
-            .prompt()
-            .user(u -> u.text(pdfExtractionResource).media(MediaType.APPLICATION_PDF, pdfFile))
-            .call()
-            .entity(ExtractedApplicationDataDTO.class);
+        try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            BufferedImage image = pdfRenderer.renderImageWithDPI(0, 300);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+
+            return chatClient
+                .prompt()
+                .user(u -> u.text(pdfExtractionResource).media(MediaType.IMAGE_PNG, new ByteArrayResource(imageBytes)))
+                .call()
+                .entity(ExtractedApplicationDataDTO.class);
+        } catch (IOException e) {
+            log.error("Failed to convert PDF to image for Gemma extraction", e);
+            throw new PDFExtractionException("PDF conversion failed", e);
+        }
     }
 
     /**
