@@ -8,21 +8,25 @@
   #fileupload_component
 >
   <ng-template #empty>
-    <div class="flex flex-col justify-center gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
-      <div class="flex justify-center w-full mb-4">
-        <span
-          class="flex items-center justify-center size-17 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
-          tabindex="0"
-          role="button"
-          aria-label="Select file to upload"
-          (keydown.enter)="fileupload_component.choose()"
-          (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
-        >
-          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
-        </span>
+    <div
+      class="flex w-full items-center justify-center gap-3 cursor-pointer"
+      (click)="fileupload_component.choose()"
+      [class.flex-col]="!compact()"
+    >
+      <span
+        class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+        tabindex="0"
+        role="button"
+        aria-label="Select file to upload"
+        (keydown.enter)="fileupload_component.choose()"
+        (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
+      >
+        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
+      </span>
+      <div class="text-color" [class.text-center]="!compact()">
+        <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
+        <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
       </div>
-      <p class="text-sm text-color text-center mt-0" jhiTranslate="entity.upload.instruction"></p>
-      <p class="text-xs text-color text-center mt-0 mb-0"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
     </div>
   </ng-template>
 
@@ -75,12 +79,11 @@
               <tr [class]="rowClass">
                 <td>
                   <span class="inline-flex justify-center w-full h-full">
-                    <fa-icon
-                      icon="file-circle-check"
-                      class="text-positive-default"
-                      [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate"
-                      tooltipPosition="top"
-                    />
+                    <fa-layers [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate" tooltipPosition="top">
+                      <fa-icon icon="file" class="text-primary" />
+                      <fa-icon icon="circle" class="text-white" transform="shrink-5 down-4 right-5" />
+                      <fa-icon icon="circle-check" class="text-positive-default" transform="shrink-7 down-4 right-5" />
+                    </fa-layers>
                   </span>
                 </td>
                 <td class="pr-3">

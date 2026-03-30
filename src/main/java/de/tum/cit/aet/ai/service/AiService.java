@@ -8,7 +8,6 @@ import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -28,20 +27,6 @@ public class AiService {
     private final ChatClient chatClient;
 
     private final JobService jobService;
-
-    /**
-     * Maximum number of tokens for AI completion responses.
-     * Set to 2000 to balance response length with generation speed.
-     */
-    private static final int MAX_COMPLETION_TOKENS = 2000;
-
-    /**
-     * Chat options for fast, deterministic responses.
-     */
-    private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
-        .maxCompletionTokens(MAX_COMPLETION_TOKENS)
-        .reasoningEffort("low")
-        .build();
 
     public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
         this.chatClient = chatClientBuilder.build();
@@ -66,7 +51,6 @@ public class AiService {
 
         return chatClient
             .prompt()
-            .options(FAST_CHAT_OPTIONS)
             .user(u ->
                 u
                     .text(jobGenerationResource)
@@ -100,7 +84,6 @@ public class AiService {
 
         return chatClient
             .prompt()
-            .options(FAST_CHAT_OPTIONS)
             .user(u ->
                 u
                     .text(translationResource)

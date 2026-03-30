@@ -38,39 +38,6 @@ describe('ApplicationPage3Component', () => {
     });
   });
 
-  describe('CV Validation', () => {
-    it('should set cvValid to false when cvDocs is undefined or empty', () => {
-      comp.cvDocsSetValidity(undefined);
-      expect(comp.cvValid()).toBe(false);
-
-      comp.cvDocsSetValidity([]);
-      expect(comp.cvValid()).toBe(false);
-    });
-
-    it('should set cvValid to true when cvDocs is provided', () => {
-      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
-      expect(comp.cvValid()).toBe(true);
-    });
-  });
-
-  describe('Document Input Handling', () => {
-    it('should return array with doc if documentIdsCv is defined', () => {
-      const doc = { id: '1', size: 1 };
-
-      fixture.componentRef.setInput('documentIdsCv', doc);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toEqual([doc]);
-    });
-
-    it('should return undefined if documentIdsCv is undefined', () => {
-      fixture.componentRef.setInput('documentIdsCv', undefined);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toBeUndefined();
-    });
-  });
-
   describe('Validation Status', () => {
     it('should have invalid form status when required fields are empty', () => {
       comp.data.set({
@@ -85,8 +52,7 @@ describe('ApplicationPage3Component', () => {
       expect(comp.formStatus()).toBe('INVALID');
     });
 
-    it('should have valid form status when required fields are filled and CV is set', () => {
-      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
+    it('should have valid form status when required fields are filled', () => {
       comp.data.set({
         experiences: '<p>Experience</p>',
         motivation: '<p>Motivation</p>',
@@ -97,7 +63,6 @@ describe('ApplicationPage3Component', () => {
       fixture.detectChanges();
 
       expect(comp.formStatus()).toBe('VALID');
-      expect(comp.cvValid()).toBe(true);
     });
   });
 

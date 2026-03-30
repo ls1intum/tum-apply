@@ -1,16 +1,19 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, Signal, computed, effect, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { firstValueFrom, map } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { TranslateDirective } from 'app/shared/language';
+import { AccountService } from 'app/core/auth/account.service';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/model/job-card-dto';
@@ -37,9 +40,11 @@ export class JobCardListComponent {
 
   DropdownOptions = DropdownOptions;
 
+  readonly accountService = inject(AccountService);
   readonly selectedSubjectAreaFilters = signal<JobFormDTOSubjectAreaEnum[]>([]);
   readonly selectedLocationFilters = signal<JobFormDTOLocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
+  readonly notificationsSettingsHref: Signal<string>;
 
   readonly allSubjectAreas = this.DropdownOptions.subjectAreas.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
@@ -58,7 +63,18 @@ export class JobCardListComponent {
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
+  readonly notificationsCtaTranslateValues = computed(() => {
+    // Recompute the translated link text when the active language changes.
+    this.currentLanguage();
+    return {
+      link: `<a class="font-medium text-primary hover:underline" href="${this.notificationsSettingsHref()}">${this.translateService.instant('jobOverviewPage.notificationsCta.link')}</a>`,
+    };
+  });
+  readonly canManageSubjectAreaSubscriptions = computed(
+    () => this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]),
+  );
 
+  private readonly router = inject(Router);
   private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
@@ -75,6 +91,9 @@ export class JobCardListComponent {
   });
 
   constructor() {
+    this.notificationsSettingsHref = computed(() =>
+      this.router.serializeUrl(this.router.createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } })),
+    );
     void this.loadAllFilter();
   }
 

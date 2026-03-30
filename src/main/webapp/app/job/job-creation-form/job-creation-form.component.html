@@ -25,7 +25,7 @@
   <ng-template #panel1>
     <div class="panel1-layout lg:!gap-x-6" [class.panel1-layout-with-sidebar]="aiToggleSignal()">
       <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto">
-        <form [formGroup]="basicInfoForm" class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:px-8 lg:pr-5 xl:px-10">
+        <form [formGroup]="basicInfoForm" class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 lg:pr-5 xl:px-10">
           <div class="grid items-start gap-4">
             <div>
               <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
@@ -201,7 +201,7 @@
   <!-- Step 2: Employment Terms -->
   <ng-template #panel2>
     <div class="flex flex-column h-full min-h-[calc(100vh-300px)]">
-      <form [formGroup]="positionDetailsForm" class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+      <form [formGroup]="positionDetailsForm" class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
         <div class="flex flex-col">
           <div class="flex flex-col lg:flex-row lg:gap-8">
@@ -341,7 +341,7 @@
   <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
     <div class="flex flex-column h-full">
-      <div class="mx-auto w-full max-w-3xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+      <div class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
         <p class="mb-4" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
         <!-- Default Image Section -->

@@ -349,6 +349,7 @@
     "applicationPage1": {
       "description": "Enter your personal details and contact information.",
       "label": {
+        "curriculumVitae": "Curriculum Vitae",
         "firstName": "First Name",
         "lastName": "Last Name",
         "email": "Email",
@@ -415,7 +416,6 @@
       "description": "Share your skills, motivation, and relevant research experience.",
       "label": {
         "desiredStartDate": "Desired Start Date",
-        "curriculumVitae": "Curriculum Vitae",
         "additionalReferences": "Additional References",
         "motivation": "What is your motivation to take this position?",
         "skills": "What are your skills?",
