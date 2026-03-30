@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, DestroyRef, effect, inject, input, model, output, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -19,13 +19,15 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
-import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
-import { firstValueFrom } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { ToastService } from 'app/service/toast-service';
 
-const AI_EXTRACTION_STORAGE_PREFIX = 'ai-extraction-';
-const AI_EXTRACTION_TTL_MS = 5 * 60 * 1000; // 5 minutes
+// Holds in-flight extraction observables across component re-creation (e.g. page navigation).
+// Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
+const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
+
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -173,19 +175,17 @@ export default class ApplicationCreationPage1Component {
 
   private aiApi = inject(AiResourceApi);
   private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
+  // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
   private restoreExtractionState = effect(() => {
     const appId = this.applicationIdForDocuments();
     if (!appId) return;
 
-    const stored = localStorage.getItem(AI_EXTRACTION_STORAGE_PREFIX + appId);
-    if (stored) {
-      const timestamp = Number(stored);
-      if (Date.now() - timestamp < AI_EXTRACTION_TTL_MS) {
-        this.isExtractingAi.set(true);
-      } else {
-        localStorage.removeItem(AI_EXTRACTION_STORAGE_PREFIX + appId);
-      }
+    const active$ = activeExtractions.get(appId);
+    if (active$) {
+      this.isExtractingAi.set(true);
+      this.subscribeToExtraction(active$, appId);
     }
   });
 
@@ -260,11 +260,10 @@ export default class ApplicationCreationPage1Component {
   /**
    * Extracts personal and education data from the uploaded CV using AI.
    * 1) Validates that an application and CV document exist
-   * 2) Calls the AI extraction endpoint
-   * 3) Patches the page 1 form with personal fields
-   * 4) Emits education fields to the parent for page 2 prefill
+   * 2) Starts or reuses an in-flight extraction request
+   * 3) Subscribes to patch form fields and emit education data on completion
    */
-  async extractAiData(): Promise<void> {
+  extractAiData(): void {
     // 1) Validate that an application and CV document exist
     const appId = this.applicationIdForDocuments();
     const cvDocs = this.currentCvDocs();
@@ -281,32 +280,43 @@ export default class ApplicationCreationPage1Component {
 
     this.isExtractingAi.set(true);
 
-    try {
-      localStorage.setItem(AI_EXTRACTION_STORAGE_PREFIX + appId, String(Date.now()));
-
-      // 2) Call the AI extraction endpoint
-      const extractedData = await firstValueFrom(this.aiApi.extractPdfData(appId, docId));
-
-      // 3) Patch the page 1 form with personal fields
-      const patch: Record<string, string> = {};
-      if (extractedData.firstName !== undefined) patch.firstName = extractedData.firstName;
-      if (extractedData.lastName !== undefined) patch.lastName = extractedData.lastName;
-      if (extractedData.phoneNumber !== undefined) patch.phoneNumber = extractedData.phoneNumber;
-      if (extractedData.website !== undefined) patch.website = extractedData.website;
-      if (extractedData.linkedinUrl !== undefined) patch.linkedIn = extractedData.linkedinUrl;
-      if (extractedData.street !== undefined) patch.street = extractedData.street;
-      if (extractedData.city !== undefined) patch.city = extractedData.city;
-      if (extractedData.postalCode !== undefined) patch.postcode = extractedData.postalCode;
-
-      this.page1Form().patchValue(patch);
-
-      // 4) Emit education fields to the parent for page 2 prefill
-      this.educationDataExtracted.emit(extractedData);
-    } catch {
-      this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
-    } finally {
-      this.isExtractingAi.set(false);
-      localStorage.removeItem(AI_EXTRACTION_STORAGE_PREFIX + appId);
+    // 2) Start or reuse an in-flight extraction request
+    let extraction$ = activeExtractions.get(appId);
+    if (!extraction$) {
+      extraction$ = this.aiApi.extractPdfData(appId, docId).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      activeExtractions.set(appId, extraction$);
     }
+
+    // 3) Subscribe to patch form fields and emit education data on completion
+    this.subscribeToExtraction(extraction$, appId);
+  }
+
+  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
+    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: extractedData => {
+        // 1) Patch the page 1 form with personal fields
+        const patch: Record<string, string> = {};
+        if (extractedData.firstName !== undefined) patch.firstName = extractedData.firstName;
+        if (extractedData.lastName !== undefined) patch.lastName = extractedData.lastName;
+        if (extractedData.phoneNumber !== undefined) patch.phoneNumber = extractedData.phoneNumber;
+        if (extractedData.website !== undefined) patch.website = extractedData.website;
+        if (extractedData.linkedinUrl !== undefined) patch.linkedIn = extractedData.linkedinUrl;
+        if (extractedData.street !== undefined) patch.street = extractedData.street;
+        if (extractedData.city !== undefined) patch.city = extractedData.city;
+        if (extractedData.postalCode !== undefined) patch.postcode = extractedData.postalCode;
+
+        this.page1Form().patchValue(patch);
+
+        // 2) Emit education fields to the parent for page 2 prefill
+        this.educationDataExtracted.emit(extractedData);
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+      error: () => {
+        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+    });
   }
 }
