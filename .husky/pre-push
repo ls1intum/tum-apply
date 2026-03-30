@@ -25,8 +25,8 @@ if [ "$branch" = "main" ] || [ "$branch" = "develop" ]; then
   exit 0
 fi
 
-if ! echo "$branch" | grep -qE "^(chore|feat|docs|test|bugfix|general)/"; then
+if ! echo "$branch" | grep -qE "^(chore|feat|docs|test|bugfix|renovate|general)/"; then
   echo "ERROR: Branch '$branch' does not follow naming convention."
-  echo "Use one of: chore/ feat/ docs/ test/ bugfix/ general/"
+  echo "Use one of: chore/ feat/ docs/ test/ bugfix/ renovate/ general/"
   exit 1
 fi

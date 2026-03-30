@@ -47,7 +47,7 @@ describe('KeycloakAuthenticationService', () => {
     it('should handle non-authenticated init', async () => {
       keycloakInstance.authenticated = false;
       keycloakInstance.init.mockResolvedValue(false);
-      const result = await service.init();
+      const result = await runSilently(() => service.init());
       expect(result).toBe(false);
       expect(keycloakInstance.init).toHaveBeenCalledTimes(1);
     });

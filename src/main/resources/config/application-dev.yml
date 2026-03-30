@@ -54,6 +54,7 @@ spring:
         options:
           model: openai/gpt-oss-20b
           temperature: 0.0
+          max-tokens: 2000
 springdoc:
   api-docs:
     enabled: true
