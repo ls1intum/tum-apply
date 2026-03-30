@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -152,19 +154,27 @@ public class AiService {
     private ExtractedApplicationDataDTO extractPdfData(Resource pdfFile) {
         try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
-            BufferedImage image = pdfRenderer.renderImageWithDPI(0, 300);
+            int pageCount = document.getNumberOfPages();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
+            List<ByteArrayResource> pageImages = new ArrayList<>(pageCount);
+            for (int i = 0; i < pageCount; i++) {
+                BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", byteArrayOutputStream);
+                pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
+            }
 
             return chatClient
                 .prompt()
-                .user(u -> u.text(pdfExtractionResource).media(MediaType.IMAGE_PNG, new ByteArrayResource(imageBytes)))
+                .user(u -> {
+                    u.text(pdfExtractionResource);
+                    for (ByteArrayResource pageImage : pageImages) {
+                        u.media(MediaType.IMAGE_PNG, pageImage);
+                    }
+                })
                 .call()
                 .entity(ExtractedApplicationDataDTO.class);
         } catch (IOException e) {
-            log.error("Failed to convert PDF to image for Gemma extraction", e);
             throw new PDFExtractionException("PDF conversion failed", e);
         }
     }
