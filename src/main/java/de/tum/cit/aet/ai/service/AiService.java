@@ -3,14 +3,30 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.exception.PDFExtractionException;
+import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -24,13 +40,27 @@ public class AiService {
     @Value("classpath:prompts/TranslateText.st")
     private Resource translationResource;
 
+    @Value("classpath:prompts/ExtractPdfData.st")
+    private Resource pdfExtractionResource;
+
     private final ChatClient chatClient;
 
     private final JobService jobService;
 
-    public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
+    private final ApplicationService applicationService;
+
+    private final DocumentDictionaryService documentDictionaryService;
+
+    public AiService(
+        ChatClient.Builder chatClientBuilder,
+        JobService jobService,
+        ApplicationService applicationService,
+        DocumentDictionaryService documentDictionaryService
+    ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
+        this.applicationService = applicationService;
+        this.documentDictionaryService = documentDictionaryService;
     }
 
     /**
@@ -112,5 +142,67 @@ public class AiService {
             jobService.updateJobDescriptionLanguage(jobId, toLang, translatedText);
         }
         return translated;
+    }
+
+    /**
+     * Extracts applicant data from the provided PDF file by converting it to images
+     * first, since the Azure OpenAI endpoint only accepts image inputs.
+     * 1) Load the PDF and render each page as a PNG image
+     * 2) Send the images to the LLM with the extraction prompt
+     *
+     * @param pdfFile the PDF file resource to be analyzed
+     * @return the extracted data as a structured DTO
+     */
+    private ExtractedApplicationDataDTO extractPdfData(Resource pdfFile) {
+        try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
+            // 1) Render each PDF page as a PNG image
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            int pageCount = document.getNumberOfPages();
+
+            List<ByteArrayResource> pageImages = new ArrayList<>(pageCount);
+            for (int i = 0; i < pageCount; i++) {
+                BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", byteArrayOutputStream);
+                pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
+            }
+
+            // 2) Send the images to the LLM with the extraction prompt
+            return chatClient
+                .prompt()
+                .user(u -> {
+                    u.text(pdfExtractionResource);
+                    for (ByteArrayResource pageImage : pageImages) {
+                        u.media(MediaType.IMAGE_PNG, pageImage);
+                    }
+                })
+                .call()
+                .entity(ExtractedApplicationDataDTO.class);
+        } catch (IOException e) {
+            throw new PDFExtractionException("PDF conversion failed", e);
+        }
+    }
+
+    /**
+     * Extracts applicant data from a PDF document and persists the extracted data
+     * in the application entity.
+     * 1) Download the document
+     * 2) Extract data from the PDF via AI
+     * 3) Persist the extracted data into the application
+     *
+     * @param applicationId the ID of the application to update with extracted data
+     * @param docId         the ID of the document to extract data from
+     * @return the extracted data as a structured DTO
+     */
+    public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
+        // 1) Download the document
+        Resource doc = documentDictionaryService.downloadDocument(UUID.fromString(docId));
+        // 2) Extract data from the PDF via AI
+        ExtractedApplicationDataDTO extracted = extractPdfData(doc);
+        // 3) Persist the extracted data into the application
+        if (extracted != null) {
+            applicationService.applyExtractedPdfData(applicationId, extracted);
+        }
+        return extracted;
     }
 }

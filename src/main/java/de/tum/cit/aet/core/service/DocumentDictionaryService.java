@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.service.support.DocumentDictionaryOwnerSetter;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class DocumentDictionaryService {
 
+    private final DocumentService documentService;
     private CurrentUserService currentUserService;
     private DocumentDictionaryRepository documentDictionaryRepository;
 
@@ -232,6 +235,18 @@ public class DocumentDictionaryService {
     }
 
     /**
+     * Downloads a document by its associated DocumentDictionary ID.
+     *
+     * @param documentDictionaryId the UUID of the DocumentDictionary
+     * @return the file as a Spring Resource
+     */
+    public Resource downloadDocument(UUID documentDictionaryId) {
+        DocumentDictionary documentDictionary = findDocumentDictionaryById(documentDictionaryId);
+        verifyAccess(documentDictionary);
+        return documentService.download(documentDictionary.getDocument());
+    }
+
+    /**
      * Asserts that the current user can manage the applicant with the given ID.
      *
      * @param documentId the id of the document to check
@@ -257,5 +272,48 @@ public class DocumentDictionaryService {
         }
 
         return documentDictionary;
+    }
+
+    /**
+     * Verifies that the current user has access to the given document dictionary.
+     * 1) Check application-owned documents (professors/employees need job access, others need to be the applicant or admin)
+     * 2) Check custom-field-answer-owned documents (same logic via the answer's application)
+     * 3) Check applicant-owned documents (must be that applicant or admin)
+     * 4) Reject if no owner association exists
+     *
+     * @param documentDictionary the document dictionary to verify access for
+     * @throws AccessDeniedException if the current user does not have access or if the document has no owner association
+     */
+    private void verifyAccess(DocumentDictionary documentDictionary) {
+        // 1) Application-owned document
+        if (documentDictionary.getApplication() != null) {
+            Application application = documentDictionary.getApplication();
+            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
+                currentUserService.verifyJobAccess(application.getJob());
+                return;
+            }
+            currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+            return;
+        }
+
+        // 2) Custom-field-answer-owned document
+        if (documentDictionary.getCustomFieldAnswer() != null) {
+            Application application = documentDictionary.getCustomFieldAnswer().getApplication();
+            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
+                currentUserService.verifyJobAccess(application.getJob());
+                return;
+            }
+            currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+            return;
+        }
+
+        // 3) Applicant-owned document
+        if (documentDictionary.getApplicant() != null) {
+            currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplicant().getUserId());
+            return;
+        }
+
+        // 4) No owner association — reject
+        throw new AccessDeniedException("Cannot verify access for document without owner association");
     }
 }

@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -17,6 +17,16 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { Observable, shareReplay } from 'rxjs';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { ToastService } from 'app/service/toast-service';
+
+// Holds in-flight extraction observables across component re-creation (e.g. page navigation).
+// Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
+const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -72,6 +82,8 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     UploadButtonComponent,
     FontAwesomeModule,
     TooltipModule,
+    ButtonComponent,
+    ProgressSpinnerComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -84,6 +96,7 @@ export default class ApplicationCreationPage1Component {
 
   valid = output<boolean>();
   changed = output<boolean>();
+  educationDataExtracted = output<ExtractedApplicationDataDTO>();
 
   cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
@@ -91,6 +104,9 @@ export default class ApplicationCreationPage1Component {
     const docInfoHolder = this.documentIdsCv();
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
+
+  // Tracks the current CV documents, updated by both the initial input and upload changes
+  currentCvDocs = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
@@ -107,7 +123,7 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-
+  isExtractingAi = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
@@ -156,6 +172,22 @@ export default class ApplicationCreationPage1Component {
     });
   });
 
+  private aiApi = inject(AiResourceApi);
+  private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
+
+  // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
+  private restoreExtractionState = effect(() => {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const active$ = activeExtractions.get(appId);
+    if (active$) {
+      this.isExtractingAi.set(true);
+      this.subscribeToExtraction(active$, appId);
+    }
+  });
+
   private initializeCvDocs = effect(() => {
     const cvDocs = this.computedDocumentIdsCvSet();
     this.cvDocsSetValidity(cvDocs);
@@ -196,6 +228,7 @@ export default class ApplicationCreationPage1Component {
   }
 
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
+    this.currentCvDocs.set(cvDocs);
     if (cvDocs === undefined || cvDocs.length === 0) {
       this.cvValid.set(false);
     } else {
@@ -221,5 +254,75 @@ export default class ApplicationCreationPage1Component {
       [field]: value,
     });
     this.emitChanged();
+  }
+
+  /**
+   * Extracts personal and education data from the uploaded CV using AI.
+   * 1) Validates that an application and CV document exist
+   * 2) Starts or reuses an in-flight extraction request
+   * 3) Subscribes to patch form fields and emit education data on completion
+   */
+  extractAiData(): void {
+    // 1) Validate that an application and CV document exist
+    const appId = this.applicationIdForDocuments();
+    const cvDocs = this.currentCvDocs();
+
+    if (appId === undefined || cvDocs === undefined || cvDocs.length === 0) {
+      return;
+    }
+
+    const docId = cvDocs[0].id;
+
+    if (!docId) {
+      return;
+    }
+
+    this.isExtractingAi.set(true);
+
+    // 2) Start or reuse an in-flight extraction request
+    let extraction$ = activeExtractions.get(appId);
+    if (!extraction$) {
+      extraction$ = this.aiApi.extractPdfData(appId, docId).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      activeExtractions.set(appId, extraction$);
+    }
+
+    // 3) Subscribe to patch form fields and emit education data on completion
+    this.subscribeToExtraction(extraction$, appId);
+  }
+
+  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
+    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: extractedData => {
+        // 1) Patch the page 1 form with personal fields, only filling empty ones
+        const form = this.page1Form();
+        const patch: Record<string, string> = {};
+        const setIfEmpty = (formKey: string, value: string | undefined): void => {
+          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+            patch[formKey] = value;
+          }
+        };
+
+        setIfEmpty('firstName', extractedData.firstName);
+        setIfEmpty('lastName', extractedData.lastName);
+        setIfEmpty('phoneNumber', extractedData.phoneNumber);
+        setIfEmpty('website', extractedData.website);
+        setIfEmpty('linkedIn', extractedData.linkedinUrl);
+        setIfEmpty('street', extractedData.street);
+        setIfEmpty('city', extractedData.city);
+        setIfEmpty('postcode', extractedData.postalCode);
+
+        form.patchValue(patch);
+
+        // 2) Emit education fields to the parent for page 2 prefill
+        this.educationDataExtracted.emit(extractedData);
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+      error: () => {
+        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+    });
   }
 }

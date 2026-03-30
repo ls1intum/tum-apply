@@ -15,6 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
 import { JobFormDTO } from '../model/job-form-dto';
 import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-translation-dto';
 
@@ -22,6 +23,25 @@ import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-tran
 export class AiResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     * @param docId 
+     */
+    extractPdfData(applicationId: string, docId: string): Observable<ExtractedApplicationDataDTO> {
+        const queryParams = new URLSearchParams();
+        if (applicationId !== undefined && applicationId !== null) {
+            queryParams.set('applicationId', String(applicationId));
+        }
+        if (docId !== undefined && docId !== null) {
+            queryParams.set('docId', String(docId));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/ai/extractPdfData${queryString ? `?${queryString}` : ''}`;
+        return this.http.put<ExtractedApplicationDataDTO>(url, null);
+    }
 
     /**
      * 

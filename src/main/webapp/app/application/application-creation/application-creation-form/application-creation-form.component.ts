@@ -44,6 +44,7 @@ import { ApplicationDocumentIdsDTO } from '../../../generated/model/application-
 import { ApplicationResourceApi } from '../../../generated/api/application-resource-api';
 import { UpdateApplicationDTO } from '../../../generated/model/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
+import { ExtractedApplicationDataDTO } from '../../../generated/model/extracted-application-data-dto';
 
 const applyflow = 'entity.toast.applyFlow';
 
@@ -555,6 +556,19 @@ export default class ApplicationCreationFormComponent {
 
   onEducationDataValidityChanged(isValid: boolean): void {
     this.educationDataValid.set(isValid);
+  }
+
+  // Applies AI-extracted education fields to page 2, only filling currently empty values
+  onEducationDataExtracted(extracted: ExtractedApplicationDataDTO): void {
+    this.educationData.update(current => {
+      if (current.bachelorDegreeName === '') current.bachelorDegreeName = extracted.bachelorDegreeName ?? '';
+      if (current.bachelorDegreeUniversity === '') current.bachelorDegreeUniversity = extracted.bachelorUniversity ?? '';
+      if (current.bachelorGrade === '') current.bachelorGrade = extracted.bachelorGrade ?? '';
+      if (current.masterDegreeName === '') current.masterDegreeName = extracted.masterDegreeName ?? '';
+      if (current.masterDegreeUniversity === '') current.masterDegreeUniversity = extracted.masterUniversity ?? '';
+      if (current.masterGrade === '') current.masterGrade = extracted.masterGrade ?? '';
+      return current;
+    });
   }
 
   onApplicationDetailsDataValidityChanged(isValid: boolean): void {
