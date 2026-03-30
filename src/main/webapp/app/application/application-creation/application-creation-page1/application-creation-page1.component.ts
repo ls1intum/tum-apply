@@ -104,6 +104,9 @@ export default class ApplicationCreationPage1Component {
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
 
+  // Tracks the current CV documents, updated by both the initial input and upload changes
+  currentCvDocs = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+
   disabledEmail = computed<boolean>(() => this.accountService.signedIn());
 
   readonly minDate = new Date(1900, 0, 1);
@@ -226,6 +229,7 @@ export default class ApplicationCreationPage1Component {
   }
 
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
+    this.currentCvDocs.set(cvDocs);
     if (cvDocs === undefined || cvDocs.length === 0) {
       this.cvValid.set(false);
     } else {
@@ -263,7 +267,7 @@ export default class ApplicationCreationPage1Component {
   async extractAiData(): Promise<void> {
     // 1) Validate that an application and CV document exist
     const appId = this.applicationIdForDocuments();
-    const cvDocs = this.computedDocumentIdsCvSet();
+    const cvDocs = this.currentCvDocs();
 
     if (appId === undefined || cvDocs === undefined || cvDocs.length === 0) {
       return;
