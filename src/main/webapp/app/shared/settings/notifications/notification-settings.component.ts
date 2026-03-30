@@ -52,7 +52,9 @@ export class NotificationSettingsComponent {
   protected loaded = signal(false);
 
   protected readonly animationClasses = computed(() =>
-    this.subjectAreaNotificationsEnabled() ? 'mt-4 max-h-[80rem] opacity-100' : 'mt-0 max-h-0 opacity-0 overflow-hidden',
+    this.subjectAreaNotificationsEnabled()
+      ? 'overflow-visible transition-all duration-200 ease-in-out mt-4 max-h-screen opacity-100'
+      : 'overflow-hidden transition-all duration-200 ease-in-out mt-0 max-h-0 opacity-0',
   );
 
   protected readonly roleEffect = effect(() => {
