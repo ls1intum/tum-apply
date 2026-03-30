@@ -13,6 +13,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContext;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.EmailSettingService;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -120,7 +121,10 @@ class JobServiceTest {
             assertThat(result.state()).isEqualTo(JobState.PUBLISHED);
             assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.JOB_PUBLISHED_SUBJECT_AREA);
             assertThat(sentEmail.getLanguage()).isEqualTo(Language.GERMAN);
-            assertThat(sentEmail.getContent()).isEqualTo(draftJob);
+            assertThat(sentEmail.getContent()).isInstanceOf(JobPublicationEmailContext.class);
+            JobPublicationEmailContext context = (JobPublicationEmailContext) sentEmail.getContent();
+            assertThat(context.job()).isEqualTo(draftJob);
+            assertThat(context.user()).isEqualTo(applicantUser);
             assertThat(sentEmail.isSendAlways()).isTrue();
             assertThat(sentEmail.getTo()).containsExactly(applicantUser);
         }
