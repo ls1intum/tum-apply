@@ -680,6 +680,10 @@ public class ApplicationService {
     /**
      * Sets a value on the application only if the current value is null or blank
      * and the new value is non-null and non-blank.
+     *
+     * @param getter   supplier for the current field value
+     * @param setter   consumer to set the new field value
+     * @param newValue the value to set if the current value is empty
      */
     private void setIfEmpty(Supplier<String> getter, Consumer<String> setter, String newValue) {
         String current = getter.get();

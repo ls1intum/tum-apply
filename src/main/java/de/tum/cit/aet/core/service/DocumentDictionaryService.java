@@ -238,7 +238,7 @@ public class DocumentDictionaryService {
      * Downloads a document by its associated DocumentDictionary ID.
      *
      * @param documentDictionaryId the UUID of the DocumentDictionary
-     * @return the file as a downloadable HTTP resource
+     * @return the file as a Spring Resource
      */
     public Resource downloadDocument(UUID documentDictionaryId) {
         DocumentDictionary documentDictionary = findDocumentDictionaryById(documentDictionaryId);

@@ -149,7 +149,7 @@ public class AiService {
      * first, since the Azure OpenAI endpoint only accepts image inputs.
      *
      * @param pdfFile the PDF file resource to be analyzed
-     * @return the parsed data from the document
+     * @return the extracted data as a structured DTO
      */
     private ExtractedApplicationDataDTO extractPdfData(Resource pdfFile) {
         try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {

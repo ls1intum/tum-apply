@@ -558,6 +558,7 @@ export default class ApplicationCreationFormComponent {
     this.educationDataValid.set(isValid);
   }
 
+  // Applies AI-extracted education fields to page 2, only filling currently empty values
   onEducationDataExtracted(extracted: ExtractedApplicationDataDTO): void {
     this.educationData.update(current => {
       if (current.bachelorDegreeName === '') current.bachelorDegreeName = extracted.bachelorDegreeName ?? '';

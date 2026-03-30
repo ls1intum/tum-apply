@@ -75,7 +75,7 @@ public class AiResource {
      * values into the application entity.
      *
      * @param applicationId the ID of the application to update
-     * @param docId         the ID of the PDF
+     * @param docId         the ID of the document dictionary entry for the PDF
      * @return a ResponseEntity containing the extracted data
      */
     @ApplicantOrAdmin

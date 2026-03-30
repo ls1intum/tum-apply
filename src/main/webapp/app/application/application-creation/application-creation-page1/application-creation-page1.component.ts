@@ -235,6 +235,11 @@ export default class ApplicationCreationPage1Component {
     this.emitChanged();
   }
 
+  /**
+   * Calls the AI endpoint to extract personal and education data from the uploaded CV,
+   * patches the page 1 form with the personal fields, and emits the education fields
+   * to the parent for page 2 prefill. Only fills fields that are non-null in the response.
+   */
   async extractAiData(): Promise<void> {
     const appId = this.applicationIdForDocuments();
     const cvDocs = this.computedDocumentIdsCvSet();
