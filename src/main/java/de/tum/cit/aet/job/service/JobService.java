@@ -22,26 +22,33 @@ import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.EmailSettingService;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final ApplicantRepository applicantRepository;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
+    private final EmailSettingService emailSettingService;
     private final ApplicationRepository applicationRepository;
     private final InterviewService interviewService;
     private final JobImageHelper jobImageHelper;
@@ -88,6 +95,7 @@ public class JobService {
      */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = assertCanManageJob(jobId);
+        JobState oldState = job.getState();
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
@@ -112,7 +120,9 @@ public class JobService {
             notifyApplicants(applicationsToNotify, RejectReason.JOB_FILLED);
         }
 
-        return JobFormDTO.getFromEntity(jobRepository.save(job));
+        Job savedJob = jobRepository.save(job);
+        handlePublishedTransition(oldState, savedJob);
+        return JobFormDTO.getFromEntity(savedJob);
     }
 
     private void notifyApplicants(Set<Application> applications, RejectReason reason) {
@@ -373,14 +383,54 @@ public class JobService {
         // Save job entity first (single repository write)
         Job savedJob = jobRepository.save(job);
 
-        if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
-            interviewService.createInterviewProcessForJob(savedJob.getJobId());
-        }
+        handlePublishedTransition(oldState, savedJob);
 
         // Clean up old image after job is persisted (separate from job persistence)
         jobImageHelper.replaceJobImage(oldImage, savedJob.getImage());
 
         return JobFormDTO.getFromEntity(savedJob);
+    }
+
+    private void handlePublishedTransition(JobState oldState, Job savedJob) {
+        if (savedJob.getState() != JobState.PUBLISHED || oldState == JobState.PUBLISHED) {
+            return;
+        }
+
+        interviewService.createInterviewProcessForJob(savedJob.getJobId());
+        notifySubjectAreaSubscribers(savedJob);
+    }
+
+    private void notifySubjectAreaSubscribers(Job job) {
+        if (job.getSubjectArea() == null) {
+            log.info("Job {} published without subject area; notified 0 subject-area subscribers", job.getJobId());
+            return;
+        }
+
+        Set<Applicant> matchingApplicants = applicantRepository.findAllBySubjectAreaSubscription(job.getSubjectArea());
+        List<User> recipients = matchingApplicants
+            .stream()
+            .map(Applicant::getUser)
+            .filter(user -> emailSettingService.canNotify(EmailType.JOB_PUBLISHED_SUBJECT_AREA, user))
+            .toList();
+
+        recipients.forEach(user ->
+            sender.sendAsync(
+                Email.builder()
+                    .to(user)
+                    .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
+                    .content(job)
+                    .language(Language.fromCode(user.getSelectedLanguage()))
+                    .sendAlways(true)
+                    .build()
+            )
+        );
+
+        log.info(
+            "Job {} transitioned to PUBLISHED for subject area {}; notified {} applicants",
+            job.getJobId(),
+            job.getSubjectArea(),
+            recipients.size()
+        );
     }
 
     /**
