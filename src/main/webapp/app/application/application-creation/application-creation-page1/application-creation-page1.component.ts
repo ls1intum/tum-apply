@@ -24,6 +24,9 @@ import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-appli
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 
+const AI_EXTRACTION_STORAGE_PREFIX = 'ai-extraction-';
+const AI_EXTRACTION_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 export type ApplicationCreationPage1Data = {
   firstName: string;
   lastName: string;
@@ -168,6 +171,21 @@ export default class ApplicationCreationPage1Component {
   private aiApi = inject(AiResourceApi);
   private toastService = inject(ToastService);
 
+  private restoreExtractionState = effect(() => {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const stored = localStorage.getItem(AI_EXTRACTION_STORAGE_PREFIX + appId);
+    if (stored) {
+      const timestamp = Number(stored);
+      if (Date.now() - timestamp < AI_EXTRACTION_TTL_MS) {
+        this.isExtractingAi.set(true);
+      } else {
+        localStorage.removeItem(AI_EXTRACTION_STORAGE_PREFIX + appId);
+      }
+    }
+  });
+
   private initializeCvDocs = effect(() => {
     const cvDocs = this.computedDocumentIdsCvSet();
     this.cvDocsSetValidity(cvDocs);
@@ -258,6 +276,7 @@ export default class ApplicationCreationPage1Component {
     }
 
     this.isExtractingAi.set(true);
+    localStorage.setItem(AI_EXTRACTION_STORAGE_PREFIX + appId, String(Date.now()));
 
     try {
       // 2) Call the AI extraction endpoint
@@ -282,6 +301,7 @@ export default class ApplicationCreationPage1Component {
       this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
     } finally {
       this.isExtractingAi.set(false);
+      localStorage.removeItem(AI_EXTRACTION_STORAGE_PREFIX + appId);
     }
   }
 }
