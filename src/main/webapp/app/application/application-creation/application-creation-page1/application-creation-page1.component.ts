@@ -293,18 +293,25 @@ export default class ApplicationCreationPage1Component {
   private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
-        // 1) Patch the page 1 form with personal fields
+        // 1) Patch the page 1 form with personal fields, only filling empty ones
+        const form = this.page1Form();
         const patch: Record<string, string> = {};
-        if (extractedData.firstName !== undefined) patch.firstName = extractedData.firstName;
-        if (extractedData.lastName !== undefined) patch.lastName = extractedData.lastName;
-        if (extractedData.phoneNumber !== undefined) patch.phoneNumber = extractedData.phoneNumber;
-        if (extractedData.website !== undefined) patch.website = extractedData.website;
-        if (extractedData.linkedinUrl !== undefined) patch.linkedIn = extractedData.linkedinUrl;
-        if (extractedData.street !== undefined) patch.street = extractedData.street;
-        if (extractedData.city !== undefined) patch.city = extractedData.city;
-        if (extractedData.postalCode !== undefined) patch.postcode = extractedData.postalCode;
+        const setIfEmpty = (formKey: string, value: string | undefined) => {
+          if (value !== undefined && !form.get(formKey)?.value) {
+            patch[formKey] = value;
+          }
+        };
 
-        this.page1Form().patchValue(patch);
+        setIfEmpty('firstName', extractedData.firstName);
+        setIfEmpty('lastName', extractedData.lastName);
+        setIfEmpty('phoneNumber', extractedData.phoneNumber);
+        setIfEmpty('website', extractedData.website);
+        setIfEmpty('linkedIn', extractedData.linkedinUrl);
+        setIfEmpty('street', extractedData.street);
+        setIfEmpty('city', extractedData.city);
+        setIfEmpty('postcode', extractedData.postalCode);
+
+        form.patchValue(patch);
 
         // 2) Emit education fields to the parent for page 2 prefill
         this.educationDataExtracted.emit(extractedData);
