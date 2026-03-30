@@ -12,7 +12,7 @@
       (filterChange)="onFilterChange($event)"
     />
     <div
-      class="pointer-events-none absolute inset-y-1/2 left-3 right-8 -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap text-[length:var(--p-select-sm-font-size)] text-text-secondary"
+      class="absolute inset-y-0 left-3 right-8 z-10 flex items-center overflow-hidden text-ellipsis whitespace-nowrap text-sm text-text-secondary pointer-events-none"
       aria-hidden="true"
     >
       {{ 'settings.notifications.applicant.subjectAreas.placeholder' | translate }}
