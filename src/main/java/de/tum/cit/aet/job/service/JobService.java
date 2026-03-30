@@ -121,7 +121,10 @@ public class JobService {
         }
 
         Job savedJob = jobRepository.save(job);
-        handlePublishedTransition(oldState, savedJob);
+        if (savedJob.getState() == JobState.PUBLISHED && (oldState == null || oldState == JobState.DRAFT)) {
+            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+            notifySubjectAreaSubscribers(savedJob);
+        }
         return JobFormDTO.getFromEntity(savedJob);
     }
 
@@ -382,22 +385,15 @@ public class JobService {
 
         // Save job entity first (single repository write)
         Job savedJob = jobRepository.save(job);
-
-        handlePublishedTransition(oldState, savedJob);
+        if (savedJob.getState() == JobState.PUBLISHED && (oldState == null || oldState == JobState.DRAFT)) {
+            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+            notifySubjectAreaSubscribers(savedJob);
+        }
 
         // Clean up old image after job is persisted (separate from job persistence)
         jobImageHelper.replaceJobImage(oldImage, savedJob.getImage());
 
         return JobFormDTO.getFromEntity(savedJob);
-    }
-
-    private void handlePublishedTransition(JobState oldState, Job savedJob) {
-        if (savedJob.getState() != JobState.PUBLISHED || oldState == JobState.PUBLISHED) {
-            return;
-        }
-
-        interviewService.createInterviewProcessForJob(savedJob.getJobId());
-        notifySubjectAreaSubscribers(savedJob);
     }
 
     private void notifySubjectAreaSubscribers(Job job) {
