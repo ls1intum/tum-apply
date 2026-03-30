@@ -276,30 +276,16 @@ public class DocumentDictionaryService {
 
     /**
      * Verifies that the current user has access to the given document dictionary.
-     * <p>
-     * Access is granted based on the following hierarchy:
-     * <ul>
-     *   <li>If the document is associated with an application:
-     *     <ul>
-     *       <li>Professors and employees must have access to the associated job</li>
-     *       <li>Other users must be the applicant or an admin</li>
-     *     </ul>
-     *   </li>
-     *   <li>If the document is associated with a custom field answer:
-     *     <ul>
-     *       <li>Professors and employees must have access to the application's job</li>
-     *       <li>Other users must be the applicant or an admin</li>
-     *     </ul>
-     *   </li>
-     *   <li>If the document is associated with an applicant directly, the current user must be that applicant or an admin</li>
-     * </ul>
-     * <p>
-     * If the document has no owner association, an {@link AccessDeniedException} is thrown.
+     * 1) Check application-owned documents (professors/employees need job access, others need to be the applicant or admin)
+     * 2) Check custom-field-answer-owned documents (same logic via the answer's application)
+     * 3) Check applicant-owned documents (must be that applicant or admin)
+     * 4) Reject if no owner association exists
      *
      * @param documentDictionary the document dictionary to verify access for
      * @throws AccessDeniedException if the current user does not have access or if the document has no owner association
      */
     private void verifyAccess(DocumentDictionary documentDictionary) {
+        // 1) Application-owned document
         if (documentDictionary.getApplication() != null) {
             Application application = documentDictionary.getApplication();
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
@@ -310,6 +296,7 @@ public class DocumentDictionaryService {
             return;
         }
 
+        // 2) Custom-field-answer-owned document
         if (documentDictionary.getCustomFieldAnswer() != null) {
             Application application = documentDictionary.getCustomFieldAnswer().getApplication();
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
@@ -320,11 +307,13 @@ public class DocumentDictionaryService {
             return;
         }
 
+        // 3) Applicant-owned document
         if (documentDictionary.getApplicant() != null) {
             currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplicant().getUserId());
             return;
         }
 
+        // 4) No owner association — reject
         throw new AccessDeniedException("Cannot verify access for document without owner association");
     }
 }

@@ -1,10 +1,9 @@
 package de.tum.cit.aet.core.web;
 
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
-import de.tum.cit.aet.core.service.DocumentService;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/documents")
 @AllArgsConstructor
@@ -27,6 +27,7 @@ public class DocumentResource {
      */
     @GetMapping("/{documentDictionaryId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentDictionaryId) {
+        log.info("GET /api/documents/{} - Download request received", documentDictionaryId);
         return ResponseEntity.ok(documentDictionaryService.downloadDocument(documentDictionaryId));
     }
 }

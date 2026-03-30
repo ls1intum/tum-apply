@@ -647,7 +647,6 @@ public class ApplicationService {
      * @param applicationId the ID of the application to update
      * @param extracted     the extracted data from the AI service
      */
-    @Transactional
     public void applyExtractedPdfData(String applicationId, ExtractedApplicationDataDTO extracted) {
         Application application = assertCanManageApplication(UUID.fromString(applicationId));
 

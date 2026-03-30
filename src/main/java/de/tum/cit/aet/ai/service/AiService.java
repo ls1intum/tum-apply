@@ -145,14 +145,17 @@ public class AiService {
     }
 
     /**
-     * Extracts applicant data from the provided PDF file by converting it to an image
+     * Extracts applicant data from the provided PDF file by converting it to images
      * first, since the Azure OpenAI endpoint only accepts image inputs.
+     * 1) Load the PDF and render each page as a PNG image
+     * 2) Send the images to the LLM with the extraction prompt
      *
      * @param pdfFile the PDF file resource to be analyzed
      * @return the extracted data as a structured DTO
      */
     private ExtractedApplicationDataDTO extractPdfData(Resource pdfFile) {
         try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
+            // 1) Render each PDF page as a PNG image
             PDFRenderer pdfRenderer = new PDFRenderer(document);
             int pageCount = document.getNumberOfPages();
 
@@ -164,6 +167,7 @@ public class AiService {
                 pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
             }
 
+            // 2) Send the images to the LLM with the extraction prompt
             return chatClient
                 .prompt()
                 .user(u -> {
@@ -181,15 +185,21 @@ public class AiService {
 
     /**
      * Extracts applicant data from a PDF document and persists the extracted data
-     * in the application entity
+     * in the application entity.
+     * 1) Download the document
+     * 2) Extract data from the PDF via AI
+     * 3) Persist the extracted data into the application
      *
      * @param applicationId the ID of the application to update with extracted data
      * @param docId         the ID of the document to extract data from
      * @return the extracted data as a structured DTO
      */
     public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
+        // 1) Download the document
         Resource doc = documentDictionaryService.downloadDocument(UUID.fromString(docId));
+        // 2) Extract data from the PDF via AI
         ExtractedApplicationDataDTO extracted = extractPdfData(doc);
+        // 3) Persist the extracted data into the application
         if (extracted != null) {
             applicationService.applyExtractedPdfData(applicationId, extracted);
         }

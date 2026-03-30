@@ -287,7 +287,7 @@ dependencies {
   // OpenAI / OpenAI-compatible (dev, localhost:1234, etc.)
   implementation "org.springframework.ai:spring-ai-starter-model-openai"
   // PDF to image conversion
-  implementation "org.apache.pdfbox:pdfbox:3.0.3"
+  implementation "org.apache.pdfbox:pdfbox:${pdfboxVersion}"
 }
 
 tasks.register("cleanResources", Delete) {

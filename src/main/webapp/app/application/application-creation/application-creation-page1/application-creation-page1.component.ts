@@ -236,15 +236,18 @@ export default class ApplicationCreationPage1Component {
   }
 
   /**
-   * Calls the AI endpoint to extract personal and education data from the uploaded CV,
-   * patches the page 1 form with the personal fields, and emits the education fields
-   * to the parent for page 2 prefill. Only fills fields that are non-null in the response.
+   * Extracts personal and education data from the uploaded CV using AI.
+   * 1) Validates that an application and CV document exist
+   * 2) Calls the AI extraction endpoint
+   * 3) Patches the page 1 form with personal fields
+   * 4) Emits education fields to the parent for page 2 prefill
    */
   async extractAiData(): Promise<void> {
+    // 1) Validate that an application and CV document exist
     const appId = this.applicationIdForDocuments();
     const cvDocs = this.computedDocumentIdsCvSet();
 
-    if (appId == null || cvDocs == null || cvDocs.length === 0) {
+    if (appId === undefined || cvDocs === undefined || cvDocs.length === 0) {
       return;
     }
 
@@ -257,18 +260,23 @@ export default class ApplicationCreationPage1Component {
     this.isExtractingAi.set(true);
 
     try {
+      // 2) Call the AI extraction endpoint
       const extractedData = await firstValueFrom(this.aiApi.extractPdfData(appId, docId));
+
+      // 3) Patch the page 1 form with personal fields
       const patch: Record<string, string> = {};
-      if (extractedData.firstName != null) patch.firstName = extractedData.firstName;
-      if (extractedData.lastName != null) patch.lastName = extractedData.lastName;
-      if (extractedData.phoneNumber != null) patch.phoneNumber = extractedData.phoneNumber;
-      if (extractedData.website != null) patch.website = extractedData.website;
-      if (extractedData.linkedinUrl != null) patch.linkedIn = extractedData.linkedinUrl;
-      if (extractedData.street != null) patch.street = extractedData.street;
-      if (extractedData.city != null) patch.city = extractedData.city;
-      if (extractedData.postalCode != null) patch.postcode = extractedData.postalCode;
+      if (extractedData.firstName !== undefined) patch.firstName = extractedData.firstName;
+      if (extractedData.lastName !== undefined) patch.lastName = extractedData.lastName;
+      if (extractedData.phoneNumber !== undefined) patch.phoneNumber = extractedData.phoneNumber;
+      if (extractedData.website !== undefined) patch.website = extractedData.website;
+      if (extractedData.linkedinUrl !== undefined) patch.linkedIn = extractedData.linkedinUrl;
+      if (extractedData.street !== undefined) patch.street = extractedData.street;
+      if (extractedData.city !== undefined) patch.city = extractedData.city;
+      if (extractedData.postalCode !== undefined) patch.postcode = extractedData.postalCode;
 
       this.page1Form().patchValue(patch);
+
+      // 4) Emit education fields to the parent for page 2 prefill
       this.educationDataExtracted.emit(extractedData);
     } catch {
       this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
