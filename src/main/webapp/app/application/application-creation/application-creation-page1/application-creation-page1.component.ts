@@ -254,14 +254,14 @@ export default class ApplicationCreationPage1Component {
     try {
       const extractedData = await firstValueFrom(this.aiApi.extractPdfData(appId, docId));
       const patch: Record<string, string> = {};
-      if (extractedData.firstName != null) patch['firstName'] = extractedData.firstName;
-      if (extractedData.lastName != null) patch['lastName'] = extractedData.lastName;
-      if (extractedData.phoneNumber != null) patch['phoneNumber'] = extractedData.phoneNumber;
-      if (extractedData.website != null) patch['website'] = extractedData.website;
-      if (extractedData.linkedinUrl != null) patch['linkedIn'] = extractedData.linkedinUrl;
-      if (extractedData.street != null) patch['street'] = extractedData.street;
-      if (extractedData.city != null) patch['city'] = extractedData.city;
-      if (extractedData.postalCode != null) patch['postcode'] = extractedData.postalCode;
+      if (extractedData.firstName != null) patch.firstName = extractedData.firstName;
+      if (extractedData.lastName != null) patch.lastName = extractedData.lastName;
+      if (extractedData.phoneNumber != null) patch.phoneNumber = extractedData.phoneNumber;
+      if (extractedData.website != null) patch.website = extractedData.website;
+      if (extractedData.linkedinUrl != null) patch.linkedIn = extractedData.linkedinUrl;
+      if (extractedData.street != null) patch.street = extractedData.street;
+      if (extractedData.city != null) patch.city = extractedData.city;
+      if (extractedData.postalCode != null) patch.postcode = extractedData.postalCode;
 
       this.page1Form().patchValue(patch);
       this.educationDataExtracted.emit(extractedData);
