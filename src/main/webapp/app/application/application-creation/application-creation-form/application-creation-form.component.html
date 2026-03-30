@@ -18,6 +18,7 @@
       [(data)]="personalInfoData"
       (valid)="onPersonalInfoDataValidityChanged($event)"
       (changed)="onValueChanged()"
+      (educationDataExtracted)="onEducationDataExtracted($event)"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
     />

@@ -348,9 +348,9 @@
     },
     "applicationPage1": {
       "description": "Enter your personal details and contact information.",
-      "aiExtractionHelper": "Save time by letting our AI automatically fill your application details from your CV.",
+      "aiExtractionHelper": "Save time by letting our AI automatically fill your details from your CV.",
       "aiExtractionButton": "AI Extraction",
-      "aiExtractionLoading": "Extracting CV data...",
+      "aiExtractionLoading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
         "detail": "Could not extract the data. Please try again."

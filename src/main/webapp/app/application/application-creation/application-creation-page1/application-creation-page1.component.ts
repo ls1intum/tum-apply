@@ -20,6 +20,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 
@@ -91,6 +92,7 @@ export default class ApplicationCreationPage1Component {
 
   valid = output<boolean>();
   changed = output<boolean>();
+  educationDataExtracted = output<ExtractedApplicationDataDTO>();
 
   cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
@@ -263,6 +265,7 @@ export default class ApplicationCreationPage1Component {
       if (extractedData.postalCode) patch['postcode'] = extractedData.postalCode;
 
       this.page1Form().patchValue(patch);
+      this.educationDataExtracted.emit(extractedData);
     } catch {
       this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
     } finally {
