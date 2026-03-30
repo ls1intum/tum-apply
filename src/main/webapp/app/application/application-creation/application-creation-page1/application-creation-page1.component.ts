@@ -296,8 +296,8 @@ export default class ApplicationCreationPage1Component {
         // 1) Patch the page 1 form with personal fields, only filling empty ones
         const form = this.page1Form();
         const patch: Record<string, string> = {};
-        const setIfEmpty = (formKey: string, value: string | undefined) => {
-          if (value !== undefined && !form.get(formKey)?.value) {
+        const setIfEmpty = (formKey: string, value: string | undefined): void => {
+          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
             patch[formKey] = value;
           }
         };
