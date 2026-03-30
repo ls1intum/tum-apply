@@ -385,6 +385,7 @@ public class JobService {
 
         // Save job entity first (single repository write)
         Job savedJob = jobRepository.save(job);
+
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             interviewService.createInterviewProcessForJob(savedJob.getJobId());
             notifySubjectAreaSubscribers(savedJob);
