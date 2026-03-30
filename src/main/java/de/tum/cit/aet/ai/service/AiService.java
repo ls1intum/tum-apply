@@ -184,8 +184,6 @@ public class AiService {
      * @return the extracted data as a structured DTO
      */
     public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
-        log.info("Extracting applicant data from PDF");
-
         Resource doc = documentDictionaryService.downloadDocument(UUID.fromString(docId));
         ExtractedApplicationDataDTO extracted = extractPdfData(doc);
         if (extracted != null) {
