@@ -181,6 +181,8 @@ public class AiService {
      * Extracts applicant data from a PDF document and persists the extracted data
      * in the application entity
      *
+     * @param applicationId the ID of the application to update with extracted data
+     * @param docId         the ID of the document to extract data from
      * @return the extracted data as a structured DTO
      */
     public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
