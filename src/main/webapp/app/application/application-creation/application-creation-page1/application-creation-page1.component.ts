@@ -276,9 +276,10 @@ export default class ApplicationCreationPage1Component {
     }
 
     this.isExtractingAi.set(true);
-    localStorage.setItem(AI_EXTRACTION_STORAGE_PREFIX + appId, String(Date.now()));
 
     try {
+      localStorage.setItem(AI_EXTRACTION_STORAGE_PREFIX + appId, String(Date.now()));
+
       // 2) Call the AI extraction endpoint
       const extractedData = await firstValueFrom(this.aiApi.extractPdfData(appId, docId));
 
