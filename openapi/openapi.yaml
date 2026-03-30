@@ -23,6 +23,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/ai/extractPdfData:
+    put:
+      tags: [ai-resource]
+      operationId: extractPdfData
+      parameters:
+      - name: applicationId
+        in: query
+        required: true
+        schema: {type: string}
+      - name: docId
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -2991,6 +3010,23 @@ components:
         interviewProcessId: {type: string, format: uuid}
         isBooked: {type: boolean}
         startDateTime: {type: string, format: date-time}
+    ExtractedApplicationDataDTO:
+      type: object
+      properties:
+        bachelorDegreeName: {type: string}
+        bachelorGrade: {type: string}
+        bachelorUniversity: {type: string}
+        city: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        linkedinUrl: {type: string}
+        masterDegreeName: {type: string}
+        masterGrade: {type: string}
+        masterUniversity: {type: string}
+        phoneNumber: {type: string}
+        postalCode: {type: string}
+        street: {type: string}
+        website: {type: string}
     GenderBiasAnalysisRequest:
       type: object
       properties:

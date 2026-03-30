@@ -17,6 +17,7 @@ import {
 } from 'app/generated/model/application-for-applicant-dto';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
+import { provideToastServiceMock } from 'util/toast-service.mock';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -33,6 +34,7 @@ describe('ApplicationPage1Component', () => {
         provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideToastServiceMock(),
         provideHttpClientMock(),
       ],
     }).compileComponents();

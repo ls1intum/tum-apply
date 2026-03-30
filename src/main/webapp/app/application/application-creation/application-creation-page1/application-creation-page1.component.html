@@ -15,14 +15,42 @@
           tooltipPosition="top"
         />
       </label>
-      <jhi-upload-button
-        documentType="CV"
-        [applicationId]="applicationId"
-        [documentIds]="computedDocumentIdsCvSet()"
-        (documentIdsChange)="cvDocsSetValidity($event)"
-        [allowMultiple]="false"
-        [compact]="true"
-      />
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div class="min-w-0 flex-1">
+          <jhi-upload-button
+            documentType="CV"
+            [applicationId]="applicationId"
+            [documentIds]="computedDocumentIdsCvSet()"
+            (documentIdsChange)="cvDocsSetValidity($event)"
+            [allowMultiple]="false"
+            [compact]="true"
+          />
+        </div>
+        <div class="flex flex-col items-center gap-2 w-full shrink-0 lg:w-40 lg:items-start">
+          <p class="m-0 text-center text-xs leading-4 text-text-tertiary lg:text-left">
+            {{ 'entity.applicationPage1.aiExtractionHelper' | translate }}
+          </p>
+          @if (isExtractingAi()) {
+            <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border-default lg:w-full">
+              <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+              <span class="whitespace-nowrap text-sm text-text-secondary">
+                {{ 'entity.applicationPage1.aiExtractionLoading' | translate }}
+              </span>
+            </div>
+          } @else {
+            <jhi-button
+              [label]="'entity.applicationPage1.aiExtractionButton'"
+              [shouldTranslate]="true"
+              severity="primary"
+              icon="custom-sparkle"
+              [fullWidth]="true"
+              styleClass="!justify-center !whitespace-nowrap"
+              (click)="extractAiData()"
+              [disabled]="!cvValid()"
+            />
+          }
+        </div>
+      </div>
     </div>
   }
 
