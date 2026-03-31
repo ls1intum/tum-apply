@@ -284,6 +284,9 @@ public class TemplateProcessingService {
         dataModel.put(TemplateVariable.EXPORT_EXPIRES_DAYS.getValue(), ctx.expiresDays());
     }
 
+    /**
+     * Adds applicant and job-related variables for subject-area job publication emails.
+     */
     private void addJobPublicationContextData(Map<String, Object> dataModel, JobPublicationEmailContext ctx) {
         addUserData(dataModel, ctx.user());
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.user().getFirstName());

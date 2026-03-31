@@ -25,7 +25,6 @@ import de.tum.cit.aet.notification.dto.JobPublicationEmailContext;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.EmailSettingService;
 import de.tum.cit.aet.notification.service.mail.Email;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -34,14 +33,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class JobService {
 
     private final JobRepository jobRepository;
@@ -399,14 +396,12 @@ public class JobService {
 
     private void notifySubjectAreaSubscribers(Job job) {
         if (job.getSubjectArea() == null) {
-            log.info("Job {} published without subject area; notified 0 subject-area subscribers", job.getJobId());
             return;
         }
 
-        Set<Applicant> matchingApplicants = applicantRepository.findAllBySubjectAreaSubscription(job.getSubjectArea());
-        List<User> recipients = matchingApplicants
+        List<User> recipients = applicantRepository
+            .findAllBySubjectAreaSubscription(job.getSubjectArea())
             .stream()
-            .map(Applicant::getUser)
             .filter(user -> emailSettingService.canNotify(EmailType.JOB_PUBLISHED_SUBJECT_AREA, user))
             .toList();
 
@@ -420,13 +415,6 @@ public class JobService {
                     .sendAlways(true)
                     .build()
             )
-        );
-
-        log.info(
-            "Job {} transitioned to PUBLISHED for subject area {}; notified {} applicants",
-            job.getJobId(),
-            job.getSubjectArea(),
-            recipients.size()
         );
     }
 

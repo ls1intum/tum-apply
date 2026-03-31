@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,14 +19,14 @@ import org.springframework.stereotype.Repository;
 public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UUID> {
     @Query(
         """
-            SELECT DISTINCT applicant
+            SELECT DISTINCT user
             FROM Applicant applicant
-            JOIN FETCH applicant.user
+            JOIN applicant.user user
             JOIN applicant.subjectAreaSubscriptions subscription
             WHERE subscription = :subjectArea
         """
     )
-    Set<Applicant> findAllBySubjectAreaSubscription(@Param("subjectArea") SubjectArea subjectArea);
+    Set<User> findAllBySubjectAreaSubscription(@Param("subjectArea") SubjectArea subjectArea);
 
     @Modifying
     @Query(

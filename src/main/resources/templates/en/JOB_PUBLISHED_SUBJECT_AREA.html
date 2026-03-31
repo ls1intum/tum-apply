@@ -1,21 +1,20 @@
 <p>Dear ${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!},</p>
 
 <p>
-  a new position matching your subscribed subject area has just been published at our research group
+  a new job posting in the subject area <strong>${SUBJECT_AREA!}</strong> has been released at the research group
   <strong>${RESEARCH_GROUP_NAME!}</strong>.
 </p>
 
-<p>
-  The position is <strong>${JOB_TITLE!}</strong> and is supervised by
-  <strong>${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}</strong>.
-</p>
+<p><strong>Position:</strong> ${JOB_TITLE!}</p>
 
-<p>You can now view the published position in TUMApply and decide whether you would like to apply.</p>
+<p><strong>Supervising Professor:</strong> ${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}</p>
+
+<p>You can view the published position in TUMApply and decide whether you would like to apply.</p>
 
 <p style="margin: 20px 0">
   <a
     href="${url!}/job/detail/${JOB_ID!}"
-    style="display: inline-block; padding: 10px 18px; background-color: #1872dd; color: #ffffff; text-decoration: none; border-radius: 5px"
+    style="display: inline-block; padding: 10px 16px; background-color:  #3070b3; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600"
   >
     View Position
   </a>

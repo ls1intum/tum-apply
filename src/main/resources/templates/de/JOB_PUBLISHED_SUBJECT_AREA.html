@@ -1,21 +1,20 @@
 <p>Sehr geehrte*r ${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!},</p>
 
 <p>
-  eine neue Position passend zu deinem abonnierten Fachbereich wurde soeben in unserer Forschungsgruppe
+  eine neue Stellenausschreibung im Fachbereich <strong>${SUBJECT_AREA!}</strong> wurde in der Forschungsgruppe
   <strong>${RESEARCH_GROUP_NAME!}</strong> veröffentlicht.
 </p>
 
-<p>
-  Es handelt sich um die Position <strong>${JOB_TITLE!}</strong>, die von
-  <strong>${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}</strong> betreut wird.
-</p>
+<p><strong>Stelle:</strong> ${JOB_TITLE!}</p>
 
-<p>Du kannst die veröffentlichte Stelle jetzt in TUMApply ansehen und entscheiden, ob du dich darauf bewerben möchtest.</p>
+<p><strong>Betreuende Professorin / Betreuender Professor:</strong> ${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}</p>
+
+<p>Du kannst die veröffentlichte Stelle in TUMApply ansehen und entscheiden, ob du dich darauf bewerben möchtest.</p>
 
 <p style="margin: 20px 0">
   <a
     href="${url!}/job/detail/${JOB_ID!}"
-    style="display: inline-block; padding: 10px 18px; background-color: #1872dd; color: #ffffff; text-decoration: none; border-radius: 5px"
+    style="display: inline-block; padding: 10px 16px; background-color:  #3070b3; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600"
   >
     Stelle ansehen
   </a>

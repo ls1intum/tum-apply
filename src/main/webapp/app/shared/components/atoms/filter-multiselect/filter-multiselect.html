@@ -9,7 +9,7 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div class="filter-trigger">
-      @if (alwaysShowLabel() || !hasSelectedItems()) {
+      @if (!showSelectedChipsInTrigger() || !hasSelectedItems()) {
         <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
       } @else {
         @if (showChipsCounterOnly()) {

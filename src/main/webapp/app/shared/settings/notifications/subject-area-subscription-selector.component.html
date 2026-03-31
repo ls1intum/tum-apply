@@ -8,7 +8,6 @@
       [filterOptions]="filterOptions()"
       [selectedValuesInput]="selectedValues()"
       [shouldTranslateOptions]="true"
-      [alwaysShowLabel]="true"
       [showSelectedChipsInTrigger]="false"
       (filterChange)="onFilterChange($event)"
     />
@@ -19,10 +18,7 @@
       @for (subjectArea of selectedOptions(); track subjectArea.value) {
         <div
           class="mr-1 mb-1 max-w-96 overflow-hidden transition-all duration-150 ease-out"
-          [class.max-w-0]="isRemovingSubjectArea(subjectArea.value)"
-          [class.opacity-0]="isRemovingSubjectArea(subjectArea.value)"
-          [class.mr-0]="isRemovingSubjectArea(subjectArea.value)"
-          [class.mb-0]="isRemovingSubjectArea(subjectArea.value)"
+          [ngClass]="subjectAreaTransitionClasses(subjectArea.value)"
         >
           <div
             class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[--color-border-hover]"

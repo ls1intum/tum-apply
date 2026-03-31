@@ -38,7 +38,10 @@
               />
             </div>
 
-            <div [class]="animationClasses()" [attr.aria-hidden]="!subjectAreaNotificationsEnabled()">
+            <div
+              [class]="'transition-all duration-200 ease-in-out ' + animationClasses()"
+              [attr.aria-hidden]="!subjectAreaNotificationsEnabled()"
+            >
               <div class="flex flex-col gap-3">
                 <div [class.pointer-events-none]="subjectAreaSubscriptions.saving()">
                   <jhi-subject-area-subscription-selector
