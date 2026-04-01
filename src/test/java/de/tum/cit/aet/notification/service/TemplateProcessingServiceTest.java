@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
@@ -94,7 +95,7 @@ class TemplateProcessingServiceTest {
         @Test
         void withJobPublicationContextInjectsApplicantAndJobVariables() throws Exception {
             EmailTemplateTranslation translation = translation(
-                "${APPLICANT_FIRST_NAME} ${APPLICANT_LAST_NAME} ${JOB_TITLE} ${RESEARCH_GROUP_NAME} " +
+                "${APPLICANT_FIRST_NAME} ${APPLICANT_LAST_NAME} ${JOB_TITLE} ${SUBJECT_AREA} ${RESEARCH_GROUP_NAME} " +
                     "${SUPERVISING_PROFESSOR_FIRST_NAME} ${SUPERVISING_PROFESSOR_LAST_NAME} ${JOB_ID} ${url}",
                 Language.ENGLISH,
                 "jobPublication"
@@ -108,6 +109,7 @@ class TemplateProcessingServiceTest {
                 "Alice",
                 "Smith",
                 "JobTitle",
+                SubjectArea.BIOCHEMISTRY.name(),
                 "RG",
                 "John",
                 "Doe",
@@ -308,6 +310,7 @@ class TemplateProcessingServiceTest {
 
         Job job = new Job();
         job.setTitle("JobTitle");
+        job.setSubjectArea(SubjectArea.BIOCHEMISTRY);
         job.setSupervisingProfessor(professor);
         job.setResearchGroup(group);
 
