@@ -294,7 +294,10 @@ public class TemplateProcessingService {
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.user().getLastName());
         addJobData(dataModel, ctx.job());
         if (ctx.job().getSubjectArea() != null) {
-            dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), ctx.job().getSubjectArea().correctLanguageValue(ctx.user().getSelectedLanguage()));
+            dataModel.put(
+                TemplateVariable.SUBJECT_AREA.getValue(),
+                ctx.job().getSubjectArea().correctLanguageValue(ctx.user().getSelectedLanguage())
+            );
         }
     }
 
