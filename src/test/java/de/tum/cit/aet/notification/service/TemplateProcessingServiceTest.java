@@ -109,7 +109,7 @@ class TemplateProcessingServiceTest {
                 "Alice",
                 "Smith",
                 "JobTitle",
-                SubjectArea.BIOCHEMISTRY.name(),
+                SubjectArea.BIOCHEMISTRY.getEnglishValue(),
                 "RG",
                 "John",
                 "Doe",
