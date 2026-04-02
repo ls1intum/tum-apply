@@ -16,12 +16,11 @@ export type SubjectArea = ApplicantSubjectAreaSubscriptionsEnum;
  * - load the current server-side selection
  * - expose derived values for the multiselect and tag UI
  * - persist incremental add/remove changes
- * - keep local UI state consistent during loading and rollback scenarios
+ * - keep local subscription state consistent during loading and rollback scenarios
  */
 @Injectable()
 export class SubjectAreaSubscriptionsStore {
   readonly saving = signal(false);
-  readonly enabled = signal(false);
   readonly selected = signal<SubjectArea[]>([]);
 
   readonly options = DropDownOptions.subjectAreas.map(option => ({
@@ -63,10 +62,9 @@ export class SubjectAreaSubscriptionsStore {
     }
   }
 
-  /** Clears both the selected values and the local enabled state. */
+  /** Clears the currently selected subject areas. */
   reset(): void {
     this.selected.set([]);
-    this.enabled.set(false);
   }
 
   /**
@@ -108,11 +106,6 @@ export class SubjectAreaSubscriptionsStore {
 
   async remove(subjectArea: SubjectArea): Promise<void> {
     await this.updateSelection(this.selected().filter(selectedSubjectArea => selectedSubjectArea !== subjectArea));
-  }
-
-  /** Toggles the visibility of the selector UI without persisting anything. */
-  setEnabled(enabled: boolean): void {
-    this.enabled.set(enabled);
   }
 
   /** Adapts the multiselect output into domain values understood by the store. */

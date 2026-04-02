@@ -10,6 +10,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.dto.DataExportEmailContext;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContext;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -176,6 +177,7 @@ public class TemplateProcessingService {
             case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContext ctx -> addDataExportContextData(dataModel, ctx);
+            case JobPublicationEmailContext ctx -> addJobPublicationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
             default -> {
                 throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
@@ -205,7 +207,9 @@ public class TemplateProcessingService {
      * @param job       the job object
      */
     private void addJobData(Map<String, Object> dataModel, Job job) {
+        dataModel.put(TemplateVariable.JOB_ID.getValue(), job.getJobId());
         dataModel.put(TemplateVariable.JOB_TITLE.getValue(), job.getTitle());
+        dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), job.getSubjectArea());
 
         User supervisingProfessor = job.getSupervisingProfessor();
         dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_FIRST_NAME.getValue(), supervisingProfessor.getFirstName());
@@ -279,6 +283,22 @@ public class TemplateProcessingService {
         addUserData(dataModel, ctx.user());
         dataModel.put(TemplateVariable.DOWNLOAD_LINK.getValue(), ctx.downloadLink());
         dataModel.put(TemplateVariable.EXPORT_EXPIRES_DAYS.getValue(), ctx.expiresDays());
+    }
+
+    /**
+     * Adds applicant and job-related variables for subject-area job publication emails.
+     */
+    private void addJobPublicationContextData(Map<String, Object> dataModel, JobPublicationEmailContext ctx) {
+        addUserData(dataModel, ctx.user());
+        dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.user().getFirstName());
+        dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.user().getLastName());
+        addJobData(dataModel, ctx.job());
+        if (ctx.job().getSubjectArea() != null) {
+            dataModel.put(
+                TemplateVariable.SUBJECT_AREA.getValue(),
+                ctx.job().getSubjectArea().correctLanguageValue(ctx.user().getSelectedLanguage())
+            );
+        }
     }
 
     /**

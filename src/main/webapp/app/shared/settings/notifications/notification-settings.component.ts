@@ -38,18 +38,21 @@ export interface NotificationGroup {
   templateUrl: './notification-settings.component.html',
 })
 export class NotificationSettingsComponent {
+  private static readonly SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE = EmailTypeEnum.JobPublishedSubjectArea;
+
   currentRole = input<RolesEnum | undefined>();
 
   protected readonly emailSettingApi = inject(EmailSettingResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly RolesEnum = RolesEnum;
   protected readonly subjectAreaSubscriptions = inject(SubjectAreaSubscriptionsStore);
+  protected readonly subjectAreaNotificationsEnabled = signal(false);
 
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
 
   protected readonly animationClasses = computed(() =>
-    this.subjectAreaSubscriptions.enabled() ? 'mt-4 max-h-[80rem] opacity-100' : 'mt-0 max-h-0 opacity-0 overflow-hidden',
+    this.subjectAreaNotificationsEnabled() ? 'overflow-visible mt-4 max-h-screen opacity-100' : 'overflow-hidden mt-0 max-h-0 opacity-0',
   );
 
   protected readonly roleEffect = effect(() => {
@@ -135,6 +138,10 @@ export class NotificationSettingsComponent {
         newMap.set(role, updatedGroups);
         this.roleSettings.set(newMap);
       }
+
+      this.subjectAreaNotificationsEnabled.set(
+        settings.find(setting => setting.emailType === NotificationSettingsComponent.SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE)?.enabled ?? true,
+      );
     } catch {
       this.toastService.showErrorKey('settings.notifications.loadFailed');
     }
@@ -151,6 +158,34 @@ export class NotificationSettingsComponent {
     }
 
     this.loaded.set(true);
+  }
+
+  onSubjectAreaToggleChanged(enabled: boolean): void {
+    this.subjectAreaNotificationsEnabled.set(enabled);
+    const role = this.currentRole();
+
+    try {
+      void firstValueFrom(
+        this.emailSettingApi.updateEmailSettings([
+          {
+            emailType: NotificationSettingsComponent.SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE,
+            enabled,
+          },
+        ]),
+      ).catch(async () => {
+        this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+        if (role) {
+          await this.loadEmailNotificationGroups(role);
+        }
+      });
+    } catch {
+      this.toastService.showErrorKey('settings.notifications.saveFailed');
+
+      if (role) {
+        void this.loadEmailNotificationGroups(role);
+      }
+    }
   }
 
   onToggleChanged(group: NotificationGroup): void {

@@ -54,11 +54,11 @@
           "emptySelection": "Noch keine Fachbereiche ausgewählt.",
           "loadFailed": {
             "summary": "Laden fehlgeschlagen",
-            "detail": "Fehler beim Laden der Fachbereich-Abonnements. Bitte versuche es erneut."
+            "detail": "Fehler beim Laden der ausgewählten Fachbereiche. Bitte versuche es erneut."
           },
           "saveFailed": {
             "summary": "Speichern fehlgeschlagen",
-            "detail": "Fehler beim Aktualisieren der Fachbereich-Abonnements. Bitte versuche es erneut."
+            "detail": "Fehler beim Aktualisieren der ausgewählten Fachbereiche. Bitte versuche es erneut."
           }
         }
       },
@@ -68,8 +68,8 @@
           "description": "Erhalte eine E-Mail, wenn eine neue Bewerbung für deine Stelle eingeht."
         },
         "accepted": {
-          "title": "Bewerbung angenommen",
-          "description": "Erhalte eine Kopie der Annahme-E-Mail, die an den Bewerber gesendet wird, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
+          "title": "Bewerbung angenommen (BCC)",
+          "description": "Erhalte eine E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     },
