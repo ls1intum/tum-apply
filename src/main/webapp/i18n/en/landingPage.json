@@ -2,7 +2,7 @@
   "landingPage": {
     "hero": {
       "headline": "Apply for your Doctorate at TUM CIT",
-      "subline": "TUMapply is a gateway to doctoral research at the TUM School of Computation, Information and Technology"
+      "subline": "TUMApply is a gateway to doctoral research at the TUM School of Computation, Information and Technology"
     },
     "banner": {
       "universityName": "Technical University of Munich"
@@ -113,7 +113,10 @@
       "seeMore": "View all positions",
       "noJobs": "No jobs available at the moment",
       "goToJobOverview": "Go to job overview",
-      "loadFailed": "Failed to load jobs"
+      "loadFailed": {
+        "summary": "Failed to load jobs",
+        "detail": "Could not load jobs. Please reload the page."
+      }
     }
   }
 }
