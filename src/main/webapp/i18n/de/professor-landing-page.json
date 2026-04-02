@@ -23,7 +23,7 @@
           "description": "Erhalte eine Übersicht aller Bewerbungen für deine Stelle"
         },
         "3": {
-          "title": "Bewerber:innen bewerten",
+          "title": "Bewerbende bewerten",
           "description": "Bewerte Bewerbungen in Detail und wähle die qualifiziertesten Kandidat:innen für den nächsten Schritt"
         },
         "4": {
@@ -62,7 +62,7 @@
           "content": "Ja, du kannst mehrere Stellenausschreibungen gleichzeitig erstellen und verwalten. Jede Ausschreibung kann ihre eigenen Anforderungen, Bewerbungen und Bewertungskriterien haben."
         },
         "documents": {
-          "title": "Welche Dokumente kann ich von Bewerber:innen verlangen?",
+          "title": "Welche Dokumente kann ich von Bewerbenden verlangen?",
           "content": "Du kannst verschiedene Dokumente verlangen, einschließlich Lebenslauf, Zeugnisse (Bachelor und Master) und Referenzschreiben. Passe die Anforderungen für jede Stelle an."
         },
         "status": {
