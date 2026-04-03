@@ -114,8 +114,8 @@
       "noJobs": "No jobs available at the moment",
       "goToJobOverview": "Go to job overview",
       "loadFailed": {
-        "summary": "Failed to load jobs",
-        "detail": "Could not load jobs. Please reload the page."
+        "summary": "Load Failed",
+        "detail": "Failed to load jobs. Please try refreshing the page."
       }
     }
   }

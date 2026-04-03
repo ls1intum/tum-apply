@@ -114,8 +114,8 @@
       "noJobs": "Derzeit sind keine Stellen verfügbar",
       "goToJobOverview": "Zur Stellenübersicht",
       "loadFailed": {
-        "summary": "Laden der Stellen fehlgeschlagen",
-        "detail": "Stellen konnte nicht geladen werden. Bitte lade die Seite neu."
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Die Stellen konnte nicht geladen werden. Bitte aktualisiere die Seite."
       }
     }
   }
