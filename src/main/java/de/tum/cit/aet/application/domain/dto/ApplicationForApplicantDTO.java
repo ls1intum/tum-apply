@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.domain.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -53,9 +54,9 @@ public record ApplicationForApplicantDTO(
             ),
             application.getState(),
             application.getDesiredStartDate(),
-            application.getProjects(),
-            application.getSpecialSkills(),
-            application.getMotivation(),
+            HtmlSanitizer.sanitize(application.getProjects()),
+            HtmlSanitizer.sanitize(application.getSpecialSkills()),
+            HtmlSanitizer.sanitize(application.getMotivation()),
             application.getCustomFieldAnswers().stream().map(CustomFieldAnswerDTO::getFromEntity).collect(Collectors.toSet())
         );
     }
