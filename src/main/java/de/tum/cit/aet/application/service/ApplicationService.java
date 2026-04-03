@@ -19,6 +19,7 @@ import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -196,9 +197,9 @@ public class ApplicationService {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
         application.setState(updateApplicationDTO.applicationState());
         application.setDesiredStartDate(updateApplicationDTO.desiredDate());
-        application.setProjects(updateApplicationDTO.projects());
-        application.setSpecialSkills(updateApplicationDTO.specialSkills());
-        application.setMotivation(updateApplicationDTO.motivation());
+        application.setProjects(HtmlSanitizer.sanitize(updateApplicationDTO.projects()));
+        application.setSpecialSkills(HtmlSanitizer.sanitize(updateApplicationDTO.specialSkills()));
+        application.setMotivation(HtmlSanitizer.sanitize(updateApplicationDTO.motivation()));
         if (updateApplicationDTO.applicationState().equals(ApplicationState.SENT)) {
             application.setAppliedAt(LocalDateTime.now());
         }

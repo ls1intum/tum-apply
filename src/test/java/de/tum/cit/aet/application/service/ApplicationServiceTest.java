@@ -213,6 +213,36 @@ class ApplicationServiceTest {
         }
 
         @Test
+        void shouldSanitizeHtmlInRichTextFields() {
+            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
+            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            String xssMotivation = "<p>My motivation</p><script>alert('xss')</script>";
+            String xssSkills = "<b>Java</b><img src=x onerror=alert(1)>";
+            String xssProjects = "<p>Project</p><iframe src='evil.com'></iframe>";
+
+            UpdateApplicationDTO update = new UpdateApplicationDTO(
+                TEST_APPLICATION_ID,
+                applicantDto("ada@example.com", "Ada", "Lovelace", "Street", "80333", "Munich", "Germany",
+                    "B.Sc.", "1.0", "M.Sc.", "1.0"),
+                LocalDate.of(2025, 11, 15),
+                ApplicationState.SAVED,
+                xssProjects,
+                xssSkills,
+                xssMotivation
+            );
+
+            applicationService.updateApplication(update);
+
+            assertThat(application.getMotivation()).contains("My motivation");
+            assertThat(application.getMotivation()).doesNotContain("<script>");
+            assertThat(application.getSpecialSkills()).contains("Java");
+            assertThat(application.getSpecialSkills()).doesNotContain("onerror");
+            assertThat(application.getProjects()).contains("Project");
+            assertThat(application.getProjects()).doesNotContain("<iframe>");
+        }
+
+        @Test
         void shouldSyncSnapshotBackToApplicantWhenStateChangesToSent() {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));

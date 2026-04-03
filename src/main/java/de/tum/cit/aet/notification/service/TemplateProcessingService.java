@@ -13,9 +13,11 @@ import de.tum.cit.aet.notification.dto.DataExportEmailContext;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -36,6 +38,14 @@ public class TemplateProcessingService {
 
     public TemplateProcessingService(Configuration freemarkerConfig) {
         this.freemarkerConfig = freemarkerConfig;
+    }
+
+    @PostConstruct
+    void hardenFreemarkerConfig() {
+        // Prevent Server-Side Template Injection (SSTI) by disabling the ?new built-in,
+        // which would otherwise allow instantiation of arbitrary Java classes (e.g.
+        // freemarker.template.utility.Execute) from user-supplied email templates.
+        freemarkerConfig.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
     }
 
     /**

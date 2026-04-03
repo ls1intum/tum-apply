@@ -43,6 +43,7 @@ class TemplateProcessingServiceTest {
     void setUp() {
         freemarkerConfig = spy(new Configuration(Configuration.VERSION_2_3_32));
         service = new TemplateProcessingService(freemarkerConfig);
+        service.hardenFreemarkerConfig();
         ReflectionTestUtils.setField(service, "url", BASE_URL);
     }
 
@@ -213,6 +214,59 @@ class TemplateProcessingServiceTest {
         @Test
         void throwsNpeWhenLanguageIsNull() {
             assertThatThrownBy(() -> service.renderRawTemplate(null, "<p>hi</p>")).isInstanceOf(NullPointerException.class);
+        }
+    }
+
+    @Nested
+    class SSTIProtectionTests {
+
+        @Test
+        void rejectsNewBuiltinInTemplateBody() throws Exception {
+            // This is the classic FreeMarker SSTI payload that would execute arbitrary commands
+            String maliciousBody = "${'freemarker.template.utility.Execute'?new()('id')}";
+            EmailTemplateTranslation translation = translation(maliciousBody, Language.ENGLISH, "ssti");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class);
+        }
+
+        @Test
+        void rejectsNewBuiltinInSubject() {
+            String maliciousSubject = "${'freemarker.template.utility.Execute'?new()('id')}";
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group))
+                .isInstanceOf(TemplateProcessingException.class);
+        }
+
+        @Test
+        void rejectsObjectConstructorInTemplate() throws Exception {
+            String maliciousBody = "${'freemarker.template.utility.ObjectConstructor'?new()}";
+            EmailTemplateTranslation translation = translation(maliciousBody, Language.ENGLISH, "ssti2");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class);
+        }
+
+        @Test
+        void allowsNormalTemplateVariablesAfterHardening() throws Exception {
+            EmailTemplateTranslation translation = translation("Hello ${APPLICANT_FIRST_NAME}", Language.ENGLISH, "safe");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            String result = service.renderTemplate(translation, mockApplication());
+            assertThat(result).contains("Hello Alice");
         }
     }
 

@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
@@ -355,8 +356,8 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
-        job.setJobDescriptionEN(dto.jobDescriptionEN());
-        job.setJobDescriptionDE(dto.jobDescriptionDE());
+        job.setJobDescriptionEN(HtmlSanitizer.sanitize(dto.jobDescriptionEN()));
+        job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
 
@@ -404,10 +405,11 @@ public class JobService {
      */
     public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
         Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        String sanitized = HtmlSanitizer.sanitize(translatedText);
         if ("de".equalsIgnoreCase(toLang)) {
-            job.setJobDescriptionDE(translatedText);
+            job.setJobDescriptionDE(sanitized);
         } else if ("en".equalsIgnoreCase(toLang)) {
-            job.setJobDescriptionEN(translatedText);
+            job.setJobDescriptionEN(sanitized);
         }
         jobRepository.save(job);
     }
