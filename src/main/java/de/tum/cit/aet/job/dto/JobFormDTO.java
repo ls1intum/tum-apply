@@ -32,8 +32,12 @@ public record JobFormDTO(
     Boolean suitableForDisabled // Position suitable for persons with severe disabilities
 ) {
     /**
-     * @param job The job entity to convert
-     * @return A JobFormDTO containing the data from the job entity.
+     * Converts a Job entity to a form DTO.
+     * Job description fields are sanitized on read as defense-in-depth
+     * before sending to the client.
+     *
+     * @param job the job entity to convert
+     * @return a JobFormDTO containing the data from the job entity
      */
     public static JobFormDTO getFromEntity(Job job) {
         if (job == null) {

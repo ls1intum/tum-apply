@@ -152,10 +152,11 @@ public class JobService {
     }
 
     /**
-     * Returns a jobDTO given the job id.
+     * Returns a JobDTO given the job id.
+     * Job description fields are sanitized on read before sending to the client.
      *
      * @param jobId the ID of the job
-     * @return the job DTO with generaL job information
+     * @return the job DTO with general job information
      */
     public JobDTO getJobById(UUID jobId) {
         Job job = assertCanManageJob(jobId);
@@ -181,7 +182,8 @@ public class JobService {
     }
 
     /**
-     * Returns a jobDetailDTO given the job id.
+     * Returns a JobDetailDTO given the job id.
+     * Job description fields are sanitized on read before sending to the client.
      *
      * @param jobId the ID of the job
      * @return the job detail DTO with detailed job information
@@ -398,6 +400,7 @@ public class JobService {
 
     /**
      * Updates the job description of a job in the specified language.
+     * The translated text is sanitized to remove unsafe HTML before persisting.
      *
      * @param jobId          the ID of the job to update
      * @param toLang         the target language ("de" or "en")

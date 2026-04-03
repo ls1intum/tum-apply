@@ -19,9 +19,12 @@ public class HtmlSanitizer {
 
     /**
      * Sanitizes generic HTML input using a base safelist. Allows basic formatting and anchor tags.
+     * <p>
+     * This method must be applied to all user-supplied rich-text content both on write (before
+     * persisting to the database) and on read (before sending to the client) as defense-in-depth.
      *
      * @param html the HTML input to sanitize
-     * @return sanitized HTML with unsafe elements and attributes removed
+     * @return sanitized HTML with unsafe elements and attributes removed, or empty string if input is blank
      */
     public static String sanitize(String html) {
         if (StringUtils.isBlank(html)) {

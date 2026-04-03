@@ -28,8 +28,13 @@ public record ApplicationDetailDTO(
     String motivation
 ) {
     /**
-     * @param application
-     * @return
+     * Converts an Application entity to a detail DTO for the evaluation view.
+     * Rich-text fields (projects, specialSkills, motivation) are sanitized on read
+     * as defense-in-depth before sending to the client.
+     *
+     * @param application the application entity
+     * @param job         the associated job entity
+     * @return the detail DTO
      */
     public static ApplicationDetailDTO getFromEntity(Application application, Job job) {
         if (application == null) {

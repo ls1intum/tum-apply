@@ -26,8 +26,12 @@ public record ApplicationForApplicantDTO(
     Set<CustomFieldAnswerDTO> customFields
 ) {
     /**
-     * @param application
-     * @return
+     * Converts an Application entity to a DTO for the applicant view.
+     * Rich-text fields (projects, specialSkills, motivation) are sanitized on read
+     * as defense-in-depth before sending to the client.
+     *
+     * @param application the application entity
+     * @return the DTO, or null if the application is null
      */
     public static ApplicationForApplicantDTO getFromEntity(Application application) {
         if (application == null) {

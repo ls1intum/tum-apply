@@ -188,6 +188,9 @@ public class ApplicationService {
      * Updates an existing application with new information.
      * Updates are stored in the application's snapshot fields, not in the applicant entity.
      * When the application is sent, the snapshot data is synced back to the applicant profile.
+     * <p>
+     * Rich-text fields (motivation, specialSkills, projects) are sanitized on write
+     * to remove unsafe HTML before persisting.
      *
      * @param updateApplicationDTO DTO containing updated application data
      * @return the updated ApplicationForApplicantDTO
