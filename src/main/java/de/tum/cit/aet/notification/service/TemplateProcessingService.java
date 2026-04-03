@@ -177,9 +177,7 @@ public class TemplateProcessingService {
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContext ctx -> addDataExportContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
-            default -> {
-                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
-            }
+            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
         return dataModel;
     }
@@ -194,6 +192,7 @@ public class TemplateProcessingService {
         User applicant = application.getApplicant().getUser();
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), applicant.getLastName());
+        dataModel.put(TemplateVariable.APPLICATION_ID.getValue(), application.getApplicationId());
 
         addJobData(dataModel, application.getJob());
     }
