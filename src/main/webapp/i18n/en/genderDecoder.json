@@ -20,7 +20,7 @@
     },
     "error": {
       "summary": "Error",
-      "detail": "Failed to analyze the text. Please try refreshing the page, or contact us if the problem continues."
+      "detail": "Failed to analyze the text. Please try refreshing the page, or contact us if the problem persists."
     }
   }
 }
