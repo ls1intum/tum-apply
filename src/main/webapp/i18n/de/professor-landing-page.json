@@ -7,7 +7,7 @@
     },
     "platformBenefits": {
       "headline": "Warum TUMApply nutzen?",
-      "text": "TUMApply bietet Dokumentenmanagement, Kandidatenbewertung und Interviewplanung für deinen Einstellungsprozess. Die Plattform hilft dir dabei, Bewerbungen zu organisieren, Kandidatenunterlagen zu prüfen und den Auswahlprozess zu koordinieren. Verfolge Bewerbungen und vergleiche Kandidat:innen systematisch an einem zentralen Ort.",
+      "text": "TUMApply bietet Dokumentenmanagement, Kandidatenbewertung und Interviewplanung für deinen Einstellungsprozess. Die Plattform hilft dir dabei, Bewerbungen zu organisieren, Kandidatenunterlagen zu prüfen und den Auswahlprozess zu koordinieren. Verfolge Bewerbungen und vergleiche Talente systematisch an einem zentralen Ort.",
       "button1": "Stellenausschreibungen anzeigen",
       "button2": "Mehr erfahren"
     },
@@ -24,11 +24,11 @@
         },
         "3": {
           "title": "Bewerbende bewerten",
-          "description": "Bewerte Bewerbungen in Detail und wähle die qualifiziertesten Kandidat:innen für den nächsten Schritt"
+          "description": "Bewerte Bewerbungen in Detail und wähle die qualifiziertesten Profile für den nächsten Schritt"
         },
         "4": {
           "title": "Interviews planen",
-          "description": "Plane Interviews mit qualifizierten Kandidat:innen und wähle die beste Bewerber:in für deine Forschungsgruppe"
+          "description": "Plane Interviews mit qualifizierten Bewerbenden und wähle die passendste Besetzung für deine Forschungsgruppe aus"
         }
       }
     },
