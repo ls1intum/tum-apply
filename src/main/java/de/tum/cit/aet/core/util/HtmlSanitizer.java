@@ -24,7 +24,7 @@ public class HtmlSanitizer {
      * persisting to the database) and on read (before sending to the client) as defense-in-depth.
      *
      * @param html the HTML input to sanitize
-     * @return sanitized HTML with unsafe elements and attributes removed, or empty string if input is blank
+     * @return sanitized HTML with unsafe elements and attributes removed; null if input is null; empty string if input is blank
      */
     public static String sanitize(String html) {
         if (html == null) {

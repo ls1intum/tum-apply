@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.constants.EmailType;
@@ -259,7 +260,7 @@ public class ResearchGroupService {
         entity.setHead(dto.head());
         entity.setEmail(dto.email());
         entity.setWebsite(dto.website());
-        entity.setDescription(dto.description());
+        entity.setDescription(HtmlSanitizer.sanitize(dto.description()));
         entity.setStreet(dto.street());
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
@@ -292,7 +293,7 @@ public class ResearchGroupService {
         Department department = departmentRepository.findByIdElseThrow(request.departmentId());
         entity.setDepartment(department);
 
-        entity.setDescription(request.description());
+        entity.setDescription(HtmlSanitizer.sanitize(request.description()));
         entity.setStreet(request.street());
         entity.setPostalCode(request.postalCode());
         entity.setCity(request.city());
