@@ -25,6 +25,7 @@ import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
@@ -205,7 +206,7 @@ public class JobService {
         return new JobDetailDTO(
             job.getJobId(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
-            job.getSupervisingProfessor().getResearchGroup(),
+            ResearchGroupSummaryDTO.getFromEntity(job.getSupervisingProfessor().getResearchGroup()),
             job.getTitle(),
             job.getSubjectArea(),
             job.getResearchArea(),

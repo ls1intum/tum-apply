@@ -8,6 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 
 public class HtmlSanitizer {
@@ -16,6 +18,9 @@ public class HtmlSanitizer {
     private static final String PLACEHOLDER_SUFFIX = "__";
     private static final Pattern FREEMARKER_HREF_PATTERN = Pattern.compile("\\$\\{(\\w+?)!?}");
     private static final Set<String> VALID_VARIABLES = TemplateVariable.getTemplateVariables();
+
+    /** Allowed CSS class pattern: only Quill formatting classes (alignment, indentation). */
+    private static final Pattern ALLOWED_CLASS_PATTERN = Pattern.compile("ql-align-(center|right|justify)|ql-indent-[1-8]");
 
     /**
      * Sanitizes generic HTML input using a base safelist. Allows basic formatting and anchor tags.
@@ -33,7 +38,36 @@ public class HtmlSanitizer {
         if (StringUtils.isBlank(html)) {
             return "";
         }
-        return Jsoup.clean(html, BASE_SAFE_LIST());
+        String cleaned = Jsoup.clean(html, BASE_SAFE_LIST());
+        return stripNonQuillClasses(cleaned);
+    }
+
+    /**
+     * Removes class attributes that are not Quill editor formatting classes (ql-*).
+     * This preserves alignment and indentation while preventing arbitrary class injection.
+     */
+    private static String stripNonQuillClasses(String html) {
+        Document doc = Jsoup.parseBodyFragment(html);
+        for (Element el : doc.body().getAllElements()) {
+            if (el.hasAttr("class")) {
+                String[] classes = el.className().split("\\s+");
+                StringBuilder kept = new StringBuilder();
+                for (String cls : classes) {
+                    if (ALLOWED_CLASS_PATTERN.matcher(cls).matches()) {
+                        if (!kept.isEmpty()) {
+                            kept.append(' ');
+                        }
+                        kept.append(cls);
+                    }
+                }
+                if (kept.isEmpty()) {
+                    el.removeAttr("class");
+                } else {
+                    el.attr("class", kept.toString());
+                }
+            }
+        }
+        return doc.body().html();
     }
 
     /**
@@ -109,6 +143,6 @@ public class HtmlSanitizer {
      * @return a configured {@link Safelist} instance
      */
     private static Safelist BASE_SAFE_LIST() {
-        return Safelist.basic().addAttributes("a", "href", "target");
+        return Safelist.basic().addAttributes("a", "href", "target").addAttributes("p", "class").addAttributes("li", "class");
     }
 }

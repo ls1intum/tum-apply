@@ -75,4 +75,41 @@ class HtmlSanitizerTest {
         assertThat(result).doesNotContain("onclick");
         assertThat(result).contains("Click me");
     }
+
+    @Test
+    void shouldPreserveQuillAlignmentClasses() {
+        String html =
+            "<p class=\"ql-align-center\">Centered</p><p class=\"ql-align-right\">Right</p><p class=\"ql-align-justify\">Justified</p>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).contains("ql-align-center");
+        assertThat(result).contains("ql-align-right");
+        assertThat(result).contains("ql-align-justify");
+        assertThat(result).contains("Centered");
+    }
+
+    @Test
+    void shouldPreserveQuillIndentClasses() {
+        String html = "<li class=\"ql-indent-1\">Level 1</li><li class=\"ql-indent-3\">Level 3</li>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).contains("ql-indent-1");
+        assertThat(result).contains("ql-indent-3");
+    }
+
+    @Test
+    void shouldStripNonQuillClasses() {
+        String html = "<p class=\"malicious-class ql-align-center\">Text</p>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).contains("ql-align-center");
+        assertThat(result).doesNotContain("malicious-class");
+        assertThat(result).contains("Text");
+    }
+
+    @Test
+    void shouldStripClassAttributeEntirely_whenNoQuillClassPresent() {
+        String html = "<p class=\"evil-injection\">Text</p>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).doesNotContain("class");
+        assertThat(result).doesNotContain("evil-injection");
+        assertThat(result).contains("Text");
+    }
 }

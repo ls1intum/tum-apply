@@ -532,7 +532,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.supervisingProfessorName()).isEqualTo(
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName()
         );
-        assertThat(returnedJob.researchGroup().getResearchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
+        assertThat(returnedJob.researchGroup().researchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
         assertThat(returnedJob.subjectArea()).isEqualTo(job.getSubjectArea());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
