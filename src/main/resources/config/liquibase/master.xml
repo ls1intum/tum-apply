@@ -41,6 +41,7 @@
   <include file="changelog/00000000000029_enforce_single_profile_picture_per_user.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000030_migrate_field_of_studies_to_subject_area.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000031_create_applicant_subject_area_subscriptions.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000032_add_ai_consented_at_to_applications.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

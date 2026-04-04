@@ -54,6 +54,9 @@ public class Application extends AbstractAuditingEntity {
     @Column(name = "applied_at")
     private LocalDateTime appliedAt;
 
+    @Column(name = "ai_consented_at")
+    private LocalDateTime aiConsentedAt;
+
     @Column(name = "projects")
     private String projects;
 
