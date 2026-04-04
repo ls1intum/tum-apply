@@ -231,8 +231,7 @@ class TemplateProcessingServiceTest {
             ResearchGroup group = mock(ResearchGroup.class);
             when(group.getName()).thenReturn("RG");
 
-            assertThatThrownBy(() -> service.renderTemplate(translation, group))
-                .isInstanceOf(TemplateProcessingException.class);
+            assertThatThrownBy(() -> service.renderTemplate(translation, group)).isInstanceOf(TemplateProcessingException.class);
         }
 
         @Test
@@ -241,8 +240,7 @@ class TemplateProcessingServiceTest {
             ResearchGroup group = mock(ResearchGroup.class);
             when(group.getName()).thenReturn("RG");
 
-            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group))
-                .isInstanceOf(TemplateProcessingException.class);
+            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group)).isInstanceOf(TemplateProcessingException.class);
         }
 
         @Test
@@ -255,8 +253,7 @@ class TemplateProcessingServiceTest {
             ResearchGroup group = mock(ResearchGroup.class);
             when(group.getName()).thenReturn("RG");
 
-            assertThatThrownBy(() -> service.renderTemplate(translation, group))
-                .isInstanceOf(TemplateProcessingException.class);
+            assertThatThrownBy(() -> service.renderTemplate(translation, group)).isInstanceOf(TemplateProcessingException.class);
         }
 
         @Test

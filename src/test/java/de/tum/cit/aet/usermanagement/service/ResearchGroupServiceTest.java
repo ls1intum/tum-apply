@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -643,11 +642,10 @@ class ResearchGroupServiceTest {
         void shouldRejectAddingMembersToAnotherResearchGroup() {
             // A professor from group A tries to add members to group B
             doThrow(new AccessDeniedException("User has no access to the research group"))
-                .when(currentUserService).isAdminOrMemberOf(OTHER_GROUP_ID);
+                .when(currentUserService)
+                .isAdminOrMemberOf(OTHER_GROUP_ID);
 
-            KeycloakUserDTO newMember = new KeycloakUserDTO(
-                UUID.randomUUID(), "newuser", "New", "User", "new@example.com", "go12abc"
-            );
+            KeycloakUserDTO newMember = new KeycloakUserDTO(UUID.randomUUID(), "newuser", "New", "User", "new@example.com", "go12abc");
 
             assertThatThrownBy(() -> researchGroupService.addMembersToResearchGroup(List.of(newMember), OTHER_GROUP_ID))
                 .isInstanceOf(AccessDeniedException.class)
@@ -663,15 +661,15 @@ class ResearchGroupServiceTest {
             when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
 
             UUID newUserId = UUID.randomUUID();
-            KeycloakUserDTO newMember = new KeycloakUserDTO(
-                newUserId, "newuser", "New", "User", "new@example.com", null
-            );
+            KeycloakUserDTO newMember = new KeycloakUserDTO(newUserId, "newuser", "New", "User", "new@example.com", null);
             when(userRepository.findById(newUserId)).thenReturn(Optional.empty());
             when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(any(User.class), eq(testResearchGroup)))
-                .thenReturn(Optional.empty());
-            when(userResearchGroupRoleRepository.save(any(UserResearchGroupRole.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(any(User.class), eq(testResearchGroup))).thenReturn(
+                Optional.empty()
+            );
+            when(userResearchGroupRoleRepository.save(any(UserResearchGroupRole.class))).thenAnswer(invocation ->
+                invocation.getArgument(0)
+            );
 
             researchGroupService.addMembersToResearchGroup(List.of(newMember), TEST_RESEARCH_GROUP_ID);
 

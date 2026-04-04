@@ -1030,9 +1030,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.admin@tum.de", "Add", "Admin", "adm999");
             KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
             AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
-            UUID adminId = UUID.randomUUID();
+            User adminUser = UserTestData.createUserWithoutResearchGroup(userRepository, "admin.member@tum.de", "Admin", "User", "adm001");
 
-            api.with(JwtPostProcessors.jwtUser(adminId, "ROLE_ADMIN")).postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
 
             User updatedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
             assertThat(updatedUser.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
@@ -1055,14 +1057,16 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void addMembersToResearchGroupWithNonExistentGroupThrowsException() {
+        void addMembersToResearchGroupWithNonExistentGroupThrowsAccessDenied() {
             User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.fail@tum.de", "Add", "Fail", "fail123");
             KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
             AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), UUID.randomUUID());
 
+            // The authorization check now runs before the entity lookup, so a non-existent
+            // group ID results in 403 (user is not a member) rather than 404.
             api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 404);
+                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 403);
         }
 
         @Test
@@ -1074,8 +1078,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             KeycloakUserDTO kcB = UserTestData.kcUserFrom(userB);
             AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcA, kcB), researchGroup.getResearchGroupId());
 
-            UUID adminId = UUID.randomUUID();
-            api.with(JwtPostProcessors.jwtUser(adminId, "ROLE_ADMIN")).postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+            User adminUser = UserTestData.createUserWithoutResearchGroup(userRepository, "admin.multi@tum.de", "Admin", "Multi", "adm002");
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
 
             User ua = userRepository.findById(userA.getUserId()).orElseThrow();
             User ub = userRepository.findById(userB.getUserId()).orElseThrow();
