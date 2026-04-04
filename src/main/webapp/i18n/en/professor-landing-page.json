@@ -7,7 +7,7 @@
     },
     "platformBenefits": {
       "headline": "Why Use TUMApply?",
-      "text": "TUMApply provides document management, candidate evaluation, and interview scheduling for your hiring process. The platform helps you organize applications, review candidate materials, and coordinate the selection process. Track applications and compare candidates systematically in one centralized location.",
+      "text": "TUMApply provides document management, candidate evaluation, and interview scheduling for your hiring process. The platform helps you organize applications, review candidate materials, and coordinate the selection process. Track applications and compare talents systematically in one centralized location.",
       "button1": "View Job Postings",
       "button2": "Learn More"
     },
@@ -28,7 +28,7 @@
         },
         "4": {
           "title": "Schedule Interviews",
-          "description": "Schedule interviews with qualified candidates and select the best applicant for your research group"
+          "description": "Schedule interviews with qualified applicants and select the most suitable fit for your research group"
         }
       }
     },
