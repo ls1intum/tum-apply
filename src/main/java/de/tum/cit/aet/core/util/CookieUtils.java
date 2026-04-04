@@ -32,7 +32,7 @@ public class CookieUtils {
             ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.refreshToken())
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Lax")
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(Duration.ofSeconds(tokens.refreshExpiresIn()))
                 .build();
@@ -49,7 +49,7 @@ public class CookieUtils {
             ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Lax")
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(0)
                 .build();

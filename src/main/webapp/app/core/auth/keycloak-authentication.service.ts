@@ -243,10 +243,21 @@ export class KeycloakAuthenticationService {
   }
 
   /**
-   * Builds a valid redirect URI. If the given URI is absolute (starts with http),
-   * it is returned unchanged; otherwise it is resolved against the application origin.
+   * Builds a safe redirect URI. If the given URI starts with the application origin
+   * followed by a path separator, it is returned as-is. Otherwise, only the path
+   * portion (starting with `/`) is appended to the origin. External URLs are rejected
+   * to prevent open redirect attacks.
    */
   private buildRedirectUri(redirectUri?: string): string {
-    return redirectUri?.startsWith('http') === true ? redirectUri : window.location.origin + (redirectUri ?? '/');
+    const origin = window.location.origin;
+    if (redirectUri !== undefined && redirectUri.startsWith(origin)) {
+      const rest = redirectUri.slice(origin.length);
+      // Only allow if what follows is a path, query, fragment, or nothing —
+      // reject domains that share the origin as a prefix (e.g. origin.evil.com)
+      if (rest === '' || rest.startsWith('/') || rest.startsWith('?') || rest.startsWith('#')) {
+        return redirectUri;
+      }
+    }
+    return origin + (redirectUri?.startsWith('/') === true ? redirectUri : '/');
   }
 }
