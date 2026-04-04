@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.constants.EmailType;
@@ -259,7 +260,7 @@ public class ResearchGroupService {
         entity.setHead(dto.head());
         entity.setEmail(dto.email());
         entity.setWebsite(dto.website());
-        entity.setDescription(dto.description());
+        entity.setDescription(HtmlSanitizer.sanitize(dto.description()));
         entity.setStreet(dto.street());
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
@@ -292,7 +293,7 @@ public class ResearchGroupService {
         Department department = departmentRepository.findByIdElseThrow(request.departmentId());
         entity.setDepartment(department);
 
-        entity.setDescription(request.description());
+        entity.setDescription(HtmlSanitizer.sanitize(request.description()));
         entity.setStreet(request.street());
         entity.setPostalCode(request.postalCode());
         entity.setCity(request.city());
@@ -594,18 +595,22 @@ public class ResearchGroupService {
     /**
      * Adds multiple members to a research group.
      * <p>
-     * For each provided Keycloak user, this method ensures they exist in the local database.
-     * If a user does not exist locally, they are created. The user is then assigned to the specified
-     * research group. An email notification is sent only if the user is newly created or if their
-     * research group assignment has changed.
+     * Verifies that the current user is an admin or a member of the target research group
+     * before proceeding. For each provided Keycloak user, this method ensures they exist in
+     * the local database. If a user does not exist locally, they are created. The user is then
+     * assigned to the specified research group. An email notification is sent only if the user
+     * is newly created or if their research group assignment has changed.
      *
      * @param keycloakUsers   A list of {@link KeycloakUserDTO} representing the users to be added.
      * @param researchGroupId The ID of the research group to which the members will be added.
      *                        If null, the current user's group is used (if they are a professor).
+     * @throws AccessDeniedException if the current user is not a member of the target group
      */
     @Transactional
     public void addMembersToResearchGroup(List<KeycloakUserDTO> keycloakUsers, UUID researchGroupId) {
         UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
+        // Throws AccessDeniedException if the current user is neither an admin nor a member of the target group
+        currentUserService.isAdminOrMemberOf(targetGroupId);
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
         for (KeycloakUserDTO keycloakUser : keycloakUsers) {

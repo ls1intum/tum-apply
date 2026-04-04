@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -31,8 +32,12 @@ public record JobFormDTO(
     Boolean suitableForDisabled // Position suitable for persons with severe disabilities
 ) {
     /**
-     * @param job The job entity to convert
-     * @return A JobFormDTO containing the data from the job entity.
+     * Converts a Job entity to a form DTO.
+     * Job description fields are sanitized on read as defense-in-depth
+     * before sending to the client.
+     *
+     * @param job the job entity to convert
+     * @return a JobFormDTO containing the data from the job entity
      */
     public static JobFormDTO getFromEntity(Job job) {
         if (job == null) {
@@ -51,8 +56,8 @@ public record JobFormDTO(
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescriptionEN(),
-            job.getJobDescriptionDE(),
+            HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
+            HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getSuitableForDisabled()

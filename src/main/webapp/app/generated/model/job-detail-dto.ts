@@ -8,7 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ResearchGroup } from './research-group';
+import type { ResearchGroupSummaryDTO } from './research-group-summary-dto';
 
 export interface JobDetailDTO {
     readonly applicationId?: string;
@@ -24,7 +24,7 @@ export interface JobDetailDTO {
     readonly lastModifiedAt: string;
     readonly location?: JobDetailDTOLocationEnum;
     readonly researchArea?: string;
-    readonly researchGroup: ResearchGroup;
+    readonly researchGroup: ResearchGroupSummaryDTO;
     readonly startDate?: string;
     readonly state?: JobDetailDTOStateEnum;
     readonly subjectArea: JobDetailDTOSubjectAreaEnum;
