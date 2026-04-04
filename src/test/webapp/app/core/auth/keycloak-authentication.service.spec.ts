@@ -131,6 +131,14 @@ describe('KeycloakAuthenticationService', () => {
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
     });
 
+    it('should reject domains that share the origin as a prefix', async () => {
+      const maliciousUri = window.location.origin + '.evil.com/phish';
+      await service.loginWithProvider(IdpProvider.Google, maliciousUri);
+      expect(keycloakInstance.login).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
+      );
+    });
+
     it('should handle login errors gracefully', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       keycloakInstance.login.mockRejectedValue(new Error('Login failed'));
