@@ -349,6 +349,7 @@
     "applicationPage1": {
       "description": "Enter your personal details and contact information.",
       "aiExtractionHelper": "Save time by letting our AI automatically fill your details from your CV.",
+      "aiExtractionConsent": "By clicking this button, your CV will be sent to an AI service (Azure OpenAI) to extract your personal details. The extracted data will only be used to pre-fill your application form.",
       "aiExtractionButton": "AI Extraction",
       "aiExtractionLoading": "Extracting...",
       "aiExtractionFailed": {

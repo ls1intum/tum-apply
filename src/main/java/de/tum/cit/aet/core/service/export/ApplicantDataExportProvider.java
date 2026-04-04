@@ -71,6 +71,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
                     application.getMotivation(),
                     application.getSpecialSkills(),
                     application.getProjects(),
+                    application.getAiConsentedAt(),
                     getReview(application.getApplicationId()),
                     getRatings(application.getApplicationId()),
                     getInternalComments(application.getApplicationId())

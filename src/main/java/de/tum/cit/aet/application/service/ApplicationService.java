@@ -30,6 +30,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -643,12 +644,18 @@ public class ApplicationService {
     /**
      * Applies AI-extracted PDF data to an application, only updating fields that
      * are currently null or blank. This ensures existing data is never overwritten.
+     * Records the AI consent timestamp when extraction is first performed.
      *
      * @param applicationId the ID of the application to update
      * @param extracted     the extracted data from the AI service
      */
+    @Transactional
     public void applyExtractedPdfData(String applicationId, ExtractedApplicationDataDTO extracted) {
         Application application = assertCanManageApplication(UUID.fromString(applicationId));
+
+        if (application.getAiConsentedAt() == null) {
+            application.setAiConsentedAt(LocalDateTime.now(ZoneOffset.UTC));
+        }
 
         setIfEmpty(application::getApplicantFirstName, application::setApplicantFirstName, extracted.firstName());
         setIfEmpty(application::getApplicantLastName, application::setApplicantLastName, extracted.lastName());
