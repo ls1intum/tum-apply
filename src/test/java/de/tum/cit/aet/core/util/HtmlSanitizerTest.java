@@ -10,7 +10,7 @@ class HtmlSanitizerTest {
     void shouldStripScriptTags() {
         String result = HtmlSanitizer.sanitize("<p>Hello</p><script>alert('xss')</script>");
         assertThat(result).contains("Hello");
-        assertThat(result).doesNotContain("<script>");
+        assertThat(result).doesNotContain("<script");
         assertThat(result).doesNotContain("alert");
     }
 
@@ -26,7 +26,7 @@ class HtmlSanitizerTest {
     void shouldStripIframeTags() {
         String result = HtmlSanitizer.sanitize("<p>Text</p><iframe src='evil.com'></iframe>");
         assertThat(result).contains("Text");
-        assertThat(result).doesNotContain("<iframe>");
+        assertThat(result).doesNotContain("<iframe");
     }
 
     @Test
@@ -59,13 +59,14 @@ class HtmlSanitizerTest {
     }
 
     @Test
-    void shouldReturnEmptyStringForNullInput() {
-        assertThat(HtmlSanitizer.sanitize(null)).isEmpty();
+    void shouldReturnNullForNullInput() {
+        assertThat(HtmlSanitizer.sanitize(null)).isNull();
     }
 
     @Test
     void shouldReturnEmptyStringForBlankInput() {
         assertThat(HtmlSanitizer.sanitize("   ")).isEmpty();
+        assertThat(HtmlSanitizer.sanitize("")).isEmpty();
     }
 
     @Test

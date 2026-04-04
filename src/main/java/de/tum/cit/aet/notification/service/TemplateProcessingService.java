@@ -41,7 +41,7 @@ public class TemplateProcessingService {
     }
 
     @PostConstruct
-    void hardenFreemarkerConfig() {
+    private void hardenFreemarkerConfig() {
         // Prevent Server-Side Template Injection (SSTI) by disabling the ?new built-in,
         // which would otherwise allow instantiation of arbitrary Java classes (e.g.
         // freemarker.template.utility.Execute) from user-supplied email templates.

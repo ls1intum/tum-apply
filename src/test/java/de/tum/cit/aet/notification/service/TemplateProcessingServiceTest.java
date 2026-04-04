@@ -43,7 +43,7 @@ class TemplateProcessingServiceTest {
     void setUp() {
         freemarkerConfig = spy(new Configuration(Configuration.VERSION_2_3_32));
         service = new TemplateProcessingService(freemarkerConfig);
-        service.hardenFreemarkerConfig();
+        ReflectionTestUtils.invokeMethod(service, "hardenFreemarkerConfig");
         ReflectionTestUtils.setField(service, "url", BASE_URL);
     }
 

@@ -608,7 +608,7 @@ public class ResearchGroupService {
     @Transactional
     public void addMembersToResearchGroup(List<KeycloakUserDTO> keycloakUsers, UUID researchGroupId) {
         UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
-        // Throws AccessDeniedException if the current user is not a member of the target group
+        // Throws AccessDeniedException if the current user is neither an admin nor a member of the target group
         currentUserService.isAdminOrMemberOf(targetGroupId);
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 

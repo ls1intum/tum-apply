@@ -27,6 +27,9 @@ public class HtmlSanitizer {
      * @return sanitized HTML with unsafe elements and attributes removed, or empty string if input is blank
      */
     public static String sanitize(String html) {
+        if (html == null) {
+            return null;
+        }
         if (StringUtils.isBlank(html)) {
             return "";
         }
