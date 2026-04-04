@@ -223,8 +223,7 @@ class ApplicationServiceTest {
 
             UpdateApplicationDTO update = new UpdateApplicationDTO(
                 TEST_APPLICATION_ID,
-                applicantDto("ada@example.com", "Ada", "Lovelace", "Street", "80333", "Munich", "Germany",
-                    "B.Sc.", "1.0", "M.Sc.", "1.0"),
+                applicantDto("ada@example.com", "Ada", "Lovelace", "Street", "80333", "Munich", "Germany", "B.Sc.", "1.0", "M.Sc.", "1.0"),
                 LocalDate.of(2025, 11, 15),
                 ApplicationState.SAVED,
                 xssProjects,

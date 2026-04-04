@@ -1030,7 +1030,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.admin@tum.de", "Add", "Admin", "adm999");
             KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
             AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
-            User adminUser = UserTestData.createUserWithoutResearchGroup(userRepository, "admin.member@tum.de", "Admin", "User", "adm001");
+            User adminUser = UserTestData.saveAdmin(userRepository);
 
             api
                 .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
@@ -1078,7 +1078,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             KeycloakUserDTO kcB = UserTestData.kcUserFrom(userB);
             AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcA, kcB), researchGroup.getResearchGroupId());
 
-            User adminUser = UserTestData.createUserWithoutResearchGroup(userRepository, "admin.multi@tum.de", "Admin", "Multi", "adm002");
+            User adminUser = UserTestData.saveAdmin(userRepository);
             api
                 .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
                 .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
