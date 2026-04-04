@@ -35,6 +35,7 @@ import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -303,7 +304,7 @@ class ApplicationServiceTest {
             applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
 
             assertThat(application.getAiConsentedAt()).isNotNull();
-            assertThat(application.getAiConsentedAt()).isBeforeOrEqualTo(LocalDateTime.now());
+            assertThat(application.getAiConsentedAt()).isBeforeOrEqualTo(LocalDateTime.now(ZoneOffset.UTC));
             assertThat(application.getApplicantFirstName()).isEqualTo("Ada");
             assertThat(application.getApplicantLastName()).isEqualTo("Lovelace");
         }

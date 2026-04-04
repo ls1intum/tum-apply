@@ -30,6 +30,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -648,11 +649,12 @@ public class ApplicationService {
      * @param applicationId the ID of the application to update
      * @param extracted     the extracted data from the AI service
      */
+    @Transactional
     public void applyExtractedPdfData(String applicationId, ExtractedApplicationDataDTO extracted) {
         Application application = assertCanManageApplication(UUID.fromString(applicationId));
 
         if (application.getAiConsentedAt() == null) {
-            application.setAiConsentedAt(LocalDateTime.now());
+            application.setAiConsentedAt(LocalDateTime.now(ZoneOffset.UTC));
         }
 
         setIfEmpty(application::getApplicantFirstName, application::setApplicantFirstName, extracted.firstName());
