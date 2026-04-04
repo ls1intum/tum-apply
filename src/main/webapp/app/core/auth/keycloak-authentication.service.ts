@@ -247,6 +247,10 @@ export class KeycloakAuthenticationService {
    * it is returned unchanged; otherwise it is resolved against the application origin.
    */
   private buildRedirectUri(redirectUri?: string): string {
-    return redirectUri?.startsWith('http') === true ? redirectUri : window.location.origin + (redirectUri ?? '/');
+    const origin = window.location.origin;
+    if (redirectUri?.startsWith(origin) === true) {
+      return redirectUri;
+    }
+    return origin + (redirectUri?.startsWith('/') === true ? redirectUri : '/');
   }
 }
