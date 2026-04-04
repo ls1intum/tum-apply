@@ -231,14 +231,31 @@ class ApplicationServiceTest {
                 xssMotivation
             );
 
-            applicationService.updateApplication(update);
+            ApplicationForApplicantDTO result = applicationService.updateApplication(update);
 
+            // Verify the entity was sanitized on write
             assertThat(application.getMotivation()).contains("My motivation");
-            assertThat(application.getMotivation()).doesNotContain("<script>");
-            assertThat(application.getSpecialSkills()).contains("Java");
+            assertThat(application.getMotivation()).doesNotContain("<script");
+            assertThat(application.getMotivation()).doesNotContain("alert");
+            assertThat(application.getSpecialSkills()).contains("<b>Java</b>");
             assertThat(application.getSpecialSkills()).doesNotContain("onerror");
+            assertThat(application.getSpecialSkills()).doesNotContain("<img");
             assertThat(application.getProjects()).contains("Project");
-            assertThat(application.getProjects()).doesNotContain("<iframe>");
+            assertThat(application.getProjects()).doesNotContain("<iframe");
+
+            // Verify the DTO returned to the client is also sanitized on read
+            assertThat(result.projects()).doesNotContain("<iframe");
+            assertThat(result.specialSkills()).doesNotContain("onerror");
+            assertThat(result.motivation()).doesNotContain("<script");
+
+            // Verify safe formatting tags are preserved
+            assertThat(application.getMotivation()).contains("<p>");
+            assertThat(application.getSpecialSkills()).contains("<b>");
+            assertThat(application.getProjects()).contains("<p>");
+
+            // Verify non-rich-text fields were not affected
+            assertThat(application.getApplicantEmail()).isEqualTo("ada@example.com");
+            assertThat(application.getState()).isEqualTo(ApplicationState.SAVED);
         }
 
         @Test

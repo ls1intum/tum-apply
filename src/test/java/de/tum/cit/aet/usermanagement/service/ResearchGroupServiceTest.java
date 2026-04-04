@@ -651,8 +651,13 @@ class ResearchGroupServiceTest {
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("no access");
 
-            // Verify the member was never saved
+            // Verify the authorization check was called with the correct group ID
+            verify(currentUserService).isAdminOrMemberOf(OTHER_GROUP_ID);
+            // Verify neither the user nor the role was saved
             verify(userRepository, never()).save(any(User.class));
+            verify(userResearchGroupRoleRepository, never()).save(any(UserResearchGroupRole.class));
+            // Verify the research group was never even looked up
+            verify(researchGroupRepository, never()).findByIdElseThrow(any());
         }
 
         @Test
@@ -673,9 +678,22 @@ class ResearchGroupServiceTest {
 
             researchGroupService.addMembersToResearchGroup(List.of(newMember), TEST_RESEARCH_GROUP_ID);
 
+            // Verify authorization was checked for the correct group
+            verify(currentUserService).isAdminOrMemberOf(TEST_RESEARCH_GROUP_ID);
+
+            // Verify the user was created with correct data
             ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
             verify(userRepository).save(userCaptor.capture());
-            assertThat(userCaptor.getValue().getResearchGroup()).isEqualTo(testResearchGroup);
+            User savedUser = userCaptor.getValue();
+            assertThat(savedUser.getResearchGroup()).isEqualTo(testResearchGroup);
+            assertThat(savedUser.getUserId()).isEqualTo(newUserId);
+            assertThat(savedUser.getEmail()).isEqualTo("new@example.com");
+            assertThat(savedUser.getFirstName()).isEqualTo("New");
+            assertThat(savedUser.getLastName()).isEqualTo("User");
+            assertThat(savedUser.getSelectedLanguage()).isEqualTo("en");
+
+            // Verify the role was assigned
+            verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
         }
     }
 }

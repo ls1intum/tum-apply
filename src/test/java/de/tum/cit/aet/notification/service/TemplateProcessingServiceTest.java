@@ -18,6 +18,8 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.utility.testdata.JobTestData;
+import freemarker.core.ParseException;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -43,7 +45,7 @@ class TemplateProcessingServiceTest {
     void setUp() {
         freemarkerConfig = spy(new Configuration(Configuration.VERSION_2_3_32));
         service = new TemplateProcessingService(freemarkerConfig);
-        ReflectionTestUtils.invokeMethod(service, "hardenFreemarkerConfig");
+        // Hardening is applied in the constructor, no separate call needed
         ReflectionTestUtils.setField(service, "url", BASE_URL);
     }
 
@@ -231,7 +233,9 @@ class TemplateProcessingServiceTest {
             ResearchGroup group = mock(ResearchGroup.class);
             when(group.getName()).thenReturn("RG");
 
-            assertThatThrownBy(() -> service.renderTemplate(translation, group)).isInstanceOf(TemplateProcessingException.class);
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
         }
 
         @Test
@@ -240,7 +244,9 @@ class TemplateProcessingServiceTest {
             ResearchGroup group = mock(ResearchGroup.class);
             when(group.getName()).thenReturn("RG");
 
-            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group)).isInstanceOf(TemplateProcessingException.class);
+            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
         }
 
         @Test
@@ -253,7 +259,9 @@ class TemplateProcessingServiceTest {
             ResearchGroup group = mock(ResearchGroup.class);
             when(group.getName()).thenReturn("RG");
 
-            assertThatThrownBy(() -> service.renderTemplate(translation, group)).isInstanceOf(TemplateProcessingException.class);
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
         }
 
         @Test
@@ -264,6 +272,14 @@ class TemplateProcessingServiceTest {
 
             String result = service.renderTemplate(translation, mockApplication());
             assertThat(result).contains("Hello Alice");
+            assertThat(result).doesNotContain("${APPLICANT_FIRST_NAME}");
+        }
+
+        @Test
+        void hardeningIsAppliedInConstructor() {
+            // Verify the Configuration was hardened during construction by checking
+            // that setNewBuiltinClassResolver was called with ALLOWS_NOTHING_RESOLVER
+            verify(freemarkerConfig).setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
         }
     }
 

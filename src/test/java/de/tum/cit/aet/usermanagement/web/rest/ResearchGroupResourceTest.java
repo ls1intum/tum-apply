@@ -1060,13 +1060,19 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         void addMembersToResearchGroupWithNonExistentGroupThrowsAccessDenied() {
             User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.fail@tum.de", "Add", "Fail", "fail123");
             KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
-            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), UUID.randomUUID());
+            UUID nonExistentGroupId = UUID.randomUUID();
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), nonExistentGroupId);
 
             // The authorization check now runs before the entity lookup, so a non-existent
             // group ID results in 403 (user is not a member) rather than 404.
             api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 403);
+
+            // Verify the user was not modified by the rejected request
+            User unchangedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
+            assertThat(unchangedUser.getResearchGroup()).isNull();
+            assertThat(unchangedUser.getEmail()).isEqualTo("add.fail@tum.de");
         }
 
         @Test
