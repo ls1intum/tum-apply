@@ -15,6 +15,7 @@ import type { ApplicationReview } from './application-review';
 import type { CustomFieldAnswer } from './custom-field-answer';
 
 export interface Application {
+    readonly aiConsentedAt?: string;
     readonly applicant?: Applicant;
     readonly applicantBachelorDegreeName?: string;
     readonly applicantBachelorGrade?: string;

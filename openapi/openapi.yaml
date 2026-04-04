@@ -2556,6 +2556,7 @@ components:
     Application:
       type: object
       properties:
+        aiConsentedAt: {type: string, format: date-time}
         applicant: {$ref: '#/components/schemas/Applicant'}
         applicantBachelorDegreeName: {type: string}
         applicantBachelorGrade: {type: string}
