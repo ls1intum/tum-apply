@@ -188,6 +188,41 @@ Controllers are responsible for:
 
 ---
 
+## Input Sanitization
+
+All user-supplied HTML content must be sanitized to prevent stored cross-site scripting (XSS). TUMApply follows a **sanitize-on-write AND sanitize-on-read** strategy as defense-in-depth:
+
+**On write** (service layer, before persisting):
+```java
+application.setMotivation(HtmlSanitizer.sanitize(dto.motivation()));
+```
+
+**On read** (DTO factory methods, before sending to the client):
+```java
+HtmlSanitizer.sanitize(application.getMotivation())
+```
+
+**Which fields require sanitization?**
+
+Any field that:
+1. Accepts rich-text / HTML input from users (e.g. Quill editor fields), AND
+2. Is rendered via `[innerHTML]` on the frontend or in generated HTML (e.g. PDF export, email templates)
+
+Currently sanitized fields:
+- `Application`: `motivation`, `specialSkills`, `projects`
+- `Job`: `jobDescriptionEN`, `jobDescriptionDE`
+- `ResearchGroup`: `description`
+
+**Utility:** `HtmlSanitizer.sanitize()` in `src/main/java/de/tum/cit/aet/core/util/HtmlSanitizer.java`
+
+Uses Jsoup with `Safelist.basic()` which preserves safe formatting (`<p>`, `<b>`, `<i>`, `<a>`, `<ul>`, `<li>`, etc.) and strips everything else (`<script>`, `<iframe>`, `<img>`, event handlers, `javascript:` URLs).
+
+:::warning
+When adding new rich-text fields, always apply `HtmlSanitizer.sanitize()` in both the service method that persists the data and the DTO factory method that returns it to the client. Omitting either layer defeats the defense-in-depth strategy.
+:::
+
+---
+
 ## General Best Practices
 
 - Use constants instead of hardcoding the same value multiple times
