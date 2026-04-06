@@ -217,11 +217,15 @@ For frequently used custom values, consider adding them to the Tailwind config i
 
 ## Styling PrimeNG Components
 
-PrimeNG components use `styleClass` (and variants like `dialogStyleClass`, `contentStyleClass`, etc.) to accept custom CSS classes.
+PrimeNG components accept custom CSS classes via the native `class` attribute.
 
-### When to Use `styleClass` vs Global Overrides
+:::warning
+`styleClass` is deprecated since PrimeNG v20 and will be removed in v22. Use the native `class` attribute instead. Existing usages of `styleClass` should be migrated when touching those files.
+:::
 
-**Use `styleClass` for:**
+### When to Use `class` vs Global Overrides
+
+**Use `class` for:**
 
 - Component-specific, one-off styling unique to a particular usage
 - Layout and spacing adjustments (margins, padding, width, alignment)
@@ -240,22 +244,22 @@ PrimeNG components use `styleClass` (and variants like `dialogStyleClass`, `cont
 Is this styling needed in multiple places across the app?
 ├─ YES → Is it modifying PrimeNG internals (.p-* classes)?
 │  ├─ YES → Add to prime-ng-overrides.scss
-│  └─ NO  → Use Tailwind in styleClass
-└─ NO  → Use Tailwind in styleClass
+│  └─ NO  → Use Tailwind in class
+└─ NO  → Use Tailwind in class
 ```
 
-### Using `styleClass` (Component-Specific Styling)
+### Using `class` (Component-Specific Styling)
 
 ✅ **GOOD** — Tailwind utilities only:
 
 ```html
 <!-- Simple Tailwind classes -->
-<p-progressSpinner styleClass="w-10 h-10" strokeWidth="4" />
-<p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
-<jhi-message severity="warn" styleClass="mb-3" [message]="'...'" />
+<p-progressSpinner class="w-10 h-10" strokeWidth="4" />
+<p-divider layout="vertical" class="mx-2 hidden lg:block" />
+<jhi-message severity="warn" class="mb-3" [message]="'...'" />
 
 <!-- With semantic tokens -->
-<p-dialog [styleClass]="'max-w-4xl bg-background-surface border-border-default'" />
+<p-dialog class="max-w-4xl bg-background-surface border-border-default" />
 ```
 
 ✅ **GOOD** — Use computed for dynamic styling:
@@ -275,7 +279,7 @@ dialogClasses = computed(() => {
 ```
 
 ```html
-<p-dialog [styleClass]="dialogClasses()" />
+<p-dialog [class]="dialogClasses()" />
 ```
 
 ### Using `prime-ng-overrides.scss` (Global Defaults)

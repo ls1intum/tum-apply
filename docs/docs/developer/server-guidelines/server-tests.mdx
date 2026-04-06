@@ -142,13 +142,6 @@ Spring Boot caches test application contexts and reuses them when configurations
 Never add these annotations to concrete test classes. If you need a new spy bean or property, add it to the appropriate abstract base test class.
 :::
 
-### Rules
-
-- Never add `@MockitoSpyBean` or `@MockitoBean` to concrete test classes
-- Never add `@TestPropertySource` or `@ActiveProfiles` to concrete test classes
-- Never use `@DirtiesContext` — clean up test state manually instead
-- If you need new configuration, add it to the appropriate base class
-
 ---
 
 ## Use `ReflectionTestUtils` Instead of `@MockBean`

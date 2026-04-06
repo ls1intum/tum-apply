@@ -37,7 +37,8 @@ Core Angular and TypeScript patterns for developing the TUMApply client. Follow 
 
 ## Component Structure
 
-- Create **1 folder per component** with 4 files: `.html`, `.scss`, `.ts`, `.spec.ts`
+- Create **1 folder per component** with the component files: `.html`, `.ts`, and `.scss` only if needed (prefer Tailwind utility classes over custom SCSS — see [Client Styling](./client-styling-guidelines))
+- Test files (`.spec.ts`) live in the mirrored directory structure under `src/test/webapp/`, not alongside the component
 - Follow the **smart/dumb component approach**: smart components handle logic and state, dumb components receive data via inputs and emit events via outputs
 - More complex components should be divided into multiple sub-components
 
@@ -364,7 +365,7 @@ Prefer `async/await` with `firstValueFrom` over manual subscriptions to avoid su
 
 ### `::ng-deep`
 
-`::ng-deep` is deprecated and should not be used in new code. If you need to style child component internals, use global stylesheets (`prime-ng-overrides.scss`) or PrimeNG's `styleClass` approach instead.
+`::ng-deep` is deprecated and should not be used in new code. If you need to style child component internals, use global stylesheets (`prime-ng-overrides.scss`) or the native `class` attribute on PrimeNG components instead.
 
 ---
 
