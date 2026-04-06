@@ -42,20 +42,13 @@ import com.tngtech.archunit.lang.ConditionEvents;
  * </ul>
  * <p>
  * Adapted from the Artemis project's architecture tests. Unlike Artemis (which has many violations
- * and uses configurable thresholds per module), TUMApply enforces strict limits that should be
- * reduced to 0 over time.
+ * and uses configurable thresholds per module), TUMApply enforces 0 violations across all checks.
  *
  * @see <a href="https://github.com/ls1intum/Artemis">Artemis (original architecture tests)</a>
  */
-class EntityUsageArchitectureTest {
+class DTOArchitectureTest {
 
     private static final String BASE_PACKAGE = "de.tum.cit.aet";
-
-    // TODO: Reduce all violation counts to 0 by replacing entity references with DTOs.
-    // When you fix a violation, lower the corresponding count.
-    private static final int MAX_ENTITY_RETURN_VIOLATIONS = 0;
-    private static final int MAX_ENTITY_INPUT_VIOLATIONS = 0;
-    private static final int MAX_DTO_ENTITY_FIELD_VIOLATIONS = 1; // JobDetailDTO.researchGroup -> ResearchGroup
 
     private static JavaClasses productionClasses;
 
@@ -113,10 +106,9 @@ class EntityUsageArchitectureTest {
             .check(productionClasses);
 
         assertThat(violations)
-            .as("Entity return type violations (max allowed: %d, found: %d). "
-                + "Reduce to 0 by using DTOs instead of entities.\nViolations:\n%s",
-                MAX_ENTITY_RETURN_VIOLATIONS, violations.size(), String.join("\n", violations))
-            .hasSizeLessThanOrEqualTo(MAX_ENTITY_RETURN_VIOLATIONS);
+            .as("REST controllers must not return @Entity types directly. Use DTOs instead.\nViolations:\n%s",
+                String.join("\n", violations))
+            .isEmpty();
     }
 
     /**
@@ -178,10 +170,9 @@ class EntityUsageArchitectureTest {
             .check(productionClasses);
 
         assertThat(violations)
-            .as("Entity input violations (max allowed: %d, found: %d). "
-                + "Reduce to 0 by using DTOs instead of entities.\nViolations:\n%s",
-                MAX_ENTITY_INPUT_VIOLATIONS, violations.size(), String.join("\n", violations))
-            .hasSizeLessThanOrEqualTo(MAX_ENTITY_INPUT_VIOLATIONS);
+            .as("REST controllers must not accept @Entity types in @RequestBody/@RequestPart. Use DTOs instead.\nViolations:\n%s",
+                String.join("\n", violations))
+            .isEmpty();
     }
 
     /**
@@ -224,10 +215,9 @@ class EntityUsageArchitectureTest {
             .check(productionClasses);
 
         assertThat(violations)
-            .as("DTO entity field violations (max allowed: %d, found: %d). "
-                + "Reduce to 0 by removing entity references from DTOs.\nViolations:\n%s",
-                MAX_DTO_ENTITY_FIELD_VIOLATIONS, violations.size(), String.join("\n", violations))
-            .hasSizeLessThanOrEqualTo(MAX_DTO_ENTITY_FIELD_VIOLATIONS);
+            .as("DTOs must not contain @Entity fields. Use primitive types, enums, or other DTOs instead.\nViolations:\n%s",
+                String.join("\n", violations))
+            .isEmpty();
     }
 
     /**
