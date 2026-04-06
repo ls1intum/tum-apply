@@ -2768,6 +2768,9 @@ components:
     DocumentInformationHolderDTO:
       type: object
       properties:
+        documentType:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
         id: {type: string, format: uuid}
         name: {type: string}
         size: {type: integer, format: int64}

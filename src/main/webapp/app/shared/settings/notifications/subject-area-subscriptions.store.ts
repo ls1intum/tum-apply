@@ -1,13 +1,13 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
-import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
+import { JobCardDTOSubjectAreaEnum } from 'app/generated/model/job-card-dto';
 import { ToastService } from 'app/service/toast-service';
 import * as DropDownOptions from 'app/job/dropdown-options';
 
 import { FilterChange } from '../../components/atoms/filter-multiselect/filter-multiselect';
 
-export type SubjectArea = ApplicantSubjectAreaSubscriptionsEnum;
+export type SubjectArea = JobCardDTOSubjectAreaEnum;
 
 /**
  * Component-scoped store for the applicant's subject area notification preferences.

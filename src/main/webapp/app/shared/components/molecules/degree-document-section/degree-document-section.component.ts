@@ -4,8 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DocumentDictionaryDocumentTypeEnum } from 'app/generated/model/document-dictionary';
-import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
+import { DocumentInformationHolderDTO, DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
@@ -48,7 +47,7 @@ export class DegreeDocumentSectionComponent {
   readonly gradeTooltipKey = computed(() => `entity.applicationPage2.tooltip.${this.degreeType()}Grade`);
   readonly documentType = computed(() =>
     this.degreeType() === 'bachelor'
-      ? DocumentDictionaryDocumentTypeEnum.BachelorTranscript
-      : DocumentDictionaryDocumentTypeEnum.MasterTranscript,
+      ? DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript
+      : DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript,
   );
 }
