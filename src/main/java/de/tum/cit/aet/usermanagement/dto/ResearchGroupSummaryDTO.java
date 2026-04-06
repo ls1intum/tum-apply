@@ -21,6 +21,10 @@ public record ResearchGroupSummaryDTO(
     String postalCode,
     String city
 ) {
+    /**
+     * @param researchGroup the research group entity to convert
+     * @return the summary DTO, or null if the entity is null
+     */
     public static ResearchGroupSummaryDTO getFromEntity(ResearchGroup researchGroup) {
         if (researchGroup == null) {
             return null;
