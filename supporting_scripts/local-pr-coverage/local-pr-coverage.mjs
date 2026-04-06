@@ -309,7 +309,8 @@ function categorizeChangedFiles(changedFiles, options) {
   const serverModules = new Set();
 
   // Files to exclude from coverage reporting (cannot be properly tested)
-  const excludedClientPatterns = ['.module.ts', '.spec.ts', '.routes.ts', '.route.ts'];
+  const excludedClientPatterns = ['.module.ts', '.spec.ts', '.routes.ts', '.route.ts', '.model.ts'];
+  const excludedClientPrefixes = ['generated/'];
   const excludedClientFiles = ['app.component.ts', 'app.config.ts', 'app.constants.ts', 'app.routes.ts'];
 
   for (const [filePath, changeType] of Object.entries(changedFiles)) {
@@ -322,6 +323,12 @@ function categorizeChangedFiles(changedFiles, options) {
       }
 
       const relativePath = filePath.substring(CLIENT_SRC_PREFIX.length);
+
+      // Skip generated files and other excluded prefixes
+      if (excludedClientPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
+        log(`Skipping (excluded prefix): ${filePath}`, options);
+        continue;
+      }
 
       // Skip excluded files
       if (excludedClientFiles.includes(relativePath)) {
