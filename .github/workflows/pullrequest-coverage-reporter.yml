@@ -195,7 +195,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run client tests and generate coverage
         id: run-tests
@@ -206,16 +206,18 @@ jobs:
 
           if [ -n "$MODULES" ]; then
             echo "Running client tests for modules: $MODULES"
-            COVERAGE_OUTPUT=$(npm run coverage:pr -- --client-only --client-modules "$MODULES" --print 2>&1) || {
+            COVERAGE_OUTPUT=$(npm run coverage:pr -- --client-only --client-modules "$MODULES" --print --verbose 2>&1) || {
               echo "success=false" >> $GITHUB_OUTPUT
-              echo "Tests failed"
+              echo "Tests failed. Output:"
+              echo "$COVERAGE_OUTPUT"
               exit 0
             }
           else
             echo "Running all client tests"
-            COVERAGE_OUTPUT=$(npm run coverage:pr -- --client-only --print 2>&1) || {
+            COVERAGE_OUTPUT=$(npm run coverage:pr -- --client-only --print --verbose 2>&1) || {
               echo "success=false" >> $GITHUB_OUTPUT
-              echo "Tests failed"
+              echo "Tests failed. Output:"
+              echo "$COVERAGE_OUTPUT"
               exit 0
             }
           fi
@@ -269,7 +271,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run server tests and generate coverage
         id: run-tests
@@ -280,16 +282,18 @@ jobs:
 
           if [ -n "$MODULES" ]; then
             echo "Running server tests for modules: $MODULES"
-            COVERAGE_OUTPUT=$(npm run coverage:pr -- --server-only --server-modules "$MODULES" --print 2>&1) || {
+            COVERAGE_OUTPUT=$(npm run coverage:pr -- --server-only --server-modules "$MODULES" --print --verbose 2>&1) || {
               echo "success=false" >> $GITHUB_OUTPUT
-              echo "Tests failed"
+              echo "Tests failed. Output:"
+              echo "$COVERAGE_OUTPUT"
               exit 0
             }
           else
             echo "Running all server tests"
-            COVERAGE_OUTPUT=$(npm run coverage:pr -- --server-only --print 2>&1) || {
+            COVERAGE_OUTPUT=$(npm run coverage:pr -- --server-only --print --verbose 2>&1) || {
               echo "success=false" >> $GITHUB_OUTPUT
-              echo "Tests failed"
+              echo "Tests failed. Output:"
+              echo "$COVERAGE_OUTPUT"
               exit 0
             }
           fi
