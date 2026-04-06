@@ -18,9 +18,10 @@ The **My Positions** page provides comprehensive tools for professors to oversee
 
 This is the **central command center** for all position management activities.
 
-- Displays all positions in a **structured table format** with comprehensive status tracking and timeline information
-- Features **dynamic action buttons** that adapt based on current position state and lifecycle stage
+- Displays all positions in a **structured table format** containing: Supervising Professor, Position Title, Status, Start Date, and Last Modified timestamp
+- Features **dynamic action buttons** (View, Edit, Delete, Close) that adapt based on the current position state
 - Shows **visual status indicators** with color-coded badges for instant assessment of position states
+- Includes **search, filtering (by Status), and sort** capabilities to easily find specific positions
 
 <Image src={myPositionsImg} alt="My Positions Dashboard" size={ImageSize.large}/>
 <div style={{textAlign: 'center'}}>
@@ -33,11 +34,11 @@ This is the **central command center** for all position management activities.
 - 🔴 **Closed**: Position no longer accepting applications, all applicants have been notified
 - ⚫ **Draft**: Position in development phase, not yet visible to applicants
 
-**Context-Sensitive Action Controls:**
-- **View**: Access complete position details and current status (available for all positions regardless of state)
-- **Edit**: Modify position specifications, requirements, and details (draft positions only)
-- **Delete**: Permanently remove positions that haven't been published (draft positions only)
-- **Close**: End application acceptance period and automatically reject all unreviewed applications and notify all applicants (published positions only)
+**Context-Sensitive Action Controls (⋮):**
+- **View The Position (👁️)**: Access complete position details and current status (available for all positions regardless of state)
+- **Edit**: Modify position specifications and details. *Note: Editing a Published position will change its status back to "Draft", temporarily hiding it from applicants until republished.*
+- **Delete**: Permanently remove positions from the system (available for Draft positions only)
+- **Close**: End the application acceptance period. This will automatically reject all unreviewed applications and notify all candidates (available for Published positions only)
 
 ---
 
@@ -103,11 +104,11 @@ This document outlines key steps for managing positions via the position managem
 - Published positions accepting applications
 - Positions that have found a suitable applicant
 - Closed positions that were previously published
-4. **Access quick actions** directly from the table:
-- Click **"View"** to see detailed position information
-- Use **"Edit"** for draft positions needing updates
-- Select **"Delete"** to remove unwanted draft positions
-- Choose **"Close"** to reject all applications for published positions
+4. **Access quick actions** directly via the Actions menu (⋮):
+- Click **"View"** (eye icon) to see detailed position information
+- Use **"Edit"** for positions needing updates (Warning: editing a published job reverts it to draft)
+- Select **"Delete"** to permanently remove unwanted draft positions
+- Choose **"Close"** to shut a published position and reject pending applications
 
 **Video**:
 <iframe
@@ -195,13 +196,3 @@ This document outlines key steps for managing positions via the position managem
 - This action is irreversible once confirmed
 - **Confirm deletion** only after ensuring valuable content is preserved elsewhere if needed
 - **Verify removal** from the dashboard table
-
-**Video**:
-<iframe
-  src="https://live.rbg.tum.de/w/artemisintro/61938?video_only=1&t=0"
-  title="Closing or Deleting Positions"
-  allowFullScreen="1"
-  frameBorder="0"
-  width="600"
-  height="350">
-</iframe>

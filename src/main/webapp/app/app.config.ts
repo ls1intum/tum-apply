@@ -20,7 +20,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
-import { PublicConfigResourceApiService } from 'app/generated/api/publicConfigResourceApi.service';
+import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
@@ -37,6 +37,7 @@ import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interc
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
 import { PrimengTranslationService } from './shared/language/primeng-translation.service';
+import { LoadingInterceptor } from './core/interceptor/loading.interceptor';
 
 /**
  * Application initializer that enforces strict order:
@@ -44,7 +45,7 @@ import { PrimengTranslationService } from './shared/language/primeng-translation
  * 2) Initialize Auth
  */
 export async function initializeApp(): Promise<void> {
-  const api = inject(PublicConfigResourceApiService);
+  const api = inject(PublicConfigResourceApi);
   const appConfigService = inject(ApplicationConfigService);
   const authFacade = inject(AuthFacadeService);
 
@@ -112,6 +113,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHandlerInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
       multi: true,
     },
     {

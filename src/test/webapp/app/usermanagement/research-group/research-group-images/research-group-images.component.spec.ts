@@ -1,0 +1,184 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
+import { ResearchGroupImagesComponent } from 'app/usermanagement/research-group/research-group-images/research-group-images.component';
+import { ImageDTO } from 'app/generated/model/image-dto';
+import { ImageUploadError } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
+import { provideTranslateMock } from 'util/translate.mock';
+import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
+import { provideImageResourceApiMock, createImageResourceApiMock } from 'util/image-resource-api.service.mock';
+import { provideActivatedRouteMock, createActivatedRouteMock } from 'util/activated-route.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+
+const createFile = () => new File(['content'], 'banner.png', { type: 'image/png' });
+
+describe('ResearchGroupImagesComponent', () => {
+  let component: ResearchGroupImagesComponent;
+  let fixture: ComponentFixture<ResearchGroupImagesComponent>;
+  let mockImageApi: ReturnType<typeof createImageResourceApiMock>;
+  let mockToastService: ReturnType<typeof createToastServiceMock>;
+  let routeMock: ReturnType<typeof createActivatedRouteMock>;
+
+  const imageInUse: ImageDTO = { imageId: 'i1', url: '/img/1.png', isInUse: true };
+  const imageNotInUse: ImageDTO = { imageId: 'i2', url: '/img/2.png', isInUse: false };
+
+  const createComponent = async () => {
+    fixture = TestBed.createComponent(ResearchGroupImagesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    await fixture.whenStable();
+  };
+
+  beforeEach(async () => {
+    mockImageApi = createImageResourceApiMock();
+    mockImageApi.getResearchGroupJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
+    mockImageApi.getResearchGroupJobBannersByResearchGroup.mockReturnValue(of([imageNotInUse]));
+    mockImageApi.uploadJobBanner.mockReturnValue(of(imageNotInUse));
+    mockImageApi.uploadJobBannerForResearchGroup.mockReturnValue(of(imageInUse));
+    mockImageApi.deleteImage.mockReturnValue(of({}));
+
+    mockToastService = createToastServiceMock();
+    routeMock = createActivatedRouteMock();
+
+    await TestBed.configureTestingModule({
+      imports: [ResearchGroupImagesComponent],
+      providers: [
+        provideImageResourceApiMock(mockImageApi),
+        provideToastServiceMock(mockToastService),
+        provideActivatedRouteMock(routeMock),
+        provideTranslateMock(),
+        provideFontAwesomeTesting(),
+      ],
+    }).compileComponents();
+  });
+
+  describe('initialization and loading', () => {
+    it('should create', async () => {
+      await createComponent();
+      expect(component).toBeTruthy();
+    });
+
+    it('loads current user research group images in default mode', async () => {
+      await createComponent();
+
+      expect(component.selectedResearchGroupId()).toBe('');
+      expect(mockImageApi.getResearchGroupJobBanners).toHaveBeenCalled();
+      expect(mockImageApi.getResearchGroupJobBannersByResearchGroup).not.toHaveBeenCalled();
+      expect(component.allImages()).toEqual([imageInUse, imageNotInUse]);
+      expect(component.isLoading()).toBe(false);
+    });
+
+    it('loads selected research group images in admin mode from query param', async () => {
+      routeMock.setQueryParams({ researchGroupId: 'rg-1' });
+
+      await createComponent();
+
+      expect(component.selectedResearchGroupId()).toBe('rg-1');
+      expect(mockImageApi.getResearchGroupJobBannersByResearchGroup).toHaveBeenCalledWith('rg-1');
+      expect(mockImageApi.getResearchGroupJobBanners).not.toHaveBeenCalled();
+      expect(component.allImages()).toEqual([imageNotInUse]);
+    });
+
+    it('shows error toast when loading images fails', async () => {
+      mockImageApi.getResearchGroupJobBanners.mockReturnValue(throwError(() => new Error('Error')));
+
+      await createComponent();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.imageLibrary.error.loadFailed');
+      expect(component.isLoading()).toBe(false);
+    });
+  });
+
+  describe('computed values', () => {
+    it('computes image statistics and usage splits', async () => {
+      await createComponent();
+      component.allImages.set([imageInUse, imageNotInUse, { imageId: 'i3', url: '/img/3.png' }]);
+
+      expect(component.totalImages()).toBe(3);
+      expect(component.inUseCount()).toBe(1);
+      expect(component.notInUseCount()).toBe(2);
+      expect(component.inUseImages()).toEqual([imageInUse]);
+      expect(component.notInUseImages().length).toBe(2);
+    });
+  });
+
+  describe('uploading', () => {
+    it('uses professor upload endpoint in default mode', async () => {
+      await createComponent();
+      const file = createFile();
+
+      let result: ImageDTO | undefined;
+      component.uploadImage(file).subscribe(value => {
+        result = value;
+      });
+
+      expect(mockImageApi.uploadJobBanner).toHaveBeenCalledWith(file);
+      expect(mockImageApi.uploadJobBannerForResearchGroup).not.toHaveBeenCalled();
+      expect(result).toEqual(imageNotInUse);
+    });
+
+    it('uses admin upload endpoint in admin mode', async () => {
+      routeMock.setQueryParams({ researchGroupId: 'rg-1' });
+      await createComponent();
+      const file = createFile();
+
+      let result: ImageDTO | undefined;
+      component.uploadImage(file).subscribe(value => {
+        result = value;
+      });
+
+      expect(mockImageApi.uploadJobBannerForResearchGroup).toHaveBeenCalledWith('rg-1', file);
+      expect(mockImageApi.uploadJobBanner).not.toHaveBeenCalled();
+      expect(result).toEqual(imageInUse);
+    });
+
+    it('adds uploaded image and shows success toast', async () => {
+      await createComponent();
+      component.allImages.set([imageInUse]);
+
+      component.onImageUploaded(imageNotInUse);
+
+      expect(component.allImages()).toEqual([imageInUse, imageNotInUse]);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.imageLibrary.success.imageUploaded');
+    });
+
+    it('shows upload error toast', async () => {
+      await createComponent();
+      const error: ImageUploadError = { errorKey: 'upload.failed', type: 'uploadFailed' };
+
+      component.onUploadError(error);
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('upload.failed');
+    });
+  });
+
+  describe('deleting', () => {
+    it('skips delete when image id is missing', async () => {
+      await createComponent();
+
+      await component.deleteImage('');
+
+      expect(mockImageApi.deleteImage).not.toHaveBeenCalled();
+    });
+
+    it('deletes image and updates list', async () => {
+      await createComponent();
+      component.allImages.set([imageInUse, imageNotInUse]);
+
+      await component.deleteImage('i1');
+
+      expect(mockImageApi.deleteImage).toHaveBeenCalledWith('i1');
+      expect(component.allImages()).toEqual([imageNotInUse]);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.imageLibrary.success.imageDeleted');
+    });
+
+    it('shows error toast when delete fails', async () => {
+      await createComponent();
+      mockImageApi.deleteImage.mockReturnValue(throwError(() => new Error('Error')));
+
+      await component.deleteImage('i1');
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.imageLibrary.error.deleteFailed');
+    });
+  });
+});

@@ -5,9 +5,9 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
-import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { PageResponseDTOUserShortDTO } from 'app/generated/model/page-response-dto-user-short-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -17,7 +17,8 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { KeycloakUserDTO } from 'app/generated';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ResearchGroupAddMembersComponent', () => {
   let component: ResearchGroupAddMembersComponent;
@@ -59,7 +60,6 @@ describe('ResearchGroupAddMembersComponent', () => {
     id: user.id,
     lastName: user.lastName,
     universityId: user.universityId,
-    username: user.username,
     displayName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
   });
 
@@ -94,8 +94,9 @@ describe('ResearchGroupAddMembersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupAddMembersComponent],
       providers: [
-        { provide: UserResourceApiService, useValue: mockUserService },
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
+        { provide: UserResourceApi, useValue: mockUserService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+        provideHttpClientMock(),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideToastServiceMock(mockToastService),
@@ -106,8 +107,6 @@ describe('ResearchGroupAddMembersComponent', () => {
 
     fixture = TestBed.createComponent(ResearchGroupAddMembersComponent);
     component = fixture.componentInstance;
-    const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean };
-    componentWithMocks.USE_MOCK_USERS = false;
   });
 
   afterEach(() => {
@@ -130,7 +129,7 @@ describe('ResearchGroupAddMembersComponent', () => {
   });
 
   describe('Load users', () => {
-    it('should not call userService on init when there is no search query', () => {
+    it('should not call userApi on init when there is no search query', () => {
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
       expect(component.users()).toEqual([]);
       expect(component.totalRecords()).toBe(0);
@@ -324,69 +323,6 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       // No toast should be shown for the stale error
       expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Mock users', () => {
-    it('should use mock users and avoid API calls when enabled', async () => {
-      vi.clearAllMocks();
-      const mockUsers: KeycloakUserDTO[] = [
-        { id: 'mock-1', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
-        { id: 'mock-2', firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@mytum.de' },
-      ];
-
-      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
-      componentWithMocks.USE_MOCK_USERS = true;
-      componentWithMocks.MOCK_USERS = mockUsers;
-
-      await component.loadAvailableUsers('alice');
-
-      expect(component.users()).toEqual([withDisplayName(mockUsers[0])]);
-      expect(component.totalRecords()).toBe(1);
-      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
-    });
-
-    it('should handle missing user fields when filtering mock users', async () => {
-      vi.clearAllMocks();
-      const mockUsers: KeycloakUserDTO[] = [
-        { id: 'mock-1', firstName: undefined, lastName: undefined, email: undefined } as KeycloakUserDTO,
-        { id: 'mock-2', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
-      ];
-
-      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
-      componentWithMocks.USE_MOCK_USERS = true;
-      componentWithMocks.MOCK_USERS = mockUsers;
-
-      await component.loadAvailableUsers('alice');
-
-      expect(component.users()).toEqual([withDisplayName(mockUsers[1])]);
-      expect(component.totalRecords()).toBe(1);
-      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
-    });
-
-    it('should paginate mock users based on page and pageSize', async () => {
-      vi.clearAllMocks();
-      const mockUsers: KeycloakUserDTO[] = [
-        { id: 'mock-1', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
-        { id: 'mock-2', firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@mytum.de' },
-        { id: 'mock-3', firstName: 'Carla', lastName: 'Nguyen', email: 'carla.nguyen@tum.de' },
-        { id: 'mock-4', firstName: 'David', lastName: 'Ibrahim', email: 'david.ibrahim@mytum.de' },
-        { id: 'mock-5', firstName: 'Elena', lastName: 'Rossi', email: 'elena.rossi@tum.de' },
-        { id: 'mock-6', firstName: 'Farid', lastName: 'Khan', email: 'farid.khan@mytum.de' },
-      ];
-
-      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
-      componentWithMocks.USE_MOCK_USERS = true;
-      componentWithMocks.MOCK_USERS = mockUsers;
-
-      component.pageSize.set(2);
-      component.page.set(1);
-
-      await component.loadAvailableUsers('tum');
-
-      expect(component.totalRecords()).toBe(6);
-      expect(component.users()).toEqual([withDisplayName(mockUsers[2]), withDisplayName(mockUsers[3])]);
-      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
   });
 

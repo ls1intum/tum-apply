@@ -105,3 +105,30 @@ export function extractCompleteHtmlTags(html: string): string {
 export function unescapeJsonString(str: string): string {
   return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
 }
+
+/**
+ * Returns the initials from a name string (first and last name).
+ * @param name - The full name string
+ * @returns The initials (first and last character, uppercase)
+ */
+export function getInitials(name: string): string {
+  if (!name) return '';
+  const nameParts = name.trim().split(/\s+/);
+  const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
+  const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
+  return firstInitial + lastInitial;
+}
+
+/**
+ * Trims an optional string and converts blank values to null.
+ *
+ * @param value - The raw optional string
+ * @returns The trimmed string or null when empty
+ */
+export function normalizeOptionalString(value: string | null | undefined): string | null {
+  const normalized = value?.trim();
+  if (normalized == null || normalized === '') {
+    return null;
+  }
+  return normalized;
+}

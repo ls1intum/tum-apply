@@ -5,9 +5,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupAdminView } from 'app/usermanagement/research-group/research-group-admin-view/research-group-admin-view.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
-import { PageResponseDTOResearchGroupAdminDTO } from 'app/generated/model/pageResponseDTOResearchGroupAdminDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/model/research-group-admin-dto';
+import { PageResponseDTOResearchGroupAdminDTO } from 'app/generated/model/page-response-dto-research-group-admin-dto';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -32,7 +32,7 @@ describe('ResearchGroupAdminView', () => {
   const mockResearchGroup1: ResearchGroupAdminDTO = {
     id: 'rg-1',
     professorName: 'Prof. Dr. Smith',
-    status: ResearchGroupAdminDTO.StatusEnum.Draft,
+    status: ResearchGroupAdminDTOStatusEnum.Draft,
     researchGroup: 'AI Research Lab',
     createdAt: '2024-01-01T00:00:00.000Z',
   };
@@ -40,7 +40,7 @@ describe('ResearchGroupAdminView', () => {
   const mockResearchGroup2: ResearchGroupAdminDTO = {
     id: 'rg-2',
     professorName: 'Prof. Dr. Jones',
-    status: ResearchGroupAdminDTO.StatusEnum.Active,
+    status: ResearchGroupAdminDTOStatusEnum.Active,
     researchGroup: 'ML Research Lab',
     createdAt: '2024-01-02T00:00:00.000Z',
   };
@@ -48,7 +48,7 @@ describe('ResearchGroupAdminView', () => {
   const mockResearchGroup3: ResearchGroupAdminDTO = {
     id: 'rg-3',
     professorName: 'Prof. Dr. Brown',
-    status: ResearchGroupAdminDTO.StatusEnum.Denied,
+    status: ResearchGroupAdminDTOStatusEnum.Denied,
     researchGroup: 'Data Science Lab',
     createdAt: '2024-01-03T00:00:00.000Z',
   };
@@ -75,7 +75,7 @@ describe('ResearchGroupAdminView', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupAdminView],
       providers: [
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
         provideDialogServiceMock(mockDialogService),
         provideTranslateMock(mockTranslateService),
         provideToastServiceMock(mockToastService),
@@ -395,7 +395,25 @@ describe('ResearchGroupAdminView', () => {
           data: { mode: 'admin' },
         }),
       );
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
+    });
+
+    it('should reload when create dialog returns created group payload', async () => {
+      const mockDialogRef = {
+        onClose: {
+          subscribe: vi.fn((callback: (result: unknown) => void) => {
+            callback({ id: 'new-rg-id' });
+          }),
+        },
+      } as unknown as DynamicDialogRef;
+
+      mockDialogService.open.mockReturnValue(mockDialogRef);
+      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
+
+      component.onCreateResearchGroup();
+      await Promise.resolve();
+
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not reload when create dialog is cancelled', async () => {
@@ -430,6 +448,15 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
     });
+
+    it('should navigate to manage images page', () => {
+      const router = TestBed.inject(Router);
+      component.onManageImages('rg-123');
+
+      expect(router.navigate).toHaveBeenCalledWith(['/research-group/admin-view/images'], {
+        queryParams: { researchGroupId: 'rg-123', researchGroupName: '' },
+      });
+    });
   });
 
   describe('Research Group Actions', () => {
@@ -441,7 +468,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.activateResearchGroup).toHaveBeenCalledWith('rg-1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.approve');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when approving research group fails', async () => {
@@ -461,7 +488,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.denyResearchGroup).toHaveBeenCalledWith('rg-1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.deny');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when denying research group fails', async () => {
@@ -481,7 +508,7 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.withdrawResearchGroup).toHaveBeenCalledWith('rg-2');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.withdraw');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle error when withdrawing research group fails', async () => {
@@ -582,9 +609,7 @@ describe('ResearchGroupAdminView', () => {
       fixture.detectChanges();
 
       const manageMembersSpy = vi.spyOn(component, 'onManageMembers');
-      const approveConfirmSpy = vi.spyOn(component.approveDialog(), 'confirm');
-      const denyConfirmSpy = vi.spyOn(component.denyDialog(), 'confirm');
-      const withdrawConfirmSpy = vi.spyOn(component.withdrawDialog(), 'confirm');
+      const manageImagesSpy = vi.spyOn(component, 'onManageImages');
 
       const menuMap = component.actionMenuItems();
 
@@ -592,28 +617,41 @@ describe('ResearchGroupAdminView', () => {
       const activeItems = menuMap.get('rg-2') ?? [];
       const deniedItems = menuMap.get('rg-3') ?? [];
 
-      expect(draftItems.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.confirm', 'button.deny']);
-      expect(activeItems.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.withdraw']);
-      expect(deniedItems.map(item => item.label)).toEqual(['button.confirm']);
+      expect(draftItems.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.confirm',
+        'button.deny',
+      ]);
+      expect(activeItems.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.withdraw',
+      ]);
+      expect(deniedItems.map(item => item.label)).toEqual(['researchGroup.imageLibrary.manageButton', 'button.confirm']);
 
       draftItems.find(item => item.label === 'researchGroup.members.manageMembers')?.command?.();
       expect(manageMembersSpy).toHaveBeenCalledWith('rg-1');
 
+      draftItems.find(item => item.label === 'researchGroup.imageLibrary.manageButton')?.command?.();
+      expect(manageImagesSpy).toHaveBeenCalledWith('rg-1', 'AI Research Lab');
+
       draftItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(approveConfirmSpy).toHaveBeenCalled();
+      expect(component.showApproveDialog()).toBe(true);
+      component.showApproveDialog.set(false); // Reset for next assertion
 
       draftItems.find(item => item.label === 'button.deny')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
-      expect(denyConfirmSpy).toHaveBeenCalled();
+      expect(component.showDenyDialog()).toBe(true);
 
       activeItems.find(item => item.label === 'button.withdraw')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-2');
-      expect(withdrawConfirmSpy).toHaveBeenCalled();
+      expect(component.showWithdrawDialog()).toBe(true);
 
       deniedItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-3');
-      expect(approveConfirmSpy).toHaveBeenCalledTimes(2);
+      expect(component.showApproveDialog()).toBe(true);
     });
 
     it('executes confirm handlers when currentResearchGroupId is set', () => {
@@ -658,7 +696,11 @@ describe('ResearchGroupAdminView', () => {
     it('returns menu items when research group id is present', () => {
       component.researchGroups.set([mockResearchGroup2]);
       const items = component.getMenuItems()(mockResearchGroup2);
-      expect(items.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.withdraw']);
+      expect(items.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.withdraw',
+      ]);
     });
 
     it('returns empty menu items when id is present but not in menu map', () => {

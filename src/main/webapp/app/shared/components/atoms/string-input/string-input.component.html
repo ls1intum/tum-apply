@@ -31,7 +31,6 @@
           [pAutoFocus]="autofocus()"
           [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : (placeholder() ?? '')"
           [required]="required()"
-          [disabled]="disabled()"
           [style]="{ width: width() }"
           autocomplete="off"
           class="custom-input"

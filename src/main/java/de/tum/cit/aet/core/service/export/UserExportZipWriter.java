@@ -115,6 +115,7 @@ public class UserExportZipWriter {
         - data/applicant_documents.csv
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
+        - data/applicant_subject_area_subscriptions.csv
 
         Staff-Daten:
         - data/staff_supervised_jobs.csv
@@ -133,7 +134,7 @@ public class UserExportZipWriter {
 
         Hinweise:
         - Nicht jede Datei ist in jedem Export enthalten.
-        - Welche CSV-Dateien vorhanden sind, haengt von Ihren Rollen und Daten im System ab.
+        - Welche CSV-Dateien vorhanden sind, haengt von deinen Rollen und Daten im System ab.
         - CSV-Dateien koennen direkt in Excel, LibreOffice Calc oder ähnlichen Programmen geöffnet werden.
         """;
     }
@@ -156,6 +157,7 @@ public class UserExportZipWriter {
         - data/applicant_documents.csv
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
+        - data/applicant_subject_area_subscriptions.csv
 
         Staff data:
         - data/staff_supervised_jobs.csv
@@ -223,6 +225,7 @@ public class UserExportZipWriter {
         writeApplicantDocumentsCsv(zipOut, applicantData);
         writeApplicantApplicationsCsv(zipOut, applicantData);
         writeApplicantIntervieweesCsv(zipOut, applicantData);
+        writeApplicantSubjectAreaSubscriptionsCsv(zipOut, applicantData);
     }
 
     private void writeApplicantProfileCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
@@ -337,6 +340,16 @@ public class UserExportZipWriter {
             .toList();
 
         addCsvFileToZip(zipOut, "data/applicant_interviewees.csv", List.of("job_title", "last_invited"), intervieweeRows);
+    }
+
+    private void writeApplicantSubjectAreaSubscriptionsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
+        List<List<String>> subscriptionRows = applicantData
+            .subjectAreaSubscriptions()
+            .stream()
+            .map(subscription -> List.of(toCsvValue(subscription)))
+            .toList();
+
+        addCsvFileToZip(zipOut, "data/applicant_subject_area_subscriptions.csv", List.of("subject_area"), subscriptionRows);
     }
 
     private void writeStaffCsv(ZipOutputStream zipOut, StaffDataDTO staffData) {

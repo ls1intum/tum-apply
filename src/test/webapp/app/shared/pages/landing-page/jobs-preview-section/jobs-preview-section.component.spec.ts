@@ -5,46 +5,49 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Router } from '@angular/router';
 import { JobsPreviewSectionComponent } from 'app/shared/pages/landing-page/jobs-preview-section/jobs-preview-section.component';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { JobCardDTOLocationEnum } from 'app/generated/model/job-card-dto';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 
-class JobResourceApiServiceMock {
+class JobResourceApiMock {
   getAvailableJobs = vi.fn();
 }
 
 describe('JobsPreviewSectionComponent', () => {
   let fixture: ComponentFixture<JobsPreviewSectionComponent>;
   let component: JobsPreviewSectionComponent;
-  let api: JobResourceApiServiceMock;
+  let api: JobResourceApiMock;
   let mockToast: ReturnType<typeof createToastServiceMock>;
 
   const mockJob = {
     jobId: 'job1',
     title: 'Job 1',
-    fieldOfStudies: 'CS',
-    location: 'Garching',
+    subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
+    location: JobCardDTOLocationEnum.Garching,
     professorName: 'Prof. John',
     workload: 20,
     startDate: '2025-09-01',
     applicationId: undefined,
     contractDuration: 6,
+    avatar: '/images/profiles/prof-john.jpg',
     imageUrl: undefined,
   };
 
   const mockResponse = { content: [mockJob, { ...mockJob, jobId: 'job2' }], totalElements: 2 };
 
   beforeEach(async () => {
-    api = new JobResourceApiServiceMock();
+    api = new JobResourceApiMock();
     api.getAvailableJobs.mockReturnValue(of(mockResponse));
     mockToast = createToastServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [JobsPreviewSectionComponent],
       providers: [
-        { provide: JobResourceApiService, useValue: api },
+        { provide: JobResourceApi, useValue: api },
         provideToastServiceMock(mockToast),
         provideTranslateMock(),
         provideRouterMock(createRouterMock()),
@@ -85,6 +88,12 @@ describe('JobsPreviewSectionComponent', () => {
 
     const jobCard = jobCardDebugEl.componentInstance as JobCardComponent;
     expect(jobCard.headerImageUrl()).toBe(component.getExampleImageUrl(0));
+  });
+
+  it('should pass the professor avatar to the job card', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toContain('/images/profiles/prof-john.jpg');
   });
 
   it('should handle error on load and show toast', async () => {

@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
@@ -21,8 +21,8 @@ describe('EmployeeRequestAccessFormComponent', () => {
 
   let mockDialogRef: DynamicDialogRefMock;
   let mockDialogService: DialogServiceMock;
-  let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
-  let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
+  let mockResearchGroupService: Partial<ResearchGroupResourceApi>;
+  let mockProfOnboardingService: Partial<ProfOnboardingResourceApi>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -48,8 +48,8 @@ describe('EmployeeRequestAccessFormComponent', () => {
         provideToastServiceMock(mockToastService),
         provideDialogServiceMock(mockDialogService),
         provideDynamicDialogRefMock(mockDialogRef),
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+        { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
       ],
     }).compileComponents();
 
@@ -107,22 +107,18 @@ describe('EmployeeRequestAccessFormComponent', () => {
   describe('onSubmit', () => {
     it('should not trigger confirm dialog when form is invalid', () => {
       component.employeeForm.patchValue({ professorName: '' });
-      const confirmDialogSpy = vi.fn();
-      component.confirmDialog = vi.fn(() => ({ confirm: confirmDialogSpy }) as any) as any;
 
       component.onSubmit();
 
-      expect(confirmDialogSpy).not.toHaveBeenCalled();
+      expect(component.showConfirmDialog()).toBe(false);
     });
 
     it('should trigger confirm dialog when form is valid', () => {
       component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-      const confirmDialogSpy = vi.fn();
-      component.confirmDialog = vi.fn(() => ({ confirm: confirmDialogSpy }) as any) as any;
 
       component.onSubmit();
 
-      expect(confirmDialogSpy).toHaveBeenCalledOnce();
+      expect(component.showConfirmDialog()).toBe(true);
     });
   });
 
@@ -289,8 +285,8 @@ describe('EmployeeRequestAccessFormComponent', () => {
             provideFontAwesomeTesting(),
             { provide: DynamicDialogRef, useValue: null },
             { provide: DialogService, useValue: mockDialogService },
-            { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-            { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
+            { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+            { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
             { provide: ToastService, useValue: mockToastService },
           ],
         })

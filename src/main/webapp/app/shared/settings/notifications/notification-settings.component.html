@@ -1,0 +1,63 @@
+@if (loaded() && currentRole(); as role) {
+  <div class="pb-4 pt-2">
+    <div class="flex flex-col gap-8">
+      <!-- Standard notification groups for the current role -->
+      @if (roleSettings().get(role); as groups) {
+        @for (group of groups; track group.groupKey) {
+          <section>
+            <div class="flex gap-6 items-start justify-between">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3">
+                  <h2 class="font-medium text-text-primary text-lg" [jhiTranslate]="group.groupKey"></h2>
+                </div>
+                <p class="mt-3 text-md text-text-secondary" [jhiTranslate]="group.descriptionKey"></p>
+              </div>
+
+              <jhi-toggle-switch class="shrink-0" [(model)]="group.enabled" (modelChange)="onToggleChanged(group)" />
+            </div>
+          </section>
+        }
+      }
+
+      <!-- Applicant-only subject area subscription settings -->
+      @if (role === RolesEnum.Applicant) {
+        <section>
+          <div class="flex flex-col">
+            <div class="flex items-start justify-between gap-8">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3">
+                  <h2 class="font-medium text-text-primary text-lg" jhiTranslate="settings.notifications.applicant.subjectAreas.title"></h2>
+                </div>
+                <p class="mt-3 text-md text-text-secondary" jhiTranslate="settings.notifications.applicant.subjectAreas.description"></p>
+              </div>
+
+              <jhi-toggle-switch
+                class="shrink-0"
+                [model]="subjectAreaSubscriptions.enabled()"
+                (modelChange)="subjectAreaSubscriptions.setEnabled($event)"
+              />
+            </div>
+
+            <div
+              [class]="'transition-all duration-100 ease-in-out ' + animationClasses()"
+              [attr.aria-hidden]="!subjectAreaSubscriptions.enabled()"
+            >
+              <div class="flex flex-col gap-3">
+                <div [class.pointer-events-none]="subjectAreaSubscriptions.saving()">
+                  <jhi-subject-area-subscription-selector
+                    [saving]="subjectAreaSubscriptions.saving()"
+                    [filterOptions]="subjectAreaSubscriptions.filterOptions"
+                    [selectedValues]="subjectAreaSubscriptions.selectedFilterValues()"
+                    [selectedOptions]="subjectAreaSubscriptions.selectedOptions()"
+                    (filterChange)="subjectAreaSubscriptions.onFilterChange($event)"
+                    (removeSubjectArea)="subjectAreaSubscriptions.remove($event)"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+}

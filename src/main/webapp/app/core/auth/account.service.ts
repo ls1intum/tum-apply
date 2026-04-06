@@ -1,14 +1,16 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { ResearchGroupShortDTO } from '../../generated/model/researchGroupShortDTO';
-import { UserResourceApiService } from '../../generated/api/userResourceApi.service';
-import { UserShortDTO } from '../../generated/model/userShortDTO';
+import { ResearchGroupShortDTO } from '../../generated/model/research-group-short-dto';
+import { UserResourceApi } from '../../generated/api/user-resource-api';
+import { UserShortDTO } from '../../generated/model/user-short-dto';
+import { formatFullName } from '../../shared/util/name.util';
 
 export interface User {
   id: string;
   email: string;
   name: string;
+  avatar?: string;
   researchGroup?: ResearchGroupShortDTO;
   authorities?: string[];
 }
@@ -30,7 +32,7 @@ export interface User {
  * -----
  *  - This service does not handle authentication itself; it assumes that the server session or Keycloak
  *    has already established an authenticated context.
- *  - It relies on `UserResourceApiService` for all server communication.
+ *  - It relies on `UserResourceApi` for all server communication.
  *  - Errors when fetching the user are logged and result in `user` being set to `undefined` while `loaded` is true.
  */
 @Injectable({ providedIn: 'root' })
@@ -42,7 +44,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
-  private readonly userResourceService = inject(UserResourceApiService);
+  private readonly userApi = inject(UserResourceApi);
 
   /**
    * Returns the id of the signed-in user, or undefined if no user is loaded.
@@ -91,9 +93,10 @@ export class AccountService {
       const user: User = {
         id: userShortDTO.userId,
         email: userShortDTO.email ?? '',
-        name: `${userShortDTO.firstName} ${userShortDTO.lastName}`.trim() || 'User',
+        name: formatFullName(userShortDTO.firstName, userShortDTO.lastName) || 'User',
+        avatar: userShortDTO.avatar,
         researchGroup: userShortDTO.researchGroup ?? undefined,
-        authorities: userShortDTO.roles,
+        authorities: userShortDTO.roles ? Array.from(userShortDTO.roles) : undefined,
       };
       this.user.set(user);
       this.loaded.set(true);
@@ -107,7 +110,7 @@ export class AccountService {
     const normalizedFirstName = firstName.trim();
     const normalizedLastName = lastName.trim();
     await firstValueFrom(
-      this.userResourceService.updateUserName({
+      this.userApi.updateUserName({
         firstName: normalizedFirstName,
         lastName: normalizedLastName,
       }),
@@ -118,13 +121,17 @@ export class AccountService {
   async updatePassword(password: string): Promise<void> {
     const trimmedPassword = password.trim();
     if (trimmedPassword) {
-      await firstValueFrom(this.userResourceService.updatePassword({ newPassword: trimmedPassword }));
+      await firstValueFrom(this.userApi.updatePassword({ newPassword: trimmedPassword }));
     }
+  }
+
+  setAvatar(avatarUrl: string | undefined): void {
+    this.user.update(currentUser => (currentUser ? Object.assign({}, currentUser, { avatar: avatarUrl }) : currentUser));
   }
 
   private async getCurrentUser(): Promise<UserShortDTO | null> {
     try {
-      const user = await firstValueFrom(this.userResourceService.getCurrentUser());
+      const user = await firstValueFrom(this.userApi.getCurrentUser());
       return user;
     } catch (error) {
       console.error('Failed to fetch user:', error);

@@ -51,7 +51,8 @@ public enum EmailType {
      * To: Applicant who was assigned to the slot
      */
     INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false),
-    /** When a user is added to a research group
+    /**
+     * When a user is added to a research group
      * To: Newly added member
      */
     RESEARCH_GROUP_MEMBER_ADDED("RESEARCH_GROUP_MEMBER_ADDED", Set.of(UserRole.EMPLOYEE, UserRole.PROFESSOR), true, false),
@@ -60,7 +61,7 @@ public enum EmailType {
      * When a research group request is approved
      * To: Research group owner (professor)
      */
-    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), true, false),
+    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), false, false),
     /**
      * Confirmation when applicant books their own interview slot
      * To: Applicant who booked the slot
@@ -78,6 +79,12 @@ public enum EmailType {
      * To: Supervising professor of the job
      */
     INTERVIEW_ASSIGNED_PROFESSOR("INTERVIEW_ASSIGNED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
+
+    /**
+     * Notification when the location of a booked interview slot is updated
+     * To: Applicant whose booked slot location was changed
+     */
+    INTERVIEW_LOCATION_CHANGED("INTERVIEW_LOCATION_CHANGED", Set.of(UserRole.APPLICANT), true, false),
 
     /**
      * Invitation to self-schedule an interview slot
@@ -105,16 +112,25 @@ public enum EmailType {
     DATA_EXPORT_READY("DATA_EXPORT_READY", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE, UserRole.ADMIN), false, false),
 
     /**
-     * Warning email sent to inactive users before their data is deleted due to prolonged inactivity.
-     * This notification is triggered 28 days before the scheduled deletion date, giving users time to log in and reactivate their account.
-     * To: Inactive applicants, employees, and professors who are approaching the data deletion threshold.
+     * Warning email sent to inactive users before their data is deleted due to
+     * prolonged inactivity.
+     * This notification is triggered 28 days before the scheduled deletion date,
+     * giving users time to log in and reactivate their account.
+     * To: Inactive applicants, employees, and professors who are approaching the
+     * data deletion threshold.
      */
     USER_DATA_DELETION_WARNING(
         "USER_DATA_DELETION_WARNING",
         Set.of(UserRole.APPLICANT, UserRole.EMPLOYEE, UserRole.PROFESSOR),
         false,
         false
-    );
+    ),
+
+    /**
+     * Warning email sent to applicants before their application data is deleted as part of the applicant retention policy.
+     * To: Applicants whose data is scheduled for deletion under the retention policy.
+     */
+    APPLICANT_DATA_DELETION_WARNING("APPLICANT_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT), false, false);
 
     private final String value;
 

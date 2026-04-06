@@ -5,14 +5,15 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum FundingType {
-    FULLY_FUNDED("FULLY_FUNDED"),
-    PARTIALLY_FUNDED("PARTIALLY_FUNDED"),
-    SCHOLARSHIP("SCHOLARSHIP"),
-    SELF_FUNDED("SELF_FUNDED"),
-    INDUSTRY_SPONSORED("INDUSTRY_SPONSORED"),
-    GOVERNMENT_FUNDED("GOVERNMENT_FUNDED"),
-    RESEARCH_GRANT("RESEARCH_GRANT");
+public enum FundingType implements LocalizedEnum {
+    FULLY_FUNDED("Fully Funded", "Vollständig finanziert"),
+    PARTIALLY_FUNDED("Partially Funded", "Teilweise finanziert"),
+    SCHOLARSHIP("Scholarship", "Stipendium"),
+    SELF_FUNDED("Self Funded", "Selbstfinanziert"),
+    INDUSTRY_SPONSORED("Industry Sponsored", "Industriegesponsert"),
+    GOVERNMENT_FUNDED("Government Funded", "Staatlich finanziert"),
+    RESEARCH_GRANT("Research Grant", "Forschungsstipendium");
 
-    private final String value;
+    private final String englishValue;
+    private final String germanValue;
 }

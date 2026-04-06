@@ -9,7 +9,7 @@
       "documents": "Dokumente"
     },
     "personalInformation": {
-      "description": "Aktualisiere hier deine persönlichen Informationen. \nDeine gespeicherten Daten werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "description": "Aktualisiere hier deine persönlichen Informationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
         "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
@@ -25,28 +25,91 @@
     },
 
     "notifications": {
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Benachrichtigungseinstellungen. Bitte versuche es erneut."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Aktualisieren der Benachrichtigungseinstellungen. Bitte versuche es erneut."
+      },
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
-          "description": "Erhalte eine Bestätigung per E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
+          "description": "Erhalte eine E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
         },
         "outcome": {
           "title": "Bewerbungsergebnis",
-          "description": "Du wirst per E-Mail benachrichtigt, wenn deine Bewerbung angenommen oder abgelehnt wurde."
+          "description": "Erhalte eine E-Mail, wenn deine Bewerbung angenommen oder abgelehnt wird."
+        },
+        "subjectAreas": {
+          "title": "Stellenausschreibungen",
+          "description": "Erhalte E-Mails über neue Stellenausschreibungen. Nach der Aktivierung kannst du deine bevorzugten Fachbereiche auswählen.",
+          "placeholder": "Fachbereiche hinzufügen",
+          "filterPlaceholder": "Fachbereich suchen...",
+          "removeLabel": "{{subjectArea}} entfernen",
+          "selectedCount": "{{count}} ausgewählt",
+          "empty": "Keine Fachbereiche verfügbar.",
+          "emptyFilter": "Keine Fachbereiche für diese Suche gefunden.",
+          "emptySelection": "Noch keine Fachbereiche ausgewählt.",
+          "loadFailed": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Fehler beim Laden der Fachbereich-Abonnements. Bitte versuche es erneut."
+          },
+          "saveFailed": {
+            "summary": "Speichern fehlgeschlagen",
+            "detail": "Fehler beim Aktualisieren der Fachbereich-Abonnements. Bitte versuche es erneut."
+          }
         }
       },
       "professor": {
         "new": {
           "title": "Neue Bewerbungen",
-          "description": "Du wirst per E-Mail benachrichtigt, wenn eine neue Bewerbung für deine Stelle eingeht."
+          "description": "Erhalte eine E-Mail, wenn eine neue Bewerbung für deine Stelle eingeht."
         },
         "accepted": {
-          "title": "Bewerbung angenommen (BCC)",
-          "description": "Erhalte eine Kopie per E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
+          "title": "Bewerbung angenommen",
+          "description": "Erhalte eine Kopie der Annahme-E-Mail, die an den Bewerber gesendet wird, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     },
 
+    "profilePicture": {
+      "header": "Profilbild",
+      "description": "Mach dein Profil persönlicher mit einem Foto.",
+      "saved": {
+        "summary": "Profilbild aktualisiert",
+        "detail": "Dein Profilbild wurde erfolgreich aktualisiert."
+      },
+      "saveFailed": {
+        "summary": "Aktualisierung fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "deleted": {
+        "summary": "Profilbild entfernt",
+        "detail": "Dein Profilbild wurde erfolgreich entfernt."
+      },
+      "deleteFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Dein Profilbild konnte nicht entfernt werden. Bitte versuche es erneut."
+      },
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bitte wähle ein Bild, das kleiner als 5 MB ist."
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte wähle ein JPEG-, JPG- oder PNG-Bild."
+      },
+      "resetConfirm": {
+        "header": "Profilbild löschen?",
+        "message": "Möchtest du dein aktuelles Profilbild wirklich löschen?"
+      },
+      "cropDialog": {
+        "header": "Profilbild zuschneiden",
+        "rotate": "Drehen"
+      }
+    },
     "appearance": {
       "header": "Aussehen",
       "theme": {
@@ -61,7 +124,7 @@
       }
     },
     "documents": {
-      "description": "Lade hier deine Dokumente hoch und verwalte sie. \nDeine gespeicherten Dokumente werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "description": "Lade hier deine Dokumente hoch und verwalte sie. Deine gespeicherten Dokumente werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "sections": {
         "bachelor": "Bachelor Studium",
         "master": "Master Studium",

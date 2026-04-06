@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -7,12 +7,12 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import {
-  GenderBiasAnalysisServiceMock,
   createGenderBiasAnalysisServiceMock,
+  GenderBiasAnalysisServiceMock,
   provideGenderBiasAnalysisServiceMock,
 } from 'util/gender-bias-analysis.service.mock';
 import { BehaviorSubject } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { ContentChange } from 'ngx-quill';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): ContentChange {
@@ -38,7 +38,7 @@ function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): Conten
 
 describe('EditorComponent', () => {
   let genderBiasService: GenderBiasAnalysisServiceMock;
-  let analysisSubject: BehaviorSubject<GenderBiasAnalysisResponse | null>;
+  let analysisSubject: BehaviorSubject<GenderBiasAnalysisResponse | undefined>;
 
   function createFixture() {
     const fixture = TestBed.createComponent(EditorComponent);
@@ -51,7 +51,7 @@ describe('EditorComponent', () => {
   }
 
   beforeEach(async () => {
-    analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | null>(null);
+    analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | undefined>(undefined);
     genderBiasService = createGenderBiasAnalysisServiceMock();
     vi.mocked(genderBiasService.getAnalysisForField).mockReturnValue(analysisSubject.asObservable());
 
@@ -336,12 +336,12 @@ describe('EditorComponent', () => {
       expect(comp.shouldShowButton()).toBe(true);
     });
 
-    it('should not show button when showGenderDecoderButton is true but analysisResult is null', () => {
+    it('should not show button when showGenderDecoderButton is true but analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -364,11 +364,11 @@ describe('EditorComponent', () => {
   });
 
   describe('codingDisplay computed', () => {
-    it('should return null when analysisResult is null', () => {
+    it('should return null when analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       fixture.detectChanges();
 
       expect(comp.codingDisplay()).toBeNull();
@@ -483,12 +483,12 @@ describe('EditorComponent', () => {
       expect(comp.shouldShowButton()).toBe(false);
     });
 
-    it('should return false when analysisResult is null', () => {
+    it('should return false when analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -525,11 +525,11 @@ describe('EditorComponent', () => {
       expect(comp.showAnalysisModal()).toBe(true);
     });
 
-    it('should not set showAnalysisModal when analysisResult is null', () => {
+    it('should not set showAnalysisModal when analysisResult is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
       comp.showAnalysisModal.set(false);
       comp.onGenderDecoderClick();
 
@@ -579,8 +579,8 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       const originalIncludes = Array.prototype.includes;
-      (Array.prototype as any).includes = function (this: any[], searchElement: any) {
-        if (this.includes === originalIncludes) {
+      const patchedIncludes = function (this: unknown[], searchElement: unknown): boolean {
+        if (this === Array.prototype) {
           return originalIncludes.call(this, searchElement);
         }
         if (this.length === 3 && searchElement === 'xyz') {
@@ -588,11 +588,12 @@ describe('EditorComponent', () => {
         }
         return originalIncludes.call(this, searchElement);
       };
+      Object.defineProperty(Array.prototype, 'includes', { value: patchedIncludes, configurable: true, writable: true });
 
       const result = comp['mapToLanguageCode']('xyz');
       expect(result).toBe('en');
 
-      Array.prototype.includes = originalIncludes;
+      Object.defineProperty(Array.prototype, 'includes', { value: originalIncludes, configurable: true, writable: true });
     });
 
     it('should fallback to currentLang when franc code is not in validCodes', () => {
@@ -659,6 +660,45 @@ describe('EditorComponent', () => {
       await fixture.whenStable();
 
       expect(genderBiasService.triggerAnalysis).not.toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('Clipboard Text Styling', () => {
+    it.each([
+      {
+        name: 'filter attributes to the allowed list',
+        input: {
+          ops: [
+            { insert: 'x', attributes: { bold: true, italic: false, color: 'red', unknown: 1, align: 'center', background: '#fff' } },
+            { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1, bad: 'style' } },
+          ],
+        },
+        expected: [
+          { insert: 'x', attributes: { bold: true, italic: false, align: 'center' } },
+          { insert: 'Click Me', attributes: { link: 'https://vitest.dev', header: 1 } },
+        ],
+      },
+      {
+        name: 'remove attributes when none are allowed',
+        input: { ops: [{ insert: 'x', attributes: { color: 'red', style: 'foo' } }] },
+        expected: [{ insert: 'x', attributes: undefined }],
+      },
+      {
+        name: 'return the same if no attributes present',
+        input: { ops: [{ insert: 'plain text' }] },
+        expected: [{ insert: 'plain text' }],
+      },
+    ])('should $name', ({ input, expected }) => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
+      const matcherFn = comp.quillModules.clipboard.matchers[0][1];
+      if (typeof matcherFn !== 'function') {
+        throw new Error('Expected clipboard matcher to be a function');
+      }
+      const result = matcherFn(document.createElement('div'), input);
+
+      expect(result.ops).toEqual(expected);
     });
   });
 });

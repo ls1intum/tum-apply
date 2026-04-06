@@ -4,6 +4,8 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.dto.IntervieweeStateCounts;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -145,6 +147,33 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 
     void deleteByApplication(Application application);
+
+    /**
+     * Counts interviewees grouped by their derived state for multiple interview processes.
+     * State logic matches {@link de.tum.cit.aet.interview.service.InterviewService#calculateIntervieweeState}:
+     * COMPLETED = has slot with endDateTime < now, SCHEDULED = has slot with endDateTime >= now,
+     * INVITED = no slot but lastInvited is set, UNCONTACTED = no slot and lastInvited is null.
+     *
+     * @param processIds the IDs of the interview processes
+     * @param now        the current timestamp used to distinguish SCHEDULED from COMPLETED
+     * @return list of state counts per process
+     */
+    @Query(
+        """
+        SELECT new de.tum.cit.aet.interview.dto.IntervieweeStateCounts(
+            i.interviewProcess.id,
+            SUM(CASE WHEN s IS NOT NULL AND s.endDateTime < :now THEN 1L ELSE 0L END),
+            SUM(CASE WHEN s IS NOT NULL AND s.endDateTime >= :now THEN 1L ELSE 0L END),
+            SUM(CASE WHEN s IS NULL AND i.lastInvited IS NOT NULL THEN 1L ELSE 0L END),
+            SUM(CASE WHEN s IS NULL AND i.lastInvited IS NULL THEN 1L ELSE 0L END)
+        )
+        FROM Interviewee i
+        LEFT JOIN i.slots s
+        WHERE i.interviewProcess.id IN :processIds
+        GROUP BY i.interviewProcess.id
+        """
+    )
+    List<IntervieweeStateCounts> countStatesByProcessIds(@Param("processIds") List<UUID> processIds, @Param("now") Instant now);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM Interviewee i WHERE i.application.applicationId IN :applicationIds")

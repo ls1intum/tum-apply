@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +69,9 @@ class ResearchGroupServiceTest {
     private DepartmentRepository departmentRepository;
 
     @Mock
+    private KeycloakUserService keycloakUserService;
+
+    @Mock
     private AsyncEmailSender emailSender;
 
     @Mock
@@ -100,7 +104,6 @@ class ResearchGroupServiceTest {
             "Test Research Group",
             "TRG",
             "Test City",
-            "Computer Science",
             "Test description",
             "test@research.com",
             "12345",
@@ -188,7 +191,6 @@ class ResearchGroupServiceTest {
             ResearchGroup otherGroup = ResearchGroupTestData.newRgAll(
                 null,
                 "Other Group",
-                null,
                 null,
                 null,
                 null,
@@ -294,7 +296,6 @@ class ResearchGroupServiceTest {
                 "updated@test.com",
                 "https://updated.com",
                 "Updated description",
-                "Computer Science",
                 "Updated Street",
                 "54321",
                 "Updated City",
@@ -514,6 +515,25 @@ class ResearchGroupServiceTest {
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
                 .isInstanceOf(ResourceAlreadyExistsException.class)
                 .hasMessageContaining("already exists");
+        }
+    }
+
+    @Nested
+    class CreateResearchGroupAsAdmin {
+
+        @Test
+        void shouldThrowEntityNotFoundWhenKeycloakHasNoResult() {
+            // Arrange
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Admin Group", TEST_DEPARTMENT_ID);
+
+            when(researchGroupRepository.existsByNameIgnoreCase("Admin Group")).thenReturn(false);
+            when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.empty());
+            when(keycloakUserService.findUserByUniversityId("ab12cde")).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy(() -> researchGroupService.createResearchGroupAsAdmin(request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("ab12cde");
         }
     }
 

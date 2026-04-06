@@ -1,0 +1,53 @@
+{{>licenseInfo}}
+{{#models}}
+{{#model}}
+{{#tsImports}}
+import type { {{classname}} } from './{{filename}}';
+{{/tsImports}}
+
+{{#description}}
+/**
+ * {{{.}}}
+ */
+{{/description}}
+{{#isEnum}}
+export type {{classname}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
+
+export const {{classname}} = {
+{{#allowableValues}}{{#enumVars}}    {{name}}: {{{value}}} as const,
+{{/enumVars}}{{/allowableValues}}} as const;
+
+export const {{classname}}Values = [{{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}}, {{/-last}}{{/enumVars}}{{/allowableValues}}] as const;
+{{/isEnum}}
+{{^isEnum}}
+{{#hasVars}}
+export interface {{classname}}{{#parent}} extends {{.}}{{/parent}} {
+{{#vars}}
+{{#description}}
+    /** {{{.}}} */
+{{/description}}
+{{#vendorExtensions.x-is-readonly}}    readonly {{/vendorExtensions.x-is-readonly}}{{^vendorExtensions.x-is-readonly}}    {{/vendorExtensions.x-is-readonly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{#isArray}}Array<{{classname}}{{enumName}}>{{/isArray}}{{^isArray}}{{classname}}{{enumName}}{{/isArray}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
+{{/vars}}
+}
+{{#hasEnums}}
+
+{{#vars}}
+{{#isEnum}}
+export type {{classname}}{{enumName}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
+
+export const {{classname}}{{enumName}} = {
+{{#allowableValues}}{{#enumVars}}    {{name}}: {{{value}}} as const,
+{{/enumVars}}{{/allowableValues}}} as const;
+
+export const {{classname}}{{enumName}}Values = [{{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}}, {{/-last}}{{/enumVars}}{{/allowableValues}}] as const;
+
+{{/isEnum}}
+{{/vars}}
+{{/hasEnums}}
+{{/hasVars}}
+{{^hasVars}}
+export type {{classname}} = {{#vendorExtensions.x-is-type-alias}}{{{vendorExtensions.x-type-alias-value}}}{{/vendorExtensions.x-is-type-alias}}{{^vendorExtensions.x-is-type-alias}}Record<string, unknown>{{/vendorExtensions.x-is-type-alias}};
+{{/hasVars}}
+{{/isEnum}}
+{{/model}}
+{{/models}}

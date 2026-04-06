@@ -9,7 +9,7 @@
     },
     "email": {
       "subject": "Request: Access to research group in TUMApply",
-      "body": "=== IMPORTANT NOTES ===\n- Please do not change the subject of this email.\n- Please fill out all required fields below.\n- The optional fields do not have to be filled out.\n- Please send this email from your official TUM email address.\n=== IMPORTANT NOTES ===\n\n\n\n=== Required ===\n\nPersonal information:\n- Title (Prof./Dr./…): \n- First name: \n- Last name: \n- TUM ID (e.g. ab12cde): \n\nInformation about the research group:\n- Head (title, first and last name): \n- Name: \n\n\n=== Optional ===\n\nInformation about the research group:\n- Abbreviation: \n- Contact email: \n- Website: \n- School: \n- Description: \n- Default field of studies: \n- Address:\n  - Street and number: \n  - Postal code: \n  - City: "
+      "body": "=== IMPORTANT NOTES ===\n- Please do not change the subject of this email.\n- Please fill out all required fields below.\n- The optional fields do not have to be filled out.\n- Please send this email from your official TUM email address.\n=== IMPORTANT NOTES ===\n\n\n\n=== Required ===\n\nPersonal information:\n- Title (Prof./Dr./…): \n- First name: \n- Last name: \n- TUM ID (e.g. ab12cde): \n\nInformation about the research group:\n- Head (title, first and last name): \n- Name: \n\n\n=== Optional ===\n\nInformation about the research group:\n- Abbreviation: \n- Contact email: \n- Website: \n- School: \n- Description: \n- Address:\n  - Street and number: \n  - Postal code: \n  - City: "
     },
     "employeeRequest": {
       "dialogTitle": "Request Access as Employee",
@@ -95,10 +95,6 @@
       "researchGroupDescription": {
         "label": "Description",
         "placeholder": "Describe briefly your group's research focus, goals, and key areas."
-      },
-      "researchGroupFieldOfStudies": {
-        "label": "Field of Studies",
-        "placeholder": "e.g. Computer Science"
       },
       "researchGroupStreetAndNumber": {
         "label": "Street and House Number",

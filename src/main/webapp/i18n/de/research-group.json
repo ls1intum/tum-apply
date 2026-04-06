@@ -17,7 +17,6 @@
         "head": "Leitung",
         "school": "School",
         "department": "Department",
-        "defaultFieldOfStudies": "Studienrichtung",
         "website": "Webseite",
         "email": "E-Mail",
         "address": "Straße und Hausnummer",
@@ -36,7 +35,6 @@
         "email": "z.B. kontakt@forschung.de",
         "website": "z.B. https://www.forschung.de/gruppe",
         "school": "z.B. Informatik",
-        "defaultFieldOfStudies": "z.B. Computer Science",
         "address": "z.B. Musterstraße 123",
         "postalCode": "z.B. 12345",
         "city": "z.B. Berlin",
@@ -55,6 +53,9 @@
         "title": "Vorlage löschen",
         "message": "Möchtest du diese Vorlage wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
       },
+      "deleteSuccess": "Vorlage erfolgreich gelöscht.",
+      "deleteDefaultDisabled": "Systemvorlagen können nicht gelöscht werden.",
+      "deleteFailed": "Vorlage konnte nicht gelöscht werden. Bitte versuche es erneut.",
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {
@@ -79,19 +80,21 @@
         "APPLICATION_SENT": "Bewerbung empfangen",
         "APPLICATION_REJECTED": "Bewerbung abgelehnt",
         "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
-        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
+        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert"
       },
       "default": {
-        "APPLICATION_ACCEPTED": "Bewerbung angenommen",
-        "APPLICATION_SENT": "Bewerbungseingang Bestätigung",
-        "APPLICATION_REJECTED-JOB_FILLED": "Bewerbung abgelehnt - Stelle bereits besetzt",
-        "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung abgelehnt - Stelle nicht mehr aktuell",
-        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
-        "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund",
-        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch",
-        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Einladung zur Terminbuchung",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
-        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
+        "APPLICATION_ACCEPTED": "Bewerbung: Angenommen",
+        "APPLICATION_SENT": "Bewerbung: Eingangsbestätigung",
+        "APPLICATION_REJECTED-JOB_FILLED": "Bewerbung: Abgelehnt - Stelle bereits besetzt",
+        "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung: Abgelehnt - Stelle nicht mehr aktuell",
+        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung: Abgelehnt - Anforderungen nicht erfüllt",
+        "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung: Abgelehnt - Anderer Grund",
+        "INTERVIEW_INVITATION": "Vorstellungsgespräch: Einladung",
+        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Vorstellungsgespräch: Einladung zur Terminbuchung",
+        "INTERVIEW_CANCELLED": "Vorstellungsgespräch: Abgesagt",
+        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Vorstellungsgespräch: Terminverschiebung angefragt",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Forschungsgruppe: Mitglied hinzugefügt"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
@@ -102,10 +105,16 @@
         "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
         "JOB_TITLE": "Stellen Titel",
         "RESEARCH_GROUP_NAME": "Name Forschungsgruppe",
+        "APPLICANT_GENDER": "Geschlecht Bewerber:in",
+        "SUPERVISING_PROFESSOR_EMAIL": "E-Mail Professor:in",
         "INTERVIEW_DATE": "Datum",
         "INTERVIEW_START_TIME": "Startzeit",
         "INTERVIEW_END_TIME": "Endzeit",
-        "INTERVIEW_LOCATION": "Ort"
+        "INTERVIEW_LOCATION": "Ort",
+        "INTERVIEW_STREAM_LINK": "Interview-Link",
+        "BOOKING_LINK": "Buchungslink",
+        "DOWNLOAD_LINK": "Download-Link",
+        "EXPORT_EXPIRES_DAYS": "Export-Gültigkeit (Tage)"
       }
     },
     "members": {
@@ -201,8 +210,12 @@
           "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
         },
         "userNotFound": {
-          "summary": "Benutzer:in nicht gefunden",
-          "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+          "summary": "Person nicht gefunden",
+          "detail": "Es wurde keine Person mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+        },
+        "userAlreadyMember": {
+          "summary": "Person bereits zugeordnet",
+          "detail": "Die ausgewählte Person ist bereits Mitglied einer anderen Forschungsgruppe."
         }
       },
       "success": {
@@ -265,6 +278,15 @@
         "label": "Professor:in TUM-ID",
         "placeholder": "z.B. ab12cde"
       },
+      "professorSelect": {
+        "searchPlaceholder": "Professoren nach Name oder E-Mail suchen...",
+        "singleEntity": "Professor:in",
+        "multipleEntities": "Professoren",
+        "noResults": "Keine verfügbaren Professor:innen gefunden.",
+        "requiredError": "Bitte wähle eine:n Professor:in aus.",
+        "loadMore": "Mehr laden",
+        "changeButton": "Auswahl ändern"
+      },
       "createButton": "Forschungsgruppe erstellen",
       "createDialog": {
         "title": "Forschungsgruppe erstellen",
@@ -310,7 +332,6 @@
       "name": "Name",
       "school": "School",
       "department": "Department",
-      "defaultFieldOfStudies": "Studienrichtung",
       "head": "Leitung",
       "email": "E-Mail",
       "website": "Webseite",
@@ -323,7 +344,6 @@
         "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
         "school": "z.B. Informatik",
         "department": "Wählen...",
-        "defaultFieldOfStudies": "z.B. Computer Science",
         "head": "z.B. Prof. Dr. Max Mustermann",
         "email": "z.B. kontakt@forschung.de",
         "website": "z.B. https://www.forschung.de/gruppe",
@@ -405,6 +425,51 @@
       "deleteDialog": {
         "header": "Department löschen",
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
+      },
+      "images": {
+        "button": "Bilder verwalten",
+        "title": "Department-Bilder verwalten",
+        "filters": {
+          "department": "Department",
+          "departmentPlaceholder": "Department wählen..."
+        },
+        "section": {
+          "inUse": "Default-Bilder in Verwendung",
+          "upload": "Default-Bilder hochladen"
+        },
+        "empty": {
+          "inUse": "Derzeit sind keine Default-Bilder in Verwendung",
+          "upload": "Noch keine Default-Bilder hochgeladen",
+          "selectDepartment": "Bitte ein Department wählen, um Default-Bilder zu verwalten"
+        },
+        "delete": {
+          "title": "Bild löschen",
+          "message": "Möchtest du dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+        },
+        "success": {
+          "imageDeleted": {
+            "summary": "Bild gelöscht",
+            "detail": "Default-Bild erfolgreich gelöscht."
+          }
+        },
+        "error": {
+          "loadDepartments": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Departments konnten nicht geladen werden. Bitte versuche es erneut."
+          },
+          "loadImages": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Default-Bilder konnten nicht geladen werden. Bitte versuche es erneut."
+          },
+          "deleteFailed": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Default-Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+          },
+          "noDepartment": {
+            "summary": "Department fehlt",
+            "detail": "Bitte zuerst ein Department wählen, bevor ein Default-Bild hochgeladen wird."
+          }
+        }
       }
     },
     "schools": {
@@ -471,6 +536,7 @@
       }
     },
     "imageLibrary": {
+      "manageButton": "Bilder verwalten",
       "title": "Bildersammlung",
       "stats": {
         "totalImages": "Bilder insgesamt",

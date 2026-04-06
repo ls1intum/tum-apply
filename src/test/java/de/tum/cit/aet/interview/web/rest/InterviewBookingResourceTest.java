@@ -87,7 +87,6 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             "Algorithms Group",
             "ALG",
             "Munich",
-            "CS",
             "We do cool stuff",
             "alg@example.com",
             "80333",
@@ -121,7 +120,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
         interviewProcess = interviewProcessRepository.save(interviewProcess);
 
         // Create applicant user and application
-        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
         applicantUser = applicant.getUser();
         application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
     }

@@ -2,9 +2,10 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 
 /** Selectable slot card for interview booking. Displays time, duration, and location. */
 @Component({
@@ -34,7 +35,7 @@ export class SelectableSlotCardComponent {
   });
 
   /** Checks if slot is virtual. */
-  isVirtual = computed(() => this.slot().location?.toLowerCase() === 'virtual');
+  isVirtual = computed(() => isVirtualLocation(this.slot().location));
 
   // Services
   private readonly translateService = inject(TranslateService);

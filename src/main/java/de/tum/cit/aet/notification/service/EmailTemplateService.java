@@ -214,6 +214,10 @@ public class EmailTemplateService {
             upsertTranslationFromDTO(template, dto.german(), Language.GERMAN);
         }
 
+        // Force update of lastModifiedAt even when only translations change,
+        // since translations are on a child entity and don't trigger @LastModifiedDate on the parent.
+        template.setLastModifiedAt(java.time.LocalDateTime.now(java.time.ZoneOffset.UTC));
+
         return toDTOWithQuillMentions(emailTemplateRepository.save(template));
     }
 
@@ -250,18 +254,15 @@ public class EmailTemplateService {
 
         // Only iterate over types that are missing
         for (EmailType emailType : EmailType.values()) {
-            if (existingEmailTypes.contains(emailType)) {
-                continue; // Skip already existing templates
-            }
-
             if (emailType.equals(EmailType.APPLICATION_REJECTED)) {
-                // Add one template for each reject reason
+                // Add one template for each reject reason that doesn't exist yet
                 for (RejectReason reason : RejectReason.values()) {
                     String name = reason.getValue();
-                    EmailTemplate template = createDefaultTemplate(researchGroup, name, emailType);
-                    toSave.add(template);
+                    if (emailTemplateRepository.findByResearchGroupAndTemplateNameAndEmailType(researchGroup, name, emailType).isEmpty()) {
+                        toSave.add(createDefaultTemplate(researchGroup, name, emailType));
+                    }
                 }
-            } else {
+            } else if (!existingEmailTypes.contains(emailType)) {
                 // Create a single default template
                 EmailTemplate template = createDefaultTemplate(researchGroup, null, emailType);
                 toSave.add(template);

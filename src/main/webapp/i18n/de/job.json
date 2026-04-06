@@ -6,11 +6,24 @@
         "edit": "Aktuelle Doktorandenstelle bearbeiten"
       },
       "steps": {
-        "basicInfo": "Grundlegende Informationen",
-        "employmentTerms": "Arbeitsbedingungen",
-        "imageSelection": "Bannerbild",
-        "additionalInfo": "Zusätzliche Informationen",
-        "summary": "Zusammenfassung"
+        "basicInfo": {
+          "name": "Grundlegende Informationen",
+          "description": "Gib die wichtigsten Details der Stelle an und füge eine klare Beschreibung hinzu."
+        },
+        "employmentTerms": {
+          "name": "Arbeitsbedingungen",
+          "description": "Gib die Arbeitsbedingungen an."
+        },
+        "imageSelection": {
+          "name": "Bannerbild",
+          "description": "Wähle ein optionales Bannerbild für die Stellenkarte aus den Standardbildern oder aus der Bildersammlung deiner Forschungsgruppe."
+        },
+        "additionalInfo": {
+          "name": "Zusätzliche Informationen"
+        },
+        "summary": {
+          "name": "Zusammenfassung"
+        }
       },
       "basicInfo": {
         "section1": "Übersicht",
@@ -18,39 +31,45 @@
       }
     },
     "basicInformationSection": {
-      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende:r Professor:in.",
+      "description": "Gib die wichtigsten Details der Stelle an und füge eine klare Beschreibung hinzu.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
       },
       "researchArea": {
         "label": "Forschungsbereich",
-        "placeholder": "z.B. Maschinelles Lernen, Mensch-Computer-Interaktion",
+        "placeholder": "z.B. Maschinelles Lernen",
         "toolTipText": "Gib das Hauptforschungsgebiet an, auf das sich die Doktorandenstelle konzentriert."
       },
-      "fieldOfStudies": {
-        "label": "Studienfach",
-        "placeholder": "Wähle ein Studienfach..."
+      "subjectArea": {
+        "label": "Fachbereich",
+        "placeholder": "Wähle einen Fachbereich..."
       },
-      "fieldsOfStudies": {
+      "subjectAreas": {
         "AerospaceEngineering": "Luft- und Raumfahrttechnik",
         "AgriculturalEngineering": "Agrartechnik",
+        "AgriculturalScience": "Agrarwissenschaften",
         "Architecture": "Architektur",
         "ArtHistory": "Kunstgeschichte",
         "AutomotiveEngineering": "Fahrzeugtechnik",
         "Bioengineering": "Bioingenieurwesen",
+        "Biochemistry": "Biochemie",
         "Biology": "Biologie",
+        "BiomedicalEngineering": "Biomedizintechnik",
         "Biotechnology": "Biotechnologie",
         "Chemistry": "Chemie",
         "ComputerEngineering": "Computertechnik",
         "ComputerScience": "Informatik",
+        "ComputerVision": "Computer Vision",
         "DataScience": "Datenwissenschaft",
         "Economics": "Wirtschaftswissenschaften",
         "EducationTechnology": "Bildungstechnologie",
         "ElectricalEngineering": "Elektrotechnik",
+        "EnergySystems": "Energiesysteme",
         "EnvironmentalBiology": "Umweltbiologie",
         "EnvironmentalChemistry": "Umweltchemie",
         "EnvironmentalEngineering": "Umwelttechnik",
+        "EnvironmentalLaw": "Umweltrecht",
         "EnvironmentalScience": "Umweltwissenschaften",
         "FinancialEngineering": "Finanztechnik",
         "FoodTechnology": "Lebensmitteltechnologie",
@@ -58,6 +77,7 @@
         "Geosciences": "Geowissenschaften",
         "IndustrialEngineering": "Wirtschaftsingenieurwesen",
         "InformationSystems": "Wirtschaftsinformatik",
+        "LifeSciences": "Lebenswissenschaften",
         "Linguistics": "Linguistik",
         "MarineBiology": "Meeresbiologie",
         "MaterialsScience": "Materialwissenschaften",
@@ -70,6 +90,7 @@
         "Psychology": "Psychologie",
         "SoftwareEngineering": "Softwaretechnik",
         "SportsScience": "Sportwissenschaft",
+        "Statistics": "Statistik",
         "Telecommunications": "Telekommunikation",
         "UrbanPlanning": "Stadtplanung"
       },
@@ -101,12 +122,12 @@
       },
       "workload": {
         "label": "Arbeitsaufwand",
-        "placeholder": "Gib einen Arbeitsaufwand an (in h/Woche)...",
+        "placeholder": "z.B. 20 h/Woche",
         "toolTipText": "Gib den erwarteten Arbeitsaufwand für die Doktorandenstelle in Stunden pro Woche an (z.B. 20). Du kannst bis zu 40 h/Woche eingeben."
       },
       "contractDuration": {
         "label": "Vertragslaufzeit",
-        "placeholder": "Gib eine Vertragslaufzeit an (in Jahren)...",
+        "placeholder": "z.B. 3 Jahre",
         "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
       "fundingType": {
@@ -123,11 +144,14 @@
         "PartiallyFunded": "Teilweise finanziert"
       }
     },
+    "aiSidebar": {
+      "header": "KI-Assistent"
+    },
     "positionDetailsSection": {
-      "description": "Beschreibe Forschungsschwerpunkt, Aufgaben/Erwartungen sowie Mindestanforderungen und Wunschqualifikationen für Kandidat:innen.",
-      "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
+      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Der KI-Assistent hilft dir beim Erstellen deiner Stellenbeschreibung und die Übersetzung wird automatisch generiert.<br><b>KI deaktiviert:</b> Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
       "jobDescription": {
         "label": "Stellenbeschreibung",
+        "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Stelle.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
@@ -140,14 +164,38 @@
         "aiHelperText": "Gib die wichtigsten Informationen an und TUMApply KI schreibt es für dich.",
         "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
+        "aiScoreTitle": "Inklusivitäts-Score",
+        "aiScoreDialog": {
+          "title": "Berechnung des Inklusivitäts-Scores",
+          "summary": "Berechnungsfaktoren",
+          "explanation": "Der Score kombiniert Wortwahl, Tonalität und eine ausbalancierte Gewichtung.",
+          "section1": {
+            "title": "Wortwahl",
+            "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
+          },
+          "section2": {
+            "title": "Gesamteindruck",
+            "body": "Neutrale Formulierungen erzielen das beste Ergebnis, während einseitige Sprache zu Punktabzügen führt."
+          },
+          "section3": {
+            "title": "Faire Gewichtung",
+            "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
+          }
+        },
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
-        "translating": "Übersetzt..."
+        "translating": "Übersetzt...",
+        "aiScoreFeedback": {
+          "critical": "Deine Ausschreibung kann auf viele passende Talente exkludierend wirken. Überarbeite Sprache und Anforderungen gezielt inklusiver.",
+          "warning": "Deine Ausschreibung könnte inklusiver sein. Stellenanzeigen mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
+          "good": "Das ist schon eine gute Grundlage. Deine Ausschreibung ist bereits inklusiv und spricht viele Bewerbende an. Mit gezielten Verfeinerungen kannst du sie noch stärker machen.",
+          "excellent": "Eine wirklich gelungene und einladende Ausschreibung! Deine Ausschreibung ist sehr einladend formuliert und spricht eine breite Vielfalt an Bewerbenden an."
+        }
       }
     },
     "imageSection": {
-      "description": "Wähle ein optionales Bannerbild aus, das in deiner Stellenkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe.",
+      "description": "Wähle ein optionales Bannerbild für die Stellenkarte aus den Standardbildern oder aus der Bildersammlung deiner Forschungsgruppe.",
       "defaultImages": "Standardbilder",
       "orDivider": "oder",
       "researchGroupImages": "Bildersammlung",
@@ -225,8 +273,8 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "fieldOfStudies": "Studienrichtung",
-        "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
+        "subjectArea": "Fachbereich",
+        "subjectAreaPlaceholder": "Fachbereich suchen...",
         "location": "Standort",
         "LocationSearchPlaceholder": "Standorte suchen...",
         "supervisor": "Betreuer:in",
@@ -236,12 +284,13 @@
     "sortingOptions": {
       "startDate": "Startdatum",
       "jobTitle": "Jobtitel",
-      "fieldOfStudies": "Studienrichtung",
+      "subjectArea": "Fachbereich",
       "location": "Standort",
       "professor": "Betreuer:in (Nachname)",
       "workload": "Arbeitsaufwand"
     },
     "tooltips": {
+      "subjectArea": "Fachbereich",
       "location": "Standort",
       "supervisor": "Betreuer:in",
       "startDate": "Startdatum"
@@ -250,6 +299,10 @@
       "viewJobDetails": "Details anzeigen für {{title}}"
     },
     "hoursPerWeek": "{{workload}} h/Woche",
+    "notificationsCta": {
+      "text": "Keine passende Stelle dabei? Aktiviere Benachrichtigungen für neue Jobs. Klicke {{link}}.",
+      "link": "hier"
+    },
     "errors": {
       "loadFilter": {
         "summary": "Fehler",
@@ -323,8 +376,6 @@
       "jobDescription": "Stellenbeschreibung",
       "jobDescriptionEN": "Englische Stellenbeschreibung",
       "jobDescriptionDE": "Deutsche Stellenbeschreibung",
-      "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
-      "eligibilityCriteria": "Zulassungsvoraussetzungen",
       "dataProtection": "Hinweis zum Datenschutz"
     },
     "cards": {
@@ -332,7 +383,7 @@
       "researchGroup": "Forschungsgruppe"
     },
     "labels": {
-      "fieldOfStudies": "Studienrichtung",
+      "subjectArea": "Fachbereich",
       "researchArea": "Forschungsbereich",
       "workload": "Arbeitsaufwand",
       "contractDuration": "Vertragslaufzeit",
@@ -350,6 +401,9 @@
     },
     "infos": {
       "applicantLanguageInfo": "Bewerber sehen die Stellenbeschreibung nur in der von ihnen gewählten Sprache."
+    },
+    "tooltips": {
+      "department": "Department"
     },
     "dataPrivacy": {
       "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise zur Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung</a>. Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."

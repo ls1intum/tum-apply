@@ -17,7 +17,8 @@ public record InterviewOverviewDTO(
     @NotNull Long scheduledCount,
     @NotNull Long invitedCount,
     @NotNull Long uncontactedCount,
-    @NotNull Long totalSlots,
     @NotNull Long totalInterviews,
+    @NotNull Long totalSlots,
+    @NotNull String jobState,
     boolean isClosed
 ) {}

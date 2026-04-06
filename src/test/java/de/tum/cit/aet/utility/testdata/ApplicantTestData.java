@@ -100,16 +100,17 @@ public final class ApplicantTestData {
     // --- Saved variants
     // -------------------------------------------------------------------------
 
-    public static Applicant saved(ApplicantRepository repo, User user) {
-        return repo.save(newApplicant(user));
+    public static Applicant saved(ApplicantRepository repo, UserRepository userRepo, User user) {
+        User savedUser = userRepo.save(user);
+        return repo.save(newApplicant(savedUser));
     }
 
-    public static Applicant savedWithNewUser(ApplicantRepository repo) {
-        return saved(repo, newApplicantUser());
+    public static Applicant savedWithNewUser(ApplicantRepository repo, UserRepository userRepo) {
+        return saved(repo, userRepo, newApplicantUser());
     }
 
-    public static Applicant savedWithNewUserWithWebsiteAndLinkedin(ApplicantRepository repo) {
-        return saved(repo, newApplicantUserWithWebsiteAndLinkedin());
+    public static Applicant savedWithNewUserWithWebsiteAndLinkedin(ApplicantRepository repo, UserRepository userRepo) {
+        return saved(repo, userRepo, newApplicantUserWithWebsiteAndLinkedin());
     }
 
     /**

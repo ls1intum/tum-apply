@@ -8,11 +8,11 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
-import { createDepartmentResourceApiServiceMock, provideDepartmentResourceApiServiceMock } from 'util/department-resource-api.service.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createDepartmentResourceApiMock, provideDepartmentResourceApiMock } from 'util/department-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SchoolShortDTO } from 'app/generated/model/models';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -21,8 +21,8 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 describe('DepartmentEditDialogComponent', () => {
   let component: DepartmentEditDialogComponent;
   let fixture: ComponentFixture<DepartmentEditDialogComponent>;
-  let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiServiceMock>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockDepartmentApi: ReturnType<typeof createDepartmentResourceApiMock>;
+  let mockSchoolApi: ReturnType<typeof createSchoolResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogRef: ReturnType<typeof createDynamicDialogRefMock>;
   let mockDialogConfig: ReturnType<typeof createDynamicDialogConfigMock>;
@@ -33,9 +33,9 @@ describe('DepartmentEditDialogComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockDepartmentService = createDepartmentResourceApiServiceMock();
-    mockSchoolService = createSchoolResourceApiServiceMock();
-    mockSchoolService.getAllSchools.mockReturnValue(of(mockSchools));
+    mockDepartmentApi = createDepartmentResourceApiMock();
+    mockSchoolApi = createSchoolResourceApiMock();
+    mockSchoolApi.getAllSchools.mockReturnValue(of(mockSchools));
     mockToastService = createToastServiceMock();
     mockDialogRef = createDynamicDialogRefMock();
     mockDialogConfig = createDynamicDialogConfigMock();
@@ -43,8 +43,8 @@ describe('DepartmentEditDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DepartmentEditDialogComponent],
       providers: [
-        provideDepartmentResourceApiServiceMock(mockDepartmentService),
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideDepartmentResourceApiMock(mockDepartmentApi),
+        provideSchoolResourceApiMock(mockSchoolApi),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideToastServiceMock(mockToastService),
@@ -72,13 +72,13 @@ describe('DepartmentEditDialogComponent', () => {
     it('should load schools on init', async () => {
       createComponent();
       await fixture.whenStable();
-      expect(mockSchoolService.getAllSchools).toHaveBeenCalled();
+      expect(mockSchoolApi.getAllSchools).toHaveBeenCalled();
       expect(component.schools()).toEqual(mockSchools);
     });
 
     it('should map schools to options correctly handling missing values', async () => {
       const schoolsWithMissingValues: SchoolShortDTO[] = [{ schoolId: undefined, name: undefined }];
-      mockSchoolService.getAllSchools.mockReturnValue(of(schoolsWithMissingValues));
+      mockSchoolApi.getAllSchools.mockReturnValue(of(schoolsWithMissingValues));
 
       createComponent();
       await fixture.whenStable();
@@ -90,7 +90,7 @@ describe('DepartmentEditDialogComponent', () => {
     });
 
     it('should handle load schools error', async () => {
-      mockSchoolService.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
+      mockSchoolApi.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
       createComponent();
       await fixture.whenStable();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.errors.loadSchoolsFailed');
@@ -134,17 +134,17 @@ describe('DepartmentEditDialogComponent', () => {
     it('should not submit if form is invalid', async () => {
       createComponent();
       await component.onSubmit();
-      expect(mockDepartmentService.createDepartment).not.toHaveBeenCalled();
+      expect(mockDepartmentApi.createDepartment).not.toHaveBeenCalled();
     });
 
     it('should create department successfully', async () => {
       createComponent();
       component.form.patchValue({ name: 'New Dept', schoolId: 's1' });
-      mockDepartmentService.createDepartment.mockReturnValue(of({}));
+      mockDepartmentApi.createDepartment.mockReturnValue(of({}));
 
       await component.onSubmit();
 
-      expect(mockDepartmentService.createDepartment).toHaveBeenCalledWith({ name: 'New Dept', schoolId: 's1' });
+      expect(mockDepartmentApi.createDepartment).toHaveBeenCalledWith({ name: 'New Dept', schoolId: 's1' });
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.success.created');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
@@ -155,11 +155,11 @@ describe('DepartmentEditDialogComponent', () => {
       };
       createComponent();
       component.form.patchValue({ name: 'Updated Dept' });
-      mockDepartmentService.updateDepartment.mockReturnValue(of({}));
+      mockDepartmentApi.updateDepartment.mockReturnValue(of({}));
 
       await component.onSubmit();
 
-      expect(mockDepartmentService.updateDepartment).toHaveBeenCalledWith('d1', { name: 'Updated Dept', schoolId: 's1' });
+      expect(mockDepartmentApi.updateDepartment).toHaveBeenCalledWith('d1', { name: 'Updated Dept', schoolId: 's1' });
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.success.updated');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
@@ -168,7 +168,7 @@ describe('DepartmentEditDialogComponent', () => {
       createComponent();
       component.form.patchValue({ name: 'New Dept', schoolId: 's1' });
       const error = new HttpErrorResponse({ status: 409 });
-      mockDepartmentService.createDepartment.mockReturnValue(throwError(() => error));
+      mockDepartmentApi.createDepartment.mockReturnValue(throwError(() => error));
 
       await component.onSubmit();
 
@@ -179,11 +179,23 @@ describe('DepartmentEditDialogComponent', () => {
       createComponent();
       component.form.patchValue({ name: 'New Dept', schoolId: 's1' });
       const error = new HttpErrorResponse({ status: 500 });
-      mockDepartmentService.createDepartment.mockReturnValue(throwError(() => error));
+      mockDepartmentApi.createDepartment.mockReturnValue(throwError(() => error));
 
       await component.onSubmit();
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.errors.createFailed');
+    });
+
+    it('should ignore non-HTTP errors during creation', async () => {
+      createComponent();
+      component.form.patchValue({ name: 'New Dept', schoolId: 's1' });
+      mockDepartmentApi.createDepartment.mockReturnValue(throwError(() => new Error('Unexpected')));
+
+      await component.onSubmit();
+
+      expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
+      expect(mockToastService.showSuccessKey).not.toHaveBeenCalled();
+      expect(component.isSubmitting()).toBe(false);
     });
   });
 

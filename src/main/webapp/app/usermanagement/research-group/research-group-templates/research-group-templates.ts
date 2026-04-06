@@ -5,15 +5,15 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplateOverviewDTO';
+import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateOverviewDTO } from '../../../generated/model/email-template-overview-dto';
 import { AccountService } from '../../../core/auth/account.service';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
 
 @Component({
   selector: 'jhi-research-group-templates',
@@ -26,7 +26,7 @@ export class ResearchGroupTemplates {
   protected pageSize = signal<number>(10);
   protected total = signal<number>(0);
 
-  protected readonly emailTemplateService = inject(EmailTemplateResourceApiService);
+  protected readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);
@@ -38,7 +38,7 @@ export class ResearchGroupTemplates {
 
   protected readonly isEmployee = computed<boolean>(() => {
     const currentUserAuthorities = this.accountService.userAuthorities;
-    return currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false;
+    return currentUserAuthorities?.includes(UserShortDTORolesEnum.Employee) ?? false;
   });
 
   protected readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -92,10 +92,10 @@ export class ResearchGroupTemplates {
 
   async delete(templateId: string): Promise<void> {
     try {
-      await firstValueFrom(this.emailTemplateService.deleteTemplate(templateId));
-      this.toastService.showSuccess({ detail: 'Successfully deleted template' });
+      await firstValueFrom(this.emailTemplateApi.deleteTemplate(templateId));
+      this.toastService.showSuccess({ detail: this.translate.instant(`${this.translationKey}.deleteSuccess`) });
     } catch {
-      this.toastService.showError({ detail: 'Failed to delete template' });
+      this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.deleteFailed`) });
     } finally {
       void this.loadPage();
     }
@@ -111,7 +111,7 @@ export class ResearchGroupTemplates {
 
   private async loadPage(): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateService.getTemplates(this.pageSize(), this.pageNumber()));
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageSize(), this.pageNumber()));
 
       this.responseData.set(res.content ?? []);
       this.total.set(res.totalElements ?? 0);

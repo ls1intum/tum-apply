@@ -5,10 +5,10 @@ import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activa
 import { Router } from '@angular/router';
 
 import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideRouterMock } from 'util/router.mock';
@@ -37,7 +37,6 @@ describe('ResearchGroupDetailViewComponent', () => {
     street: 'Main Street 1',
     postalCode: '12345',
     city: 'Munich',
-    defaultFieldOfStudies: 'Artificial Intelligence',
   };
 
   const mockDepartments: DepartmentDTO[] = [
@@ -62,8 +61,8 @@ describe('ResearchGroupDetailViewComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupDetailViewComponent],
       providers: [
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+        { provide: DepartmentResourceApi, useValue: mockDepartmentService },
         provideActivatedRouteMock(mockActivatedRoute),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
@@ -89,7 +88,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         abbreviation: '',
         name: '',
         departmentId: '',
-        defaultFieldOfStudies: '',
         head: '',
         email: '',
         website: '',
@@ -179,7 +177,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: 'Main Street 1',
         postalCode: '12345',
         city: 'Munich',
-        defaultFieldOfStudies: 'Artificial Intelligence',
       });
     });
   });
@@ -249,7 +246,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: 'New Street 2',
         postalCode: '54321',
         city: 'Berlin',
-        defaultFieldOfStudies: 'Machine Learning',
       });
 
       await component.onSave();
@@ -266,7 +262,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: 'New Street 2',
         postalCode: '54321',
         city: 'Berlin',
-        defaultFieldOfStudies: 'Machine Learning',
       });
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.detailView.success.updated');
     });
@@ -356,7 +351,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         abbreviation: '',
         name: '',
         departmentId: '',
-        defaultFieldOfStudies: '',
         head: '',
         email: '',
         website: '',
@@ -381,7 +375,6 @@ describe('ResearchGroupDetailViewComponent', () => {
       street: null,
       postalCode: null,
       city: null,
-      defaultFieldOfStudies: null,
     });
 
     await component.onSave();
@@ -398,7 +391,6 @@ describe('ResearchGroupDetailViewComponent', () => {
         street: '',
         postalCode: '',
         city: '',
-        defaultFieldOfStudies: '',
       }),
     );
   });

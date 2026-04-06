@@ -1,11 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
-import { ImageDTO } from 'app/generated/model/imageDTO';
+import { Observable, firstValueFrom } from 'rxjs';
+import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { ImageDTO } from 'app/generated/model/image-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateDirective } from 'app/shared/language';
@@ -38,6 +39,8 @@ const I18N_BASE = 'researchGroup.imageLibrary';
 export class ResearchGroupImagesComponent {
   readonly allImages = signal<ImageDTO[]>([]);
   readonly isLoading = signal<boolean>(true);
+  readonly selectedResearchGroupId = signal<string>('');
+  readonly selectedResearchGroupName = signal<string>('');
 
   readonly totalImages = computed(() => this.allImages().length);
 
@@ -48,10 +51,13 @@ export class ResearchGroupImagesComponent {
   readonly inUseCount = computed(() => this.inUseImages().length);
   readonly notInUseCount = computed(() => this.notInUseImages().length);
 
-  private readonly imageService = inject(ImageResourceApiService);
+  private readonly imageApi = inject(ImageResourceApi);
   private readonly toastService = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
 
   constructor() {
+    this.selectedResearchGroupId.set(this.route.snapshot.queryParamMap.get('researchGroupId') ?? '');
+    this.selectedResearchGroupName.set(this.route.snapshot.queryParamMap.get('researchGroupName') ?? '');
     void this.loadImages();
   }
 
@@ -61,7 +67,12 @@ export class ResearchGroupImagesComponent {
   async loadImages(): Promise<void> {
     try {
       this.isLoading.set(true);
-      const images = await firstValueFrom(this.imageService.getResearchGroupJobBanners());
+      const researchGroupId = this.selectedResearchGroupId();
+      const images = await firstValueFrom(
+        researchGroupId === ''
+          ? this.imageApi.getResearchGroupJobBanners()
+          : this.imageApi.getResearchGroupJobBannersByResearchGroup(researchGroupId),
+      );
 
       this.allImages.set(images);
     } catch {
@@ -86,6 +97,13 @@ export class ResearchGroupImagesComponent {
     this.toastService.showErrorKey(error.errorKey);
   }
 
+  uploadImage = (file: File): Observable<ImageDTO> => {
+    const researchGroupId = this.selectedResearchGroupId();
+    return researchGroupId === ''
+      ? this.imageApi.uploadJobBanner(file)
+      : this.imageApi.uploadJobBannerForResearchGroup(researchGroupId, file);
+  };
+
   /**
    * Delete an image by ID
    */
@@ -95,7 +113,7 @@ export class ResearchGroupImagesComponent {
     }
 
     try {
-      await firstValueFrom(this.imageService.deleteImage(imageId));
+      await firstValueFrom(this.imageApi.deleteImage(imageId));
       this.allImages.update(images => images.filter(img => img.imageId !== imageId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.imageDeleted`);
     } catch {

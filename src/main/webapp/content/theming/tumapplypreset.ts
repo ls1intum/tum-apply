@@ -266,9 +266,13 @@ export const TUMApplyPreset = definePreset(Aura, {
         },
         border: {
           default: '{neutral.700}',
+          hover: '{neutral.800}',
         },
         divider: {
           default: '{neutral.700}',
+        },
+        image: {
+          hoverOverlay: '{base.black}',
         },
       },
     },

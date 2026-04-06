@@ -2,15 +2,16 @@ import { Component, TemplateRef, computed, effect, inject, input, output, signal
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
-import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
-import { SendInvitationsResultDTO } from 'app/generated/model/sendInvitationsResultDTO';
-import { CancelInterviewDTO } from 'app/generated/model/cancelInterviewDTO';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { AddIntervieweesDTO } from 'app/generated/model/add-interviewees-dto';
+import { IntervieweeDTO, IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
+import { SendInvitationsResultDTO } from 'app/generated/model/send-invitations-result-dto';
+import { CancelInterviewDTO } from 'app/generated/model/cancel-interview-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -19,17 +20,21 @@ import { Section } from 'app/shared/components/atoms/section/section';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+
+import { CancelInterviewModalComponent } from '../cancel-interview-modal/cancel-interview-modal.component';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
 // Filter key type for interviewee states
-type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
+type FilterKey = 'ALL' | IntervieweeDTOStateEnum;
 
 // Row data structure for the applicant selection table
 interface ApplicantRow {
   applicationId: string;
   name: string;
+  avatar?: string;
   selected: boolean;
 }
 
@@ -40,7 +45,6 @@ interface ApplicantRow {
     FormsModule,
     TranslateModule,
     TranslateDirective,
-    CheckboxComponent,
     ButtonComponent,
     DialogComponent,
     FilterTabsComponent,
@@ -48,7 +52,9 @@ interface ApplicantRow {
     IntervieweeCardComponent,
     DynamicTableComponent,
     ConfirmDialog,
+    CheckboxComponent,
     UserAvatarComponent,
+    CancelInterviewModalComponent,
   ],
   templateUrl: './interviewee-section.component.html',
 })
@@ -56,7 +62,9 @@ export class IntervieweeSectionComponent {
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
+  isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
+  hasSlots = input<boolean>(false);
 
   // Component Outputs
   slotsRefresh = output();
@@ -86,12 +94,10 @@ export class IntervieweeSectionComponent {
   // Cancellation State
   showCancelModal = signal(false);
   selectedIntervieweeForCancel = signal<IntervieweeDTO | undefined>(undefined);
-  cancelSendReinvite = signal(false);
-  cancelDeleteSlot = signal(true);
 
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
-  readonly confirmDialog = viewChild.required(ConfirmDialog);
+  showResendDialog = signal(false);
 
   // Computed Signals
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
@@ -104,34 +110,34 @@ export class IntervieweeSectionComponent {
         tooltipKey: 'interview.interviewees.filter.tooltip.ALL',
       },
       {
-        key: 'UNCONTACTED',
+        key: IntervieweeDTOStateEnum.Uncontacted,
         labelKey: 'interview.interviewees.filter.UNCONTACTED',
-        count: all.filter(i => i.state === 'UNCONTACTED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Uncontacted).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.UNCONTACTED',
       },
       {
-        key: 'INVITED',
+        key: IntervieweeDTOStateEnum.Invited,
         labelKey: 'interview.interviewees.filter.INVITED',
-        count: all.filter(i => i.state === 'INVITED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Invited).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.INVITED',
       },
       {
-        key: 'SCHEDULED',
+        key: IntervieweeDTOStateEnum.Scheduled,
         labelKey: 'interview.interviewees.filter.SCHEDULED',
-        count: all.filter(i => i.state === 'SCHEDULED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Scheduled).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.SCHEDULED',
       },
       {
-        key: 'COMPLETED',
+        key: IntervieweeDTOStateEnum.Completed,
         labelKey: 'interview.interviewees.filter.COMPLETED',
-        count: all.filter(i => i.state === 'COMPLETED').length,
+        count: all.filter(i => i.state === IntervieweeDTOStateEnum.Completed).length,
         tooltipKey: 'interview.interviewees.filter.tooltip.COMPLETED',
       },
     ];
   });
 
   // Computed: Count of uncontacted interviewees (for bulk send button)
-  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === 'UNCONTACTED').length);
+  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === IntervieweeDTOStateEnum.Uncontacted).length);
 
   // Computed: Filtered Interviewees
   filteredInterviewees = computed(() => {
@@ -159,6 +165,7 @@ export class IntervieweeSectionComponent {
         return {
           applicationId: app.applicationDetailDTO.applicationId,
           name,
+          avatar: user?.avatar,
           selected: selected.has(app.applicationDetailDTO.applicationId),
         };
       });
@@ -169,6 +176,9 @@ export class IntervieweeSectionComponent {
 
   allInvitedTooltip = computed(() => {
     this.currentLang(); // Dependency for reactivity
+    if (!this.hasSlots()) {
+      return this.translateService.instant('interview.interviewees.invitation.noSlots.detail');
+    }
     return this.uncontactedCount() === 0 ? this.translateService.instant('interview.interviewees.allInvited') : '';
   });
 
@@ -182,8 +192,8 @@ export class IntervieweeSectionComponent {
   });
 
   // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly interviewApi = inject(InterviewResourceApi);
+  private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -210,7 +220,7 @@ export class IntervieweeSectionComponent {
 
     try {
       this.processingAdd.set(true);
-      await firstValueFrom(this.interviewService.addApplicantsToInterview(processId, dto));
+      await firstValueFrom(this.interviewApi.addApplicantsToInterview(processId, dto));
       this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
       this.closeAddModal();
       void this.loadInterviewees();
@@ -228,7 +238,7 @@ export class IntervieweeSectionComponent {
 
     try {
       this.loadingInterviewees.set(true);
-      const data = await firstValueFrom(this.interviewService.getIntervieweesByProcessId(processId));
+      const data = await firstValueFrom(this.interviewApi.getIntervieweesByProcessId(processId));
       this.interviewees.set(data);
     } catch {
       this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
@@ -241,9 +251,14 @@ export class IntervieweeSectionComponent {
     const processId = this.processId();
     if (processId === '' || interviewee.id == null) return;
 
-    if (interviewee.state === 'INVITED') {
+    if (!this.hasSlots()) {
+      this.toastService.showWarnKey('interview.interviewees.invitation.noSlots');
+      return;
+    }
+
+    if (interviewee.state === IntervieweeDTOStateEnum.Invited) {
       this.pendingResendId.set(interviewee.id);
-      this.confirmDialog().confirm();
+      this.showResendDialog.set(true);
     } else {
       void this.performSendInvitation(processId, interviewee.id);
     }
@@ -254,10 +269,15 @@ export class IntervieweeSectionComponent {
     const processId = this.processId();
     if (processId === '') return;
 
+    if (!this.hasSlots()) {
+      this.toastService.showWarnKey('interview.interviewees.invitation.noSlots');
+      return;
+    }
+
     try {
       this.sendingBulk.set(true);
       const result = await firstValueFrom(
-        this.interviewService.sendInvitations(processId, {
+        this.interviewApi.sendInvitations(processId, {
           onlyUninvited: true,
         }),
       );
@@ -274,12 +294,12 @@ export class IntervieweeSectionComponent {
     try {
       this.loadingApplicants.set(true);
       const result = await firstValueFrom(
-        this.applicationService.getApplicationsDetails(
+        this.evaluationApi.getApplicationsDetails(
           this.pageNumber(),
           this.pageSize(),
           'appliedAt',
           'DESC',
-          ['IN_REVIEW'],
+          [ApplicationDetailDTOApplicationStateEnum.InReview],
           [this.jobTitle()],
           undefined,
         ),
@@ -343,38 +363,21 @@ export class IntervieweeSectionComponent {
 
   onCancelInterview(interviewee: IntervieweeDTO): void {
     this.selectedIntervieweeForCancel.set(interviewee);
-    this.cancelSendReinvite.set(false);
-    this.cancelDeleteSlot.set(true);
     this.showCancelModal.set(true);
   }
 
-  async onCancelInterviewConfirm(): Promise<void> {
+  async onCancelInterviewConfirm(cancelParams: CancelInterviewDTO): Promise<void> {
     const interviewee = this.selectedIntervieweeForCancel();
     const processId = this.processId();
     if (interviewee?.scheduledSlot?.id == null || processId === '') return;
 
     try {
-      const cancelParams: CancelInterviewDTO = {
-        sendReinvite: this.cancelSendReinvite(),
-        deleteSlot: this.cancelDeleteSlot(),
-      };
-
-      await firstValueFrom(this.interviewService.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
+      await firstValueFrom(this.interviewApi.cancelInterview(processId, interviewee.scheduledSlot.id, cancelParams));
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
 
-      // Update the interviewee state based on whether we reinvited
-      this.interviewees.update(list =>
-        list.map(i => {
-          if (i.id === interviewee.id) {
-            return Object.assign({}, i, {
-              state: this.cancelSendReinvite() ? IntervieweeDTO.StateEnum.Invited : IntervieweeDTO.StateEnum.Uncontacted,
-              scheduledSlot: undefined,
-            });
-          }
-          return i;
-        }),
-      );
+      // Reload interviewees from server to get accurate state
+      await this.loadInterviewees();
 
       // Notify parent to refresh slots section
       this.slotsRefresh.emit();
@@ -422,7 +425,7 @@ export class IntervieweeSectionComponent {
     try {
       this.sendingInvitationId.set(intervieweeId);
       const result = await firstValueFrom(
-        this.interviewService.sendInvitations(processId, {
+        this.interviewApi.sendInvitations(processId, {
           intervieweeIds: [intervieweeId],
         }),
       );

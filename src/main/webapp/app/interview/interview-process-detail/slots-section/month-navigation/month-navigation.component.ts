@@ -9,6 +9,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 })
 export class MonthNavigationComponent {
   currentMonth = input.required<string>();
+  isClosed = input<boolean>(false);
 
   previousMonth = output();
   nextMonth = output();

@@ -30,12 +30,16 @@
       "settings": "TUMApply - Einstellungen",
       "researchGroup": {
         "adminView": "TUMApply - Admin Ansicht",
+        "adminImages": "TUMApply - Forschungsgruppen-Bilder",
         "schools": "TUMApply - Schools",
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
         "images": "TUMApply - Meine Bilder",
         "info": "TUMApply - Meine Gruppe"
+      },
+      "admin": {
+        "dependencies": "TUMApply - Abhängigkeiten"
       },
       "about-us": "TumApply - Über uns",
       "interview": {
@@ -168,7 +172,7 @@
       "success": {
         "downloadSuccess": {
           "summary": "Download erfolgreich",
-          "detail": "Ihr Datenexport wurde erfolgreich heruntergeladen."
+          "detail": "Dein Datenexport wurde erfolgreich heruntergeladen."
         }
       }
     }
@@ -245,13 +249,6 @@
       }
     },
     "upload": {
-      "upload_instruction_standard": "Bitte hochladen",
-      "upload_instruction": {
-        "BACHELOR_TRANSCRIPT": "Bitte lade dein Bachelor-Zeugnis hoch",
-        "MASTER_TRANSCRIPT": "Bitte lade dein Master-Zeugnis hoch",
-        "REFERENCE": "Bitte lade deine Empfehlungsschreiben hoch",
-        "CV": "Bitte lade deinen Lebenslauf hoch"
-      },
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",
@@ -350,7 +347,16 @@
       }
     },
     "applicationPage1": {
+      "description": "Gib deine persönlichen Daten und Kontaktdaten ein.",
+      "aiExtractionHelper": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
+      "aiExtractionButton": "KI-Extraktion",
+      "aiExtractionLoading": "Extrahiert...",
+      "aiExtractionFailed": {
+        "summary": "Extraktion fehlgeschlagen",
+        "detail": "Die Daten konnten nicht extrahiert werden. Bitte versuche es erneut."
+      },
       "label": {
+        "curriculumVitae": "Lebenslauf",
         "firstName": "Vorname",
         "lastName": "Nachname",
         "email": "E-Mail",
@@ -380,6 +386,7 @@
       }
     },
     "applicationPage2": {
+      "description": "Füge deine Ausbildung hinzu.",
       "section": {
         "bachelor": "Bachelor Studium",
         "master": "Master Studium"
@@ -413,9 +420,9 @@
       }
     },
     "applicationPage3": {
+      "description": "Teile deine Fähigkeiten, Motivation und relevante Forschungserfahrung.",
       "label": {
         "desiredStartDate": "Gewünschtes Startdatum",
-        "curriculumVitae": "Lebenslauf",
         "additionalReferences": "Zusätzliche Referenzen",
         "motivation": "Was motiviert dich für diese Position?",
         "skills": "Welche Fähigkeiten bringst du mit?",

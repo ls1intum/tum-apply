@@ -7,32 +7,32 @@
   (onSelect)="onFileSelected($event)"
   #fileupload_component
 >
-  <ng-template #header let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
-    <div class="flex flex-wrap flex-row justify-around gap-2.5 w-full" (click)="fileupload_component.choose()">
-      <div class="text-center flex items-center">
-        <span class="inline-block whitespace-nowrap">
-          <span [jhiTranslate]="uploadKey()"></span>
-          @if (markAsRequired()) {
-            <span class="required">*</span>
-          }
-        </span>
-      </div>
-    </div>
-  </ng-template>
   <ng-template #empty>
-    <div class="flex justify-center flex-col gap-0.5 cursor-pointer" (click)="fileupload_component.choose()">
-      <div class="flex w-full justify-center">
-        <span class="flex border items-center justify-center rounded-pill border-primary size-20">
-          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="xl" />
-        </span>
+    <div
+      class="flex w-full items-center justify-center gap-3 cursor-pointer"
+      (click)="fileupload_component.choose()"
+      [class.flex-col]="!compact()"
+    >
+      <span
+        class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+        tabindex="0"
+        role="button"
+        aria-label="Select file to upload"
+        (keydown.enter)="fileupload_component.choose()"
+        (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
+      >
+        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
+      </span>
+      <div class="text-color" [class.text-center]="!compact()">
+        <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
+        <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
       </div>
-      <p class="mt-0 text-sm text-color text-center" jhiTranslate="entity.upload.instruction"></p>
-      <p class="mt-0 mb-0 text-xs text-color text-center"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }}MB</p>
     </div>
   </ng-template>
+
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
-    <div class="mt-0 w-full">
-      <table class="table-fixed border-collapse w-full slim-table">
+    <div class="w-full mt-0">
+      <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
         <thead>
           <tr>
             <th class="w-1/10"></th>
@@ -44,21 +44,19 @@
         <tbody>
           @if (selectedFiles(); as selectedFiles) {
             @for (file of selectedFiles; track $index) {
-              <tr class="border border-color leading-0 border-x-0">
+              <tr [class]="rowClass">
                 <td>
-                  <span class="w-full h-full inline-flex justify-center">
+                  <span class="inline-flex justify-center w-full h-full">
                     <fa-icon
                       icon="cloud-arrow-up"
-                      class="icon-color-warning"
+                      class="text-warning-default"
                       [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
                       tooltipPosition="top"
                     />
                   </span>
                 </td>
-                <td>
-                  <span class="w-full h-full inline-flex justify-center">
-                    <input [(ngModel)]="file.name" class="editable-input" />
-                  </span>
+                <td class="pr-3">
+                  <input [(ngModel)]="file.name" [class]="inputClass" />
                 </td>
                 <td class="text-center">
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
@@ -68,6 +66,7 @@
                     icon="times"
                     severity="danger"
                     variant="text"
+                    size="sm"
                     (click)="removeFileCallback($event, $index)"
                     aria-label="Remove file"
                   />
@@ -77,24 +76,23 @@
           }
           @if (documentIds(); as documentIds) {
             @for (info of documentIds; track $index) {
-              <tr class="border border-color leading-0 border-x-0">
+              <tr [class]="rowClass">
                 <td>
-                  <span class="w-full h-full inline-flex justify-center">
-                    <fa-icon
-                      icon="file-circle-check"
-                      class="icon-color-success"
-                      [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate"
-                      tooltipPosition="top"
-                    />
+                  <span class="inline-flex justify-center w-full h-full">
+                    <fa-layers [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate" tooltipPosition="top">
+                      <fa-icon icon="file" class="text-primary" />
+                      <fa-icon icon="circle" class="text-white" transform="shrink-5 down-4 right-5" />
+                      <fa-icon icon="circle-check" class="text-positive-default" transform="shrink-7 down-4 right-5" />
+                    </fa-layers>
                   </span>
                 </td>
-                <td>
-                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" class="editable-input" />
+                <td class="pr-3">
+                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" [class]="inputClass" />
                 </td>
                 <td class="text-center">
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
-                <td class="border-r-0">
+                <td>
                   <jhi-confirm-dialog
                     [label]="'button.delete' | translate"
                     [header]="'entity.upload.deleteDocument.confirm.header' | translate"
@@ -118,21 +116,23 @@
 </p-fileupload>
 
 <jhi-confirm-dialog
-  #duplicateConfirmDialog
   [header]="'entity.upload.duplicate.title' | translate"
   [message]="'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() }"
   [label]="'button.replace' | translate"
   severity="primary"
   [showOpenButton]="false"
+  [visible]="showDuplicateDialog()"
   (confirmed)="onConfirmDuplicate()"
+  (closed)="showDuplicateDialog.set(false)"
 />
 
 <jhi-confirm-dialog
-  #replacementConfirmDialog
   [header]="'entity.upload.replacement.title' | translate"
   [message]="'entity.upload.replacement.message' | translate"
   [label]="'button.replace' | translate"
   severity="primary"
   [showOpenButton]="false"
+  [visible]="showReplacementDialog()"
   (confirmed)="onConfirmReplacement()"
+  (closed)="showReplacementDialog.set(false)"
 />

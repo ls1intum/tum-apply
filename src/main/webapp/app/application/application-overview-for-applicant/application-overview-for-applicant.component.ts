@@ -14,10 +14,11 @@ import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicationOverviewDTO } from 'app/generated/model/application-overview-dto';
+import { ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/model/application-overview-dto';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
-import { ApplicationOverviewDTO } from '../../generated/model/applicationOverviewDTO';
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
@@ -46,7 +47,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
  * application status, and creation time.
  */
 export default class ApplicationOverviewForApplicantComponent {
-  loading = signal(false);
+  loading = signal(true);
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
@@ -69,9 +70,9 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for created column (relative time)
   readonly timeSinceCreationTemplate = viewChild.required<TemplateRef<unknown>>('timeSinceCreationTemplate');
 
-  // Confirm dialog references
-  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
-  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  // Dialog visibility signals
+  showWithdrawDialog = signal(false);
+  showDeleteDialog = signal(false);
 
   // Track current application ID for dialogs
   currentApplicationId = signal<string | undefined>(undefined);
@@ -130,7 +131,7 @@ export default class ApplicationOverviewForApplicantComponent {
       const applicationId = application.applicationId;
 
       // Edit action - only for SAVED applications
-      if (application.applicationState === 'SAVED') {
+      if (application.applicationState === ApplicationOverviewDTOApplicationStateEnum.Saved) {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -142,27 +143,34 @@ export default class ApplicationOverviewForApplicantComponent {
       }
 
       // Withdraw action - for SENT or IN_REVIEW applications
-      if (['SENT', 'IN_REVIEW'].includes(application.applicationState ?? '')) {
+      if (
+        (
+          [
+            ApplicationOverviewDTOApplicationStateEnum.Sent,
+            ApplicationOverviewDTOApplicationStateEnum.InReview,
+          ] as ApplicationOverviewDTOApplicationStateEnum[]
+        ).includes(application.applicationState as ApplicationOverviewDTOApplicationStateEnum)
+      ) {
         items.push({
           label: 'button.withdraw',
           icon: 'withdraw',
           severity: 'danger',
           command: () => {
             this.currentApplicationId.set(applicationId);
-            this.withdrawDialog().confirm();
+            this.showWithdrawDialog.set(true);
           },
         });
       }
 
       // Delete action - only for SAVED applications
-      if (application.applicationState === 'SAVED') {
+      if (application.applicationState === ApplicationOverviewDTOApplicationStateEnum.Saved) {
         items.push({
           label: 'button.delete',
           icon: 'trash',
           severity: 'danger',
           command: () => {
             this.currentApplicationId.set(applicationId);
-            this.deleteDialog().confirm();
+            this.showDeleteDialog.set(true);
           },
         });
       }
@@ -184,7 +192,7 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
-  private readonly applicationService = inject(ApplicationResourceApiService);
+  private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
 
   private applicantId = signal<string>('');
@@ -203,7 +211,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
     try {
       const page = await firstValueFrom(
-        this.applicationService.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
+        this.applicationApi.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
       );
       this.pageData.set(page.content ?? []);
       this.total.set(page.totalElements ?? 0);
@@ -227,7 +235,7 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    this.applicationService.deleteApplication(applicationId).subscribe({
+    this.applicationApi.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });
         const event = this.lastLazyLoadEvent();
@@ -241,7 +249,7 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onWithdrawApplication(applicationId: string): void {
-    this.applicationService.withdrawApplication(applicationId).subscribe({
+    this.applicationApi.withdrawApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
         const event = this.lastLazyLoadEvent();

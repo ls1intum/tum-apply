@@ -207,7 +207,7 @@ jhi-menu {
     }
 
     &:hover {
-      background-color: var(--p-neutral-hover-color-outlined);
+      background-color: var(--color-border-hover);
       .p-menu-item-icon {
         color: var(--p-neutral-color);
       }
@@ -376,6 +376,11 @@ jhi-menu {
   border: 1px solid var(--p-border-default) !important;
   border-radius: 0 0 var(--border-radius-md) var(--border-radius-md) !important;
 
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+
   &:focus-within {
     border-color: var(--p-primary-color) !important;
   }
@@ -453,11 +458,12 @@ jhi-menu {
 .p-fileupload-content {
   background: var(--p-background-default);
   color: var(--p-text-color);
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .p-fileupload-header {
-  background: var(--p-background-default);
-  color: var(--p-text-color);
+  display: none;
 }
 
 /* ---------------------------

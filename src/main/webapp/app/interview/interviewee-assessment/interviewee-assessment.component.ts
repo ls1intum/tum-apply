@@ -6,10 +6,9 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { InterviewResourceApiService } from 'app/generated';
-import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
-import { UpdateAssessmentDTO } from 'app/generated/model/updateAssessmentDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { IntervieweeDetailDTO } from 'app/generated/model/interviewee-detail-dto';
+import { UpdateAssessmentDTO } from 'app/generated/model/update-assessment-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -20,6 +19,7 @@ import { DocumentSection } from 'app/shared/components/organisms/document-sectio
 import { Prose } from 'app/shared/components/atoms/prose/prose';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatFullName } from 'app/shared/util/name.util';
 
 /**
  * Assessment view for evaluating interview candidates.
@@ -34,7 +34,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
     TranslateDirective,
     FontAwesomeModule,
     DividerModule,
-    ProgressSpinnerModule,
     BackButtonComponent,
     ButtonComponent,
     Section,
@@ -65,8 +64,9 @@ export class IntervieweeAssessmentComponent {
   protected readonly applicantName = computed(() => {
     const user = this.interviewee()?.user;
     if (!user) return '';
-    return `${user.firstName} ${user.lastName}`;
+    return formatFullName(user.firstName, user.lastName);
   });
+  protected readonly applicantAvatar = computed(() => this.interviewee()?.user?.avatar);
 
   protected readonly degreeName = computed(() => {
     const applicant = this.interviewee()?.application?.applicant;
@@ -101,7 +101,7 @@ export class IntervieweeAssessmentComponent {
 
   // Services
   private readonly router = inject(Router);
-  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly serverRating = signal<number | undefined>(undefined);
   private readonly isInitializing = signal<boolean>(true);
@@ -140,7 +140,7 @@ export class IntervieweeAssessmentComponent {
     const dto: UpdateAssessmentDTO = { notes };
 
     try {
-      const updated = await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
+      const updated = await firstValueFrom(this.interviewApi.updateAssessment(processId, intervieweeId, dto));
 
       this.interviewee.set(updated);
       this.toastService.showSuccessKey('interview.assessment.notes.saved');
@@ -173,7 +173,7 @@ export class IntervieweeAssessmentComponent {
     this.isInitializing.set(true);
 
     try {
-      const data = await firstValueFrom(this.interviewService.getIntervieweeDetails(processId, intervieweeId));
+      const data = await firstValueFrom(this.interviewApi.getIntervieweeDetails(processId, intervieweeId));
 
       this.interviewee.set(data);
       this.rating.set(data.rating ?? undefined);
@@ -191,7 +191,7 @@ export class IntervieweeAssessmentComponent {
     const dto: UpdateAssessmentDTO = rating === undefined ? { clearRating: true } : { rating };
 
     try {
-      await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
+      await firstValueFrom(this.interviewApi.updateAssessment(processId, intervieweeId, dto));
       this.serverRating.set(rating);
     } catch {
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');

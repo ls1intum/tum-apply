@@ -19,8 +19,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -36,12 +38,13 @@ import ApplicationCreationPage2Component, {
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
-import { ApplicationDetailDTO } from '../../../generated/model/applicationDetailDTO';
-import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
-import { ApplicationResourceApiService } from '../../../generated/api/applicationResourceApi.service';
-import { UpdateApplicationDTO } from '../../../generated/model/updateApplicationDTO';
+import { ApplicationDetailDTO } from '../../../generated/model/application-detail-dto';
+import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../../../generated/model/application-document-ids-dto';
+import { ApplicationResourceApi } from '../../../generated/api/application-resource-api';
+import { UpdateApplicationDTO } from '../../../generated/model/update-application-dto';
 import { AuthOrchestratorService } from '../../../core/auth/auth-orchestrator.service';
+import { ExtractedApplicationDataDTO } from '../../../generated/model/extracted-application-data-dto';
 
 const applyflow = 'entity.toast.applyFlow';
 
@@ -115,14 +118,14 @@ export default class ApplicationCreationFormComponent {
   applicationDetailsPanel = viewChild<TemplateRef<ApplicationCreationPage3Component>>('applicationDetailsPanel');
   summaryPanel = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('summaryPanel');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
-  sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
+  showSendDialog = signal(false);
   progressStepper = viewChild<ProgressStepperComponent>(ProgressStepperComponent);
 
   title = signal<string>('');
   jobId = signal<string>('');
   applicantId = signal<string>('');
   applicationId = signal<string>('');
-  applicationState = signal<ApplicationForApplicantDTO.ApplicationStateEnum>('SAVED');
+  applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   savingBadgeCalculatedClass = computed<string>(
@@ -323,7 +326,7 @@ export default class ApplicationCreationFormComponent {
             severity: this.sendButtonSeverity,
             icon: this.sendButtonIcon,
             onClick: () => {
-              this.sendConfirmDialog()?.confirm();
+              this.showSendDialog.set(true);
             },
             disabled: !allPagesValid,
             label: 'button.send',
@@ -337,7 +340,7 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
-  private readonly applicationResourceService = inject(ApplicationResourceApiService);
+  private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
@@ -346,7 +349,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
-  private readonly jobResourceService = inject(JobResourceApiService);
+  private readonly jobApi = inject(JobResourceApi);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -413,10 +416,10 @@ export default class ApplicationCreationFormComponent {
     if (jobId !== null) {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
-      this.applicationState.set('SAVED');
+      this.applicationState.set(ApplicationForApplicantDTOApplicationStateEnum.Saved);
 
       // Fetch job title for display
-      firstValueFrom(this.jobResourceService.getJobDetails(jobId))
+      firstValueFrom(this.jobApi.getJobDetails(jobId))
         .then(jobDetails => {
           if (jobDetails.title) {
             this.title.set(jobDetails.title);
@@ -431,9 +434,9 @@ export default class ApplicationCreationFormComponent {
   }
 
   async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
-    const application = await firstValueFrom(this.applicationResourceService.getApplicationById(applicationId));
+    const application = await firstValueFrom(this.applicationApi.getApplicationById(applicationId));
 
-    if (application.applicationState !== 'SAVED') {
+    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', applicationId]);
       throw new Error('Application is not editable.');
@@ -444,9 +447,9 @@ export default class ApplicationCreationFormComponent {
   }
 
   async initPageCreateApplication(jobId: string): Promise<ApplicationForApplicantDTO> {
-    const application = await firstValueFrom(this.applicationResourceService.createApplication(jobId));
+    const application = await firstValueFrom(this.applicationApi.createApplication(jobId));
 
-    if (application.applicationState !== 'SAVED') {
+    if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
       await this.router.navigate(['/application/detail', application.applicationId]);
       throw new Error('Application is not editable.');
@@ -489,10 +492,10 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
-    void this.sendCreateApplicationData('SENT', true);
+    void this.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
   }
 
-  async sendCreateApplicationData(state: ApplicationForApplicantDTO.ApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
+  async sendCreateApplicationData(state: ApplicationForApplicantDTOApplicationStateEnum, rerouteToOtherPage: boolean): Promise<boolean> {
     const applicationId = this.applicationId();
 
     if (applicationId === '') {
@@ -509,13 +512,13 @@ export default class ApplicationCreationFormComponent {
     const updateApplication = this.mapPagesToDTO(state) as UpdateApplicationDTO;
 
     try {
-      await firstValueFrom(this.applicationResourceService.updateApplication(updateApplication));
+      await firstValueFrom(this.applicationApi.updateApplication(updateApplication));
 
       // Clear local storage on successful server save
       this.clearLocalStorage();
 
       // After application is sent, reload user data to update header with latest names
-      if (state === 'SENT') {
+      if (state === ApplicationForApplicantDTOApplicationStateEnum.Sent) {
         await this.accountService.loadUser();
       }
 
@@ -536,7 +539,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    firstValueFrom(this.applicationResourceService.getDocumentDictionaryIds(this.applicationId()))
+    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })
@@ -553,6 +556,19 @@ export default class ApplicationCreationFormComponent {
 
   onEducationDataValidityChanged(isValid: boolean): void {
     this.educationDataValid.set(isValid);
+  }
+
+  // Applies AI-extracted education fields to page 2, only filling currently empty values
+  onEducationDataExtracted(extracted: ExtractedApplicationDataDTO): void {
+    this.educationData.update(current => {
+      if (current.bachelorDegreeName === '') current.bachelorDegreeName = extracted.bachelorDegreeName ?? '';
+      if (current.bachelorDegreeUniversity === '') current.bachelorDegreeUniversity = extracted.bachelorUniversity ?? '';
+      if (current.bachelorGrade === '') current.bachelorGrade = extracted.bachelorGrade ?? '';
+      if (current.masterDegreeName === '') current.masterDegreeName = extracted.masterDegreeName ?? '';
+      if (current.masterDegreeUniversity === '') current.masterDegreeUniversity = extracted.masterUniversity ?? '';
+      if (current.masterGrade === '') current.masterGrade = extracted.masterGrade ?? '';
+      return current;
+    });
   }
 
   onApplicationDetailsDataValidityChanged(isValid: boolean): void {
@@ -653,7 +669,7 @@ export default class ApplicationCreationFormComponent {
     }
   }
 
-  private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
+  private mapPagesToDTO(state?: ApplicationDetailDTOApplicationStateEnum): UpdateApplicationDTO | ApplicationDetailDTO {
     const p1 = this.personalInfoData();
     const p2 = this.educationData();
     const p3 = this.applicationDetailsData();

@@ -11,6 +11,7 @@ import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 import importPlugin from 'eslint-plugin-import';
+import localRulesPlugin from './rules/index.mjs';
 
 // jhipster-needle-eslint-add-import - JHipster will add additional import here
 
@@ -55,7 +56,6 @@ export default [
         'uploads/',
         'supporting_scripts/',
         'stub.js',
-        '.lintstagedrc.js',
         'rules/**/*.js',
         'build/resources/main/static/',
         'prebuild.mjs',
@@ -116,6 +116,7 @@ export default [
         '@typescript-eslint': tsPlugin,
         prettier: prettierPlugin,
         'unused-imports': unusedImports,
+        localRules: localRulesPlugin,
       },
       processor: angular.processInlineTemplates,
       rules: {
@@ -228,6 +229,7 @@ export default [
             argsIgnorePattern: '^_',
           },
         ],
+        'localRules/enforce-signal-apis': 'error',
       },
     },
 

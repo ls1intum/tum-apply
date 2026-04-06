@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #closeConfirmDialog
   class="confirm-dialog"
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
@@ -7,10 +6,11 @@
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
+  [visible]="showCloseDialog()"
   (confirmed)="onCloseJob()"
+  (closed)="showCloseDialog.set(false)"
 />
 <jhi-confirm-dialog
-  #deleteConfirmDialog
   class="confirm-dialog"
   [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
@@ -18,7 +18,9 @@
   [severity]="deleteButtonSeverity"
   [confirmIcon]="deleteButtonIcon"
   [showOpenButton]="false"
+  [visible]="showDeleteDialog()"
   (confirmed)="onDeleteJob()"
+  (closed)="showDeleteDialog.set(false)"
 />
 
 @if (jobDetails(); as job) {
@@ -135,8 +137,8 @@
           <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
-                <span jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
-                <span class="value">{{ (dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate) || '-' }}</span>
+                <span jhiTranslate="jobDetailPage.labels.subjectArea"></span>
+                <span class="value">{{ (dropDownOptions.getSubjectAreaTranslationKey(job.subjectArea) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
@@ -198,14 +200,28 @@
               <div class="leading-relaxed mb-4 text-sm wrap-anywhere">{{ noData() }}</div>
             }
 
-            @if (job.researchGroupEmail || job.researchGroupWebsite || job.researchGroupStreet) {
+            @if (job.researchGroupDepartment || job.researchGroupEmail || job.researchGroupWebsite || job.researchGroupStreet) {
               <div class="mt-4">
+                @if (job.researchGroupDepartment) {
+                  <div class="flex items-start gap-3 mb-3 text-sm">
+                    <fa-icon
+                      [icon]="['fas', 'building-user']"
+                      class="icon"
+                      [pTooltip]="'jobDetailPage.tooltips.department' | translate"
+                      tooltipPosition="top"
+                    />
+                    <div>{{ job.researchGroupDepartment }}</div>
+                  </div>
+                }
                 @if (job.researchGroupStreet) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
                     <div>
-                      <div>{{ job.researchGroupStreet }}</div>
-                      <div>{{ job.researchGroupPostalCode }} {{ job.researchGroupCity }}</div>
+                      {{ job.researchGroupStreet }}
+                      @if (job.researchGroupPostalCode || job.researchGroupCity) {
+                        , {{ job.researchGroupPostalCode }}{{ job.researchGroupPostalCode && job.researchGroupCity ? ' ' : ''
+                        }}{{ job.researchGroupCity }}
+                      }
                     </div>
                   </div>
                 }

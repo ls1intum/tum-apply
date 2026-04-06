@@ -5,12 +5,12 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { DividerModule } from 'primeng/divider';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
@@ -70,13 +70,12 @@ export class ResearchGroupInfoComponent {
     postalCode: new FormControl(''),
     address: new FormControl(''),
     description: new FormControl(''),
-    defaultFieldOfStudies: new FormControl(''),
   });
 
   // Services
   private accountService = inject(AccountService);
-  private researchGroupService = inject(ResearchGroupResourceApiService);
-  private departmentService = inject(DepartmentResourceApiService);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
+  private departmentApi = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private translate = inject(TranslateService);
 
@@ -115,10 +114,9 @@ export class ResearchGroupInfoComponent {
         street: formValue.address ?? '',
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
-        defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
       };
 
-      await firstValueFrom(this.researchGroupService.updateResearchGroup(researchGroupId, updateData));
+      await firstValueFrom(this.researchGroupApi.updateResearchGroup(researchGroupId, updateData));
 
       this.toastService.showSuccess({
         detail: this.translate.instant(`${this.translationKey}.toasts.updated`),
@@ -144,7 +142,7 @@ export class ResearchGroupInfoComponent {
         return;
       }
 
-      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
 
       // Fetch department info if departmentId exists
@@ -166,7 +164,7 @@ export class ResearchGroupInfoComponent {
    */
   private async loadDepartmentInfo(departmentId: string): Promise<void> {
     try {
-      const department = await firstValueFrom(this.departmentService.getDepartmentById(departmentId));
+      const department = await firstValueFrom(this.departmentApi.getDepartmentById(departmentId));
       this.departmentName.set(department.name ?? null);
       this.schoolName.set(department.school?.name ?? null);
     } catch {
@@ -190,7 +188,6 @@ export class ResearchGroupInfoComponent {
       postalCode: data?.postalCode,
       address: data?.street,
       description: data?.description,
-      defaultFieldOfStudies: data?.defaultFieldOfStudies,
     });
     this.form.updateValueAndValidity();
   }

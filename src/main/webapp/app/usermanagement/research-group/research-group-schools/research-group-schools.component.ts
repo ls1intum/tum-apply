@@ -10,8 +10,8 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
-import { SchoolDTO } from 'app/generated/model/schoolDTO';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { SchoolDTO } from 'app/generated/model/school-dto';
 
 import { SchoolEditDialogComponent } from './school-edit-dialog/school-edit-dialog.component';
 
@@ -72,7 +72,7 @@ export class ResearchGroupSchoolsComponent {
   });
 
   private toastService = inject(ToastService);
-  private readonly schoolResourceApiService = inject(SchoolResourceApiService);
+  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
 
@@ -91,13 +91,7 @@ export class ResearchGroupSchoolsComponent {
   async loadSchools(): Promise<void> {
     try {
       const pageResponse = await firstValueFrom(
-        this.schoolResourceApiService.getSchoolsForAdmin(
-          this.pageSize(),
-          this.pageNumber(),
-          this.searchQuery(),
-          this.sortBy(),
-          this.sortDirection(),
-        ),
+        this.schoolApi.getSchoolsForAdmin(this.pageSize(), this.pageNumber(), this.searchQuery(), this.sortBy(), this.sortDirection()),
       );
 
       const typedResponse = pageResponse as SchoolPageResponse;
@@ -157,7 +151,7 @@ export class ResearchGroupSchoolsComponent {
       return;
     }
     try {
-      await firstValueFrom(this.schoolResourceApiService.deleteSchool(schoolId));
+      await firstValueFrom(this.schoolApi.deleteSchool(schoolId));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteSuccess`);
       await this.loadSchools();
     } catch {

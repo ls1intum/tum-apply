@@ -3,13 +3,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { JobCardListComponent } from 'app/job/job-overview/job-card-list/job-card-list.component';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import * as DropdownOptions from 'app/job/dropdown-options';
-import { Job } from 'app/generated/model/job';
-import LocationEnum = Job.LocationEnum;
+import { JobLocationEnum } from 'app/generated/model/job';
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
@@ -18,7 +17,7 @@ describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
   let component: JobCardListComponent;
 
-  let jobService: {
+  let jobApi: {
     getAllFilters: ReturnType<typeof vi.fn>;
     getAvailableJobs: ReturnType<typeof vi.fn>;
   };
@@ -26,10 +25,10 @@ describe('JobCardListComponent', () => {
   let mockToastService = createToastServiceMock();
 
   beforeEach(async () => {
-    jobService = {
+    jobApi = {
       getAllFilters: vi.fn().mockReturnValue(
         of({
-          fieldsOfStudy: ['AI', 'ML'],
+          subjectAreas: [DropdownOptions.subjectAreas[0].value, DropdownOptions.subjectAreas[1].value],
           supervisorNames: ['Prof. X'],
         }),
       ),
@@ -40,7 +39,7 @@ describe('JobCardListComponent', () => {
               jobId: '1',
               title: 'Test Job',
               professorName: 'Prof. Y',
-              location: LocationEnum.Munich,
+              location: JobLocationEnum.Munich,
             },
           ],
           totalElements: 1,
@@ -51,7 +50,7 @@ describe('JobCardListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [JobCardListComponent],
       providers: [
-        { provide: JobResourceApiService, useValue: jobService },
+        { provide: JobResourceApi, useValue: jobApi },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideToastServiceMock(mockToastService),
@@ -74,15 +73,15 @@ describe('JobCardListComponent', () => {
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
-    expect(jobService.getAllFilters).toHaveBeenCalled();
-    // allFieldOfStudies is a static list of i18n keys from DropdownOptions
-    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    expect(jobApi.getAllFilters).toHaveBeenCalled();
+    // allSubjectAreas is a static list of i18n keys from DropdownOptions
+    expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
     expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
 
   it('should handle error when loading filters', async () => {
-    jobService.getAllFilters.mockReturnValueOnce(throwError(() => new Error('fail')));
+    jobApi.getAllFilters.mockReturnValueOnce(throwError(() => new Error('fail')));
 
     await component.loadAllFilter();
 
@@ -92,15 +91,15 @@ describe('JobCardListComponent', () => {
   it('should load jobs successfully', async () => {
     await component.loadJobs();
 
-    expect(jobService.getAvailableJobs).toHaveBeenCalled();
+    expect(jobApi.getAvailableJobs).toHaveBeenCalled();
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
   });
 
   it('should handle error when loading jobs', async () => {
-    jobService.getAvailableJobs.mockReturnValueOnce(throwError(() => new Error('fail')));
+    jobApi.getAvailableJobs.mockReturnValueOnce(throwError(() => new Error('fail')));
 
-    await component.loadJobs();
+    await runSilently(() => component.loadJobs());
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadJobs');
   });
@@ -116,7 +115,7 @@ describe('JobCardListComponent', () => {
 
     expect(component.page()).toBe(0);
     expect(component.searchQuery()).toBe('New query');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should not reload jobs if search query is the same after trimming', async () => {
@@ -128,13 +127,13 @@ describe('JobCardListComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should handle filter changes for fieldOfStudies', async () => {
+  it('should handle filter changes for subjectArea', async () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
-    component.onFilterEmit({ filterId: 'fieldOfStudies', selectedValues: ['AI'] });
+    component.onFilterEmit({ filterId: 'subjectArea', selectedValues: [DropdownOptions.subjectAreas[0].name] });
     fixture.detectChanges();
-    expect(component.selectedFieldOfStudiesFilters()).toEqual(['AI']);
-    expect(spy).toHaveBeenCalled();
+    expect(component.selectedSubjectAreaFilters()).toEqual([DropdownOptions.subjectAreas[0].value]);
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle filter changes for location', async () => {
@@ -146,7 +145,7 @@ describe('JobCardListComponent', () => {
     });
     fixture.detectChanges();
     expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle filter changes for supervisor', async () => {
@@ -155,7 +154,7 @@ describe('JobCardListComponent', () => {
     component.onFilterEmit({ filterId: 'supervisor', selectedValues: ['Prof. X'] });
     fixture.detectChanges();
     expect(component.selectedSupervisorFilters()).toEqual(['Prof. X']);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle sort emit correctly', async () => {
@@ -166,7 +165,7 @@ describe('JobCardListComponent', () => {
     expect(component.page()).toBe(0);
     expect(component.sortBy()).toBe('title');
     expect(component.sortDirection()).toBe('ASC');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should handle table lazy load correctly', async () => {
@@ -176,11 +175,11 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(8);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should set empty jobs and totalRecords when API returns no content', async () => {
-    jobService.getAvailableJobs.mockReturnValueOnce(of({ content: undefined, totalElements: undefined }));
+    jobApi.getAvailableJobs.mockReturnValueOnce(of({ content: undefined, totalElements: undefined }));
 
     await component.loadJobs();
 
@@ -189,12 +188,12 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle loadAllFilter when API returns null fields', async () => {
-    jobService.getAllFilters.mockReturnValueOnce(of({ jobNames: null, fieldsOfStudy: null, supervisorNames: null }));
+    jobApi.getAllFilters.mockReturnValueOnce(of({ jobNames: null, subjectAreas: null, supervisorNames: null }));
 
     await component.loadAllFilter();
 
-    // allFieldOfStudies remains the static list of i18n keys
-    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    // allSubjectAreas remains the static list of i18n keys
+    expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual([]);
   });
 
@@ -214,7 +213,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
 
     expect(component.searchQuery()).toBe('');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should update sort when called twice with different values', async () => {
@@ -236,11 +235,11 @@ describe('JobCardListComponent', () => {
     component.loadOnTableEmit({ first: 16, rows: undefined });
     fixture.detectChanges();
     expect(component.page()).toBe(Math.floor(16 / component.pageSize()));
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should call loadAllFilter in constructor', () => {
-    expect(jobService.getAllFilters).toHaveBeenCalled();
+    expect(jobApi.getAllFilters).toHaveBeenCalled();
   });
 
   it('should render one job-card per job when jobs exist', () => {
@@ -249,15 +248,15 @@ describe('JobCardListComponent', () => {
         jobId: '1',
         title: 'A',
         professorName: 'P1',
-        location: LocationEnum.Heilbronn,
-        departmentName: 'D1',
+        location: JobLocationEnum.Heilbronn,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
       },
       {
         jobId: '2',
         title: 'B',
         professorName: 'P2',
-        location: LocationEnum.Heilbronn,
-        departmentName: 'D2',
+        location: JobLocationEnum.Heilbronn,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
       },
     ]);
     fixture.detectChanges();
@@ -272,9 +271,9 @@ describe('JobCardListComponent', () => {
         jobId: '1',
         title: 'A',
         professorName: 'P1',
-        location: LocationEnum.Heilbronn,
+        location: JobLocationEnum.Heilbronn,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
         applicationState: undefined,
-        departmentName: 'D1',
       },
     ]);
     fixture.detectChanges();
@@ -291,10 +290,10 @@ describe('JobCardListComponent', () => {
         jobId: '1',
         title: 'A',
         professorName: 'P1',
-        location: LocationEnum.Garching,
+        location: JobLocationEnum.Garching,
+        subjectArea: DropdownOptions.subjectAreas[0].value,
         relativeTimeEnglish: '2 days ago',
         relativeTimeGerman: 'vor 2 Tagen',
-        departmentName: 'D1',
       },
     ]);
     fixture.detectChanges();

@@ -33,7 +33,9 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 export class SearchFilterSortBar {
   // total number of records found
   totalRecords = input<number>(0);
+  showRecords = input<boolean>(true);
   searchText = input<string | undefined>(undefined);
+  fullWidth = input<boolean>(false);
 
   // list of filters to be displayed
   filters = input<Filter[]>([]);
@@ -63,17 +65,14 @@ export class SearchFilterSortBar {
 
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  private readonly initializeSortDefaultsEffect = effect(
-    () => {
-      const fields = this.sortableFields();
-      if (!fields || fields.length === 0 || this.selectedSortField() !== undefined) {
-        return;
-      }
+  private readonly initializeSortDefaultsEffect = effect(() => {
+    const fields = this.sortableFields();
+    if (!fields || fields.length === 0 || this.selectedSortField() !== undefined) {
+      return;
+    }
 
-      this.selectedSortField.set(fields[0].fieldName);
-    },
-    { allowSignalWrites: true },
-  );
+    this.selectedSortField.set(fields[0].fieldName);
+  });
 
   onSearch(): void {
     if (this.debounceTimeout) {

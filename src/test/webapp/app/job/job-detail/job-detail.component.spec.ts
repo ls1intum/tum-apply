@@ -8,19 +8,19 @@ import { TranslateService } from '@ngx-translate/core';
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
 import { JhiMenuItem } from 'app/shared/components/atoms/menu/menu.component';
 import { User } from 'app/core/auth/account.service';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { JobDetailDTO, JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
+import { JobFormDTO, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { signal } from '@angular/core';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
+import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -30,33 +30,33 @@ describe('JobDetailComponent', () => {
   const mockRouter = createRouterMock();
 
   let location: Location;
-  let jobService: {
+  let jobApi: {
     getJobDetails: ReturnType<typeof vi.fn>;
     changeJobState: ReturnType<typeof vi.fn>;
     deleteJob: ReturnType<typeof vi.fn>;
   };
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService = createToastServiceMock();
-  let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
-  let pdfExportService: {
+  let researchGroupApi: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
+  let pdfExportApi: {
     exportJobToPDF: ReturnType<typeof vi.fn>;
     exportJobPreviewToPDF: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     location = { back: vi.fn() } as unknown as Location;
-    jobService = {
+    jobApi = {
       getJobDetails: vi.fn(),
       changeJobState: vi.fn(),
       deleteJob: vi.fn(),
     };
     mockAccountService = createAccountServiceMock();
 
-    researchGroupService = {
+    researchGroupApi = {
       getResourceGroupDetails: vi.fn().mockReturnValue(of({ description: 'RG Desc' })),
     };
 
-    pdfExportService = {
+    pdfExportApi = {
       exportJobToPDF: vi.fn(),
       exportJobPreviewToPDF: vi.fn(),
     };
@@ -65,10 +65,10 @@ describe('JobDetailComponent', () => {
       imports: [JobDetailComponent],
       providers: [
         { provide: Location, useValue: location },
-        { provide: JobResourceApiService, useValue: jobService },
-        { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+        { provide: JobResourceApi, useValue: jobApi },
+        { provide: ResearchGroupResourceApi, useValue: researchGroupApi },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
-        { provide: PdfExportResourceApiService, useValue: pdfExportService },
+        { provide: PdfExportResourceApi, useValue: pdfExportApi },
         provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
         provideAccountServiceMock(mockAccountService),
@@ -103,7 +103,7 @@ describe('JobDetailComponent', () => {
     component.jobDetails.set({
       applicationId: 'app42',
       title: '',
-      jobState: '',
+      jobState: undefined,
       supervisingProfessor: '',
       researchGroup: '',
       createdAt: '',
@@ -117,7 +117,7 @@ describe('JobDetailComponent', () => {
     component.jobDetails.set({
       applicationId: 'app88',
       title: '',
-      jobState: '',
+      jobState: undefined,
       supervisingProfessor: '',
       researchGroup: '',
       createdAt: '',
@@ -168,28 +168,28 @@ describe('JobDetailComponent', () => {
   });
 
   it('should close job successfully', async () => {
-    jobService.changeJobState.mockReturnValue(of({}));
+    jobApi.changeJobState.mockReturnValue(of({}));
     await component.onCloseJob();
-    expect(jobService.changeJobState).toHaveBeenCalledWith('job123', 'CLOSED');
+    expect(jobApi.changeJobState).toHaveBeenCalledWith('job123', JobDetailDTOStateEnum.Closed);
     expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
   });
 
   it('should handle close job error', async () => {
-    jobService.changeJobState.mockReturnValue(throwError(() => new Error('fail')));
+    jobApi.changeJobState.mockReturnValue(throwError(() => new Error('fail')));
     await component.onCloseJob();
     expect(mockToastService.showError).toHaveBeenCalled();
   });
 
   it('should delete job successfully', async () => {
-    jobService.deleteJob.mockReturnValue(of({}));
+    jobApi.deleteJob.mockReturnValue(of({}));
     await component.onDeleteJob();
-    expect(jobService.deleteJob).toHaveBeenCalledWith('job123');
+    expect(jobApi.deleteJob).toHaveBeenCalledWith('job123');
     expect(mockToastService.showSuccess).toHaveBeenCalled();
   });
 
   it('should handle delete job error', async () => {
-    jobService.deleteJob.mockReturnValue(throwError(() => new Error('boom')));
+    jobApi.deleteJob.mockReturnValue(throwError(() => new Error('boom')));
     await component.onDeleteJob();
     expect(mockToastService.showError).toHaveBeenCalled();
   });
@@ -197,22 +197,22 @@ describe('JobDetailComponent', () => {
   it('should load job details via init()', async () => {
     const dto: JobDetailDTO = {
       title: 'JobTitle',
-      state: 'DRAFT',
+      state: JobDetailDTOStateEnum.Draft,
       supervisingProfessorName: 'ProfX',
       researchGroup: { name: 'RG', researchGroupId: 'rg1' },
       createdAt: new Date().toISOString(),
       lastModifiedAt: new Date().toISOString(),
     } as JobDetailDTO;
-    jobService.getJobDetails.mockReturnValue(of(dto));
+    jobApi.getJobDetails.mockReturnValue(of(dto));
 
     await component.init();
 
-    expect(jobService.getJobDetails).toHaveBeenCalledWith('job123');
+    expect(jobApi.getJobDetails).toHaveBeenCalledWith('job123');
     expect(component.dataLoaded()).toBe(true);
   });
 
   it('should handle init error with HttpErrorResponse', async () => {
-    jobService.getJobDetails.mockReturnValue(throwError(() => new Error('fail')));
+    jobApi.getJobDetails.mockReturnValue(throwError(() => new Error('fail')));
     await component.init();
     expect(mockToastService.showError).toHaveBeenCalled();
     expect(location.back).toHaveBeenCalled();
@@ -225,15 +225,15 @@ describe('JobDetailComponent', () => {
     expect(component.dataLoaded()).toBe(true);
   });
 
-  it('should handle error when researchGroupService fails', async () => {
-    researchGroupService.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
+  it('should handle error when researchGroupApi fails', async () => {
+    researchGroupApi.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
     const form: JobFormDTO = { title: 'FormJob' } as JobFormDTO;
     await (component as unknown as { loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void> }).loadJobDetailsFromForm(form);
     expect(mockToastService.showError).toHaveBeenCalled();
   });
 
   it('should compute jobStateText and jobStateColor correctly', () => {
-    component.jobDetails.set({ jobState: 'DRAFT' } as JobDetails);
+    component.jobDetails.set({ jobState: JobDetailDTOStateEnum.Draft } as JobDetails);
     expect(component.jobStateText()).toBe('jobState.draft');
     expect(component.jobStateColor()).toBe('info');
   });
@@ -241,7 +241,7 @@ describe('JobDetailComponent', () => {
   it('should map JobDetailDTO to JobDetails', () => {
     const dto: JobDetailDTO = {
       title: 'Mapped',
-      state: 'PUBLISHED',
+      state: JobDetailDTOStateEnum.Published,
       supervisingProfessorName: 'Prof',
       researchGroup: { name: 'RG', researchGroupId: 'rg1' },
       createdAt: new Date().toISOString(),
@@ -254,7 +254,7 @@ describe('JobDetailComponent', () => {
       }
     ).mapToJobDetails(dto, user);
     expect(result.title).toBe('Mapped');
-    expect(result.jobState).toBe('PUBLISHED');
+    expect(result.jobState).toBe(JobDetailDTOStateEnum.Published);
   });
 
   it('should compute primaryActionButton for non-research-group user', () => {
@@ -263,27 +263,23 @@ describe('JobDetailComponent', () => {
     expect(component.primaryActionButton()?.label).toBe('button.apply');
   });
 
-  it('should compute getMenuItems for DRAFT and trigger confirm()', () => {
-    const confirmSpy = vi.fn();
-    (component as unknown as { deleteConfirmDialog: () => { confirm: () => void } }).deleteConfirmDialog = () => ({ confirm: confirmSpy });
-    const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
+  it('should compute getMenuItems for DRAFT and set showDeleteDialog to true', () => {
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Draft } as JobDetails;
     component.jobDetails.set(job);
     const menuItems = component.menuItems();
     const deleteItem = menuItems.find((item: JhiMenuItem) => item.label === component.deleteButtonLabel);
     deleteItem?.command?.();
-    expect(confirmSpy).toHaveBeenCalled();
+    expect(component.showDeleteDialog()).toBe(true);
   });
 
-  it('should compute primaryActionButton for PUBLISHED and trigger confirm()', () => {
-    const confirmSpy = vi.fn();
-    (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
+  it('should compute primaryActionButton for PUBLISHED and set showCloseDialog to true', () => {
     // mock professor ownership
     vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
-    const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Published } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.primaryActionButton();
     btn?.onClick();
-    expect(confirmSpy).toHaveBeenCalled();
+    expect(component.showCloseDialog()).toBe(true);
   });
 
   it('should return null for PUBLISHED job when user is professor but not owner', () => {
@@ -291,7 +287,7 @@ describe('JobDetailComponent', () => {
 
     const job = {
       belongsToResearchGroup: false,
-      jobState: 'PUBLISHED',
+      jobState: JobDetailDTOStateEnum.Published,
     } as JobDetails;
 
     component.jobDetails.set(job);
@@ -306,8 +302,8 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: JobResourceApiService, useValue: jobService },
-          { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+          { provide: JobResourceApi, useValue: jobApi },
+          { provide: ResearchGroupResourceApi, useValue: researchGroupApi },
           { provide: ActivatedRoute, useValue: invalidRoute },
           provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
@@ -320,8 +316,7 @@ describe('JobDetailComponent', () => {
 
     const fixture2 = TestBed.createComponent(JobDetailComponent);
     const comp2 = fixture2.componentInstance;
-    await comp2.init();
-
+    await runSilently(() => comp2.init());
     expect(location.back).toHaveBeenCalled();
   });
 
@@ -375,12 +370,12 @@ describe('JobDetailComponent', () => {
     ).mapToJobDetails(form, user, { jobDescriptionEN: 'RG D' }, { jobDescriptionDE: 'RG D' }, true);
 
     expect(result.title).toBe('Form Job');
-    expect(result.jobState).toBe('DRAFT');
+    expect(result.jobState).toBe(JobDetailDTOStateEnum.Draft);
     expect(result.supervisingProfessor).toBe(user?.name);
   });
 
   it('should handle unknown job state in jobStateText and jobStateColor', () => {
-    component.jobDetails.set({ jobState: 'UNKNOWN_STATE' } as JobDetails);
+    component.jobDetails.set({ jobState: 'UNKNOWN_STATE' } as unknown as JobDetails);
     expect(component.jobStateText()).toBe('jobState.unknown');
     expect(component.jobStateColor()).toBe('info');
   });
@@ -448,7 +443,7 @@ describe('JobDetailComponent', () => {
   it('should trigger onEditApplication from computed button', () => {
     const job = {
       belongsToResearchGroup: false,
-      applicationState: ApplicationForApplicantDTO.ApplicationStateEnum.Saved,
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Saved,
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onEditApplication');
@@ -460,7 +455,7 @@ describe('JobDetailComponent', () => {
   it('should trigger onViewApplication from computed button', () => {
     const job = {
       belongsToResearchGroup: false,
-      applicationState: ApplicationForApplicantDTO.ApplicationStateEnum.Sent,
+      applicationState: ApplicationForApplicantDTOApplicationStateEnum.Sent,
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onViewApplication');
@@ -471,7 +466,7 @@ describe('JobDetailComponent', () => {
 
   it('should trigger onEditJob from computed button', () => {
     const spy = vi.spyOn(component, 'onEditJob');
-    const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Draft } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.primaryActionButton();
     expect(btn?.label).toBe('button.edit');
@@ -481,7 +476,7 @@ describe('JobDetailComponent', () => {
 
   it('should handle HttpErrorResponse in init()', async () => {
     const httpError = new HttpErrorResponse({ status: 500, statusText: 'Server Error' });
-    jobService.getJobDetails.mockReturnValue(throwError(() => httpError));
+    jobApi.getJobDetails.mockReturnValue(throwError(() => httpError));
     await component.init();
     expect(mockToastService.showError).toHaveBeenCalledWith({
       detail: expect.stringContaining('500'),
@@ -520,7 +515,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should return null when jobDetails do not match any button case', () => {
-    const job = { belongsToResearchGroup: true, jobState: 'CLOSED' } as JobDetails;
+    const job = { belongsToResearchGroup: true, jobState: JobDetailDTOStateEnum.Closed } as JobDetails;
     component.jobDetails.set(job);
     const result = component.primaryActionButton();
     expect(result).toBeNull();
@@ -589,8 +584,8 @@ describe('JobDetailComponent', () => {
         imports: [JobDetailComponent],
         providers: [
           { provide: Location, useValue: location },
-          { provide: JobResourceApiService, useValue: jobService },
-          { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+          { provide: JobResourceApi, useValue: jobApi },
+          { provide: ResearchGroupResourceApi, useValue: researchGroupApi },
           { provide: ActivatedRoute, useValue: routeNoJobId },
           provideToastServiceMock(mockToastService),
           provideRouterMock(mockRouter),
@@ -604,9 +599,9 @@ describe('JobDetailComponent', () => {
     const fixture2 = TestBed.createComponent(JobDetailComponent);
     const comp2 = fixture2.componentInstance;
 
-    jobService.getJobDetails.mockReturnValue(of({ title: 'FallbackJob' } as JobDetails));
+    jobApi.getJobDetails.mockReturnValue(of({ title: 'FallbackJob' } as JobDetails));
 
-    await comp2.init();
+    await runSilently(() => comp2.init());
 
     expect(comp2['userId']()).toBe('');
     expect(comp2['jobId']()).toBe('');
@@ -616,7 +611,7 @@ describe('JobDetailComponent', () => {
     component.jobDetails.set(null);
     expect(component.jobStateText()).toBe('Unknown');
 
-    component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as JobDetails);
+    component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as unknown as JobDetails);
     expect(component.jobStateText()).toBe('jobState.unknown');
   });
 
@@ -624,13 +619,14 @@ describe('JobDetailComponent', () => {
     const dto: JobDetailDTO = {
       jobId: 'j1',
       title: '',
-      state: 'DRAFT',
+      state: JobDetailDTOStateEnum.Draft,
       supervisingProfessorName: '',
       researchGroup: { name: 'RG1', researchGroupId: 'rg1' },
       createdAt: '',
       lastModifiedAt: '',
       workload: 15 as unknown as number,
       contractDuration: 9 as unknown as number,
+      subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
     };
 
     const user = mockAccountService.loadedUser();
@@ -650,10 +646,10 @@ describe('JobDetailComponent', () => {
       title: 'Form Job',
       jobDescriptionEN: 'Some description',
       jobDescriptionDE: 'Some description',
-      fieldOfStudies: '',
+      subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
-      location: 'GARCHING',
-      state: 'CLOSED',
+      location: JobFormDTOLocationEnum.Garching,
+      state: JobDetailDTOStateEnum.Closed,
     };
 
     const result = (
@@ -673,13 +669,13 @@ describe('JobDetailComponent', () => {
 
     const form: JobFormDTO = {
       title: 'Form Job',
-      fieldOfStudies: '',
+      subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       supervisingProfessor: '',
-      location: 'GARCHING',
-      state: 'CLOSED',
+      location: JobFormDTOLocationEnum.Garching,
+      state: JobDetailDTOStateEnum.Closed,
     };
 
-    const spy = vi.spyOn(researchGroupService, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
+    const spy = vi.spyOn(researchGroupApi, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
 
     await (
       component as unknown as {
@@ -700,7 +696,7 @@ describe('JobDetailComponent', () => {
 
     const dto: JobDetailDTO = {
       title: 'RG Job',
-      state: 'PUBLISHED',
+      state: JobDetailDTOStateEnum.Published,
       supervisingProfessorName: 'ProfX',
       researchGroup: { name: 'RGX', researchGroupId: 'rgX' },
       createdAt: new Date().toISOString(),
@@ -722,7 +718,7 @@ describe('JobDetailComponent', () => {
       fixture.componentRef.setInput('previewData', undefined);
 
       component.jobDetails.set({
-        jobState: 'PUBLISHED',
+        jobState: JobDetailDTOStateEnum.Published,
         belongsToResearchGroup: false,
       } as any);
 
@@ -741,12 +737,12 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; filename="test.pdf"') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobToPDF.mockReturnValue(of(mockResponse));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object), 'response');
+      expect(pdfExportApi.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
     it('should download PDF for preview job', async () => {
@@ -754,14 +750,14 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; filename="preview.pdf"') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
 
       const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
       fixture.componentRef.setInput('previewData', signal(previewJob));
 
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
+      expect(pdfExportApi.exportJobPreviewToPDF).toHaveBeenCalled();
     });
 
     it('should show error when preview formData is missing', async () => {
@@ -773,7 +769,7 @@ describe('JobDetailComponent', () => {
     });
 
     it('should handle error in preview PDF generation', async () => {
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
+      pdfExportApi.exportJobPreviewToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
 
       const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
       fixture.componentRef.setInput('previewData', signal(previewJob));
@@ -783,7 +779,7 @@ describe('JobDetailComponent', () => {
     });
 
     it('should handle error in normal PDF generation', async () => {
-      pdfExportService.exportJobToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
+      pdfExportApi.exportJobToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
@@ -796,12 +792,12 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue(null) },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobToPDF.mockReturnValue(of(mockResponse));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledOnce();
+      expect(pdfExportApi.exportJobToPDF).toHaveBeenCalledOnce();
     });
 
     it('should use default filename when regex does not match Content-Disposition', async () => {
@@ -809,12 +805,12 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobToPDF.mockReturnValue(of(mockResponse));
 
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledOnce();
+      expect(pdfExportApi.exportJobToPDF).toHaveBeenCalledOnce();
     });
 
     it('should use default filename when regex does not match in preview mode', async () => {
@@ -823,7 +819,7 @@ describe('JobDetailComponent', () => {
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
 
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
+      pdfExportApi.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
 
       const previewJob: JobFormDTO = {
         title: 'Preview',
@@ -834,7 +830,7 @@ describe('JobDetailComponent', () => {
 
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalledOnce();
+      expect(pdfExportApi.exportJobPreviewToPDF).toHaveBeenCalledOnce();
     });
   });
 });

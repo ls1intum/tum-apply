@@ -13,13 +13,16 @@
     (tabChange)="onTabChange($event)"
   >
     <ng-template jhiTabPanel="general">
+      <jhi-profile-picture-settings />
+      <p-divider layout="horizontal" />
+
       <div class="mb-4">
-        <div class="text-lg font-semibold mb-2">
+        <div class="text-lg font-semibold mb-1">
           <h2 jhiTranslate="settings.appearance.header"></h2>
         </div>
         <div class="pb-4">
           <div class="flex flex-row items-center justify-between">
-            <label class="text-base font-medium text-text-secondary" jhiTranslate="settings.appearance.theme.label"></label>
+            <label class="text-text-secondary" jhiTranslate="settings.appearance.theme.label"></label>
             <jhi-select
               [items]="themeOptions"
               [selected]="selectedTheme()"
@@ -32,17 +35,19 @@
     </ng-template>
 
     <ng-template jhiTabPanel="notifications">
-      <jhi-email-settings [currentRole]="role()" />
+      <div class="flex h-full px-4 xl:px-32 2xl:px-64">
+        <jhi-notification-settings class="w-full" [currentRole]="role()" />
+      </div>
     </ng-template>
 
     <ng-template jhiTabPanel="personal-information">
-      <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+      <div class="flex h-full px-4 xl:px-32 2xl:px-64">
         <jhi-personal-information-settings class="w-full" />
       </div>
     </ng-template>
 
     <ng-template jhiTabPanel="documents">
-      <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+      <div class="flex h-full px-4 xl:px-32 2xl:px-64">
         <jhi-settings-documents class="w-full" />
       </div>
     </ng-template>

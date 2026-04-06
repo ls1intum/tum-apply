@@ -1,20 +1,23 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, Signal, computed, effect, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { firstValueFrom, map } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { TranslateDirective } from 'app/shared/language';
+import { AccountService } from 'app/core/auth/account.service';
+import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
-import { JobCardDTO } from '../../../generated/model/jobCardDTO';
-import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
+import { JobCardDTO } from '../../../generated/model/job-card-dto';
+import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 
 @Component({
@@ -37,18 +40,20 @@ export class JobCardListComponent {
 
   DropdownOptions = DropdownOptions;
 
-  readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
-  readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
+  readonly accountService = inject(AccountService);
+  readonly selectedSubjectAreaFilters = signal<JobFormDTOSubjectAreaEnum[]>([]);
+  readonly selectedLocationFilters = signal<JobFormDTOLocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
+  readonly notificationsSettingsHref: Signal<string>;
 
-  readonly allFieldOfStudies = this.DropdownOptions.fieldsOfStudies.map(option => option.name);
+  readonly allSubjectAreas = this.DropdownOptions.subjectAreas.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
   readonly allSupervisorNames = signal<string[]>([]);
 
   readonly sortableFields: SortOption[] = [
     { displayName: 'jobOverviewPage.sortingOptions.startDate', fieldName: 'startDate', type: 'NUMBER' },
     { displayName: 'jobOverviewPage.sortingOptions.jobTitle', fieldName: 'title', type: 'TEXT' },
-    { displayName: 'jobOverviewPage.sortingOptions.fieldOfStudies', fieldName: 'fieldOfStudies', type: 'TEXT' },
+    { displayName: 'jobOverviewPage.sortingOptions.subjectArea', fieldName: 'subjectArea', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.location', fieldName: 'location', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.professor', fieldName: 'professorName', type: 'TEXT' },
     { displayName: 'jobOverviewPage.sortingOptions.workload', fieldName: 'workload', type: 'NUMBER' },
@@ -58,15 +63,26 @@ export class JobCardListComponent {
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
+  readonly notificationsCtaTranslateValues = computed(() => {
+    // Recompute the translated link text when the active language changes.
+    this.currentLanguage();
+    return {
+      link: `<a class="font-medium text-primary hover:underline" href="${this.notificationsSettingsHref()}">${this.translateService.instant('jobOverviewPage.notificationsCta.link')}</a>`,
+    };
+  });
+  readonly canManageSubjectAreaSubscriptions = computed(
+    () => this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]),
+  );
 
-  private jobService = inject(JobResourceApiService);
+  private readonly router = inject(Router);
+  private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
   private readonly loadJobsEffect = effect(() => {
     this.page();
     this.pageSize();
     this.searchQuery();
-    this.selectedFieldOfStudiesFilters();
+    this.selectedSubjectAreaFilters();
     this.selectedLocationFilters();
     this.selectedSupervisorFilters();
     this.sortBy();
@@ -75,6 +91,9 @@ export class JobCardListComponent {
   });
 
   constructor() {
+    this.notificationsSettingsHref = computed(() =>
+      this.router.serializeUrl(this.router.createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } })),
+    );
     void this.loadAllFilter();
   }
 
@@ -98,11 +117,8 @@ export class JobCardListComponent {
 
   onFilterEmit(filterChange: FilterChange): void {
     this.page.set(0);
-    if (filterChange.filterId === 'fieldOfStudies') {
-      const fieldOfStudyValue = filterChange.selectedValues.map(
-        key => DropdownOptions.fieldsOfStudies.find(fs => fs.name === key)?.value ?? key,
-      );
-      this.selectedFieldOfStudiesFilters.set(fieldOfStudyValue);
+    if (filterChange.filterId === 'subjectArea') {
+      this.selectedSubjectAreaFilters.set(DropdownOptions.mapSubjectAreaNames(filterChange.selectedValues));
     } else if (filterChange.filterId === 'location') {
       const enumValues = DropdownOptions.mapLocationNames(filterChange.selectedValues);
       this.selectedLocationFilters.set(enumValues);
@@ -121,7 +137,7 @@ export class JobCardListComponent {
 
   async loadAllFilter(): Promise<void> {
     try {
-      const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
+      const filterOptions = await firstValueFrom(this.jobApi.getAllFilters());
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
       this.allSupervisorNames.set([]);
@@ -132,10 +148,10 @@ export class JobCardListComponent {
   async loadJobs(): Promise<void> {
     try {
       const pageData = await firstValueFrom(
-        this.jobService.getAvailableJobs(
+        this.jobApi.getAvailableJobs(
           this.pageSize(),
           this.page(),
-          emptyToUndef(this.selectedFieldOfStudiesFilters()),
+          emptyToUndef(this.selectedSubjectAreaFilters()),
           emptyToUndef(this.selectedLocationFilters()),
           emptyToUndef(this.selectedSupervisorFilters()),
           this.sortBy(),
@@ -153,10 +169,12 @@ export class JobCardListComponent {
 
   getExampleImageUrl(index: number): string {
     const headerImages = [
-      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
-      'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&q=80',
-      'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80',
+      '/content/images/job-banner/job-banner1.jpg',
+      '/content/images/job-banner/job-banner2.jpg',
+      '/content/images/job-banner/job-banner3.jpg',
+      '/content/images/job-banner/job-banner4.jpg',
+      '/content/images/job-banner/job-banner5.jpg',
+      '/content/images/job-banner/job-banner6.jpg',
     ];
 
     return headerImages[index % headerImages.length];

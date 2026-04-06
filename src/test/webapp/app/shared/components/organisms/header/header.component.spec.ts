@@ -8,7 +8,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { User } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
@@ -22,7 +22,7 @@ import {
 import { setupWindowMatchMediaMock, createThemeServiceMock, provideThemeServiceMock, ThemeServiceMock } from 'util/theme.service.mock';
 
 type HeaderComponentTestInstance = Omit<HeaderComponent, 'routeAuthorities' | 'isProfessorPage'> & {
-  routeAuthorities: () => UserShortDTO.RolesEnum[] | string[];
+  routeAuthorities: () => UserShortDTORolesEnum[] | string[];
   isProfessorPage: () => boolean;
 };
 
@@ -79,7 +79,7 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('navigateToHome', () => {
+  describe('onLogoClick', () => {
     it('should navigate to professor landing page when user is professor', () => {
       accountService.setAuthorities(['PROFESSOR']);
 
@@ -103,6 +103,36 @@ describe('HeaderComponent', () => {
       component.navigateToHome();
 
       expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it.each([
+      ['plain left-click without modifiers', { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false }, true, true],
+      ['middle-click', { button: 1, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false }, false, false],
+      ['left-click with modifier keys', { button: 0, ctrlKey: true, metaKey: false, shiftKey: false, altKey: false }, false, false],
+    ])('should handle onLogoClick: %s', (_desc, eventProps, shouldPrevent, shouldNavigate) => {
+      const navSpy = vi.spyOn(component, 'navigateToHome');
+      const mockEvent = {
+        button: eventProps.button,
+        ctrlKey: eventProps.ctrlKey,
+        metaKey: eventProps.metaKey,
+        shiftKey: eventProps.shiftKey,
+        altKey: eventProps.altKey,
+        preventDefault: vi.fn(),
+      } as unknown as MouseEvent;
+
+      component.onLogoClick(mockEvent);
+
+      if (shouldPrevent) {
+        expect(mockEvent.preventDefault).toHaveBeenCalledOnce();
+      } else {
+        expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+      }
+
+      if (shouldNavigate) {
+        expect(navSpy).toHaveBeenCalledOnce();
+      } else {
+        expect(navSpy).not.toHaveBeenCalled();
+      }
     });
   });
 
@@ -132,7 +162,7 @@ describe('HeaderComponent', () => {
       router.url = '/some-other-route';
       accountService.setAuthorities([]);
       router.routerState.snapshot.root.data = {
-        authorities: [UserShortDTO.RolesEnum.Professor],
+        authorities: [UserShortDTORolesEnum.Professor],
       };
 
       fixture = TestBed.createComponent(HeaderComponent);
@@ -154,7 +184,7 @@ describe('HeaderComponent', () => {
       ).firstChild = {
         firstChild: {
           firstChild: null,
-          data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+          data: { authorities: [UserShortDTORolesEnum.Professor] },
         },
         data: {},
       };
@@ -182,7 +212,7 @@ describe('HeaderComponent', () => {
       ).firstChild = {
         firstChild: {
           firstChild: null,
-          data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+          data: { authorities: [UserShortDTORolesEnum.Professor] },
         },
         data: {},
       };

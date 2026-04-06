@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ApplicationCardComponent } from 'app/shared/components/molecules/application-card/application-card.component';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
+import { ApplicationDetailDTO } from 'app/generated/model/application-detail-dto';
 import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
 import { provideThemeServiceMock } from '../../../../../util/theme.service.mock';
@@ -47,22 +47,6 @@ describe('ApplicationCardComponent', () => {
 
   // ---------------- PLACEHOLDER STATE ----------------
 
-  it('should apply placeholder class when placeholder is true', () => {
-    fixture.componentRef.setInput('placeholder', true);
-    fixture.detectChanges();
-
-    const card = fixture.nativeElement.querySelector('.card');
-    expect(card.classList.contains('placeholder')).toBe(true);
-  });
-
-  it('should not render content when placeholder is true', () => {
-    fixture.componentRef.setInput('placeholder', true);
-    fixture.detectChanges();
-
-    const header = fixture.nativeElement.querySelector('.header');
-    expect(header).toBeFalsy();
-  });
-
   it('should render content when placeholder is false', () => {
     const detail: ApplicationDetailDTO = {
       applicationId: '123',
@@ -76,7 +60,7 @@ describe('ApplicationCardComponent', () => {
     fixture.componentRef.setInput('application', app);
     fixture.detectChanges();
 
-    const header = fixture.nativeElement.querySelector('.header');
+    const header = fixture.nativeElement.querySelector('h2');
     expect(header).toBeTruthy();
   });
 });

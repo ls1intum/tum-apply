@@ -24,12 +24,21 @@
       </label>
     }
 
-    <div class="input-wrapper" [class.error]="isEmpty()" contenteditable="false" (focusin)="onFocus()" (focusout)="onBlur()" #editorElem>
+    <div
+      class="input-wrapper"
+      [class.error]="isEmpty()"
+      contenteditable="false"
+      (focusin)="onFocus()"
+      (focusout)="onBlur()"
+      #editorElem
+      [style.height]="height()"
+    >
       <quill-editor
         class="custom-quill-editor"
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
         [ngModel]="editorValue()"
+        [modules]="quillModules"
         [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
         (onContentChanged)="textChanged($event)"
       >
@@ -64,7 +73,7 @@
               @if (codingDisplay(); as coding) {
                 <span
                   class="px-3 py-1 rounded text-xs break-words"
-                  [ngClass]="analysisResult()?.coding === 'non-inclusive-coded' ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"
+                  [ngClass]="analysisResult()?.coding === 'non-inclusive-coded' ? 'gender-badge-warn' : 'gender-badge-secondary'"
                 >
                   {{ coding }}
                 </span>
@@ -73,7 +82,7 @@
                 <button
                   type="button"
                   class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
-                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: white;'"
+                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: var(--p-background-default);'"
                   (click)="onGenderDecoderClick()"
                   [pTooltip]="'genderDecoder.openAnaylsis' | translate"
                   tooltipPosition="top"

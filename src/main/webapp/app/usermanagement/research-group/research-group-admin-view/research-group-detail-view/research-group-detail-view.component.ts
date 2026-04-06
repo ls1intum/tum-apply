@@ -3,10 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -39,7 +39,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
     departmentId: new FormControl('', [Validators.required]),
-    defaultFieldOfStudies: new FormControl(''),
     head: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.pattern(/.+\..{2,}$/)]),
     website: new FormControl(''),
@@ -71,8 +70,8 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     return this.departmentOptions().find(opt => opt.value === deptId);
   });
 
-  readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly departmentService = inject(DepartmentResourceApiService);
+  readonly researchGroupApi = inject(ResearchGroupResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -85,7 +84,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   async loadDepartments(): Promise<void> {
     try {
-      const departments = await firstValueFrom(this.departmentService.getDepartments());
+      const departments = await firstValueFrom(this.departmentApi.getDepartments());
       this.departments.set(departments);
     } catch {
       this.toastService.showErrorKey('researchGroup.detailView.errors.loadDepartments');
@@ -123,11 +122,10 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         street: formValue.street ?? '',
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
-        defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
         departmentId: formValue.departmentId ?? undefined,
       };
 
-      await firstValueFrom(this.ResearchGroupService.updateResearchGroup(researchGroupId, updateData));
+      await firstValueFrom(this.researchGroupApi.updateResearchGroup(researchGroupId, updateData));
 
       this.toastService.showSuccessKey('researchGroup.detailView.success.updated');
     } catch {
@@ -146,7 +144,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     }
 
     try {
-      const researchGroup = await firstValueFrom(this.ResearchGroupService.getResearchGroup(researchGroupId));
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
     } catch {
       this.toastService.showErrorKey('researchGroup.detailView.errors.view');
@@ -159,7 +157,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     this.form.patchValue({
       abbreviation: data?.abbreviation ?? '',
       name: data?.name ?? '',
-      defaultFieldOfStudies: data?.defaultFieldOfStudies ?? '',
       head: data?.head ?? '',
       email: data?.email ?? '',
       website: data?.website ?? '',

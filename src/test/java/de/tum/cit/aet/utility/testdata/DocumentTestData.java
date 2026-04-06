@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import org.springframework.mock.web.MockMultipartFile;
@@ -42,7 +41,7 @@ public final class DocumentTestData {
         String classpathResource,
         String filename
     ) throws IOException {
-        Path storageRoot = Paths.get(storageRootConfig).toAbsolutePath().normalize();
+        Path storageRoot = Path.of(storageRootConfig).toAbsolutePath().normalize();
         Files.createDirectories(storageRoot);
 
         Path pdfPath = storageRoot.resolve(filename);

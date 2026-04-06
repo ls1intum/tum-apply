@@ -9,11 +9,12 @@ import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.ai.web.AiResource;
 import de.tum.cit.aet.utility.MvcTestClient;
+import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class AiResourceTest extends AbstractResourceTest {
@@ -37,7 +38,6 @@ class AiResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void translateJobDescriptionReturnsTranslatedText() {
         String mockTranslation = "Hallo Welt";
         String jobId = "job-1";
@@ -48,17 +48,18 @@ class AiResourceTest extends AbstractResourceTest {
         );
 
         String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang;
-        AIJobDescriptionTranslationDTO response = api.putAndRead(url, input, AIJobDescriptionTranslationDTO.class, 200);
+        AIJobDescriptionTranslationDTO response = api
+            .with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_PROFESSOR"))
+            .putAndRead(url, input, AIJobDescriptionTranslationDTO.class, 200);
 
         assertThat(response).isNotNull();
         assertThat(response.translatedText()).isEqualTo(mockTranslation);
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void translateJobDescriptionAsStudentForbidden() {
         String url = TRANSLATE_URL + "?jobId=job-1&toLang=de";
-        api.putAndRead(url, input, Void.class, 403);
+        api.with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_APPLICANT")).putAndRead(url, input, Void.class, 403);
     }
 
     @Test

@@ -2,19 +2,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
-import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
-import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { provideTranslateMock } from 'util/translate.mock';
-import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
-import { DepartmentDTO } from 'app/generated/model/departmentDTO';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
+import { DepartmentDTO } from 'app/generated/model/department-dto';
+import { UserShortDTO } from 'app/generated/model/user-short-dto';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
@@ -34,12 +35,13 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
 
   let mockDialogRef: DynamicDialogRefMock;
   let mockDialogConfig: Partial<DynamicDialogConfig>;
-  let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
-  let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
-  let mockSchoolService: Partial<SchoolResourceApiService>;
-  let mockDepartmentService: Partial<DepartmentResourceApiService>;
-  let mockUserService: Partial<UserResourceApiService>;
+  let mockResearchGroupService: Partial<ResearchGroupResourceApi>;
+  let mockProfOnboardingService: Partial<ProfOnboardingResourceApi>;
+  let mockSchoolService: Partial<SchoolResourceApi>;
+  let mockDepartmentService: Partial<DepartmentResourceApi>;
+  let mockUserService: Partial<UserResourceApi>;
   let mockGetCurrentUser: ReturnType<typeof vi.fn>;
+  let getAvailableUsersForResearchGroupMock: ReturnType<typeof vi.fn>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -51,11 +53,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     mockResearchGroupService = {
       createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
       createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
-    } as unknown as ResearchGroupResourceApiService;
+    } as unknown as ResearchGroupResourceApi;
 
     mockProfOnboardingService = {
       confirmOnboarding: vi.fn(() => of(undefined)),
-    } as unknown as ProfOnboardingResourceApiService;
+    } as unknown as ProfOnboardingResourceApi;
 
     mockSchoolService = {
       getAllSchools: vi.fn(() =>
@@ -64,7 +66,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
           { schoolId: 'school-2', name: 'Test School 2' } as Partial<SchoolShortDTO> as SchoolShortDTO,
         ]),
       ),
-    } as unknown as SchoolResourceApiService;
+    } as unknown as SchoolResourceApi;
 
     mockDepartmentService = {
       getDepartments: vi.fn(() =>
@@ -81,12 +83,15 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
           } as Partial<DepartmentDTO> as DepartmentDTO,
         ]),
       ),
-    } as unknown as DepartmentResourceApiService;
+    } as unknown as DepartmentResourceApi;
 
     mockGetCurrentUser = vi.fn(() => of({} as UserShortDTO));
+    getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
     mockUserService = {
-      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApiService['getCurrentUser'],
-    } as unknown as UserResourceApiService;
+      getCurrentUser: mockGetCurrentUser as unknown as UserResourceApi['getCurrentUser'],
+      getAvailableUsersForResearchGroup:
+        getAvailableUsersForResearchGroupMock as unknown as UserResourceApi['getAvailableUsersForResearchGroup'],
+    } as unknown as UserResourceApi;
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
@@ -97,11 +102,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         provideHttpClientMock(),
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
-        { provide: SchoolResourceApiService, useValue: mockSchoolService },
-        { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
-        { provide: UserResourceApiService, useValue: mockUserService },
+        { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
+        { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
+        { provide: SchoolResourceApi, useValue: mockSchoolService },
+        { provide: DepartmentResourceApi, useValue: mockDepartmentService },
+        { provide: UserResourceApi, useValue: mockUserService },
       ],
     }).compileComponents();
 
@@ -111,6 +116,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -266,6 +272,25 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.userNotFound');
     });
 
+    it('should show already member error toast in admin mode when user already belongs to a research group', async () => {
+      const error = new HttpErrorResponse({
+        status: 400,
+        error: { message: "User with universityId 'aa00bka' is already a member of research group 'Existing Group'" },
+      });
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
+
+      fillValidForm({
+        researchGroupHead: 'Prof. Dr. Test',
+        researchGroupName: 'Test Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.userAlreadyMember');
+    });
+
     it('should handle non-HttpErrorResponse errors in admin mode', async () => {
       const error = new TypeError('Unexpected error'); // Not an HttpErrorResponse
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
@@ -392,6 +417,201 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         expect.objectContaining({
           abbreviation: '',
           website: '',
+        }),
+      );
+    });
+
+    it('should load admin professor candidates when search query is long enough', async () => {
+      const candidates: KeycloakUserDTO[] = [
+        {
+          id: '1d8e3025-cf70-4f7a-b510-e9fbe7f4f123',
+          firstName: 'Alice',
+          lastName: 'Professor',
+          email: 'alice.prof@tum.de',
+          universityId: 'ab12cde',
+          username: 'alice.prof',
+        },
+      ];
+      getAvailableUsersForResearchGroupMock.mockReturnValue(of({ content: candidates, totalElements: 1 }));
+
+      await component.onAdminProfessorSearch('alice');
+
+      expect(getAvailableUsersForResearchGroupMock).toHaveBeenCalledWith(25, 0, 'alice');
+      expect(component.adminProfessorCandidates()).toEqual(candidates);
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should not call user service when admin search query is too short', async () => {
+      await component.onAdminProfessorSearch('al');
+
+      expect(getAvailableUsersForResearchGroupMock).not.toHaveBeenCalled();
+      expect(component.adminProfessorCandidates()).toEqual([]);
+    });
+
+    it('should show toast when admin professor search fails', async () => {
+      getAvailableUsersForResearchGroupMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+
+      await component.onAdminProfessorSearch('alice');
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should ignore stale admin professor search responses', async () => {
+      const firstResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+      const secondResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+
+      getAvailableUsersForResearchGroupMock
+        .mockReturnValueOnce(firstResponse.asObservable())
+        .mockReturnValueOnce(secondResponse.asObservable());
+
+      const firstCandidates: KeycloakUserDTO[] = [
+        {
+          id: '7f8d7f67-84c2-4bf8-89f2-84bbca2e7aa1',
+          firstName: 'Old',
+          lastName: 'Result',
+          email: 'old.result@tum.de',
+          universityId: 'ab12cde',
+          username: 'old.result',
+        },
+      ];
+
+      const secondCandidates: KeycloakUserDTO[] = [
+        {
+          id: '0ea4a5fd-2fd8-4b80-8c84-0bb3674ef6e2',
+          firstName: 'New',
+          lastName: 'Result',
+          email: 'new.result@tum.de',
+          universityId: 'cd34efg',
+          username: 'new.result',
+        },
+      ];
+
+      const firstSearchPromise = component.onAdminProfessorSearch('alice');
+      const secondSearchPromise = component.onAdminProfessorSearch('alicia');
+
+      secondResponse.next({ content: secondCandidates, totalElements: 1 });
+      secondResponse.complete();
+      await secondSearchPromise;
+
+      firstResponse.next({ content: firstCandidates, totalElements: 1 });
+      firstResponse.complete();
+      await firstSearchPromise;
+
+      expect(component.adminProfessorCandidates()).toEqual(secondCandidates);
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should only show admin professor search errors for latest request', async () => {
+      const firstResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+      const secondResponse = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+
+      getAvailableUsersForResearchGroupMock
+        .mockReturnValueOnce(firstResponse.asObservable())
+        .mockReturnValueOnce(secondResponse.asObservable());
+
+      const secondCandidates: KeycloakUserDTO[] = [
+        {
+          id: 'bf733186-cf79-4f9d-878b-c183c4f5d6b8',
+          firstName: 'Latest',
+          lastName: 'Result',
+          email: 'latest.result@tum.de',
+          universityId: 'ef56ghi',
+          username: 'latest.result',
+        },
+      ];
+
+      const firstSearchPromise = component.onAdminProfessorSearch('alice');
+      const secondSearchPromise = component.onAdminProfessorSearch('alicia');
+
+      secondResponse.next({ content: secondCandidates, totalElements: 1 });
+      secondResponse.complete();
+      await secondSearchPromise;
+
+      firstResponse.error(new HttpErrorResponse({ status: 500 }));
+      await firstSearchPromise;
+
+      expect(component.adminProfessorCandidates()).toEqual(secondCandidates);
+      expect(mockToastService.showErrorKey).not.toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
+    });
+
+    it('should delay loading spinner until threshold for admin professor search', async () => {
+      vi.useFakeTimers();
+
+      const response = new Subject<{ content: KeycloakUserDTO[]; totalElements: number }>();
+      getAvailableUsersForResearchGroupMock.mockReturnValue(response.asObservable());
+
+      const searchPromise = component.onAdminProfessorSearch('alice');
+      expect(component.isLoadingAdminUsers()).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(249);
+      expect(component.isLoadingAdminUsers()).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(1);
+      expect(component.isLoadingAdminUsers()).toBe(true);
+
+      response.next({ content: [], totalElements: 0 });
+      response.complete();
+      await searchPromise;
+
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should set selected admin professor and copy universityId into tumID', () => {
+      const selectedProfessor: KeycloakUserDTO = {
+        id: '2c4f7b39-102f-4b9a-a1ba-33f3388d7744',
+        firstName: 'Bob',
+        lastName: 'Professor',
+        email: 'bob.prof@tum.de',
+        universityId: 'xy34zab',
+        username: 'bob.prof',
+      };
+
+      component.selectAdminProfessor(selectedProfessor);
+
+      expect(component.selectedAdminProfessor()).toEqual(selectedProfessor);
+      expect(component.form.get('tumID')?.value).toBe('xy34zab');
+      expect(component.selectedAdminProfessor()?.id).toBe(selectedProfessor.id);
+    });
+
+    it('should clear selected admin professor and reset tumID', () => {
+      const selectedProfessor: KeycloakUserDTO = {
+        id: 'f4f809f7-9150-4602-9c43-2562ec0d0adf',
+        firstName: 'Clara',
+        lastName: 'Professor',
+        email: 'clara.prof@tum.de',
+        universityId: 'cd56efg',
+        username: 'clara.prof',
+      };
+
+      component.selectAdminProfessor(selectedProfessor);
+      component.clearSelectedAdminProfessor();
+
+      expect(component.selectedAdminProfessor()).toBeUndefined();
+      expect(component.form.get('tumID')?.value).toBe('');
+      expect(component.adminProfessorCandidates()).toEqual([]);
+    });
+
+    it('should submit selected admin professor universityId in payload', async () => {
+      const selectedProfessor: KeycloakUserDTO = {
+        id: 'a2d43009-9c94-4b61-bf00-c89f02f4f1a2',
+        firstName: 'Dana',
+        lastName: 'Professor',
+        email: 'dana.prof@tum.de',
+        universityId: 'mn78opq',
+        username: 'dana.prof',
+      };
+
+      fillValidForm({ tumID: '' });
+      component.selectAdminProfessor(selectedProfessor);
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          universityId: 'mn78opq',
         }),
       );
     });

@@ -1,5 +1,4 @@
 <jhi-confirm-dialog
-  #sendConfirmDialog
   class="confirm-dialog"
   [header]="'entity.applicationSteps.confirmDialog.header' | translate"
   [message]="'entity.applicationSteps.confirmDialog.message' | translate"
@@ -7,22 +6,27 @@
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
+  [visible]="showSendDialog()"
   (confirmed)="onConfirmSend()"
+  (closed)="showSendDialog.set(false)"
 />
 
 <ng-template #personalInfoPanel>
-  <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+  <div class="flex h-full w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
     <jhi-application-creation-page1
       class="w-full"
       [(data)]="personalInfoData"
       (valid)="onPersonalInfoDataValidityChanged($event)"
       (changed)="onValueChanged()"
+      (educationDataExtracted)="onEducationDataExtracted($event)"
+      [applicationIdForDocuments]="applicationId()"
+      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
     />
   </div>
 </ng-template>
 
 <ng-template #educationPanel>
-  <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+  <div class="flex h-full w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
     <jhi-application-creation-page2
       class="w-full"
       [(data)]="educationData"
@@ -36,7 +40,7 @@
 </ng-template>
 
 <ng-template #applicationDetailsPanel>
-  <div class="h-full flex px-4 xl:px-32 2xl:px-64">
+  <div class="flex h-full w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
     @if (applicationDetailsData()) {
       <jhi-application-creation-page3
         class="w-full"
@@ -45,7 +49,6 @@
         (valid)="onApplicationDetailsDataValidityChanged($event)"
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
-        [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
       />
     }
   </div>

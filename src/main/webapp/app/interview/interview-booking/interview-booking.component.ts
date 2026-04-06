@@ -5,14 +5,17 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { InterviewBookingResourceApiService } from 'app/generated/api/interviewBookingResourceApi.service';
-import { BookingDTO } from 'app/generated/model/bookingDTO';
-import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { InterviewBookingResourceApi } from 'app/generated/api/interview-booking-resource-api';
+import { BookingDTO } from 'app/generated/model/booking-dto';
+import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import { formatFullName } from 'app/shared/util/name.util';
+import { isVirtualLocation } from 'app/shared/util/location.util';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
 import { BookingSummaryComponent } from './booking-summary/booking-summary.component';
@@ -29,6 +32,7 @@ import { BookingSummaryComponent } from './booking-summary/booking-summary.compo
     SelectableSlotCardComponent,
     BookingSummaryComponent,
     DateHeaderComponent,
+    InfoBoxComponent,
   ],
   templateUrl: './interview-booking.component.html',
 })
@@ -39,6 +43,7 @@ export class InterviewBookingComponent {
   bookingData = signal<BookingDTO | null>(null);
   loading = signal(true);
   error = signal(false);
+  isClosed = signal(false);
   selectedSlot = signal<InterviewSlotDTO | null>(null);
   currentMonthOffset = signal(0);
   currentDatePage = signal(0);
@@ -55,7 +60,7 @@ export class InterviewBookingComponent {
   supervisor = computed(() => this.bookingData()?.supervisor);
   supervisorName = computed(() => {
     const s = this.bookingData()?.supervisor;
-    return s === undefined ? '' : `${s.firstName} ${s.lastName}`;
+    return s === undefined ? '' : formatFullName(s.firstName, s.lastName);
   });
 
   // Computed - Booking Status
@@ -83,11 +88,13 @@ export class InterviewBookingComponent {
     const slot = this.bookedSlot();
     if (slot === null) return '';
     const location = slot.location;
-    if (location !== undefined && location !== '' && location !== 'virtual') return location;
-    return this.translateService.instant(location === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
+    if (location !== undefined && location !== '' && !isVirtualLocation(location)) return location;
+    return this.translateService.instant(
+      isVirtualLocation(location) ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson',
+    );
   });
 
-  isBookedVirtual = computed(() => this.bookedSlot()?.location === 'virtual');
+  isBookedVirtual = computed(() => isVirtualLocation(this.bookedSlot()?.location));
 
   /** Groups available slots by date and sorts chronologically (slots already filtered by server). */
   groupedSlots = computed(() => {
@@ -135,7 +142,7 @@ export class InterviewBookingComponent {
 
   // Services
   private readonly route = inject(ActivatedRoute);
-  private readonly bookingService = inject(InterviewBookingResourceApiService);
+  private readonly bookingApi = inject(InterviewBookingResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
@@ -181,7 +188,7 @@ export class InterviewBookingComponent {
     if (processId === null) return;
 
     try {
-      await firstValueFrom(this.bookingService.bookSlot(processId, { slotId: slot.id }));
+      await firstValueFrom(this.bookingApi.bookSlot(processId, { slotId: slot.id }));
       this.toastService.showSuccessKey('interview.booking.bookingSuccess');
       this.selectedSlot.set(null);
       // Reload data to show confirmation
@@ -260,7 +267,7 @@ export class InterviewBookingComponent {
     try {
       this.loading.set(true);
       this.error.set(false);
-      const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month, 0, 100));
+      const data = await firstValueFrom(this.bookingApi.getBookingData(processId, year, month, 0, 100));
 
       // Auto-select first available month on initial load using first slot's date
       if (!this.initialized()) {
@@ -278,8 +285,12 @@ export class InterviewBookingComponent {
       }
 
       this.bookingData.set(data);
-    } catch {
-      this.error.set(true);
+    } catch (error: unknown) {
+      if (error !== null && typeof error === 'object' && 'status' in error && error.status === 403) {
+        this.isClosed.set(true);
+      } else {
+        this.error.set(true);
+      }
     } finally {
       this.loading.set(false);
     }

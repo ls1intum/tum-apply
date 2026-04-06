@@ -3,8 +3,8 @@ package de.tum.cit.aet.usermanagement.web.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
@@ -19,6 +19,8 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import de.tum.cit.aet.usermanagement.web.ResearchGroupResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
@@ -31,6 +33,7 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +42,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Integration tests for {@link ResearchGroupResource}.
@@ -61,6 +65,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     UserRepository userRepository;
 
     @Autowired
+    UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+
+    @Autowired
     SchoolRepository schoolRepository;
 
     @Autowired
@@ -74,6 +81,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Autowired
     ResearchGroupService researchGroupService;
+
+    @Autowired
+    KeycloakUserService keycloakUserService;
 
     private AsyncEmailSender asyncEmailSenderMock;
 
@@ -97,7 +107,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Machine Learning Lab",
             "ML",
             "Munich",
-            "Computer Science",
             "We research ML algorithms",
             "contact@ml.tum.de",
             "80333",
@@ -112,7 +121,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Other Lab",
             "OL",
             "Munich",
-            "Physics",
             "Other research",
             "contact@other.tum.de",
             "80335",
@@ -340,7 +348,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 testDepartment.getDepartmentId(),
                 "updated@ml.tum.de",
                 "https://updated.ml.tum.de",
-                "Computer Science",
                 "Updated description",
                 "Arcisstr. 21",
                 "80333",
@@ -367,7 +374,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 testDepartment.getDepartmentId(),
                 "invalid-email", // Invalid email
                 "https://ml.tum.de",
-                "Computer Science",
                 "Description",
                 "Street",
                 "80333",
@@ -400,7 +406,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "contact@newlab.tum.de",
                 "https://newlab.tum.de",
                 "Research on new topics",
-                "Engineering Science",
                 "Boltzmannstr. 3",
                 "85748",
                 "Garching"
@@ -444,7 +449,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "",
                 "",
                 "",
-                "",
                 ""
             );
 
@@ -471,7 +475,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "contact@newlab.tum.de",
                 "https://newlab.tum.de",
                 "Research on new topics",
-                "Engineering Science",
                 "Boltzmannstr. 3",
                 "85748",
                 "Garching"
@@ -651,7 +654,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Draft",
                 "draft@example.com",
                 "DL",
-                "Science",
                 "Draft research",
                 "contact@draft.tum.de",
                 "80333",
@@ -702,7 +704,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Activation",
                 "activate@example.com",
                 "DLA",
-                "Science",
                 "Activation research",
                 "contact@activate.tum.de",
                 "80333",
@@ -750,7 +751,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Denial",
                 "deny@example.com",
                 "DLD",
-                "Science",
                 "Denial research",
                 "contact@deny.tum.de",
                 "80333",
@@ -798,7 +798,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Lab for Withdrawal",
                 "LFW",
                 "Munich",
-                "Science",
                 "Withdrawal research",
                 "contact@withdraw.tum.de",
                 "80333",
@@ -834,7 +833,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Prof. Withdraw",
                 "withdraw@example.com",
                 "DLW",
-                "Science",
                 "Withdraw research",
                 "contact@withdraw.tum.de",
                 "80333",
@@ -869,7 +867,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "ACL",
                 "https://acl.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -888,6 +885,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void createResearchGroupAsAdminWithNonExistentUserThrowsException() {
             UUID adminUserID = UUID.randomUUID();
+            when(keycloakUserService.findUserByUniversityId("nonexistent")).thenReturn(Optional.empty());
             ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
                 "Prof.",
                 "Fail",
@@ -900,7 +898,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "FL",
                 "https://fail.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -909,6 +906,53 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
                 .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, Void.class, 404);
+        }
+
+        @Test
+        void createResearchGroupAsAdminWithNonExistentLocalUserCreatesUserFromKeycloak() {
+            UUID adminUserID = UUID.randomUUID();
+            UUID keycloakUserId = UUID.randomUUID();
+            String universityId = "kc123ab";
+
+            when(keycloakUserService.findUserByUniversityId(universityId)).thenReturn(
+                Optional.of(new KeycloakUserDTO(keycloakUserId, "kc.user", "Key", "Cloak", "key.cloak@tum.de", universityId))
+            );
+
+            ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
+                "Prof.",
+                "Key",
+                "Cloak",
+                universityId,
+                "Prof. Key Cloak",
+                "Keycloak Provisioned Lab",
+                testDepartment.getDepartmentId(),
+                "keycloak.lab@tum.de",
+                "KCL",
+                "https://kcl.tum.de",
+                "Description",
+                "Street",
+                "12345",
+                "City"
+            );
+
+            ResearchGroupDTO result = api
+                .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
+                .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, ResearchGroupDTO.class, 201);
+
+            assertThat(result).isNotNull();
+            assertThat(result.name()).isEqualTo("Keycloak Provisioned Lab");
+
+            User createdUser = userRepository.findById(keycloakUserId).orElseThrow();
+            assertThat(createdUser.getUniversityId()).isEqualTo(universityId);
+            assertThat(createdUser.getEmail()).isEqualTo("key.cloak@tum.de");
+            assertThat(createdUser.getResearchGroup()).isNotNull();
+            assertThat(createdUser.getResearchGroup().getName()).isEqualTo("Keycloak Provisioned Lab");
+
+            assertThat(userResearchGroupRoleRepository.findByUserAndResearchGroup(createdUser, createdUser.getResearchGroup()))
+                .isPresent()
+                .get()
+                .extracting(role -> role.getRole().name())
+                .isEqualTo("PROFESSOR");
         }
 
         @Test
@@ -927,7 +971,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "EX",
                 "https://exist.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"
@@ -954,7 +997,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "AL",
                 "https://group.tum.de",
                 "Description",
-                "CS",
                 "Street",
                 "12345",
                 "City"

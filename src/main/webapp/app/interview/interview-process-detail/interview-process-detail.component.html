@@ -1,8 +1,13 @@
 <div class="page-container">
   <!-- Header -->
-  <div class="page-header flex flex-row items-center gap-2">
-    <jhi-back-button />
-    <h1 class="h1-text hyphens-none">{{ jobTitle() }}</h1>
+  <div class="page-header flex gap-4 items-center mb-6">
+    <div class="flex-1 flex gap-2 items-center">
+      <jhi-back-button />
+      <h1 class="h1-text hyphens-none">{{ jobTitle() }}</h1>
+    </div>
+    @if (isJobClosed()) {
+      <jhi-tag color="contrast" [text]="'interview.overview.status.closed' | translate" />
+    }
   </div>
 
   <!-- Slots Section -->
@@ -11,7 +16,9 @@
       [processId]="safeProcessId()"
       [invitedCount]="invitedCount()"
       [refreshKey]="slotsRefreshKey()"
+      [isClosed]="isJobClosed()"
       (slotAssigned)="onSlotAssigned()"
+      (hasSlotsChange)="hasSlots.set($event)"
     />
   }
 
@@ -23,7 +30,9 @@
     <jhi-interviewee-section
       [processId]="safeProcessId()"
       [jobTitle]="safeJobTitle()"
+      [isClosed]="isJobClosed()"
       [refreshKey]="intervieweeRefreshKey()"
+      [hasSlots]="hasSlots()"
       (slotsRefresh)="onSlotCancelled()"
     />
   }

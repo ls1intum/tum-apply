@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { provideTranslateMock } from '../../../util/translate.mock';
-import { getApplicationPDFLabels, getJobPDFLabels } from 'app/shared/language/pdf-labels';
+import { formatGradeDisplay, getApplicationPDFLabels, getJobPDFLabels } from 'app/shared/language/pdf-labels';
 
 /* ======================================================
  * Helper functions
@@ -11,7 +11,7 @@ import { getApplicationPDFLabels, getJobPDFLabels } from 'app/shared/language/pd
 function expectOverviewLabels(labels: Record<string, string>) {
   expect(labels).toHaveProperty('supervisor');
   expect(labels).toHaveProperty('location');
-  expect(labels).toHaveProperty('fieldsOfStudies');
+  expect(labels).toHaveProperty('subjectArea');
   expect(labels).toHaveProperty('researchArea');
   expect(labels).toHaveProperty('workload');
   expect(labels).toHaveProperty('hoursPerWeek');
@@ -33,7 +33,7 @@ function expectFooterLabels(labels: Record<string, string>) {
 }
 
 function expectColonLabels(labels: Record<string, string>) {
-  ['fieldsOfStudies', 'researchArea', 'workload', 'duration', 'fundingType', 'startDate', 'endDate'].forEach(key => {
+  ['subjectArea', 'researchArea', 'workload', 'duration', 'fundingType', 'startDate', 'endDate'].forEach(key => {
     expect(labels[key]).toContain(':');
   });
 }
@@ -89,7 +89,7 @@ describe('PDF Labels', () => {
 
       expect(labels).toHaveProperty('application');
       expect(labels).toHaveProperty('researchGroup');
-      expect(labels).toHaveProperty('jobDescription');
+      expect(labels).toHaveProperty('jobDetails');
     });
 
     it('should return correct translation keys', () => {
@@ -102,7 +102,7 @@ describe('PDF Labels', () => {
 
         supervisor: 'jobDetailPage.header.supervisor',
         location: 'jobDetailPage.header.location',
-        fieldsOfStudies: 'jobDetailPage.labels.fieldOfStudies:',
+        subjectArea: 'jobDetailPage.labels.subjectArea:',
         researchArea: 'jobDetailPage.labels.researchArea:',
         workload: 'jobDetailPage.labels.workload:',
         hoursPerWeek: 'jobDetailPage.units.hoursPerWeek',
@@ -140,7 +140,7 @@ describe('PDF Labels', () => {
 
         application: 'evaluation.application',
         researchGroup: 'jobDetailPage.header.researchGroup',
-        jobDescription: 'jobDetailPage.sections.jobDescription',
+        jobDetails: 'pdf.sections.jobDetails',
       });
     });
 
@@ -164,9 +164,6 @@ describe('PDF Labels', () => {
       expect(labels.lang).toBe(translate.getCurrentLang());
 
       expect(labels).toHaveProperty('jobDetails');
-      expect(labels).toHaveProperty('description');
-      expect(labels).toHaveProperty('tasksResponsibilities');
-      expect(labels).toHaveProperty('eligibilityCriteria');
 
       expect(labels).toHaveProperty('researchGroup');
       expect(labels).toHaveProperty('contactDetails');
@@ -188,7 +185,7 @@ describe('PDF Labels', () => {
 
         supervisor: 'jobDetailPage.header.supervisor',
         location: 'jobDetailPage.header.location',
-        fieldsOfStudies: 'jobDetailPage.labels.fieldOfStudies:',
+        subjectArea: 'jobDetailPage.labels.subjectArea:',
         researchArea: 'jobDetailPage.labels.researchArea:',
         workload: 'jobDetailPage.labels.workload:',
         hoursPerWeek: 'jobDetailPage.units.hoursPerWeek',
@@ -199,9 +196,6 @@ describe('PDF Labels', () => {
         endDate: 'jobDetailPage.labels.applicationEndDate:',
 
         jobDetails: 'pdf.sections.jobDetails',
-        description: 'pdf.sections.description',
-        tasksResponsibilities: 'jobDetailPage.sections.tasksResponsibilities',
-        eligibilityCriteria: 'jobDetailPage.sections.eligibilityCriteria',
 
         researchGroup: 'jobDetailPage.cards.researchGroup',
         contactDetails: 'pdf.sections.contactDetails',
@@ -235,7 +229,7 @@ describe('PDF Labels', () => {
       expectSharedLabels(appLabels, jobLabels, [
         'supervisor',
         'location',
-        'fieldsOfStudies',
+        'subjectArea',
         'researchArea',
         'workload',
         'hoursPerWeek',
@@ -244,6 +238,7 @@ describe('PDF Labels', () => {
         'fundingType',
         'startDate',
         'endDate',
+        'jobDetails',
         'thisDocumentWasGeneratedOn',
         'byUser',
         'usingTumapply',
@@ -252,6 +247,80 @@ describe('PDF Labels', () => {
         'of',
         'lang',
       ]);
+    });
+  });
+
+  describe('formatGradeDisplay', () => {
+    let grade = '1.5';
+    let upperLimit = '1.0';
+    let lowerLimit = '4.0';
+
+    afterEach(() => {
+      vi.resetAllMocks();
+    });
+
+    describe('grade is absent', () => {
+      it('should return "-" when grade is undefined', () => {
+        expect(formatGradeDisplay(translate, undefined)).toBe('-');
+      });
+
+      it('should return "-" when grade is an empty string', () => {
+        expect(formatGradeDisplay(translate, '')).toBe('-');
+      });
+    });
+
+    describe('grade is present but limits are incomplete', () => {
+      it('should return the grade as-is when upperLimit is missing', () => {
+        expect(formatGradeDisplay(translate, grade, undefined, lowerLimit)).toBe(grade);
+      });
+
+      it('should return the grade as-is when lowerLimit is missing', () => {
+        expect(formatGradeDisplay(translate, grade, upperLimit, undefined)).toBe(grade);
+      });
+
+      it('should return the grade as-is when both limits are missing', () => {
+        expect(formatGradeDisplay(translate, grade)).toBe(grade);
+      });
+    });
+
+    describe('grade and both limits are provided', () => {
+      it('should return formatted grade with translated scale', () => {
+        const result = formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
+        const expectedScale = translate.instant('entity.applicationPage2.helperText.gradingScale', {
+          upperLimit: upperLimit,
+          lowerLimit: lowerLimit,
+        });
+
+        expect(result).toBe(`${grade} (${expectedScale})`);
+      });
+
+      it('should call translate.instant exactly once with the scale key and correct interpolation params', () => {
+        const instantSpy = vi.spyOn(translate, 'instant');
+
+        formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
+
+        expect(instantSpy).toHaveBeenCalledOnce();
+        expect(instantSpy).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
+          upperLimit: upperLimit,
+          lowerLimit: lowerLimit,
+        });
+      });
+
+      it('should not call translate.instant when grade is absent', () => {
+        const instantSpy = vi.spyOn(translate, 'instant');
+
+        formatGradeDisplay(translate, undefined, upperLimit, lowerLimit);
+
+        expect(instantSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not call translate.instant when limits are missing', () => {
+        const instantSpy = vi.spyOn(translate, 'instant');
+
+        formatGradeDisplay(translate, grade);
+
+        expect(instantSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });

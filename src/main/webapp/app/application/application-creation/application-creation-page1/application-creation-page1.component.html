@@ -1,4 +1,59 @@
 <form [formGroup]="page1Form()">
+  <p jhiTranslate="entity.applicationPage1.description"></p>
+  @if (applicationIdForDocuments(); as applicationId) {
+    <p-divider layout="horizontal">
+      <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
+    </p-divider>
+    <div class="w-full mb-6">
+      <label>
+        <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
+        <span class="required"> *</span>
+        <fa-icon
+          class="icon"
+          [icon]="['fas', 'circle-info']"
+          [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+          tooltipPosition="top"
+        />
+      </label>
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div class="min-w-0 flex-1">
+          <jhi-upload-button
+            documentType="CV"
+            [applicationId]="applicationId"
+            [documentIds]="computedDocumentIdsCvSet()"
+            (documentIdsChange)="cvDocsSetValidity($event)"
+            [allowMultiple]="false"
+            [compact]="true"
+          />
+        </div>
+        <div class="flex flex-col items-center gap-2 w-full shrink-0 lg:w-40 lg:items-start">
+          <p class="m-0 text-center text-xs leading-4 text-text-tertiary lg:text-left">
+            {{ 'entity.applicationPage1.aiExtractionHelper' | translate }}
+          </p>
+          @if (isExtractingAi()) {
+            <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border-default lg:w-full">
+              <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+              <span class="whitespace-nowrap text-sm text-text-secondary">
+                {{ 'entity.applicationPage1.aiExtractionLoading' | translate }}
+              </span>
+            </div>
+          } @else {
+            <jhi-button
+              [label]="'entity.applicationPage1.aiExtractionButton'"
+              [shouldTranslate]="true"
+              severity="primary"
+              icon="custom-sparkle"
+              [fullWidth]="true"
+              styleClass="!justify-center !whitespace-nowrap"
+              (click)="extractAiData()"
+              [disabled]="!cvValid()"
+            />
+          }
+        </div>
+      </div>
+    </div>
+  }
+
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="flex flex-col">
     <div class="flex flex-col lg:flex-row lg:gap-8">

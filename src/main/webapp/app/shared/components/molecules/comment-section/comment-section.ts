@@ -3,8 +3,8 @@ import { firstValueFrom } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { Comment } from 'app/shared/components/molecules/comment/comment';
-import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
-import { InternalCommentDTO } from 'app/generated/model/internalCommentDTO';
+import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
+import { InternalCommentDTO } from 'app/generated/model/internal-comment-dto';
 
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -14,7 +14,7 @@ import TranslateDirective from '../../../language/translate.directive';
   templateUrl: './comment-section.html',
 })
 export class CommentSection {
-  commentService = inject(InternalCommentResourceApiService);
+  commentApi = inject(InternalCommentResourceApi);
   accountService = inject(AccountService);
   toast = inject(ToastService);
 
@@ -41,7 +41,7 @@ export class CommentSection {
       return;
     }
     try {
-      const data = await firstValueFrom(this.commentService.listComments(id));
+      const data = await firstValueFrom(this.commentApi.listComments(id));
       this.comments.set(data);
     } catch {
       this.toast.showError({ summary: 'Error', detail: 'Failed to load comments' });
@@ -54,7 +54,7 @@ export class CommentSection {
     if (id === undefined || !trimmed) return;
 
     try {
-      const created = await firstValueFrom(this.commentService.createComment(id, { message: trimmed }));
+      const created = await firstValueFrom(this.commentApi.createComment(id, { message: trimmed }));
       this.comments.update(prev => [...prev, created]);
       this.createDraft.set('');
     } catch {
@@ -67,7 +67,7 @@ export class CommentSection {
     if (!commentId || !trimmed) return;
 
     try {
-      const updated = await firstValueFrom(this.commentService.updateComment(commentId, { message: trimmed }));
+      const updated = await firstValueFrom(this.commentApi.updateComment(commentId, { message: trimmed }));
       this.comments.update(prev => prev.map(c => (c.commentId === commentId ? updated : c)));
     } catch {
       this.toast.showError({ summary: 'Error', detail: 'Failed to update comment' });
@@ -78,7 +78,7 @@ export class CommentSection {
     if (commentId === undefined) return;
 
     try {
-      await firstValueFrom(this.commentService.deleteComment(commentId));
+      await firstValueFrom(this.commentApi.deleteComment(commentId));
       this.comments.update(prev => prev.filter(c => c.commentId !== commentId));
     } catch {
       this.toast.showError({ summary: 'Error', detail: 'Failed to delete comment' });

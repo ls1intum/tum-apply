@@ -9,7 +9,7 @@
       "documents": "Documents"
     },
     "personalInformation": {
-      "description": "Update your personal information here. \nYour saved data is used to prefill forms during the application process.",
+      "description": "Update your personal information here. Your saved data will be used to prefill future application forms.",
       "loadFailed": {
         "summary": "Load failed",
         "detail": "Failed to load personal information. Please try again."
@@ -25,28 +25,91 @@
     },
 
     "notifications": {
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load notification settings. Please try again."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to update notification settings. Please try again."
+      },
       "applicant": {
         "submission": {
           "title": "Application Submission",
-          "description": "Receive confirmation by email when you submit or withdraw an application."
+          "description": "Receive an email when you submit or withdraw an application."
         },
         "outcome": {
           "title": "Application Outcome",
-          "description": "Be notified by email when your application is accepted or rejected."
+          "description": "Receive an email when your application is accepted or rejected."
+        },
+        "subjectAreas": {
+          "title": "Job Postings",
+          "description": "Receive emails about new job postings. After enabling, you can choose your preferred subject areas.",
+          "placeholder": "Add Subject Area",
+          "filterPlaceholder": "Search Subject Area...",
+          "removeLabel": "Remove {{subjectArea}}",
+          "selectedCount": "{{count}} selected",
+          "empty": "No subject areas available.",
+          "emptyFilter": "No subject areas match your search.",
+          "emptySelection": "No subject areas selected yet.",
+          "loadFailed": {
+            "summary": "Load failed",
+            "detail": "Failed to load selected subject areas. Please try again."
+          },
+          "saveFailed": {
+            "summary": "Save failed",
+            "detail": "Failed to update selected subject areas. Please try again."
+          }
         }
       },
       "professor": {
         "new": {
           "title": "New Applications",
-          "description": "Get notified by email when a new application is received for your job posting."
+          "description": "Receive an email when a new application is received for your job posting."
         },
         "accepted": {
-          "title": "Application Accepted (BCC)",
-          "description": "Receive a copy by email when an applicant for your job is accepted."
+          "title": "Application Accepted",
+          "description": "Receive a copy of the acceptance email sent to the applicant when an application for one of your job postings is accepted."
         }
       }
     },
 
+    "profilePicture": {
+      "header": "Profile Picture",
+      "description": "Make your profile more personal with a photo.",
+      "saved": {
+        "summary": "Profile picture updated",
+        "detail": "Your profile picture was updated successfully."
+      },
+      "saveFailed": {
+        "summary": "Update failed",
+        "detail": "Failed to update your profile picture. Please try again."
+      },
+      "deleted": {
+        "summary": "Profile picture removed",
+        "detail": "Your profile picture was removed successfully."
+      },
+      "deleteFailed": {
+        "summary": "Deletion failed",
+        "detail": "Failed to remove your profile picture. Please try again."
+      },
+      "fileTooLarge": {
+        "summary": "File too large",
+        "detail": "Please choose an image smaller than 5 MB."
+      },
+      "invalidFileType": {
+        "summary": "Invalid file type",
+        "detail": "Please choose a JPEG, JPG, or PNG image."
+      },
+      "resetConfirm": {
+        "header": "Delete profile picture?",
+        "message": "Are you sure you want to delete your current profile picture?"
+      },
+      "cropDialog": {
+        "header": "Crop Profile Picture",
+        "rotate": "Rotate"
+      }
+    },
     "appearance": {
       "header": "Appearance",
       "theme": {
@@ -61,7 +124,7 @@
       }
     },
     "documents": {
-      "description": "Upload and manage your documents here. \nYour saved documents are used to prefill forms during the application process.",
+      "description": "Upload and manage your documents here. Your saved documents will be used to prefill future application forms.",
       "sections": {
         "bachelor": "Bachelor Studies",
         "master": "Master Studies",
