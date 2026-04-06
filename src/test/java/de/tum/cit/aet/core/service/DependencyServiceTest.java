@@ -86,7 +86,12 @@ class DependencyServiceTest {
             assertThat(overview.serverCount()).isEqualTo(2);
             assertThat(overview.clientCount()).isZero();
 
-            DependencyDTO springBoot = overview.dependencies().stream().filter(d -> d.name().equals("spring-boot-starter-web")).findFirst().orElseThrow();
+            DependencyDTO springBoot = overview
+                .dependencies()
+                .stream()
+                .filter(d -> d.name().equals("spring-boot-starter-web"))
+                .findFirst()
+                .orElseThrow();
             assertThat(springBoot.group()).isEqualTo("org.springframework.boot");
             assertThat(springBoot.version()).isEqualTo("3.2.0");
             assertThat(springBoot.source()).isEqualTo("server");
@@ -230,7 +235,12 @@ class DependencyServiceTest {
             assertThat(overview.clientCount()).isEqualTo(2);
             assertThat(overview.serverCount()).isZero();
 
-            DependencyDTO rxjs = overview.dependencies().stream().filter(d -> d.name().equals("rxjs")).findFirst().orElseThrow();
+            DependencyDTO rxjs = overview
+                .dependencies()
+                .stream()
+                .filter(d -> d.name().equals("rxjs"))
+                .findFirst()
+                .orElseThrow();
             assertThat(rxjs.version()).isEqualTo("7.8.1");
             assertThat(rxjs.source()).isEqualTo("client");
             assertThat(rxjs.group()).isEmpty();
@@ -257,7 +267,12 @@ class DependencyServiceTest {
 
             assertThat(overview.dependencies()).hasSize(2);
 
-            DependencyDTO angularCore = overview.dependencies().stream().filter(d -> d.name().equals("core")).findFirst().orElseThrow();
+            DependencyDTO angularCore = overview
+                .dependencies()
+                .stream()
+                .filter(d -> d.name().equals("core"))
+                .findFirst()
+                .orElseThrow();
             assertThat(angularCore.group()).isEqualTo("@angular");
             assertThat(angularCore.version()).isEqualTo("18.0.0");
             assertThat(angularCore.purl()).isEqualTo("pkg:npm/@angular/core@18.0.0");
@@ -303,8 +318,18 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            DependencyDTO rxjs = overview.dependencies().stream().filter(d -> d.name().equals("rxjs")).findFirst().orElseThrow();
-            DependencyDTO zoneJs = overview.dependencies().stream().filter(d -> d.name().equals("zone.js")).findFirst().orElseThrow();
+            DependencyDTO rxjs = overview
+                .dependencies()
+                .stream()
+                .filter(d -> d.name().equals("rxjs"))
+                .findFirst()
+                .orElseThrow();
+            DependencyDTO zoneJs = overview
+                .dependencies()
+                .stream()
+                .filter(d -> d.name().equals("zone.js"))
+                .findFirst()
+                .orElseThrow();
             assertThat(rxjs.version()).isEqualTo("7.8.1");
             assertThat(zoneJs.version()).isEqualTo("0.14.0");
         }
@@ -403,9 +428,11 @@ class DependencyServiceTest {
                 """,
                 StandardCharsets.UTF_8
             );
-            stubOsvResponseWithVulnerabilities("""
+            stubOsvResponseWithVulnerabilities(
+                """
                 {"results": [{}]}
-                """);
+                """
+            );
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
