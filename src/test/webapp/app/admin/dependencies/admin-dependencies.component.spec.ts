@@ -271,7 +271,7 @@ describe('AdminDependenciesComponent', () => {
 
       const filtered = component.filteredDependencies();
       expect(filtered).toHaveLength(expectedCount);
-      expect(filtered.every(d => ((d.vulnerabilities?.length ?? 0) > 0) === hasVulns)).toBe(true);
+      expect(filtered.every(d => (d.vulnerabilities?.length ?? 0) > 0 === hasVulns)).toBe(true);
     });
 
     it('should show all dependencies when both vulnerable and secure are selected', async () => {
@@ -365,16 +365,19 @@ describe('AdminDependenciesComponent', () => {
       { depName: 'lodash', expectedSeverity: 'CRITICAL', expectedColor: 'danger' },
       { depName: 'jackson-databind', expectedSeverity: 'MEDIUM', expectedColor: 'warn' },
       { depName: 'rxjs', expectedSeverity: 'LOW', expectedColor: 'secondary' },
-    ])('should enrich $depName with severity=$expectedSeverity, color=$expectedColor', async ({ depName, expectedSeverity, expectedColor }) => {
-      await Promise.resolve();
+    ])(
+      'should enrich $depName with severity=$expectedSeverity, color=$expectedColor',
+      async ({ depName, expectedSeverity, expectedColor }) => {
+        await Promise.resolve();
 
-      component.onSortChange({ field: 'name', direction: 'ASC' });
-      const enriched = component.paginatedDependencies().find(d => d.name === depName);
+        component.onSortChange({ field: 'name', direction: 'ASC' });
+        const enriched = component.paginatedDependencies().find(d => d.name === depName);
 
-      expect(enriched).toBeDefined();
-      expect(enriched!.highestSeverity).toBe(expectedSeverity);
-      expect(enriched!.severityTagColor).toBe(expectedColor);
-    });
+        expect(enriched).toBeDefined();
+        expect(enriched!.highestSeverity).toBe(expectedSeverity);
+        expect(enriched!.severityTagColor).toBe(expectedColor);
+      },
+    );
   });
 
   describe('Vulnerability Expansion Toggle', () => {

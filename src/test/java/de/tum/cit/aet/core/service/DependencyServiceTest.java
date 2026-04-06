@@ -82,12 +82,14 @@ class DependencyServiceTest {
         }
 
         @ParameterizedTest(name = "should skip {0} lines")
-        @ValueSource(strings = {
-            "testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'",
-            "annotationProcessor 'org.projectlombok:lombok:1.18.30'",
-            "developmentOnly 'org.springframework.boot:spring-boot-devtools:3.2.0'",
-            "// implementation 'commented:out:1.0.0'",
-        })
+        @ValueSource(
+            strings = {
+                "testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'",
+                "annotationProcessor 'org.projectlombok:lombok:1.18.30'",
+                "developmentOnly 'org.springframework.boot:spring-boot-devtools:3.2.0'",
+                "// implementation 'commented:out:1.0.0'",
+            }
+        )
         void shouldSkipNonProductionDependencies(String line) throws IOException {
             writeBuildGradle(line + "\nimplementation 'org.example:kept:1.0.0'");
             stubOsvEmptyResponse(1);
@@ -137,12 +139,14 @@ class DependencyServiceTest {
 
         @Test
         void shouldParseRegularAndDevDependencies() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 {
                   "dependencies": { "rxjs": "~7.8.1" },
                   "devDependencies": { "vitest": "^1.0.0" }
                 }
-                """);
+                """
+            );
             stubOsvEmptyResponse(2);
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
@@ -155,9 +159,11 @@ class DependencyServiceTest {
         @ParameterizedTest(name = "should strip prefix from {0} → {1}")
         @CsvSource({ "~7.8.1, 7.8.1", "^0.14.0, 0.14.0", "1.0.0, 1.0.0" })
         void shouldStripVersionPrefixes(String raw, String expected) throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "lib": "%s" } }
-                """.formatted(raw));
+                """.formatted(raw)
+            );
             stubOsvEmptyResponse(1);
 
             assertThat(dependencyService.refresh().dependencies().get(0).version()).isEqualTo(expected);
@@ -165,9 +171,11 @@ class DependencyServiceTest {
 
         @Test
         void shouldParseScopedPackagesIntoGroupAndName() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "@angular/core": "^18.0.0" } }
-                """);
+                """
+            );
             stubOsvEmptyResponse(1);
 
             DependencyDTO dep = dependencyService.refresh().dependencies().get(0);
@@ -184,9 +192,11 @@ class DependencyServiceTest {
         @Test
         void shouldCombineServerAndClientDependencies() throws IOException {
             writeBuildGradle("implementation 'org.example:server-lib:1.0.0'");
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "client-lib": "1.0.0" } }
-                """);
+                """
+            );
             stubOsvEmptyResponse(2);
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
@@ -202,9 +212,11 @@ class DependencyServiceTest {
         @ParameterizedTest(name = "{0} severity should increment {0} count")
         @CsvSource({ "CRITICAL, 1, 0, 0, 0", "HIGH, 0, 1, 0, 0", "MEDIUM, 0, 0, 1, 0" })
         void shouldCountVulnerabilitiesBySeverity(String severity, int critical, int high, int medium, int low) throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "lib": "1.0.0" } }
-                """);
+                """
+            );
             stubOsvResponseWithVulnerabilities(
                 """
                 {"results": [{"vulns": [{"id": "GHSA-001", "summary": "test", "database_specific": {"severity": "%s"}}]}]}
@@ -222,9 +234,11 @@ class DependencyServiceTest {
 
         @Test
         void shouldNormalizeModerateSeverityToMedium() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "lib": "1.0.0" } }
-                """);
+                """
+            );
             stubOsvResponseWithVulnerabilities(
                 """
                 {"results": [{"vulns": [{"id": "GHSA-004", "database_specific": {"severity": "MODERATE"}}]}]}
@@ -239,12 +253,16 @@ class DependencyServiceTest {
 
         @Test
         void shouldHandleDependencyWithNoVulnerabilities() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "safe-lib": "1.0.0" } }
-                """);
-            stubOsvResponseWithVulnerabilities("""
+                """
+            );
+            stubOsvResponseWithVulnerabilities(
+                """
                 {"results": [{}]}
-                """);
+                """
+            );
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
@@ -254,9 +272,11 @@ class DependencyServiceTest {
 
         @Test
         void shouldHandleOsvApiFailureGracefully() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "rxjs": "7.8.1" } }
-                """);
+                """
+            );
             stubOsvFailure();
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
@@ -268,9 +288,11 @@ class DependencyServiceTest {
 
         @Test
         void shouldAttachVulnerabilityDetailsToMatchingDependency() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "lodash": "4.17.20" } }
-                """);
+                """
+            );
             stubOsvResponseWithVulnerabilities(
                 """
                 {"results": [{"vulns": [
@@ -294,9 +316,11 @@ class DependencyServiceTest {
 
         @Test
         void shouldReturnCachedResultOnSubsequentGetOverviewCalls() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "rxjs": "7.8.1" } }
-                """);
+                """
+            );
             stubOsvEmptyResponse(1);
 
             assertThat(dependencyService.getOverview()).isSameAs(dependencyService.getOverview());
@@ -304,9 +328,11 @@ class DependencyServiceTest {
 
         @Test
         void shouldRefreshBypassCache() throws IOException {
-            writePackageJson("""
+            writePackageJson(
+                """
                 { "dependencies": { "rxjs": "7.8.1" } }
-                """);
+                """
+            );
             stubOsvEmptyResponse(2);
 
             DependenciesOverviewDTO first = dependencyService.getOverview();
@@ -319,13 +345,17 @@ class DependencyServiceTest {
 
         @Test
         void shouldCorrectlyAggregateCounts() throws IOException {
-            writeBuildGradle("""
+            writeBuildGradle(
+                """
                 implementation 'org.example:a:1.0'
                 implementation 'org.example:b:1.0'
-                """);
-            writePackageJson("""
+                """
+            );
+            writePackageJson(
+                """
                 { "dependencies": { "x": "1.0", "y": "1.0", "z": "1.0" } }
-                """);
+                """
+            );
             stubOsvEmptyResponse(5);
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
