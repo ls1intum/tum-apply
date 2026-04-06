@@ -206,7 +206,6 @@ export class JobCreationFormComponent {
   /** Computed: checks if the selected image is a custom upload (not a default) */
   hasCustomImage = computed(() => {
     const image = this.selectedImage();
-
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
 

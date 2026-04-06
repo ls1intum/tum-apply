@@ -43,6 +43,7 @@ public class PDFExportResource {
             request.application().jobTitle(),
             request.labels().get("application")
         );
+
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
             .contentType(MediaType.APPLICATION_PDF)
