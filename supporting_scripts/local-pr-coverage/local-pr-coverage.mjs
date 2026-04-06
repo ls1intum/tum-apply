@@ -35,7 +35,9 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
 // Configuration
 const CLIENT_SRC_PREFIX = 'src/main/webapp/app/';
+const CLIENT_TEST_PREFIX = 'src/test/webapp/app/';
 const SERVER_SRC_PREFIX = 'src/main/java/de/tum/cit/aet/';
+const SERVER_TEST_PREFIX = 'src/test/java/de/tum/cit/aet/';
 const VITEST_COVERAGE_SUMMARY = path.join(PROJECT_ROOT, 'build/test-results/vitest/coverage/coverage-summary.json');
 const SERVER_COVERAGE_DIR = path.join(PROJECT_ROOT, 'build/reports/jacoco');
 
@@ -361,6 +363,52 @@ function categorizeChangedFiles(changedFiles, options) {
       }
 
       log(`Server file: ${relativePath} (module: ${moduleName})`, options);
+    // Client test files — map back to source file for coverage reporting
+    else if (filePath.startsWith(CLIENT_TEST_PREFIX) && filePath.endsWith('.spec.ts')) {
+      const relativePath = filePath.substring(CLIENT_TEST_PREFIX.length).replace('.spec.ts', '.ts');
+
+      // Skip if the source file is already tracked
+      if (clientFiles[relativePath]) {
+        log(`Skipping test (source already tracked): ${filePath}`, options);
+        continue;
+      }
+
+      // Only include if the corresponding source file exists
+      const sourceFile = path.join(PROJECT_ROOT, CLIENT_SRC_PREFIX, relativePath);
+      if (fs.existsSync(sourceFile)) {
+        clientFiles[relativePath] = changeType;
+        const moduleName = relativePath.split('/')[0];
+        if (moduleName && relativePath.includes('/')) {
+          clientModules.add(moduleName);
+        }
+        log(`Client test file: ${filePath} → source: ${relativePath} (module: ${moduleName})`, options);
+      } else {
+        log(`Skipping test (no matching source): ${filePath}`, options);
+      }
+    }
+    // Server test files — map back to source file for coverage reporting
+    else if (filePath.startsWith(SERVER_TEST_PREFIX) && filePath.endsWith('Test.java')) {
+      const relativePath = filePath.substring('src/test/java/'.length).replace('Test.java', '.java');
+
+      // Skip if the source file is already tracked
+      if (serverFiles[relativePath]) {
+        log(`Skipping test (source already tracked): ${filePath}`, options);
+        continue;
+      }
+
+      // Only include if the corresponding source file exists
+      const sourceFile = path.join(PROJECT_ROOT, 'src/main/java', relativePath);
+      if (fs.existsSync(sourceFile)) {
+        serverFiles[relativePath] = changeType;
+        const afterAet = relativePath.substring('de/tum/cit/aet/'.length);
+        const moduleName = afterAet.split('/')[0];
+        if (moduleName) {
+          serverModules.add(moduleName);
+        }
+        log(`Server test file: ${filePath} → source: ${relativePath} (module: ${moduleName})`, options);
+      } else {
+        log(`Skipping test (no matching source): ${filePath}`, options);
+      }
     } else {
       log(`Skipping: ${filePath}`, options);
     }
