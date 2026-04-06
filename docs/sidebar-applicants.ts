@@ -14,8 +14,8 @@ const sidebars: SidebarsConfig = {
       items: [
         'account-creation',
         'login',
-        'browse-jobs',
-        'applying',
+        'browse-positions',
+        'apply',
         'application-dashboard',
       ],
     },
