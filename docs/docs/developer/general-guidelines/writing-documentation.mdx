@@ -27,7 +27,23 @@ This label should be human-readable and reflect the actual topic (e.g., "Applica
 
 ---
 
-## 2. Add Your File to the Sidebar
+## 2. Name Files to Match the Sidebar Label
+
+The file name **must be the kebab-case version of the `sidebar_label`**. This ensures the generated URL matches the page title displayed in the sidebar.
+
+| `sidebar_label` | File name |
+|---|---|
+| `Client Development` | `client-development.mdx` |
+| `API Testing with Postman` | `api-testing-with-postman.mdx` |
+| `Database & Performance` | `database-and-performance.mdx` |
+
+:::warning
+Do **not** use `slug` in frontmatter to fix a mismatch — rename the file instead. This keeps a single source of truth for the URL.
+:::
+
+---
+
+## 3. Add Your File to the Sidebar
 
 Make sure to correctly **register your `.mdx` file in the corresponding `sidebar-*.ts`**. The order and location where you register your file will determine its **position and grouping** in the documentation sidebar.
 
@@ -57,7 +73,7 @@ The folder structure and sidebar organization should stay in sync for clarity.
 
 ---
 
-## 3. Use the Image Component
+## 4. Use the Image Component
 
 Use the custom `<Image>` component instead of plain HTML `<img>` tags. This ensures consistent styling across the site. Specify the image size using the `ImageSize` enum:
 
@@ -78,7 +94,7 @@ import loginForm from '../images/login/login-form.png';
 
 ---
 
-## 4. Embed Videos with iframe
+## 5. Embed Videos with iframe
 
 If you're including videos, always use an `<iframe>` for embedding to maintain compatibility and layout consistency:
 
@@ -95,7 +111,7 @@ If you're including videos, always use an `<iframe>` for embedding to maintain c
 
 ---
 
-## 5. Place Images in Subdirectories
+## 6. Place Images in Subdirectories
 
 Organize your images by placing them in **subfolders named after the `.mdx` file** they relate to. This makes image management easier and keeps our structure maintainable.
 
@@ -119,7 +135,7 @@ This also helps when reviewing image usage or updating assets, since all related
 
 ---
 
-## 6. Use Standardized Admonitions
+## 7. Use Standardized Admonitions
 
 When adding visual notes, **do not use custom-styled or non-standard labels**. Instead, use the built-in [Docusaurus Admonitions](https://docusaurus.io/docs/markdown-features/admonitions) such as `note`, `tip`, `info`, `warning`, or `danger`.
 
