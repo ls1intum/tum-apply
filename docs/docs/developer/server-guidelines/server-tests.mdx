@@ -1,0 +1,232 @@
+---
+sidebar_label: Server Tests
+---
+
+# Server Tests
+
+Best practices and tools for writing server-side tests in TUMApply using Spring Boot, JUnit 5, and AssertJ. Docker is required to run server tests — tests run against MySQL via Testcontainers by default to match the production database engine.
+
+Test files are located in `src/test/java/` and follow a **mirror structure** matching the source code package structure.
+
+---
+
+## Running Tests
+
+| **Command** | **Description** |
+|---|---|
+| `./gradlew test -x webapp` | Run all tests |
+| `./gradlew test jacocoTestReport -x webapp` | Run tests with coverage report |
+| `./gradlew jacocoTestCoverageVerification -x webapp` | Verify coverage thresholds |
+| `./gradlew test --tests UserIntegrationTest -x webapp` | Run a specific test class |
+| `./gradlew test --tests UserIntegrationTest.methodName -x webapp` | Run a specific test method |
+
+With a specific Dockerized database:
+
+```bash
+SPRING_PROFILES_INCLUDE=mysql ./gradlew test -x webapp
+```
+
+### Coverage Report
+
+To keep high coverage, inspect the coverage report while making a PR:
+
+1. Generate the report:
+   ```bash
+   ./gradlew test jacocoTestReport -x webapp
+   ```
+2. Open the report:
+   ```bash
+   open build/reports/jacoco/test/html/index.html
+   ```
+
+Test reports are also available under `build/reports/tests/`.
+
+---
+
+## Test Naming & Structure
+
+Use the pattern: `should<ExpectedBehavior>When<StateUnderTest>`
+
+```java
+@Nested
+class JobApplication {
+
+    @Test
+    void shouldRejectApplicationWhenDeadlinePassed() {
+        // ...
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+}
+```
+
+- Use meaningful variable names: `actualJob`, `expectedJob` — not `a`, `b`, `c`
+- Write small, focused test methods with helper functions
+- Assert what's relevant — avoid writing a single test covering all edge cases
+- Use **deterministic test data** (no random values) to make error messages understandable
+- Use `@Nested` classes to organize tests logically
+- Use **JUnit 5 parameterized tests** for testing multiple inputs with the same logic
+
+---
+
+## AssertJ: Specific Assertions
+
+Always use `assertThat` from AssertJ followed by the most specific assertion method available:
+
+```java
+// ❌ AVOID — generic boolean assertions
+assertThat(applications.size()).isEqualTo(1);
+assertThat(applicationOpt.isPresent()).isTrue();
+assertThat(application.getFilePath().contains("file.png")).isTrue();
+
+// ✅ GOOD — specific assertions with better error messages
+assertThat(applications).hasSize(1);
+assertThat(applicationOpt).isPresent();
+assertThat(application.getFilePath()).contains("file.png");
+```
+
+For unavoidable boolean assertions, add descriptive messages:
+
+```java
+assertThat(application.isSubmittedInTime())
+    .as("application should be submitted in time")
+    .isTrue();
+```
+
+For more information, see the [AssertJ documentation](https://assertj.github.io/doc/).
+
+---
+
+## Test Utilities & Factories
+
+Always use the provided utility classes for test data instead of creating objects from scratch:
+
+- **Factories** — for creating and initializing mock entities
+- **UtilServices** — for saving and accessing test data in the database
+
+If you cannot find the right helper function, add a new one to the most fitting UtilService or Factory and document it with JavaDoc.
+
+:::warning
+Always use IDs returned by the database — never assume the existence or non-existence of specific values or hardcode IDs.
+:::
+
+---
+
+## Test Performance
+
+Fast tests provide quick feedback and speed up the development process. Follow these tips:
+
+- **Minimize database access** — it is very time-consuming, especially against MySQL
+- **Avoid unnecessary HTTP mocks** — persist data directly when possible
+- **Use Awaitility** for asserting async code
+- **Limit object creation** in tests and test setup
+- **Group tests logically** with `@Nested`
+
+---
+
+## Avoiding Context Pollution
+
+Spring Boot caches test application contexts and reuses them when configurations match. Certain annotations can force Spring to create new contexts, causing additional server starts (each adding ~30-60 seconds and extra memory usage).
+
+### Annotations to Avoid in Concrete Test Classes
+
+| **Annotation** | **Impact** |
+|---|---|
+| `@MockitoBean` / `@MockitoSpyBean` | Creates new context when mock configuration differs |
+| `@TestPropertySource` | Creates new context when properties differ |
+| `@ActiveProfiles` | Creates new context when active profiles differ |
+| `@DirtiesContext` | Marks context as dirty, forcing recreation |
+| `@ContextConfiguration` | Creates new context when configuration differs |
+| `@Import` | Creates new context when imported configurations differ |
+
+:::danger
+Never add these annotations to concrete test classes. If you need a new spy bean or property, add it to the appropriate abstract base test class.
+:::
+
+---
+
+## Use `ReflectionTestUtils` Instead of `@MockBean`
+
+`@MockBean` marks the application context cache as dirty, causing Spring to restart the context for subsequent test classes. Avoid this by using standard Mockito mocks injected via `ReflectionTestUtils`:
+
+```java
+// ❌ AVOID — forces context reload
+@MockBean
+private AsyncEmailSender asyncEmailSenderMock;
+
+// ✅ GOOD — keeps Spring Context clean and reusable
+private AsyncEmailSender asyncEmailSenderMock;
+
+@BeforeEach
+void setup() {
+    asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+    ReflectionTestUtils.setField(interviewService, "asyncEmailSender", asyncEmailSenderMock);
+}
+```
+
+---
+
+## Counting Database Query Calls
+
+You can write tests that verify how many database queries an operation performs. This ensures code changes don't inadvertently decrease performance:
+
+```java
+@Test
+void testQueryCount() throws Exception {
+    Application app = assertThatDb(() ->
+        request.get("/api/applications/" + applicationId, HttpStatus.OK, Application.class)
+    ).hasBeenCalledTimes(3);
+
+    assertThat(app).isNotNull();
+}
+```
+
+:::note
+Use these assertions carefully — they make tests more brittle to maintain. Only add them for commonly used, performance-critical functionality.
+:::
+
+---
+
+## Parallel Test Execution
+
+TUMApply uses JUnit 5 parallel test execution for faster CI runs. Tests within the same group run sequentially (to share resources safely), while different groups run in parallel.
+
+- Annotate abstract base classes with `@Execution(ExecutionMode.CONCURRENT)` and `@ResourceLock`
+- Never use `@Isolated` unless refactoring is truly not possible — it worsens test runtime
+
+:::warning
+Parallel test execution is only safe if tests are independent. Shared mutable state between tests will cause flaky failures.
+:::
+
+---
+
+## Architecture Rules (ArchUnit)
+
+The class `src/test/java/de/tum/cit/aet/TechnicalStructureTest.java` contains architecture rules that run as part of server-side tests.
+
+### Data Export Annotations
+
+Every class annotated with `@Entity` must explicitly document its export decision:
+
+- `@ExportedUserData` — this entity is included in user data exports
+- `@NoUserDataExportRequired` — this entity is explicitly excluded from exports
+
+If marked as exported, the entity must reference a `@Component` provider implementing `UserDataSectionProvider`.
+
+| **Provider Type** | **Meaning** | **Runtime Effect** |
+|---|---|---|
+| `APPLICANT` | Applicant-focused export section | Only contributed when user has APPLICANT role |
+| `STAFF` | Staff-focused export section | Only contributed when user has PROFESSOR/EMPLOYEE/ADMIN role |
+| `USER_SETTINGS` | Profile/settings ownership | Always contributed as part of base export |
+
+When adding a new entity, always choose one of these two annotations. If you mark it as exported, ensure the configured provider exists, implements `UserDataSectionProvider`, and is annotated with `@Component`.
+
+---
+
+## Writing Good Tests — Summary
+
+- Write **small and specific** tests with helper functions
+- Assert **what's relevant** — avoid catch-all tests
+- Use **hard-coded expected values** instead of reusing production code for comparisons
+- Use **constructor injection** and avoid static access for testable code
+- Separate business logic from asynchronous execution
+- Use **JUnit 5 features**: parameterized tests, `@Nested`, `@Execution`

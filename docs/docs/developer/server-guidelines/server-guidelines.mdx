@@ -1,0 +1,293 @@
+---
+sidebar_label: Server Development
+---
+
+# Server Development
+
+Coding conventions and architectural patterns for server-side development in TUMApply using Spring Boot + Hibernate + JPA.
+
+---
+
+## Naming Conventions
+
+- Use `camelCase` for variables and methods
+- Use `PascalCase` for classes
+- Use `SCREAMING_SNAKE_CASE` for constants
+- Always name the logger `log`
+- Names should be intention-revealing and readable
+
+```java
+private static final Logger log = LoggerFactory.getLogger(JobPostingService.class);
+private static final int MAX_JOB_COUNT = 50;
+```
+
+---
+
+## Single Responsibility & Small Methods
+
+- Each class or method should serve one purpose
+- Break up long methods (ideally < 20 lines)
+- Avoid "god" classes
+
+---
+
+## Structure and Access Modifiers
+
+- Use `private` by default; expose more only if needed
+- Define variables at the top of the class
+- Declare methods in top-down order of usage
+- Avoid default packages (important for Spring Boot scanning)
+- Use interfaces for service abstraction when helpful
+
+---
+
+## Use of DTOs
+
+- Always return DTOs from REST controllers
+- Use Java `record` for DTOs (immutability & clarity)
+- Include only minimal necessary data
+- DTOs should contain: primitive types, enums, other DTOs (composition)
+- Never include entities or logic in DTOs
+
+```java
+// ❌ BAD — includes full entity
+public record ApplicationDTO(Application entity, boolean selected) {}
+
+// ✅ GOOD — clean & simple
+public record ApplicationDTO(Long id, String name, ApplicationStatus status) {}
+```
+
+### Separate DTOs for Input and Output
+
+Different operations often need different data:
+
+```java
+// For creating (input)
+public record CreateApplicationDTO(
+    @NotBlank String motivation,
+    @NotNull UUID jobId
+) {}
+
+// For returning data (output)
+public record ApplicationDTO(
+    UUID id,
+    String applicantName,
+    ApplicationStatus status,
+    JobInfoDTO job
+) {
+    public static ApplicationDTO of(Application application) {
+        return new ApplicationDTO(
+            application.getId(),
+            application.getApplicant().getFullName(),
+            application.getStatus(),
+            JobInfoDTO.of(application.getJob())
+        );
+    }
+}
+```
+
+### JSON Serialization Control
+
+Annotate DTOs with `@JsonInclude` to omit null or empty fields from API responses, keeping payloads clean:
+
+```java
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public record ApplicationDTO(UUID id, String name, ApplicationStatus status) {}
+```
+
+- Use `NON_EMPTY` (preferred) to exclude both `null` values and empty collections/strings
+- Use `NON_NULL` when empty collections or strings are meaningful and should be sent
+
+### Request Validation
+
+Always validate incoming DTOs using Bean Validation:
+
+```java
+public record CreateJobDTO(
+    @NotBlank @Size(max = 255)
+    String title,
+
+    @NotNull
+    ZonedDateTime deadline,
+
+    @NotBlank
+    String description
+) {}
+```
+
+---
+
+## Comments & Documentation
+
+- Add meaningful JavaDoc and inline comments
+- All comments must be in English
+- Prefer helpful descriptions over obvious ones (explain the *why*, not just the *what*)
+- For complex methods, break down the logic using numbered step-by-step comments:
+
+```java
+public void processInterview(UUID processId) {
+    // 1. Load interview process
+    var process = interviewProcessRepository.findByIdElseThrow(processId);
+
+    // 2. Validate input and check permissions
+    currentUserService.assertAccessTo(process.getJob());
+
+    // 3. Save entity
+    interviewProcessRepository.save(process);
+}
+```
+
+---
+
+## Utility Methods
+
+- Group static utility methods by functionality, not in catch-all "Utils.java"
+- Place domain-specific methods inside the relevant service or helper class
+
+---
+
+## Dependency Injection
+
+- Use **constructor injection** by default
+- Use setter injection only for optional dependencies
+- Avoid `@Autowired` on fields
+- Do not inject `EntityManager` or `EntityManagerFactory` directly into services or controllers — all database operations must go through Spring Data repositories
+
+---
+
+## REST Controller Best Practices
+
+Controllers should be **stateless and thin** — delegate business logic to services.
+
+Controllers are responsible for:
+
+- Access control
+- Input validation
+- Output creation (DTOs)
+- Error handling
+
+### Route Conventions
+
+- Use **kebab-case** for routes: `/job-postings/{id}/applications`
+- **Plural** for collections: `/applications`
+- **Singular** for single resources: `/application/{id}`
+- Use **verbs** for remote actions: `/applications/{id}/submit`
+
+### Controller Tips
+
+- Always use DTOs in both request and response — never expose entities directly
+- Use `POST` to trigger actions or create entities
+- Never trust user input — always verify that passed data exists in the database
+- Use `...ElseThrow` repository methods for increased readability (e.g., `findByIdElseThrow(...)`)
+
+### Response Codes
+
+| **Code** | **Usage** |
+|---|---|
+| `200 OK` | Successful GET, PUT, PATCH |
+| `201 Created` | Successful POST that creates a resource |
+| `204 No Content` | Successful DELETE |
+| `400 Bad Request` | Invalid input / validation error |
+| `401 Unauthorized` | Missing or invalid authentication |
+| `403 Forbidden` | Authenticated but not authorized |
+| `404 Not Found` | Resource doesn't exist |
+| `409 Conflict` | Resource conflict (e.g., duplicate) |
+
+### Logging
+
+- Use `log.info(...)` at the REST controller level for actions and state changes
+- Always include the endpoint name or specific action in the log message to make tracing easier
+
+---
+
+## Input Sanitization
+
+All user-supplied HTML content must be sanitized to prevent stored cross-site scripting (XSS). TUMApply follows a **sanitize-on-write AND sanitize-on-read** strategy as defense-in-depth:
+
+**On write** (service layer, before persisting):
+```java
+application.setMotivation(HtmlSanitizer.sanitize(dto.motivation()));
+```
+
+**On read** (DTO factory methods, before sending to the client):
+```java
+HtmlSanitizer.sanitize(application.getMotivation())
+```
+
+**Which fields require sanitization?**
+
+Any field that:
+1. Accepts rich-text / HTML input from users (e.g. Quill editor fields), AND
+2. Is rendered via `[innerHTML]` on the frontend or in generated HTML (e.g. PDF export, email templates)
+
+Currently sanitized fields:
+- `Application`: `motivation`, `specialSkills`, `projects`
+- `Job`: `jobDescriptionEN`, `jobDescriptionDE`
+- `ResearchGroup`: `description`
+
+**Utility:** `HtmlSanitizer.sanitize()` in `src/main/java/de/tum/cit/aet/core/util/HtmlSanitizer.java`
+
+Uses Jsoup with `Safelist.basic()` which preserves safe formatting (`<p>`, `<b>`, `<i>`, `<a>`, `<ul>`, `<li>`, etc.) and strips everything else (`<script>`, `<iframe>`, `<img>`, event handlers, `javascript:` URLs).
+
+:::warning
+When adding new rich-text fields, always apply `HtmlSanitizer.sanitize()` in both the service method that persists the data and the DTO factory method that returns it to the client. Omitting either layer defeats the defense-in-depth strategy.
+:::
+
+---
+
+## General Best Practices
+
+- Use constants instead of hardcoding the same value multiple times
+- Extract duplicate logic into helper methods
+- Avoid unnecessary wrapper classes (prefer `int` over `Integer`)
+- Use `.toList()` instead of `.collect(Collectors.toList())`
+
+---
+
+## File Handling
+
+Use OS-independent paths:
+
+```java
+Path path = Path.of("uploads", userId.toString());
+```
+
+Never hardcode separators like `/` or `\\`.
+
+---
+
+## Service Dependency Rules
+
+- Minimize service-to-service dependencies
+- Avoid cyclic dependencies (use repositories for simple access logic)
+- Move simple fetch operations into default methods in repositories:
+
+```java
+default JobPosting findByIdElseThrow(Long id) {
+    return findById(id).orElseThrow(() ->
+        new NotFoundException("Job posting not found")
+    );
+}
+```
+
+### Circular Dependency Resolution
+
+:::danger
+Using `@Lazy` on constructor parameters or `ObjectProvider<T>` to work around circular dependencies is forbidden. These patterns hide architectural problems.
+:::
+
+```java
+// ❌ FORBIDDEN
+public MyService(@Lazy OtherService otherService) { ... }
+public MyService(ObjectProvider<OtherService> otherServiceProvider) { ... }
+```
+
+How to properly resolve circular dependencies:
+
+- **Refactor the architecture** — extract shared logic into a new service that both can depend on
+- **Move logic to repositories** — simple database operations can be default methods in repositories
+- **Reconsider the design** — a circular dependency often indicates responsibilities are not properly separated
+
+
+
+For database design, JPA patterns, SQL best practices, and performance optimization, see the [Database & Performance](./database-guidelines) page.
