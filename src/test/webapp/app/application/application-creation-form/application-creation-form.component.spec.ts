@@ -2011,7 +2011,7 @@ describe('ApplicationForm', () => {
       const initialJobId = comp.jobId();
 
       localStorageService.loadApplicationDraft = vi.fn().mockImplementation(() => {
-        throw new Error('Failed to load');
+        throw new Error('Failed to load!');
       });
 
       comp['loadPersonalInfoDataFromLocalStorage']('job-456');
@@ -2025,4 +2025,3 @@ describe('ApplicationForm', () => {
     });
   });
 });
-
