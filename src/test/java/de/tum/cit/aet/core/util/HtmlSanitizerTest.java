@@ -105,7 +105,7 @@ class HtmlSanitizerTest {
     }
 
     @Test
-    void shouldStripClassAttributeEntirely_whenNoQuillClassPresent() {
+    void shouldStripClassAttributeEntirelyWhenNoQuillClassPresent() {
         String html = "<p class=\"evil-injection\">Text</p>";
         String result = HtmlSanitizer.sanitize(html);
         assertThat(result).doesNotContain("class");
