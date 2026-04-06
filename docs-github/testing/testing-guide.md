@@ -32,7 +32,7 @@ Test reports will be available under `build/reports/tests/` and `build/reports/j
 - View coverage report of tests:
 
   ```bash
-  open build/test-results/lcov-report/index.html
+  open build/test-results/vitest/coverage/index.html
   ```
 
 ### Architecture Rules (ArchUnit)

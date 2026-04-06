@@ -24,20 +24,20 @@ This script generates a code coverage report for changed files in a PR by runnin
 npm run coverage:pr
 
 # Or directly
-node supporting_scripts/code-coverage/local-pr-coverage/local-pr-coverage.mjs
+node supporting_scripts/local-pr-coverage/local-pr-coverage.mjs
 ```
 
 ### Options
 
-| Option | Description |
-|--------|-------------|
-| `--base-branch <branch>` | Base branch to compare against (default: `origin/develop`) |
-| `--skip-tests` | Skip running tests, use existing coverage data |
-| `--client-only` | Only run client tests |
-| `--server-only` | Only run server tests |
-| `--print` | Print results to console (default: copy to clipboard) |
-| `--verbose` | Enable verbose logging |
-| `--help` | Show help |
+| Option                   | Description                                             |
+|--------------------------|---------------------------------------------------------|
+| `--base-branch <branch>` | Base branch to compare against (default: `origin/main`) |
+| `--skip-tests`           | Skip running tests, use existing coverage data          |
+| `--client-only`          | Only run client tests                                   |
+| `--server-only`          | Only run server tests                                   |
+| `--print`                | Print results to console (default: copy to clipboard)   |
+| `--verbose`              | Enable verbose logging                                  |
+| `--help`                 | Show help                                               |
 
 ### Examples
 
@@ -67,7 +67,7 @@ npm run coverage:pr -- --verbose
 ## How It Works
 
 1. **Detect changed files**: Uses `git diff` to find files changed compared to the base branch
-2. **Identify affected modules**: Extracts module names from file paths (e.g., `core`, `exam`, `programming`)
+2. **Identify affected modules**: Extracts module names from file paths (e.g., `core`, `job`, `application`)
 3. **Run module tests**:
    - Client: Runs `npm run prebuild && npx ng test --coverage --test-path-pattern=...` for affected modules
    - Server: Runs `./gradlew test -DincludeModules=<modules> jacocoTestReport`
@@ -85,15 +85,15 @@ The output is a Markdown table compatible with GitHub PR descriptions:
 
 | Class/File | Line Coverage | Lines | Expects | Ratio |
 |------------|-------------:|------:|--------:|------:|
-| course.service.ts | 95.2% | 120 | 15 | 12.5 |
-| course.component.ts | 87.3% | 85 | 8 | 9.4 |
+| job-creation-form.component.ts | 95.2% | 120 | 15 | 12.5 |
+| job-detail.component.ts | 87.3% | 85 | 8 | 9.4 |
 
 #### Server
 
 | Class/File | Line Coverage | Lines |
 |------------|-------------:|------:|
-| CourseService.java | 91.5% | 200 |
-| CourseResource.java | 88.2% | 150 |
+| PDFExportService.java | 91.5% | 200 |
+| PDFExportResource.java | 88.2% | 150 |
 ```
 
 ### Column Descriptions
@@ -129,18 +129,6 @@ The following files are automatically excluded from coverage reporting (they can
 
 ### Server
 - Test files are not included in coverage reports by default
-
-## Comparison with `generate_code_cov_table`
-
-| Feature | This script | `generate_code_cov_table.py` |
-|---------|-------------|------------------------------|
-| Runs tests locally | ✅ | ❌ (uses CI artifacts) |
-| Requires GitHub token | ❌ | ✅ |
-| Works offline | ✅ | ❌ |
-| Affected by flaky tests in other modules | ❌ | ✅ |
-| Uses CI coverage data | ❌ | ✅ |
-
-Use this script for quick local feedback. Use `generate_code_cov_table.py` when you need the official CI coverage numbers.
 
 ## Troubleshooting
 

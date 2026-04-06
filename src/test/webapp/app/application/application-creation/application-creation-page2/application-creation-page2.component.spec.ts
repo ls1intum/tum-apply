@@ -5,7 +5,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
   getPage2FromApplication,
-} from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
+} from '../../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { provideHttpClient as provideHttpClientMock } from '@angular/common/http';
@@ -16,7 +16,7 @@ import {
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
-import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../util/dialog.service.mock';
+import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../../util/dialog.service.mock';
 import { firstValueFrom, Subject } from 'rxjs';
 import { outputToObservable } from '@angular/core/rxjs-interop';
 

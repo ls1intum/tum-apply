@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { DocumentHolder } from 'app/shared/components/organisms/document-section/document-section';
 import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
-import { provideTranslateMock } from '../../../../util/translate.mock';
+import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 
 function createDocument(id: string, name: string, size = 123): DocumentInformationHolderDTO {
