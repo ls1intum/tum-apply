@@ -206,7 +206,7 @@ public class JobService {
         return new JobDetailDTO(
             job.getJobId(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
-            ResearchGroupSummaryDTO.getFromEntity(job.getSupervisingProfessor().getResearchGroup()),
+            ResearchGroupSummaryDTO.getFromEntity(job.getResearchGroup()),
             job.getTitle(),
             job.getSubjectArea(),
             job.getResearchArea(),

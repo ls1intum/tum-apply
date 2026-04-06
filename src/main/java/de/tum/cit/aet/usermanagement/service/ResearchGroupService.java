@@ -214,7 +214,7 @@ public class ResearchGroupService {
             .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
 
         return new ResearchGroupLargeDTO(
-            researchGroup.getDescription(),
+            HtmlSanitizer.sanitize(researchGroup.getDescription()),
             researchGroup.getEmail(),
             researchGroup.getWebsite(),
             researchGroup.getStreet(),
