@@ -10,14 +10,6 @@ tasks.withType(Test).configureEach {
   // This is harmless: it only opens java.lang to classpath code within the same JVM process and does not expand the attack surface for remote exploits.
   jvmArgs += "--add-opens=java.base/java.lang=ALL-UNNAMED"
 
-  // Pass Docker image versions from .env to integration tests as system properties
-  // (e.g. MYSQL_VERSION=9.6.0 becomes -Dmysql.version=9.6.0, usable in Spring YAML as ${mysql.version})
-  // Parsed by gradle/env.gradle, applied in build.gradle
-  rootProject.envProperties.each { key, value ->
-    // Convert ENV_VAR_NAME to env.var.name for use as system/Spring properties
-    systemProperty key.toLowerCase().replaceAll('_', '.'), value
-  }
-
   // Forward Gradle command-line -D properties to the test JVM for database type selection
   // (e.g. -Dzonky.test.database.type=MYSQL selects MySQL testcontainers instead of H2)
   systemProperty 'spring.jpa.database-platform', 'org.hibernate.dialect.MySQLDialect'
@@ -65,7 +57,6 @@ tasks.withType(Test).configureEach {
   }
 }
 
-// Allow using in jacoco.gradle
 ext {
   includedTestTags = System.getProperty("includeTags")
   includedTags = !includedTestTags ? new String[]{} : includedTestTags.split(",") as String[]
@@ -73,7 +64,6 @@ ext {
   includedModules = !includedModulesTag ? new String[]{} : includedModulesTag.split(",") as String[]
 
   runAllTests = includedTags.size() == 0 && includedModules.size() == 0
-  BasePath = "de/tum/cit/aet"
 }
 
 
@@ -135,6 +125,3 @@ tasks.register("testMysql", Test) {
   systemProperty 'spring.jpa.database-platform', 'org.hibernate.dialect.MySQLDialect'
   systemProperty 'spring.jpa.database', 'MYSQL'
 }
-
-// Dynamic generation of jacoco test report generation-/coverage verification-tasks (per-module)
-apply from: "gradle/jacoco.gradle"

@@ -296,13 +296,6 @@ dependencies {
   implementation "org.apache.pdfbox:pdfbox:${pdfboxVersion}"
 }
 
-// Load Docker image versions from .env (single source of truth for Docker, tests, and build dependencies)
-apply from: 'gradle/env.gradle'
-envProperties.each { key, value ->
-  // Convert UPPER_CASE to lower_case to match gradle.properties convention
-  ext.set(key.toLowerCase(), value)
-}
-
 apply from: "gradle/test.gradle"
 
 tasks.register("cleanResources", Delete) {

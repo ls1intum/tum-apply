@@ -629,8 +629,8 @@ function getServerFileCoverage(filePath, moduleName) {
   const parts = filePath.split('/');
   const fileName = parts[parts.length - 1];
 
-  // Try module-specific report first, then aggregated
-  const reportPaths = [path.join(SERVER_COVERAGE_DIR, moduleName, 'jacocoTestReport.xml'), path.join(SERVER_COVERAGE_DIR, 'aggregated', 'jacocoTestReport.xml')];
+  // Use default JaCoCo report path
+  const reportPaths = [path.join(SERVER_COVERAGE_DIR, 'test', 'jacocoTestReport.xml')];
 
   for (const reportPath of reportPaths) {
     if (!fs.existsSync(reportPath)) {
