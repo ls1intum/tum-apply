@@ -250,7 +250,7 @@ export class KeycloakAuthenticationService {
    */
   private buildRedirectUri(redirectUri?: string): string {
     const origin = window.location.origin;
-    if (redirectUri !== undefined && redirectUri.startsWith(origin)) {
+    if (redirectUri?.startsWith(origin)) {
       const rest = redirectUri.slice(origin.length);
       // Only allow if what follows is a path, query, fragment, or nothing —
       // reject domains that share the origin as a prefix (e.g. origin.evil.com)

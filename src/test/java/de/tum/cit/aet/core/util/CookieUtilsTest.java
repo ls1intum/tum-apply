@@ -3,8 +3,6 @@ package de.tum.cit.aet.core.util;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
-import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
