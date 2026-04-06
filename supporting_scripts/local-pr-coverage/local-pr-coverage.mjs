@@ -363,6 +363,7 @@ function categorizeChangedFiles(changedFiles, options) {
       }
 
       log(`Server file: ${relativePath} (module: ${moduleName})`, options);
+    }
     // Client test files — map back to source file for coverage reporting
     else if (filePath.startsWith(CLIENT_TEST_PREFIX) && filePath.endsWith('.spec.ts')) {
       const relativePath = filePath.substring(CLIENT_TEST_PREFIX.length).replace('.spec.ts', '.ts');
