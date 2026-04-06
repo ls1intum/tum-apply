@@ -4,7 +4,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DocumentInformationHolderDTO, DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
+import {
+  DocumentInformationHolderDTO,
+  DocumentInformationHolderDTODocumentTypeEnum,
+} from 'app/generated/model/document-information-holder-dto';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
