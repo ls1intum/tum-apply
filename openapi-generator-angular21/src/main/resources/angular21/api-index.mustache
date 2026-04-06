@@ -1,0 +1,13 @@
+{{>licenseInfo}}
+/**
+ * API index
+ * @generated from OpenAPI specification
+ */
+{{#apiInfo}}
+{{#apis}}
+export * from './{{classFilename}}-api';
+{{#vendorExtensions.x-has-get-operations}}
+export * from './{{classFilename}}-resources';
+{{/vendorExtensions.x-has-get-operations}}
+{{/apis}}
+{{/apiInfo}}

@@ -11,16 +11,18 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
+import { ResearchGroupShortDTO } from 'app/generated/model/research-group-short-dto';
+import { UserShortDTO } from 'app/generated/model/user-short-dto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
-import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { ResearchGroupResourceApi } from '../../../generated/api/research-group-resource-api';
 import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
@@ -30,7 +32,7 @@ interface MembersRow {
   firstName?: string;
   lastName?: string;
   researchGroup?: ResearchGroupShortDTO;
-  roles?: UserShortDTO.RolesEnum[];
+  roles?: UserShortDTORolesEnum[];
   userId?: string;
   name: string;
   role: string;
@@ -106,9 +108,9 @@ export class ResearchGroupMembersComponent {
     });
   });
 
-  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false);
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Employee) ?? false);
 
-  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
@@ -149,7 +151,7 @@ export class ResearchGroupMembersComponent {
 
   async removeMember(member: UserShortDTO): Promise<void> {
     try {
-      await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
+      await firstValueFrom(this.researchGroupApi.removeMemberFromResearchGroup(member.userId ?? ''));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
         memberName: formatFullName(member.firstName, member.lastName),
       });
@@ -167,8 +169,8 @@ export class ResearchGroupMembersComponent {
     try {
       const id = this.researchGroupId();
       const members = id
-        ? await firstValueFrom(this.researchGroupService.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
-        : await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+        ? await firstValueFrom(this.researchGroupApi.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
+        : await firstValueFrom(this.researchGroupApi.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);
@@ -197,12 +199,11 @@ export class ResearchGroupMembersComponent {
   /** Internal methods */
 
   private formatRoles(roles?: string[]): string {
-    if (!roles || roles.length === 0) {
+    if (!roles?.length) {
       return this.translate.instant(`${this.translationKey}.noRole`);
     }
 
-    // Capitalize first letter and make it singular
-    return roles[0].charAt(0).toUpperCase() + roles[0].slice(1).toLowerCase();
+    return roles.map(role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()).join(', ');
   }
 
   private isCurrentUser(member: UserShortDTO): boolean {
@@ -211,7 +212,7 @@ export class ResearchGroupMembersComponent {
 
   private async loadResearchGroupName(researchGroupId: string): Promise<void> {
     try {
-      const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
       this.researchGroupName.set(researchGroup.name);
     } catch {
       this.researchGroupName.set(undefined);

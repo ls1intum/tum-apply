@@ -123,8 +123,11 @@ public class DependencyService {
             low = 0;
 
         for (DependencyDTO d : deps) {
-            if ("server".equals(d.source())) serverCount++;
-            else clientCount++;
+            if ("server".equals(d.source())) {
+                serverCount++;
+            } else {
+                clientCount++;
+            }
 
             if (d.vulnerabilities() != null) {
                 for (VulnerabilityDTO v : d.vulnerabilities()) {
@@ -154,7 +157,9 @@ public class DependencyService {
     private List<DependencyDTO> parseGradle() {
         Path buildFile = Path.of(projectDir, "build.gradle");
         Path propsFile = Path.of(projectDir, "gradle.properties");
-        if (!Files.exists(buildFile)) return List.of();
+        if (!Files.exists(buildFile)) {
+            return List.of();
+        }
 
         try {
             // 1) Read build file and load property placeholders
@@ -178,16 +183,22 @@ public class DependencyService {
 
     private DependencyDTO parseGradleLine(String trimmed, Map<String, String> props) {
         // 1) Skip comments, test, annotation processor, and development-only lines
-        if (isSkippedGradleLine(trimmed)) return null;
+        if (isSkippedGradleLine(trimmed)) {
+            return null;
+        }
 
         // 2) Match against the dependency regex
         Matcher m = GRADLE_DEP.matcher(trimmed);
-        if (!m.find()) return null;
+        if (!m.find()) {
+            return null;
+        }
 
         // 3) Resolve property placeholders and split into group:name:version
         String coord = resolveProps(m.group(1), props);
         String[] parts = coord.split(":");
-        if (parts.length < GRADLE_MIN_PARTS) return null;
+        if (parts.length < GRADLE_MIN_PARTS) {
+            return null;
+        }
 
         // 4) Build the dependency DTO with a Maven purl
         String group = parts[GRADLE_GROUP_INDEX];
@@ -217,7 +228,9 @@ public class DependencyService {
      */
     private List<DependencyDTO> parsePackageJson() {
         Path pkgFile = Path.of(projectDir, "package.json");
-        if (!Files.exists(pkgFile)) return List.of();
+        if (!Files.exists(pkgFile)) {
+            return List.of();
+        }
 
         JsonNode root = objectMapper.readTree(pkgFile.toFile());
         List<DependencyDTO> result = new ArrayList<>();
@@ -235,7 +248,9 @@ public class DependencyService {
      * @param result the list to append parsed dependencies to
      */
     private void addNpmDeps(JsonNode node, List<DependencyDTO> result) {
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         node
             .properties()
             .forEach(entry -> {
@@ -281,11 +296,15 @@ public class DependencyService {
         try {
             // 1) Send the batch request to OSV.dev
             String response = sendOsvRequest(batch);
-            if (response == null) return result;
+            if (response == null) {
+                return result;
+            }
 
             // 2) Validate the response structure
             JsonNode results = objectMapper.readTree(response).get("results");
-            if (results == null || !results.isArray()) return result;
+            if (results == null || !results.isArray()) {
+                return result;
+            }
 
             // 3) Parse each result entry into vulnerability DTOs
             parseOsvResults(results, batch, result);
@@ -315,7 +334,9 @@ public class DependencyService {
     private void parseOsvResults(JsonNode results, List<DependencyDTO> batch, Map<String, List<VulnerabilityDTO>> result) {
         for (int j = 0; j < results.size() && j < batch.size(); j++) {
             JsonNode vulns = results.get(j).get("vulns");
-            if (vulns == null || !vulns.isArray() || vulns.isEmpty()) continue;
+            if (vulns == null || !vulns.isArray() || vulns.isEmpty()) {
+                continue;
+            }
 
             List<VulnerabilityDTO> list = new ArrayList<>();
             for (JsonNode v : vulns) {
@@ -347,16 +368,22 @@ public class DependencyService {
      */
     private boolean hasSeverityData(JsonNode vuln) {
         JsonNode sev = vuln.get("severity");
-        if (sev != null && sev.isArray() && !sev.isEmpty()) return true;
+        if (sev != null && sev.isArray() && !sev.isEmpty()) {
+            return true;
+        }
 
         JsonNode db = vuln.get("database_specific");
-        if (db != null && db.has("severity")) return true;
+        if (db != null && db.has("severity")) {
+            return true;
+        }
 
         JsonNode affected = vuln.get("affected");
         if (affected != null && affected.isArray()) {
             for (JsonNode a : affected) {
                 JsonNode eco = a.get("ecosystem_specific");
-                if (eco != null && eco.has("severity")) return true;
+                if (eco != null && eco.has("severity")) {
+                    return true;
+                }
             }
         }
         return false;
@@ -390,15 +417,21 @@ public class DependencyService {
     private String extractSeverity(JsonNode vuln) {
         // 1) Prefer database_specific.severity (authoritative from source DB like GitHub/GHSA)
         String severity = severityFromDatabaseSpecific(vuln);
-        if (severity != null) return severity;
+        if (severity != null) {
+            return severity;
+        }
 
         // 2) Try affected[].ecosystem_specific.severity
         severity = severityFromEcosystemSpecific(vuln);
-        if (severity != null) return severity;
+        if (severity != null) {
+            return severity;
+        }
 
         // 3) Fall back to computing severity from CVSS vector string
         severity = severityFromCvss(vuln);
-        if (severity != null) return severity;
+        if (severity != null) {
+            return severity;
+        }
 
         // 4) Default to LOW if no severity source is available
         return "LOW";
@@ -406,18 +439,24 @@ public class DependencyService {
 
     private String severityFromCvss(JsonNode vuln) {
         JsonNode sev = vuln.get("severity");
-        if (sev == null || !sev.isArray()) return null;
+        if (sev == null || !sev.isArray()) {
+            return null;
+        }
 
         for (JsonNode s : sev) {
             String score = s.path("score").asString("");
             Double numericScore = parseDouble(score);
-            if (numericScore != null) return cvssToSeverity(numericScore);
+            if (numericScore != null) {
+                return cvssToSeverity(numericScore);
+            }
 
             String type = s.path("type").asString("");
             if (type.startsWith("CVSS")) {
                 // Try CVSS v3 base score computation
                 Double baseScore = computeCvssV3BaseScore(score);
-                if (baseScore != null) return cvssToSeverity(baseScore);
+                if (baseScore != null) {
+                    return cvssToSeverity(baseScore);
+                }
 
                 // For CVSS v4 or other versions, extract severity from the vector's
                 // base metrics if possible (approximate via macrovector approach)
@@ -472,19 +511,25 @@ public class DependencyService {
 
     private String severityFromDatabaseSpecific(JsonNode vuln) {
         JsonNode db = vuln.get("database_specific");
-        if (db == null || !db.has("severity")) return null;
+        if (db == null || !db.has("severity")) {
+            return null;
+        }
         return normalizeSeverity(db.get("severity").asString(""));
     }
 
     private String severityFromEcosystemSpecific(JsonNode vuln) {
         JsonNode affected = vuln.get("affected");
-        if (affected == null || !affected.isArray()) return null;
+        if (affected == null || !affected.isArray()) {
+            return null;
+        }
 
         for (JsonNode a : affected) {
             JsonNode eco = a.get("ecosystem_specific");
             if (eco != null && eco.has("severity")) {
                 String result = normalizeSeverity(eco.get("severity").asString(""));
-                if (result != null) return result;
+                if (result != null) {
+                    return result;
+                }
             }
         }
         return null;
@@ -492,7 +537,9 @@ public class DependencyService {
 
     private String normalizeSeverity(String raw) {
         String upper = raw.toUpperCase();
-        if ("MODERATE".equals(upper)) return "MEDIUM";
+        if ("MODERATE".equals(upper)) {
+            return "MEDIUM";
+        }
         return VALID_SEVERITIES.contains(upper) ? upper : null;
     }
 
@@ -504,7 +551,9 @@ public class DependencyService {
      * @see <a href="https://www.first.org/cvss/v3.1/specification-document">CVSS v3.1 Specification</a>
      */
     private Double computeCvssV3BaseScore(String vector) {
-        if (vector == null || !vector.startsWith("CVSS:3")) return null;
+        if (vector == null || !vector.startsWith("CVSS:3")) {
+            return null;
+        }
 
         // 1) Parse vector segments into a key-value map (e.g. "AV" -> "N")
         Map<String, String> metrics = new HashMap<>();
@@ -516,7 +565,9 @@ public class DependencyService {
         }
 
         String s = metrics.get("S");
-        if (s == null) return null;
+        if (s == null) {
+            return null;
+        }
         boolean scopeChanged = "C".equals(s);
 
         // 2) Map each metric to its numeric weight per the CVSS v3.1 spec
@@ -562,13 +613,17 @@ public class DependencyService {
             default -> null;
         };
 
-        if (av == null || ac == null || pr == null || ui == null || c == null || i == null || a == null) return null;
+        if (av == null || ac == null || pr == null || ui == null || c == null || i == null || a == null) {
+            return null;
+        }
 
         // 3) Compute Impact Sub-Score (ISS) and Impact
         double iss = 1 - ((1 - c) * (1 - i) * (1 - a));
         double impact = scopeChanged ? 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15) : 6.42 * iss;
 
-        if (impact <= 0) return 0.0;
+        if (impact <= 0) {
+            return 0.0;
+        }
 
         // 4) Compute Exploitability and final base score with Roundup
         double exploitability = 8.22 * av * ac * pr * ui;
@@ -587,9 +642,15 @@ public class DependencyService {
      *         otherwise "LOW"
      */
     private String cvssToSeverity(double score) {
-        if (score >= CVSS_CRITICAL_THRESHOLD) return "CRITICAL";
-        if (score >= CVSS_HIGH_THRESHOLD) return "HIGH";
-        if (score >= CVSS_MEDIUM_THRESHOLD) return "MEDIUM";
+        if (score >= CVSS_CRITICAL_THRESHOLD) {
+            return "CRITICAL";
+        }
+        if (score >= CVSS_HIGH_THRESHOLD) {
+            return "HIGH";
+        }
+        if (score >= CVSS_MEDIUM_THRESHOLD) {
+            return "MEDIUM";
+        }
         return "LOW";
     }
 
@@ -634,11 +695,15 @@ public class DependencyService {
      */
     private Map<String, String> loadProperties(Path path) {
         Map<String, String> props = new HashMap<>();
-        if (!Files.exists(path)) return props;
+        if (!Files.exists(path)) {
+            return props;
+        }
         try {
             for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
                 String t = line.trim();
-                if (t.startsWith("#") || !t.contains("=")) continue;
+                if (t.startsWith("#") || !t.contains("=")) {
+                    continue;
+                }
                 int idx = t.indexOf('=');
                 props.put(t.substring(0, idx).trim(), t.substring(idx + 1).trim());
             }

@@ -20,7 +20,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
-import { PublicConfigResourceApiService } from 'app/generated/api/publicConfigResourceApi.service';
+import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
@@ -45,7 +45,7 @@ import { LoadingInterceptor } from './core/interceptor/loading.interceptor';
  * 2) Initialize Auth
  */
 export async function initializeApp(): Promise<void> {
-  const api = inject(PublicConfigResourceApiService);
+  const api = inject(PublicConfigResourceApi);
   const appConfigService = inject(ApplicationConfigService);
   const authFacade = inject(AuthFacadeService);
 

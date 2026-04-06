@@ -8,6 +8,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { AccountService } from 'app/core/auth/account.service';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -49,7 +50,7 @@ export class ProfessorFaqSectionComponent {
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   readonly accountService = inject(AccountService);
   readonly loggedIn = computed(() => this.accountService.signedIn());
-  readonly isApplicant = computed(() => this.accountService.hasAnyAuthority(['APPLICANT']));
+  readonly isApplicant = computed(() => this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]));
 
   private readonly translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);

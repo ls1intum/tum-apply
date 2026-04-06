@@ -4,10 +4,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentDictionaryDocumentTypeEnum } from 'app/generated/model/document-dictionary';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
-import { DocumentType, UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
+import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
 
 type DegreeType = 'bachelor' | 'master';
 
@@ -45,6 +46,9 @@ export class DegreeDocumentSectionComponent {
   readonly degreeUniversityLabelKey = computed(() => `entity.applicationPage2.label.${this.degreeType()}DegreeUniversity`);
   readonly gradeLabelKey = computed(() => `entity.applicationPage2.label.${this.degreeType()}Grade`);
   readonly gradeTooltipKey = computed(() => `entity.applicationPage2.tooltip.${this.degreeType()}Grade`);
-  readonly uploadKey = computed(() => `entity.upload.upload_instruction.${this.documentType()}`);
-  readonly documentType = computed<DocumentType>(() => (this.degreeType() === 'bachelor' ? 'BACHELOR_TRANSCRIPT' : 'MASTER_TRANSCRIPT'));
+  readonly documentType = computed(() =>
+    this.degreeType() === 'bachelor'
+      ? DocumentDictionaryDocumentTypeEnum.BachelorTranscript
+      : DocumentDictionaryDocumentTypeEnum.MasterTranscript,
+  );
 }

@@ -1,8 +1,8 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
-import { DocumentResourceApiService } from 'app/generated/api/documentResourceApi.service';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class DocumentViewerComponent {
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
-  private documentService = inject(DocumentResourceApiService);
+  private documentApi = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
 
   constructor() {
@@ -37,8 +37,9 @@ export class DocumentViewerComponent {
     }
 
     try {
-      const response = await firstValueFrom(this.documentService.downloadDocument(docId));
-      const pdfBlob = new Blob([response], { type: 'application/pdf' });
+      const response = await firstValueFrom(this.documentApi.downloadDocument(docId));
+      const body = response.body;
+      const pdfBlob = body ? new Blob([body], { type: 'application/pdf' }) : new Blob([], { type: 'application/pdf' });
       const safeUrl = this.cache.set(docId, pdfBlob);
       this.sanitizedBlobUrl.set(safeUrl);
     } catch (error) {

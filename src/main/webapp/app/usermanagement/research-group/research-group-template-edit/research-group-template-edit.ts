@@ -10,15 +10,16 @@ import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
-
 import 'quill-mention/autoregister';
+import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/model/email-template-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
-import { EmailTemplateDTO } from '../../../generated/model/emailTemplateDTO';
+import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateDTO } from '../../../generated/model/email-template-dto';
 import { AccountService } from '../../../core/auth/account.service';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -41,7 +42,7 @@ import { UserShortDTO } from '../../../generated/model/userShortDTO';
 export class ResearchGroupTemplateEdit {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
-  readonly emailTemplateService = inject(EmailTemplateResourceApiService);
+  readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   readonly translate = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly accountService = inject(AccountService);
@@ -133,9 +134,14 @@ export class ResearchGroupTemplateEdit {
     },
   };
 
-  readonly allowedSelectOptions = ['APPLICATION_ACCEPTED'];
+  readonly allowedSelectOptions = [EmailTemplateDTOEmailTypeEnum.ApplicationAccepted];
 
-  readonly allSelectOptions = ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED', 'APPLICATION_SENT', 'RESEARCH_GROUP_MEMBER_ADDED'];
+  readonly allSelectOptions = [
+    EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
+    EmailTemplateDTOEmailTypeEnum.ApplicationRejected,
+    EmailTemplateDTOEmailTypeEnum.ApplicationSent,
+    EmailTemplateDTOEmailTypeEnum.ResearchGroupMemberAdded,
+  ];
 
   readonly TEMPLATE_VARIABLES = [
     'APPLICANT_FIRST_NAME',
@@ -193,7 +199,7 @@ export class ResearchGroupTemplateEdit {
 
     if (isNonDefault && (nameMissing || typeMissing)) return;
 
-    const isEmployee = this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
+    const isEmployee = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Employee);
     if (isEmployee) return;
 
     this.savingState.set('SAVING');
@@ -217,7 +223,7 @@ export class ResearchGroupTemplateEdit {
   setSelectedEmailType(selection: SelectOption): void {
     this.formModel.update(prev => ({
       ...prev,
-      emailType: selection.value as EmailTemplateDTO.EmailTypeEnum,
+      emailType: selection.value as EmailTemplateDTOEmailTypeEnum,
     }));
   }
 
@@ -328,9 +334,9 @@ export class ResearchGroupTemplateEdit {
 
     try {
       if (form.emailTemplateId != null) {
-        await firstValueFrom(this.emailTemplateService.updateTemplate(form));
+        await firstValueFrom(this.emailTemplateApi.updateTemplate(form));
       } else {
-        const created = await firstValueFrom(this.emailTemplateService.createTemplate(form));
+        const created = await firstValueFrom(this.emailTemplateApi.createTemplate(form));
         this.formModel.set({ ...form, emailTemplateId: created.emailTemplateId });
         this.skipNextAutosave = true;
       }
@@ -350,7 +356,7 @@ export class ResearchGroupTemplateEdit {
   // Load and sanitize template data from server
   private async load(templateId: string): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateService.getTemplate(templateId));
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplate(templateId));
       const safeTemplate: EmailTemplateDTO = {
         ...res,
         english: res.english ?? { subject: '', body: '' },

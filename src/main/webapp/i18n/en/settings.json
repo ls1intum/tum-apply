@@ -25,24 +25,51 @@
     },
 
     "notifications": {
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load notification settings. Please try again."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to update notification settings. Please try again."
+      },
       "applicant": {
         "submission": {
           "title": "Application Submission",
-          "description": "Receive confirmation by email when you submit or withdraw an application."
+          "description": "Receive an email when you submit or withdraw an application."
         },
         "outcome": {
           "title": "Application Outcome",
-          "description": "Be notified by email when your application is accepted or rejected."
+          "description": "Receive an email when your application is accepted or rejected."
+        },
+        "subjectAreas": {
+          "title": "Job Postings",
+          "description": "Receive emails about new job postings. After enabling, you can choose your preferred subject areas.",
+          "placeholder": "Add Subject Area",
+          "filterPlaceholder": "Search Subject Area...",
+          "removeLabel": "Remove {{subjectArea}}",
+          "selectedCount": "{{count}} selected",
+          "empty": "No subject areas available.",
+          "emptyFilter": "No subject areas match your search.",
+          "emptySelection": "No subject areas selected yet.",
+          "loadFailed": {
+            "summary": "Load failed",
+            "detail": "Failed to load selected subject areas. Please try again."
+          },
+          "saveFailed": {
+            "summary": "Save failed",
+            "detail": "Failed to update selected subject areas. Please try again."
+          }
         }
       },
       "professor": {
         "new": {
           "title": "New Applications",
-          "description": "Get notified by email when a new application is received for your job posting."
+          "description": "Receive an email when a new application is received for your job posting."
         },
         "accepted": {
-          "title": "Application Accepted (BCC)",
-          "description": "Receive a copy by email when an applicant for your job is accepted."
+          "title": "Application Accepted",
+          "description": "Receive a copy of the acceptance email sent to the applicant when an application for one of your job postings is accepted."
         }
       }
     },

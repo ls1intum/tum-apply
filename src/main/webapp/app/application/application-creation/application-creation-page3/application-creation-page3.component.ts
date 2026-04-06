@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { Component, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -11,8 +11,8 @@ import { EditorComponent } from 'app/shared/components/atoms/editor/editor.compo
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
-import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
-import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { TranslateDirective } from 'app/shared/language';
@@ -56,14 +56,12 @@ export default class ApplicationCreationPage3Component {
   data = model<ApplicationCreationPage3Data>();
 
   applicationIdForDocuments = input<string | undefined>();
-  documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
   documentIdsReferences = input<DocumentInformationHolderDTO[] | undefined>();
 
   valid = output<boolean>();
   changed = output<boolean>();
 
   hasInitialized = signal(false);
-  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
   formbuilder = inject(FormBuilder);
 
@@ -82,11 +80,6 @@ export default class ApplicationCreationPage3Component {
     initialValue: this.page3Form.status,
   });
 
-  computedDocumentIdsCvSet = computed(() => {
-    const docInfoHolder = this.documentIdsCv();
-    return docInfoHolder ? [docInfoHolder] : undefined;
-  });
-
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;
     const raw = this.formValue();
@@ -97,7 +90,7 @@ export default class ApplicationCreationPage3Component {
       this.data.set(newData);
       this.changed.emit(true);
     }
-    this.valid.emit(this.page3Form.valid && this.cvValid());
+    this.valid.emit(this.page3Form.valid);
   });
 
   private initializeFormEffect = effect(() => {
@@ -113,21 +106,8 @@ export default class ApplicationCreationPage3Component {
     this.hasInitialized.set(true);
   });
 
-  private initializeCvDocs = effect(() => {
-    const cvDocs = this.computedDocumentIdsCvSet();
-    this.cvDocsSetValidity(cvDocs);
-  });
-
   emitChanged(): void {
     this.changed.emit(true);
-  }
-
-  cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
-    if (cvDocs === undefined || cvDocs.length === 0) {
-      this.cvValid.set(false);
-    } else {
-      this.cvValid.set(true);
-    }
   }
 
   setDesiredStartDate($event: string | undefined): void {

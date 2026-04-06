@@ -1,14 +1,14 @@
 import { vi } from 'vitest';
 import { Provider } from '@angular/core';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 
-export type UserResourceApiServiceMock = {
+export type UserResourceApiMock = {
   getCurrentUser: ReturnType<typeof vi.fn>;
   updateUserName: ReturnType<typeof vi.fn>;
   updatePassword: ReturnType<typeof vi.fn>;
 };
 
-export function createUserResourceApiServiceMock(): UserResourceApiServiceMock {
+export function createUserResourceApiMock(): UserResourceApiMock {
   return {
     getCurrentUser: vi.fn(),
     updateUserName: vi.fn(),
@@ -16,6 +16,6 @@ export function createUserResourceApiServiceMock(): UserResourceApiServiceMock {
   };
 }
 
-export function provideUserResourceApiServiceMock(mock: UserResourceApiServiceMock = createUserResourceApiServiceMock()): Provider {
-  return { provide: UserResourceApiService, useValue: mock };
+export function provideUserResourceApiMock(mock: UserResourceApiMock = createUserResourceApiMock()): Provider {
+  return { provide: UserResourceApi, useValue: mock };
 }

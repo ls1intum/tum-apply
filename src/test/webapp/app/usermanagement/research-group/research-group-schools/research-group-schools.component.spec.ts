@@ -2,18 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ResearchGroupSchoolsComponent } from 'app/usermanagement/research-group/research-group-schools/research-group-schools.component';
-import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createDialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
-import { createSchoolResourceApiServiceMock, provideSchoolResourceApiServiceMock } from 'util/school-resource-api.service.mock';
+import { createSchoolResourceApiMock, provideSchoolResourceApiMock } from 'util/school-resource-api.service.mock';
 import { SchoolEditDialogComponent } from 'app/usermanagement/research-group/research-group-schools/school-edit-dialog/school-edit-dialog.component';
 
 describe('ResearchGroupSchoolsComponent', () => {
   let component: ResearchGroupSchoolsComponent;
   let fixture: ComponentFixture<ResearchGroupSchoolsComponent>;
-  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
+  let mockSchoolApi: ReturnType<typeof createSchoolResourceApiMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogService: ReturnType<typeof createDialogServiceMock>;
 
@@ -23,9 +23,9 @@ describe('ResearchGroupSchoolsComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockSchoolService = createSchoolResourceApiServiceMock();
-    mockSchoolService.getSchoolsForAdmin.mockReturnValue(of({ content: mockSchools, totalElements: mockSchools.length }));
-    mockSchoolService.deleteSchool.mockReturnValue(of({}));
+    mockSchoolApi = createSchoolResourceApiMock();
+    mockSchoolApi.getSchoolsForAdmin.mockReturnValue(of({ content: mockSchools, totalElements: mockSchools.length }));
+    mockSchoolApi.deleteSchool.mockReturnValue(of({}));
 
     mockToastService = createToastServiceMock();
     mockDialogService = createDialogServiceMock();
@@ -33,7 +33,7 @@ describe('ResearchGroupSchoolsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchGroupSchoolsComponent],
       providers: [
-        provideSchoolResourceApiServiceMock(mockSchoolService),
+        provideSchoolResourceApiMock(mockSchoolApi),
         provideDialogServiceMock(mockDialogService),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
@@ -61,13 +61,13 @@ describe('ResearchGroupSchoolsComponent', () => {
     });
 
     it('should handle load schools error', async () => {
-      mockSchoolService.getSchoolsForAdmin.mockReturnValue(throwError(() => new Error('Error')));
+      mockSchoolApi.getSchoolsForAdmin.mockReturnValue(throwError(() => new Error('Error')));
       await expect(component.loadSchools()).resolves.toBeUndefined();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.loadFailed');
     });
 
     it('should default undefined page response fields to empty and zero', async () => {
-      mockSchoolService.getSchoolsForAdmin.mockReturnValue(of({}));
+      mockSchoolApi.getSchoolsForAdmin.mockReturnValue(of({}));
 
       await component.loadSchools();
 
@@ -92,19 +92,19 @@ describe('ResearchGroupSchoolsComponent', () => {
 
   describe('search & sort', () => {
     it('calls API with search query', async () => {
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       component.onSearchEmit('School');
       await Promise.resolve();
 
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledWith(10, 0, 'School', 'name', 'DESC');
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledWith(10, 0, 'School', 'name', 'DESC');
     });
 
     it('calls API on sort change', async () => {
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       component.loadOnSortEmit({ field: 'abbreviation', direction: 'DESC' });
       await Promise.resolve();
 
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledWith(10, 0, '', 'abbreviation', 'DESC');
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledWith(10, 0, '', 'abbreviation', 'DESC');
     });
   });
 
@@ -113,7 +113,7 @@ describe('ResearchGroupSchoolsComponent', () => {
       const mockDialogRef = { onClose: of(true) };
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       await component.onCreateSchool();
 
       expect(mockDialogService.open).toHaveBeenCalledWith(
@@ -122,26 +122,26 @@ describe('ResearchGroupSchoolsComponent', () => {
           header: expect.any(String),
         }),
       );
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
     });
 
     it('should not reload if create dialog cancelled', async () => {
       const mockDialogRef = { onClose: of(false) };
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       await component.onCreateSchool();
 
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
 
     it('should handle create dialogRef null', async () => {
       mockDialogService.open.mockReturnValue(null);
 
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       await component.onCreateSchool();
 
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
 
     it('should open edit dialog and reload on success', async () => {
@@ -149,7 +149,7 @@ describe('ResearchGroupSchoolsComponent', () => {
       const mockDialogRef = { onClose: of(true) };
       mockDialogService.open.mockReturnValue(mockDialogRef);
 
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       await component.onEditSchool('s1');
 
       expect(mockDialogService.open).toHaveBeenCalledWith(
@@ -158,7 +158,7 @@ describe('ResearchGroupSchoolsComponent', () => {
           data: { school: mockSchools[0] },
         }),
       );
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
     });
 
     it('should not open edit dialog if id is missing', async () => {
@@ -175,27 +175,27 @@ describe('ResearchGroupSchoolsComponent', () => {
       await component.loadSchools();
       mockDialogService.open.mockReturnValue(null);
 
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       await component.onEditSchool('s1');
 
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('actions', () => {
     it('should delete school and reload', async () => {
-      mockSchoolService.deleteSchool.mockReturnValue(of({}));
+      mockSchoolApi.deleteSchool.mockReturnValue(of({}));
 
-      mockSchoolService.getSchoolsForAdmin.mockClear();
+      mockSchoolApi.getSchoolsForAdmin.mockClear();
       await component.onDeleteSchool('s1');
 
-      expect(mockSchoolService.deleteSchool).toHaveBeenCalledWith('s1');
+      expect(mockSchoolApi.deleteSchool).toHaveBeenCalledWith('s1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.deleteSuccess');
-      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
     });
 
     it('should handle delete error', async () => {
-      mockSchoolService.deleteSchool.mockReturnValue(throwError(() => new Error('Error')));
+      mockSchoolApi.deleteSchool.mockReturnValue(throwError(() => new Error('Error')));
 
       await component.onDeleteSchool('s1');
 
@@ -204,7 +204,7 @@ describe('ResearchGroupSchoolsComponent', () => {
 
     it('should not delete if id is missing', async () => {
       await component.onDeleteSchool(undefined);
-      expect(mockSchoolService.deleteSchool).not.toHaveBeenCalled();
+      expect(mockSchoolApi.deleteSchool).not.toHaveBeenCalled();
     });
   });
 });

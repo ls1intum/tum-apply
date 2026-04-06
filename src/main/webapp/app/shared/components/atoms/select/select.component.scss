@@ -33,7 +33,7 @@
     background: var(--p-background-default);
 
     &:hover {
-      border-color: var(--p-neutral-hover-color-outlined);
+      border-color: var(--color-border-hover);
     }
   }
 
@@ -97,25 +97,14 @@
     border-radius: 0.5rem;
     background: var(--p-background-default);
 
-    &:hover {
+    &:hover,
+    &.p-focus,
+    &.p-select-option-selected {
       background: var(--p-primary-hover-color-outlined);
-    }
-
-    &.p-focus:not(.p-select-option-selected) {
-      background: var(--p-background-default);
-
-      &:hover {
-        background: var(--p-primary-hover-color-outlined);
-      }
     }
 
     &.p-select-option-selected {
-      background: var(--p-primary-hover-color-outlined);
       color: var(--p-text-primary);
-
-      &:hover {
-        background: var(--p-primary-hover-color-outlined);
-      }
     }
   }
 }

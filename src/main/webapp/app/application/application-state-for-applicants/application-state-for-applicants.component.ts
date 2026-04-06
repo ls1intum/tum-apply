@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 
-import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 
 @Component({
@@ -11,5 +11,7 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
   styleUrl: './application-state-for-applicants.component.scss',
 })
 export class ApplicationStateForApplicantsComponent {
-  state = input.required<ApplicationDetailDTO.ApplicationStateEnum>();
+  readonly AppState = ApplicationDetailDTOApplicationStateEnum;
+
+  state = input.required<ApplicationDetailDTOApplicationStateEnum>();
 }

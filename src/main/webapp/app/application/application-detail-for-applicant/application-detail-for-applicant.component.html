@@ -281,6 +281,20 @@
         }
         <!-- Document grid for all document types -->
         <div class="document-container">
+          @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
+            <div class="section-detail-card">
+              <div class="section-card-header">
+                <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
+                <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
+              </div>
+              <div class="section-card-body">
+                <div class="document-viewer">
+                  <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+                </div>
+              </div>
+            </div>
+          }
+
           @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
             @for (doc of bachelorDocs; track $index) {
               <div class="section-detail-card">
@@ -311,20 +325,6 @@
                 </div>
               </div>
             }
-          }
-
-          @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
-            <div class="section-detail-card">
-              <div class="section-card-header">
-                <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
-              </div>
-              <div class="section-card-body">
-                <div class="document-viewer">
-                  <jhi-document-viewer [documentDictionaryId]="cvDoc" />
-                </div>
-              </div>
-            </div>
           }
 
           @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
