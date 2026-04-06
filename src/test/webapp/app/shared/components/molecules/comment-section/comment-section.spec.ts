@@ -4,8 +4,8 @@ import { of, throwError } from 'rxjs';
 
 import { CommentSection } from 'app/shared/components/molecules/comment-section/comment-section';
 import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
-import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../../../util/toast-service.mock';
+import { createAccountServiceMock, provideAccountServiceMock } from '../../../../../util/account.service.mock';
 
 type CommentDTO = {
   commentId: string;

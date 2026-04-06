@@ -5,8 +5,8 @@ import { of, throwError } from 'rxjs';
 import { RatingSection } from 'app/shared/components/molecules/rating-section/rating-section';
 import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
 import { RatingOverviewDTO } from 'app/generated/model/rating-overview-dto';
-import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { provideAccountServiceMock } from '../../../../util/account.service.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../../../util/toast-service.mock';
+import { provideAccountServiceMock } from '../../../../../util/account.service.mock';
 
 describe('RatingSection', () => {
   let fixture: ComponentFixture<RatingSection>;

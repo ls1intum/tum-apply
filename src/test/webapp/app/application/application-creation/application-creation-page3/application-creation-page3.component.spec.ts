@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage3Component, {
   getPage3FromApplication,
-} from '../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
+} from '../../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import {
   ApplicationForApplicantDTO,

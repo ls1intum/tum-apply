@@ -3,7 +3,7 @@ import { ActivatedRoute, convertToParamMap, Params, UrlSegment } from '@angular/
 import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach, MockInstance } from 'vitest';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
-import ApplicationCreationFormComponent from '../../../../../main/webapp/app/application/application-creation/application-creation-form/application-creation-form.component';
+import ApplicationCreationFormComponent from '../../../../../../main/webapp/app/application/application-creation/application-creation-form/application-creation-form.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
 import { of, Subject, throwError } from 'rxjs';
