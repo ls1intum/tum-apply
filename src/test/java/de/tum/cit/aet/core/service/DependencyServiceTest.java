@@ -48,6 +48,15 @@ class DependencyServiceTest {
     @Mock
     private WebClient.ResponseSpec responseSpec;
 
+    @Mock
+    private WebClient.RequestHeadersUriSpec<?> requestHeadersUriSpec;
+
+    @Mock
+    private WebClient.RequestHeadersSpec<?> requestHeadersSpec;
+
+    @Mock
+    private WebClient.ResponseSpec getResponseSpec;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private DependencyService dependencyService;
@@ -309,6 +318,280 @@ class DependencyServiceTest {
                 .extracting(VulnerabilityDTO::id)
                 .containsExactly("GHSA-001", "GHSA-002");
         }
+
+        @Test
+        void shouldExtractSeverityFromEcosystemSpecific() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-005", "affected": [{"ecosystem_specific": {"severity": "HIGH"}}]}]}]}
+                """
+            );
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.highCount()).isEqualTo(1);
+            assertThat(overview.dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("HIGH");
+        }
+
+        @Test
+        void shouldExtractSeverityFromNumericCvssScore() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-006", "severity": [{"score": "9.8"}]}]}]}
+                """
+            );
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.criticalCount()).isEqualTo(1);
+        }
+
+        @ParameterizedTest(name = "CVSS score {0} should map to {1}")
+        @CsvSource({ "9.5, CRITICAL", "8.0, HIGH", "5.0, MEDIUM", "2.0, LOW" })
+        void shouldMapNumericCvssScoreToCorrectSeverity(String score, String expectedSeverity) throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-NUM", "severity": [{"score": "%s"}]}]}]}
+                """.formatted(score)
+            );
+
+            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo(expectedSeverity);
+        }
+
+        @Test
+        void shouldComputeSeverityFromCvssV3Vector() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // CVSS:3.1 vector for a critical vulnerability (score ~9.8)
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-V3", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}]}]}]}
+                """
+            );
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.criticalCount()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldComputeSeverityFromCvssV3VectorWithScopeChanged() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // CVSS:3.1 vector with Scope=Changed
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-V3C", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"}]}]}]}
+                """
+            );
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.criticalCount()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldReturnNullForInvalidCvssV3VectorMissingScope() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // Missing S (Scope) metric → computeCvssV3BaseScore returns null → falls through to LOW
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-BAD", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/C:H/I:H/A:H"}]}]}]}
+                """
+            );
+
+            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("LOW");
+        }
+
+        @Test
+        void shouldExtractSeverityFromCvssV4VectorCritical() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // CVSS v4 vector: network accessible, low complexity, no privileges, no UI, high impact → CRITICAL
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-V4C", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H"}]}]}]}
+                """
+            );
+
+            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("CRITICAL");
+        }
+
+        @Test
+        void shouldExtractSeverityFromCvssV4VectorHigh() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // High impact but requires privileges → HIGH (not CRITICAL)
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-V4H", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:H/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H"}]}]}]}
+                """
+            );
+
+            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("HIGH");
+        }
+
+        @Test
+        void shouldExtractSeverityFromCvssV4VectorMedium() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // Low impact → MEDIUM
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-V4M", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N"}]}]}]}
+                """
+            );
+
+            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("MEDIUM");
+        }
+
+        @Test
+        void shouldExtractSeverityFromCvssV4VectorLow() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // No impact → LOW
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-V4L", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N"}]}]}]}
+                """
+            );
+
+            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("LOW");
+        }
+
+        @Test
+        void shouldDefaultToLowWhenNoSeveritySourceExists() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // Vulnerability with no severity data at all
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-NONE", "summary": "Unknown severity"}]}]}
+                """
+            );
+            stubWebClientGet(Mono.just("{\"id\": \"GHSA-NONE\", \"summary\": \"Unknown severity\"}"));
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.lowCount()).isEqualTo(1);
+            assertThat(overview.dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("LOW");
+        }
+
+        @Test
+        void shouldFetchFullVulnerabilityWhenBatchResponseLacksSeverity() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            // Batch response has no severity → triggers fetchFullVulnerability
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-FULL", "summary": "Needs full fetch"}]}]}
+                """
+            );
+            // Full vulnerability response has severity in database_specific
+            stubWebClientGet(Mono.just("{\"id\": \"GHSA-FULL\", \"summary\": \"Full details\", \"database_specific\": {\"severity\": \"HIGH\"}}"));
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.highCount()).isEqualTo(1);
+            assertThat(overview.dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("HIGH");
+        }
+
+        @Test
+        void shouldHandleFullVulnerabilityFetchFailure() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-FAIL"}]}]}
+                """
+            );
+            stubWebClientGet(Mono.error(new RuntimeException("Fetch failed")));
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            // Falls back to LOW when full fetch also fails
+            assertThat(overview.lowCount()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldHandleOsvNullResponse() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            stubWebClientPost(Mono.justOrEmpty(null));
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            assertThat(overview.dependencies()).hasSize(1);
+            assertThat(overview.dependencies().get(0).vulnerabilities()).isEmpty();
+        }
+
+        @Test
+        void shouldIgnoreInvalidSeverityStrings() throws IOException {
+            writePackageJson(
+                """
+                { "dependencies": { "lib": "1.0.0" } }
+                """
+            );
+            stubOsvResponseWithVulnerabilities(
+                """
+                {"results": [{"vulns": [{"id": "GHSA-INV", "database_specific": {"severity": "UNKNOWN_LEVEL"}}]}]}
+                """
+            );
+
+            DependenciesOverviewDTO overview = dependencyService.refresh();
+
+            // Invalid severity string is not recognized by normalizeSeverity → falls through to LOW
+            assertThat(overview.lowCount()).isEqualTo(1);
+        }
     }
 
     @Nested
@@ -417,5 +700,13 @@ class DependencyServiceTest {
         when(requestBodySpec.bodyValue(any())).thenReturn((WebClient.RequestHeadersSpec) requestBodySpec);
         when(requestBodySpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(String.class)).thenReturn(response);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void stubWebClientGet(Mono<String> response) {
+        when(webClient.get()).thenReturn((WebClient.RequestHeadersUriSpec) requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(anyString())).thenReturn((WebClient.RequestHeadersSpec) requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(getResponseSpec);
+        when(getResponseSpec.bodyToMono(String.class)).thenReturn(response);
     }
 }
