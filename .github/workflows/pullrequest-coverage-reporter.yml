@@ -42,10 +42,22 @@ jobs:
           CLIENT_MODULES=""
           HAS_CLIENT_CHANGES="false"
           for file in $CHANGED_FILES; do
-            if [[ "$file" == src/main/webapp/app/*.ts ]] && [[ "$file" != *.spec.ts ]] && [[ "$file" != *.module.ts ]]; then
+            # Source files in src/main
+            if [[ "$file" == src/main/webapp/app/*.ts ]] && [[ "$file" != *.spec.ts ]] && [[ "$file" != *.module.ts ]] && [[ "$file" != *.model.ts ]] && [[ "$file" != *.route.ts ]] && [[ "$file" != *.routes.ts ]] && [[ "$file" != */generated/* ]]; then
               HAS_CLIENT_CHANGES="true"
-              # Extract module name (first directory after app/)
               MODULE=$(echo "$file" | sed -n 's|^src/main/webapp/app/\([^/]*\)/.*|\1|p')
+              if [ -n "$MODULE" ] && [[ ! "$CLIENT_MODULES" =~ (^|,)$MODULE(,|$) ]]; then
+                if [ -z "$CLIENT_MODULES" ]; then
+                  CLIENT_MODULES="$MODULE"
+                else
+                  CLIENT_MODULES="$CLIENT_MODULES,$MODULE"
+                fi
+              fi
+            fi
+            # Test files in src/test — map back to source module
+            if [[ "$file" == src/test/webapp/app/*.spec.ts ]]; then
+              HAS_CLIENT_CHANGES="true"
+              MODULE=$(echo "$file" | sed -n 's|^src/test/webapp/app/\([^/]*\)/.*|\1|p')
               if [ -n "$MODULE" ] && [[ ! "$CLIENT_MODULES" =~ (^|,)$MODULE(,|$) ]]; then
                 if [ -z "$CLIENT_MODULES" ]; then
                   CLIENT_MODULES="$MODULE"
@@ -60,10 +72,22 @@ jobs:
           SERVER_MODULES=""
           HAS_SERVER_CHANGES="false"
           for file in $CHANGED_FILES; do
+            # Source files in src/main
             if [[ "$file" == src/main/java/de/tum/cit/aet/*.java ]]; then
               HAS_SERVER_CHANGES="true"
-              # Extract module name (first directory after aet/)
               MODULE=$(echo "$file" | sed -n 's|^src/main/java/de/tum/cit/aet/\([^/]*\)/.*|\1|p')
+              if [ -n "$MODULE" ] && [[ ! "$SERVER_MODULES" =~ (^|,)$MODULE(,|$) ]]; then
+                if [ -z "$SERVER_MODULES" ]; then
+                  SERVER_MODULES="$MODULE"
+                else
+                  SERVER_MODULES="$SERVER_MODULES,$MODULE"
+                fi
+              fi
+            fi
+            # Test files in src/test — map back to source module
+            if [[ "$file" == src/test/java/de/tum/cit/aet/*Test.java ]]; then
+              HAS_SERVER_CHANGES="true"
+              MODULE=$(echo "$file" | sed -n 's|^src/test/java/de/tum/cit/aet/\([^/]*\)/.*|\1|p')
               if [ -n "$MODULE" ] && [[ ! "$SERVER_MODULES" =~ (^|,)$MODULE(,|$) ]]; then
                 if [ -z "$SERVER_MODULES" ]; then
                   SERVER_MODULES="$MODULE"
@@ -213,9 +237,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: client-coverage-report
-          path: |
-            build/test-results/jest/coverage-summary.json
-            build/test-results/vitest/coverage/coverage-summary.json
+          path: build/test-results/vitest/coverage/coverage-summary.json
           if-no-files-found: ignore
 
   server-coverage:
