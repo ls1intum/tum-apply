@@ -7,8 +7,8 @@ import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
-import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
-import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../../../util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from '../../../../../util/translate.mock';
 
 describe('DocumentSection', () => {
   let fixture: ComponentFixture<DocumentSection>;
