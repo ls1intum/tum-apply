@@ -16,11 +16,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { JobFormDTO } from '../model/job-form-dto';
-import { JobFiltersDTO } from '../model/job-filters-dto';
-import { PageJobCardDTO } from '../model/page-job-card-dto';
-import { JobDTO } from '../model/job-dto';
-import { JobDetailDTO } from '../model/job-detail-dto';
-import { PageCreatedJobDTO } from '../model/page-created-job-dto';
 
 @Injectable({ providedIn: 'root' })
 export class JobResourceApi {
@@ -67,115 +62,6 @@ export class JobResourceApi {
         const jobIdPath = encodeURIComponent(String(jobId));
         const url = `${this.basePath}/api/jobs/${jobIdPath}`;
         return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getAllFilters(): Observable<JobFiltersDTO> {
-        const url = `${this.basePath}/api/jobs/filters`;
-        return this.http.get<JobFiltersDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param subjectAreas 
-     * @param locations 
-     * @param professorNames 
-     * @param sortBy 
-     * @param direction 
-     * @param searchQuery 
-     */
-    getAvailableJobs(pageSize?: number, pageNumber?: number, subjectAreas?: Array<'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string): Observable<PageJobCardDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (subjectAreas !== undefined && subjectAreas !== null) {
-            subjectAreas.forEach(item => queryParams.append('subjectAreas', String(item)));
-        }
-        if (locations !== undefined && locations !== null) {
-            locations.forEach(item => queryParams.append('locations', String(item)));
-        }
-        if (professorNames !== undefined && professorNames !== null) {
-            professorNames.forEach(item => queryParams.append('professorNames', String(item)));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/jobs/available${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageJobCardDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param jobId 
-     */
-    getJobById(jobId: string): Observable<JobDTO> {
-        const jobIdPath = encodeURIComponent(String(jobId));
-        const url = `${this.basePath}/api/jobs/${jobIdPath}`;
-        return this.http.get<JobDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param jobId 
-     */
-    getJobDetails(jobId: string): Observable<JobDetailDTO> {
-        const jobIdPath = encodeURIComponent(String(jobId));
-        const url = `${this.basePath}/api/jobs/detail/${jobIdPath}`;
-        return this.http.get<JobDetailDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param states 
-     * @param sortBy 
-     * @param direction 
-     * @param searchQuery 
-     */
-    getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string): Observable<PageCreatedJobDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (states !== undefined && states !== null) {
-            states.forEach(item => queryParams.append('states', String(item)));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/jobs/research-group${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageCreatedJobDTO>(url);
     }
 
     /**

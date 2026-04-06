@@ -17,6 +17,7 @@ export class {{classname}} {
 
 {{#operations}}
 {{#operation}}
+{{^vendorExtensions.x-use-http-resource}}
     /**
      * {{summary}}
      * {{notes}}
@@ -87,6 +88,7 @@ export class {{classname}} {
 {{/hasFormParams}}
     }
 
+{{/vendorExtensions.x-use-http-resource}}
 {{/operation}}
 {{/operations}}
 }

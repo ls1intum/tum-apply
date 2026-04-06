@@ -25,15 +25,6 @@ export class EmailSettingResourceApi {
     /**
      * 
      * 
-     */
-    getEmailSettings(): Observable<Array<EmailSettingDTO>> {
-        const url = `${this.basePath}/api/settings/emails`;
-        return this.http.get<Array<EmailSettingDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
      * @param emailSettingDTO 
      */
     updateEmailSettings(emailSettingDTO: Array<EmailSettingDTO>): Observable<Array<EmailSettingDTO>> {

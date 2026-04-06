@@ -1,0 +1,30 @@
+# Configuration for the Angular 21 OpenAPI generator.
+# See each property below for available options.
+
+additionalProperties:
+
+  #   useHttpResource=true  -> GET operations use httpResource (Signal-based, reactive)
+  #                            Generated in separate *-resources.ts files.
+  #                            Requires client code to use resource functions instead of .subscribe()
+  #
+  #   useHttpResource=false -> GET operations use HttpClient (Observable/subscription-based)
+  #                            Generated alongside mutations in *-api.ts service files.
+  #                            Compatible with existing .subscribe() patterns — less migration effort.
+  useHttpResource: true
+
+  #   useInjectFunction=true  -> Services use inject(HttpClient) (modern, functional style)
+  #   useInjectFunction=false -> Services use constructor(private http: HttpClient) (classic style)
+  useInjectFunction: true
+
+  #   separateResources=true  -> GET operations are generated in separate *-resources.ts files
+  #   separateResources=false -> GET operations are generated inline in the *-api.ts service files
+  separateResources: true
+
+  #   readonlyModels=true  -> Output DTO properties are marked readonly
+  #                           Input DTOs (names ending with Create/Update/Request/Input) stay mutable
+  #   readonlyModels=false -> All model properties are mutable
+  readonlyModels: true
+
+  #   supportsES6=true  -> Generate ES6+ compatible code (template literals, const enums)
+  #   supportsES6=false -> Generate ES5 compatible code
+  supportsES6: true

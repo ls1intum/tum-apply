@@ -223,6 +223,9 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
             if (useHttpResource && separateResources && !usage.hasGet) {
                 openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
             }
+            if (useHttpResource && !usage.hasMutation) {
+                openapiGeneratorIgnoreList.add("api/" + apiFilename + "-api.ts");
+            }
         }
     }
 

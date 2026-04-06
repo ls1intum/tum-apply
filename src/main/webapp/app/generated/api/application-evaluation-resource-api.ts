@@ -12,12 +12,10 @@
  * ApplicationEvaluationResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AcceptDTO } from '../model/accept-dto';
-import { ApplicationEvaluationDetailListDTO } from '../model/application-evaluation-detail-list-dto';
-import { ApplicationEvaluationOverviewListDTO } from '../model/application-evaluation-overview-list-dto';
 import { RejectDTO } from '../model/reject-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -35,143 +33,6 @@ export class ApplicationEvaluationResourceApi {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/accept`;
         return this.http.post<void>(url, acceptDTO);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     */
-    downloadAll(applicationId: string): Observable<HttpResponse<Blob>> {
-        const applicationIdPath = encodeURIComponent(String(applicationId));
-        const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/documents-download`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
-    }
-
-    /**
-     * 
-     * 
-     */
-    getAllJobNames(): Observable<Array<string>> {
-        const url = `${this.basePath}/api/evaluation/job-names`;
-        return this.http.get<Array<string>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param offset 
-     * @param limit 
-     * @param sortBy 
-     * @param direction 
-     * @param status 
-     * @param job 
-     * @param search 
-     */
-    getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
-        const queryParams = new URLSearchParams();
-        if (offset !== undefined && offset !== null) {
-            queryParams.set('offset', String(offset));
-        }
-        if (limit !== undefined && limit !== null) {
-            queryParams.set('limit', String(limit));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (status !== undefined && status !== null) {
-            status.forEach(item => queryParams.append('status', String(item)));
-        }
-        if (job !== undefined && job !== null) {
-            job.forEach(item => queryParams.append('job', String(item)));
-        }
-        if (search !== undefined && search !== null) {
-            queryParams.set('search', String(search));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/evaluation/application-details${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<ApplicationEvaluationDetailListDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param applicationId 
-     * @param windowSize 
-     * @param sortBy 
-     * @param direction 
-     * @param status 
-     * @param job 
-     * @param search 
-     */
-    getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
-        const queryParams = new URLSearchParams();
-        if (applicationId !== undefined && applicationId !== null) {
-            queryParams.set('applicationId', String(applicationId));
-        }
-        if (windowSize !== undefined && windowSize !== null) {
-            queryParams.set('windowSize', String(windowSize));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (status !== undefined && status !== null) {
-            status.forEach(item => queryParams.append('status', String(item)));
-        }
-        if (job !== undefined && job !== null) {
-            job.forEach(item => queryParams.append('job', String(item)));
-        }
-        if (search !== undefined && search !== null) {
-            queryParams.set('search', String(search));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/evaluation/application-details/window${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<ApplicationEvaluationDetailListDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param offset 
-     * @param limit 
-     * @param sortBy 
-     * @param direction 
-     * @param status 
-     * @param job 
-     * @param search 
-     */
-    getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationOverviewListDTO> {
-        const queryParams = new URLSearchParams();
-        if (offset !== undefined && offset !== null) {
-            queryParams.set('offset', String(offset));
-        }
-        if (limit !== undefined && limit !== null) {
-            queryParams.set('limit', String(limit));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (status !== undefined && status !== null) {
-            status.forEach(item => queryParams.append('status', String(item)));
-        }
-        if (job !== undefined && job !== null) {
-            job.forEach(item => queryParams.append('job', String(item)));
-        }
-        if (search !== undefined && search !== null) {
-            queryParams.set('search', String(search));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/evaluation/applications${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<ApplicationEvaluationOverviewListDTO>(url);
     }
 
     /**

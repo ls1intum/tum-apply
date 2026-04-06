@@ -17,7 +17,6 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DepartmentDTO } from '../model/department-dto';
 import { DepartmentCreationDTO } from '../model/department-creation-dto';
-import { PageResponseDTODepartmentDTO } from '../model/page-response-dto-department-dto';
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentResourceApi {
@@ -43,67 +42,6 @@ export class DepartmentResourceApi {
         const idPath = encodeURIComponent(String(id));
         const url = `${this.basePath}/api/departments/delete/${idPath}`;
         return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param id 
-     */
-    getDepartmentById(id: string): Observable<DepartmentDTO> {
-        const idPath = encodeURIComponent(String(id));
-        const url = `${this.basePath}/api/departments/${idPath}`;
-        return this.http.get<DepartmentDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param schoolId 
-     */
-    getDepartments(schoolId?: string): Observable<Array<DepartmentDTO>> {
-        const queryParams = new URLSearchParams();
-        if (schoolId !== undefined && schoolId !== null) {
-            queryParams.set('schoolId', String(schoolId));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/departments${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<DepartmentDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param schoolNames 
-     * @param searchQuery 
-     * @param sortBy 
-     * @param direction 
-     */
-    getDepartmentsForAdmin(pageSize?: number, pageNumber?: number, schoolNames?: Array<string>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTODepartmentDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (schoolNames !== undefined && schoolNames !== null) {
-            schoolNames.forEach(item => queryParams.append('schoolNames', String(item)));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/departments/admin/search${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTODepartmentDTO>(url);
     }
 
     /**

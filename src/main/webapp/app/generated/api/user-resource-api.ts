@@ -15,8 +15,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
-import { UserShortDTO } from '../model/user-short-dto';
 import { UpdateAvatarDTO } from '../model/update-avatar-dto';
 import { UpdatePasswordDTO } from '../model/update-password-dto';
 import { UpdateUserNameDTO } from '../model/update-user-name-dto';
@@ -25,38 +23,6 @@ import { UpdateUserNameDTO } from '../model/update-user-name-dto';
 export class UserResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param searchQuery 
-     */
-    getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string): Observable<PageResponseDTOKeycloakUserDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/users/available-for-research-group${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTOKeycloakUserDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getCurrentUser(): Observable<UserShortDTO> {
-        const url = `${this.basePath}/api/users/me`;
-        return this.http.get<UserShortDTO>(url);
-    }
 
     /**
      * 

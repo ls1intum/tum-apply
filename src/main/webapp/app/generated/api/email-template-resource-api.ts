@@ -16,7 +16,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { EmailTemplateDTO } from '../model/email-template-dto';
-import { PageResponseDTOEmailTemplateOverviewDTO } from '../model/page-response-dto-email-template-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class EmailTemplateResourceApi {
@@ -42,36 +41,6 @@ export class EmailTemplateResourceApi {
         const templateIdPath = encodeURIComponent(String(templateId));
         const url = `${this.basePath}/api/email-templates/${templateIdPath}`;
         return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param templateId 
-     */
-    getTemplate(templateId: string): Observable<EmailTemplateDTO> {
-        const templateIdPath = encodeURIComponent(String(templateId));
-        const url = `${this.basePath}/api/email-templates/${templateIdPath}`;
-        return this.http.get<EmailTemplateDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     */
-    getTemplates(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOEmailTemplateOverviewDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/email-templates${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTOEmailTemplateOverviewDTO>(url);
     }
 
     /**

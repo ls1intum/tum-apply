@@ -17,7 +17,6 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BookSlotRequestDTO } from '../model/book-slot-request-dto';
 import { InterviewSlotDTO } from '../model/interview-slot-dto';
-import { BookingDTO } from '../model/booking-dto';
 
 @Injectable({ providedIn: 'root' })
 export class InterviewBookingResourceApi {
@@ -34,35 +33,6 @@ export class InterviewBookingResourceApi {
         const processIdPath = encodeURIComponent(String(processId));
         const url = `${this.basePath}/api/interviews/booking/${processIdPath}/book`;
         return this.http.post<InterviewSlotDTO>(url, bookSlotRequestDTO);
-    }
-
-    /**
-     * 
-     * 
-     * @param processId 
-     * @param year 
-     * @param month 
-     * @param page 
-     * @param size 
-     */
-    getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number): Observable<BookingDTO> {
-        const processIdPath = encodeURIComponent(String(processId));
-        const queryParams = new URLSearchParams();
-        if (year !== undefined && year !== null) {
-            queryParams.set('year', String(year));
-        }
-        if (month !== undefined && month !== null) {
-            queryParams.set('month', String(month));
-        }
-        if (page !== undefined && page !== null) {
-            queryParams.set('page', String(page));
-        }
-        if (size !== undefined && size !== null) {
-            queryParams.set('size', String(size));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/interviews/booking/${processIdPath}${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<BookingDTO>(url);
     }
 
 }
