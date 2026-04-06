@@ -2,7 +2,9 @@ package de.tum.cit.aet.core.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.dto.sbom.DependenciesOverviewDTO;
 import de.tum.cit.aet.core.dto.sbom.DependencyDTO;
@@ -546,7 +548,6 @@ class DependencyServiceTest {
         Files.writeString(tempDir.resolve("package.json"), content, StandardCharsets.UTF_8);
     }
 
-    @SuppressWarnings("unchecked")
     private void stubOsvEmptyResponse(int dependencyCount) {
         if (dependencyCount == 0) {
             return;
@@ -568,20 +569,18 @@ class DependencyServiceTest {
         stubWebClientPost(Mono.error(new RuntimeException("OSV API unavailable")));
     }
 
-    @SuppressWarnings("unchecked")
     private void stubWebClientPost(Mono<String> response) {
         when(webClient.post()).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
         when(requestBodySpec.header(anyString(), anyString())).thenReturn(requestBodySpec);
-        when(requestBodySpec.bodyValue(any())).thenReturn((WebClient.RequestHeadersSpec) requestBodySpec);
+        doReturn(requestBodySpec).when(requestBodySpec).bodyValue(any());
         when(requestBodySpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(String.class)).thenReturn(response);
     }
 
-    @SuppressWarnings("unchecked")
     private void stubWebClientGet(Mono<String> response) {
-        when(webClient.get()).thenReturn((WebClient.RequestHeadersUriSpec) requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(anyString())).thenReturn((WebClient.RequestHeadersSpec) requestHeadersSpec);
+        doReturn(requestHeadersUriSpec).when(webClient).get();
+        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(anyString());
         when(requestHeadersSpec.retrieve()).thenReturn(getResponseSpec);
         when(getResponseSpec.bodyToMono(String.class)).thenReturn(response);
     }
