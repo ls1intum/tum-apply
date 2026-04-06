@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, input, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,7 +14,7 @@ export interface SubjectAreaOption {
 
 @Component({
   selector: 'jhi-subject-area-subscription-selector',
-  imports: [CommonModule, FilterMultiselect, FontAwesomeModule, TranslateModule, TranslateDirective],
+  imports: [FilterMultiselect, FontAwesomeModule, TranslateModule, TranslateDirective],
   templateUrl: './subject-area-subscription-selector.component.html',
 })
 export class SubjectAreaSubscriptionSelectorComponent {
@@ -56,15 +55,5 @@ export class SubjectAreaSubscriptionSelectorComponent {
 
   isRemovingSubjectArea(subjectArea: SubjectArea): boolean {
     return this.removingSubjectAreas().has(subjectArea);
-  }
-
-  subjectAreaTransitionClasses(subjectArea: SubjectArea): Record<string, boolean> {
-    const isRemoving = this.isRemovingSubjectArea(subjectArea);
-    return {
-      'max-w-0': isRemoving,
-      'opacity-0': isRemoving,
-      'mr-0': isRemoving,
-      'mb-0': isRemoving,
-    };
   }
 }

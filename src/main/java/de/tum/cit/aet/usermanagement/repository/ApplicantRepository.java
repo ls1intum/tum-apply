@@ -19,11 +19,9 @@ import org.springframework.stereotype.Repository;
 public interface ApplicantRepository extends TumApplyJpaRepository<Applicant, UUID> {
     @Query(
         """
-            SELECT DISTINCT user
+            SELECT DISTINCT applicant.user
             FROM Applicant applicant
-            JOIN applicant.user user
-            JOIN applicant.subjectAreaSubscriptions subscription
-            WHERE subscription = :subjectArea
+            WHERE :subjectArea MEMBER OF applicant.subjectAreaSubscriptions
         """
     )
     Set<User> findAllBySubjectAreaSubscription(@Param("subjectArea") SubjectArea subjectArea);

@@ -395,10 +395,6 @@ public class JobService {
     }
 
     private void notifySubjectAreaSubscribers(Job job) {
-        if (job.getSubjectArea() == null) {
-            return;
-        }
-
         List<User> recipients = applicantRepository
             .findAllBySubjectAreaSubscription(job.getSubjectArea())
             .stream()
