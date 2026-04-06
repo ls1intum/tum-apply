@@ -580,6 +580,7 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
     private String toKebabCase(String name) {
         return name.replaceAll("([a-z])([A-Z])", "$1-$2")
                 .replaceAll("([A-Z]+)([A-Z][a-z])", "$1-$2")
+                .replaceAll("_", "-")
                 .toLowerCase();
     }
 
