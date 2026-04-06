@@ -16,8 +16,8 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Getting Started',
           items: [
-            'getting-started/dev-environment',
-            'getting-started/spring-ai',
+            'getting-started/development-environment',
+            'getting-started/local-llm-setup',
           ],
         },
         {
@@ -25,7 +25,7 @@ const sidebars: SidebarsConfig = {
           label: 'General Guidelines',
           items: [
             'general-guidelines/branch-guidelines',
-            'general-guidelines/pr-guidelines',
+            'general-guidelines/pull-request-guidelines',
             'general-guidelines/openapi',
             'general-guidelines/writing-documentation',
           ],
@@ -34,10 +34,10 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Server Guidelines',
           items: [
-            'server-guidelines/server-guidelines',
+            'server-guidelines/server-development',
             'server-guidelines/server-tests',
-            'server-guidelines/api-testing',
-            'server-guidelines/database-guidelines',
+            'server-guidelines/api-testing-with-postman',
+            'server-guidelines/database-and-performance',
             'server-guidelines/liquibase-guidelines',
             'server-guidelines/error-handling',
           ],
@@ -46,8 +46,8 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Client Guidelines',
           items: [
-            'client-guidelines/angular-guidelines',
-            'client-guidelines/client-styling-guidelines',
+            'client-guidelines/client-development',
+            'client-guidelines/client-styling',
             'client-guidelines/client-tests',
             'client-guidelines/language-guidelines',
             'client-guidelines/color-theming',
@@ -58,7 +58,7 @@ const sidebars: SidebarsConfig = {
           label: 'Infrastructure & CI/CD',
           items: [
             'infrastructure-and-cicd/environment-variables',
-            'infrastructure-and-cicd/testserver',
+            'infrastructure-and-cicd/testserver-deployment',
           ],
         },
         {
@@ -71,7 +71,7 @@ const sidebars: SidebarsConfig = {
               type: 'category',
               label: 'Keycloak',
               items: [
-                'authentication-and-authorization/keycloak/keycloak-overview',
+                'authentication-and-authorization/keycloak/overview',
                 'authentication-and-authorization/keycloak/development-setup',
                 'authentication-and-authorization/keycloak/test-users',
               ],
