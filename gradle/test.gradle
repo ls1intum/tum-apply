@@ -110,6 +110,14 @@ test {
 //
 // Note: The default 'test' task uses H2 (in-process, no Docker needed). See application.yml
 // for the Zonky configuration (zonky.test.database.type).
+// Enable XML report generation for JaCoCo (needed by local-pr-coverage script)
+jacocoTestReport {
+  reports {
+    xml.required = true
+    html.required = true
+  }
+}
+
 tasks.register("testMysql", Test) {
   description = "Run tests against Mysql (via Testcontainers)"
   group = 'verification'
