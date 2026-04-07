@@ -411,7 +411,7 @@ class DependencyServiceTest {
                 { "dependencies": { "lib": "1.0.0" } }
                 """
             );
-            stubWebClientPost(Mono.justOrEmpty(null));
+            stubWebClientPost(Mono.empty());
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
