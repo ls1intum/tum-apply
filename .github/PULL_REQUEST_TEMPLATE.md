@@ -11,20 +11,21 @@
 
 - [ ] I tested **all** changes and their related features with **all** corresponding user types.
 - [ ] Language: I followed the [guidelines for inclusive, diversity-sensitive, and appreciative language](https://ls1intum.github.io/tum-apply/developer/client-guidelines/language-guidelines).
-- [ ] I chose a title conforming to the [naming conventions for pull requests](https://ls1intum.github.io/tum-apply/developer/general-guidelines/pr-guidelines).
+- [ ] I chose a title conforming to the [naming conventions for pull requests](https://ls1intum.github.io/tum-apply/developer/general-guidelines/pull-request-guidelines).
 
 #### Server
 
-- [ ] **Important**: I implemented the changes with a [very good performance](https://ls1intum.github.io/tum-apply/developer/server-guidelines/database-guidelines) and prevented too many (unnecessary) and too complex database calls.
+- [ ] **Important**: I implemented the changes with a [very good performance](https://ls1intum.github.io/tum-apply/developer/server-guidelines/database-and-performance) and prevented too many (unnecessary) and too complex database calls.
 - [ ] I **strictly** followed the principle of **data economy** for all database calls.
-- [ ] I **strictly** followed the [server coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-guidelines).
+- [ ] I **strictly** followed the [server coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-development).
+- [ ] I added multiple server tests (JUnit) related to the features (with a high test coverage), while following the [test guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-tests).
 - [ ] I documented the Java code using JavaDoc style.
 
 #### Client
 
 - [ ] **Important**: I implemented the changes with a very good performance, prevented too many (unnecessary) REST calls and made sure the UI is responsive, even with large data (e.g. using paging).
 - [ ] I **strictly** followed the principle of **data economy** for all client-server REST calls.
-- [ ] I **strictly** followed the [client coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/angular-guidelines).
+- [ ] I **strictly** followed the [client coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-development).
 - [ ] I added multiple integration tests (Vitest) related to the features (with a high test coverage), while following the [test guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-tests).
 - [ ] I documented the TypeScript code using JSDoc style.
 - [ ] I added multiple screenshots/screencasts of my UI changes.
