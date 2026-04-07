@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -86,13 +87,14 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies()).hasSize(1);
-            DependencyDTO dep = overview.dependencies().getFirst();
-            assertThat(dep.name()).isEqualTo("my-lib");
-            assertThat(dep.group()).isEqualTo("org.example");
-            assertThat(dep.version()).isEqualTo("1.0.0");
-            assertThat(dep.source()).isEqualTo("server");
-            assertThat(dep.purl()).isEqualTo("pkg:maven/org.example/my-lib@1.0.0");
+            assertThat(overview.dependencies())
+                .hasSize(1)
+                .first()
+                .returns("my-lib", DependencyDTO::name)
+                .returns("org.example", DependencyDTO::group)
+                .returns("1.0.0", DependencyDTO::version)
+                .returns("server", DependencyDTO::source)
+                .returns("pkg:maven/org.example/my-lib@1.0.0", DependencyDTO::purl);
         }
 
         @ParameterizedTest(name = "should skip {0} dependencies")
@@ -108,8 +110,10 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies()).hasSize(1);
-            assertThat(overview.dependencies().getFirst().name()).isEqualTo("kept");
+            assertThat(overview.dependencies())
+                .hasSize(1)
+                .first()
+                .returns("kept", DependencyDTO::name);
         }
 
         @Test
@@ -120,7 +124,9 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies().getFirst().version()).isEqualTo("2.5.0");
+            assertThat(overview.dependencies())
+                .first()
+                .returns("2.5.0", DependencyDTO::version);
         }
 
         @Test
@@ -128,7 +134,9 @@ class DependencyServiceTest {
             writeBuildGradle("implementation 'org.example:my-lib'");
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies().getFirst().version()).isEqualTo("managed");
+            assertThat(dependencyService.refresh().dependencies())
+                .first()
+                .returns("managed", DependencyDTO::version);
         }
 
         @Test
@@ -141,8 +149,10 @@ class DependencyServiceTest {
             writeBuildGradle("implementation('org.example:my-lib:1.0.0')");
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies()).hasSize(1);
-            assertThat(dependencyService.refresh().dependencies().getFirst().name()).isEqualTo("my-lib");
+            assertThat(dependencyService.refresh().dependencies())
+                .hasSize(1)
+                .first()
+                .returns("my-lib", DependencyDTO::name);
         }
     }
 
@@ -178,7 +188,9 @@ class DependencyServiceTest {
             );
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies().getFirst().version()).isEqualTo(expected);
+            assertThat(dependencyService.refresh().dependencies())
+                .first()
+                .returns(expected, DependencyDTO::version);
         }
 
         @Test
@@ -190,10 +202,11 @@ class DependencyServiceTest {
             );
             stubOsvEmptyResponse(1);
 
-            DependencyDTO dep = dependencyService.refresh().dependencies().getFirst();
-            assertThat(dep.group()).isEqualTo("@angular");
-            assertThat(dep.name()).isEqualTo("core");
-            assertThat(dep.purl()).isEqualTo("pkg:npm/@angular/core@18.0.0");
+            assertThat(dependencyService.refresh().dependencies())
+                .first()
+                .returns("@angular", DependencyDTO::group)
+                .returns("core", DependencyDTO::name)
+                .returns("pkg:npm/@angular/core@18.0.0", DependencyDTO::purl);
         }
 
         @Test
@@ -260,7 +273,9 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.mediumCount()).isEqualTo(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo("MEDIUM");
+            assertThat(overview.dependencies().getFirst().vulnerabilities())
+                .first()
+                .returns("MEDIUM", VulnerabilityDTO::severity);
         }
 
         @Test
@@ -279,7 +294,9 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.totalVulnerabilities()).isZero();
-            assertThat(overview.dependencies().getFirst().vulnerabilities()).isEmpty();
+            assertThat(overview.dependencies())
+                .first()
+                .returns(List.of(), DependencyDTO::vulnerabilities);
         }
 
         @Test
@@ -293,8 +310,10 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies()).hasSize(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities()).isEmpty();
+            assertThat(overview.dependencies())
+                .hasSize(1)
+                .first()
+                .returns(List.of(), DependencyDTO::vulnerabilities);
             assertThat(overview.totalVulnerabilities()).isZero();
         }
 
@@ -316,8 +335,8 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies().getFirst().vulnerabilities()).hasSize(2);
             assertThat(overview.dependencies().getFirst().vulnerabilities())
+                .hasSize(2)
                 .extracting(VulnerabilityDTO::id)
                 .containsExactly("GHSA-001", "GHSA-002");
         }
@@ -336,7 +355,9 @@ class DependencyServiceTest {
                 """.formatted(vulnJson)
             );
 
-            assertThat(dependencyService.refresh().dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo(expectedSeverity);
+            assertThat(dependencyService.refresh().dependencies().getFirst().vulnerabilities())
+                .first()
+                .returns(expectedSeverity, VulnerabilityDTO::severity);
         }
 
         @Test
@@ -357,7 +378,9 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.lowCount()).isEqualTo(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo("LOW");
+            assertThat(overview.dependencies().getFirst().vulnerabilities())
+                .first()
+                .returns("LOW", VulnerabilityDTO::severity);
         }
 
         @Test
@@ -379,7 +402,9 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.highCount()).isEqualTo(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo("HIGH");
+            assertThat(overview.dependencies().getFirst().vulnerabilities())
+                .first()
+                .returns("HIGH", VulnerabilityDTO::severity);
         }
 
         @Test
@@ -413,8 +438,10 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies()).hasSize(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities()).isEmpty();
+            assertThat(overview.dependencies())
+                .hasSize(1)
+                .first()
+                .returns(List.of(), DependencyDTO::vulnerabilities);
         }
 
         @Test
