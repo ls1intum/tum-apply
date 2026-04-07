@@ -16,12 +16,12 @@ import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/fil
 /** Helper to build a DependencyDTO with defaults. */
 function dep(overrides: Partial<DependencyDTO> & Pick<DependencyDTO, 'name'>): DependencyDTO {
   return {
-    group: '',
-    version: '1.0.0',
-    source: 'client',
-    purl: `pkg:npm/${overrides.name}@${overrides.version ?? '1.0.0'}`,
-    vulnerabilities: [],
-    ...overrides,
+    name: overrides.name,
+    group: overrides.group ?? '',
+    version: overrides.version ?? '1.0.0',
+    source: overrides.source ?? 'client',
+    purl: overrides.purl ?? `pkg:npm/${overrides.name}@${overrides.version ?? '1.0.0'}`,
+    vulnerabilities: overrides.vulnerabilities ?? [],
   };
 }
 
