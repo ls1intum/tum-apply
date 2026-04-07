@@ -3,6 +3,14 @@ package de.tum.cit.aet;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchCondition;
+import com.tngtech.archunit.lang.ConditionEvents;
+import jakarta.persistence.Entity;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -14,22 +22,11 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.persistence.Entity;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.lang.ArchCondition;
-import com.tngtech.archunit.lang.ConditionEvents;
 
 /**
  * Architecture tests verifying proper DTO usage and entity encapsulation.
@@ -54,9 +51,7 @@ class DTOArchitectureTest {
 
     @BeforeAll
     static void loadClasses() {
-        productionClasses = new ClassFileImporter()
-            .withImportOption(new ImportOption.DoNotIncludeTests())
-            .importPackages(BASE_PACKAGE);
+        productionClasses = new ClassFileImporter().withImportOption(new ImportOption.DoNotIncludeTests()).importPackages(BASE_PACKAGE);
     }
 
     /**
@@ -68,7 +63,6 @@ class DTOArchitectureTest {
         List<String> violations = new ArrayList<>();
 
         var condition = new ArchCondition<JavaClass>("not return @Entity types from REST controller methods") {
-
             @Override
             public void check(JavaClass controllerClass, ConditionEvents events) {
                 Class<?> reflectedController = controllerClass.reflect();
@@ -91,23 +85,34 @@ class DTOArchitectureTest {
                     }
 
                     if (entityType.isPresent()) {
-                        violations.add(String.format("%s#%s returns entity '%s' (return type: %s)",
-                            controllerClass.getSimpleName(), archMethod.getName(),
-                            entityType.get().getSimpleName(), returnType.getTypeName()));
+                        violations.add(
+                            String.format(
+                                "%s#%s returns entity '%s' (return type: %s)",
+                                controllerClass.getSimpleName(),
+                                archMethod.getName(),
+                                entityType.get().getSimpleName(),
+                                returnType.getTypeName()
+                            )
+                        );
                     }
                 }
             }
         };
 
-        classes().that().resideInAPackage(BASE_PACKAGE + "..")
-            .and().areAnnotatedWith(RestController.class)
+        classes()
+            .that()
+            .resideInAPackage(BASE_PACKAGE + "..")
+            .and()
+            .areAnnotatedWith(RestController.class)
             .should(condition)
             .allowEmptyShould(true)
             .check(productionClasses);
 
         assertThat(violations)
-            .as("REST controllers must not return @Entity types directly. Use DTOs instead.\nViolations:\n%s",
-                String.join("\n", violations))
+            .as(
+                "REST controllers must not return @Entity types directly. Use DTOs instead.\nViolations:\n%s",
+                String.join("\n", violations)
+            )
             .isEmpty();
     }
 
@@ -120,7 +125,6 @@ class DTOArchitectureTest {
         List<String> violations = new ArrayList<>();
 
         var condition = new ArchCondition<JavaClass>("not use @Entity types in @RequestBody/@RequestPart parameters") {
-
             @Override
             public void check(JavaClass controllerClass, ConditionEvents events) {
                 Class<?> reflectedController = controllerClass.reflect();
@@ -154,24 +158,36 @@ class DTOArchitectureTest {
 
                         if (entityType.isPresent()) {
                             String annotation = parameter.isAnnotationPresent(RequestBody.class) ? "@RequestBody" : "@RequestPart";
-                            violations.add(String.format("%s#%s accepts entity '%s' via %s (parameter type: %s)",
-                                controllerClass.getSimpleName(), archMethod.getName(),
-                                entityType.get().getSimpleName(), annotation, parameterType.getTypeName()));
+                            violations.add(
+                                String.format(
+                                    "%s#%s accepts entity '%s' via %s (parameter type: %s)",
+                                    controllerClass.getSimpleName(),
+                                    archMethod.getName(),
+                                    entityType.get().getSimpleName(),
+                                    annotation,
+                                    parameterType.getTypeName()
+                                )
+                            );
                         }
                     }
                 }
             }
         };
 
-        classes().that().resideInAPackage(BASE_PACKAGE + "..")
-            .and().areAnnotatedWith(RestController.class)
+        classes()
+            .that()
+            .resideInAPackage(BASE_PACKAGE + "..")
+            .and()
+            .areAnnotatedWith(RestController.class)
             .should(condition)
             .allowEmptyShould(true)
             .check(productionClasses);
 
         assertThat(violations)
-            .as("REST controllers must not accept @Entity types in @RequestBody/@RequestPart. Use DTOs instead.\nViolations:\n%s",
-                String.join("\n", violations))
+            .as(
+                "REST controllers must not accept @Entity types in @RequestBody/@RequestPart. Use DTOs instead.\nViolations:\n%s",
+                String.join("\n", violations)
+            )
             .isEmpty();
     }
 
@@ -186,7 +202,6 @@ class DTOArchitectureTest {
         List<String> violations = new ArrayList<>();
 
         var condition = new ArchCondition<JavaClass>("not contain fields that reference @Entity types") {
-
             @Override
             public void check(JavaClass dtoClass, ConditionEvents events) {
                 Class<?> reflectedDto = dtoClass.reflect();
@@ -200,23 +215,34 @@ class DTOArchitectureTest {
                     Optional<Class<?>> entityType = findFirstEntityType(fieldType);
 
                     if (entityType.isPresent()) {
-                        violations.add(String.format("%s.%s references entity '%s' (field type: %s)",
-                            dtoClass.getSimpleName(), field.getName(),
-                            entityType.get().getSimpleName(), fieldType.getTypeName()));
+                        violations.add(
+                            String.format(
+                                "%s.%s references entity '%s' (field type: %s)",
+                                dtoClass.getSimpleName(),
+                                field.getName(),
+                                entityType.get().getSimpleName(),
+                                fieldType.getTypeName()
+                            )
+                        );
                     }
                 }
             }
         };
 
-        classes().that().resideInAPackage(BASE_PACKAGE + "..")
-            .and().haveSimpleNameEndingWith("DTO")
+        classes()
+            .that()
+            .resideInAPackage(BASE_PACKAGE + "..")
+            .and()
+            .haveSimpleNameEndingWith("DTO")
             .should(condition)
             .allowEmptyShould(true)
             .check(productionClasses);
 
         assertThat(violations)
-            .as("DTOs must not contain @Entity fields. Use primitive types, enums, or other DTOs instead.\nViolations:\n%s",
-                String.join("\n", violations))
+            .as(
+                "DTOs must not contain @Entity fields. Use primitive types, enums, or other DTOs instead.\nViolations:\n%s",
+                String.join("\n", violations)
+            )
             .isEmpty();
     }
 
@@ -225,14 +251,11 @@ class DTOArchitectureTest {
      */
     private static Method findMatchingDeclaredMethod(Class<?> owner, JavaMethod archMethod) {
         String name = archMethod.getName();
-        Class<?>[] rawParamTypes = archMethod.getRawParameterTypes().stream()
-            .map(JavaClass::reflect)
-            .toArray(Class<?>[]::new);
+        Class<?>[] rawParamTypes = archMethod.getRawParameterTypes().stream().map(JavaClass::reflect).toArray(Class<?>[]::new);
 
         try {
             return owner.getDeclaredMethod(name, rawParamTypes);
-        }
-        catch (NoSuchMethodException ex) {
+        } catch (NoSuchMethodException ex) {
             for (Method method : owner.getDeclaredMethods()) {
                 if (!method.getName().equals(name) || method.getParameterCount() != rawParamTypes.length) {
                     continue;
