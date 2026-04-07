@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -98,22 +98,21 @@ class DependencyServiceTest {
         }
 
         @ParameterizedTest(name = "should skip {0} dependencies")
-        @CsvSource({
-            "test,              testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'",
-            "annotation processor, annotationProcessor 'org.projectlombok:lombok:1.18.30'",
-            "dev-only,          developmentOnly 'org.springframework.boot:spring-boot-devtools:3.2.0'",
-            "commented-out,     // implementation 'commented:out:1.0.0'",
-        })
+        @CsvSource(
+            {
+                "test,              testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'",
+                "annotation processor, annotationProcessor 'org.projectlombok:lombok:1.18.30'",
+                "dev-only,          developmentOnly 'org.springframework.boot:spring-boot-devtools:3.2.0'",
+                "commented-out,     // implementation 'commented:out:1.0.0'",
+            }
+        )
         void shouldSkipNonProductionDependencies(String label, String line) throws IOException {
             writeBuildGradle(line + "\nimplementation 'org.example:kept:1.0.0'");
             stubOsvEmptyResponse(1);
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies())
-                .hasSize(1)
-                .first()
-                .returns("kept", DependencyDTO::name);
+            assertThat(overview.dependencies()).hasSize(1).first().returns("kept", DependencyDTO::name);
         }
 
         @Test
@@ -124,9 +123,7 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies())
-                .first()
-                .returns("2.5.0", DependencyDTO::version);
+            assertThat(overview.dependencies()).first().returns("2.5.0", DependencyDTO::version);
         }
 
         @Test
@@ -134,9 +131,7 @@ class DependencyServiceTest {
             writeBuildGradle("implementation 'org.example:my-lib'");
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies())
-                .first()
-                .returns("managed", DependencyDTO::version);
+            assertThat(dependencyService.refresh().dependencies()).first().returns("managed", DependencyDTO::version);
         }
 
         @Test
@@ -149,10 +144,7 @@ class DependencyServiceTest {
             writeBuildGradle("implementation('org.example:my-lib:1.0.0')");
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies())
-                .hasSize(1)
-                .first()
-                .returns("my-lib", DependencyDTO::name);
+            assertThat(dependencyService.refresh().dependencies()).hasSize(1).first().returns("my-lib", DependencyDTO::name);
         }
     }
 
@@ -188,9 +180,7 @@ class DependencyServiceTest {
             );
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies())
-                .first()
-                .returns(expected, DependencyDTO::version);
+            assertThat(dependencyService.refresh().dependencies()).first().returns(expected, DependencyDTO::version);
         }
 
         @Test
@@ -273,9 +263,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.mediumCount()).isEqualTo(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities())
-                .first()
-                .returns("MEDIUM", VulnerabilityDTO::severity);
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).first().returns("MEDIUM", VulnerabilityDTO::severity);
         }
 
         @Test
@@ -294,9 +282,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.totalVulnerabilities()).isZero();
-            assertThat(overview.dependencies())
-                .first()
-                .returns(List.of(), DependencyDTO::vulnerabilities);
+            assertThat(overview.dependencies()).first().returns(List.of(), DependencyDTO::vulnerabilities);
         }
 
         @Test
@@ -310,10 +296,7 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies())
-                .hasSize(1)
-                .first()
-                .returns(List.of(), DependencyDTO::vulnerabilities);
+            assertThat(overview.dependencies()).hasSize(1).first().returns(List.of(), DependencyDTO::vulnerabilities);
             assertThat(overview.totalVulnerabilities()).isZero();
         }
 
@@ -378,9 +361,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.lowCount()).isEqualTo(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities())
-                .first()
-                .returns("LOW", VulnerabilityDTO::severity);
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).first().returns("LOW", VulnerabilityDTO::severity);
         }
 
         @Test
@@ -397,14 +378,14 @@ class DependencyServiceTest {
                 """
             );
             // Full vulnerability response has severity in database_specific
-            stubWebClientGet(Mono.just("{\"id\": \"GHSA-FULL\", \"summary\": \"Full details\", \"database_specific\": {\"severity\": \"HIGH\"}}"));
+            stubWebClientGet(
+                Mono.just("{\"id\": \"GHSA-FULL\", \"summary\": \"Full details\", \"database_specific\": {\"severity\": \"HIGH\"}}")
+            );
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.highCount()).isEqualTo(1);
-            assertThat(overview.dependencies().getFirst().vulnerabilities())
-                .first()
-                .returns("HIGH", VulnerabilityDTO::severity);
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).first().returns("HIGH", VulnerabilityDTO::severity);
         }
 
         @Test
@@ -438,10 +419,7 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies())
-                .hasSize(1)
-                .first()
-                .returns(List.of(), DependencyDTO::vulnerabilities);
+            assertThat(overview.dependencies()).hasSize(1).first().returns(List.of(), DependencyDTO::vulnerabilities);
         }
 
         @Test
@@ -533,33 +511,81 @@ class DependencyServiceTest {
     static Stream<Arguments> severityExtractionCases() {
         return Stream.of(
             // ecosystem_specific
-            Arguments.of("ecosystem_specific HIGH", """
-                {"id": "V1", "affected": [{"ecosystem_specific": {"severity": "HIGH"}}]}""", "HIGH"),
+            Arguments.of(
+                "ecosystem_specific HIGH",
+                """
+                {"id": "V1", "affected": [{"ecosystem_specific": {"severity": "HIGH"}}]}""",
+                "HIGH"
+            ),
             // numeric CVSS scores → cvssToSeverity thresholds
-            Arguments.of("numeric score 9.5 → CRITICAL", """
-                {"id": "V2", "severity": [{"score": "9.5"}]}""", "CRITICAL"),
-            Arguments.of("numeric score 8.0 → HIGH", """
-                {"id": "V3", "severity": [{"score": "8.0"}]}""", "HIGH"),
-            Arguments.of("numeric score 5.0 → MEDIUM", """
-                {"id": "V4", "severity": [{"score": "5.0"}]}""", "MEDIUM"),
-            Arguments.of("numeric score 2.0 → LOW", """
-                {"id": "V5", "severity": [{"score": "2.0"}]}""", "LOW"),
+            Arguments.of(
+                "numeric score 9.5 → CRITICAL",
+                """
+                {"id": "V2", "severity": [{"score": "9.5"}]}""",
+                "CRITICAL"
+            ),
+            Arguments.of(
+                "numeric score 8.0 → HIGH",
+                """
+                {"id": "V3", "severity": [{"score": "8.0"}]}""",
+                "HIGH"
+            ),
+            Arguments.of(
+                "numeric score 5.0 → MEDIUM",
+                """
+                {"id": "V4", "severity": [{"score": "5.0"}]}""",
+                "MEDIUM"
+            ),
+            Arguments.of(
+                "numeric score 2.0 → LOW",
+                """
+                {"id": "V5", "severity": [{"score": "2.0"}]}""",
+                "LOW"
+            ),
             // CVSS v3 vectors
-            Arguments.of("CVSS v3.1 scope unchanged → CRITICAL", """
-                {"id": "V6", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}]}""", "CRITICAL"),
-            Arguments.of("CVSS v3.1 scope changed → CRITICAL", """
-                {"id": "V7", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"}]}""", "CRITICAL"),
-            Arguments.of("CVSS v3.1 missing scope → LOW fallback", """
-                {"id": "V8", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/C:H/I:H/A:H"}]}""", "LOW"),
+            Arguments.of(
+                "CVSS v3.1 scope unchanged → CRITICAL",
+                """
+                {"id": "V6", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}]}""",
+                "CRITICAL"
+            ),
+            Arguments.of(
+                "CVSS v3.1 scope changed → CRITICAL",
+                """
+                {"id": "V7", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"}]}""",
+                "CRITICAL"
+            ),
+            Arguments.of(
+                "CVSS v3.1 missing scope → LOW fallback",
+                """
+                {"id": "V8", "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/C:H/I:H/A:H"}]}""",
+                "LOW"
+            ),
             // CVSS v4 vectors
-            Arguments.of("CVSS v4 high impact + easy access → CRITICAL", """
-                {"id": "V9", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H"}]}""", "CRITICAL"),
-            Arguments.of("CVSS v4 high impact + hard access → HIGH", """
-                {"id": "V10", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:H/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H"}]}""", "HIGH"),
-            Arguments.of("CVSS v4 low impact → MEDIUM", """
-                {"id": "V11", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N"}]}""", "MEDIUM"),
-            Arguments.of("CVSS v4 no impact → LOW", """
-                {"id": "V12", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N"}]}""", "LOW")
+            Arguments.of(
+                "CVSS v4 high impact + easy access → CRITICAL",
+                """
+                {"id": "V9", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H"}]}""",
+                "CRITICAL"
+            ),
+            Arguments.of(
+                "CVSS v4 high impact + hard access → HIGH",
+                """
+                {"id": "V10", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:H/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H"}]}""",
+                "HIGH"
+            ),
+            Arguments.of(
+                "CVSS v4 low impact → MEDIUM",
+                """
+                {"id": "V11", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N"}]}""",
+                "MEDIUM"
+            ),
+            Arguments.of(
+                "CVSS v4 no impact → LOW",
+                """
+                {"id": "V12", "severity": [{"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N"}]}""",
+                "LOW"
+            )
         );
     }
 
