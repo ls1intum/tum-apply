@@ -105,12 +105,12 @@
       "moreDocument": "+1 weiteres Dokument",
       "moreDocuments": "+{{count}} weitere Dokumente",
       "ratingTitle": "Bewertungen",
-      "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben. Diese Angaben sind für die Bewerbenden nicht sichtbar.",
+      "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben.",
       "ratingYourRating": "Deine Bewertung",
       "ratingYourRatingLabel": "Klicke auf ein Feld, um deine Bewertung auszuwählen",
       "ratingOtherRatings": "Bewertungen Anderer",
       "commentTitle": "Kommentare",
-      "commentDescription": "Hinterlasse interne Kommentare, um die Bewerbung mit anderen zu diskutieren oder persönliche Notizen zu machen. Diese sind für die Bewerbenden nicht sichtbar."
+      "commentDescription": "Hinterlasse interne Kommentare, um die Bewerbung mit anderen zu diskutieren oder persönliche Notizen zu machen."
     },
     "deleteComment": {
       "confirm": {

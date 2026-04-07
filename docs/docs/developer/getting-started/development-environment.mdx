@@ -1,0 +1,122 @@
+---
+sidebar_label: Development Environment
+---
+
+# Development Environment
+
+This document explains how to set up and run the TUMApply project locally for development.
+
+---
+
+## Prerequisites
+
+:::info[Prerequisites]
+Make sure you have the following installed:
+
+- **Java 25**
+- **Node.js v24.2.0+** and **npm**
+- **Docker** and **Docker Compose**
+- **MySQL Client** (`mysql` CLI) installed and available in `PATH`
+- **Git**
+:::
+
+### Installing MySQL Client
+
+The MySQL CLI is required to import test data.
+
+- **macOS**:
+
+  ```bash
+  brew install mysql-client
+  echo 'export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"' >> ~/.zprofile
+  source ~/.zprofile
+  ```
+
+- **Linux**:
+
+  ```bash
+  sudo apt install mysql-client
+  ```
+
+- **Windows**:
+  - Install via MySQL Installer
+  - Use **Git Bash** to run `.sh` scripts
+  - Ensure the MySQL `bin` directory is in your `PATH`
+
+---
+
+## Docker Services
+
+Make sure Docker Desktop is running. For local development, you only need to run the services file which starts **Keycloak** and **MySQL**:
+
+```bash
+docker compose -f docker/local-setup/services.yml up -d
+```
+
+This starts:
+- **MySQL** on `localhost:3306` — the application database
+- **Keycloak** on `localhost:9080` — the identity provider with a pre-configured dev realm
+
+To stop the services:
+
+```bash
+docker compose -f docker/local-setup/services.yml down
+```
+
+### Docker File Overview
+
+All Docker configuration files are located in the `docker/` directory:
+
+| **File** | **Purpose** |
+|---|---|
+| `docker/local-setup/services.yml` | Local development — starts Keycloak and MySQL |
+| `docker/local-setup/keycloak.yml` | Keycloak service definition for local development |
+| `docker/local-setup/mysql.yml` | MySQL service definition for local development |
+
+---
+
+## Starting the Application
+
+Once the Docker services are running, start the server and client in two separate terminals:
+
+```bash
+# Terminal 1 - Start Spring Boot without client build
+./gradlew -x webapp
+
+# Terminal 2 - Install npm dependencies and start Angular dev server
+npm install
+npm start
+```
+
+Starting the server will automatically apply all Liquibase migrations to the database.
+
+:::note
+If you encounter errors starting the server, ensure the MySQL container is running and reachable.
+:::
+
+---
+
+## Importing Test Data
+
+To populate the database with example data, run the import script. This automatically imports all SQL files from the `src/main/resources/testdata/` folder, sorted alphabetically:
+
+```bash
+bash ./src/main/resources/testdata/import-testdata.sh
+```
+
+---
+
+## Local LLM Setup
+
+If you want to use the AI features on the website then you need a local LLM instance. Follow the instructions in the [Local LLM Setup Guide](./local-llm-setup) to get started.
+
+---
+
+## Troubleshooting
+
+:::warning[Common Issues]
+- `mysql CLI not found`: Ensure it is installed and on your system `PATH`
+- `Public Key Retrieval is not allowed`: Add `allowPublicKeyRetrieval=true` to the JDBC URL
+- `Access denied`: Use user `root` with an empty password if not configured otherwise
+- Unexpected build issues: Try running `./gradlew clean build` to reset the environment
+:::

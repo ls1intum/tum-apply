@@ -1,44 +1,38 @@
-# 🎓 TUMApply – Application Portal for Doctoral Candidates
+# TUMApply – Application Portal for Doctoral Candidates
 
 **TUMApply** is a modern, inclusive, and efficient application portal for doctoral positions at the Technical University
 of Munich. It streamlines application management, improves usability for applicants and research groups, and supports
 scalable, secure, and transparent recruitment processes.
 
-## 👥 Who is this for?
+## Who is this for?
 
 - **Applicants**: Search and apply for open doctoral positions across all TUM research groups.
 - **Professors and Research Groups**: Create job positions, review applications, and manage evaluations in one place.
 
-## 🚀 What can you do on TUMApply?
+## What can you do on TUMApply?
 
 ### For Applicants
 
-- Browse doctoral openings across TUM ([Video](https://live.rbg.tum.de/w/artemisintro/61935))
-- View job details and requirements ([Video](https://live.rbg.tum.de/w/artemisintro/61934))
-- Apply with your documents (CV, transcripts, motivation letter,
-  etc.) ([Video](https://live.rbg.tum.de/w/artemisintro/61939))
-- Save, submit and delete application drafts ([Save](https://live.rbg.tum.de/w/artemisintro/61942)) ([
-  Submit](https://live.rbg.tum.de/w/artemisintro/61941)) ([
-  Delete](https://live.rbg.tum.de/w/artemisintro/61940))
-- Track/Review your application details and submission for multiple
-  positions ([Video](https://live.rbg.tum.de/w/artemisintro/61943))
-- Withdraw applications ([Video](https://live.rbg.tum.de/w/artemisintro/61944))
+- Browse doctoral openings across TUM
+- View job details and requirements
+- Apply with your documents (CV, transcripts, motivation letter, etc.)
+- Save, submit and delete application drafts
+- Track/Review your application details and submission for multiple positions
+- Withdraw applications
 - Get notified when a decision is made
 
 ### For Professors & Research Groups
 
-- Create and publish doctoral positions ([Video](https://live.rbg.tum.de/w/artemisintro/61937))
-- View published positions ([Video](https://live.rbg.tum.de/w/artemisintro/61932))
-- View position details ([Video](https://live.rbg.tum.de/w/artemisintro/61933))
-- Edit jobs ([Video](https://live.rbg.tum.de/w/artemisintro/61936))
-- Close and delete job postings ([Video](https://live.rbg.tum.de/w/artemisintro/61938))
-- Manage incoming applications ([Video](https://live.rbg.tum.de/w/artemisintro/61948))
-- Evaluate candidates and assign
-  status ([Review](https://live.rbg.tum.de/w/artemisintro/61947)) ([Accept](https://live.rbg.tum.de/w/artemisintro/61945))
-  ([Reject](https://live.rbg.tum.de/w/artemisintro/61946))
+- Create and publish doctoral positions
+- View published positions
+- View position details
+- Edit jobs
+- Close and delete job postings
+- Manage incoming applications
+- Evaluate candidates and assign status
 - Notify applicants directly via the system
 
-## 🧭 How to Get Started
+## How to Get Started
 
 1. Visit the portal: [TUMApply](https://tumapply.aet.cit.tum.de/)
 2. Browse available doctoral positions
@@ -47,19 +41,18 @@ scalable, secure, and transparent recruitment processes.
 
 ## Registration
 
-New users can register directly on the TUMApply portal using their email address or social login
-options. ([Video](https://live.rbg.tum.de/w/artemisintro/67995))
+New users can register directly on the TUMApply portal using their email address or social login options.
 
-## 🔐 Login
+## Login
 
 TUMApply supports **secure login** via:
 
-- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/67993))
+- TUM Single Sign-On (SSO)
 - Apple and Google
-- Email and code ([Video](https://live.rbg.tum.de/w/artemisintro/67994))
-- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/67996))
+- Email and code
+- Email and password
 
-## 🧱 Architecture Overview
+## Architecture Overview
 
 TUMApply is designed with modularity, scalability, and maintainability in mind. While it follows a monolithic
 architecture for now, clear service boundaries allow for potential migration to microservices in the future.
@@ -99,23 +92,13 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### UML Diagram
 
-![TUMApply Project Architecture UML Diagram](docs-github/architecture/tumapply-project-architecture.svg)
+![TUMApply Project Architecture UML Diagram](docs/static/img/tumapply-project-architecture.svg)
 
-## 📄 Documentation for Developers
+## Documentation
 
-If you're a developer or contributor, head over to the full documentation on our [Docusaurus site](https://ls1intum.github.io/tum-apply/developer/intro):
-
-- 📚 [Development Setup](https://ls1intum.github.io/tum-apply/developer/setup/dev-environment)
-- 💡 [General Documentation](https://ls1intum.github.io/tum-apply/developer/general/general-documentation)
-- 🧪 [Testing Guide](https://ls1intum.github.io/tum-apply/developer/testing/testing-guide)
-- 🎨 [Theming & Color Tokens](https://ls1intum.github.io/tum-apply/developer/theming/color-theming)
-- 💼 [Job Documentation](https://ls1intum.github.io/tum-apply/developer/modules/job)
-- 📝 [Application Documentation](https://ls1intum.github.io/tum-apply/developer/modules/application)
-- 📊 [Evaluation Documentation](https://ls1intum.github.io/tum-apply/developer/modules/evaluation)
-
-Full documentation is available on the [Developer Docs](https://ls1intum.github.io/tum-apply/developer/intro) site.
+Full documentation is available on the [TUMApply Docs](https://ls1intum.github.io/tum-apply/) site.
 
 ---
 
-© 2025 Technische Universität München – Built with ❤️ by the TUMApply Team at [Applied Education
+© 2026 Technische Universität München – Built with ❤️ by the TUMApply Team at [Applied Education
 Technologies (AET)](https://aet.cit.tum.de/)

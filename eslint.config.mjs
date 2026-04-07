@@ -23,7 +23,7 @@ export default [
       'docs/**',
       'gradle/**',
       'src/test/webapp/**',
-      'vite.config.ts',
+      'vitest.config.ts',
       'build/',
       '**/build/**',
       'supporting_scripts/local-pr-coverage/local-pr-coverage.mjs',
