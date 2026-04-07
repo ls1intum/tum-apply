@@ -87,7 +87,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.dependencies()).hasSize(1);
-            DependencyDTO dep = overview.dependencies().get(0);
+            DependencyDTO dep = overview.dependencies().getFirst();
             assertThat(dep.name()).isEqualTo("my-lib");
             assertThat(dep.group()).isEqualTo("org.example");
             assertThat(dep.version()).isEqualTo("1.0.0");
@@ -111,7 +111,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.dependencies()).hasSize(1);
-            assertThat(overview.dependencies().get(0).name()).isEqualTo("kept");
+            assertThat(overview.dependencies().getFirst().name()).isEqualTo("kept");
         }
 
         @Test
@@ -122,7 +122,7 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies().get(0).version()).isEqualTo("2.5.0");
+            assertThat(overview.dependencies().getFirst().version()).isEqualTo("2.5.0");
         }
 
         @Test
@@ -130,7 +130,7 @@ class DependencyServiceTest {
             writeBuildGradle("implementation 'org.example:my-lib'");
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies().get(0).version()).isEqualTo("managed");
+            assertThat(dependencyService.refresh().dependencies().getFirst().version()).isEqualTo("managed");
         }
 
         @Test
@@ -144,7 +144,7 @@ class DependencyServiceTest {
             stubOsvEmptyResponse(1);
 
             assertThat(dependencyService.refresh().dependencies()).hasSize(1);
-            assertThat(dependencyService.refresh().dependencies().get(0).name()).isEqualTo("my-lib");
+            assertThat(dependencyService.refresh().dependencies().getFirst().name()).isEqualTo("my-lib");
         }
     }
 
@@ -180,7 +180,7 @@ class DependencyServiceTest {
             );
             stubOsvEmptyResponse(1);
 
-            assertThat(dependencyService.refresh().dependencies().get(0).version()).isEqualTo(expected);
+            assertThat(dependencyService.refresh().dependencies().getFirst().version()).isEqualTo(expected);
         }
 
         @Test
@@ -192,7 +192,7 @@ class DependencyServiceTest {
             );
             stubOsvEmptyResponse(1);
 
-            DependencyDTO dep = dependencyService.refresh().dependencies().get(0);
+            DependencyDTO dep = dependencyService.refresh().dependencies().getFirst();
             assertThat(dep.group()).isEqualTo("@angular");
             assertThat(dep.name()).isEqualTo("core");
             assertThat(dep.purl()).isEqualTo("pkg:npm/@angular/core@18.0.0");
@@ -262,7 +262,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.mediumCount()).isEqualTo(1);
-            assertThat(overview.dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("MEDIUM");
+            assertThat(overview.dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo("MEDIUM");
         }
 
         @Test
@@ -281,7 +281,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.totalVulnerabilities()).isZero();
-            assertThat(overview.dependencies().get(0).vulnerabilities()).isEmpty();
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).isEmpty();
         }
 
         @Test
@@ -296,7 +296,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.dependencies()).hasSize(1);
-            assertThat(overview.dependencies().get(0).vulnerabilities()).isEmpty();
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).isEmpty();
             assertThat(overview.totalVulnerabilities()).isZero();
         }
 
@@ -318,8 +318,8 @@ class DependencyServiceTest {
 
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
-            assertThat(overview.dependencies().get(0).vulnerabilities()).hasSize(2);
-            assertThat(overview.dependencies().get(0).vulnerabilities())
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).hasSize(2);
+            assertThat(overview.dependencies().getFirst().vulnerabilities())
                 .extracting(VulnerabilityDTO::id)
                 .containsExactly("GHSA-001", "GHSA-002");
         }
@@ -338,7 +338,7 @@ class DependencyServiceTest {
                 """.formatted(vulnJson)
             );
 
-            assertThat(dependencyService.refresh().dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo(expectedSeverity);
+            assertThat(dependencyService.refresh().dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo(expectedSeverity);
         }
 
         @Test
@@ -359,7 +359,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.lowCount()).isEqualTo(1);
-            assertThat(overview.dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("LOW");
+            assertThat(overview.dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo("LOW");
         }
 
         @Test
@@ -381,7 +381,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.highCount()).isEqualTo(1);
-            assertThat(overview.dependencies().get(0).vulnerabilities().get(0).severity()).isEqualTo("HIGH");
+            assertThat(overview.dependencies().getFirst().vulnerabilities().getFirst().severity()).isEqualTo("HIGH");
         }
 
         @Test
@@ -416,7 +416,7 @@ class DependencyServiceTest {
             DependenciesOverviewDTO overview = dependencyService.refresh();
 
             assertThat(overview.dependencies()).hasSize(1);
-            assertThat(overview.dependencies().get(0).vulnerabilities()).isEmpty();
+            assertThat(overview.dependencies().getFirst().vulnerabilities()).isEmpty();
         }
 
         @Test
