@@ -139,7 +139,7 @@ describe('AdminDependenciesComponent', () => {
     it('should call getOverview on construction and populate the overview signal', async () => {
       await Promise.resolve();
 
-      expect(mockDependencyApi.getOverview).toHaveBeenCalled();
+      expect(mockDependencyApi.getOverview).toHaveBeenCalledOnce();
       expect(component.dependenciesOverview()).toEqual(mockOverview);
     });
 
@@ -165,7 +165,7 @@ describe('AdminDependenciesComponent', () => {
 
       await component.refreshVulnerabilities();
 
-      expect(mockDependencyApi.refresh).toHaveBeenCalled();
+      expect(mockDependencyApi.refresh).toHaveBeenCalledOnce();
       expect(component.dependenciesOverview()).toEqual(refreshedOverview);
       expect(component.isRefreshing()).toBe(false);
     });
@@ -480,7 +480,7 @@ describe('AdminDependenciesComponent', () => {
       component.downloadDependencies();
 
       expect(createElementSpy).toHaveBeenCalledWith('a');
-      expect(revokeObjectURLSpy).toHaveBeenCalled();
+      expect(revokeObjectURLSpy).toHaveBeenCalledOnce();
 
       createElementSpy.mockRestore();
       revokeObjectURLSpy.mockRestore();
