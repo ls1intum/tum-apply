@@ -12,7 +12,6 @@ import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock 
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
-import { Sort } from 'app/shared/components/atoms/sorting/sorting';
 
 /** Helper to build a DependencyDTO with defaults. */
 function dep(overrides: Partial<DependencyDTO> & Pick<DependencyDTO, 'name'>): DependencyDTO {
