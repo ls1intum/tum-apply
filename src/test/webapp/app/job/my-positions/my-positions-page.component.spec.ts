@@ -6,14 +6,14 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { MyPositionsPageComponent } from 'app/job/my-positions/my-positions-page.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { CreatedJobDTO } from 'app/generated/model/createdJobDTO';
-import { PageCreatedJobDTO } from 'app/generated/model/pageCreatedJobDTO';
+import { CreatedJobDTO, CreatedJobDTOStateEnum } from 'app/generated/model/created-job-dto';
+import { PageCreatedJobDTO } from 'app/generated/model/page-created-job-dto';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import {
-  createJobResourceApiServiceMock,
-  JobResourceApiServiceMock,
-  provideJobResourceApiServiceMock,
+  createJobResourceApiMock,
+  JobResourceApiMock,
+  provideJobResourceApiMock,
 } from 'src/test/webapp/util/job-resource-api.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
@@ -24,20 +24,20 @@ describe('MyPositionsPageComponent', () => {
   let accountService: Mocked<AccountService>;
   let router: Mocked<Router>;
 
-  let mockJobService: JobResourceApiServiceMock;
+  let mockJobApi: JobResourceApiMock;
 
   let mockToastService: ReturnType<typeof createToastServiceMock>;
 
   beforeEach(async () => {
-    mockJobService = createJobResourceApiServiceMock();
-    mockJobService.getJobsForCurrentResearchGroup.mockReturnValue(
+    mockJobApi = createJobResourceApiMock();
+    mockJobApi.getJobsForCurrentResearchGroup.mockReturnValue(
       of<PageCreatedJobDTO>({
-        content: [{ jobId: '1', title: 'Job A', state: 'DRAFT' } as CreatedJobDTO],
+        content: [{ jobId: '1', title: 'Job A', state: CreatedJobDTOStateEnum.Draft } as CreatedJobDTO],
         totalElements: 1,
       }),
     );
-    mockJobService.deleteJob.mockReturnValue(of({}));
-    mockJobService.changeJobState.mockReturnValue(of({}));
+    mockJobApi.deleteJob.mockReturnValue(of({}));
+    mockJobApi.changeJobState.mockReturnValue(of({}));
 
     mockToastService = createToastServiceMock();
 
@@ -53,7 +53,7 @@ describe('MyPositionsPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MyPositionsPageComponent, TranslateModule.forRoot()],
       providers: [
-        provideJobResourceApiServiceMock(mockJobService),
+        provideJobResourceApiMock(mockJobApi),
         { provide: AccountService, useValue: accountService },
         { provide: Router, useValue: router },
         provideToastServiceMock(mockToastService),
@@ -158,7 +158,7 @@ describe('MyPositionsPageComponent', () => {
     it('should handle filterEmit for status', async () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.onFilterEmit({ filterId: 'status', selectedValues: ['jobState.draft'] });
-      expect(component.selectedStatusFilters()).toContain('DRAFT');
+      expect(component.selectedStatusFilters()).toContain(CreatedJobDTOStateEnum.Draft);
       expect(loadSpy).toHaveBeenCalled();
     });
 
@@ -220,13 +220,13 @@ describe('MyPositionsPageComponent', () => {
   describe('Load Jobs', () => {
     it('should load jobs successfully', async () => {
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-      expect(mockJobService.getJobsForCurrentResearchGroup).toHaveBeenCalled();
+      expect(mockJobApi.getJobsForCurrentResearchGroup).toHaveBeenCalled();
       expect(component.jobs().length).toBe(1);
       expect(component.totalRecords()).toBe(1);
     });
 
     it('should handle loadJobs API error', async () => {
-      mockJobService.getJobsForCurrentResearchGroup.mockReturnValueOnce(throwError(() => new Error('fail')));
+      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(throwError(() => new Error('fail')));
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobs');
     });
@@ -237,7 +237,7 @@ describe('MyPositionsPageComponent', () => {
         email: '',
         name: '',
       });
-      const spy = vi.spyOn(mockJobService, 'getJobsForCurrentResearchGroup');
+      const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
       spy.mockClear();
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
       expect(spy).not.toHaveBeenCalled();
@@ -245,7 +245,7 @@ describe('MyPositionsPageComponent', () => {
 
     it('should set userId to empty string when loadedUser returns undefined', async () => {
       vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined);
-      const spy = vi.spyOn(mockJobService, 'getJobsForCurrentResearchGroup');
+      const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
       spy.mockClear();
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
       expect(component.userId()).toBe('');
@@ -258,7 +258,7 @@ describe('MyPositionsPageComponent', () => {
         email: '',
         name: '',
       });
-      mockJobService.getJobsForCurrentResearchGroup.mockReturnValueOnce(
+      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
         of<PageCreatedJobDTO>({
           content: undefined,
           totalElements: undefined,
@@ -276,14 +276,14 @@ describe('MyPositionsPageComponent', () => {
         name: 'User',
         email: '',
       });
-      component.selectedStatusFilters.set(['PUBLISHED']);
+      component.selectedStatusFilters.set([CreatedJobDTOStateEnum.Published]);
 
       const mockResponse: PageCreatedJobDTO = {
-        content: [{ jobId: '123', title: 'Job Filtered', state: 'PUBLISHED' } as CreatedJobDTO],
+        content: [{ jobId: '123', title: 'Job Filtered', state: CreatedJobDTOStateEnum.Published } as CreatedJobDTO],
         totalElements: 1,
       };
 
-      const spy = vi.spyOn(mockJobService, 'getJobsForCurrentResearchGroup');
+      const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
       spy.mockReturnValue(of(mockResponse));
 
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
@@ -291,7 +291,7 @@ describe('MyPositionsPageComponent', () => {
       expect(spy).toHaveBeenCalledWith(
         component.pageSize(),
         component.page(),
-        ['PUBLISHED'],
+        [CreatedJobDTOStateEnum.Published],
         component.sortBy(),
         component.sortDirection(),
         component.searchQuery(),
@@ -302,12 +302,12 @@ describe('MyPositionsPageComponent', () => {
     it('should update job order when sorted by title', async () => {
       vi.spyOn(accountService, 'loadedUser').mockReturnValue({ id: 'u1', name: 'User', email: '' });
 
-      mockJobService.getJobsForCurrentResearchGroup.mockReturnValueOnce(
+      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
         of<PageCreatedJobDTO>({
           content: [
-            { jobId: '2', title: 'Zebra', state: 'PUBLISHED' } as CreatedJobDTO,
-            { jobId: '1', title: 'Alpha', state: 'DRAFT' } as CreatedJobDTO,
-            { jobId: '3', title: 'Monkey', state: 'CLOSED' } as CreatedJobDTO,
+            { jobId: '2', title: 'Zebra', state: CreatedJobDTOStateEnum.Published } as CreatedJobDTO,
+            { jobId: '1', title: 'Alpha', state: CreatedJobDTOStateEnum.Draft } as CreatedJobDTO,
+            { jobId: '3', title: 'Monkey', state: CreatedJobDTOStateEnum.Closed } as CreatedJobDTO,
           ],
           totalElements: 3,
         }),
@@ -316,12 +316,12 @@ describe('MyPositionsPageComponent', () => {
       expect(component.jobs().map(j => j.title)).toEqual(['Zebra', 'Alpha', 'Monkey']);
 
       component.loadOnSortEmit({ field: 'title', direction: 'ASC' });
-      mockJobService.getJobsForCurrentResearchGroup.mockReturnValueOnce(
+      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
         of<PageCreatedJobDTO>({
           content: [
-            { jobId: '1', title: 'Alpha', state: 'DRAFT' } as CreatedJobDTO,
-            { jobId: '3', title: 'Monkey', state: 'CLOSED' } as CreatedJobDTO,
-            { jobId: '2', title: 'Zebra', state: 'PUBLISHED' } as CreatedJobDTO,
+            { jobId: '1', title: 'Alpha', state: CreatedJobDTOStateEnum.Draft } as CreatedJobDTO,
+            { jobId: '3', title: 'Monkey', state: CreatedJobDTOStateEnum.Closed } as CreatedJobDTO,
+            { jobId: '2', title: 'Zebra', state: CreatedJobDTOStateEnum.Published } as CreatedJobDTO,
           ],
           totalElements: 3,
         }),
@@ -335,13 +335,13 @@ describe('MyPositionsPageComponent', () => {
     it('should delete job successfully', async () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       await component.onDeleteJob('1');
-      expect(mockJobService.deleteJob).toHaveBeenCalledWith('1');
+      expect(mockJobApi.deleteJob).toHaveBeenCalledWith('1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalled();
       expect(loadSpy).toHaveBeenCalled();
     });
 
     it('should handle delete job error', async () => {
-      vi.spyOn(mockJobService, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
+      vi.spyOn(mockJobApi, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
       await component.onDeleteJob('1');
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
         'myPositionsPage.toastMessages.deleteJobFailed',
@@ -352,13 +352,13 @@ describe('MyPositionsPageComponent', () => {
     it('should close job successfully', async () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       await component.onCloseJob('1');
-      expect(mockJobService.changeJobState).toHaveBeenCalledWith('1', 'CLOSED');
+      expect(mockJobApi.changeJobState).toHaveBeenCalledWith('1', CreatedJobDTOStateEnum.Closed);
       expect(mockToastService.showSuccessKey).toHaveBeenCalled();
       expect(loadSpy).toHaveBeenCalled();
     });
 
     it('should handle close job error', async () => {
-      vi.spyOn(mockJobService, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
+      vi.spyOn(mockJobApi, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
       await component.onCloseJob('1');
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
         'myPositionsPage.toastMessages.closeJobFailed',
@@ -425,7 +425,7 @@ describe('MyPositionsPageComponent', () => {
 
   describe('Job Menu Items', () => {
     it('should build edit/delete menu items for draft jobs', () => {
-      component.jobs.set([{ jobId: '1', state: 'DRAFT', title: 'Draft' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '1', state: CreatedJobDTOStateEnum.Draft, title: 'Draft' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('1') ?? [];
       const labels = items.map(item => item.label);
@@ -435,7 +435,7 @@ describe('MyPositionsPageComponent', () => {
 
     it('should invoke edit command for draft jobs', () => {
       const editSpy = vi.spyOn(component, 'onEditJob');
-      component.jobs.set([{ jobId: '1', state: 'DRAFT', title: 'Draft' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '1', state: CreatedJobDTOStateEnum.Draft, title: 'Draft' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('1') ?? [];
       items[0]?.command?.();
@@ -444,7 +444,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should set showEditPublishedDialog to true for published jobs', () => {
-      component.jobs.set([{ jobId: '2', state: 'PUBLISHED', title: 'Published' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '2', state: CreatedJobDTOStateEnum.Published, title: 'Published' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('2') ?? [];
       items[0]?.command?.();
@@ -454,7 +454,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should set showDeleteDialog to true for draft jobs', () => {
-      component.jobs.set([{ jobId: '4', state: 'DRAFT', title: 'Draft' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '4', state: CreatedJobDTOStateEnum.Draft, title: 'Draft' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('4') ?? [];
       items[1]?.command?.();
@@ -464,7 +464,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should set showCloseDialog to true for published jobs', () => {
-      component.jobs.set([{ jobId: '5', state: 'PUBLISHED', title: 'Published' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '5', state: CreatedJobDTOStateEnum.Published, title: 'Published' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('5') ?? [];
       items[1]?.command?.();
@@ -474,7 +474,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should build edit/close menu items for published jobs', () => {
-      component.jobs.set([{ jobId: '2', state: 'PUBLISHED', title: 'Published' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '2', state: CreatedJobDTOStateEnum.Published, title: 'Published' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('2') ?? [];
       const labels = items.map(item => item.label);
@@ -483,7 +483,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should omit menu items for closed jobs', () => {
-      component.jobs.set([{ jobId: '3', state: 'CLOSED', title: 'Closed' } as CreatedJobDTO]);
+      component.jobs.set([{ jobId: '3', state: CreatedJobDTOStateEnum.Closed, title: 'Closed' } as CreatedJobDTO]);
 
       const items = component.jobMenuItems().get('3') ?? [];
 

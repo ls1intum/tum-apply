@@ -6,11 +6,24 @@
         "edit": "Edit the Current Doctorate Position"
       },
       "steps": {
-        "basicInfo": "Basic Information",
-        "employmentTerms": "Employment Terms",
-        "imageSelection": "Banner Image",
-        "additionalInfo": "Additional Information",
-        "summary": "Summary"
+        "basicInfo": {
+          "name": "Basic Information",
+          "description": "Provide the key details of the position and add a clear description."
+        },
+        "employmentTerms": {
+          "name": "Employment Terms",
+          "description": "Provide the employment information."
+        },
+        "imageSelection": {
+          "name": "Banner Image",
+          "description": "Select an optional banner image for the position card from the default images or your research group’s image collection."
+        },
+        "additionalInfo": {
+          "name": "Additional Information"
+        },
+        "summary": {
+          "name": "Summary"
+        }
       },
       "basicInfo": {
         "section1": "Overview",
@@ -18,14 +31,14 @@
       }
     },
     "basicInformationSection": {
-      "description": "Provide the key details about the doctoral position, such as title, subject area, and supervising professor.",
+      "description": "Provide the key details of the position and add a clear description.",
       "jobTitle": {
         "label": "Job Title",
         "placeholder": "e.g. Doctoral Position in Robotics"
       },
       "researchArea": {
         "label": "Research Area",
-        "placeholder": "e.g. Machine Learning, Human-Computer Interaction",
+        "placeholder": "e.g. Machine Learning",
         "toolTipText": "Specify the main Research Area the doctoral position focuses on."
       },
       "subjectArea": {
@@ -104,17 +117,17 @@
       },
       "applicationDeadline": {
         "label": "Application Deadline",
-        "placeholder": "Select an Application Deadline...",
+        "placeholder": "Choose an Application Deadline...",
         "toolTipText": "After this date, applying is no longer possible."
       },
       "workload": {
         "label": "Workload",
-        "placeholder": "Specify the Workload (in h/week)...",
+        "placeholder": "e.g. 20 h/week",
         "toolTipText": "Indicate the expected workload for the doctoral position in hours per week (e.g. 20). You can enter up to 40 h/week."
       },
       "contractDuration": {
         "label": "Contract Duration",
-        "placeholder": "Specify the Contract Duration (in years)...",
+        "placeholder": "e.g. 3 years",
         "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
       },
       "fundingType": {
@@ -131,10 +144,14 @@
         "PartiallyFunded": "Partially Funded"
       }
     },
+    "aiSidebar": {
+      "header": "AI-Assistant"
+    },
     "positionDetailsSection": {
-      "languageInfo": "Please choose and write the job description in either English or German:<br><b>AI enabled:</b> The translation is generated automatically and can then be reviewed or edited.<br><b>AI disabled:</b> The translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
+      "languageInfo": "Please choose and write the job description in either English or German:<br><b>AI enabled:</b> The AI Assistant helps you draft your job description and the translation is generated automatically.<br><b>AI disabled:</b> The AI Assistant is not available and the translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
       "jobDescription": {
         "label": "Job Description",
+        "aiLabel": "AI writes, improves and translates for you.",
         "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Use the template above to structure your job description clearly for applicants.",
@@ -147,14 +164,38 @@
         "aiHelperText": "Specify the most important information and let TUMApply AI write it for you.",
         "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
+        "aiScoreTitle": "Inclusivity Score",
+        "aiScoreDialog": {
+          "title": "How the Inclusivity Score is calculated",
+          "summary": "Calculation factors",
+          "explanation": "The score combines wording analysis, tone evaluation, and balanced weighting.",
+          "section1": {
+            "title": "Word Choice",
+            "body": "The system analyzes your text for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
+          },
+          "section2": {
+            "title": "Overall Impression",
+            "body": "A neutral tone yields the best result, while biased language leads to deductions."
+          },
+          "section3": {
+            "title": "Balanced Rating",
+            "body": "The score is weighted to ensure that individual, poorly chosen words do not disproportionately affect your final result."
+          }
+        },
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
         "languageGerman": "German",
-        "translating": "Translating..."
+        "translating": "Translating...",
+        "aiScoreFeedback": {
+          "critical": "Your posting may come across as exclusionary to many strong candidates. Rework wording and requirements to make them more inclusive.",
+          "warning": "Your job could be more inclusive. Job descriptions with a higher score attract more diverse applicants and get more responses.",
+          "good": "This is already a solid foundation. Your posting is inclusive and reaches many candidates. With a few targeted refinements, it can perform even better.",
+          "excellent": "A very well-written and inviting job posting! Your posting is very welcoming and appeals to a broad and diverse range of applicants."
+        }
       }
     },
     "imageSection": {
-      "description": "Select an optional banner image that will be displayed in your position card. Choose from default images or use your research group's image library.",
+      "description": "Select an optional banner image for the position card from the default images or your research group’s image collection.",
       "defaultImages": "Default Images",
       "orDivider": "or",
       "researchGroupImages": "Image Collection",
@@ -258,6 +299,10 @@
       "viewJobDetails": "View details for {{title}}"
     },
     "hoursPerWeek": "{{workload}} h/week",
+    "notificationsCta": {
+      "text": "No suitable job? Receive {{link}}.",
+      "link": "notifications"
+    },
     "errors": {
       "loadFilter": {
         "summary": "Error",

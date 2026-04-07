@@ -1,8 +1,10 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -43,7 +46,7 @@ public class AiResource {
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {
-        log.info("PUT /api/ai/generateJobDescriptionStream - Streaming request received (lang={})", descriptionLanguage);
+        log.info("PUT /api/ai/generateJobApplicationDraftStream - Streaming request received (lang={})", descriptionLanguage);
         return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage);
     }
 
@@ -66,6 +69,24 @@ public class AiResource {
     ) {
         log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
         return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, text));
+    }
+
+    /**
+     * Extracts applicant data from a PDF file using AI and persists the extracted
+     * values into the application entity.
+     *
+     * @param applicationId the ID of the application to update
+     * @param docId         the ID of the document dictionary entry for the PDF
+     * @return a ResponseEntity containing the extracted data
+     */
+    @ApplicantOrAdmin
+    @PutMapping(value = "extractPdfData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
+        @RequestParam("applicationId") String applicationId,
+        @RequestParam("docId") String docId
+    ) {
+        log.info("PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
+        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docId));
     }
 
     /**

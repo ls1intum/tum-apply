@@ -4,8 +4,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
-import { InterviewResourceApiService, ApplicationEvaluationResourceApiService } from 'app/generated';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
+import { IntervieweeDTO, IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -13,21 +14,21 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 const uncontactedInterviewee: IntervieweeDTO = {
   id: 'iee-1',
   applicationId: 'app-1',
-  state: 'UNCONTACTED',
+  state: IntervieweeDTOStateEnum.Uncontacted,
   user: { userId: 'u1', firstName: 'Alice', lastName: 'Mueller', email: 'alice@example.com' },
 };
 
 const invitedInterviewee: IntervieweeDTO = {
   id: 'iee-2',
   applicationId: 'app-2',
-  state: 'INVITED',
+  state: IntervieweeDTOStateEnum.Invited,
   user: { userId: 'u2', firstName: 'Bob', lastName: 'Schmidt', email: 'bob@example.com' },
 };
 
 const scheduledInterviewee: IntervieweeDTO = {
   id: 'iee-3',
   applicationId: 'app-3',
-  state: 'SCHEDULED',
+  state: IntervieweeDTOStateEnum.Scheduled,
   user: { userId: 'u3', firstName: 'Charlie', lastName: 'Brown', email: 'charlie@example.com' },
   scheduledSlot: {
     id: 'slot-1',
@@ -42,8 +43,8 @@ const allInterviewees = [uncontactedInterviewee, invitedInterviewee, scheduledIn
 describe('IntervieweeSectionComponent', () => {
   let fixture: ComponentFixture<IntervieweeSectionComponent>;
   let component: IntervieweeSectionComponent;
-  let mockInterviewService: Partial<InterviewResourceApiService>;
-  let mockApplicationService: Partial<ApplicationEvaluationResourceApiService>;
+  let mockInterviewService: Partial<InterviewResourceApi>;
+  let mockApplicationService: Partial<ApplicationEvaluationResourceApi>;
   let toastMock: ToastServiceMock;
 
   beforeEach(async () => {
@@ -64,8 +65,8 @@ describe('IntervieweeSectionComponent', () => {
         provideTranslateMock(),
         provideToastServiceMock(toastMock),
         provideFontAwesomeTesting(),
-        { provide: InterviewResourceApiService, useValue: mockInterviewService },
-        { provide: ApplicationEvaluationResourceApiService, useValue: mockApplicationService },
+        { provide: InterviewResourceApi, useValue: mockInterviewService },
+        { provide: ApplicationEvaluationResourceApi, useValue: mockApplicationService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -118,9 +119,9 @@ describe('IntervieweeSectionComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.setFilter('UNCONTACTED');
+      component.setFilter(IntervieweeDTOStateEnum.Uncontacted);
       expect(component.filteredInterviewees().length).toBe(1);
-      expect(component.filteredInterviewees()[0].state).toBe('UNCONTACTED');
+      expect(component.filteredInterviewees()[0].state).toBe(IntervieweeDTOStateEnum.Uncontacted);
     });
 
     it('should return all interviewees when filter is ALL', async () => {

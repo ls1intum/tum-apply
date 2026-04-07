@@ -1,0 +1,51 @@
+<div class="flex flex-col gap-3">
+  <div class="relative">
+    <jhi-filter-multiselect
+      class="[&_.filter-button]:justify-between [&_.filter-trigger]:min-w-0 [&_.filter-trigger]:flex-1 [&_.trigger-placeholder]:hidden [&_.trigger-summary]:hidden [&_.chip-row]:hidden [&_.filter-icon]:ml-auto [&_.filter-icon]:shrink-0 [&_.filter-button:hover]:border-[--color-border-hover] [&_.selected-chips-list]:!hidden"
+      filterId="subject-areas"
+      [filterLabel]="'settings.notifications.applicant.subjectAreas.placeholder'"
+      [filterSearchPlaceholder]="'settings.notifications.applicant.subjectAreas.filterPlaceholder'"
+      [filterOptions]="filterOptions()"
+      [selectedValuesInput]="selectedValues()"
+      [shouldTranslateOptions]="true"
+      [showSelectedChipsInTrigger]="false"
+      (filterChange)="onFilterChange($event)"
+    />
+    <div
+      class="pointer-events-none absolute inset-y-1/2 left-3 right-8 -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap text-[length:var(--p-select-sm-font-size)] text-text-secondary"
+      aria-hidden="true"
+    >
+      {{ 'settings.notifications.applicant.subjectAreas.placeholder' | translate }}
+    </div>
+  </div>
+
+  @if (!isDropdownOpen() && selectedOptions().length) {
+    <div class="flex flex-wrap gap-1">
+      @for (subjectArea of selectedOptions(); track subjectArea.value) {
+        <div
+          class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[--color-border-hover]"
+        >
+          <span [jhiTranslate]="subjectArea.name"></span>
+          <span class="flex items-center">
+            <button
+              type="button"
+              class="inline-flex size-3 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-background-surface-alt hover:text-primary"
+              [attr.aria-label]="
+                'settings.notifications.applicant.subjectAreas.removeLabel'
+                  | translate
+                    : {
+                        subjectArea: (subjectArea.name | translate),
+                      }
+              "
+              (click)="onRemoveSubjectArea(subjectArea.value)"
+            >
+              <fa-icon class="text-sm" [icon]="['fas', 'xmark']" />
+            </button>
+          </span>
+        </div>
+      }
+    </div>
+  } @else if (!isDropdownOpen()) {
+    <p class="text-text-secondary" jhiTranslate="settings.notifications.applicant.subjectAreas.emptySelection"></p>
+  }
+</div>

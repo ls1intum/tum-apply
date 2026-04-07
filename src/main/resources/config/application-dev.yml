@@ -52,8 +52,9 @@ spring:
       chat:
         completions-path: /v1/chat/completions
         options:
-          model: openai/gpt-oss-20b
+          model: google/gemma-3-12b
           temperature: 0.0
+          max-tokens: 2000
 springdoc:
   api-docs:
     enabled: true

@@ -11,6 +11,7 @@ import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 import importPlugin from 'eslint-plugin-import';
+import localRulesPlugin from './rules/index.mjs';
 
 // jhipster-needle-eslint-add-import - JHipster will add additional import here
 
@@ -22,7 +23,7 @@ export default [
       'docs/**',
       'gradle/**',
       'src/test/webapp/**',
-      'vite.config.ts',
+      'vitest.config.ts',
       'build/',
       '**/build/**',
       'supporting_scripts/local-pr-coverage/local-pr-coverage.mjs',
@@ -115,6 +116,7 @@ export default [
         '@typescript-eslint': tsPlugin,
         prettier: prettierPlugin,
         'unused-imports': unusedImports,
+        localRules: localRulesPlugin,
       },
       processor: angular.processInlineTemplates,
       rules: {
@@ -227,6 +229,7 @@ export default [
             argsIgnorePattern: '^_',
           },
         ],
+        'localRules/enforce-signal-apis': 'error',
       },
     },
 

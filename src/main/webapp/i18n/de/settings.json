@@ -25,24 +25,51 @@
     },
 
     "notifications": {
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der Benachrichtigungseinstellungen. Bitte versuche es erneut."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Aktualisieren der Benachrichtigungseinstellungen. Bitte versuche es erneut."
+      },
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",
-          "description": "Erhalte eine Bestätigung per E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
+          "description": "Erhalte eine E-Mail, wenn du eine Bewerbung einreichst oder zurückziehst."
         },
         "outcome": {
           "title": "Bewerbungsergebnis",
-          "description": "Du wirst per E-Mail benachrichtigt, wenn deine Bewerbung angenommen oder abgelehnt wurde."
+          "description": "Erhalte eine E-Mail, wenn deine Bewerbung angenommen oder abgelehnt wird."
+        },
+        "subjectAreas": {
+          "title": "Stellenausschreibungen",
+          "description": "Erhalte E-Mails über neue Stellenausschreibungen. Nach der Aktivierung kannst du deine bevorzugten Fachbereiche auswählen.",
+          "placeholder": "Fachbereiche hinzufügen",
+          "filterPlaceholder": "Fachbereich suchen...",
+          "removeLabel": "{{subjectArea}} entfernen",
+          "selectedCount": "{{count}} ausgewählt",
+          "empty": "Keine Fachbereiche verfügbar.",
+          "emptyFilter": "Keine Fachbereiche für diese Suche gefunden.",
+          "emptySelection": "Noch keine Fachbereiche ausgewählt.",
+          "loadFailed": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Fehler beim Laden der Fachbereich-Abonnements. Bitte versuche es erneut."
+          },
+          "saveFailed": {
+            "summary": "Speichern fehlgeschlagen",
+            "detail": "Fehler beim Aktualisieren der Fachbereich-Abonnements. Bitte versuche es erneut."
+          }
         }
       },
       "professor": {
         "new": {
           "title": "Neue Bewerbungen",
-          "description": "Du wirst per E-Mail benachrichtigt, wenn eine neue Bewerbung für deine Stelle eingeht."
+          "description": "Erhalte eine E-Mail, wenn eine neue Bewerbung für deine Stelle eingeht."
         },
         "accepted": {
-          "title": "Bewerbung angenommen (BCC)",
-          "description": "Erhalte eine Kopie per E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
+          "title": "Bewerbung angenommen",
+          "description": "Erhalte eine Kopie der Annahme-E-Mail, die an den Bewerber gesendet wird, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
     },

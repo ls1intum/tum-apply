@@ -18,11 +18,11 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { ThemeService } from 'app/service/theme.service';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectOption } from '../../atoms/select/select.component';
@@ -101,9 +101,9 @@ export class HeaderComponent {
   isProfessorPage = computed(() => {
     const auths = this.routeAuthorities();
     return (
-      (this.router.url === '/professor' && !this.accountService.hasAnyAuthority(['APPLICANT'])) ||
-      this.accountService.hasAnyAuthority(['PROFESSOR']) ||
-      (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
+      (this.router.url === '/professor' && !this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant])) ||
+      this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor]) ||
+      (Array.isArray(auths) && auths.includes(UserShortDTORolesEnum.Professor))
     );
   });
 
@@ -167,7 +167,7 @@ export class HeaderComponent {
   }
 
   navigateToHome(): void {
-    if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
+    if (this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor]) || this.router.url === '/professor') {
       this.redirectToProfessorLandingPage();
     } else {
       this.redirectToApplicantLandingPage();

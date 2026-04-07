@@ -2,20 +2,22 @@ import { Component, ViewEncapsulation, computed, input, output } from '@angular/
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
-import { BiasedWordDTO, GenderBiasAnalysisResponse } from 'app/generated';
+import { BiasedWordDTO } from 'app/generated/model/biased-word-dto';
+import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 @Component({
   selector: 'jhi-gender-bias-analysis-dialog',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DialogModule, FontAwesomeModule, TooltipModule],
+  imports: [CommonModule, TranslateModule, DialogModule, FontAwesomeModule, TooltipModule, InfoBoxComponent],
   templateUrl: './gender-bias-analysis-dialog.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class GenderBiasAnalysisDialogComponent {
   visible = input.required<boolean>();
-  result = input<GenderBiasAnalysisResponse | null>(null);
+  result = input<GenderBiasAnalysisResponse | undefined>(undefined);
 
   visibleChange = output<boolean>();
   closeDialog = output();

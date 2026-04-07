@@ -10,22 +10,23 @@
 <!-- If it's only a small change, testing it locally is acceptable, and you may remove the first checkmark. If you are unsure, please test on the test servers. -->
 
 - [ ] I tested **all** changes and their related features with **all** corresponding user types.
-- [ ] Language: I followed the [guidelines for inclusive, diversity-sensitive, and appreciative language](https://confluence.aet.cit.tum.de/spaces/AP/pages/257786006/Language+Guidelines+Client).
-- [ ] I chose a title conforming to the [naming conventions for pull requests](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311714/PR+Guidelines).
+- [ ] Language: I followed the [guidelines for inclusive, diversity-sensitive, and appreciative language](https://ls1intum.github.io/tum-apply/developer/client-guidelines/language-guidelines).
+- [ ] I chose a title conforming to the [naming conventions for pull requests](https://ls1intum.github.io/tum-apply/developer/general-guidelines/pull-request-guidelines).
 
 #### Server
 
-- [ ] **Important**: I implemented the changes with a [very good performance](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311718/Performance+Guidelines) and prevented too many (unnecessary) and too complex database calls.
+- [ ] **Important**: I implemented the changes with a [very good performance](https://ls1intum.github.io/tum-apply/developer/server-guidelines/database-and-performance) and prevented too many (unnecessary) and too complex database calls.
 - [ ] I **strictly** followed the principle of **data economy** for all database calls.
-- [ ] I **strictly** followed the [server coding and design guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311877/Server+Guidelines).
+- [ ] I **strictly** followed the [server coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-development).
+- [ ] I added multiple server tests (JUnit) related to the features (with a high test coverage), while following the [server test guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-tests).
 - [ ] I documented the Java code using JavaDoc style.
 
 #### Client
 
 - [ ] **Important**: I implemented the changes with a very good performance, prevented too many (unnecessary) REST calls and made sure the UI is responsive, even with large data (e.g. using paging).
 - [ ] I **strictly** followed the principle of **data economy** for all client-server REST calls.
-- [ ] I **strictly** followed the [client coding and design guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311716/Client+Guidelines).
-- [ ] I added multiple integration tests (Vitest) related to the features (with a high test coverage), while following the [test guidelines](https://confluence.aet.cit.tum.de/spaces/AP/pages/256311925/Client+Test+Guidelines).
+- [ ] I **strictly** followed the [client coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-development).
+- [ ] I added multiple integration tests (Vitest) related to the features (with a high test coverage), while following the [client test guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-tests).
 - [ ] I documented the TypeScript code using JSDoc style.
 - [ ] I added multiple screenshots/screencasts of my UI changes.
 
@@ -62,21 +63,13 @@ Prerequisites:
 
 - [ ] Test 1
 
-### Test Coverage
-
-<!-- Please add the test coverages for all changed files modified in this PR here. -->
-<!-- You can execute the tests locally (see build.gradle and package.json) or look into the corresponding artefacts. -->
-<!-- The line coverage must be above 90% for changes files, and you must use extensive and useful assertions for server tests and expect statements for client tests. -->
-<!-- Note: Confirm in the last column that you have implemented extensive assertions for server tests and expect statements for client tests. -->
-<!--       Remove rows with only trivial changes from the table. -->
-<!--
-| Class/File | Line Coverage | Confirmation (assert/expect) |
-|------------|--------------:|-----------------------------:|
-| ExerciseService.java | 85% | ✅                           |
-| programming-exercise.component.ts | 95% | ✅              |
--->
-
 ### Screenshots
 
 <!-- Add screenshots to demonstrate the changes in the UI. Remove the section if you did not change the UI. -->
 <!-- Create a GIF file from a screen recording in a docker container https://toub.es/2017/09/11/high-quality-gif-with-ffmpeg-and-docker/ -->
+
+### Test Coverage
+
+<!-- This section is automatically updated by the PR Coverage Reporter workflow after the PR check completes. -->
+<!-- You can also generate the coverage table locally by running `npm run coverage:pr` (see supporting_scripts/local-pr-coverage/README.md). -->
+<!-- The line coverage must be above 80% for changed files, and you must use extensive and useful assertions for server tests and expect statements for client tests. -->

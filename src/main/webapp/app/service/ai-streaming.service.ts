@@ -1,18 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
-import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { JobFormDTO } from 'app/generated/model/job-form-dto';
 
 /**
  * Service for streaming AI responses using Server-Sent Events (SSE).
  * This service provides real-time streaming capabilities that the generated
- * AiResourceApiService cannot provide due to HttpClient limitations.
+ * AiResourceApi cannot provide due to HttpClient limitations.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class AiStreamingService {
   private keycloakService = inject(KeycloakAuthenticationService);
-  // TODO: Check if streaming can be implemented in the generated AiResourceApiService and remove this service if so.
+  // TODO: Check if streaming can be implemented in the generated AiResourceApi and remove this service if so.
   /**
    * Generates a job application draft using streaming SSE.
    * Calls the provided callback for each chunk received, allowing real-time UI updates.

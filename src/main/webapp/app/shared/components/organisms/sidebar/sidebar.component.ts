@@ -1,11 +1,11 @@
 import { Component, inject, input, output } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { SidebarButtonComponent } from '../../atoms/sidebar-button/sidebar-button.component';
 import TranslateDirective from '../../../language/translate.directive';
@@ -44,9 +44,9 @@ export class SidebarComponent {
     const authorities = this.accountService.user()?.authorities;
     return authorities
       ?.map((authority: string) =>
-        authority === 'PROFESSOR' || authority === 'EMPLOYEE'
+        authority === UserShortDTORolesEnum.Professor || authority === UserShortDTORolesEnum.Employee
           ? categoryConfig.PROFESSOR_EMPLOYEE
-          : categoryConfig[authority as UserShortDTO.RolesEnum],
+          : categoryConfig[authority as UserShortDTORolesEnum],
       )
       .flat();
   }
@@ -157,7 +157,10 @@ export class SidebarComponent {
         },
         {
           title: 'sidebar.system.system',
-          buttons: [{ icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' }],
+          buttons: [
+            { icon: 'cubes', text: 'sidebar.system.dependencies', link: '/dependencies' },
+            { icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' },
+          ],
         },
       ],
     };

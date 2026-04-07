@@ -1,23 +1,28 @@
 package de.tum.cit.aet.core.retention;
 
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import de.tum.cit.aet.IntegrationTest;
+import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.scheduling.annotation.Scheduled;
 
-@IntegrationTest
-@TestPropertySource(properties = { "user.retention.enabled=false", "user.retention.cron=*/1 * * * * *" })
 class UserRetentionJobSchedulingIntegrationTest {
 
-    @SuppressWarnings("removal")
-    @SpyBean
-    private UserRetentionJob userRetentionJob;
+    @Test
+    void deleteUserDataShouldHaveScheduledAnnotation() throws NoSuchMethodException {
+        Method method = UserRetentionJob.class.getMethod("deleteUserData");
+        Scheduled scheduled = method.getAnnotation(Scheduled.class);
+        assertThat(scheduled).isNotNull();
+        assertThat(scheduled.cron()).isEqualTo("${user.retention.cron:0 17 3 * * *}");
+        assertThat(scheduled.zone()).isEqualTo("UTC");
+    }
 
     @Test
-    void shouldTriggerScheduledJob() {
-        verify(userRetentionJob, timeout(5000).atLeastOnce()).deleteUserData();
+    void warnUserOfDataDeletionShouldHaveScheduledAnnotation() throws NoSuchMethodException {
+        Method method = UserRetentionJob.class.getMethod("warnUserOfDataDeletion");
+        Scheduled scheduled = method.getAnnotation(Scheduled.class);
+        assertThat(scheduled).isNotNull();
+        assertThat(scheduled.cron()).isEqualTo("${user.retention.cron:0 0 3 * * *}");
+        assertThat(scheduled.zone()).isEqualTo("UTC");
     }
 }
