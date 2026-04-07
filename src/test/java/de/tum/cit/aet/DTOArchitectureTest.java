@@ -277,7 +277,6 @@ class DTOArchitectureTest {
      */
     private static Optional<Class<?>> findFirstEntityType(Type type) {
         return switch (type) {
-            case null -> Optional.empty();
             case Class<?> cls -> {
                 if (cls.isAnnotationPresent(Entity.class)) {
                     yield Optional.of(cls);
