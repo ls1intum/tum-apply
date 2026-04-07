@@ -18,7 +18,7 @@
 - [ ] **Important**: I implemented the changes with a [very good performance](https://ls1intum.github.io/tum-apply/developer/server-guidelines/database-and-performance) and prevented too many (unnecessary) and too complex database calls.
 - [ ] I **strictly** followed the principle of **data economy** for all database calls.
 - [ ] I **strictly** followed the [server coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-development).
-- [ ] I added multiple server tests (JUnit) related to the features (with a high test coverage), while following the [test guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-tests).
+- [ ] I added multiple server tests (JUnit) related to the features (with a high test coverage), while following the [server test guidelines](https://ls1intum.github.io/tum-apply/developer/server-guidelines/server-tests).
 - [ ] I documented the Java code using JavaDoc style.
 
 #### Client
@@ -26,7 +26,7 @@
 - [ ] **Important**: I implemented the changes with a very good performance, prevented too many (unnecessary) REST calls and made sure the UI is responsive, even with large data (e.g. using paging).
 - [ ] I **strictly** followed the principle of **data economy** for all client-server REST calls.
 - [ ] I **strictly** followed the [client coding and design guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-development).
-- [ ] I added multiple integration tests (Vitest) related to the features (with a high test coverage), while following the [test guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-tests).
+- [ ] I added multiple integration tests (Vitest) related to the features (with a high test coverage), while following the [client test guidelines](https://ls1intum.github.io/tum-apply/developer/client-guidelines/client-tests).
 - [ ] I documented the TypeScript code using JSDoc style.
 - [ ] I added multiple screenshots/screencasts of my UI changes.
 
