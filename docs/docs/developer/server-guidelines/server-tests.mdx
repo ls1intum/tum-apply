@@ -220,6 +220,16 @@ If marked as exported, the entity must reference a `@Component` provider impleme
 
 When adding a new entity, always choose one of these two annotations. If you mark it as exported, ensure the configured provider exists, implements `UserDataSectionProvider`, and is annotated with `@Component`.
 
+### DTO Enforcement
+
+The class `src/test/java/de/tum/cit/aet/DTOArchitectureTest.java` verifies that `@Entity` types are never leaked through the REST API or embedded in DTOs. It enforces three rules:
+
+1. **No entity return types** — REST controllers must not return `@Entity` types directly (including nested generics like `ResponseEntity<List<Entity>>`). Return DTOs instead.
+2. **No entity input types** — REST controllers must not accept `@Entity` types in `@RequestBody` or `@RequestPart` parameters. Accept DTOs instead.
+3. **No entity fields in DTOs** — Classes ending with `DTO` must not contain fields that reference `@Entity` types. This prevents the "lazy wrapper" anti-pattern where a DTO simply wraps an entity. DTOs should only contain primitive types, date/time types, enums, and other DTOs.
+
+All three checks enforce **0 violations**. If any of these rules are violated, the test will fail and list the offending classes and methods.
+
 ---
 
 ## Writing Good Tests — Summary
