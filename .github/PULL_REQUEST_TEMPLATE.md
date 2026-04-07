@@ -63,6 +63,11 @@ Prerequisites:
 
 - [ ] Test 1
 
+### Screenshots
+
+<!-- Add screenshots to demonstrate the changes in the UI. Remove the section if you did not change the UI. -->
+<!-- Create a GIF file from a screen recording in a docker container https://toub.es/2017/09/11/high-quality-gif-with-ffmpeg-and-docker/ -->
+
 ### Test Coverage
 
 <!-- This section is automatically updated by the PR Coverage Reporter workflow after the PR check completes. -->
@@ -70,8 +75,3 @@ Prerequisites:
 <!-- The line coverage must be above 80% for changed files, and you must use extensive and useful assertions for server tests and expect statements for client tests. -->
 <!-- Note: Confirm in the last column that you have implemented extensive assertions for server tests and expect statements for client tests. -->
 <!--       Remove rows with only trivial changes from the table. -->
-
-### Screenshots
-
-<!-- Add screenshots to demonstrate the changes in the UI. Remove the section if you did not change the UI. -->
-<!-- Create a GIF file from a screen recording in a docker container https://toub.es/2017/09/11/high-quality-gif-with-ffmpeg-and-docker/ -->
