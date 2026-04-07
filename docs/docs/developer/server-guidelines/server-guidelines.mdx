@@ -43,11 +43,17 @@ private static final int MAX_JOB_COUNT = 50;
 
 ## Use of DTOs
 
-- Always return DTOs from REST controllers
+- Always return DTOs from REST controllers — never expose `@Entity` types directly
 - Use Java `record` for DTOs (immutability & clarity)
 - Include only minimal necessary data
-- DTOs should contain: primitive types, enums, other DTOs (composition)
+- DTOs should contain: primitive types, date/time types, enums, other DTOs (composition)
 - Never include entities or logic in DTOs
+
+These rules are enforced by `DTOArchitectureTest`, which checks:
+
+1. **REST controllers must not return `@Entity` types** — including nested generics like `ResponseEntity<List<Entity>>`
+2. **REST controllers must not accept `@Entity` types** in `@RequestBody` or `@RequestPart` parameters
+3. **DTO classes must not contain fields referencing `@Entity` types** — this prevents the "lazy wrapper" anti-pattern where a DTO simply wraps an entity
 
 ```java
 // ❌ BAD — includes full entity
