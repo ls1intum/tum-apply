@@ -37,11 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
  * <li>REST controllers do not accept @Entity types in @RequestBody/@RequestPart parameters</li>
  * <li>DTO classes do not contain fields that reference @Entity types</li>
  * </ul>
- * <p>
- * Adapted from the Artemis project's architecture tests. Unlike Artemis (which has many violations
- * and uses configurable thresholds per module), TUMApply enforces 0 violations across all checks.
- *
- * @see <a href="https://github.com/ls1intum/Artemis">Artemis (original architecture tests)</a>
  */
 class DTOArchitectureTest {
 
