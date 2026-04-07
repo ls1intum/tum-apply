@@ -190,7 +190,7 @@ public class PDFBuilder {
      * PDF
      *
      * @param metadataText the beginning of metadata text to display (before
-     *                     TumApply label)
+     *                     TUMApply label)
      * @return this builder for method chaining
      */
     public PDFBuilder setMetadata(String metadataText) {
