@@ -178,9 +178,9 @@ class DependencyServiceTest {
             assertThat(overview.dependencies()).allSatisfy(d -> assertThat(d.source()).isEqualTo("client"));
         }
 
-        @ParameterizedTest(name = "should strip prefix from {0} → {1}")
+        @ParameterizedTest(name = "should parse version {0} as {1}")
         @CsvSource({ "~7.8.1, 7.8.1", "^0.14.0, 0.14.0", "1.0.0, 1.0.0" })
-        void shouldStripVersionPrefixes(String raw, String expected) throws IOException {
+        void shouldParseVersionCorrectly(String raw, String expected) throws IOException {
             writePackageJson(
                 """
                 { "dependencies": { "lib": "%s" } }
