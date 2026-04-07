@@ -316,7 +316,7 @@ describe('AdminDependenciesComponent', () => {
       component.onSortChange({ field: 'security', direction: 'ASC' });
       const counts = component.filteredDependencies().map(d => d.vulnerabilities?.length ?? 0);
 
-      expect(counts).toEqual([...counts].sort((a, b) => a - b));
+      expect(counts).toEqual([0, 1, 1, 2]);
     });
 
     it('should sort by security descending by default', async () => {
@@ -324,7 +324,7 @@ describe('AdminDependenciesComponent', () => {
 
       const counts = component.filteredDependencies().map(d => d.vulnerabilities?.length ?? 0);
 
-      expect(counts).toEqual([...counts].sort((a, b) => b - a));
+      expect(counts).toEqual([2, 1, 1, 0]);
     });
   });
 
