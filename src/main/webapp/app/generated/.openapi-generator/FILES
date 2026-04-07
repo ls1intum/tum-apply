@@ -141,10 +141,10 @@ model/update-password-dto.ts
 model/update-slot-location-dto.ts
 model/update-user-name-dto.ts
 model/user-booking-info-dto.ts
+model/user-data-export-exception-cause-stack-trace-inner.ts
+model/user-data-export-exception-cause-suppressed-inner.ts
+model/user-data-export-exception-cause.ts
 model/user-data-export-exception.ts
-model/user-data-export-exception_cause.ts
-model/user-data-export-exception_cause_stack-trace_inner.ts
-model/user-data-export-exception_cause_suppressed_inner.ts
 model/user-dto.ts
 model/user-for-application-detail-dto.ts
 model/user-profile-dto.ts

@@ -1,0 +1,376 @@
+---
+sidebar_label: Client Development
+---
+
+# Client Development
+
+Core Angular and TypeScript patterns for developing the TUMApply client. Follow these across all components and features.
+
+---
+
+## General Practices
+
+- Use **standalone components**, **Angular signals**, and the new `input()`/`output()` decorators
+- Use `inject()` for dependency injection instead of constructor injection
+- Never call methods or getters in HTML templates (except signals — this kills change detection performance)
+- Use `async/await` with `firstValueFrom` instead of manual subscriptions
+- Prefer **OnPush change detection** for components
+- Use arrow functions over anonymous functions
+- Use single quotes for strings
+- Consider objects and arrays as **immutable** outside the component that created them
+
+---
+
+## Naming Conventions
+
+| **Convention** | **Used For** | **Example** |
+|---|---|---|
+| PascalCase | Types, classes, enums | `ApplicationDTO`, `JobState` |
+| camelCase | Functions, properties, variables | `loadApplications`, `isLoading` |
+| SCREAMING_SNAKE_CASE | Constants (readonly) | `MAX_RETRIES`, `DEFAULT_PAGE_SIZE` |
+
+- Avoid using `_` for private properties
+- Do not prefix interfaces with "I"
+- Use full, descriptive names — but don't exaggerate with length
+
+---
+
+## Component Structure
+
+- Create **1 folder per component** with the component files: `.html`, `.ts`, and `.scss` only if needed (prefer Tailwind utility classes over custom SCSS — see [Client Styling](./client-styling))
+- Test files (`.spec.ts`) live in the mirrored directory structure under `src/test/webapp/`, not alongside the component
+- Follow the **smart/dumb component approach**: smart components handle logic and state, dumb components receive data via inputs and emit events via outputs
+- More complex components should be divided into multiple sub-components
+
+### Page Layout Convention
+
+Every top-level page should start with the `page-container` and `page-header` classes for consistent layout:
+
+```html
+<div class="page-container">
+  <header class="page-header">
+    <h1 jhiTranslate="interview.overview.title">Interview Overview</h1>
+  </header>
+
+  <!-- Page content here -->
+</div>
+```
+
+If the header also contains action buttons, use `header-container`:
+
+```html
+<div class="page-container">
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="settings.header">Settings</h1>
+    </div>
+    <button>Action</button>
+  </div>
+
+  <!-- Page content here -->
+</div>
+```
+
+### Component Communication
+
+Use signal-based APIs for inputs and outputs. Legacy decorators (`@Input`, `@Output`, `@ViewChild`, `@ViewChildren`, `@ContentChild`, `@ContentChildren`) must not be used in new code.
+
+```typescript
+// ✅ GOOD — Signal-based inputs/outputs
+export class MyComponent {
+  title = input.required<string>();
+  count = input<number>(0);
+  countChange = output<number>();
+
+  isLoading = signal(false);
+  displayText = computed(() => `${this.title()}: ${this.count()}`);
+}
+```
+
+```html
+<jhi-my-component [title]="'My Title'" [count]="count()" (countChange)="onCountChange($event)" />
+```
+
+```typescript
+// ❌ AVOID — Legacy decorators
+@Input() title!: string;
+@Output() countChange = new EventEmitter<number>();
+```
+
+### Use `viewChild()` / `viewChildren()` for Queries
+
+```typescript
+// ✅ GOOD — Signal-based queries
+myRef = viewChild<MyComponent>('myRef');
+myRequiredRef = viewChild.required<MyComponent>('myRef');
+myRefs = viewChildren<MyComponent>(MyComponent);
+
+// ❌ AVOID — Legacy decorators
+@ViewChild('myRef') myRef?: MyComponent;
+@ViewChildren(MyComponent) myRefs?: QueryList<MyComponent>;
+```
+
+### Use `inject()` for Dependency Injection
+
+```typescript
+// ✅ GOOD
+export class MyComponent {
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+  private api = inject(ApplicationResourceApiService);
+}
+
+// ❌ AVOID — Old constructor injection
+constructor(
+  private router: Router,
+  private toastService: ToastService
+) { }
+```
+
+---
+
+## Signals & Reactive State
+
+Use `signal()`, `computed()`, and `effect()` for component state instead of plain class fields.
+
+### Use `computed()` for Derived State
+
+```typescript
+// ✅ GOOD — Automatically memoized, reactive
+applications = signal<ApplicationDTO[]>([]);
+searchTerm = signal('');
+filteredApplications = computed(() =>
+  this.applications().filter(app =>
+    app.name.toLowerCase().includes(this.searchTerm().toLowerCase())
+  )
+);
+
+// ❌ AVOID — Getters recalculate on every change detection
+get filteredApplications(): ApplicationDTO[] {
+  return this.applications().filter(app =>
+    app.name.toLowerCase().includes(this.searchTerm().toLowerCase())
+  );
+}
+```
+
+### Use `effect()` Only for Side Effects
+
+```typescript
+// ✅ GOOD — Side effects (DOM, logging, API calls)
+constructor() {
+  effect(() => {
+    console.log('Count changed:', this.count());
+  });
+
+  effect(() => {
+    void this.saveToStorage(this.formData());
+  });
+}
+
+// ✅ GOOD — Use computed() for derived values
+doubleCount = computed(() => this.count() * 2);
+
+// ❌ WRONG — Don't derive values inside effect()
+effect(() => {
+  this.doubleCount = this.count() * 2;
+});
+```
+
+### Handle Async Operations with `async/await`
+
+```typescript
+// ✅ GOOD
+async loadApplications(): Promise<void> {
+  this.isLoading.set(true);
+  try {
+    const apps = await firstValueFrom(this.api.getApplications());
+    this.applications.set(apps);
+  } catch (error) {
+    this.toastService.showError('Failed to load applications');
+  } finally {
+    this.isLoading.set(false);
+  }
+}
+
+// ❌ AVOID — Manual subscriptions (memory leak if not unsubscribed)
+loadApplications(): void {
+  this.api.getApplications().subscribe({
+    next: apps => this.applications.set(apps),
+    error: err => this.handleError(err)
+  });
+}
+```
+
+---
+
+## Types & Interfaces
+
+- Prefer `interface` over `type`
+- Strict typing always — no `any`
+- Do not prefix interfaces with "I"
+- Define shared types in `types.ts`
+- Do not export types unless you need to share them across multiple components
+- Type definitions should come first within a file
+- Do not use inline type casting — use typed variable declarations instead
+
+```typescript
+// ✅ GOOD — Typed variable declaration
+const link: AngularLink = { text: 'I am a Link', routerLink: ['home'] };
+
+// ❌ WRONG — Type assertion hides errors at compile time
+const link = { text: 'I am a Link', routerLink: 4 } as AngularLink;
+```
+
+### null & undefined
+
+Use `undefined` exclusively — never use `null`.
+
+### Avoid Non-Null Assertion (`!`)
+
+Never use the TypeScript non-null assertion operator (`!`) to bypass type checks. It hides potential runtime errors and defeats the purpose of strict typing. Handle `undefined` cases explicitly.
+
+```typescript
+// ✅ GOOD
+if (user) {
+  console.log(user.name);
+}
+
+const name = user?.name ?? 'Unknown';
+
+// ❌ WRONG — This could crash if user is undefined
+console.log(user!.name);
+```
+
+---
+
+## Angular Template Patterns
+
+### Use Modern Control Flow (`@if`, `@for`, `@switch`)
+
+```html
+<!-- ✅ GOOD — Modern Angular 17+ syntax -->
+@if (applications(); as apps) { @if (apps.length > 0) { @for (app of apps; track app.id) {
+<jhi-application-card [application]="app" />
+} } @else {
+<p>No applications found</p>
+} }
+
+<!-- ❌ AVOID — Old structural directives -->
+<ng-container *ngIf="applications() as apps">
+  <div *ngIf="apps.length > 0; else empty">
+    <jhi-application-card *ngFor="let app of apps; trackBy: trackById" [application]="app" />
+  </div>
+  <ng-template #empty>
+    <p>No applications found</p>
+  </ng-template>
+</ng-container>
+```
+
+### Internationalization (i18n)
+
+All user-visible text must use translation. Add new strings to `/i18n/{lang}/{area}.json`.
+
+Use the `jhiTranslate` directive — avoid the pipe:
+
+```html
+<!-- ✅ GOOD — Use directive -->
+<h1 jhiTranslate="application.title">Application</h1>
+<span [jhiTranslate]="'application.count'" [translateValues]="{ count: count() }">
+  {{ count() }} applications
+</span>
+<jhi-button [label]="'button.save'" [shouldTranslate]="true" />
+
+<!-- ❌ WRONG — Never hard-code user-visible text -->
+<h1>Application</h1>
+<button>Save</button>
+
+<!-- ❌ AVOID — Don't use the pipe -->
+<span>{{ 'global.title' | translate }}</span>
+```
+
+### Buttons vs Links
+
+Use the right element based on the action:
+
+- **Buttons** — for triggering functionality (e.g., `<button (click)="deleteJob()">`)
+- **Links** — for navigation (e.g., `<a [routerLink]="['/jobs', jobId]">`) — this allows middle-click / open in new tab
+
+### Labels & Accessibility
+
+Always use `<label for="id">` or wrap the input inside the label to improve accessibility:
+
+```html
+<!-- ✅ Preferred — associated via for/id -->
+<label for="email" jhiTranslate="form.email">Email</label>
+<input id="email" type="email" />
+
+<!-- ✅ Also acceptable — wrapped inside label -->
+<label>
+  <input type="checkbox" (click)="toggleOption()" />
+  {{ 'form.option' | translate }}
+</label>
+```
+
+---
+
+## Comments & Documentation
+
+- Use **JSDoc style** for functions, enums, and classes
+- Explain complex logic inline where needed
+- For complex methods, break down the logic using numbered step-by-step comments:
+
+```typescript
+async processApplication(applicationId: string): Promise<void> {
+  // 1. Fetch application data
+  const application = await firstValueFrom(this.api.getApplication(applicationId));
+
+  // 2. Validate input and check permissions
+  this.currentUserService.assertAccessTo(application);
+
+  // 3. Update UI state
+  this.selectedApplication.set(application);
+}
+```
+
+---
+
+## Code Style
+
+- Use **4-space indentation**
+- Use **single quotes** for strings
+- One variable per declaration
+- Always surround arrow function parameters with parentheses: `(x) => x + x`, not `x => x + x`
+- Always surround loop and conditional bodies with curly braces
+- `else` goes on the same line as the closing curly brace
+- Split complex functions into multiple helper functions — the parent function should be easy to understand at a glance
+- Format with **Prettier**, validate with **ESLint**
+
+---
+
+## Memory Leak Prevention
+
+Memory leaks degrade application performance over time. Common causes:
+
+- **Forgotten RXJS subscriptions** — always unsubscribe, or better yet, use `async/await` with `firstValueFrom`
+- **Forgotten timers or callbacks** — clean up `setTimeout`/`setInterval` in `ngOnDestroy`
+- **Mocks not restored in tests** — especially when involving global objects
+
+:::tip
+Prefer `async/await` with `firstValueFrom` over manual subscriptions to avoid subscription leaks entirely.
+:::
+
+---
+
+## Deprecated APIs
+
+### `::ng-deep`
+
+`::ng-deep` is deprecated and should not be used in new code. If you need to style child component internals, use global stylesheets (`prime-ng-overrides.scss`) or the native `class` attribute on PrimeNG components instead.
+
+---
+
+## Related Documentation
+
+- [Client Styling](./client-styling) — Tailwind, PrimeNG, and CSS patterns
+- [Color Theming](./color-theming) — Complete theming guide
+- [Client Tests](./client-tests) — Client testing patterns
