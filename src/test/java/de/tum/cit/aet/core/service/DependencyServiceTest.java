@@ -95,16 +95,14 @@ class DependencyServiceTest {
             assertThat(dep.purl()).isEqualTo("pkg:maven/org.example/my-lib@1.0.0");
         }
 
-        @ParameterizedTest(name = "should skip {0} lines")
-        @ValueSource(
-            strings = {
-                "testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'",
-                "annotationProcessor 'org.projectlombok:lombok:1.18.30'",
-                "developmentOnly 'org.springframework.boot:spring-boot-devtools:3.2.0'",
-                "// implementation 'commented:out:1.0.0'",
-            }
-        )
-        void shouldSkipNonProductionDependencies(String line) throws IOException {
+        @ParameterizedTest(name = "should skip {0} dependencies")
+        @CsvSource({
+            "test,              testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'",
+            "annotation processor, annotationProcessor 'org.projectlombok:lombok:1.18.30'",
+            "dev-only,          developmentOnly 'org.springframework.boot:spring-boot-devtools:3.2.0'",
+            "commented-out,     // implementation 'commented:out:1.0.0'",
+        })
+        void shouldSkipNonProductionDependencies(String label, String line) throws IOException {
             writeBuildGradle(line + "\nimplementation 'org.example:kept:1.0.0'");
             stubOsvEmptyResponse(1);
 
