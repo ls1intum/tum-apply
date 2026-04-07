@@ -345,6 +345,28 @@ async processApplication(applicationId: string): Promise<void> {
 - Split complex functions into multiple helper functions — the parent function should be easy to understand at a glance
 - Format with **Prettier**, validate with **ESLint**
 
+### Avoid the Spread Operator (`...`)
+
+Do not use the spread operator for objects or arrays. It obscures what is actually being copied or merged, makes debugging harder, and can introduce subtle bugs with nested references. Write out the operation explicitly instead.
+
+```typescript
+// ✅ GOOD — Explicit object construction
+const updated: UserDTO = {
+  id: user.id,
+  name: newName,
+  email: user.email,
+};
+
+// ✅ GOOD — Explicit array operations
+const combined = firstArray.concat(secondArray);
+const withNewItem = items.concat(newItem);
+
+// ❌ AVOID — Spread operator hides what is being copied
+const updated = { ...user, name: newName };
+const combined = [...firstArray, ...secondArray];
+const withNewItem = [...items, newItem];
+```
+
 ---
 
 ## Memory Leak Prevention
