@@ -79,17 +79,15 @@ class DTOArchitectureTest {
                         entityType = findFirstEntityType(reflectedMethod.getAnnotatedReturnType().getType());
                     }
 
-                    if (entityType.isPresent()) {
-                        violations.add(
-                            String.format(
-                                "%s#%s returns entity '%s' (return type: %s)",
-                                controllerClass.getSimpleName(),
-                                archMethod.getName(),
-                                entityType.get().getSimpleName(),
-                                returnType.getTypeName()
-                            )
-                        );
-                    }
+                    entityType.ifPresent(entity -> violations.add(
+                        String.format(
+                            "%s#%s returns entity '%s' (return type: %s)",
+                            controllerClass.getSimpleName(),
+                            archMethod.getName(),
+                            entity.getSimpleName(),
+                            returnType.getTypeName()
+                        )
+                    ));
                 }
             }
         };
@@ -151,19 +149,17 @@ class DTOArchitectureTest {
                             entityType = findFirstEntityType(annotatedParameterTypes[i].getType());
                         }
 
-                        if (entityType.isPresent()) {
-                            String annotation = parameter.isAnnotationPresent(RequestBody.class) ? "@RequestBody" : "@RequestPart";
-                            violations.add(
-                                String.format(
-                                    "%s#%s accepts entity '%s' via %s (parameter type: %s)",
-                                    controllerClass.getSimpleName(),
-                                    archMethod.getName(),
-                                    entityType.get().getSimpleName(),
-                                    annotation,
-                                    parameterType.getTypeName()
-                                )
-                            );
-                        }
+                        String annotation = parameter.isAnnotationPresent(RequestBody.class) ? "@RequestBody" : "@RequestPart";
+                        entityType.ifPresent(entity -> violations.add(
+                            String.format(
+                                "%s#%s accepts entity '%s' via %s (parameter type: %s)",
+                                controllerClass.getSimpleName(),
+                                archMethod.getName(),
+                                entity.getSimpleName(),
+                                annotation,
+                                parameterType.getTypeName()
+                            )
+                        ));
                     }
                 }
             }
@@ -209,17 +205,15 @@ class DTOArchitectureTest {
                     Type fieldType = field.getGenericType();
                     Optional<Class<?>> entityType = findFirstEntityType(fieldType);
 
-                    if (entityType.isPresent()) {
-                        violations.add(
-                            String.format(
-                                "%s.%s references entity '%s' (field type: %s)",
-                                dtoClass.getSimpleName(),
-                                field.getName(),
-                                entityType.get().getSimpleName(),
-                                fieldType.getTypeName()
-                            )
-                        );
-                    }
+                    entityType.ifPresent(entity -> violations.add(
+                        String.format(
+                            "%s.%s references entity '%s' (field type: %s)",
+                            dtoClass.getSimpleName(),
+                            field.getName(),
+                            entity.getSimpleName(),
+                            fieldType.getTypeName()
+                        )
+                    ));
                 }
             }
         };
