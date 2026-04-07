@@ -289,16 +289,13 @@ public class TemplateProcessingService {
      * Adds applicant and job-related variables for subject-area job publication emails.
      */
     private void addJobPublicationContextData(Map<String, Object> dataModel, JobPublicationEmailContext ctx) {
-        addUserData(dataModel, ctx.user());
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.user().getFirstName());
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.user().getLastName());
         addJobData(dataModel, ctx.job());
-        if (ctx.job().getSubjectArea() != null) {
-            dataModel.put(
-                TemplateVariable.SUBJECT_AREA.getValue(),
-                ctx.job().getSubjectArea().correctLanguageValue(ctx.user().getSelectedLanguage())
-            );
-        }
+        dataModel.put(
+            TemplateVariable.SUBJECT_AREA.getValue(),
+            ctx.job().getSubjectArea().correctLanguageValue(ctx.user().getSelectedLanguage())
+        );
     }
 
     /**
