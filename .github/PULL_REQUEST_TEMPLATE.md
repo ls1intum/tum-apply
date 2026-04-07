@@ -74,4 +74,3 @@ Prerequisites:
 <!-- You can also generate the coverage table locally by running `npm run coverage:pr` (see supporting_scripts/local-pr-coverage/README.md). -->
 <!-- The line coverage must be above 80% for changed files, and you must use extensive and useful assertions for server tests and expect statements for client tests. -->
 <!-- Note: Confirm in the last column that you have implemented extensive assertions for server tests and expect statements for client tests. -->
-<!--       Remove rows with only trivial changes from the table. -->
