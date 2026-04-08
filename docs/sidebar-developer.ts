@@ -2,89 +2,82 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   developerSidebar: [
-    'intro',
     {
       type: 'category',
-      label: 'Introduction',
+      label: 'Developers',
+      collapsed: false,
+      link: {
+        type: 'generated-index',
+        description:
+          'All information for developers: from setting up your local environment to coding guidelines, testing, and deployment.',
+      },
       items: [
-        'intro/features',
-        'intro/personas',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Getting Started',
-      items: [
-        'setup/dev-environment',
-        'setup/database-setup',
-        'setup/environment-variables',
-        'setup/spring-ai',
-        'setup/openapi',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Authentication & Authorization',
-      items: [
-        'auth/authentication-flow',
-        'auth/authorization',
         {
           type: 'category',
-          label: 'Keycloak',
+          label: 'Getting Started',
           items: [
-            'auth/keycloak/keycloak-overview',
-            'auth/keycloak/keycloak-realm-and-clients',
-            'auth/keycloak/keycloak-impersonation',
-            'auth/keycloak/development-setup',
-            'auth/keycloak/production-setup',
+            'getting-started/development-environment',
+            'getting-started/local-llm-setup',
           ],
         },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Modules',
-      items: [
-        'modules/application',
-        'modules/job',
-        'modules/evaluation',
-        'modules/notification',
-        'modules/user-management',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Development Guides',
-      items: [
-        'general/general-documentation',
-        'general/client-best-practices',
-        'theming/color-theming',
-        'errors/error-handling',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Testing',
-      items: [
-        'testing/testing-guide',
-        'testing/bruno',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Deployment',
-      items: [
-        'deployment/build-production',
-        'deployment/docker',
-        'deployment/environment-config',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Privacy & Data',
-      items: [
-        'privacy/data-export',
-        'privacy/data-retention',
+        {
+          type: 'category',
+          label: 'General Guidelines',
+          items: [
+            'general-guidelines/branch-guidelines',
+            'general-guidelines/pull-request-guidelines',
+            'general-guidelines/openapi',
+            'general-guidelines/writing-documentation',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Server Guidelines',
+          items: [
+            'server-guidelines/server-development',
+            'server-guidelines/server-tests',
+            'server-guidelines/api-testing-with-postman',
+            'server-guidelines/database-and-performance',
+            'server-guidelines/liquibase-guidelines',
+            'server-guidelines/error-handling',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Client Guidelines',
+          items: [
+            'client-guidelines/client-development',
+            'client-guidelines/client-styling',
+            'client-guidelines/client-tests',
+            'client-guidelines/language-guidelines',
+            'client-guidelines/color-theming',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Infrastructure & CI/CD',
+          items: [
+            'infrastructure-and-cicd/environment-variables',
+            'infrastructure-and-cicd/testserver-deployment',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Authentication & Authorization',
+          items: [
+            'authentication-and-authorization/authentication-flow',
+            'authentication-and-authorization/authorization',
+            {
+              type: 'category',
+              label: 'Keycloak',
+              items: [
+                'authentication-and-authorization/keycloak/overview',
+                'authentication-and-authorization/keycloak/development-setup',
+                'authentication-and-authorization/keycloak/test-users',
+              ],
+            },
+          ],
+        },
       ],
     },
   ],

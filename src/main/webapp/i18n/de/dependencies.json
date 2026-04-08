@@ -3,7 +3,7 @@
     "title": "Software-Abhängigkeiten",
     "infoTitle": "Was ist diese Seite?",
     "vulnerabilityExplanation": "TUMApply überwacht automatisch alle Abhängigkeiten auf bekannte Sicherheitslücken. Schwachstellendaten werden täglich aktualisiert von ",
-    "securityFeatureHighlight": "Diese proaktive Sicherheitsüberwachung hilft Administrator:innen, potenzielle Risiken zu erkennen und zu beheben, bevor sie zu Bedrohungen werden.",
+    "securityFeatureHighlight": "Diese proaktive Sicherheitsüberwachung hilft Administrierenden, potenzielle Risiken zu erkennen und zu beheben, bevor sie zu Bedrohungen werden.",
     "infoServerLabel": "Server-Abhängigkeiten: ",
     "infoServerDesc": "Java-Bibliotheken, die serverseitig für die Anwendungslogik verwendet werden (aus build.gradle).",
     "infoClientLabel": "Client-Abhängigkeiten: ",

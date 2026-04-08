@@ -1,0 +1,181 @@
+---
+sidebar_label: Writing Documentation
+---
+
+import Image, {ImageSize} from "../../../src/components/Image/Image";
+import admonitions from './images/writing-documentation/docu-admonitions.png';
+
+# Writing Documentation
+
+To ensure a consistent and professional structure across our documentation, please follow the best practices outlined below.
+
+---
+
+## 1. Add a Sidebar Label
+
+Always include a descriptive sidebar label at the **top of your `.mdx` file** to define how the page should appear in the navigation:
+
+```bash
+---
+sidebar_label: Login
+---
+```
+
+:::note
+This label should be human-readable and reflect the actual topic (e.g., "Application Form", not just "Form").
+:::
+
+---
+
+## 2. Name Files to Match the Sidebar Label
+
+The file name **must be the kebab-case version of the `sidebar_label`**. This ensures the generated URL matches the page title displayed in the sidebar.
+
+| `sidebar_label` | File name |
+|---|---|
+| `Client Development` | `client-development.mdx` |
+| `API Testing with Postman` | `api-testing-with-postman.mdx` |
+| `Database & Performance` | `database-and-performance.mdx` |
+
+:::warning
+Do **not** use `slug` in frontmatter to fix a mismatch — rename the file instead. This keeps a single source of truth for the URL.
+:::
+
+---
+
+## 3. Add Your File to the Sidebar
+
+Make sure to correctly **register your `.mdx` file in the corresponding `sidebar-*.ts`**. The order and location where you register your file will determine its **position and grouping** in the documentation sidebar.
+
+**Example:**
+
+```ts
+'applicants/login',
+```
+
+If added under the Applicants category, it will appear in the sidebar under the Applicants section:
+
+```ts
+{
+  type: 'category',
+  label: 'Applicants',
+  items: [
+    'applicants/account-creation',
+    'applicants/login', // <-- Here
+    ...
+  ],
+},
+```
+
+:::note
+The folder structure and sidebar organization should stay in sync for clarity.
+:::
+
+---
+
+## 4. Use the Image Component
+
+Use the custom `<Image>` component instead of plain HTML `<img>` tags. This ensures consistent styling across the site. Specify the image size using the `ImageSize` enum:
+
+```tsx
+import Image, {ImageSize} from "../../src/components/Image/Image";
+import loginForm from '../images/login/login-form.png';
+
+<Image src={loginForm} alt="Login form" size={ImageSize.large} />
+```
+
+**Available sizes:**
+
+| Size | Max Width |
+|---|---|
+| `ImageSize.small` | 300px |
+| `ImageSize.medium` | 600px |
+| `ImageSize.large` | 100% |
+
+---
+
+## 5. Embed Videos with iframe
+
+If you're including videos, always use an `<iframe>` for embedding to maintain compatibility and layout consistency:
+
+```html
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/example"
+  title="Video title"
+  frameBorder="0"
+  allowFullScreen
+></iframe>
+```
+
+---
+
+## 6. Place Images in Subdirectories
+
+Organize your images by placing them in **subfolders named after the `.mdx` file** they relate to. This makes image management easier and keeps our structure maintainable.
+
+**Example structure:**
+
+```
+docs/
+└── professors/
+    ├── application-review.mdx
+    ├── login.mdx
+    └── images/
+        ├── login/
+        │   └── login-view.png
+        └── application-review/
+            └── rating-section.png
+```
+
+:::tip
+This also helps when reviewing image usage or updating assets, since all related visuals are grouped with their corresponding documentation topic.
+:::
+
+---
+
+## 7. Use Standardized Admonitions
+
+When adding visual notes, **do not use custom-styled or non-standard labels**. Instead, use the built-in [Docusaurus Admonitions](https://docusaurus.io/docs/markdown-features/admonitions) such as `note`, `tip`, `info`, `warning`, or `danger`.
+
+**Correct usage:**
+
+```markdown
+:::note
+This is a note admonition.
+:::
+
+:::tip
+This is a tip admonition.
+:::
+
+:::info
+This is an info admonition.
+:::
+
+:::warning
+This is a warning admonition.
+:::
+
+:::danger
+This is a danger admonition.
+:::
+```
+
+This is how they look when rendered:
+
+<Image src={admonitions} alt="Docusaurus admonitions overview" size={ImageSize.large} />
+
+You can also add a custom title:
+
+```markdown
+:::tip[Best Practice]
+Keep your browser window wide enough to show details, documents, and the rating panel
+side by side — this reduces scrolling and speeds up your review workflow.
+:::
+```
+
+---
+
+Following these guidelines will help keep our documentation clear, consistent, and easy to maintain.

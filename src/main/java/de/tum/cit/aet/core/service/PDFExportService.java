@@ -9,6 +9,7 @@ import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -301,6 +302,28 @@ public class PDFExportService {
 
         addResearchGroupMainInfo(builder, group);
         addResearchGroupContactInfo(builder, group, labels);
+    }
+
+    private void addResearchGroupSection(PDFBuilder builder, ResearchGroupSummaryDTO group, Map<String, String> labels) {
+        builder.startSectionGroup(labels.get("researchGroup"));
+
+        builder.startInfoSection(group.name()).addSectionContent(getValue(group.description()));
+
+        String address = formatAddress(group.street(), group.postalCode(), group.city());
+        Map<String, String> items = new LinkedHashMap<>();
+        if (hasValue(address)) {
+            items.put(labels.get("address"), address);
+        }
+        if (hasValue(group.email())) {
+            items.put(labels.get("email"), group.email());
+        }
+        if (hasValue(group.website())) {
+            items.put(labels.get("website"), group.website());
+        }
+        if (!items.isEmpty()) {
+            builder.startInfoSection(labels.get("contactDetails"));
+            items.forEach(builder::addSectionData);
+        }
     }
 
     private void addResearchGroupMainInfo(PDFBuilder builder, ResearchGroup group) {

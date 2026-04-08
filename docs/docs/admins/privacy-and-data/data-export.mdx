@@ -1,0 +1,47 @@
+---
+sidebar_label: Data Export
+---
+
+# Data Export
+
+TUMApply allows users to request a GDPR-compliant export of their personal data. Exports are processed automatically and delivered via email.
+
+---
+
+## How It Works
+
+1. A logged-in user clicks **Export my data** on the Privacy page
+2. The request is queued and processed by a scheduled job
+3. After processing, the user receives an email with a download link
+4. The link expires after the configured number of days
+
+The export ZIP file contains:
+- `data_export_summary.json` — structured summary of personal, application, and staff data
+- `documents/` — uploaded documents
+- `images/` — uploaded images
+
+---
+
+## Cooldown & Expiry
+
+- Users can request an export **once every 7 days**
+- The download link is valid for the number of days configured in `AET_DATA_EXPORT_EXPIRES_DAYS`
+- After expiry, the export file is no longer accessible
+
+---
+
+## Configuration
+
+These properties control the data export behavior. On the testserver and production, they are managed via **GitHub Variables**:
+
+| **Variable** | **Description** | **Default** |
+|---|---|---|
+| `AET_DATA_EXPORT_ROOT` | Filesystem path where export ZIP files are stored | `/tmp/tum-apply-exports` |
+| `AET_DATA_EXPORT_EXPIRES_DAYS` | Number of days the download link remains valid | `1` |
+| `AET_DATA_EXPORT_CRON` | Cron schedule for processing pending exports | `*/15 * * * * *` (every 15 seconds) |
+| `AET_CLIENT_URL` | Base URL used to build download links in notification emails | — |
+| `AET_STORAGE_IMAGE_ROOT` | Root path for image resolution during export packaging | — |
+
+:::warning
+Make sure `AET_DATA_EXPORT_ROOT` points to a persistent volume on production, not `/tmp`. The default is only suitable for local development.
+:::

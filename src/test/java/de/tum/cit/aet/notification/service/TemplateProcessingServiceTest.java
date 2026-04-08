@@ -20,6 +20,7 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.utility.testdata.JobTestData;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -46,6 +47,7 @@ class TemplateProcessingServiceTest {
     void setUp() {
         freemarkerConfig = spy(new Configuration(Configuration.VERSION_2_3_32));
         service = new TemplateProcessingService(freemarkerConfig);
+        // Hardening is applied in the constructor, no separate call needed
         ReflectionTestUtils.setField(service, "url", BASE_URL);
     }
 
@@ -242,6 +244,70 @@ class TemplateProcessingServiceTest {
         @Test
         void throwsNpeWhenLanguageIsNull() {
             assertThatThrownBy(() -> service.renderRawTemplate(null, "<p>hi</p>")).isInstanceOf(NullPointerException.class);
+        }
+    }
+
+    @Nested
+    class SSTIProtectionTests {
+
+        @Test
+        void rejectsNewBuiltinInTemplateBody() throws Exception {
+            // This is the classic FreeMarker SSTI payload that would execute arbitrary commands
+            String maliciousBody = "${'freemarker.template.utility.Execute'?new()('id')}";
+            EmailTemplateTranslation translation = translation(maliciousBody, Language.ENGLISH, "ssti");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
+        }
+
+        @Test
+        void rejectsNewBuiltinInSubject() {
+            String maliciousSubject = "${'freemarker.template.utility.Execute'?new()('id')}";
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
+        }
+
+        @Test
+        void rejectsObjectConstructorInTemplate() throws Exception {
+            String maliciousBody = "${'freemarker.template.utility.ObjectConstructor'?new()}";
+            EmailTemplateTranslation translation = translation(maliciousBody, Language.ENGLISH, "ssti2");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
+        }
+
+        @Test
+        void allowsNormalTemplateVariablesAfterHardening() throws Exception {
+            EmailTemplateTranslation translation = translation("Hello ${APPLICANT_FIRST_NAME}", Language.ENGLISH, "safe");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            String result = service.renderTemplate(translation, mockApplication());
+            assertThat(result).contains("Hello Alice");
+            assertThat(result).doesNotContain("${APPLICANT_FIRST_NAME}");
+        }
+
+        @Test
+        void hardeningIsAppliedInConstructor() {
+            // Verify the Configuration was hardened during construction by checking
+            // that setNewBuiltinClassResolver was called with ALLOWS_NOTHING_RESOLVER
+            verify(freemarkerConfig).setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
         }
     }
 
