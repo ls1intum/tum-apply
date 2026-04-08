@@ -15,7 +15,7 @@ import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
-import de.tum.cit.aet.notification.dto.JobPublicationEmailContext;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -320,9 +320,9 @@ class TemplateProcessingServiceTest {
         return app;
     }
 
-    private JobPublicationEmailContext mockJobPublicationContext() {
+    private JobPublicationEmailContextDTO mockJobPublicationContext() {
         Application application = mockApplication();
         application.getJob().setJobId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
-        return new JobPublicationEmailContext(application.getApplicant().getUser(), application.getJob());
+        return new JobPublicationEmailContextDTO(application.getApplicant().getUser(), application.getJob());
     }
 }

@@ -164,28 +164,20 @@ export class NotificationSettingsComponent {
     this.subjectAreaNotificationsEnabled.set(enabled);
     const role = this.currentRole();
 
-    try {
-      void firstValueFrom(
-        this.emailSettingApi.updateEmailSettings([
-          {
-            emailType: NotificationSettingsComponent.SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE,
-            enabled,
-          },
-        ]),
-      ).catch(async () => {
-        this.toastService.showErrorKey('settings.notifications.saveFailed');
-
-        if (role) {
-          await this.loadEmailNotificationGroups(role);
-        }
-      });
-    } catch {
+    void firstValueFrom(
+      this.emailSettingApi.updateEmailSettings([
+        {
+          emailType: NotificationSettingsComponent.SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE,
+          enabled,
+        },
+      ]),
+    ).catch(async () => {
       this.toastService.showErrorKey('settings.notifications.saveFailed');
 
       if (role) {
-        void this.loadEmailNotificationGroups(role);
+        await this.loadEmailNotificationGroups(role);
       }
-    }
+    });
   }
 
   onToggleChanged(group: NotificationGroup): void {

@@ -18,7 +18,7 @@
       @for (subjectArea of selectedOptions(); track subjectArea.value) {
         <div
           class="mr-1 mb-1 max-w-96 overflow-hidden transition-all duration-150 ease-out"
-          [class]="isRemovingSubjectArea(subjectArea.value) ? 'mr-0 mb-0 max-w-0 opacity-0' : ''"
+          [class]="removingSubjectArea() === subjectArea.value ? 'mr-0 mb-0 max-w-0 opacity-0' : ''"
         >
           <div
             class="inline-flex items-center gap-2 rounded-pill border border-border-default bg-background-surface px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-[--color-border-hover]"

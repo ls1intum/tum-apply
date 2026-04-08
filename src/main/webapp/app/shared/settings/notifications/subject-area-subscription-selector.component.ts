@@ -28,7 +28,7 @@ export class SubjectAreaSubscriptionSelectorComponent {
   filterChange = output<FilterChange>();
   removeSubjectArea = output<SubjectArea>();
 
-  protected readonly removingSubjectAreas = signal<Set<SubjectArea>>(new Set());
+  protected readonly removingSubjectArea = signal<SubjectArea | undefined>(undefined);
   protected readonly filterMultiselect = viewChild(FilterMultiselect);
   protected readonly isDropdownOpen = computed(() => this.filterMultiselect()?.isOpen() ?? false);
 
@@ -37,23 +37,14 @@ export class SubjectAreaSubscriptionSelectorComponent {
   }
 
   onRemoveSubjectArea(subjectArea: SubjectArea): void {
-    if (this.removingSubjectAreas().has(subjectArea)) {
+    if (this.removingSubjectArea() !== undefined) {
       return;
     }
 
-    this.removingSubjectAreas.update(current => new Set(current).add(subjectArea));
-    // Delay the actual removal briefly so the tag can fade/collapse before it disappears from the DOM.
-    window.setTimeout(() => {
+    this.removingSubjectArea.set(subjectArea);
+    setTimeout(() => {
       this.removeSubjectArea.emit(subjectArea);
-      this.removingSubjectAreas.update(current => {
-        const next = new Set(current);
-        next.delete(subjectArea);
-        return next;
-      });
+      this.removingSubjectArea.set(undefined);
     }, SubjectAreaSubscriptionSelectorComponent.REMOVE_ANIMATION_MS);
-  }
-
-  isRemovingSubjectArea(subjectArea: SubjectArea): boolean {
-    return this.removingSubjectAreas().has(subjectArea);
   }
 }

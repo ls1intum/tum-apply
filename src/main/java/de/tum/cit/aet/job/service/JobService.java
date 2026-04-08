@@ -21,7 +21,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.dto.JobPublicationEmailContext;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.EmailSettingService;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -406,7 +406,7 @@ public class JobService {
                 Email.builder()
                     .to(user)
                     .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
-                    .content(new JobPublicationEmailContext(user, job))
+                    .content(new JobPublicationEmailContextDTO(user, job))
                     .language(Language.fromCode(user.getSelectedLanguage()))
                     .sendAlways(true)
                     .build()
