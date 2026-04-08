@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.domain.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -25,8 +26,12 @@ public record ApplicationForApplicantDTO(
     Set<CustomFieldAnswerDTO> customFields
 ) {
     /**
-     * @param application
-     * @return
+     * Converts an Application entity to a DTO for the applicant view.
+     * Rich-text fields (projects, specialSkills, motivation) are sanitized on read
+     * as defense-in-depth before sending to the client.
+     *
+     * @param application the application entity
+     * @return the DTO, or null if the application is null
      */
     public static ApplicationForApplicantDTO getFromEntity(Application application) {
         if (application == null) {
@@ -53,9 +58,9 @@ public record ApplicationForApplicantDTO(
             ),
             application.getState(),
             application.getDesiredStartDate(),
-            application.getProjects(),
-            application.getSpecialSkills(),
-            application.getMotivation(),
+            HtmlSanitizer.sanitize(application.getProjects()),
+            HtmlSanitizer.sanitize(application.getSpecialSkills()),
+            HtmlSanitizer.sanitize(application.getMotivation()),
             application.getCustomFieldAnswers().stream().map(CustomFieldAnswerDTO::getFromEntity).collect(Collectors.toSet())
         );
     }
