@@ -311,6 +311,7 @@ const routes: Routes = [
     children: [
       {
         path: 'overview',
+        canActivate: [UserRouteAccessService],
         loadComponent: () =>
           import('./interview/interview-processes-overview/interview-processes-overview.component').then(
             m => m.InterviewProcessesOverviewComponent,
@@ -322,8 +323,12 @@ const routes: Routes = [
       },
       {
         path: ':processId',
+        canActivate: [UserRouteAccessService],
         component: InterviewProcessDetailComponent,
         title: 'global.routes.interview.detail',
+        data: {
+          authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Employee],
+        },
       },
       {
         path: 'process/:processId/interviewee/:intervieweeId/assessment',

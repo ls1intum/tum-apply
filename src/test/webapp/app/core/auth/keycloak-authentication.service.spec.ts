@@ -115,6 +115,30 @@ describe('KeycloakAuthenticationService', () => {
       expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
     });
 
+    it('should reject external redirect URIs on login', async () => {
+      await service.loginWithProvider(IdpProvider.Google, 'https://evil.com/phish');
+      expect(keycloakInstance.login).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
+      );
+      expect(keycloakInstance.login).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.stringContaining(window.location.origin) }),
+      );
+    });
+
+    it('should allow same-origin absolute redirect URIs on login', async () => {
+      const sameOriginUri = window.location.origin + '/jobs';
+      await service.loginWithProvider(IdpProvider.Google, sameOriginUri);
+      expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
+    });
+
+    it('should reject domains that share the origin as a prefix', async () => {
+      const maliciousUri = window.location.origin + '.evil.com/phish';
+      await service.loginWithProvider(IdpProvider.Google, maliciousUri);
+      expect(keycloakInstance.login).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
+      );
+    });
+
     it('should handle login errors gracefully', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       keycloakInstance.login.mockRejectedValue(new Error('Login failed'));
@@ -229,11 +253,25 @@ describe('KeycloakAuthenticationService', () => {
       );
     });
 
-    it('should handle absolute redirect URIs', async () => {
+    it('should reject external redirect URIs and fall back to origin', async () => {
       keycloakInstance.authenticated = true;
       await service.logout('https://external.com/redirect');
 
-      expect(keycloakInstance.logout).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: 'https://external.com/redirect' }));
+      // External URLs must not be passed to Keycloak to prevent open redirects
+      expect(keycloakInstance.logout).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.not.stringContaining('external.com') }),
+      );
+      expect(keycloakInstance.logout).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.stringContaining(window.location.origin) }),
+      );
+    });
+
+    it('should allow same-origin absolute redirect URIs', async () => {
+      keycloakInstance.authenticated = true;
+      const sameOriginUri = window.location.origin + '/dashboard';
+      await service.logout(sameOriginUri);
+
+      expect(keycloakInstance.logout).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
     });
 
     it('should stop token refresh scheduler on logout', async () => {
