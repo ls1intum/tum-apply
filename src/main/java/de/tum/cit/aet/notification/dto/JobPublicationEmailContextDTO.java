@@ -30,6 +30,13 @@ public record JobPublicationEmailContextDTO(
     String researchGroupName,
     String subjectArea
 ) {
+    /**
+     * Creates a new DTO by extracting the required fields from the given entities.
+     *
+     * @param user the recipient user
+     * @param job  the published job
+     * @return a new {@link JobPublicationEmailContextDTO} with the extracted data
+     */
     public static JobPublicationEmailContextDTO fromEntities(User user, Job job) {
         return new JobPublicationEmailContextDTO(
             user.getFirstName(),
