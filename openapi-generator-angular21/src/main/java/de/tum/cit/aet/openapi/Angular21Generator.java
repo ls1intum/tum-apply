@@ -229,10 +229,15 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         for (Map.Entry<String, TagUsage> entry : usageByTag.entrySet()) {
             String apiFilename = toApiFilename(entry.getKey());
             TagUsage usage = entry.getValue();
-            if (useHttpResource && separateResources && !usage.hasGet) {
+            if (!useHttpResource || !separateResources) {
+                // No resource files when httpResource is disabled or resources are inline
+                openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
+            } else if (!usage.hasGet) {
+                // No resource file for tags without GET operations
                 openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
             }
             if (useHttpResource && !usage.hasMutation) {
+                // No api file for tags that only have GET operations (they go in resources)
                 openapiGeneratorIgnoreList.add("api/" + apiFilename + "-api.ts");
             }
         }

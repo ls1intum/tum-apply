@@ -1,9 +1,11 @@
+api/admin-dependency-resource-api.ts
 api/ai-resource-api.ts
 api/applicant-resource-api.ts
 api/application-evaluation-resource-api.ts
 api/application-resource-api.ts
 api/authentication-resource-api.ts
 api/department-resource-api.ts
+api/document-resource-api.ts
 api/email-setting-resource-api.ts
 api/email-template-resource-api.ts
 api/email-verification-resource-api.ts
@@ -15,6 +17,7 @@ api/interview-resource-api.ts
 api/job-resource-api.ts
 api/pdf-export-resource-api.ts
 api/prof-onboarding-resource-api.ts
+api/public-config-resource-api.ts
 api/rating-resource-api.ts
 api/research-group-resource-api.ts
 api/school-resource-api.ts
