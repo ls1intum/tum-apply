@@ -28,6 +28,7 @@ import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
@@ -174,7 +175,7 @@ export class JobCreationFormComponent {
   /** Indicates whether AI is currently generating a job description draft */
   isGeneratingDraft = signal<boolean>(false);
 
-  /** Controls visibility of the AI generation panel and AI translation invocation */
+  /** Controls visibility of the AI generation panel and AI translation invocation, synced with user settings */
   aiToggleSignal = signal<boolean>(true);
 
   /** Tracks if the rewrite button should be shown (after first generation) */
@@ -223,6 +224,7 @@ export class JobCreationFormComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private aiApi = inject(AiResourceApi);
+  private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
   private researchGroupApi = inject(ResearchGroupResourceApi);
   private genderBiasAnalysisService = inject(GenderBiasAnalysisService);
@@ -461,8 +463,28 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   constructor() {
+    this.loadAiConsent();
     this.init();
     this.setupAutoSave();
+  }
+
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiToggleSignal.set(isEnabled ?? true);
+    } catch {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
+  }
+
+  async onAiToggleChanged(value: boolean): Promise<void> {
+    try {
+      await firstValueFrom(this.userApi.updateAiConsent(value));
+      this.aiToggleSignal.set(value);
+    } catch {
+      this.aiToggleSignal.set(!value);
+      this.toastService.showErrorKey('settings.aiFeatures.saveFailed');
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -45,6 +45,17 @@ public class UserService {
     }
 
     /**
+     * Finds a user by their Keycloak user ID.
+     *
+     * @param userId the Keycloak user ID
+     * @return the user entity
+     * @throws EntityNotFoundException if no user is found
+     */
+    public User findById(String userId) {
+        return userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+    }
+
+    /**
      * Finds a user by email in a case-insensitive manner.
      * Returns an empty Optional on null/blank input or when no user exists.
      *
@@ -197,6 +208,19 @@ public class UserService {
             defaultRole.setRole(UserRole.APPLICANT);
             userResearchGroupRoleRepository.save(defaultRole);
         }
+    }
+
+    /**
+     * Updates the AI consent setting for the given user.
+     * Sets aiConsentedAt on first opt-in; preserves existing timestamp on subsequent toggles.
+     *
+     * @param userId    the Keycloak user ID
+     * @param aiFeaturesEnabled the new consent value
+     */
+    public void updateAiConsent(String userId, boolean aiFeaturesEnabled) {
+        User user = findById(userId);
+        user.setAiFeaturesEnabled(aiFeaturesEnabled);
+        userRepository.save(user);
     }
 
     /**

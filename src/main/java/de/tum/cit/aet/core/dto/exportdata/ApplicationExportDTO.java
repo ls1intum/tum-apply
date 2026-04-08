@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.dto.exportdata;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,7 +13,6 @@ public record ApplicationExportDTO(
     String motivation,
     String specialSkills,
     String projects,
-    LocalDateTime aiConsentedAt,
     ApplicantReviewExportDTO review,
     List<ApplicantRatingExportDTO> ratings,
     List<ApplicantInternalCommentExportDTO> internalComments

@@ -1,0 +1,59 @@
+@if (loaded()) {
+  <div class="mb-4">
+    <div class="flex gap-6 items-start justify-between">
+      <div class="flex-1 min-w-0">
+        <h2 class="font-medium text-text-primary text-lg" jhiTranslate="settings.aiFeatures.header"></h2>
+        <p class="mt-3 text-md text-text-secondary" jhiTranslate="settings.aiFeatures.description"></p>
+      </div>
+      <jhi-toggle-switch class="shrink-0" [model]="aiFeaturesEnabled()" (modelChange)="onToggleChanged($event)" />
+    </div>
+    <div class="mt-3">
+      <jhi-button
+        label="settings.aiFeatures.learnMore"
+        [shouldTranslate]="true"
+        variant="text"
+        severity="info"
+        size="xs"
+        icon="circle-info"
+        (click)="openModal()"
+      />
+    </div>
+  </div>
+}
+
+<jhi-dialog
+  [visible]="modalVisible()"
+  header="settings.aiFeatures.modal.header"
+  [shouldTranslateHeader]="true"
+  width="540px"
+  [closable]="true"
+  [dismissableMask]="true"
+  (visibleChange)="closeModal()"
+>
+  <div class="flex flex-col gap-5">
+    <p class="text-text-secondary" jhiTranslate="settings.aiFeatures.modal.intro"></p>
+
+    <div>
+      <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.processing.header"></h3>
+      <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.processing.description"></p>
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.scope.header"></h3>
+      @if (currentRole() === RolesEnum.Applicant) {
+        <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.scope.applicant"></p>
+      } @else {
+        <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.scope.professorOrEmployee"></p>
+      }
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.consent.header"></h3>
+      <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.consent.description"></p>
+    </div>
+
+    <div class="flex justify-end">
+      <jhi-button label="button.close" [shouldTranslate]="true" (click)="closeModal()" />
+    </div>
+  </div>
+</jhi-dialog>

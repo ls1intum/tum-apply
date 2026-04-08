@@ -34,8 +34,6 @@ import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -325,11 +323,9 @@ class ApplicationServiceTest {
     class ApplyExtractedPdfData {
 
         @Test
-        void shouldRecordAiConsentTimestampOnFirstExtraction() {
+        void shouldFillExtractedFields() {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-            assertThat(application.getAiConsentedAt()).isNull();
 
             ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
                 "Ada",
@@ -349,39 +345,8 @@ class ApplicationServiceTest {
             );
             applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
 
-            assertThat(application.getAiConsentedAt()).isNotNull();
-            assertThat(application.getAiConsentedAt()).isBeforeOrEqualTo(LocalDateTime.now(ZoneOffset.UTC));
             assertThat(application.getApplicantFirstName()).isEqualTo("Ada");
             assertThat(application.getApplicantLastName()).isEqualTo("Lovelace");
-        }
-
-        @Test
-        void shouldNotOverwriteExistingConsentTimestamp() {
-            LocalDateTime originalConsent = LocalDateTime.of(2025, 1, 1, 12, 0);
-            application.setAiConsentedAt(originalConsent);
-            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
-            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
-                null,
-                null,
-                "+49999",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
-            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
-
-            assertThat(application.getAiConsentedAt()).isEqualTo(originalConsent);
-            assertThat(application.getApplicantPhoneNumber()).isEqualTo("+49999");
         }
 
         @Test
@@ -413,8 +378,6 @@ class ApplicationServiceTest {
             // Empty fields should be filled
             assertThat(application.getApplicantLastName()).isEqualTo("New");
             assertThat(application.getApplicantStreet()).isEqualTo("New Street");
-            // Consent should be recorded
-            assertThat(application.getAiConsentedAt()).isNotNull();
         }
     }
 

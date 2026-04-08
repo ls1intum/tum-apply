@@ -6,6 +6,7 @@ import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
@@ -51,16 +52,20 @@ public class AiService {
 
     private final DocumentDictionaryService documentDictionaryService;
 
+    private final CurrentUserService currentUserService;
+
     public AiService(
         ChatClient.Builder chatClientBuilder,
         JobService jobService,
         ApplicationService applicationService,
-        DocumentDictionaryService documentDictionaryService
+        DocumentDictionaryService documentDictionaryService,
+        CurrentUserService currentUserService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
         this.applicationService = applicationService;
         this.documentDictionaryService = documentDictionaryService;
+        this.currentUserService = currentUserService;
     }
 
     /**
@@ -136,6 +141,7 @@ public class AiService {
      * @return The translated text response with detected and target language info
      */
     public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(String jobId, String toLang, String text) {
+        currentUserService.markAiConsentForCurrentUser();
         AIJobDescriptionTranslationDTO translated = translateText(text, toLang);
         String translatedText = translated.translatedText();
         if (translatedText != null && !translatedText.isBlank()) {
@@ -195,6 +201,7 @@ public class AiService {
      * @return the extracted data as a structured DTO
      */
     public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
+        currentUserService.markAiConsentForCurrentUser();
         // 1) Download the document
         Resource doc = documentDictionaryService.downloadDocument(UUID.fromString(docId));
         // 2) Extract data from the PDF via AI

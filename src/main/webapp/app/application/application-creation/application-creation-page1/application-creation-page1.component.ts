@@ -22,7 +22,9 @@ import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-s
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { Observable, shareReplay } from 'rxjs';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { ToastService } from 'app/service/toast-service';
+import { firstValueFrom } from 'rxjs';
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
@@ -123,6 +125,7 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
+  aiFeaturesEnabled = signal<boolean>(false);
   isExtractingAi = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
@@ -173,6 +176,7 @@ export default class ApplicationCreationPage1Component {
   });
 
   private aiApi = inject(AiResourceApi);
+  private userApi = inject(UserResourceApi);
   private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
 
@@ -194,6 +198,8 @@ export default class ApplicationCreationPage1Component {
   });
 
   constructor() {
+    this.loadAiConsent();
+
     effect(onCleanup => {
       const form = this.page1Form();
       const data = this.data();
@@ -225,6 +231,15 @@ export default class ApplicationCreationPage1Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiFeaturesEnabled.set(isEnabled ?? true);
+    } catch {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
   }
 
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {

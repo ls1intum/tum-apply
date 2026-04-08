@@ -14,22 +14,18 @@
       <jhi-profile-picture-settings />
       <p-divider layout="horizontal" />
 
-      <div class="mb-4">
-        <div class="text-lg font-semibold mb-1">
-          <h2 jhiTranslate="settings.appearance.header"></h2>
-        </div>
-        <div class="pb-4">
-          <div class="flex flex-row items-center justify-between">
-            <label class="text-text-secondary" jhiTranslate="settings.appearance.theme.label"></label>
-            <jhi-select
-              [items]="themeOptions"
-              [selected]="selectedTheme()"
-              (selectedChange)="onThemeChange($event)"
-              [translateItems]="true"
-            />
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between my-6 gap-4">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-3">
+            <h2 class="font-medium text-text-primary text-lg" jhiTranslate="settings.appearance.header"></h2>
           </div>
+          <p class="mt-3 text-md text-text-secondary" jhiTranslate="settings.appearance.theme.label"></p>
         </div>
+        <jhi-select [items]="themeOptions" [selected]="selectedTheme()" (selectedChange)="onThemeChange($event)" [translateItems]="true" />
       </div>
+
+      <p-divider class="my-6" layout="horizontal" />
+      <jhi-ai-consent-settings [currentRole]="role()" />
     </ng-template>
 
     <ng-template jhiTabPanel="notifications">
