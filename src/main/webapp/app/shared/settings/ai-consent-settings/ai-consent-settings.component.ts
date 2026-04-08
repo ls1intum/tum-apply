@@ -1,6 +1,5 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -23,10 +22,10 @@ export class AiConsentSettingsComponent {
   modalVisible = signal<boolean>(false);
   loaded = signal<boolean>(false);
 
+  protected readonly RolesEnum = UserShortDTORolesEnum;
+
   private readonly userApi = inject(UserResourceApi);
   private readonly toastService = inject(ToastService);
-
-  protected readonly RolesEnum = UserShortDTORolesEnum;
 
   constructor() {
     this.loadAiConsent();
@@ -35,7 +34,7 @@ export class AiConsentSettingsComponent {
   async loadAiConsent(): Promise<void> {
     try {
       const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled ?? true);
+      this.aiFeaturesEnabled.set(isEnabled);
       this.loaded.set(true);
     } catch {
       this.toastService.showErrorKey('settings.aiFeatures.loadFailed');

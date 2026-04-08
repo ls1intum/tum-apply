@@ -233,15 +233,6 @@ export default class ApplicationCreationPage1Component {
     });
   }
 
-  private async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled ?? true);
-    } catch {
-      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
-    }
-  }
-
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
     this.currentCvDocs.set(cvDocs);
     if (cvDocs === undefined || cvDocs.length === 0) {
@@ -339,5 +330,14 @@ export default class ApplicationCreationPage1Component {
         this.isExtractingAi.set(false);
       },
     });
+  }
+
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiFeaturesEnabled.set(isEnabled);
+    } catch {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
   }
 }

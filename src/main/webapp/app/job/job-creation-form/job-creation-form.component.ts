@@ -471,7 +471,7 @@ export class JobCreationFormComponent {
   private async loadAiConsent(): Promise<void> {
     try {
       const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiToggleSignal.set(isEnabled ?? true);
+      this.aiToggleSignal.set(isEnabled);
     } catch {
       this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
     }
