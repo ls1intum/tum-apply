@@ -10,7 +10,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.dto.DataExportEmailContext;
-import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTODTO;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
