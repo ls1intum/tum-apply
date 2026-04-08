@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  *       plus const enum objects for runtime enum access (e.g., {@code JobDetailDTOStateEnum.Draft}).</li>
  * </ol>
  *
- * <h3>Generation Pipeline</h3>
+ * <p><b>Generation Pipeline</b></p>
  * The generator hooks into four lifecycle stages of the OpenAPI Generator framework:
  * <ol>
  *   <li>{@link #processOpts()} &mdash; Reads CLI options and registers mustache templates.</li>
@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  *       builds URL templates, and collects imports.</li>
  * </ol>
  *
- * <h3>Naming Conventions</h3>
+ * <p><b>Naming Conventions</b></p>
  * <ul>
  *   <li>File names: kebab-case (e.g., {@code job-resource-api.ts}, {@code job-detail-dto.ts})</li>
  *   <li>Class names: PascalCase with {@code Api} suffix (e.g., {@code JobResourceApi})</li>
@@ -57,15 +57,24 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Angular21Generator.class);
 
+    /** Generator name used by the OpenAPI Generator SPI and CLI. */
     public static final String GENERATOR_NAME = "angular21";
+    /** Config option for enabling httpResource-based GET resources. */
     public static final String USE_HTTP_RESOURCE = "useHttpResource";
+    /** Config option for enabling inject() instead of constructor injection. */
     public static final String USE_INJECT_FUNCTION = "useInjectFunction";
+    /** Config option for generating separate resource files for GET operations. */
     public static final String SEPARATE_RESOURCES = "separateResources";
+    /** Config option for adding readonly modifiers to response models. */
     public static final String READONLY_MODELS = "readonlyModels";
 
+    /** Whether to generate httpResource-based GET resources. */
     protected boolean useHttpResource = true;
+    /** Whether to use Angular inject() for service dependencies. */
     protected boolean useInjectFunction = true;
+    /** Whether to place GET resources in separate files. */
     protected boolean separateResources = true;
+    /** Whether to add readonly modifiers to response models. */
     protected boolean readonlyModels = true;
 
     // =============================================================================================
@@ -583,6 +592,7 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
     private String toKebabCase(String name) {
         return name.replaceAll("([a-z])([A-Z])", "$1-$2")
                 .replaceAll("([A-Z]+)([A-Z][a-z])", "$1-$2")
+                .replaceAll("_", "-")
                 .toLowerCase();
     }
 

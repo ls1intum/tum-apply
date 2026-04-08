@@ -41,7 +41,7 @@
       "admin": {
         "dependencies": "TUMApply - Abhängigkeiten"
       },
-      "about-us": "TumApply - Über uns",
+      "about-us": "TUMApply - Über uns",
       "interview": {
         "overview": "TUMApply - Interviewübersicht",
         "detail": "Interview - {{jobTitle}}",

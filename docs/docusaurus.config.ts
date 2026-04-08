@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'TUMApply',
   tagline: 'Documentation for Users',
-  favicon: 'img/tum-logo-blue.svg',
+  favicon: 'img/tum-apply-logo.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -82,7 +82,7 @@ const config: Config = {
       '@docusaurus/plugin-content-docs',
       {
         id: 'professors',
-        path: 'docs/professors',
+        path: 'docs/professors-and-employees',
         routeBasePath: 'professors',
         sidebarPath: './sidebar-professors.ts',
         editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
@@ -102,7 +102,7 @@ const config: Config = {
       '@docusaurus/plugin-content-docs',
       {
         id: 'admin',
-        path: 'docs/admin',
+        path: 'docs/admins',
         routeBasePath: 'admin',
         sidebarPath: './sidebar-admin.ts',
         editUrl: 'https://github.com/ls1intum/tum-apply/tree/main/docs',
@@ -126,29 +126,29 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Apply User Docs',
+      title: 'TUMApply Docs',
       logo: {
-        alt: 'TUM Logo',
-        src: 'img/tum-logo-blue.svg'
+        alt: 'TUMApply Logo',
+        src: 'img/tum-apply-logo.svg'
       },
       items: [
         {
-          to: '/applicants/account-creation',
+          to: '/applicants/category/applicants',
           label: 'Applicants',
           position: 'left',
         },
         {
-          to: '/professors/account-creation',
+          to: '/professors/category/professors--employees',
           label: 'Professors',
           position: 'left',
         },
         {
-          to: '/developer/intro',
+          to: '/developer/category/developers',
           label: 'Developers',
           position: 'left',
         },
         {
-          to: '/admin/intro',
+          to: '/admin/category/admins',
           label: 'Admins',
           position: 'left',
         },

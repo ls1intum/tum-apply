@@ -1,0 +1,52 @@
+---
+sidebar_label: Branch Guidelines
+---
+
+# Branch Guidelines
+
+Before creating a branch, **prefix it with one of the following standardized categories** to clarify the purpose and scope of your changes. This helps keep the repository organized and improves collaboration across the team.
+
+---
+
+## Branch Prefixes
+
+| **Prefix** | **When to Use** |
+|---|---|
+| `chore/` | For **routine tasks** that don't add features or fix bugs. Examples: refactoring, dependency updates, cleanup work, documentation changes. |
+| `feat/` | When adding a **new feature** or significant enhancement to the application. |
+| `test/` | When adding or updating **tests** (unit, integration). |
+| `bugfix/` | For fixing **user-facing or logic bugs** in the application. |
+| `general/` | For changes that **don't clearly fall into any of the categories** above. |
+
+---
+
+## Naming Rules
+
+- Use **kebab-case** for the branch name after the prefix (e.g., `feat/add-login-page`).
+- Keep names **short but descriptive** — they should convey what the branch is about at a glance.
+- If the branch relates to a specific issue then you can include it optionally (e.g., `bugfix/1383-fix-resend-otp-code`).
+
+---
+
+## Examples
+
+```bash
+# New feature
+feat/add-application-dashboard
+
+# Bug fix tied to an issue
+bugfix/1383-fix-resend-otp-code
+
+# Routine maintenance
+chore/update-dependencies
+
+# Test additions
+test/add-evaluation-module-tests
+
+# General / uncategorized
+general/migrate-ci-runner-config
+```
+
+:::tip
+Always check existing branches before creating a new one to avoid duplicates or naming conflicts.
+:::

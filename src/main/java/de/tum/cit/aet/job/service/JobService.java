@@ -22,10 +22,13 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.EmailSettingService;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
@@ -42,8 +45,10 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final ApplicantRepository applicantRepository;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
+    private final EmailSettingService emailSettingService;
     private final ApplicationRepository applicationRepository;
     private final InterviewService interviewService;
     private final JobImageHelper jobImageHelper;
@@ -90,6 +95,7 @@ public class JobService {
      */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = assertCanManageJob(jobId);
+        JobState oldState = job.getState();
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
@@ -114,7 +120,11 @@ public class JobService {
             notifyApplicants(applicationsToNotify, RejectReason.JOB_FILLED);
         }
 
-        return JobFormDTO.getFromEntity(jobRepository.save(job));
+        Job savedJob = jobRepository.save(job);
+        if (savedJob.getState() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
+            notifySubjectAreaSubscribers(savedJob);
+        }
+        return JobFormDTO.getFromEntity(savedJob);
     }
 
     private void notifyApplicants(Set<Application> applications, RejectReason reason) {
@@ -379,12 +389,33 @@ public class JobService {
 
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             interviewService.createInterviewProcessForJob(savedJob.getJobId());
+            notifySubjectAreaSubscribers(savedJob);
         }
 
         // Clean up old image after job is persisted (separate from job persistence)
         jobImageHelper.replaceJobImage(oldImage, savedJob.getImage());
 
         return JobFormDTO.getFromEntity(savedJob);
+    }
+
+    private void notifySubjectAreaSubscribers(Job job) {
+        List<User> recipients = applicantRepository
+            .findAllBySubjectAreaSubscription(job.getSubjectArea())
+            .stream()
+            .filter(user -> emailSettingService.canNotify(EmailType.JOB_PUBLISHED_SUBJECT_AREA, user))
+            .toList();
+
+        recipients.forEach(user ->
+            sender.sendAsync(
+                Email.builder()
+                    .to(user)
+                    .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
+                    .content(new JobPublicationEmailContextDTO(user, job))
+                    .language(Language.fromCode(user.getSelectedLanguage()))
+                    .sendAlways(true)
+                    .build()
+            )
+        );
     }
 
     /**

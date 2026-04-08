@@ -1,0 +1,138 @@
+---
+sidebar_label: API Testing with Postman
+---
+
+# API Testing with Postman
+
+This guide explains how to test TUMApply API endpoints locally using Postman with Keycloak authentication.
+
+---
+
+## Prerequisites
+
+- [Postman](https://www.postman.com/downloads/) installed
+- TUMApply running locally (Docker services + server started)
+- Keycloak running on `http://localhost:9080`
+
+---
+
+## Step 1: Get an Access Token
+
+All TUMApply API endpoints require authentication via a JWT token from Keycloak. To obtain one:
+
+1. Open Postman and create a new **POST** request
+2. Set the URL to:
+
+   ```
+   http://localhost:9080/realms/tumapply/protocol/openid-connect/token
+   ```
+
+3. Go to the **Body** tab, select **x-www-form-urlencoded**, and add the following key-value pairs:
+
+   | **Key** | **Value** |
+   |---|---|
+   | `grant_type` | `password` |
+   | `client_id` | `tumapply-client` |
+   | `username` | `admin1` |
+   | `password` | `admin` |
+
+4. Click **Send**
+5. You will receive a response containing an `access_token`:
+
+   ```json
+   {
+     "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6...",
+     "expires_in": 300,
+     "token_type": "Bearer"
+   }
+   ```
+
+6. Copy the `access_token` value — you'll need it for the next step
+
+### Available Test Users
+
+| **Username** | **Password** | **Role** |
+|---|---|---|
+| `admin1` | `admin` | ADMIN |
+| `professor1` | `professor` | PROFESSOR |
+| `professor2` | `professor` | PROFESSOR |
+| `applicant1` | `applicant` | APPLICANT |
+| `applicant2` | `applicant` | APPLICANT |
+| `applicant3` | `applicant` | APPLICANT |
+
+Use different users to test role-specific endpoints.
+
+---
+
+## Step 2: Call an API Endpoint
+
+1. Create a new request in Postman (e.g., **GET**)
+2. Set the URL to a TUMApply endpoint, for example:
+
+   ```
+   http://localhost:8080/api/users/me
+   ```
+
+3. Go to the **Authorization** tab
+4. Select **Bearer Token** as the type
+5. Paste the `access_token` from Step 1 into the **Token** field
+6. Click **Send**
+
+You should receive a response with the authenticated user's data:
+
+```json
+{
+  "userId": "fcf4722e-757f-427f-bae1-1c960b0dd531",
+  "email": "admin1@tumapply.local",
+  "firstName": "Admin",
+  "lastName": "One",
+  "roles": ["ADMIN"]
+}
+```
+
+---
+
+## Automating Token Retrieval in Postman
+
+Instead of manually copying the token each time, you can configure Postman to handle it automatically:
+
+1. Create a new request or open an existing one
+2. Go to the **Authorization** tab
+3. Select **OAuth 2.0** as the type
+4. Under **Configure New Token**, fill in:
+
+   | **Field** | **Value** |
+   |---|---|
+   | Token Name | `TUMApply Local` |
+   | Grant Type | `Password Credentials` |
+   | Access Token URL | `http://localhost:9080/realms/tumapply/protocol/openid-connect/token` |
+   | Client ID | `tumapply-client` |
+   | Username | `admin1` |
+   | Password | `admin` |
+
+5. Click **Get New Access Token**
+6. Click **Use Token**
+
+Postman will now automatically attach the token to your requests. When it expires (after 5 minutes), click **Get New Access Token** again.
+
+---
+
+## Inspecting Tokens
+
+You can decode and inspect any JWT token at [jwt.io](https://jwt.io). Paste the `access_token` to see the decoded payload including:
+
+- `preferred_username` — the Keycloak username
+- `given_name` / `family_name` — user's name
+- `email` — user's email
+- `exp` — token expiration timestamp
+
+---
+
+## Common Issues
+
+:::warning[Troubleshooting]
+- **401 Unauthorized**: Token has expired (tokens last 5 minutes by default). Get a new one.
+- **403 Forbidden**: The user doesn't have the required role for this endpoint. Try a different test user.
+- **Connection refused on port 9080**: Keycloak is not running. Start it with `docker compose -f docker/local-setup/services.yml up -d`.
+- **Connection refused on port 8080**: The Spring Boot server is not running. Start it with `./gradlew -x webapp`.
+:::

@@ -11,9 +11,11 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -27,6 +29,7 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -89,6 +92,32 @@ class TemplateProcessingServiceTest {
             String result = service.renderTemplate(translation, mockApplication().getJob());
 
             assertThat(result).contains("JobTitle");
+        }
+
+        @Test
+        void withJobPublicationContextInjectsApplicantAndJobVariables() throws Exception {
+            EmailTemplateTranslation translation = translation(
+                "${APPLICANT_FIRST_NAME} ${APPLICANT_LAST_NAME} ${JOB_TITLE} ${SUBJECT_AREA} ${RESEARCH_GROUP_NAME} " +
+                    "${SUPERVISING_PROFESSOR_FIRST_NAME} ${SUPERVISING_PROFESSOR_LAST_NAME} ${JOB_ID} ${url}",
+                Language.ENGLISH,
+                "jobPublication"
+            );
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            String result = service.renderTemplate(translation, mockJobPublicationContext());
+
+            assertThat(result).contains(
+                "Alice",
+                "Smith",
+                "JobTitle",
+                SubjectArea.BIOCHEMISTRY.getEnglishValue(),
+                "RG",
+                "John",
+                "Doe",
+                BASE_URL,
+                "123e4567-e89b-12d3-a456-426614174000"
+            );
         }
 
         @Test
@@ -347,6 +376,7 @@ class TemplateProcessingServiceTest {
 
         Job job = new Job();
         job.setTitle("JobTitle");
+        job.setSubjectArea(SubjectArea.BIOCHEMISTRY);
         job.setSupervisingProfessor(professor);
         job.setResearchGroup(group);
 
@@ -354,5 +384,11 @@ class TemplateProcessingServiceTest {
         app.setApplicant(applicant);
         app.setJob(job);
         return app;
+    }
+
+    private JobPublicationEmailContextDTO mockJobPublicationContext() {
+        Application application = mockApplication();
+        application.getJob().setJobId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+        return new JobPublicationEmailContextDTO(application.getApplicant().getUser(), application.getJob());
     }
 }

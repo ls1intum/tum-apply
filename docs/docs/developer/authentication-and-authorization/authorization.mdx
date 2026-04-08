@@ -1,0 +1,182 @@
+---
+sidebar_label: Authorization
+---
+
+# Authorization
+
+## Available Roles
+
+The application supports the following roles (assigned in the DB):
+
+- `APPLICANT`
+- `EMPLOYEE`
+- `PROFESSOR`
+- `ADMIN`
+
+Roles are not assigned via Keycloak — they are provisioned in the server database.
+
+---
+
+## Role Handling on the Server
+
+- On first login, users are automatically created (if not existing) and assigned a role.
+- Role assignments are stored in `UserResearchGroupRole`.
+- Roles are loaded together with the user using a JPA `@EntityGraph`.
+
+---
+
+## Checking Roles on the Client
+
+In the Angular client, you can determine the currently logged-in user's role(s) by calling the `/api/users/me` endpoint after login.
+
+### `/api/users/me` Endpoint
+
+The `GET /api/users/me` endpoint allows the client to fetch details of the currently logged-in user.
+
+**Behavior:**
+
+- **Authenticated and user exists**: returns user data and roles
+- **Authenticated but user not in DB**: creates new user with data from the JWT and assigns role `APPLICANT`
+- **Unauthenticated**: returns `401 Unauthorized`
+
+**Example response:**
+
+```json
+{
+  "userId": "fcf4722e-757f-427f-bae1-1c960b0dd531",
+  "email": "admin1@tumapply.local",
+  "firstName": "Admin",
+  "lastName": "One",
+  "roles": ["APPLICANT"],
+  "researchGroup": {
+    "researchGroupId": "00000000-0000-0000-0000-000000000002",
+    "name": "Data Science Group"
+  }
+}
+```
+
+Use this role information to control visibility of menus, routes, and functionality in the UI.
+
+---
+
+## Authorization in Code
+
+TUMApply uses a **layered authorization strategy**, combining annotations and runtime access checks.
+
+---
+
+### Role-Based Annotations
+
+Use the custom security annotations on controller methods to restrict access by role. Here are some common examples (more are available in the codebase):
+
+| **Annotation** | **Allowed Roles** |
+|---|---|
+| `@Applicant` | APPLICANT |
+| `@ApplicantOrAdmin` | APPLICANT, ADMIN |
+| `@ProfessorOrEmployee` | PROFESSOR, EMPLOYEE |
+| `@ProfessorOrEmployeeOrAdmin` | PROFESSOR, EMPLOYEE, ADMIN |
+| `@ProfessorOrAdmin` | PROFESSOR, ADMIN |
+| `@Professor` | PROFESSOR |
+| `@Admin` | ADMIN |
+| `@Authenticated` | Any authenticated user |
+
+```java
+@ProfessorOrEmployee
+@GetMapping("/api/interviews/overview")
+public ResponseEntity<?> getInterviewOverview() {
+    ...
+}
+```
+
+---
+
+### Access Checks with `currentUserService.hasAccessTo(...)`
+
+Use `currentUserService.hasAccessTo(object)` to check **if the current user can access a specific resource**.
+
+- Best used inside **service methods**
+- Checks based on ownership or research group relationship
+- Avoids duplicate database calls — you already have the resource
+
+You can also use `currentUserService.assertAccessTo(object)` to throw an `AccessDeniedException` if access is denied:
+
+```java
+currentUserService.assertAccessTo(job);
+```
+
+Supports: `Job`, `Application`, `CustomFieldAnswer`, `ApplicationReview`, `InternalComment`, `CustomField`, `ResearchGroup`
+
+---
+
+### `@CheckAccess` for Request Parameters
+
+Use `@CheckAccess` to automatically check access **based on method parameters** — especially useful in controller methods where IDs are directly passed.
+
+```java
+@CheckAccess
+@PostMapping("/api/research-groups/{researchGroupId}/jobs")
+public ResponseEntity<JobDTO> createJob(@PathVariable UUID researchGroupId, @RequestBody JobDTO jobDTO) {
+    ...
+}
+```
+
+```java
+@CheckAccess(target = AccessTarget.PROFESSOR_ID)
+public ResponseEntity<?> getJobsForProfessor(@PathVariable UUID professorId) {
+    ...
+}
+```
+
+Supported targets: `RESEARCH_GROUP_ID` (default), `USER_ID`, `PROFESSOR_ID`
+
+---
+
+### When to Use What?
+
+| **Use case** | **Role annotation** | **`hasAccessTo(...)`** | **`@CheckAccess`** |
+|---|---|---|---|
+| Block roles like APPLICANT early | Yes | No | No |
+| Check if user owns a Job or Application | No | Yes | If param ID is passed |
+| POST with researchGroupId in path | No | No | Yes |
+| Service logic with full object | No | Yes | No |
+
+:::info[Important]
+All approaches work together — use them **in combination** for best clarity and security.
+
+Use role annotations to restrict access based on roles (e.g., "is this user a professor?"). Use
+`hasAccessTo(...)` or `@CheckAccess` to restrict access based on ownership or affiliation with a resource (e.g., "does
+this user belong to the research group that owns this application?").
+:::
+
+---
+
+## Employee Role (Server-Verified)
+
+The employee role is implemented via controller-level security annotations on the server:
+
+- `@ProfessorOrEmployee` — endpoint is available to **both EMPLOYEE and PROFESSOR**
+- `@ProfessorOrEmployeeOrAdmin` — endpoint is available to **EMPLOYEE, PROFESSOR, and ADMIN**
+
+The following capabilities are verified from server controller methods annotated with the employee-enabled annotations:
+
+| **Area** | **Employee Capability** | **Annotation** | **Professors can do this too?** |
+|---|---|---|---|
+| Evaluation | Accept/reject applications, open applications, list evaluation overviews/details, download applicant documents, list job names | `@ProfessorOrEmployee` | Yes |
+| Internal collaboration | Read/create/update/delete internal comments, read/update application ratings | `@ProfessorOrEmployee` | Yes |
+| Interviews | Full interview workflow: overview, upcoming interviews, process details, create/delete slots, assign slots, add interviewees, update assessments, send invitations | `@ProfessorOrEmployee` | Yes |
+| Jobs | Create/update/delete jobs, change job state, list research-group jobs, view protected job details | `@ProfessorOrEmployeeOrAdmin` | Yes |
+| Email templates | List, get, create, and update research-group templates | `@ProfessorOrEmployee` | Yes |
+| Research groups | View own group members, read group details, update research group data | `@ProfessorOrEmployeeOrAdmin` | Yes |
+| Images and banners | View default and research-group banners, list own uploads, upload job banners | `@ProfessorOrEmployeeOrAdmin` | Yes |
+| Export | Export job preview to PDF | `@ProfessorOrEmployee` | Yes |
+| AI support | Generate job draft stream, translate/persist job descriptions | `@ProfessorOrEmployeeOrAdmin` | Yes |
+
+### Not Allowed for Employees
+
+The following actions are explicitly restricted by annotations that **exclude EMPLOYEE**:
+
+- Delete email templates (`@Professor`)
+- Delete images (`@ProfessorOrAdmin`)
+- Add/remove research group members (`@ProfessorOrAdmin`)
+- Search users available for research-group assignment (`@ProfessorOrAdmin`)
+- Admin-only endpoints such as research-group moderation and admin creation flows (`@Admin`)

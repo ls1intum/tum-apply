@@ -8,7 +8,10 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
-import { DocumentInformationHolderDTO, DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
+import {
+  DocumentInformationHolderDTO,
+  DocumentInformationHolderDTODocumentTypeEnum,
+} from 'app/generated/model/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
