@@ -33,7 +33,7 @@
   </div>
 
   @if (isOpen()) {
-    <div class="filter-dropdown" [class.align-right]="dropdownAlignment() === 'right'">
+    <div class="filter-dropdown" [class.inline-mode]="inline()" [class.align-right]="dropdownAlignment() === 'right'">
       <div class="panel-header">
         <fa-icon class="filter-icon text-primary" [icon]="['fas', 'search']" />
         <input

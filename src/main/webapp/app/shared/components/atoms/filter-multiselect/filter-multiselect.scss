@@ -168,6 +168,11 @@
       }
     }
   }
+
+  .filter-dropdown.inline-mode {
+    position: relative;
+    z-index: 1;;
+  }
 }
 
 @media (max-width: bp.$md) {
