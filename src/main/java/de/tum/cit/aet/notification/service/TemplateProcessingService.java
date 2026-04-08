@@ -209,7 +209,6 @@ public class TemplateProcessingService {
     private void addJobData(Map<String, Object> dataModel, Job job) {
         dataModel.put(TemplateVariable.JOB_ID.getValue(), job.getJobId());
         dataModel.put(TemplateVariable.JOB_TITLE.getValue(), job.getTitle());
-        dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), job.getSubjectArea());
 
         User supervisingProfessor = job.getSupervisingProfessor();
         dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_FIRST_NAME.getValue(), supervisingProfessor.getFirstName());
