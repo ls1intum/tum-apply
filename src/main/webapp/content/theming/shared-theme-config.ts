@@ -314,6 +314,7 @@ export const sharedComponentConfig = {
     },
     navButton: {
       selectedBackground: '{primary.color}',
+      hoverBackground: '{primary.hoverColorOutlined}',
     },
   },
   multiselect: {

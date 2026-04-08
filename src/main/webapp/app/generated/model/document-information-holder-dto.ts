@@ -10,7 +10,21 @@
 
 
 export interface DocumentInformationHolderDTO {
+    readonly documentType?: DocumentInformationHolderDTODocumentTypeEnum;
     readonly id: string;
     readonly name?: string;
     readonly size: number;
 }
+
+export type DocumentInformationHolderDTODocumentTypeEnum = 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM';
+
+export const DocumentInformationHolderDTODocumentTypeEnum = {
+    BachelorTranscript: 'BACHELOR_TRANSCRIPT' as const,
+    MasterTranscript: 'MASTER_TRANSCRIPT' as const,
+    Reference: 'REFERENCE' as const,
+    Cv: 'CV' as const,
+    Custom: 'CUSTOM' as const,
+} as const;
+
+export const DocumentInformationHolderDTODocumentTypeEnumValues = ['BACHELOR_TRANSCRIPT', 'MASTER_TRANSCRIPT', 'REFERENCE', 'CV', 'CUSTOM'] as const;
+
