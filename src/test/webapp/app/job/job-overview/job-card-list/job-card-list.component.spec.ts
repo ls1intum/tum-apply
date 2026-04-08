@@ -8,7 +8,7 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import * as DropdownOptions from 'app/job/dropdown-options';
-import { JobLocationEnum } from 'app/generated/model/job';
+import { JobCardDTOLocationEnum as JobLocationEnum } from 'app/generated/model/job-card-dto';
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';

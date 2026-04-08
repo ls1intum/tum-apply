@@ -8,6 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 
 public class HtmlSanitizer {
@@ -17,17 +19,64 @@ public class HtmlSanitizer {
     private static final Pattern FREEMARKER_HREF_PATTERN = Pattern.compile("\\$\\{(\\w+?)!?}");
     private static final Set<String> VALID_VARIABLES = TemplateVariable.getTemplateVariables();
 
+    /** Allowed CSS class pattern: only Quill formatting classes (alignment, indentation). */
+    private static final Pattern ALLOWED_CLASS_PATTERN = Pattern.compile("ql-align-(center|right|justify)|ql-indent-[1-8]");
+
+    /** Allowed values for the data-list attribute on &lt;li&gt; elements (Quill 2.x list types). */
+    private static final Set<String> ALLOWED_DATA_LIST_VALUES = Set.of("bullet", "ordered");
+
     /**
      * Sanitizes generic HTML input using a base safelist. Allows basic formatting and anchor tags.
+     * <p>
+     * This method must be applied to all user-supplied rich-text content both on write (before
+     * persisting to the database) and on read (before sending to the client) as defense-in-depth.
      *
      * @param html the HTML input to sanitize
-     * @return sanitized HTML with unsafe elements and attributes removed
+     * @return sanitized HTML with unsafe elements and attributes removed; null if input is null; empty string if input is blank
      */
     public static String sanitize(String html) {
+        if (html == null) {
+            return null;
+        }
         if (StringUtils.isBlank(html)) {
             return "";
         }
-        return Jsoup.clean(html, BASE_SAFE_LIST());
+        String cleaned = Jsoup.clean(html, BASE_SAFE_LIST());
+        return stripNonQuillClasses(cleaned);
+    }
+
+    /**
+     * Removes class attributes that are not Quill editor formatting classes (ql-*)
+     * and strips invalid data-list attribute values.
+     * This preserves alignment, indentation, and list types while preventing arbitrary injection.
+     */
+    private static String stripNonQuillClasses(String html) {
+        Document doc = Jsoup.parseBodyFragment(html);
+        for (Element el : doc.body().getAllElements()) {
+            if (el.hasAttr("class")) {
+                String[] classes = el.className().split("\\s+");
+                StringBuilder kept = new StringBuilder();
+                for (String cls : classes) {
+                    if (ALLOWED_CLASS_PATTERN.matcher(cls).matches()) {
+                        if (!kept.isEmpty()) {
+                            kept.append(' ');
+                        }
+                        kept.append(cls);
+                    }
+                }
+                if (kept.isEmpty()) {
+                    el.removeAttr("class");
+                } else {
+                    el.attr("class", kept.toString());
+                }
+            }
+            if (el.hasAttr("data-list")) {
+                if (!ALLOWED_DATA_LIST_VALUES.contains(el.attr("data-list"))) {
+                    el.removeAttr("data-list");
+                }
+            }
+        }
+        return doc.body().html();
     }
 
     /**
@@ -103,6 +152,6 @@ public class HtmlSanitizer {
      * @return a configured {@link Safelist} instance
      */
     private static Safelist BASE_SAFE_LIST() {
-        return Safelist.basic().addAttributes("a", "href", "target");
+        return Safelist.basic().addAttributes("a", "href", "target").addAttributes("p", "class").addAttributes("li", "class", "data-list");
     }
 }

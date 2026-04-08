@@ -37,7 +37,7 @@ Core Angular and TypeScript patterns for developing the TUMApply client. Follow 
 
 ## Component Structure
 
-- Create **1 folder per component** with the component files: `.html`, `.ts`, and `.scss` only if needed (prefer Tailwind utility classes over custom SCSS — see [Client Styling](./client-styling-guidelines))
+- Create **1 folder per component** with the component files: `.html`, `.ts`, and `.scss` only if needed (prefer Tailwind utility classes over custom SCSS — see [Client Styling](./client-styling))
 - Test files (`.spec.ts`) live in the mirrored directory structure under `src/test/webapp/`, not alongside the component
 - Follow the **smart/dumb component approach**: smart components handle logic and state, dumb components receive data via inputs and emit events via outputs
 - More complex components should be divided into multiple sub-components
@@ -345,6 +345,28 @@ async processApplication(applicationId: string): Promise<void> {
 - Split complex functions into multiple helper functions — the parent function should be easy to understand at a glance
 - Format with **Prettier**, validate with **ESLint**
 
+### Avoid the Spread Operator (`...`)
+
+Do not use the spread operator for objects or arrays. It obscures what is actually being copied or merged, makes debugging harder, and can introduce subtle bugs with nested references. Write out the operation explicitly instead.
+
+```typescript
+// ✅ GOOD — Explicit object construction
+const updated: UserDTO = {
+  id: user.id,
+  name: newName,
+  email: user.email,
+};
+
+// ✅ GOOD — Explicit array operations
+const combined = firstArray.concat(secondArray);
+const withNewItem = items.concat(newItem);
+
+// ❌ AVOID — Spread operator hides what is being copied
+const updated = { ...user, name: newName };
+const combined = [...firstArray, ...secondArray];
+const withNewItem = [...items, newItem];
+```
+
 ---
 
 ## Memory Leak Prevention
@@ -371,6 +393,6 @@ Prefer `async/await` with `firstValueFrom` over manual subscriptions to avoid su
 
 ## Related Documentation
 
-- [Client Styling](./client-styling-guidelines) — Tailwind, PrimeNG, and CSS patterns
+- [Client Styling](./client-styling) — Tailwind, PrimeNG, and CSS patterns
 - [Color Theming](./color-theming) — Complete theming guide
 - [Client Tests](./client-tests) — Client testing patterns

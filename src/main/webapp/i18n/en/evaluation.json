@@ -121,11 +121,11 @@
     "errors": {
       "loadJobNames": {
         "summary": "Error",
-        "detail": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
+        "detail": "Failed to load job names. Please try refreshing the page, or contact us if the problem persists."
       },
       "loadApplications": {
         "summary": "Error",
-        "detail": "Failed to load applications. Please try refreshing the page, or contact us if the problem continues."
+        "detail": "Failed to load applications. Please try refreshing the page, or contact us if the problem persists."
       },
       "noJobId": {
         "summary": "Error",

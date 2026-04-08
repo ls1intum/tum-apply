@@ -183,23 +183,23 @@
       "errors": {
         "loadFilter": {
           "summary": "Error",
-          "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+          "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem persists."
         },
         "loadResearchGroups": {
           "summary": "Error",
-          "detail": "Failed to load research groups. Please try refreshing the page, or contact us if the problem continues."
+          "detail": "Failed to load research groups. Please try refreshing the page, or contact us if the problem persists."
         },
         "approve": {
           "summary": "Error",
-          "detail": "Failed to approve research group. Please try refreshing the page, or contact us if the problem continues."
+          "detail": "Failed to approve research group. Please try refreshing the page, or contact us if the problem persists."
         },
         "deny": {
           "summary": "Error",
-          "detail": "Failed to deny research group. Please try refreshing the page, or contact us if the problem continues."
+          "detail": "Failed to deny research group. Please try refreshing the page, or contact us if the problem persists."
         },
         "withdraw": {
           "summary": "Error",
-          "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem continues."
+          "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem persists."
         },
         "create": {
           "summary": "Error",
@@ -304,7 +304,7 @@
       "errors": {
         "view": {
           "summary": "Error",
-          "detail": "Failed displaying research group information. Please try refreshing the page, or contact us if the problem continues."
+          "detail": "Failed displaying research group information. Please try refreshing the page, or contact us if the problem persists."
         },
         "noId": {
           "summary": "Error",

@@ -54,11 +54,11 @@
           "emptySelection": "Noch keine Fachbereiche ausgewählt.",
           "loadFailed": {
             "summary": "Laden fehlgeschlagen",
-            "detail": "Fehler beim Laden der Fachbereich-Abonnements. Bitte versuche es erneut."
+            "detail": "Fehler beim Laden der ausgewählten Fachbereiche. Bitte versuche es erneut."
           },
           "saveFailed": {
             "summary": "Speichern fehlgeschlagen",
-            "detail": "Fehler beim Aktualisieren der Fachbereich-Abonnements. Bitte versuche es erneut."
+            "detail": "Fehler beim Aktualisieren der ausgewählten Fachbereiche. Bitte versuche es erneut."
           }
         }
       },
