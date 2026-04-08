@@ -166,6 +166,54 @@ class HtmlSanitizerTest {
     }
 
     @Test
+    void shouldPreserveQuillBulletListDataAttribute() {
+        // Quill 2.x uses <ol> with data-list="bullet" on <li> for unordered lists
+        String html = "<ol><li data-list=\"bullet\">Item 1</li><li data-list=\"bullet\">Item 2</li></ol>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).contains("data-list=\"bullet\"");
+        assertThat(result).contains("Item 1");
+        assertThat(result).contains("Item 2");
+    }
+
+    @Test
+    void shouldPreserveQuillOrderedListDataAttribute() {
+        String html = "<ol><li data-list=\"ordered\">First</li><li data-list=\"ordered\">Second</li></ol>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).contains("data-list=\"ordered\"");
+        assertThat(result).contains("First");
+        assertThat(result).contains("Second");
+    }
+
+    @Test
+    void shouldStripUnsupportedChecklistDataListValues() {
+        // checked/unchecked are not enabled in the editor, so they should be stripped
+        String html = "<ol><li data-list=\"checked\">Done</li><li data-list=\"unchecked\">Todo</li></ol>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).doesNotContain("data-list");
+        assertThat(result).contains("Done");
+        assertThat(result).contains("Todo");
+    }
+
+    @Test
+    void shouldStripInvalidDataListValues() {
+        String html = "<ol><li data-list=\"malicious\">Item</li></ol>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).doesNotContain("data-list");
+        assertThat(result).contains("Item");
+    }
+
+    @Test
+    void shouldPreserveDataListWithIndentClass() {
+        // Quill nested bullet list
+        String html = "<ol><li data-list=\"bullet\">Top</li><li data-list=\"bullet\" class=\"ql-indent-1\">Nested</li></ol>";
+        String result = HtmlSanitizer.sanitize(html);
+        assertThat(result).contains("data-list=\"bullet\"");
+        assertThat(result).contains("ql-indent-1");
+        assertThat(result).contains("Top");
+        assertThat(result).contains("Nested");
+    }
+
+    @Test
     void shouldSanitizeWhilePreservingQuillClasses() {
         // Mix of legitimate Quill content with XSS payload
         String html =
