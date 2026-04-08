@@ -6,7 +6,7 @@ import { NotificationSettingsComponent, NotificationGroup } from 'app/shared/set
 import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { provideTranslateMock } from '../../../../util/translate.mock';
-import { ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/applicant';
+import { JobCardDTOSubjectAreaEnum as ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/job-card-dto';
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 

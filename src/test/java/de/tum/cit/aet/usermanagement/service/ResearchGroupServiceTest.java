@@ -3,9 +3,7 @@ package de.tum.cit.aet.usermanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
@@ -632,6 +630,70 @@ class ResearchGroupServiceTest {
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getTotalElements()).isEqualTo(1L);
             verify(researchGroupRepository).findAllForAdmin(anyList(), anyString(), any(Pageable.class));
+        }
+    }
+
+    @Nested
+    class AddMembersToResearchGroup {
+
+        private static final UUID OTHER_GROUP_ID = UUID.randomUUID();
+
+        @Test
+        void shouldRejectAddingMembersToAnotherResearchGroup() {
+            // A professor from group A tries to add members to group B
+            doThrow(new AccessDeniedException("User has no access to the research group"))
+                .when(currentUserService)
+                .isAdminOrMemberOf(OTHER_GROUP_ID);
+
+            KeycloakUserDTO newMember = new KeycloakUserDTO(UUID.randomUUID(), "newuser", "New", "User", "new@example.com", "go12abc");
+
+            assertThatThrownBy(() -> researchGroupService.addMembersToResearchGroup(List.of(newMember), OTHER_GROUP_ID))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("no access");
+
+            // Verify the authorization check was called with the correct group ID
+            verify(currentUserService).isAdminOrMemberOf(OTHER_GROUP_ID);
+            // Verify neither the user nor the role was saved
+            verify(userRepository, never()).save(any(User.class));
+            verify(userResearchGroupRoleRepository, never()).save(any(UserResearchGroupRole.class));
+            // Verify the research group was never even looked up
+            verify(researchGroupRepository, never()).findByIdElseThrow(any());
+        }
+
+        @Test
+        void shouldAllowAddingMembersToOwnResearchGroup() {
+            doNothing().when(currentUserService).isAdminOrMemberOf(TEST_RESEARCH_GROUP_ID);
+            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
+
+            UUID newUserId = UUID.randomUUID();
+            KeycloakUserDTO newMember = new KeycloakUserDTO(newUserId, "newuser", "New", "User", "new@example.com", null);
+            when(userRepository.findById(newUserId)).thenReturn(Optional.empty());
+            when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(any(User.class), eq(testResearchGroup))).thenReturn(
+                Optional.empty()
+            );
+            when(userResearchGroupRoleRepository.save(any(UserResearchGroupRole.class))).thenAnswer(invocation ->
+                invocation.getArgument(0)
+            );
+
+            researchGroupService.addMembersToResearchGroup(List.of(newMember), TEST_RESEARCH_GROUP_ID);
+
+            // Verify authorization was checked for the correct group
+            verify(currentUserService).isAdminOrMemberOf(TEST_RESEARCH_GROUP_ID);
+
+            // Verify the user was created with correct data
+            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+            verify(userRepository).save(userCaptor.capture());
+            User savedUser = userCaptor.getValue();
+            assertThat(savedUser.getResearchGroup()).isEqualTo(testResearchGroup);
+            assertThat(savedUser.getUserId()).isEqualTo(newUserId);
+            assertThat(savedUser.getEmail()).isEqualTo("new@example.com");
+            assertThat(savedUser.getFirstName()).isEqualTo("New");
+            assertThat(savedUser.getLastName()).isEqualTo("User");
+            assertThat(savedUser.getSelectedLanguage()).isEqualTo("en");
+
+            // Verify the role was assigned
+            verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
         }
     }
 }

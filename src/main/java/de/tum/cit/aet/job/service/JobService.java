@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
@@ -24,6 +25,7 @@ import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
@@ -151,10 +153,11 @@ public class JobService {
     }
 
     /**
-     * Returns a jobDTO given the job id.
+     * Returns a JobDTO given the job id.
+     * Job description fields are sanitized on read before sending to the client.
      *
      * @param jobId the ID of the job
-     * @return the job DTO with generaL job information
+     * @return the job DTO with general job information
      */
     public JobDTO getJobById(UUID jobId) {
         Job job = assertCanManageJob(jobId);
@@ -170,8 +173,8 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescriptionEN(),
-            job.getJobDescriptionDE(),
+            HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
+            HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null,
@@ -180,7 +183,8 @@ public class JobService {
     }
 
     /**
-     * Returns a jobDetailDTO given the job id.
+     * Returns a JobDetailDTO given the job id.
+     * Job description fields are sanitized on read before sending to the client.
      *
      * @param jobId the ID of the job
      * @return the job detail DTO with detailed job information
@@ -202,7 +206,7 @@ public class JobService {
         return new JobDetailDTO(
             job.getJobId(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
-            job.getSupervisingProfessor().getResearchGroup(),
+            ResearchGroupSummaryDTO.getFromEntity(job.getResearchGroup()),
             job.getTitle(),
             job.getSubjectArea(),
             job.getResearchArea(),
@@ -210,8 +214,8 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescriptionEN(),
-            job.getJobDescriptionDE(),
+            HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
+            HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getStartDate(),
             job.getEndDate(),
             job.getCreatedAt(),
@@ -355,8 +359,8 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
-        job.setJobDescriptionEN(dto.jobDescriptionEN());
-        job.setJobDescriptionDE(dto.jobDescriptionDE());
+        job.setJobDescriptionEN(HtmlSanitizer.sanitize(dto.jobDescriptionEN()));
+        job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
 
@@ -397,6 +401,7 @@ public class JobService {
 
     /**
      * Updates the job description of a job in the specified language.
+     * The translated text is sanitized to remove unsafe HTML before persisting.
      *
      * @param jobId          the ID of the job to update
      * @param toLang         the target language ("de" or "en")
@@ -404,10 +409,11 @@ public class JobService {
      */
     public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
         Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        String sanitized = HtmlSanitizer.sanitize(translatedText);
         if ("de".equalsIgnoreCase(toLang)) {
-            job.setJobDescriptionDE(translatedText);
+            job.setJobDescriptionDE(sanitized);
         } else if ("en".equalsIgnoreCase(toLang)) {
-            job.setJobDescriptionEN(translatedText);
+            job.setJobDescriptionEN(sanitized);
         }
         jobRepository.save(job);
     }
