@@ -16,6 +16,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApplicationForApplicantDTO } from '../model/application-for-applicant-dto';
+import { ApplicationDetailDTO } from '../model/application-detail-dto';
+import { PageApplicationOverviewDTO } from '../model/page-application-overview-dto';
+import { ApplicationDocumentIdsDTO } from '../model/application-document-ids-dto';
 import { UpdateApplicationDTO } from '../model/update-application-dto';
 import { DocumentInformationHolderDTO } from '../model/document-information-holder-dto';
 
@@ -55,6 +58,66 @@ export class ApplicationResourceApi {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/applications/documents/${documentDictionaryIdPath}`;
         return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    getApplicationById(applicationId: string): Observable<ApplicationForApplicantDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}`;
+        return this.http.get<ApplicationForApplicantDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    getApplicationForDetailPage(applicationId: string): Observable<ApplicationDetailDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/detail`;
+        return this.http.get<ApplicationDetailDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     * @param sortBy 
+     * @param direction 
+     */
+    getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageApplicationOverviewDTO> {
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        if (sortBy !== undefined && sortBy !== null) {
+            queryParams.set('sortBy', String(sortBy));
+        }
+        if (direction !== undefined && direction !== null) {
+            queryParams.set('direction', String(direction));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/applications/pages${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageApplicationOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    getDocumentDictionaryIds(applicationId: string): Observable<ApplicationDocumentIdsDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/getDocumentIds/${applicationIdPath}`;
+        return this.http.get<ApplicationDocumentIdsDTO>(url);
     }
 
     /**

@@ -12,14 +12,35 @@
  * UserDataExportResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { DataExportStatusDTO } from '../model/data-export-status-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataExportResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * Download a prepared data export
+     * 
+     * @param token 
+     */
+    downloadDataExport(token: string): Observable<HttpResponse<Blob>> {
+        const tokenPath = encodeURIComponent(String(token));
+        const url = `${this.basePath}/api/users/data-export/download/${tokenPath}`;
+        return this.http.get(url, { responseType: 'blob', observe: 'response' });
+    }
+
+    /**
+     * Get data export status for the current user
+     * 
+     */
+    getDataExportStatus(): Observable<DataExportStatusDTO> {
+        const url = `${this.basePath}/api/users/data-export/status`;
+        return this.http.get<DataExportStatusDTO>(url);
+    }
 
     /**
      * Request a data export for the current user

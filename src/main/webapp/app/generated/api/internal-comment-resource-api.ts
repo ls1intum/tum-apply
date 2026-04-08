@@ -49,6 +49,17 @@ export class InternalCommentResourceApi {
     /**
      * 
      * 
+     * @param applicationId 
+     */
+    listComments(applicationId: string): Observable<Array<InternalCommentDTO>> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/comments`;
+        return this.http.get<Array<InternalCommentDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param commentId 
      * @param internalCommentUpdateDTO 
      */

@@ -16,6 +16,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApplicantDTO } from '../model/applicant-dto';
+import { ApplicationDocumentIdsDTO } from '../model/application-document-ids-dto';
 import { DocumentInformationHolderDTO } from '../model/document-information-holder-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +44,33 @@ export class ApplicantResourceApi {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}`;
         return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getApplicantProfile(): Observable<ApplicantDTO> {
+        const url = `${this.basePath}/api/applicants/profile`;
+        return this.http.get<ApplicantDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getApplicantProfileDocumentIds(): Observable<ApplicationDocumentIdsDTO> {
+        const url = `${this.basePath}/api/applicants/profile/document-ids`;
+        return this.http.get<ApplicationDocumentIdsDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getSubjectAreaSubscriptions(): Observable<Array<string>> {
+        const url = `${this.basePath}/api/applicants/subject-area-subscriptions`;
+        return this.http.get<Array<string>>(url);
     }
 
     /**

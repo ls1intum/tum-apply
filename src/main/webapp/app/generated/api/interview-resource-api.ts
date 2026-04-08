@@ -21,7 +21,11 @@ import { AssignSlotRequestDTO } from '../model/assign-slot-request-dto';
 import { InterviewSlotDTO } from '../model/interview-slot-dto';
 import { CancelInterviewDTO } from '../model/cancel-interview-dto';
 import { CreateSlotsDTO } from '../model/create-slots-dto';
+import { ConflictDataDTO } from '../model/conflict-data-dto';
+import { InterviewOverviewDTO } from '../model/interview-overview-dto';
 import { IntervieweeDetailDTO } from '../model/interviewee-detail-dto';
+import { PageResponseDTOInterviewSlotDTO } from '../model/page-response-dto-interview-slot-dto';
+import { UpcomingInterviewDTO } from '../model/upcoming-interview-dto';
 import { SendInvitationsRequestDTO } from '../model/send-invitations-request-dto';
 import { SendInvitationsResultDTO } from '../model/send-invitations-result-dto';
 import { UpdateAssessmentDTO } from '../model/update-assessment-dto';
@@ -91,6 +95,113 @@ export class InterviewResourceApi {
         const slotIdPath = encodeURIComponent(String(slotId));
         const url = `${this.basePath}/api/interviews/slots/${slotIdPath}`;
         return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     * @param date 
+     */
+    getConflictDataForDate(processId: string, date: string): Observable<ConflictDataDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const queryParams = new URLSearchParams();
+        if (date !== undefined && date !== null) {
+            queryParams.set('date', String(date));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/slots/conflict-data${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<ConflictDataDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getInterviewOverview(): Observable<Array<InterviewOverviewDTO>> {
+        const url = `${this.basePath}/api/interviews/overview`;
+        return this.http.get<Array<InterviewOverviewDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     */
+    getInterviewProcessDetails(processId: string): Observable<InterviewOverviewDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}`;
+        return this.http.get<InterviewOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     * @param intervieweeId 
+     */
+    getIntervieweeDetails(processId: string, intervieweeId: string): Observable<IntervieweeDetailDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const intervieweeIdPath = encodeURIComponent(String(intervieweeId));
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/interviewees/${intervieweeIdPath}`;
+        return this.http.get<IntervieweeDetailDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     */
+    getIntervieweesByProcessId(processId: string): Observable<Array<IntervieweeDTO>> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/interviewees`;
+        return this.http.get<Array<IntervieweeDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     * @param year 
+     * @param month 
+     * @param afterDateTime 
+     * @param beforeDateTime 
+     * @param page 
+     * @param size 
+     */
+    getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number): Observable<PageResponseDTOInterviewSlotDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const queryParams = new URLSearchParams();
+        if (year !== undefined && year !== null) {
+            queryParams.set('year', String(year));
+        }
+        if (month !== undefined && month !== null) {
+            queryParams.set('month', String(month));
+        }
+        if (afterDateTime !== undefined && afterDateTime !== null) {
+            queryParams.set('afterDateTime', String(afterDateTime));
+        }
+        if (beforeDateTime !== undefined && beforeDateTime !== null) {
+            queryParams.set('beforeDateTime', String(beforeDateTime));
+        }
+        if (page !== undefined && page !== null) {
+            queryParams.set('page', String(page));
+        }
+        if (size !== undefined && size !== null) {
+            queryParams.set('size', String(size));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/slots${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOInterviewSlotDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getUpcomingInterviews(): Observable<Array<UpcomingInterviewDTO>> {
+        const url = `${this.basePath}/api/interviews/upcoming`;
+        return this.http.get<Array<UpcomingInterviewDTO>>(url);
     }
 
     /**

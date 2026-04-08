@@ -26,6 +26,17 @@ export class RatingResourceApi {
      * 
      * 
      * @param applicationId 
+     */
+    getRatings(applicationId: string): Observable<RatingOverviewDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/ratings`;
+        return this.http.get<RatingOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
      * @param rating 
      */
     updateRating(applicationId: string, rating?: number): Observable<RatingOverviewDTO> {

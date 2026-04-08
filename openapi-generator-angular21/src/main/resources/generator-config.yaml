@@ -10,7 +10,7 @@ additionalProperties:
   #   useHttpResource=false -> GET operations use HttpClient (Observable/subscription-based)
   #                            Generated alongside mutations in *-api.ts service files.
   #                            Compatible with existing .subscribe() patterns — less migration effort.
-  useHttpResource: true
+  useHttpResource: false
 
   #   useInjectFunction=true  -> Services use inject(HttpClient) (modern, functional style)
   #   useInjectFunction=false -> Services use constructor(private http: HttpClient) (classic style)
@@ -18,7 +18,7 @@ additionalProperties:
 
   #   separateResources=true  -> GET operations are generated in separate *-resources.ts files
   #   separateResources=false -> GET operations are generated inline in the *-api.ts service files
-  separateResources: true
+  separateResources: false
 
   #   readonlyModels=true  -> Output DTO properties are marked readonly
   #                           Input DTOs (names ending with Create/Update/Request/Input) stay mutable

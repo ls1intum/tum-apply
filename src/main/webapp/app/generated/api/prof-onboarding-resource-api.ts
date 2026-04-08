@@ -15,11 +15,21 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ProfOnboardingDTO } from '../model/prof-onboarding-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ProfOnboardingResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     */
+    check(): Observable<ProfOnboardingDTO> {
+        const url = `${this.basePath}/api/me/prof-onboarding`;
+        return this.http.get<ProfOnboardingDTO>(url);
+    }
 
     /**
      * 
