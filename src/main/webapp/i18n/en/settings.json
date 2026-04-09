@@ -110,6 +110,37 @@
         "rotate": "Rotate"
       }
     },
+    "aiFeatures": {
+      "header": "AI Features",
+      "description": "Control whether AI-powered features are enabled for your account.",
+      "learnMore": "Learn more about AI usage",
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to update AI settings. Please try again."
+      },
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load AI settings. Please try again."
+      },
+      "modal": {
+        "header": "About AI Features in TUMApply",
+        "intro": "TUMApply uses AI to enhance your experience. Here is what you should know:",
+        "processing": {
+          "header": "Data Processing",
+          "description": "Your data is processed via Azure OpenAI, hosted on EU servers. Your data is never used for model training."
+        },
+        "scope": {
+          "header": "What AI Can Do",
+          "applicant": "As an applicant, AI can automatically extract your personal details from your CV to pre-fill application forms, saving you time.",
+          "professorOrEmployee": "As a professor or employee, AI can generate job posting descriptions and translate them between German and English."
+        },
+        "consent": {
+          "header": "Your Control",
+          "description": "You can enable or disable AI features at any time using the toggle in your settings. Disabling AI will not delete any data that was previously processed.",
+          "descriptionSettings": "You can enable or disable AI features at any time using the toggle. Disabling AI will not delete any data that was previously processed."
+        }
+      }
+    },
     "appearance": {
       "header": "Appearance",
       "theme": {

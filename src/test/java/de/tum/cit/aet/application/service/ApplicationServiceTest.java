@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
@@ -315,6 +316,68 @@ class ApplicationServiceTest {
 
             verify(documentDictionaryService, times(5)).getApplicationDocumentDictionaries(eq(application), any(DocumentType.class));
             verify(documentDictionaryService, times(5)).getApplicantDocumentDictionaries(eq(applicant), any(DocumentType.class));
+        }
+    }
+
+    @Nested
+    class ApplyExtractedPdfData {
+
+        @Test
+        void shouldFillExtractedFields() {
+            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
+            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
+                "Ada",
+                "Lovelace",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
+
+            assertThat(application.getApplicantFirstName()).isEqualTo("Ada");
+            assertThat(application.getApplicantLastName()).isEqualTo("Lovelace");
+        }
+
+        @Test
+        void shouldOnlyFillEmptyFields() {
+            application.setApplicantFirstName("Existing");
+            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
+            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
+                "Overwrite",
+                "New",
+                null,
+                null,
+                null,
+                "New Street",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
+
+            // Existing field should not be overwritten
+            assertThat(application.getApplicantFirstName()).isEqualTo("Existing");
+            // Empty fields should be filled
+            assertThat(application.getApplicantLastName()).isEqualTo("New");
+            assertThat(application.getApplicantStreet()).isEqualTo("New Street");
         }
     }
 

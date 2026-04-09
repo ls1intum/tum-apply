@@ -2321,6 +2321,26 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/users/ai-consent:
+    get:
+      tags: [user-resource]
+      operationId: getAiConsent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {type: boolean}
+    put:
+      tags: [user-resource]
+      operationId: updateAiConsent
+      requestBody:
+        content:
+          application/json:
+            schema: {type: boolean}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/users/available-for-research-group:
     get:
       tags: [user-resource]

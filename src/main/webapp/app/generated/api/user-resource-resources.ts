@@ -20,6 +20,17 @@ import { UserShortDTO } from '../model/user-short-dto';
 const BASE_PATH = '';
 
 /**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAiConsentResource(): HttpResourceRef<boolean | undefined> {
+    return httpResource<boolean>(() => {
+        return `${BASE_PATH}/api/users/ai-consent`;
+    });
+}
+
+/**
  * Query parameters for getAvailableUsersForResearchGroup
  */
 export interface GetAvailableUsersForResearchGroupParams {

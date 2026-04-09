@@ -21,8 +21,11 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { Observable, shareReplay } from 'rxjs';
+import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { ToastService } from 'app/service/toast-service';
+import { firstValueFrom } from 'rxjs';
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
@@ -84,6 +87,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     TooltipModule,
     ButtonComponent,
     ProgressSpinnerComponent,
+    AiConsentModalComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -123,7 +127,9 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
+  aiFeaturesEnabled = signal<boolean>(false);
   isExtractingAi = signal<boolean>(false);
+  aiConsentModalVisible = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
@@ -173,6 +179,7 @@ export default class ApplicationCreationPage1Component {
   });
 
   private aiApi = inject(AiResourceApi);
+  private userApi = inject(UserResourceApi);
   private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
 
@@ -194,6 +201,8 @@ export default class ApplicationCreationPage1Component {
   });
 
   constructor() {
+    void this.loadAiConsent();
+
     effect(onCleanup => {
       const form = this.page1Form();
       const data = this.data();
@@ -225,6 +234,14 @@ export default class ApplicationCreationPage1Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  openAiConsentModal(): void {
+    this.aiConsentModalVisible.set(true);
+  }
+
+  closeAiConsentModal(): void {
+    this.aiConsentModalVisible.set(false);
   }
 
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
@@ -324,5 +341,14 @@ export default class ApplicationCreationPage1Component {
         this.isExtractingAi.set(false);
       },
     });
+  }
+
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiFeaturesEnabled.set(isEnabled);
+    } catch {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
   }
 }

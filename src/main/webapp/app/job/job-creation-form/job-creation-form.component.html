@@ -132,7 +132,7 @@
                 </div>
 
                 <div class="flex items-center gap-2 sm:ml-auto sm:justify-end">
-                  <jhi-toggle-switch [(model)]="aiToggleSignal" class="flex" />
+                  <jhi-toggle-switch [model]="aiToggleSignal()" (modelChange)="onAiToggleChanged($event)" class="flex" />
                   <label
                     class="text-sm whitespace-nowrap"
                     jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"
