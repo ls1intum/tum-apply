@@ -21,6 +21,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { Observable, shareReplay } from 'rxjs';
+import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { ToastService } from 'app/service/toast-service';
@@ -86,6 +87,8 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     TooltipModule,
     ButtonComponent,
     ProgressSpinnerComponent,
+    // AI consent modal
+    AiConsentModalComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -127,6 +130,8 @@ export default class ApplicationCreationPage1Component {
   formbuilder = inject(FormBuilder);
   aiFeaturesEnabled = signal<boolean>(false);
   isExtractingAi = signal<boolean>(false);
+  // Controls the visibility of the AI consent modal
+  aiConsentModalVisible = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
@@ -231,6 +236,14 @@ export default class ApplicationCreationPage1Component {
         statusSubscription.unsubscribe();
       });
     });
+  }
+
+  openAiConsentModal(): void {
+    this.aiConsentModalVisible.set(true);
+  }
+
+  closeAiConsentModal(): void {
+    this.aiConsentModalVisible.set(false);
   }
 
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {

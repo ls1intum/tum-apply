@@ -5,14 +5,15 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
-import { DialogComponent } from '../../components/atoms/dialog/dialog.component';
 import { ToggleSwitchComponent } from '../../components/atoms/toggle-switch/toggle-switch.component';
 import TranslateDirective from '../../language/translate.directive';
+
+import { AiConsentModalComponent } from './ai-consent-modal/ai-consent-modal.component';
 
 @Component({
   selector: 'jhi-ai-consent-settings',
   standalone: true,
-  imports: [ToggleSwitchComponent, ButtonComponent, DialogComponent, TranslateDirective],
+  imports: [ToggleSwitchComponent, ButtonComponent, AiConsentModalComponent, TranslateDirective],
   templateUrl: './ai-consent-settings.component.html',
 })
 export class AiConsentSettingsComponent {
@@ -21,8 +22,6 @@ export class AiConsentSettingsComponent {
   aiFeaturesEnabled = signal<boolean>(false);
   modalVisible = signal<boolean>(false);
   loaded = signal<boolean>(false);
-
-  protected readonly RolesEnum = UserShortDTORolesEnum;
 
   private readonly userApi = inject(UserResourceApi);
   private readonly toastService = inject(ToastService);
