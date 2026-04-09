@@ -13,6 +13,7 @@ import TranslateDirective from '../../../language/translate.directive';
 export class AiConsentModalComponent {
   visible = input.required<boolean>();
   currentRole = input<UserShortDTORolesEnum | undefined>(undefined);
+  settings = input<boolean>(true);
   visibleChange = output<boolean>();
 
   protected readonly RolesEnum = UserShortDTORolesEnum;

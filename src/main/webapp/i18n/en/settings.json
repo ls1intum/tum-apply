@@ -136,7 +136,8 @@
         },
         "consent": {
           "header": "Your Control",
-          "description": "You can enable or disable AI features at any time using the toggle in your settings. Disabling AI will not delete any data that was previously processed."
+          "description": "You can enable or disable AI features at any time using the toggle in your settings. Disabling AI will not delete any data that was previously processed.",
+          "descriptionSettings": "You can enable or disable AI features at any time using the toggle. Disabling AI will not delete any data that was previously processed."
         }
       }
     },

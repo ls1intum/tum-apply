@@ -26,7 +26,11 @@
 
     <div>
       <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.consent.header"></h3>
-      <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.consent.description"></p>
+      @if (settings()) {
+        <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.consent.descriptionSettings"></p>
+      } @else {
+        <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.consent.description"></p>
+      }
     </div>
   </div>
 </jhi-dialog>

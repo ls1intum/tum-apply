@@ -136,7 +136,8 @@
         },
         "consent": {
           "header": "Deine Kontrolle",
-          "description": "Du kannst KI-Funktionen jederzeit über den Schalter in deinen Einstellungen aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten."
+          "description": "Du kannst KI-Funktionen jederzeit über den Schalter in deinen Einstellungen aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten.",
+          "descriptionSettings": "Du kannst KI-Funktionen jederzeit über den Schalter aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten."
         }
       }
     },
