@@ -100,11 +100,13 @@ export class HeaderComponent {
   );
   isProfessorPage = computed(() => {
     const auths = this.routeAuthorities();
-    return (
-      (this.router.url === '/professor' && !this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant])) ||
-      this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor]) ||
-      (Array.isArray(auths) && auths.includes(UserShortDTORolesEnum.Professor))
-    );
+    const isPublicProfessorLandingPage = this.router.url === '/professor' && !this.accountService.signedIn();
+    const isProfessorOnlyRoute =
+      Array.isArray(auths) &&
+      auths.length > 0 &&
+      auths.every(auth => this.professorPortalAuthorities.includes(auth as UserShortDTORolesEnum));
+
+    return isPublicProfessorLandingPage || this.accountService.hasAnyAuthority(this.professorPortalAuthorities) || isProfessorOnlyRoute;
   });
 
   readonly headerButtonClass =
@@ -143,6 +145,7 @@ export class HeaderComponent {
   private observer?: IntersectionObserver;
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+  private readonly professorPortalAuthorities: UserShortDTORolesEnum[] = [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Employee];
 
   constructor() {
     afterNextRender(() => {
