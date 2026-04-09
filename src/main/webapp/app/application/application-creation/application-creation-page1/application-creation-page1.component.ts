@@ -87,7 +87,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     TooltipModule,
     ButtonComponent,
     ProgressSpinnerComponent,
-    // AI consent modal
     AiConsentModalComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
@@ -130,7 +129,6 @@ export default class ApplicationCreationPage1Component {
   formbuilder = inject(FormBuilder);
   aiFeaturesEnabled = signal<boolean>(false);
   isExtractingAi = signal<boolean>(false);
-  // Controls the visibility of the AI consent modal
   aiConsentModalVisible = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
@@ -203,7 +201,7 @@ export default class ApplicationCreationPage1Component {
   });
 
   constructor() {
-    this.loadAiConsent();
+    void this.loadAiConsent();
 
     effect(onCleanup => {
       const form = this.page1Form();

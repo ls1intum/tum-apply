@@ -27,7 +27,7 @@ export class AiConsentSettingsComponent {
   private readonly toastService = inject(ToastService);
 
   constructor() {
-    this.loadAiConsent();
+    void this.loadAiConsent();
   }
 
   async loadAiConsent(): Promise<void> {

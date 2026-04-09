@@ -463,7 +463,7 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   constructor() {
-    this.loadAiConsent();
+    void this.loadAiConsent();
     this.init();
     this.setupAutoSave();
   }

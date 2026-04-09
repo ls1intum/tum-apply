@@ -45,9 +45,9 @@ public class UserService {
     }
 
     /**
-     * Finds a user by their Keycloak user ID.
+     * Finds a user by their user ID.
      *
-     * @param userId the Keycloak user ID
+     * @param userId the user ID
      * @return the user entity
      * @throws EntityNotFoundException if no user is found
      */
@@ -214,7 +214,7 @@ public class UserService {
      * Updates the AI consent setting for the given user.
      * Sets aiConsentedAt on first opt-in; preserves existing timestamp on subsequent toggles.
      *
-     * @param userId    the Keycloak user ID
+     * @param userId    the user ID
      * @param aiFeaturesEnabled the new consent value
      */
     public void updateAiConsent(String userId, boolean aiFeaturesEnabled) {
