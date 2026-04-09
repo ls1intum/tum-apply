@@ -8,4 +8,5 @@ export interface ActionButton {
   onClick: () => void;
   disabled?: boolean;
   shouldTranslate?: boolean;
+  tooltip?: string;
 }

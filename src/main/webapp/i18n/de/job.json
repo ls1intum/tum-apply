@@ -317,7 +317,8 @@
   "myPositionsPage": {
     "header": {
       "title": "Stellen",
-      "createButton": "Stelle erstellen"
+      "createButton": "Stelle erstellen",
+      "createButtonTooltip": "Das Erstellen neuer Stellen ist derzeit nicht möglich. Bitte kontaktiere den Support, um weitere Informationen zu erhalten."
     },
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",

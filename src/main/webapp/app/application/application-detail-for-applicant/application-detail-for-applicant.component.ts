@@ -86,6 +86,8 @@ export default class ApplicationDetailForApplicantComponent {
         onClick: () => {
           this.onUpdateApplication();
         },
+        tooltip: 'button.editTooltip',
+        disabled: true,
       };
     }
 

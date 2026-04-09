@@ -139,6 +139,8 @@ export default class ApplicationOverviewForApplicantComponent {
           command: () => {
             this.onUpdateApplication(applicationId);
           },
+          tooltip: 'button.editTooltip',
+          disabled: true,
         });
       }
 

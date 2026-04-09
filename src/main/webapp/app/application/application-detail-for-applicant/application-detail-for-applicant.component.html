@@ -48,6 +48,8 @@
               [icon]="item.icon"
               [shouldTranslate]="true"
               (click)="item.command?.()"
+              [tooltip]="item.tooltip | translate"
+              [disabled]="item.disabled ?? false"
             />
           }
           @if (shouldShowKebabMenu()) {
@@ -70,6 +72,7 @@
               [disabled]="primaryActionButton.disabled ?? false"
               [shouldTranslate]="primaryActionButton.shouldTranslate ?? true"
               (click)="primaryActionButton.onClick()"
+              [tooltip]="primaryActionButton.tooltip | translate"
             />
           }
         </div>

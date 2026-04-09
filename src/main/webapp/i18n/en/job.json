@@ -317,7 +317,8 @@
   "myPositionsPage": {
     "header": {
       "title": "Positions",
-      "createButton": "Create Position"
+      "createButton": "Create Position",
+      "createButtonTooltip": "Creating new positions is currently unavailable. Please contact support for more information."
     },
     "searchFilterSortBar": {
       "searchText": "Search Positions...",

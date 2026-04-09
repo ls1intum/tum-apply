@@ -138,6 +138,8 @@ export class MyPositionsPageComponent {
           command: () => {
             this.onEditJob(job.jobId);
           },
+          tooltip: 'button.editTooltip',
+          disabled: true,
         });
       } else if (job.state === CreatedJobDTOStateEnum.Published) {
         items.push({
@@ -148,6 +150,8 @@ export class MyPositionsPageComponent {
             this.currentJobId.set(job.jobId);
             this.showEditPublishedDialog.set(true);
           },
+          tooltip: 'button.editTooltip',
+          disabled: true,
         });
       }
 

@@ -18,6 +18,7 @@ export interface JhiMenuItem {
   severity?: MenuItemSeverity;
   disabled?: boolean;
   styleClass?: string;
+  tooltip?: string;
 }
 
 @Component({

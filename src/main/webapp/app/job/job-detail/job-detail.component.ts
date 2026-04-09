@@ -136,8 +136,9 @@ export class JobDetailComponent {
             onClick: () => {
               this.onApply();
             },
-            disabled: false,
+            disabled: true,
             shouldTranslate: true,
+            tooltip: 'button.applyTooltip',
           };
         case ApplicationForApplicantDTOApplicationStateEnum.Saved:
           return {
@@ -146,9 +147,10 @@ export class JobDetailComponent {
             onClick: () => {
               this.onEditApplication();
             },
-            disabled: false,
+            disabled: true,
             shouldTranslate: true,
             icon: 'pencil',
+            tooltip: 'button.editTooltip',
           };
         default:
           return {
@@ -170,9 +172,10 @@ export class JobDetailComponent {
         onClick: () => {
           this.onEditJob();
         },
-        disabled: false,
+        disabled: true,
         shouldTranslate: true,
         icon: 'pencil',
+        tooltip: 'button.editTooltip',
       };
     }
     // Case 3: PUBLISHED and belongs to professor → show Close button
