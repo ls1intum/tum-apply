@@ -1,3 +1,4 @@
+import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NavigationEnd } from '@angular/router';
@@ -147,8 +148,9 @@ describe('HeaderComponent', () => {
       expect(component.isProfessorPage()).toBe(true);
     });
 
-    it('should consider page as professor page when URL is /professor and user is not APPLICANT', () => {
+    it('should consider page as professor page on the public /professor landing page when signed out', () => {
       router.url = '/professor';
+      (accountService.signedIn as WritableSignal<boolean>).set(false);
       accountService.setAuthorities([]);
 
       fixture = TestBed.createComponent(HeaderComponent);
@@ -156,6 +158,18 @@ describe('HeaderComponent', () => {
       fixture.detectChanges();
 
       expect(component.isProfessorPage()).toBe(true);
+    });
+
+    it('should not consider page as professor page when URL is /professor but the user is signed in without professor portal roles', () => {
+      router.url = '/professor';
+      (accountService.signedIn as WritableSignal<boolean>).set(true);
+      accountService.setAuthorities([]);
+
+      fixture = TestBed.createComponent(HeaderComponent);
+      component = fixture.componentInstance as HeaderComponentTestInstance;
+      fixture.detectChanges();
+
+      expect(component.isProfessorPage()).toBe(false);
     });
 
     it('should consider page as professor page when route authorities contain Professor role', () => {
