@@ -20,12 +20,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -68,10 +63,10 @@ public class PDFExportService {
             )
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
+        String lang = labels.getOrDefault("lang", "en");
         if (app.jobId() != null) {
             JobDetailDTO job = jobService.getJobDetails(app.jobId());
             // Determine job description language and content
-            String lang = labels.getOrDefault("lang", "en");
             String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
 
             // Overview Section if no in preview
@@ -123,7 +118,7 @@ public class PDFExportService {
             builder.addSectionData(labels.get("address"), street);
         }
         if (hasValue(app.applicant().country())) {
-            builder.addSectionData(labels.get("country"), app.applicant().country());
+            builder.addSectionData(labels.get("country"), getCountry(app.applicant().country(), lang));
         }
 
         if (app.applicant().user().website() != null) {
@@ -595,5 +590,19 @@ public class PDFExportService {
         } else {
             return "-";
         }
+    }
+
+    /**
+     * Converts a country code to its display name in the specified language.
+     *
+     * @param countryCode   the ISO country code (e.g., "DE" for Germany)
+     * @param lang          the language code for display (e.g., "en" or "de")
+     * @return              the display name of the country in the specified language, or "-" if the code is not provided
+     */
+    private String getCountry(String countryCode, String lang) {
+        if (!hasValue(countryCode)) return "-";
+        Locale countryLocale = Locale.of("", countryCode);
+        Locale displayLanguage = Locale.of(lang);
+        return countryLocale.getDisplayCountry(displayLanguage);
     }
 }

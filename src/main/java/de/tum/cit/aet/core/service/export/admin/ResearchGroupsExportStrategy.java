@@ -12,6 +12,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupMemberDTO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +77,11 @@ public class ResearchGroupsExportStrategy {
 
     AdminResearchGroupExportDTO toDto(ResearchGroup rg) {
         Set<UserResearchGroupRole> roles = rg.getUserRoles() == null ? Set.of() : rg.getUserRoles();
-        List<ResearchGroupMemberDTO> memberRefs = roles.stream().map(ResearchGroupMemberDTO::getFromEntity).filter(m -> m != null).toList();
+        List<ResearchGroupMemberDTO> memberRefs = roles
+            .stream()
+            .map(ResearchGroupMemberDTO::getFromEntity)
+            .filter(Objects::nonNull)
+            .toList();
 
         return new AdminResearchGroupExportDTO(
             rg.getResearchGroupId(),
@@ -113,7 +118,7 @@ public class ResearchGroupsExportStrategy {
         List<List<Object>> rows = new ArrayList<>(groups.size());
         for (ResearchGroup rg : groups) {
             rows.add(
-                List.<Object>of(
+                List.of(
                     nullSafe(rg.getResearchGroupId()),
                     nullSafe(rg.getName()),
                     nullSafe(rg.getAbbreviation()),

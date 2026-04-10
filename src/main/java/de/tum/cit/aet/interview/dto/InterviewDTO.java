@@ -31,9 +31,7 @@ public record InterviewDTO(
             return null;
         }
         List<InterviewSlotDTO> slots =
-            interviewee.getSlots() == null
-                ? List.of()
-                : interviewee.getSlots().stream().map(InterviewSlotDTO::fromEntity).toList();
+            interviewee.getSlots() == null ? List.of() : interviewee.getSlots().stream().map(InterviewSlotDTO::fromEntity).toList();
         return new InterviewDTO(
             interviewee.getId(),
             interviewee.getInterviewProcess() == null ? null : interviewee.getInterviewProcess().getId(),

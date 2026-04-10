@@ -12,11 +12,4 @@ import java.util.UUID;
  * export.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record DocumentRefDTO(
-    UUID documentId,
-    String name,
-    DocumentType documentType,
-    String mimeType,
-    Long sizeBytes,
-    String zipPath
-) {}
+public record DocumentRefDTO(UUID documentId, String name, DocumentType documentType, String mimeType, Long sizeBytes, String zipPath) {}

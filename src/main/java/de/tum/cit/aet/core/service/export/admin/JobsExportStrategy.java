@@ -14,10 +14,10 @@ import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.service.PDFExportService;
 import de.tum.cit.aet.core.service.XlsxExportService;
 import de.tum.cit.aet.core.service.ZipExportService;
+import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.evaluation.dto.ApplicationReviewDTO;
 import de.tum.cit.aet.evaluation.dto.InternalCommentDetailDTO;
 import de.tum.cit.aet.evaluation.dto.RatingDetailDTO;
-import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
@@ -37,7 +37,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +64,7 @@ import tools.jackson.databind.ObjectMapper;
  * </ul>
  *
  * <p>This strategy is also reused by {@link FullAdminExportStrategy} via the
- * {@link #writeJobsInto(ZipOutputStream, String, List, boolean)} entry point so
+ * {@link #writeJobsInto(ZipOutputStream, String, List, boolean, boolean, boolean)} entry point so
  * the same folder layout is produced under {@code research_groups/<rg>/jobs/}.
  */
 @Slf4j
@@ -506,9 +505,7 @@ public class JobsExportStrategy {
 
     AdminJobExportDTO toJobDto(Job job) {
         List<CustomFieldDTO> customFields =
-            job.getCustomFields() == null
-                ? List.of()
-                : job.getCustomFields().stream().map(CustomFieldDTO::getFromEntity).toList();
+            job.getCustomFields() == null ? List.of() : job.getCustomFields().stream().map(CustomFieldDTO::getFromEntity).toList();
         return new AdminJobExportDTO(
             JobFormDTO.getFromEntity(job),
             job.getResearchGroup() == null ? null : job.getResearchGroup().getResearchGroupId(),
