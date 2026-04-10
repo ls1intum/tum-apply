@@ -293,13 +293,15 @@ public class TemplateProcessingService {
      * Adds applicant and job-related variables for subject-area job publication emails.
      */
     private void addJobPublicationContextData(Map<String, Object> dataModel, JobPublicationEmailContextDTO ctx) {
-        dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.user().getFirstName());
-        dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.user().getLastName());
-        addJobData(dataModel, ctx.job());
-        dataModel.put(
-            TemplateVariable.SUBJECT_AREA.getValue(),
-            ctx.job().getSubjectArea().correctLanguageValue(ctx.user().getSelectedLanguage())
-        );
+        dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.applicantFirstName());
+        dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.applicantLastName());
+        dataModel.put(TemplateVariable.JOB_ID.getValue(), ctx.jobId());
+        dataModel.put(TemplateVariable.JOB_TITLE.getValue(), ctx.jobTitle());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_FIRST_NAME.getValue(), ctx.supervisingProfessorFirstName());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_LAST_NAME.getValue(), ctx.supervisingProfessorLastName());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_EMAIL.getValue(), ctx.supervisingProfessorEmail());
+        dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), ctx.researchGroupName());
+        dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), ctx.subjectArea());
     }
 
     /**

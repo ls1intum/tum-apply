@@ -410,7 +410,7 @@ public class JobService {
                 Email.builder()
                     .to(user)
                     .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
-                    .content(new JobPublicationEmailContextDTO(user, job))
+                    .content(JobPublicationEmailContextDTO.fromEntities(user, job))
                     .language(Language.fromCode(user.getSelectedLanguage()))
                     .sendAlways(true)
                     .build()
