@@ -389,6 +389,6 @@ class TemplateProcessingServiceTest {
     private JobPublicationEmailContextDTO mockJobPublicationContext() {
         Application application = mockApplication();
         application.getJob().setJobId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
-        return new JobPublicationEmailContextDTO(application.getApplicant().getUser(), application.getJob());
+        return JobPublicationEmailContextDTO.fromEntities(application.getApplicant().getUser(), application.getJob());
     }
 }
