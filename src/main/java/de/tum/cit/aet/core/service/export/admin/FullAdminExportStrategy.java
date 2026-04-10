@@ -139,7 +139,10 @@ public class FullAdminExportStrategy {
             List<Job> openJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_OPEN);
             List<Job> expiredJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_EXPIRED);
             List<Job> closedJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_CLOSED);
-            List<Job> draftJobs = rgJobs.stream().filter(j -> j.getState() == JobState.DRAFT).toList();
+            List<Job> draftJobs = rgJobs
+                .stream()
+                .filter(j -> j.getState() == JobState.DRAFT)
+                .toList();
 
             // Full admin is the comprehensive backup — every bucket includes
             // SAVED applications too so nothing is silently dropped.
@@ -153,7 +156,10 @@ public class FullAdminExportStrategy {
         researchGroupsExportStrategy.writeOverviewSheet(zos, "research_groups_overview.xlsx", groups);
 
         // 3. Orphan jobs (no research group) — defensive; healthy data should leave this empty.
-        List<Job> orphanJobs = allJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
+        List<Job> orphanJobs = allJobs
+            .stream()
+            .filter(j -> j.getResearchGroup() == null)
+            .toList();
         if (!orphanJobs.isEmpty()) {
             jobsExportStrategy.writeJobsInto(zos, "orphans/jobs/", orphanJobs, true, false, true, manifest);
         }
@@ -176,12 +182,7 @@ public class FullAdminExportStrategy {
                     manifest.exported(ExportManifest.Category.USER);
                     return dto;
                 } catch (Exception e) {
-                    manifest.failed(
-                        ExportManifest.Category.USER,
-                        u.getUserId(),
-                        u.getEmail(),
-                        e
-                    );
+                    manifest.failed(ExportManifest.Category.USER, u.getUserId(), u.getEmail(), e);
                     return null;
                 }
             })

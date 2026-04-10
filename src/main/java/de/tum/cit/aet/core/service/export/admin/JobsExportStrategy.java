@@ -157,7 +157,10 @@ public class JobsExportStrategy {
 
         // Defensive: jobs that match the filter but have no research group go
         // into orphans/. Healthy data should leave this empty.
-        List<Job> orphanJobs = matchingJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
+        List<Job> orphanJobs = matchingJobs
+            .stream()
+            .filter(j -> j.getResearchGroup() == null)
+            .toList();
         if (!orphanJobs.isEmpty()) {
             writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeDrafts, false, false, manifest);
         }
@@ -406,7 +409,10 @@ public class JobsExportStrategy {
         // Catch every exception per file so a missing/corrupted blob never
         // aborts the surrounding ZIP stream.
         Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
-        long docsWithBinary = docDicts.stream().filter(dd -> dd.getDocument() != null).count();
+        long docsWithBinary = docDicts
+            .stream()
+            .filter(dd -> dd.getDocument() != null)
+            .count();
         manifest.expect(ExportManifest.Category.DOCUMENT, (int) docsWithBinary);
         FolderNameAllocator docAllocator = new FolderNameAllocator(false);
         for (DocumentDictionary dd : docDicts) {

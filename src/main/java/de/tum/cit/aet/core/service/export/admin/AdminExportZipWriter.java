@@ -88,7 +88,7 @@ public class AdminExportZipWriter {
         ExportManifest.Payload p = manifest.finish();
         log.info(
             "Admin export {} finished with status {} in {}s — RG {}/{} (failed {}), Jobs {}/{} (failed {}), " +
-            "Applications {}/{} (failed {}), Documents {}/{} (failed {}), Users {}/{} (failed {}), total failures: {}",
+                "Applications {}/{} (failed {}), Documents {}/{} (failed {}), Users {}/{} (failed {}), total failures: {}",
             type,
             p.status(),
             p.durationSeconds(),

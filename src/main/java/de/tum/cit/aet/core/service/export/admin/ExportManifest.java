@@ -84,9 +84,8 @@ public final class ExportManifest {
      */
     public void failed(Category category, UUID id, String context, Throwable cause) {
         counterFor(category).failed++;
-        String reason = cause == null
-            ? "unknown"
-            : cause.getClass().getSimpleName() + (cause.getMessage() == null ? "" : ": " + cause.getMessage());
+        String reason =
+            cause == null ? "unknown" : cause.getClass().getSimpleName() + (cause.getMessage() == null ? "" : ": " + cause.getMessage());
         failures.add(new Failure(category, id, context, reason));
     }
 
@@ -117,13 +116,7 @@ public final class ExportManifest {
             finishedAt,
             Duration.between(startedAt, finishedAt).toMillis() / 1000.0,
             status(),
-            new Totals(
-                researchGroups.snapshot(),
-                jobs.snapshot(),
-                applications.snapshot(),
-                documents.snapshot(),
-                users.snapshot()
-            ),
+            new Totals(researchGroups.snapshot(), jobs.snapshot(), applications.snapshot(), documents.snapshot(), users.snapshot()),
             aborted ? abortReason : null,
             List.copyOf(failures)
         );
@@ -181,13 +174,7 @@ public final class ExportManifest {
     public record Snapshot(int expected, int exported, int failed) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record Totals(
-        Snapshot researchGroups,
-        Snapshot jobs,
-        Snapshot applications,
-        Snapshot documents,
-        Snapshot users
-    ) {}
+    public record Totals(Snapshot researchGroups, Snapshot jobs, Snapshot applications, Snapshot documents, Snapshot users) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record Failure(Category category, UUID id, String context, String reason) {}
