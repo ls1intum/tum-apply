@@ -15,6 +15,7 @@ import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.dto.UserDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.io.IOException;
@@ -189,18 +190,7 @@ public class FullAdminExportStrategy {
                       .toList();
 
         return new AdminUserExportDTO(
-            user.getUserId(),
-            user.getResearchGroup() == null ? null : user.getResearchGroup().getResearchGroupId(),
-            user.getEmail(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getGender(),
-            user.getNationality(),
-            user.getBirthday(),
-            user.getPhoneNumber(),
-            user.getWebsite(),
-            user.getLinkedinUrl(),
-            user.getSelectedLanguage(),
+            UserDTO.getFromEntity(user),
             user.getUniversityId(),
             user.getLastActivityAt(),
             user.isAiFeaturesEnabled(),

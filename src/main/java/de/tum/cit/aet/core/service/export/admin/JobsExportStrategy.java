@@ -24,8 +24,10 @@ import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.CustomField;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -198,7 +200,7 @@ public class JobsExportStrategy {
             }
         }
         if (!jobs.isEmpty()) {
-            writeJobsOverviewSheet(zos, basePath + "jobs_overview.xlsx", jobs);
+            writeJobsOverviewSheet(zos, basePath + "jobs_overview.xlsx", jobs, includeJsonDumps);
             if (includeJsonDumps) {
                 writeJsonEntry(zos, basePath + "_machine_readable/jobs.json", jobs.stream().map(this::toJobDto).toList());
             }
@@ -275,7 +277,7 @@ public class JobsExportStrategy {
         }
 
         // 3. Per-job overview xlsx + (optionally) machine-readable JSON dumps.
-        writeApplicationsOverviewSheet(zos, folder + "applications_overview.xlsx", apps);
+        writeApplicationsOverviewSheet(zos, folder + "applications_overview.xlsx", apps, includeJsonDumps);
         if (includeJsonDumps) {
             writeJsonEntry(zos, folder + "_machine_readable/job.json", toJobDto(job));
             writeJsonEntry(zos, folder + "_machine_readable/applications.json", apps.stream().map(this::toApplicationDto).toList());
@@ -367,67 +369,80 @@ public class JobsExportStrategy {
 
     // ----------------------------- overview sheets -----------------------------
 
-    private void writeJobsOverviewSheet(ZipOutputStream zos, String entryPath, List<Job> jobs) {
-        List<String> headers = List.of(
-            "Job ID",
-            "Title",
-            "State",
-            "Supervising Professor",
-            "Research Group",
-            "Subject Area",
-            "Location",
-            "Start Date",
-            "Application Deadline",
-            "Application Count",
-            "Created"
+    private void writeJobsOverviewSheet(ZipOutputStream zos, String entryPath, List<Job> jobs, boolean includeIds) {
+        List<String> headers = new ArrayList<>();
+        if (includeIds) {
+            headers.add("Job ID");
+        }
+        headers.addAll(
+            List.of(
+                "Title",
+                "State",
+                "Supervising Professor",
+                "Research Group",
+                "Subject Area",
+                "Location",
+                "Start Date",
+                "Application Deadline",
+                "Application Count",
+                "Created"
+            )
         );
         List<List<Object>> rows = new ArrayList<>(jobs.size());
         for (Job job : jobs) {
-            rows.add(
-                List.<Object>of(
-                    nullSafe(job.getJobId()),
-                    nullSafe(job.getTitle()),
-                    nullSafe(job.getState()),
-                    job.getSupervisingProfessor() == null
-                        ? ""
-                        : (
-                              nullSafe(job.getSupervisingProfessor().getFirstName()) +
-                              " " +
-                              nullSafe(job.getSupervisingProfessor().getLastName())
-                          ).trim(),
-                    job.getResearchGroup() == null ? "" : nullSafe(job.getResearchGroup().getName()),
-                    job.getSubjectArea() == null ? "" : job.getSubjectArea().name(),
-                    job.getLocation() == null ? "" : job.getLocation().name(),
-                    nullSafe(job.getStartDate()),
-                    nullSafe(job.getEndDate()),
-                    applicationRepository.findAllByJobId(job.getJobId()).size(),
-                    nullSafe(job.getCreatedAt())
-                )
+            List<Object> row = new ArrayList<>();
+            if (includeIds) {
+                row.add(nullSafe(job.getJobId()));
+            }
+            row.add(nullSafe(job.getTitle()));
+            row.add(nullSafe(job.getState()));
+            row.add(
+                job.getSupervisingProfessor() == null
+                    ? ""
+                    : (
+                          nullSafe(job.getSupervisingProfessor().getFirstName()) +
+                          " " +
+                          nullSafe(job.getSupervisingProfessor().getLastName())
+                      ).trim()
             );
+            row.add(job.getResearchGroup() == null ? "" : nullSafe(job.getResearchGroup().getName()));
+            row.add(job.getSubjectArea() == null ? "" : job.getSubjectArea().name());
+            row.add(job.getLocation() == null ? "" : job.getLocation().name());
+            row.add(nullSafe(job.getStartDate()));
+            row.add(nullSafe(job.getEndDate()));
+            row.add(applicationRepository.findAllByJobId(job.getJobId()).size());
+            row.add(nullSafe(job.getCreatedAt()));
+            rows.add(row);
         }
         xlsxWriter.writeSheet(zos, entryPath, "Jobs", headers, rows);
     }
 
-    private void writeApplicationsOverviewSheet(ZipOutputStream zos, String entryPath, List<Application> apps) {
-        List<String> headers = List.of(
-            "Application ID",
-            "Last Name",
-            "First Name",
-            "Email",
-            "State",
-            "Average Rating",
-            "Interview Rating",
-            "Interview Date",
-            "Interview Location",
-            "Interview Notes",
-            "Applied At",
-            "Desired Start Date",
-            "Bachelor Degree",
-            "Bachelor University",
-            "Bachelor Grade",
-            "Master Degree",
-            "Master University",
-            "Master Grade"
+    private void writeApplicationsOverviewSheet(ZipOutputStream zos, String entryPath, List<Application> apps, boolean includeIds) {
+        List<String> headers = new ArrayList<>();
+        if (includeIds) {
+            headers.add("Application ID");
+        }
+        headers.addAll(
+            List.of(
+                "Last Name",
+                "First Name",
+                "Email",
+                "Phone Number",
+                "State",
+                "Average Rating",
+                "Interview Rating",
+                "Interview Date",
+                "Interview Location",
+                "Interview Notes",
+                "Applied At",
+                "Desired Start Date",
+                "Bachelor Degree",
+                "Bachelor University",
+                "Bachelor Grade",
+                "Master Degree",
+                "Master University",
+                "Master Grade"
+            )
         );
         List<List<Object>> rows = new ArrayList<>(apps.size());
         for (Application app : apps) {
@@ -446,28 +461,30 @@ public class JobsExportStrategy {
             Object interviewDate = slot == null ? "" : slot.getStartDateTime();
             String interviewLocation = slot == null ? "" : nullSafeString(slot.getLocation());
             String interviewNotes = interviewee == null ? "" : truncate(nullSafeString(interviewee.getAssessmentNotes()), 500);
-            rows.add(
-                List.<Object>of(
-                    nullSafe(app.getApplicationId()),
-                    nullSafe(app.getApplicantLastName()),
-                    nullSafe(app.getApplicantFirstName()),
-                    nullSafe(app.getApplicantEmail()),
-                    nullSafe(app.getState()),
-                    avg == null ? "" : avg,
-                    interviewRating,
-                    interviewDate,
-                    interviewLocation,
-                    interviewNotes,
-                    nullSafe(app.getAppliedAt()),
-                    nullSafe(app.getDesiredStartDate()),
-                    nullSafe(app.getApplicantBachelorDegreeName()),
-                    nullSafe(app.getApplicantBachelorUniversity()),
-                    nullSafe(app.getApplicantBachelorGrade()),
-                    nullSafe(app.getApplicantMasterDegreeName()),
-                    nullSafe(app.getApplicantMasterUniversity()),
-                    nullSafe(app.getApplicantMasterGrade())
-                )
-            );
+
+            List<Object> row = new ArrayList<>();
+            if (includeIds) {
+                row.add(nullSafe(app.getApplicationId()));
+            }
+            row.add(nullSafe(app.getApplicantLastName()));
+            row.add(nullSafe(app.getApplicantFirstName()));
+            row.add(nullSafe(app.getApplicantEmail()));
+            row.add(nullSafe(app.getApplicantPhoneNumber()));
+            row.add(nullSafe(app.getState()));
+            row.add(avg == null ? "" : avg);
+            row.add(interviewRating);
+            row.add(interviewDate);
+            row.add(interviewLocation);
+            row.add(interviewNotes);
+            row.add(nullSafe(app.getAppliedAt()));
+            row.add(nullSafe(app.getDesiredStartDate()));
+            row.add(nullSafe(app.getApplicantBachelorDegreeName()));
+            row.add(nullSafe(app.getApplicantBachelorUniversity()));
+            row.add(nullSafe(app.getApplicantBachelorGrade()));
+            row.add(nullSafe(app.getApplicantMasterDegreeName()));
+            row.add(nullSafe(app.getApplicantMasterUniversity()));
+            row.add(nullSafe(app.getApplicantMasterGrade()));
+            rows.add(row);
         }
         xlsxWriter.writeSheet(zos, entryPath, "Applications", headers, rows);
     }
@@ -504,22 +521,8 @@ public class JobsExportStrategy {
                       )
                       .toList();
         return new AdminJobExportDTO(
-            job.getJobId(),
-            job.getSupervisingProfessor() == null ? null : job.getSupervisingProfessor().getUserId(),
+            JobFormDTO.getFromEntity(job),
             job.getResearchGroup() == null ? null : job.getResearchGroup().getResearchGroupId(),
-            job.getTitle(),
-            job.getState(),
-            job.getSubjectArea(),
-            job.getResearchArea(),
-            job.getLocation(),
-            job.getWorkload(),
-            job.getContractDuration(),
-            job.getFundingType(),
-            job.getJobDescriptionEN(),
-            job.getJobDescriptionDE(),
-            job.getStartDate(),
-            job.getEndDate(),
-            job.getSuitableForDisabled(),
             customFields,
             job.getCreatedAt(),
             job.getLastModifiedAt()
@@ -604,36 +607,13 @@ public class JobsExportStrategy {
         return new AdminApplicationExportDTO(
             app.getApplicationId(),
             app.getJob() == null ? null : app.getJob().getJobId(),
-            app.getApplicant() == null || app.getApplicant().getUser() == null ? null : app.getApplicant().getUser().getUserId(),
             app.getState(),
             app.getDesiredStartDate(),
             app.getAppliedAt(),
             app.getMotivation(),
             app.getSpecialSkills(),
             app.getProjects(),
-            app.getApplicantFirstName(),
-            app.getApplicantLastName(),
-            app.getApplicantEmail(),
-            app.getApplicantGender(),
-            app.getApplicantNationality(),
-            app.getApplicantBirthday(),
-            app.getApplicantPhoneNumber(),
-            app.getApplicantWebsite(),
-            app.getApplicantLinkedinUrl(),
-            app.getApplicantStreet(),
-            app.getApplicantPostalCode(),
-            app.getApplicantCity(),
-            app.getApplicantCountry(),
-            app.getApplicantBachelorDegreeName(),
-            app.getApplicantBachelorGradeUpperLimit(),
-            app.getApplicantBachelorGradeLowerLimit(),
-            app.getApplicantBachelorGrade(),
-            app.getApplicantBachelorUniversity(),
-            app.getApplicantMasterDegreeName(),
-            app.getApplicantMasterGradeUpperLimit(),
-            app.getApplicantMasterGradeLowerLimit(),
-            app.getApplicantMasterGrade(),
-            app.getApplicantMasterUniversity(),
+            ApplicantDTO.getFromApplicationSnapshot(app),
             reviewDto,
             ratingDtos,
             commentDtos,

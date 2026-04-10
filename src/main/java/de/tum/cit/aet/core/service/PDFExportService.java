@@ -111,9 +111,20 @@ public class PDFExportService {
 
         builder
             .startInfoSection(labels.get("applicantInfo"))
+            .addSectionData(labels.get("name"), getValue(app.applicant().user().name()))
+            .addSectionData(labels.get("email"), getValue(app.applicant().user().email()))
+            .addSectionData(labels.get("phoneNumber"), getValue(app.applicant().user().phoneNumber()))
             .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
             .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
             .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));
+
+        String street = formatAddress(app.applicant().street(), app.applicant().postalCode(), app.applicant().city());
+        if (hasValue(street)) {
+            builder.addSectionData(labels.get("address"), street);
+        }
+        if (hasValue(app.applicant().country())) {
+            builder.addSectionData(labels.get("country"), app.applicant().country());
+        }
 
         if (app.applicant().user().website() != null) {
             builder.addSectionData(labels.get("website"), getValue(app.applicant().user().website()));

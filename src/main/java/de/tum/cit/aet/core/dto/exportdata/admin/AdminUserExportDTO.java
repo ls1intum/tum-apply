@@ -2,26 +2,22 @@ package de.tum.cit.aet.core.dto.exportdata.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
-import java.time.LocalDate;
+import de.tum.cit.aet.usermanagement.dto.UserDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/** Flat, re-importable representation of a {@link de.tum.cit.aet.usermanagement.domain.User}. */
+/**
+ * Re-importable representation of a {@link de.tum.cit.aet.usermanagement.domain.User}
+ * for admin bulk exports. Wraps the existing {@link UserDTO} (which covers
+ * personal details plus the primary research group via its short DTO) and
+ * only adds the fields the admin export needs on top: university id,
+ * last-activity timestamp, AI feature flags, per-rg roles, and audit
+ * timestamps.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record AdminUserExportDTO(
-    UUID userId,
-    UUID researchGroupId,
-    String email,
-    String firstName,
-    String lastName,
-    String gender,
-    String nationality,
-    LocalDate birthday,
-    String phoneNumber,
-    String website,
-    String linkedinUrl,
-    String selectedLanguage,
+    UserDTO user,
     String universityId,
     LocalDateTime lastActivityAt,
     boolean aiFeaturesEnabled,

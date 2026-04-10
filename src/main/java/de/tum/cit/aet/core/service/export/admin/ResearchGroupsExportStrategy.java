@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,12 @@ public class ResearchGroupsExportStrategy {
             writeJsonEntry(zos, folder + "_machine_readable/research_group.json", toDto(rg));
         }
 
+        List<String> headers = new ArrayList<>();
+        if (includeJsonDumps) {
+            headers.add("User ID");
+        }
+        headers.addAll(List.of("Last Name", "First Name", "Email", "Role"));
+
         List<UserResearchGroupRole> roles = rg.getUserRoles() == null ? List.of() : new ArrayList<>(rg.getUserRoles());
         List<List<Object>> rows = new ArrayList<>(roles.size());
         for (UserResearchGroupRole role : roles) {
@@ -52,24 +59,18 @@ public class ResearchGroupsExportStrategy {
             if (user == null) {
                 continue;
             }
-            rows.add(
-                List.<Object>of(
-                    nullSafe(user.getUserId()),
-                    nullSafe(user.getLastName()),
-                    nullSafe(user.getFirstName()),
-                    nullSafe(user.getEmail()),
-                    role.getRole() == null ? "" : role.getRole().name()
-                )
-            );
+            List<Object> row = new ArrayList<>();
+            if (includeJsonDumps) {
+                row.add(nullSafe(user.getUserId()));
+            }
+            row.add(nullSafe(user.getLastName()));
+            row.add(nullSafe(user.getFirstName()));
+            row.add(nullSafe(user.getEmail()));
+            row.add(role.getRole() == null ? "" : role.getRole().name());
+            rows.add(row);
         }
 
-        xlsxWriter.writeSheet(
-            zos,
-            folder + "members_overview.xlsx",
-            "Members",
-            List.of("User ID", "Last Name", "First Name", "Email", "Role"),
-            rows
-        );
+        xlsxWriter.writeSheet(zos, folder + "members_overview.xlsx", "Members", headers, rows);
     }
 
     AdminResearchGroupExportDTO toDto(ResearchGroup rg) {
@@ -90,19 +91,9 @@ public class ResearchGroupsExportStrategy {
 
         return new AdminResearchGroupExportDTO(
             rg.getResearchGroupId(),
-            rg.getName(),
-            rg.getAbbreviation(),
-            rg.getHead(),
-            rg.getEmail(),
-            rg.getWebsite(),
-            rg.getDepartment() == null ? null : rg.getDepartment().getDepartmentId(),
+            ResearchGroupDTO.getFromEntity(rg),
             rg.getDepartment() == null ? null : rg.getDepartment().getName(),
-            rg.getDescription(),
-            rg.getStreet(),
-            rg.getPostalCode(),
-            rg.getCity(),
             rg.getUniversityId(),
-            rg.getState(),
             memberRefs,
             rg.getCreatedAt(),
             rg.getLastModifiedAt()

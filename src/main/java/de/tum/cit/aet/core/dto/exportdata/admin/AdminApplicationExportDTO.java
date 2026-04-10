@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
+import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,11 +12,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Flat, re-importable representation of an
- * {@link de.tum.cit.aet.application.domain.Application}. Includes the snapshot
- * fields the application stores at submission time, plus inline review,
- * rating, comment, custom field answer, document and interview references so
- * a single JSON file fully describes one applicant.
+ * Re-importable representation of an
+ * {@link de.tum.cit.aet.application.domain.Application} for admin bulk exports.
+ * Wraps the existing {@link ApplicantDTO} (which — built via
+ * {@link ApplicantDTO#getFromApplicationSnapshot} — already covers every
+ * applicant snapshot field including the embedded {@link de.tum.cit.aet.usermanagement.dto.UserDTO})
+ * and only adds the application-level fields plus the review / rating /
+ * comment / custom-field-answer / document / interview sub-records.
  *
  * <p>All sub-records are nested inside this DTO instead of living in separate
  * files — they only ever appear as part of an application export.
@@ -24,38 +27,13 @@ import java.util.UUID;
 public record AdminApplicationExportDTO(
     UUID applicationId,
     UUID jobId,
-    UUID applicantUserId,
     ApplicationState state,
     LocalDate desiredStartDate,
     LocalDateTime appliedAt,
     String motivation,
     String specialSkills,
     String projects,
-    // applicant snapshot
-    String applicantFirstName,
-    String applicantLastName,
-    String applicantEmail,
-    String applicantGender,
-    String applicantNationality,
-    LocalDate applicantBirthday,
-    String applicantPhoneNumber,
-    String applicantWebsite,
-    String applicantLinkedinUrl,
-    String applicantStreet,
-    String applicantPostalCode,
-    String applicantCity,
-    String applicantCountry,
-    String applicantBachelorDegreeName,
-    String applicantBachelorGradeUpperLimit,
-    String applicantBachelorGradeLowerLimit,
-    String applicantBachelorGrade,
-    String applicantBachelorUniversity,
-    String applicantMasterDegreeName,
-    String applicantMasterGradeUpperLimit,
-    String applicantMasterGradeLowerLimit,
-    String applicantMasterGrade,
-    String applicantMasterUniversity,
-    // related data
+    ApplicantDTO applicant,
     Review review,
     List<Rating> ratings,
     List<InternalComment> internalComments,
