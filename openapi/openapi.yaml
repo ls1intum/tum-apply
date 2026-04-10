@@ -33,6 +33,7 @@ paths:
         required: true
         schema:
           type: string
+          description: Identifies which kind of admin bulk export should be produced
           enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
       responses:
         '200':
