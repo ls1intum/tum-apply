@@ -112,6 +112,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
+  /api/applicants/profile/application-information:
+    put:
+      tags: [applicant-resource]
+      operationId: updateApplicantApplicationInformation
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applicants/profile/document-ids:
     get:
       tags: [applicant-resource]
@@ -188,21 +203,6 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
                 uniqueItems: true
-  /api/applicants/profile/personal-information:
-    put:
-      tags: [applicant-resource]
-      operationId: updateApplicantPersonalInformation
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ApplicantDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applicants/subject-area-subscriptions:
     get:
       tags: [applicant-resource]
