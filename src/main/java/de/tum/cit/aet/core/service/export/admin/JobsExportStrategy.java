@@ -1,6 +1,5 @@
 package de.tum.cit.aet.core.service.export.admin;
 
-import tools.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.CustomFieldAnswer;
@@ -26,8 +25,8 @@ import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.CustomField;
@@ -52,6 +51,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Builds the jobs portion of an admin bulk export. Handles the three job-centric
@@ -145,7 +145,10 @@ public class JobsExportStrategy {
 
         // Defensive: jobs that match the filter but have no research group go
         // into orphans/. Healthy data should leave this empty.
-        List<Job> orphanJobs = matchingJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
+        List<Job> orphanJobs = matchingJobs
+            .stream()
+            .filter(j -> j.getResearchGroup() == null)
+            .toList();
         if (!orphanJobs.isEmpty()) {
             writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeDrafts, false, false);
         }
@@ -198,11 +201,7 @@ public class JobsExportStrategy {
                 // Defensive: one bad job (e.g. corrupt entity, missing relation) must
                 // never abort the surrounding ZIP. Drop a placeholder and continue.
                 log.error("Failed to write job folder for job {} ({}): {}", job.getJobId(), job.getTitle(), e.getMessage(), e);
-                writeTextEntry(
-                    zos,
-                    folder + "_error.txt",
-                    "Failed to export job " + job.getJobId() + ": " + e.getMessage()
-                );
+                writeTextEntry(zos, folder + "_error.txt", "Failed to export job " + job.getJobId() + ": " + e.getMessage());
             }
         }
         if (!jobs.isEmpty()) {
@@ -286,17 +285,14 @@ public class JobsExportStrategy {
         writeApplicationsOverviewSheet(zos, folder + "applications_overview.xlsx", apps);
         if (includeJsonDumps) {
             writeJsonEntry(zos, folder + "_machine_readable/job.json", toJobDto(job));
-            writeJsonEntry(
-                zos,
-                folder + "_machine_readable/applications.json",
-                apps.stream().map(this::toApplicationDto).toList()
-            );
+            writeJsonEntry(zos, folder + "_machine_readable/applications.json", apps.stream().map(this::toApplicationDto).toList());
         }
 
         // 4. One folder per application — fresh allocator scoped to this job
         FolderNameAllocator appAllocator = new FolderNameAllocator(includeUuids);
         for (Application app : apps) {
-            String label = (app.getApplicantLastName() == null ? "applicant" : app.getApplicantLastName()) +
+            String label =
+                (app.getApplicantLastName() == null ? "applicant" : app.getApplicantLastName()) +
                 "_" +
                 (app.getApplicantFirstName() == null ? "" : app.getApplicantFirstName());
             String appFolder = folder + "applications/" + appAllocator.allocate(label, app.getApplicationId()) + "/";
@@ -332,11 +328,7 @@ public class JobsExportStrategy {
                 Resource interviewPdf = AdminInterviewPdf.build(interviewee, app, job);
                 zipExportService.addFileToZip(zos, folder + "interview/interview_summary.pdf", interviewPdf.getInputStream());
             } catch (Exception e) {
-                log.warn(
-                    "Failed to write interview_summary.pdf for application {}: {}",
-                    app.getApplicationId(),
-                    e.getMessage()
-                );
+                log.warn("Failed to write interview_summary.pdf for application {}: {}", app.getApplicationId(), e.getMessage());
                 writeTextEntry(
                     zos,
                     folder + "interview/interview_summary.pdf.error.txt",
@@ -405,7 +397,11 @@ public class JobsExportStrategy {
                     nullSafe(job.getState()),
                     job.getSupervisingProfessor() == null
                         ? ""
-                        : (nullSafe(job.getSupervisingProfessor().getFirstName()) + " " + nullSafe(job.getSupervisingProfessor().getLastName())).trim(),
+                        : (
+                              nullSafe(job.getSupervisingProfessor().getFirstName()) +
+                              " " +
+                              nullSafe(job.getSupervisingProfessor().getLastName())
+                          ).trim(),
                     job.getResearchGroup() == null ? "" : nullSafe(job.getResearchGroup().getName()),
                     job.getSubjectArea() == null ? "" : job.getSubjectArea().name(),
                     job.getLocation() == null ? "" : job.getLocation().name(),
@@ -445,7 +441,12 @@ public class JobsExportStrategy {
             Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(app.getApplicationId());
             Double avg = ratings.isEmpty()
                 ? null
-                : ratings.stream().filter(r -> r.getRating() != null).mapToInt(Rating::getRating).average().orElse(0d);
+                : ratings
+                      .stream()
+                      .filter(r -> r.getRating() != null)
+                      .mapToInt(Rating::getRating)
+                      .average()
+                      .orElse(0d);
             Interviewee interviewee = lookupInterviewee(app);
             String interviewRating = interviewee == null || interviewee.getRating() == null ? "" : interviewee.getRating().name();
             InterviewSlot slot = interviewee == null ? null : interviewee.getScheduledSlot();
@@ -492,13 +493,8 @@ public class JobsExportStrategy {
     // ----------------------------- DTO conversion -----------------------------
 
     AdminJobExportDTO toJobDto(Job job) {
-        List<AdminCustomFieldDTO> customFields = job.getCustomFields() == null
-            ? List.of()
-            : job
-                .getCustomFields()
-                .stream()
-                .map(this::toCustomFieldDto)
-                .toList();
+        List<AdminCustomFieldDTO> customFields =
+            job.getCustomFields() == null ? List.of() : job.getCustomFields().stream().map(this::toCustomFieldDto).toList();
         return new AdminJobExportDTO(
             job.getJobId(),
             job.getSupervisingProfessor() == null ? null : job.getSupervisingProfessor().getUserId(),
@@ -535,25 +531,21 @@ public class JobsExportStrategy {
 
     AdminApplicationExportDTO toApplicationDto(Application app) {
         ApplicationReview review = app.getApplicationReview();
-        AdminApplicationReviewDTO reviewDto = review == null
-            ? null
-            : new AdminApplicationReviewDTO(
-                review.getApplicationReviewId(),
-                review.getReviewedBy() == null ? null : review.getReviewedBy().getUserId(),
-                review.getReason(),
-                review.getReviewedAt()
-            );
+        AdminApplicationReviewDTO reviewDto =
+            review == null
+                ? null
+                : new AdminApplicationReviewDTO(
+                      review.getApplicationReviewId(),
+                      review.getReviewedBy() == null ? null : review.getReviewedBy().getUserId(),
+                      review.getReason(),
+                      review.getReviewedAt()
+                  );
 
         Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(app.getApplicationId());
         List<AdminRatingDTO> ratingDtos = ratings
             .stream()
             .map(r ->
-                new AdminRatingDTO(
-                    r.getRatingId(),
-                    r.getFrom() == null ? null : r.getFrom().getUserId(),
-                    r.getRating(),
-                    r.getCreatedAt()
-                )
+                new AdminRatingDTO(r.getRatingId(), r.getFrom() == null ? null : r.getFrom().getUserId(), r.getRating(), r.getCreatedAt())
             )
             .toList();
 
@@ -590,9 +582,8 @@ public class JobsExportStrategy {
             .stream()
             .filter(dd -> dd.getDocument() != null)
             .map(dd -> {
-                String typeLabel = dd.getDocumentType() == null
-                    ? "document"
-                    : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
+                String typeLabel =
+                    dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
                 String baseName = docPathAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
                 return new AdminDocumentRefDTO(
                     dd.getDocument().getDocumentId(),
@@ -654,13 +645,8 @@ public class JobsExportStrategy {
 
     private AdminIntervieweeDTO toIntervieweeDto(Interviewee interviewee) {
         InterviewProcess process = interviewee.getInterviewProcess();
-        List<AdminInterviewSlotDTO> slots = interviewee.getSlots() == null
-            ? List.of()
-            : interviewee
-                .getSlots()
-                .stream()
-                .map(this::toSlotDto)
-                .toList();
+        List<AdminInterviewSlotDTO> slots =
+            interviewee.getSlots() == null ? List.of() : interviewee.getSlots().stream().map(this::toSlotDto).toList();
         return new AdminIntervieweeDTO(
             interviewee.getId(),
             process == null ? null : process.getId(),

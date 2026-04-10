@@ -32,7 +32,10 @@ class AdminXlsxWriterTest {
                 ENTRY,
                 "Jobs",
                 List.of("Title", "Date", "Count"),
-                List.of(List.<Object>of("Position A", LocalDate.of(2026, 4, 10), 7), List.<Object>of("Position B", LocalDate.of(2026, 5, 1), 3))
+                List.of(
+                    List.<Object>of("Position A", LocalDate.of(2026, 4, 10), 7),
+                    List.<Object>of("Position B", LocalDate.of(2026, 5, 1), 3)
+                )
             );
             zos.finish();
         }

@@ -69,13 +69,12 @@ public class AdminExportZipWriter {
     }
 
     private String buildEnglishReadme(AdminExportType type) {
-        String typeDescription =
-            switch (type) {
-                case JOBS_OPEN -> "all currently published jobs whose application deadline has not yet passed";
-                case JOBS_EXPIRED -> "all published jobs whose application deadline has already passed";
-                case JOBS_CLOSED -> "all jobs that are closed or where an applicant has been selected";
-                case FULL_ADMIN -> "the entire system: research groups with members, every job (including drafts) grouped under its research group, every application, and re-importable JSON dumps";
-            };
+        String typeDescription = switch (type) {
+            case JOBS_OPEN -> "all currently published jobs whose application deadline has not yet passed";
+            case JOBS_EXPIRED -> "all published jobs whose application deadline has already passed";
+            case JOBS_CLOSED -> "all jobs that are closed or where an applicant has been selected";
+            case FULL_ADMIN -> "the entire system: research groups with members, every job (including drafts) grouped under its research group, every application, and re-importable JSON dumps";
+        };
         return """
         TUMApply – Admin Bulk Export
         ============================
@@ -112,13 +111,12 @@ public class AdminExportZipWriter {
     }
 
     private String buildGermanReadme(AdminExportType type) {
-        String typeBeschreibung =
-            switch (type) {
-                case JOBS_OPEN -> "alle aktuell veroeffentlichten Stellen, deren Bewerbungsfrist noch nicht abgelaufen ist";
-                case JOBS_EXPIRED -> "alle veroeffentlichten Stellen, deren Bewerbungsfrist bereits abgelaufen ist";
-                case JOBS_CLOSED -> "alle geschlossenen Stellen oder Stellen, fuer die ein Bewerber gefunden wurde";
-                case FULL_ADMIN -> "das gesamte System: Forschungsgruppen mit Mitgliedern, jede Stelle (auch Entwuerfe) unter ihrer Forschungsgruppe, jede Bewerbung sowie re-importierbare JSON-Dumps";
-            };
+        String typeBeschreibung = switch (type) {
+            case JOBS_OPEN -> "alle aktuell veroeffentlichten Stellen, deren Bewerbungsfrist noch nicht abgelaufen ist";
+            case JOBS_EXPIRED -> "alle veroeffentlichten Stellen, deren Bewerbungsfrist bereits abgelaufen ist";
+            case JOBS_CLOSED -> "alle geschlossenen Stellen oder Stellen, fuer die ein Bewerber gefunden wurde";
+            case FULL_ADMIN -> "das gesamte System: Forschungsgruppen mit Mitgliedern, jede Stelle (auch Entwuerfe) unter ihrer Forschungsgruppe, jede Bewerbung sowie re-importierbare JSON-Dumps";
+        };
         return """
         TUMApply – Admin-Massenexport
         =============================

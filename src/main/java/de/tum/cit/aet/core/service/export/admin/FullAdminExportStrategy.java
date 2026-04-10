@@ -126,7 +126,10 @@ public class FullAdminExportStrategy {
             List<Job> openJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_OPEN);
             List<Job> expiredJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_EXPIRED);
             List<Job> closedJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_CLOSED);
-            List<Job> draftJobs = rgJobs.stream().filter(j -> j.getState() == JobState.DRAFT).toList();
+            List<Job> draftJobs = rgJobs
+                .stream()
+                .filter(j -> j.getState() == JobState.DRAFT)
+                .toList();
 
             // Full admin is the comprehensive backup — every bucket includes
             // SAVED applications too so nothing is silently dropped.
@@ -140,7 +143,10 @@ public class FullAdminExportStrategy {
         researchGroupsExportStrategy.writeOverviewSheet(zos, "research_groups_overview.xlsx", groups);
 
         // 3. Orphan jobs (no research group) — defensive; healthy data should leave this empty.
-        List<Job> orphanJobs = allJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
+        List<Job> orphanJobs = allJobs
+            .stream()
+            .filter(j -> j.getResearchGroup() == null)
+            .toList();
         if (!orphanJobs.isEmpty()) {
             jobsExportStrategy.writeJobsInto(zos, "orphans/jobs/", orphanJobs, true, false, true);
         }
@@ -156,11 +162,7 @@ public class FullAdminExportStrategy {
         List<AdminUserExportDTO> userDtos = userRepository.findAll().stream().map(this::toUserDto).toList();
         writeJsonEntry(zos, "_machine_readable/users.json", userDtos);
 
-        writeJsonEntry(
-            zos,
-            "_machine_readable/research_groups.json",
-            groups.stream().map(researchGroupsExportStrategy::toDto).toList()
-        );
+        writeJsonEntry(zos, "_machine_readable/research_groups.json", groups.stream().map(researchGroupsExportStrategy::toDto).toList());
     }
 
     private void writeBucket(ZipOutputStream zos, String basePath, List<Job> jobs, boolean includeDrafts) {
@@ -173,13 +175,8 @@ public class FullAdminExportStrategy {
     }
 
     private AdminUserExportDTO toUserDto(User user) {
-        List<AdminUserRoleDTO> roles = user.getResearchGroupRoles() == null
-            ? List.of()
-            : user
-                .getResearchGroupRoles()
-                .stream()
-                .map(this::toUserRoleDto)
-                .toList();
+        List<AdminUserRoleDTO> roles =
+            user.getResearchGroupRoles() == null ? List.of() : user.getResearchGroupRoles().stream().map(this::toUserRoleDto).toList();
 
         return new AdminUserExportDTO(
             user.getUserId(),
@@ -205,10 +202,7 @@ public class FullAdminExportStrategy {
     }
 
     private AdminUserRoleDTO toUserRoleDto(UserResearchGroupRole role) {
-        return new AdminUserRoleDTO(
-            role.getResearchGroup() == null ? null : role.getResearchGroup().getResearchGroupId(),
-            role.getRole()
-        );
+        return new AdminUserRoleDTO(role.getResearchGroup() == null ? null : role.getResearchGroup().getResearchGroupId(), role.getRole());
     }
 
     private void writeJsonEntry(ZipOutputStream zos, String entryPath, Object payload) {
