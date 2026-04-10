@@ -208,11 +208,7 @@ class ApplicationServiceTest {
 
             assertThat(result.applicant().user().email()).isEqualTo("updated.snapshot@example.com");
             assertThat(result.applicationState()).isEqualTo(ApplicationState.SAVED);
-            verify(applicantService, never()).applyApplicationInformationData(
-                any(User.class),
-                any(Applicant.class),
-                any(ApplicantDTO.class)
-            );
+            verify(applicantService, never()).applyApplicationInformationData(any(User.class), any(Applicant.class), any(ApplicantDTO.class));
             verify(applicantService, never()).applyDocumentSettingsData(any(Applicant.class), any(ApplicantDTO.class));
             verify(sender, never()).sendAsync(any());
         }
