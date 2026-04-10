@@ -374,6 +374,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Admin - Bulk Exports
+  // ======================================================================================
+  {
+    path: 'admin-exports',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
+    loadComponent: () => import('./admin/exports/admin-exports.component').then(m => m.AdminExportsComponent),
+    title: 'global.routes.admin.exports',
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,

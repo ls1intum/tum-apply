@@ -202,7 +202,7 @@ public class PDFBuilder {
      * Sets the end of the metadata text to be displayed at the bottom of the
      * PDF
      *
-     * @param metadataEndText the end of metadata text to display (after TumApply
+     * @param metadataEndText the end of metadata text to display (after TUMApply
      *                        label)
      * @return this builder for method chaining
      */
@@ -477,8 +477,8 @@ public class PDFBuilder {
 
             metadataParagraph.add(new Text(metadataText));
 
-            // add TumApply as clickable Link
-            Link tumapplyLink = new Link("TumApply", PdfAction.createURI(TUMAPPLY_URL));
+            // add TUMApply as clickable Link
+            Link tumapplyLink = new Link("TUMApply", PdfAction.createURI(TUMAPPLY_URL));
             tumapplyLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(normalFont).setFontSize(FONT_SIZE_METADATA);
 
             metadataParagraph.add(tumapplyLink);

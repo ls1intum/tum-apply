@@ -7,6 +7,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record ApplicantForApplicationDetailDTO(
     @NotNull UserForApplicationDetailDTO user,
+    String street,
+    String postalCode,
+    String city,
+    String country,
     String bachelorDegreeName,
     String bachelorGradeUpperLimit,
     String bachelorGradeLowerLimit,
@@ -29,6 +33,10 @@ public record ApplicantForApplicationDetailDTO(
         }
         return new ApplicantForApplicationDetailDTO(
             UserForApplicationDetailDTO.getFromEntity(applicant.getUser()),
+            applicant.getStreet(),
+            applicant.getPostalCode(),
+            applicant.getCity(),
+            applicant.getCountry(),
             applicant.getBachelorDegreeName(),
             applicant.getBachelorGradeUpperLimit(),
             applicant.getBachelorGradeLowerLimit(),
@@ -71,6 +79,10 @@ public record ApplicantForApplicationDetailDTO(
 
         return new ApplicantForApplicationDetailDTO(
             userDTO,
+            application.getApplicantStreet(),
+            application.getApplicantPostalCode(),
+            application.getApplicantCity(),
+            application.getApplicantCountry(),
             application.getApplicantBachelorDegreeName(),
             application.getApplicantBachelorGradeUpperLimit(),
             application.getApplicantBachelorGradeLowerLimit(),

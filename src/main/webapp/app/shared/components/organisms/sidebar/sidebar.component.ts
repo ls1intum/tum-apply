@@ -159,6 +159,7 @@ export class SidebarComponent {
           title: 'sidebar.system.system',
           buttons: [
             { icon: 'cubes', text: 'sidebar.system.dependencies', link: '/dependencies' },
+            { icon: 'download', text: 'sidebar.system.exports', link: '/admin-exports' },
             { icon: 'wrench', text: 'sidebar.system.systemsettings', link: '/system-settings' },
           ],
         },

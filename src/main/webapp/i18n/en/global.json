@@ -39,7 +39,8 @@
         "info": "TUMApply - My Group"
       },
       "admin": {
-        "dependencies": "TUMApply - Dependencies"
+        "dependencies": "TUMApply - Dependencies",
+        "exports": "TUMApply - Admin Exports"
       },
       "about-us": "TUMApply - About Us",
       "interview": {
