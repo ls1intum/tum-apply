@@ -14,8 +14,8 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.UserDTO;
+import de.tum.cit.aet.usermanagement.dto.UserResearchGroupRoleDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.io.IOException;
@@ -175,19 +175,10 @@ public class FullAdminExportStrategy {
     }
 
     private AdminUserExportDTO toUserDto(User user) {
-        List<AdminUserExportDTO.Role> roles =
+        List<UserResearchGroupRoleDTO> roles =
             user.getResearchGroupRoles() == null
                 ? List.of()
-                : user
-                      .getResearchGroupRoles()
-                      .stream()
-                      .map(role ->
-                          new AdminUserExportDTO.Role(
-                              role.getResearchGroup() == null ? null : role.getResearchGroup().getResearchGroupId(),
-                              role.getRole()
-                          )
-                      )
-                      .toList();
+                : user.getResearchGroupRoles().stream().map(UserResearchGroupRoleDTO::getFromEntity).toList();
 
         return new AdminUserExportDTO(
             UserDTO.getFromEntity(user),

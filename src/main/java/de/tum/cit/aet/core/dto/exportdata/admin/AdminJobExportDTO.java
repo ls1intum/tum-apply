@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.dto.exportdata.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.job.constants.CustomFieldType;
+import de.tum.cit.aet.job.dto.CustomFieldDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,18 +19,7 @@ import java.util.UUID;
 public record AdminJobExportDTO(
     JobFormDTO job,
     UUID researchGroupId,
-    List<CustomField> customFields,
+    List<CustomFieldDTO> customFields,
     LocalDateTime createdAt,
     LocalDateTime lastModifiedAt
-) {
-    /** Flat representation of a {@link de.tum.cit.aet.job.domain.CustomField}. */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record CustomField(
-        UUID customFieldId,
-        String question,
-        boolean required,
-        CustomFieldType customFieldType,
-        List<String> answerOptions,
-        int sequence
-    ) {}
-}
+) {}

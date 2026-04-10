@@ -2,28 +2,30 @@ package de.tum.cit.aet.core.service.export.admin;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.CustomFieldAnswerDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.AdminExportType;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.dto.DocumentRefDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminJobExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.service.PDFExportService;
 import de.tum.cit.aet.core.service.XlsxExportService;
 import de.tum.cit.aet.core.service.ZipExportService;
-import de.tum.cit.aet.evaluation.domain.ApplicationReview;
-import de.tum.cit.aet.evaluation.domain.InternalComment;
+import de.tum.cit.aet.evaluation.dto.ApplicationReviewDTO;
+import de.tum.cit.aet.evaluation.dto.InternalCommentDetailDTO;
+import de.tum.cit.aet.evaluation.dto.RatingDetailDTO;
 import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
-import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.dto.InterviewDTO;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.domain.CustomField;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.dto.CustomFieldDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -503,23 +505,10 @@ public class JobsExportStrategy {
     // ----------------------------- DTO conversion -----------------------------
 
     AdminJobExportDTO toJobDto(Job job) {
-        List<AdminJobExportDTO.CustomField> customFields =
+        List<CustomFieldDTO> customFields =
             job.getCustomFields() == null
                 ? List.of()
-                : job
-                      .getCustomFields()
-                      .stream()
-                      .map(cf ->
-                          new AdminJobExportDTO.CustomField(
-                              cf.getCustomFieldId(),
-                              cf.getQuestion(),
-                              cf.isRequired(),
-                              cf.getCustomFieldType(),
-                              cf.getAnswerOptions(),
-                              cf.getSequence()
-                          )
-                      )
-                      .toList();
+                : job.getCustomFields().stream().map(CustomFieldDTO::getFromEntity).toList();
         return new AdminJobExportDTO(
             JobFormDTO.getFromEntity(job),
             job.getResearchGroup() == null ? null : job.getResearchGroup().getResearchGroupId(),
@@ -530,67 +519,36 @@ public class JobsExportStrategy {
     }
 
     AdminApplicationExportDTO toApplicationDto(Application app) {
-        ApplicationReview review = app.getApplicationReview();
-        AdminApplicationExportDTO.Review reviewDto =
-            review == null
-                ? null
-                : new AdminApplicationExportDTO.Review(
-                      review.getApplicationReviewId(),
-                      review.getReviewedBy() == null ? null : review.getReviewedBy().getUserId(),
-                      review.getReason(),
-                      review.getReviewedAt()
-                  );
+        ApplicationReviewDTO reviewDto = ApplicationReviewDTO.getFromEntity(app.getApplicationReview());
 
-        List<AdminApplicationExportDTO.Rating> ratingDtos = ratingRepository
+        List<RatingDetailDTO> ratingDtos = ratingRepository
             .findByApplicationApplicationId(app.getApplicationId())
             .stream()
-            .map(r ->
-                new AdminApplicationExportDTO.Rating(
-                    r.getRatingId(),
-                    r.getFrom() == null ? null : r.getFrom().getUserId(),
-                    r.getRating(),
-                    r.getCreatedAt()
-                )
-            )
+            .map(RatingDetailDTO::getFromEntity)
             .toList();
 
-        Set<InternalComment> comments = app.getInternalComments() == null ? Set.of() : app.getInternalComments();
-        List<AdminApplicationExportDTO.InternalComment> commentDtos = comments
-            .stream()
-            .map(c ->
-                new AdminApplicationExportDTO.InternalComment(
-                    c.getInternalCommentId(),
-                    c.getCreatedBy() == null ? null : c.getCreatedBy().getUserId(),
-                    c.getMessage(),
-                    c.getCreatedAt()
-                )
-            )
-            .toList();
+        List<InternalCommentDetailDTO> commentDtos =
+            app.getInternalComments() == null
+                ? List.of()
+                : app.getInternalComments().stream().map(InternalCommentDetailDTO::getFromEntity).toList();
 
-        Set<CustomFieldAnswer> answers = app.getCustomFieldAnswers() == null ? Set.of() : app.getCustomFieldAnswers();
-        List<AdminApplicationExportDTO.CustomFieldAnswer> answerDtos = answers
-            .stream()
-            .map(a ->
-                new AdminApplicationExportDTO.CustomFieldAnswer(
-                    a.getCustomFieldAnswerId(),
-                    a.getCustomField() == null ? null : a.getCustomField().getCustomFieldId(),
-                    a.getAnswers()
-                )
-            )
-            .toList();
+        List<CustomFieldAnswerDetailDTO> answerDtos =
+            app.getCustomFieldAnswers() == null
+                ? List.of()
+                : app.getCustomFieldAnswers().stream().map(CustomFieldAnswerDetailDTO::getFromEntity).toList();
 
         // Mirrors the filename allocation in writeApplicationFolder so the JSON's
         // zipPath matches the actual file on disk inside the ZIP.
         Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
         FolderNameAllocator docPathAllocator = new FolderNameAllocator(false);
-        List<AdminApplicationExportDTO.DocumentRef> docRefs = docDicts
+        List<DocumentRefDTO> docRefs = docDicts
             .stream()
             .filter(dd -> dd.getDocument() != null)
             .map(dd -> {
                 String typeLabel =
                     dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
                 String baseName = docPathAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
-                return new AdminApplicationExportDTO.DocumentRef(
+                return new DocumentRefDTO(
                     dd.getDocument().getDocumentId(),
                     dd.getName(),
                     dd.getDocumentType(),
@@ -625,33 +583,8 @@ public class JobsExportStrategy {
         );
     }
 
-    AdminApplicationExportDTO.Interview toIntervieweeDto(Interviewee interviewee) {
-        InterviewProcess process = interviewee.getInterviewProcess();
-        List<AdminApplicationExportDTO.Interview.Slot> slots =
-            interviewee.getSlots() == null
-                ? List.of()
-                : interviewee
-                      .getSlots()
-                      .stream()
-                      .map(slot ->
-                          new AdminApplicationExportDTO.Interview.Slot(
-                              slot.getId(),
-                              slot.getStartDateTime(),
-                              slot.getEndDateTime(),
-                              slot.getLocation(),
-                              slot.getStreamLink(),
-                              slot.getIsBooked()
-                          )
-                      )
-                      .toList();
-        return new AdminApplicationExportDTO.Interview(
-            interviewee.getId(),
-            process == null ? null : process.getId(),
-            interviewee.getLastInvited(),
-            interviewee.getRating(),
-            interviewee.getAssessmentNotes(),
-            slots
-        );
+    InterviewDTO toIntervieweeDto(Interviewee interviewee) {
+        return InterviewDTO.getFromEntity(interviewee);
     }
 
     private Interviewee lookupInterviewee(Application app) {

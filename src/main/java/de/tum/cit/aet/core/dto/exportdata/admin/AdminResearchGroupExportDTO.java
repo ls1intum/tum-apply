@@ -1,8 +1,8 @@
 package de.tum.cit.aet.core.dto.exportdata.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupMemberDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -21,11 +21,7 @@ public record AdminResearchGroupExportDTO(
     ResearchGroupDTO researchGroup,
     String departmentName,
     String universityId,
-    List<MemberRef> members,
+    List<ResearchGroupMemberDTO> members,
     LocalDateTime createdAt,
     LocalDateTime lastModifiedAt
-) {
-    /** Reference to a member of a research group, with the role they hold there. */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record MemberRef(UUID userId, String firstName, String lastName, String email, UserRole role) {}
-}
+) {}

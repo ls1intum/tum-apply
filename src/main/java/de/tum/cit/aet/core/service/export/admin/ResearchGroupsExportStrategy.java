@@ -8,6 +8,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupMemberDTO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,19 +76,7 @@ public class ResearchGroupsExportStrategy {
 
     AdminResearchGroupExportDTO toDto(ResearchGroup rg) {
         Set<UserResearchGroupRole> roles = rg.getUserRoles() == null ? Set.of() : rg.getUserRoles();
-        List<AdminResearchGroupExportDTO.MemberRef> memberRefs = roles
-            .stream()
-            .filter(r -> r.getUser() != null)
-            .map(r ->
-                new AdminResearchGroupExportDTO.MemberRef(
-                    r.getUser().getUserId(),
-                    r.getUser().getFirstName(),
-                    r.getUser().getLastName(),
-                    r.getUser().getEmail(),
-                    r.getRole()
-                )
-            )
-            .toList();
+        List<ResearchGroupMemberDTO> memberRefs = roles.stream().map(ResearchGroupMemberDTO::getFromEntity).filter(m -> m != null).toList();
 
         return new AdminResearchGroupExportDTO(
             rg.getResearchGroupId(),
