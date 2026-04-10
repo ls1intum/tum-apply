@@ -9,7 +9,7 @@ import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
-import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
+import { ApplicationInformationSettingsComponent } from 'app/shared/settings/application-information-settings';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
 import { createApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -74,7 +74,7 @@ describe('Profile save isolation', () => {
     vi.clearAllMocks();
     applicantApiMock.getApplicantProfile.mockReturnValue(of(baseProfile));
     applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicantApiMock.updateApplicantPersonalInformation.mockReturnValue(of(baseProfile));
+    applicantApiMock.updateApplicantApplicationInformation.mockReturnValue(of(baseProfile));
     applicantApiMock.updateApplicantDocumentSettings.mockReturnValue(of(baseProfile));
     applicantApiMock.uploadApplicantDocuments.mockReturnValue(of([]));
     applicantApiMock.deleteApplicantProfileDocument.mockReturnValue(of(undefined));
@@ -95,7 +95,7 @@ describe('Profile save isolation', () => {
     });
   });
 
-  it('documents save uses the latest personal information saved in another tab', async () => {
+  it('documents save uses the latest application information saved in another tab', async () => {
     const profileAfterPersonalSave = cloneValue(baseProfile);
     profileAfterPersonalSave.user!.firstName = 'Grace';
     const profileAfterBothSaves = cloneValue(profileAfterPersonalSave);
@@ -111,26 +111,26 @@ describe('Profile save isolation', () => {
       .mockReturnValueOnce(of(profileAfterBothSaves));
     applicantApiMock.getApplicantProfileDocumentIds.mockReset();
     applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicantApiMock.updateApplicantPersonalInformation.mockReset();
+    applicantApiMock.updateApplicantApplicationInformation.mockReset();
     applicantApiMock.updateApplicantDocumentSettings.mockReset();
-    applicantApiMock.updateApplicantPersonalInformation
+    applicantApiMock.updateApplicantApplicationInformation
       .mockReturnValueOnce(of(profileAfterPersonalSave))
       .mockReturnValueOnce(of(profileAfterPersonalSave));
     applicantApiMock.updateApplicantDocumentSettings.mockReturnValueOnce(of(profileAfterBothSaves));
 
-    const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
-    await personalComponent.loadPersonalInformation();
+    const applicationComponent = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
+    await applicationComponent.loadApplicationInformation();
 
     const documentsComponent = await createDocumentsComponent();
 
-    const updatedPersonalData = cloneValue(personalComponent.data());
+    const updatedPersonalData = cloneValue(applicationComponent.data());
     updatedPersonalData.firstName = 'Grace';
-    personalComponent.data.set(updatedPersonalData);
+    applicationComponent.data.set(updatedPersonalData);
     documentsComponent.form.patchValue({
       bachelorGrade: '1.0',
     });
 
-    await personalComponent.onSave();
+    await applicationComponent.onSave();
     await documentsComponent.saveAll();
 
     expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
@@ -141,7 +141,7 @@ describe('Profile save isolation', () => {
         bachelorGrade: '1.0',
       }),
     );
-    expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+    expect(applicantApiMock.updateApplicantApplicationInformation).toHaveBeenCalledWith(
       expect.objectContaining({
         user: expect.objectContaining({
           firstName: 'Grace',
@@ -150,7 +150,7 @@ describe('Profile save isolation', () => {
     );
   });
 
-  it('personal information save uses the latest document settings saved in another tab', async () => {
+  it('application information save uses the latest document settings saved in another tab', async () => {
     const profileAfterDocumentsSave = cloneValue(baseProfile);
     profileAfterDocumentsSave.bachelorGrade = '1.0';
     const profileAfterBothSaves = cloneValue(profileAfterDocumentsSave);
@@ -167,28 +167,28 @@ describe('Profile save isolation', () => {
     applicantApiMock.getApplicantProfileDocumentIds.mockReset();
     applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
     applicantApiMock.updateApplicantDocumentSettings.mockReset();
-    applicantApiMock.updateApplicantPersonalInformation.mockReset();
+    applicantApiMock.updateApplicantApplicationInformation.mockReset();
     applicantApiMock.updateApplicantDocumentSettings
       .mockReturnValueOnce(of(profileAfterDocumentsSave))
       .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicantApiMock.updateApplicantPersonalInformation.mockReturnValueOnce(of(profileAfterBothSaves));
+    applicantApiMock.updateApplicantApplicationInformation.mockReturnValueOnce(of(profileAfterBothSaves));
 
     const documentsComponent = await createDocumentsComponent();
 
-    const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
-    await personalComponent.loadPersonalInformation();
+    const applicationComponent = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
+    await applicationComponent.loadApplicationInformation();
 
     documentsComponent.form.patchValue({
       bachelorGrade: '1.0',
     });
-    const updatedPersonalData = cloneValue(personalComponent.data());
+    const updatedPersonalData = cloneValue(applicationComponent.data());
     updatedPersonalData.firstName = 'Grace';
-    personalComponent.data.set(updatedPersonalData);
+    applicationComponent.data.set(updatedPersonalData);
 
     await documentsComponent.saveAll();
-    await personalComponent.onSave();
+    await applicationComponent.onSave();
 
-    expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+    expect(applicantApiMock.updateApplicantApplicationInformation).toHaveBeenCalledWith(
       expect.objectContaining({
         user: expect.objectContaining({
           firstName: 'Grace',
@@ -231,18 +231,18 @@ describe('Profile save isolation', () => {
     vi.useRealTimers();
   });
 
-  it('preserves disabled email field when another personal information field changes', async () => {
-    const fixture = TestBed.createComponent(PersonalInformationSettingsComponent);
-    const personalComponent = fixture.componentInstance;
-    await personalComponent.loadPersonalInformation();
+  it('preserves disabled email field when another application information field changes', async () => {
+    const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+    const applicationComponent = fixture.componentInstance;
+    await applicationComponent.loadApplicationInformation();
     fixture.detectChanges();
 
-    const form = personalComponent.personalInfoForm();
+    const form = applicationComponent.applicationInfoForm();
     form.controls.firstName.setValue('Grace');
     fixture.detectChanges();
 
-    expect(personalComponent.data().email).toBe(baseProfile.user?.email);
-    expect(personalComponent.data().firstName).toBe('Grace');
+    expect(applicationComponent.data().email).toBe(baseProfile.user?.email);
+    expect(applicationComponent.data().firstName).toBe('Grace');
   });
 
   it('uploads queued applicant documents when settings documents are saved', async () => {

@@ -66,10 +66,10 @@ class ApplicantServiceTest {
     }
 
     @Nested
-    class UpdateApplicantPersonalInformation {
+    class UpdateApplicantApplicationInformation {
 
         @Test
-        void shouldUpdateOnlyPersonalInformationFields() {
+        void shouldUpdateOnlyApplicationInformationFields() {
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findById(TEST_USER_ID)).thenReturn(Optional.of(user));
             when(applicantRepository.findById(TEST_USER_ID)).thenReturn(Optional.of(applicant));
@@ -108,7 +108,7 @@ class ApplicantServiceTest {
                 "Should Be Ignored Master University"
             );
 
-            ApplicantDTO result = applicantService.updateApplicantPersonalInformation(update);
+            ApplicantDTO result = applicantService.updateApplicantApplicationInformation(update);
 
             assertThat(result.user().email()).isEqualTo("updated.personal@example.com");
             assertThat(result.user().firstName()).isEqualTo("Grace");

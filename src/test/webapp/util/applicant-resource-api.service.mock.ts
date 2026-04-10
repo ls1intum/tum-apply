@@ -10,7 +10,7 @@ export type ApplicantResourceApiMock = {
   addSubjectAreaSubscription: ReturnType<typeof vi.fn>;
   removeSubjectAreaSubscription: ReturnType<typeof vi.fn>;
   updateApplicantProfile: ReturnType<typeof vi.fn>;
-  updateApplicantPersonalInformation: ReturnType<typeof vi.fn>;
+  updateApplicantApplicationInformation: ReturnType<typeof vi.fn>;
   updateApplicantDocumentSettings: ReturnType<typeof vi.fn>;
   uploadApplicantDocuments: ReturnType<typeof vi.fn>;
   uploadApplicantProfileDocuments: ReturnType<typeof vi.fn>;
@@ -26,7 +26,7 @@ export function createApplicantResourceApiMock(): ApplicantResourceApiMock {
     addSubjectAreaSubscription: vi.fn().mockReturnValue(of(void 0)),
     removeSubjectAreaSubscription: vi.fn().mockReturnValue(of(void 0)),
     updateApplicantProfile: vi.fn().mockReturnValue(of({ user: {} })),
-    updateApplicantPersonalInformation: vi.fn().mockReturnValue(of({ user: {} })),
+    updateApplicantApplicationInformation: vi.fn().mockReturnValue(of({ user: {} })),
     updateApplicantDocumentSettings: vi.fn().mockReturnValue(of({ user: {} })),
     uploadApplicantDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),
     uploadApplicantProfileDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),

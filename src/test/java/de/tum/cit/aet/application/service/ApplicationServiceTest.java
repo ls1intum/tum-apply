@@ -208,7 +208,7 @@ class ApplicationServiceTest {
 
             assertThat(result.applicant().user().email()).isEqualTo("updated.snapshot@example.com");
             assertThat(result.applicationState()).isEqualTo(ApplicationState.SAVED);
-            verify(applicantService, never()).applyPersonalInformationData(any(User.class), any(Applicant.class), any(ApplicantDTO.class));
+            verify(applicantService, never()).applyApplicationInformationData(any(User.class), any(Applicant.class), any(ApplicantDTO.class));
             verify(applicantService, never()).applyDocumentSettingsData(any(Applicant.class), any(ApplicantDTO.class));
             verify(sender, never()).sendAsync(any());
         }
@@ -295,7 +295,7 @@ class ApplicationServiceTest {
             ArgumentCaptor<ApplicantDTO> personalCaptor = ArgumentCaptor.forClass(ApplicantDTO.class);
             ArgumentCaptor<ApplicantDTO> documentCaptor = ArgumentCaptor.forClass(ApplicantDTO.class);
 
-            verify(applicantService).applyPersonalInformationData(eq(applicantUser), eq(applicant), personalCaptor.capture());
+            verify(applicantService).applyApplicationInformationData(eq(applicantUser), eq(applicant), personalCaptor.capture());
             verify(applicantService).applyDocumentSettingsData(eq(applicant), documentCaptor.capture());
             verify(sender, times(2)).sendAsync(any());
 
