@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.service.export.admin.AdminExportZipWriter;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +36,16 @@ public class AdminDataExportService {
      * provided output stream. The transaction stays open for the entire build
      * so lazy collections inside the strategies remain accessible.
      *
-     * @param type which kind of admin export to produce
-     * @param out  destination output stream (typically the HTTP response)
+     * @param type        which kind of admin export to produce
+     * @param out         destination output stream (typically the HTTP response)
+     * @param requestedBy id of the admin user who initiated this export — recorded
+     *                    in the manifest at the root of the produced ZIP
      */
-    public void buildExport(@NonNull AdminExportType type, @NonNull OutputStream out) {
+    public void buildExport(@NonNull AdminExportType type, @NonNull OutputStream out, @NonNull UUID requestedBy) {
         TransactionTemplate tx = new TransactionTemplate(Objects.requireNonNull(transactionManager));
         tx.setReadOnly(true);
         try {
-            tx.executeWithoutResult(status -> adminExportZipWriter.writeExport(out, type));
+            tx.executeWithoutResult(status -> adminExportZipWriter.writeExport(out, type, requestedBy));
         } catch (RuntimeException e) {
             log.error("Failed to build admin export of type {}", type, e);
             throw new UserDataExportException("Failed to build admin export: " + e.getMessage(), e);

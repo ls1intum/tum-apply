@@ -112,10 +112,11 @@ public class JobsExportStrategy {
      * └── orphans/jobs/...           (jobs without a research group, rare)
      * </pre>
      *
-     * @param zos  open ZIP output stream rooted at the top of the export
-     * @param type which jobs-only case to apply ({@code JOBS_OPEN}, {@code JOBS_EXPIRED} or {@code JOBS_CLOSED})
+     * @param zos      open ZIP output stream rooted at the top of the export
+     * @param type     which jobs-only case to apply ({@code JOBS_OPEN}, {@code JOBS_EXPIRED} or {@code JOBS_CLOSED})
+     * @param manifest export-wide audit trail; entities exported here are recorded against it
      */
-    public void exportJobs(ZipOutputStream zos, AdminExportType type) {
+    public void exportJobs(ZipOutputStream zos, AdminExportType type, ExportManifest manifest) {
         List<Job> matchingJobs = filterJobs(jobRepository.findAll(), type);
         boolean includeDrafts = type != AdminExportType.JOBS_OPEN;
 
@@ -133,24 +134,32 @@ public class JobsExportStrategy {
             .sorted(Comparator.comparing(ResearchGroup::getName, Comparator.nullsLast(Comparator.naturalOrder())))
             .toList();
 
+        manifest.expect(ExportManifest.Category.RESEARCH_GROUP, groups.size());
+        manifest.expect(ExportManifest.Category.JOB, matchingJobs.size());
+
         FolderNameAllocator rgAllocator = new FolderNameAllocator(false);
         for (ResearchGroup rg : groups) {
             // Use the full research group title; abbreviations collide too easily
             // ("AET", null, …) and the slug() helper trims it to a safe length.
             String rgFolder = rgAllocator.allocate(rg.getName(), rg.getResearchGroupId()) + "/";
-            // Members XLSX only — no JSON dumps for the human-readable per-type exports.
-            researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, false);
-            writeJobsInternal(zos, rgFolder + "jobs/", jobsByRg.get(rg.getResearchGroupId()), includeDrafts, false, false);
+            try {
+                // Members XLSX only — no JSON dumps for the human-readable per-type exports.
+                researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, false);
+                manifest.exported(ExportManifest.Category.RESEARCH_GROUP);
+            } catch (StreamAbortedException sae) {
+                throw sae;
+            } catch (Exception e) {
+                manifest.failed(ExportManifest.Category.RESEARCH_GROUP, rg.getResearchGroupId(), rg.getName(), e);
+                rethrowIfStreamBroken(e);
+            }
+            writeJobsInternal(zos, rgFolder + "jobs/", jobsByRg.get(rg.getResearchGroupId()), includeDrafts, false, false, manifest);
         }
 
         // Defensive: jobs that match the filter but have no research group go
         // into orphans/. Healthy data should leave this empty.
-        List<Job> orphanJobs = matchingJobs
-            .stream()
-            .filter(j -> j.getResearchGroup() == null)
-            .toList();
+        List<Job> orphanJobs = matchingJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
         if (!orphanJobs.isEmpty()) {
-            writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeDrafts, false, false);
+            writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeDrafts, false, false, manifest);
         }
 
         // TODO(post-export-go-live): dispatch JOB_EXPORT_NOTIFICATION to all
@@ -172,6 +181,7 @@ public class JobsExportStrategy {
      * @param includeDrafts     whether to include {@code SAVED} applications
      * @param includeUuids      whether to suffix folder names with the entity's short UUID
      * @param includeJsonDumps  whether to write {@code _machine_readable/} JSON files
+     * @param manifest          export-wide audit trail; jobs/apps/documents are recorded against it
      */
     void writeJobsInto(
         ZipOutputStream zos,
@@ -179,9 +189,11 @@ public class JobsExportStrategy {
         List<Job> jobs,
         boolean includeDrafts,
         boolean includeUuids,
-        boolean includeJsonDumps
+        boolean includeJsonDumps,
+        ExportManifest manifest
     ) {
-        writeJobsInternal(zos, basePath, jobs, includeDrafts, includeUuids, includeJsonDumps);
+        manifest.expect(ExportManifest.Category.JOB, jobs.size());
+        writeJobsInternal(zos, basePath, jobs, includeDrafts, includeUuids, includeJsonDumps, manifest);
     }
 
     private void writeJobsInternal(
@@ -190,19 +202,23 @@ public class JobsExportStrategy {
         List<Job> jobs,
         boolean includeDrafts,
         boolean includeUuids,
-        boolean includeJsonDumps
+        boolean includeJsonDumps,
+        ExportManifest manifest
     ) {
         FolderNameAllocator jobAllocator = new FolderNameAllocator(includeUuids);
         for (Job job : jobs) {
             String folder = basePath + "job_" + jobAllocator.allocate(job.getTitle(), job.getJobId()) + "/";
             try {
-                writeJobFolder(zos, folder, job, includeDrafts, includeUuids, includeJsonDumps);
+                writeJobFolder(zos, folder, job, includeDrafts, includeUuids, includeJsonDumps, manifest);
+                manifest.exported(ExportManifest.Category.JOB);
             } catch (StreamAbortedException sae) {
+                manifest.failed(ExportManifest.Category.JOB, job.getJobId(), job.getTitle(), sae);
                 throw sae;
             } catch (Exception e) {
                 // Defensive: one bad job (e.g. corrupt entity, missing relation) must
                 // never abort the surrounding ZIP. Drop a placeholder and continue.
                 log.error("Failed to write job folder for job {} ({}): {}", job.getJobId(), job.getTitle(), e.getMessage(), e);
+                manifest.failed(ExportManifest.Category.JOB, job.getJobId(), job.getTitle(), e);
                 rethrowIfStreamBroken(e);
                 writeTextEntry(zos, folder + "_error.txt", "Failed to export job " + job.getJobId() + ": " + e.getMessage());
             }
@@ -253,7 +269,8 @@ public class JobsExportStrategy {
         Job job,
         boolean includeDrafts,
         boolean includeUuids,
-        boolean includeJsonDumps
+        boolean includeJsonDumps,
+        ExportManifest manifest
     ) {
         // 1. Job details PDF (reuses existing public job-export PDF)
         try {
@@ -295,6 +312,7 @@ public class JobsExportStrategy {
         }
 
         // 4. One folder per application — fresh allocator scoped to this job
+        manifest.expect(ExportManifest.Category.APPLICATION, apps.size());
         FolderNameAllocator appAllocator = new FolderNameAllocator(includeUuids);
         for (Application app : apps) {
             String label =
@@ -302,24 +320,52 @@ public class JobsExportStrategy {
                 "_" +
                 (app.getApplicantFirstName() == null ? "" : app.getApplicantFirstName());
             String appFolder = folder + "applications/" + appAllocator.allocate(label, app.getApplicationId()) + "/";
-            writeApplicationFolder(zos, appFolder, app, job, includeJsonDumps);
+            writeApplicationFolder(zos, appFolder, app, job, includeJsonDumps, manifest);
         }
     }
 
-    private void writeApplicationFolder(ZipOutputStream zos, String folder, Application app, Job job, boolean includeJsonDumps) {
+    private void writeApplicationFolder(
+        ZipOutputStream zos,
+        String folder,
+        Application app,
+        Job job,
+        boolean includeJsonDumps,
+        ExportManifest manifest
+    ) {
+        // The unit of "application exported" is the application_details.pdf —
+        // if the PDF makes it into the ZIP, the application is counted as
+        // exported. Documents and the interview PDF are tracked separately so
+        // a missing CV doesn't make the whole application "failed".
+        boolean appPdfWritten = false;
         // 1. Application details PDF (reuses existing per-applicant PDF)
         try {
             ApplicationDetailDTO dto = ApplicationDetailDTO.getFromEntity(app, job);
             Resource pdf = pdfExportService.exportApplicationToPDF(dto, AdminPdfLabels.forApplication());
             zipExportService.addFileToZip(zos, folder + "application_details.pdf", pdf.getInputStream());
+            appPdfWritten = true;
         } catch (StreamAbortedException sae) {
+            manifest.failed(
+                ExportManifest.Category.APPLICATION,
+                app.getApplicationId(),
+                app.getApplicantLastName() + ", " + app.getApplicantFirstName(),
+                sae
+            );
             throw sae;
         } catch (Exception e) {
             // Log full stack trace so future PDF rendering bugs are diagnosable
             // (we previously only had `e.getMessage()` which masked NPEs).
             log.warn("Failed to write application_details.pdf for {}", app.getApplicationId(), e);
+            manifest.failed(
+                ExportManifest.Category.APPLICATION,
+                app.getApplicationId(),
+                app.getApplicantLastName() + ", " + app.getApplicantFirstName(),
+                e
+            );
             rethrowIfStreamBroken(e);
             writeTextEntry(zos, folder + "application_details.pdf.error.txt", "Failed to render PDF: " + e.getMessage());
+        }
+        if (appPdfWritten) {
+            manifest.exported(ExportManifest.Category.APPLICATION);
         }
 
         // 2. Machine-readable JSON (review, ratings, comments). Skipped for the
@@ -360,6 +406,8 @@ public class JobsExportStrategy {
         // Catch every exception per file so a missing/corrupted blob never
         // aborts the surrounding ZIP stream.
         Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
+        long docsWithBinary = docDicts.stream().filter(dd -> dd.getDocument() != null).count();
+        manifest.expect(ExportManifest.Category.DOCUMENT, (int) docsWithBinary);
         FolderNameAllocator docAllocator = new FolderNameAllocator(false);
         for (DocumentDictionary dd : docDicts) {
             if (dd.getDocument() == null) {
@@ -381,7 +429,9 @@ public class JobsExportStrategy {
                     bytes = is.readAllBytes();
                 }
                 zipExportService.addFileToZip(zos, folder + "documents/" + filename, bytes);
+                manifest.exported(ExportManifest.Category.DOCUMENT);
             } catch (StreamAbortedException sae) {
+                manifest.failed(ExportManifest.Category.DOCUMENT, dd.getDocument().getDocumentId(), filename, sae);
                 throw sae;
             } catch (Exception e) {
                 log.warn(
@@ -390,6 +440,7 @@ public class JobsExportStrategy {
                     app.getApplicationId(),
                     e.getMessage()
                 );
+                manifest.failed(ExportManifest.Category.DOCUMENT, dd.getDocument().getDocumentId(), filename, e);
                 rethrowIfStreamBroken(e);
                 writeTextEntry(
                     zos,

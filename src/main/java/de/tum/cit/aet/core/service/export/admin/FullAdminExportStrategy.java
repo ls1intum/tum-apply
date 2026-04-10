@@ -80,9 +80,10 @@ public class FullAdminExportStrategy {
     /**
      * Builds the full admin export into the supplied ZIP output stream.
      *
-     * @param zos open ZIP output stream rooted at the export's top-level folder
+     * @param zos      open ZIP output stream rooted at the export's top-level folder
+     * @param manifest export-wide audit trail recording every entity that makes it into the ZIP
      */
-    public void exportFull(ZipOutputStream zos) {
+    public void exportFull(ZipOutputStream zos, ExportManifest manifest) {
         // 1. Active research groups only — DRAFT and DENIED groups are excluded by design.
         List<ResearchGroup> allRgs = researchGroupRepository.findAll();
         List<ResearchGroup> groups = allRgs
@@ -108,6 +109,8 @@ public class FullAdminExportStrategy {
             .filter(j -> j.getResearchGroup() != null)
             .collect(Collectors.groupingBy(j -> j.getResearchGroup().getResearchGroupId()));
 
+        manifest.expect(ExportManifest.Category.RESEARCH_GROUP, groups.size());
+
         // No UUID suffixes in folder names — every entity's id is already in
         // the JSON files inside _machine_readable/. Slug collisions (same
         // abbreviation/title twice) are handled by an auto-incrementing suffix.
@@ -116,7 +119,16 @@ public class FullAdminExportStrategy {
             // Use the full research group title; abbreviations collide too easily
             // ("AET", null, …) and the slug() helper trims it to a safe length.
             String rgFolder = rgAllocator.allocate(rg.getName(), rg.getResearchGroupId()) + "/";
-            researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, true);
+            try {
+                researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, true);
+                manifest.exported(ExportManifest.Category.RESEARCH_GROUP);
+            } catch (JobsExportStrategy.StreamAbortedException sae) {
+                throw sae;
+            } catch (Exception e) {
+                log.warn("Failed to write research group folder for {}", rg.getResearchGroupId(), e);
+                manifest.failed(ExportManifest.Category.RESEARCH_GROUP, rg.getResearchGroupId(), rg.getName(), e);
+                JobsExportStrategy.rethrowIfStreamBroken(e);
+            }
 
             List<Job> rgJobs = jobsByRg.getOrDefault(rg.getResearchGroupId(), List.of());
             if (rgJobs.isEmpty()) {
@@ -127,29 +139,23 @@ public class FullAdminExportStrategy {
             List<Job> openJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_OPEN);
             List<Job> expiredJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_EXPIRED);
             List<Job> closedJobs = jobsExportStrategy.filterJobs(rgJobs, AdminExportType.JOBS_CLOSED);
-            List<Job> draftJobs = rgJobs
-                .stream()
-                .filter(j -> j.getState() == JobState.DRAFT)
-                .toList();
+            List<Job> draftJobs = rgJobs.stream().filter(j -> j.getState() == JobState.DRAFT).toList();
 
             // Full admin is the comprehensive backup — every bucket includes
             // SAVED applications too so nothing is silently dropped.
-            writeBucket(zos, rgFolder + "jobs/open/", openJobs, true);
-            writeBucket(zos, rgFolder + "jobs/expired/", expiredJobs, true);
-            writeBucket(zos, rgFolder + "jobs/closed/", closedJobs, true);
-            writeBucket(zos, rgFolder + "jobs/drafts/", draftJobs, true);
+            writeBucket(zos, rgFolder + "jobs/open/", openJobs, true, manifest);
+            writeBucket(zos, rgFolder + "jobs/expired/", expiredJobs, true, manifest);
+            writeBucket(zos, rgFolder + "jobs/closed/", closedJobs, true, manifest);
+            writeBucket(zos, rgFolder + "jobs/drafts/", draftJobs, true, manifest);
         }
 
         // 2. Top-level research groups overview workbook (only ACTIVE groups, matches the loop above).
         researchGroupsExportStrategy.writeOverviewSheet(zos, "research_groups_overview.xlsx", groups);
 
         // 3. Orphan jobs (no research group) — defensive; healthy data should leave this empty.
-        List<Job> orphanJobs = allJobs
-            .stream()
-            .filter(j -> j.getResearchGroup() == null)
-            .toList();
+        List<Job> orphanJobs = allJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
         if (!orphanJobs.isEmpty()) {
-            jobsExportStrategy.writeJobsInto(zos, "orphans/jobs/", orphanJobs, true, false, true);
+            jobsExportStrategy.writeJobsInto(zos, "orphans/jobs/", orphanJobs, true, false, true, manifest);
         }
 
         // 4. Top-level machine-readable dumps — flat lists of every entity (not state-filtered).
@@ -160,19 +166,39 @@ public class FullAdminExportStrategy {
         List<AdminApplicationExportDTO> appDtos = allApplications.stream().map(jobsExportStrategy::toApplicationDto).toList();
         writeJsonEntry(zos, "_machine_readable/applications.json", appDtos);
 
-        List<AdminUserExportDTO> userDtos = userRepository.findAll().stream().map(this::toUserDto).toList();
+        List<de.tum.cit.aet.usermanagement.domain.User> allUsers = userRepository.findAll();
+        manifest.expect(ExportManifest.Category.USER, allUsers.size());
+        List<AdminUserExportDTO> userDtos = allUsers
+            .stream()
+            .map(u -> {
+                try {
+                    AdminUserExportDTO dto = toUserDto(u);
+                    manifest.exported(ExportManifest.Category.USER);
+                    return dto;
+                } catch (Exception e) {
+                    manifest.failed(
+                        ExportManifest.Category.USER,
+                        u.getUserId(),
+                        u.getEmail(),
+                        e
+                    );
+                    return null;
+                }
+            })
+            .filter(java.util.Objects::nonNull)
+            .toList();
         writeJsonEntry(zos, "_machine_readable/users.json", userDtos);
 
         writeJsonEntry(zos, "_machine_readable/research_groups.json", groups.stream().map(researchGroupsExportStrategy::toDto).toList());
     }
 
-    private void writeBucket(ZipOutputStream zos, String basePath, List<Job> jobs, boolean includeDrafts) {
+    private void writeBucket(ZipOutputStream zos, String basePath, List<Job> jobs, boolean includeDrafts, ExportManifest manifest) {
         if (jobs.isEmpty()) {
             return;
         }
         // includeUuids=false: folder names stay clean; UUIDs live only in the JSON files.
         // includeJsonDumps=true: full admin keeps every machine-readable file for re-import.
-        jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeDrafts, false, true);
+        jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeDrafts, false, true, manifest);
     }
 
     private AdminUserExportDTO toUserDto(User user) {

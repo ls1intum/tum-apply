@@ -57,7 +57,7 @@ public class AdminExportResource {
 
         String filename = adminDataExportService.fileNameFor(type);
         StreamingResponseBody body = out -> {
-            adminDataExportService.buildExport(type, out);
+            adminDataExportService.buildExport(type, out, adminId);
             out.flush();
         };
 

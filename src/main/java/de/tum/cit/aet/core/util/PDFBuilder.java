@@ -247,7 +247,15 @@ public class PDFBuilder {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdfDoc = new PdfDocument(writer);
-            Document document = new Document(pdfDoc);
+            // immediateFlush=false: keep all pages in memory until pdfDoc.close().
+            // The default (true) flushes intermediate pages as soon as they're full,
+            // which releases their PdfDictionary state. addMetadata() below walks
+            // every page via pdfDoc.getPage(i).getPageSize() and would NPE on the
+            // already-flushed pages (this.map == null inside iText's PdfDictionary).
+            // The bug only surfaced for multi-page PDFs (e.g. application details);
+            // single-page PDFs accidentally avoided it because the only page was
+            // still the "current" page when addMetadata ran.
+            Document document = new Document(pdfDoc, pdfDoc.getDefaultPageSize(), false);
 
             document.setTopMargin(MARGIN_PDF_TOP_AND_BOTTOM);
             document.setBottomMargin(MARGIN_PDF_TOP_AND_BOTTOM * 3);
