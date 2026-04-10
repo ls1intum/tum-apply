@@ -197,10 +197,13 @@ public class JobsExportStrategy {
             String folder = basePath + "job_" + jobAllocator.allocate(job.getTitle(), job.getJobId()) + "/";
             try {
                 writeJobFolder(zos, folder, job, includeDrafts, includeUuids, includeJsonDumps);
+            } catch (StreamAbortedException sae) {
+                throw sae;
             } catch (Exception e) {
                 // Defensive: one bad job (e.g. corrupt entity, missing relation) must
                 // never abort the surrounding ZIP. Drop a placeholder and continue.
                 log.error("Failed to write job folder for job {} ({}): {}", job.getJobId(), job.getTitle(), e.getMessage(), e);
+                rethrowIfStreamBroken(e);
                 writeTextEntry(zos, folder + "_error.txt", "Failed to export job " + job.getJobId() + ": " + e.getMessage());
             }
         }
@@ -256,8 +259,11 @@ public class JobsExportStrategy {
         try {
             Resource pdf = pdfExportService.exportJobToPDF(job.getJobId(), AdminPdfLabels.forJob());
             zipExportService.addFileToZip(zos, folder + "job_details.pdf", pdf.getInputStream());
+        } catch (StreamAbortedException sae) {
+            throw sae;
         } catch (Exception e) {
-            log.warn("Failed to write job_details.pdf for job {}: {}", job.getJobId(), e.getMessage());
+            log.warn("Failed to write job_details.pdf for job {}", job.getJobId(), e);
+            rethrowIfStreamBroken(e);
             writeTextEntry(zos, folder + "job_details.pdf.error.txt", "Failed to render PDF: " + e.getMessage());
         }
 
@@ -306,8 +312,13 @@ public class JobsExportStrategy {
             ApplicationDetailDTO dto = ApplicationDetailDTO.getFromEntity(app, job);
             Resource pdf = pdfExportService.exportApplicationToPDF(dto, AdminPdfLabels.forApplication());
             zipExportService.addFileToZip(zos, folder + "application_details.pdf", pdf.getInputStream());
+        } catch (StreamAbortedException sae) {
+            throw sae;
         } catch (Exception e) {
-            log.warn("Failed to write application_details.pdf for {}: {}", app.getApplicationId(), e.getMessage());
+            // Log full stack trace so future PDF rendering bugs are diagnosable
+            // (we previously only had `e.getMessage()` which masked NPEs).
+            log.warn("Failed to write application_details.pdf for {}", app.getApplicationId(), e);
+            rethrowIfStreamBroken(e);
             writeTextEntry(zos, folder + "application_details.pdf.error.txt", "Failed to render PDF: " + e.getMessage());
         }
 
@@ -327,8 +338,11 @@ public class JobsExportStrategy {
             try {
                 Resource interviewPdf = pdfExportService.exportInterviewToPDF(interviewee, app, job, AdminPdfLabels.forInterview());
                 zipExportService.addFileToZip(zos, folder + "interview/interview_summary.pdf", interviewPdf.getInputStream());
+            } catch (StreamAbortedException sae) {
+                throw sae;
             } catch (Exception e) {
-                log.warn("Failed to write interview_summary.pdf for application {}: {}", app.getApplicationId(), e.getMessage());
+                log.warn("Failed to write interview_summary.pdf for application {}", app.getApplicationId(), e);
+                rethrowIfStreamBroken(e);
                 writeTextEntry(
                     zos,
                     folder + "interview/interview_summary.pdf.error.txt",
@@ -367,6 +381,8 @@ public class JobsExportStrategy {
                     bytes = is.readAllBytes();
                 }
                 zipExportService.addFileToZip(zos, folder + "documents/" + filename, bytes);
+            } catch (StreamAbortedException sae) {
+                throw sae;
             } catch (Exception e) {
                 log.warn(
                     "Failed to add document {} for application {}: {}",
@@ -374,6 +390,7 @@ public class JobsExportStrategy {
                     app.getApplicationId(),
                     e.getMessage()
                 );
+                rethrowIfStreamBroken(e);
                 writeTextEntry(
                     zos,
                     folder + "documents/" + filename + ".error.txt",
@@ -628,7 +645,44 @@ public class JobsExportStrategy {
         try {
             zipExportService.addFileToZip(zos, entryPath, content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
+            // The error placeholder is best-effort: if it can't be written, the
+            // stream is almost certainly already broken. Surface that fact so the
+            // outer loops abort instead of looping for thousands of failing
+            // entries (which is what produced the corrupt ZIP / EBADMSG).
             log.warn("Failed to write text entry {}: {}", entryPath, e.getMessage());
+            rethrowIfStreamBroken(e);
+        }
+    }
+
+    /**
+     * Aborts the export immediately when the underlying response/ZIP stream is
+     * no longer writable. Symptoms we treat as fatal: Spring's
+     * {@code AsyncRequestNotUsableException} (response already committed and
+     * closed by the container) and Java's {@code Deflater has been closed} —
+     * once those happen, every subsequent write will fail with the same error,
+     * so we save the server (and the logs) by stopping right away.
+     */
+    static void rethrowIfStreamBroken(Throwable e) {
+        Throwable cur = e;
+        while (cur != null) {
+            String msg = cur.getMessage();
+            String name = cur.getClass().getName();
+            if (
+                name.endsWith("AsyncRequestNotUsableException") ||
+                (cur instanceof IllegalStateException && msg != null && msg.contains("Deflater has been closed")) ||
+                (cur instanceof IOException && msg != null && msg.contains("Stream closed"))
+            ) {
+                throw new StreamAbortedException("Export stream is no longer writable: " + msg, e);
+            }
+            cur = cur.getCause();
+        }
+    }
+
+    /** Sentinel thrown to short-circuit the export when the response stream dies. */
+    static final class StreamAbortedException extends RuntimeException {
+
+        StreamAbortedException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 

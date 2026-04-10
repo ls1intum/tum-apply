@@ -52,15 +52,15 @@ public class PDFExportService {
     public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
+        // CurrentUserService is a request-scoped proxy that does not always resolve
+        // cleanly inside Spring MVC async dispatch threads (e.g. the admin bulk
+        // export's StreamingResponseBody runs on MvcAsync*). Fall back to the
+        // applicant's name in that case so the PDF still renders.
+        String displayName = currentUserService
+            .getCurrentUserFullNameIfAvailable()
+            .orElseGet(() -> app.applicant() != null && app.applicant().user() != null ? app.applicant().user().name() : "");
         builder
-            .addHeaderItem(
-                labels.get("applicationBy") +
-                    currentUserService.getCurrentUserFullName() +
-                    labels.get("forPosition") +
-                    "'" +
-                    app.jobTitle() +
-                    "'"
-            )
+            .addHeaderItem(labels.get("applicationBy") + displayName + labels.get("forPosition") + "'" + app.jobTitle() + "'")
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
         String lang = labels.getOrDefault("lang", "en");
