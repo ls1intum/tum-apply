@@ -285,6 +285,8 @@ dependencies {
   implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
   // Used for pdf creation
   implementation "com.itextpdf:html2pdf:${itextVersion}"
+  // Used for XLSX creation in admin bulk exports
+  implementation "org.apache.poi:poi-ooxml:${poiVersion}"
   // Align all Spring AI modules to the same version
   implementation platform("org.springframework.ai:spring-ai-bom:${springAiVersion}")
   // Azure OpenAI (prod, or when you want Azure)

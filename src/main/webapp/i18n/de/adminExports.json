@@ -1,0 +1,37 @@
+{
+  "adminExports": {
+    "title": "Admin-Massenexporte",
+    "subtitle": "Erstellt maschinenlesbare JSON-Dumps und menschlich lesbare PDF/XLSX-Archive für die Daten, die die Universität zum Übergeben benötigt. Klicke auf einen Button, um das ZIP direkt herunterzuladen.",
+    "actions": {
+      "download": "Herunterladen"
+    },
+    "sections": {
+      "jobs": "Stellen",
+      "full": "Vollständiger Admin-Export"
+    },
+    "buttons": {
+      "jobsOpen": {
+        "label": "Offene Stellen",
+        "description": "Aktuell veröffentlichte Stellen, deren Bewerbungsfrist noch nicht abgelaufen ist. Enthält alle eingereichten Bewerbungen, Bewertungen und Interview-Daten; Entwürfe werden ausgeschlossen."
+      },
+      "jobsExpired": {
+        "label": "Stellen mit abgelaufener Frist",
+        "description": "Veröffentlichte Stellen, deren Bewerbungsfrist abgelaufen ist, die aber noch nicht formal geschlossen wurden. Enthält jede Bewerbung unabhängig vom Status."
+      },
+      "jobsClosed": {
+        "label": "Geschlossene Stellen",
+        "description": "Geschlossene Stellen und Stellen, für die ein Bewerber ausgewählt wurde. Enthält jede Bewerbung unabhängig vom Status."
+      },
+      "full": {
+        "label": "Vollständiger Admin-Export",
+        "description": "Alles: Forschungsgruppen mit ihren Mitgliedern und jede Stelle (auch Entwürfe), jede Bewerbung mit Dokumenten, plus re-importierbare JSON-Dumps. Geeignet zur Übergabe an die Universität oder für ein Backup."
+      }
+    },
+    "toast": {
+      "downloadError": {
+        "summary": "Export konnte nicht heruntergeladen werden",
+        "detail": "Beim Erstellen des Exports ist etwas schiefgelaufen. Bitte versuche es erneut."
+      }
+    }
+  }
+}

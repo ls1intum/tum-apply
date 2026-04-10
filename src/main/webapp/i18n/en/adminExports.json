@@ -1,0 +1,37 @@
+{
+  "adminExports": {
+    "title": "Admin Bulk Exports",
+    "subtitle": "Generate machine-readable JSON dumps and human-readable PDF/XLSX archives for the data the university needs to hand off. Click a button to download the ZIP directly.",
+    "actions": {
+      "download": "Download"
+    },
+    "sections": {
+      "jobs": "Jobs",
+      "full": "Full Admin Export"
+    },
+    "buttons": {
+      "jobsOpen": {
+        "label": "Open Jobs",
+        "description": "Currently published jobs whose application deadline has not passed. Includes all submitted applications, ratings and interview data; draft applications are excluded."
+      },
+      "jobsExpired": {
+        "label": "Expired Deadline Jobs",
+        "description": "Published jobs whose application deadline has passed but which have not yet been formally closed. Includes every application regardless of state."
+      },
+      "jobsClosed": {
+        "label": "Closed Jobs",
+        "description": "Closed jobs and jobs where an applicant has been selected. Includes every application regardless of state."
+      },
+      "full": {
+        "label": "Full Admin Export",
+        "description": "Everything: research groups with their members and every job (drafts included), every application with documents, plus re-importable JSON dumps. Use this for handover to the university or backup."
+      }
+    },
+    "toast": {
+      "downloadError": {
+        "summary": "Could not download export",
+        "detail": "Something went wrong while building the export. Please try again."
+      }
+    }
+  }
+}
