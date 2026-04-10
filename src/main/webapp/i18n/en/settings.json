@@ -5,7 +5,7 @@
     "tabs": {
       "general": "General",
       "notifications": "Notifications",
-      "personalInformation": "Personal Information",
+      "personalInformation": "Application Information",
       "documents": "Documents"
     },
     "personalInformation": {
