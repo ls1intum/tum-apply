@@ -2540,11 +2540,15 @@ components:
         bachelorGradeLowerLimit: {type: string}
         bachelorGradeUpperLimit: {type: string}
         bachelorUniversity: {type: string}
+        city: {type: string}
+        country: {type: string}
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterGradeLowerLimit: {type: string}
         masterGradeUpperLimit: {type: string}
         masterUniversity: {type: string}
+        postalCode: {type: string}
+        street: {type: string}
         user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
       required: [user]
     ApplicationDetailDTO:
