@@ -66,7 +66,7 @@ import tools.jackson.databind.ObjectMapper;
  * </ul>
  *
  * <p>This strategy is also reused by {@link FullAdminExportStrategy} via the
- * {@link #writeJobsInto(ZipOutputStream, String, List, boolean, boolean, boolean)} entry point so
+ * {@link #writeJobsInto(ZipOutputStream, String, List, boolean, boolean, boolean, ExportManifest)} entry point so
  * the same folder layout is produced under {@code research_groups/<rg>/jobs/}.
  */
 @Slf4j
