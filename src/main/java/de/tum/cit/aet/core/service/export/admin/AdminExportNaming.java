@@ -10,10 +10,10 @@ import java.util.UUID;
  */
 final class AdminExportNaming {
 
-    private AdminExportNaming() {}
-
     /** Maximum slug length to keep paths from blowing past Windows' 260-char limit. */
     private static final int MAX_SLUG_LENGTH = 50;
+
+    private AdminExportNaming() {}
 
     /** Lowercase, ASCII-safe slug; falls back to {@code untitled} when blank. */
     static String slug(String value) {
