@@ -257,7 +257,7 @@ public class ApplicationService {
         User user = applicant.getUser();
 
         ApplicantDTO dto = ApplicantDTO.getFromApplicationSnapshot(application);
-        applicantService.applyApplicationInformationData(user, applicant, dto);
+        applicantService.applyPersonalInformationData(user, applicant, dto);
         applicantService.applyDocumentSettingsData(applicant, dto);
     }
 

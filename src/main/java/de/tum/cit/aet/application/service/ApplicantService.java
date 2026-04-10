@@ -74,7 +74,7 @@ public class ApplicantService {
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Applicant applicant = findOrCreateApplicant(userId);
 
-        applyApplicationInformationData(user, applicant, dto);
+        applyPersonalInformationData(user, applicant, dto);
         applyDocumentSettingsData(applicant, dto);
         userRepository.save(user);
         applicantRepository.save(applicant);
@@ -89,7 +89,7 @@ public class ApplicantService {
      * @return the updated ApplicantDTO
      */
     @Transactional
-    public ApplicantDTO updateApplicantApplicationInformation(ApplicantDTO dto) {
+    public ApplicantDTO updateApplicantPersonalInformation(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
             throw new InvalidParameterException("UserId must not be null.");
@@ -98,7 +98,7 @@ public class ApplicantService {
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Applicant applicant = findOrCreateApplicant(userId);
 
-        applyApplicationInformationData(user, applicant, dto);
+        applyPersonalInformationData(user, applicant, dto);
         userRepository.save(user);
         applicantRepository.save(applicant);
 
@@ -300,7 +300,7 @@ public class ApplicantService {
             .collect(Collectors.toSet());
     }
 
-    void applyApplicationInformationData(User user, Applicant applicant, ApplicantDTO dto) {
+    void applyPersonalInformationData(User user, Applicant applicant, ApplicantDTO dto) {
         if (dto.user() != null) {
             if (dto.user().firstName() != null) {
                 user.setFirstName(dto.user().firstName());

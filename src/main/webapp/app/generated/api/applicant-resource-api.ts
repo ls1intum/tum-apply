@@ -116,8 +116,8 @@ export class ApplicantResourceApi {
      * 
      * @param applicantDTO 
      */
-    updateApplicantApplicationInformation(applicantDTO: ApplicantDTO): Observable<ApplicantDTO> {
-        const url = `${this.basePath}/api/applicants/profile/application-information`;
+    updateApplicantPersonalInformation(applicantDTO: ApplicantDTO): Observable<ApplicantDTO> {
+        const url = `${this.basePath}/api/applicants/profile/personal-information`;
         return this.http.put<ApplicantDTO>(url, applicantDTO);
     }
 

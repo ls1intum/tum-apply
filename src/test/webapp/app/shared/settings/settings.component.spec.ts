@@ -99,7 +99,7 @@ describe('SettingsComponent', () => {
 
   // ===== TABS =====
   describe('tabs()', () => {
-    it('should show general, notifications, application-information and documents tabs for applicant', () => {
+    it('should show general, notifications, personal-information and documents tabs for applicant', () => {
       accountServiceMock.user.set({
         id: 'u1',
         name: 'Test Applicant',
@@ -113,11 +113,11 @@ describe('SettingsComponent', () => {
       expect(tabs).toHaveLength(4);
       expect(tabs[0].id).toBe('general');
       expect(tabs[1].id).toBe('notifications');
-      expect(tabs[2].id).toBe('application-information');
+      expect(tabs[2].id).toBe('personal-information');
       expect(tabs[3].id).toBe('documents');
     });
 
-    it('should show general and notifications tabs for professor (no application-information)', () => {
+    it('should show general and notifications tabs for professor (no personal-information)', () => {
       accountServiceMock.user.set({
         id: 'u1',
         name: 'Test Professor',
@@ -131,10 +131,10 @@ describe('SettingsComponent', () => {
       expect(tabs).toHaveLength(2);
       expect(tabs[0].id).toBe('general');
       expect(tabs[1].id).toBe('notifications');
-      expect(tabs.find(tab => tab.id === 'application-information')).toBeUndefined();
+      expect(tabs.find(tab => tab.id === 'personal-information')).toBeUndefined();
     });
 
-    it('should show only general tab for admin (no notifications, no application-information)', () => {
+    it('should show only general tab for admin (no notifications, no personal-information)', () => {
       accountServiceMock.user.set({
         id: 'u1',
         name: 'Test Admin',
@@ -148,7 +148,7 @@ describe('SettingsComponent', () => {
       expect(tabs).toHaveLength(1);
       expect(tabs[0].id).toBe('general');
       expect(tabs.find(tab => tab.id === 'notifications')).toBeUndefined();
-      expect(tabs.find(tab => tab.id === 'application-information')).toBeUndefined();
+      expect(tabs.find(tab => tab.id === 'personal-information')).toBeUndefined();
     });
 
     it('should include correct translation keys for all tabs', () => {
@@ -164,7 +164,7 @@ describe('SettingsComponent', () => {
 
       expect(tabs[0].translationKey).toBe('settings.tabs.general');
       expect(tabs[1].translationKey).toBe('settings.tabs.notifications');
-      expect(tabs[2].translationKey).toBe('settings.tabs.applicationInformation');
+      expect(tabs[2].translationKey).toBe('settings.tabs.personalInformation');
       expect(tabs[3].translationKey).toBe('settings.tabs.documents');
     });
   });
@@ -185,8 +185,8 @@ describe('SettingsComponent', () => {
       component.onTabChange('notifications');
       expect(component.activeTab()).toBe('notifications');
 
-      component.onTabChange('application-information');
-      expect(component.activeTab()).toBe('application-information');
+      component.onTabChange('personal-information');
+      expect(component.activeTab()).toBe('personal-information');
 
       component.onTabChange('documents');
       expect(component.activeTab()).toBe('documents');

@@ -63,7 +63,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
     class ApplicantProfileTests {
 
         @Test
-        void getApplicantProfileReturnsProfileWithApplicationInformation() {
+        void getApplicantProfileReturnsProfileWithPersonalInformation() {
             ApplicantDTO profile = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .getAndRead("/api/applicants/profile", null, ApplicantDTO.class, 200);
@@ -101,7 +101,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void updateApplicantProfileUpdatesApplicationInformation() {
+        void updateApplicantProfileUpdatesPersonalInformation() {
             UserDTO updatedUserDTO = new UserDTO(
                 applicant.getUserId(),
                 "updated.email@example.com",
@@ -280,10 +280,10 @@ class ApplicantResourceTest extends AbstractResourceTest {
     }
 
     @Nested
-    class ApplicantApplicationInformationTests {
+    class ApplicantPersonalInformationTests {
 
         @Test
-        void updateApplicantApplicationInformationUpdatesOnlyPersonalFields() {
+        void updateApplicantPersonalInformationUpdatesOnlyPersonalFields() {
             ApplicantDTO updatePayload = new ApplicantDTO(
                 new UserDTO(
                     applicant.getUserId(),
@@ -318,7 +318,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
             ApplicantDTO updated = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applicants/profile/application-information", updatePayload, ApplicantDTO.class, 200);
+                .putAndRead("/api/applicants/profile/personal-information", updatePayload, ApplicantDTO.class, 200);
 
             assertThat(updated.user().email()).isEqualTo("personal.updated@example.com");
             assertThat(updated.user().firstName()).isEqualTo("UpdatedFirstName");
@@ -340,7 +340,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void updateApplicantApplicationInformationWithNullUserReturnsBadRequest() {
+        void updateApplicantPersonalInformationWithNullUserReturnsBadRequest() {
             ApplicantDTO invalidPayload = new ApplicantDTO(
                 null,
                 "Street 123",
@@ -361,16 +361,16 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
             Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applicants/profile/application-information", invalidPayload, Void.class, 400);
+                .putAndRead("/api/applicants/profile/personal-information", invalidPayload, Void.class, 400);
 
             assertThat(response).isNull();
         }
 
         @Test
-        void updateApplicantApplicationInformationWithoutAuthReturnsForbidden() {
+        void updateApplicantPersonalInformationWithoutAuthReturnsForbidden() {
             ApplicantDTO updatePayload = ApplicantDTO.getFromEntity(applicant);
 
-            Void response = api.putAndRead("/api/applicants/profile/application-information", updatePayload, Void.class, 403);
+            Void response = api.putAndRead("/api/applicants/profile/personal-information", updatePayload, Void.class, 403);
             assertThat(response).isNull();
         }
     }

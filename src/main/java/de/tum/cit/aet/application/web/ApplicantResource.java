@@ -88,10 +88,10 @@ public class ApplicantResource {
      * @return ApplicantDTO with updated user and applicant data
      */
     @ApplicantOrAdmin
-    @PutMapping("/profile/application-information")
-    public ResponseEntity<ApplicantDTO> updateApplicantApplicationInformation(@Valid @RequestBody ApplicantDTO applicantDTO) {
-        log.info("PUT /api/applicants/profile/application-information - Updating personal information for current user");
-        return ResponseEntity.ok(applicantService.updateApplicantApplicationInformation(applicantDTO));
+    @PutMapping("/profile/personal-information")
+    public ResponseEntity<ApplicantDTO> updateApplicantPersonalInformation(@Valid @RequestBody ApplicantDTO applicantDTO) {
+        log.info("PUT /api/applicants/profile/personal-information - Updating personal information for current user");
+        return ResponseEntity.ok(applicantService.updateApplicantPersonalInformation(applicantDTO));
     }
 
     /**

@@ -20,7 +20,7 @@ import { DatePickerComponent } from '../../components/atoms/datepicker/datepicke
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 
-export type ApplicationInformationData = {
+export type PersonalInformationData = {
   firstName: string;
   lastName: string;
   email: string;
@@ -36,7 +36,7 @@ export type ApplicationInformationData = {
   postcode: string;
 };
 
-interface ApplicationInformationSnapshot {
+interface PersonalInformationSnapshot {
   firstName: string;
   lastName: string;
   email: string;
@@ -53,7 +53,7 @@ interface ApplicationInformationSnapshot {
 }
 
 @Component({
-  selector: 'jhi-application-information-settings',
+  selector: 'jhi-personal-information-settings',
   imports: [
     ReactiveFormsModule,
     DividerModule,
@@ -64,11 +64,11 @@ interface ApplicationInformationSnapshot {
     TranslateDirective,
     ButtonComponent,
   ],
-  templateUrl: './application-information-settings.component.html',
+  templateUrl: './personal-information-settings.component.html',
   standalone: true,
 })
-export class ApplicationInformationSettingsComponent {
-  data = signal<ApplicationInformationData>({
+export class PersonalInformationSettingsComponent {
+  data = signal<PersonalInformationData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -86,7 +86,7 @@ export class ApplicationInformationSettingsComponent {
 
   isValid = signal<boolean>(false);
   loadedProfile = signal<ApplicantDTO | undefined>(undefined);
-  initialDataSnapshot = signal<ApplicationInformationSnapshot | undefined>(undefined);
+  initialDataSnapshot = signal<PersonalInformationSnapshot | undefined>(undefined);
   hasChanges = computed(() => {
     const initial = this.initialDataSnapshot();
     if (initial === undefined) {
@@ -138,7 +138,7 @@ export class ApplicationInformationSettingsComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  applicationInfoForm = computed(() => {
+  personalInfoForm = computed(() => {
     const currentData = this.data();
     return this.formbuilder.group({
       firstName: [currentData.firstName],
@@ -161,11 +161,11 @@ export class ApplicationInformationSettingsComponent {
   });
 
   formEffect = effect(onCleanup => {
-    const form = this.applicationInfoForm();
+    const form = this.personalInfoForm();
     const data = this.data();
     const valueSubscription = form.valueChanges.subscribe(() => {
       const normalizedValue = Object.fromEntries(Object.entries(form.getRawValue()).map(([key, val]) => [key, val ?? '']));
-      const nextData: ApplicationInformationData = {
+      const nextData: PersonalInformationData = {
         firstName: normalizedValue.firstName as string,
         lastName: normalizedValue.lastName as string,
         email: normalizedValue.email as string,
@@ -198,16 +198,16 @@ export class ApplicationInformationSettingsComponent {
 
   constructor() {
     // Load initial data from backend API
-    void this.loadApplicationInformation();
+    void this.loadPersonalInformation();
   }
 
-  async loadApplicationInformation(): Promise<void> {
+  async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
       const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
 
-      // Map ApplicantDTO to ApplicationInformationData
-      const applicationInfo: ApplicationInformationData = {
+      // Map ApplicantDTO to PersonalInformationData
+      const personalInfo: PersonalInformationData = {
         firstName: profile.user.firstName ?? '',
         lastName: profile.user.lastName ?? '',
         email: profile.user.email ?? '',
@@ -227,10 +227,10 @@ export class ApplicationInformationSettingsComponent {
       };
 
       this.loadedProfile.set(profile);
-      this.data.set(applicationInfo);
-      this.initialDataSnapshot.set(this.toSnapshot(applicationInfo));
+      this.data.set(personalInfo);
+      this.initialDataSnapshot.set(this.toSnapshot(personalInfo));
     } catch {
-      this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
+      this.toastService.showErrorKey('settings.personalInformation.loadFailed');
     }
   }
 
@@ -240,7 +240,7 @@ export class ApplicationInformationSettingsComponent {
     this.data.set(updatedData);
   }
 
-  updateSelect(field: keyof ApplicationInformationData, value: SelectOption | undefined): void {
+  updateSelect(field: keyof PersonalInformationData, value: SelectOption | undefined): void {
     const updatedData = structuredClone(this.data());
     updatedData[field] = value as never;
     this.data.set(updatedData);
@@ -250,7 +250,7 @@ export class ApplicationInformationSettingsComponent {
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
-        this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
+        this.toastService.showErrorKey('settings.personalInformation.saveFailed');
         return;
       }
 
@@ -286,20 +286,20 @@ export class ApplicationInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantApplicationInformation(applicantDTO));
+      const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
       this.loadedProfile.set(updatedProfile);
-      this.toastService.showSuccessKey('settings.applicationInformation.saved');
+      this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));
     } catch {
-      this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
+      this.toastService.showErrorKey('settings.personalInformation.saveFailed');
     }
   }
 
   async onCancel(): Promise<void> {
-    await this.loadApplicationInformation();
+    await this.loadPersonalInformation();
   }
 
-  private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {
+  private toSnapshot(data: PersonalInformationData): PersonalInformationSnapshot {
     return {
       firstName: data.firstName,
       lastName: data.lastName,
