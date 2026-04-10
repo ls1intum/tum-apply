@@ -5,9 +5,15 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
+import { AdminExportResourceApi } from 'app/generated/api/admin-export-resource-api';
 
-import { AdminExportService } from './admin-export.service';
-import { AdminExportType } from './admin-export.model';
+/**
+ * Mirrors {@code de.tum.cit.aet.core.constants.AdminExportType} on the
+ * server. Derived from the generated API method signature so it stays in
+ * sync automatically when the backend enum changes and openapi is
+ * regenerated.
+ */
+type AdminExportType = Parameters<AdminExportResourceApi['download']>[0];
 
 interface ExportButton {
   type: AdminExportType;
@@ -32,7 +38,6 @@ interface ExportSection {
   standalone: true,
   imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent],
   templateUrl: './admin-exports.component.html',
-  styleUrl: './admin-exports.component.scss',
 })
 export class AdminExportsComponent {
   /** Tracks which buttons are currently downloading (one signal per type). */
@@ -76,7 +81,7 @@ export class AdminExportsComponent {
     },
   ];
 
-  private readonly api = inject(AdminExportService);
+  private readonly api = inject(AdminExportResourceApi);
   private readonly toastService = inject(ToastService);
 
   /**
@@ -94,7 +99,8 @@ export class AdminExportsComponent {
         this.toastService.showErrorKey('adminExports.toast.downloadError');
         return;
       }
-      const filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? `admin-export-${type.toLowerCase()}.zip`;
+      const contentDisposition = response.headers.get('Content-Disposition') ?? undefined;
+      const filename = this.parseFilename(contentDisposition) ?? `admin-export-${type.toLowerCase()}.zip`;
       this.triggerBrowserDownload(blob, filename);
     } catch {
       this.toastService.showErrorKey('adminExports.toast.downloadError');
@@ -113,8 +119,8 @@ export class AdminExportsComponent {
     this.busy.set(next);
   }
 
-  private parseFilename(contentDisposition: string | null): string | undefined {
-    if (contentDisposition === null) return undefined;
+  private parseFilename(contentDisposition: string | undefined): string | undefined {
+    if (contentDisposition === undefined) return undefined;
     return /filename="([^"]+)"/.exec(contentDisposition)?.[1];
   }
 

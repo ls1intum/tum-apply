@@ -1,17 +1,24 @@
 package de.tum.cit.aet.core.service;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.core.dto.JobOverviewData;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.util.PDFBuilder;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
+import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -275,7 +282,98 @@ public class PDFExportService {
         return builder.build();
     }
 
+    /**
+     * Exports a one-page summary of an {@link Interviewee} record to PDF: header
+     * with applicant name and current rating, scheduled slots (date/time/location/
+     * stream link/booked), and the professor's assessment notes.
+     *
+     * @param interviewee the interviewee whose data should be exported
+     * @param app         the linked application (used for the applicant header)
+     * @param job         the job the application is for (used for the title)
+     * @param labels      translation labels for PDF content
+     * @return the PDF file as Resource
+     */
+    public Resource exportInterviewToPDF(Interviewee interviewee, Application app, Job job, Map<String, String> labels) {
+        String jobTitle = job == null || job.getTitle() == null ? "-" : job.getTitle();
+        String applicantName = formatApplicantName(app);
+
+        PDFBuilder builder = new PDFBuilder(labels.get("interviewHeading") + jobTitle);
+        builder.addHeaderItem(labels.get("applicantInfo") + ": " + applicantName);
+        builder.addHeaderItem(labels.get("status") + formatRating(interviewee.getRating(), labels));
+        if (interviewee.getLastInvited() != null) {
+            builder.addHeaderItem(labels.get("invitedAt") + formatInstantDateTime(interviewee.getLastInvited()));
+        }
+
+        // Schedule
+        builder.startSectionGroup(labels.get("interviewSchedule"));
+        List<InterviewSlot> slots = interviewee.getSlots() == null ? List.of() : interviewee.getSlots();
+        if (slots.isEmpty()) {
+            builder.startInfoSection(labels.get("interviewNoSlotTitle")).addSectionContent(labels.get("interviewNoSlotMessage"));
+        } else {
+            int idx = 1;
+            for (InterviewSlot slot : slots) {
+                String sectionTitle = slots.size() == 1 ? labels.get("interviewSlot") : labels.get("interviewSlot") + " " + idx++;
+                builder.startInfoSection(sectionTitle);
+                builder.addSectionData(labels.get("interviewDate"), formatInstantDate(slot.getStartDateTime()));
+                builder.addSectionData(
+                    labels.get("interviewTime"),
+                    formatInstantTime(slot.getStartDateTime()) + " – " + formatInstantTime(slot.getEndDateTime())
+                );
+                builder.addSectionData(labels.get("interviewLocation"), getValue(slot.getLocation()));
+                if (slot.getStreamLink() != null && !slot.getStreamLink().isBlank()) {
+                    builder.addSectionData(labels.get("interviewStreamLink"), slot.getStreamLink());
+                }
+                builder.addSectionData(
+                    labels.get("interviewBooked"),
+                    Boolean.TRUE.equals(slot.getIsBooked()) ? labels.get("yes") : labels.get("no")
+                );
+            }
+        }
+
+        // Assessment
+        builder.startSectionGroup(labels.get("interviewAssessment"));
+        builder
+            .startInfoSection(labels.get("interviewRating"))
+            .addSectionData(labels.get("interviewRating"), formatRating(interviewee.getRating(), labels));
+        builder.startInfoSection(labels.get("interviewNotes")).addSectionContent(getValue(interviewee.getAssessmentNotes()));
+
+        // Footer
+        builder.setMetadata(buildMetadataText(labels));
+        builder.setMetadataEnd(labels.get("metaEndText"));
+        builder.setPageLabels(labels.get("page"), labels.get("of"));
+
+        return builder.build();
+    }
+
     // ------------------- Helper methods -------------------
+
+    private String formatApplicantName(Application app) {
+        if (app == null) {
+            return "-";
+        }
+        String last = app.getApplicantLastName();
+        String first = app.getApplicantFirstName();
+        String composed = ((last == null ? "" : last) + ", " + (first == null ? "" : first)).trim();
+        return composed.replaceAll("^,\\s*|,\\s*$", "").isBlank() ? "-" : composed;
+    }
+
+    private String formatRating(AssessmentRating rating, Map<String, String> labels) {
+        return rating == null ? labels.get("interviewNotRated") : rating.name() + " (" + rating.getValue() + ")";
+    }
+
+    private String formatInstantDate(Instant instant) {
+        return instant == null ? "-" : DATE_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+    }
+
+    private String formatInstantTime(Instant instant) {
+        return instant == null
+            ? "-"
+            : DateTimeFormatter.ofPattern("HH:mm").format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+    }
+
+    private String formatInstantDateTime(Instant instant) {
+        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+    }
 
     private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
         builder

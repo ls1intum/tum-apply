@@ -1,8 +1,8 @@
 package de.tum.cit.aet.core.service.export.admin;
 
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminMemberRefDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminResearchGroupExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
+import de.tum.cit.aet.core.service.XlsxExportService;
 import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
 public class ResearchGroupsExportStrategy {
 
     private final ZipExportService zipExportService;
-    private final AdminXlsxWriter xlsxWriter;
+    private final XlsxExportService xlsxWriter;
     private final ObjectMapper objectMapper;
 
     /**
@@ -74,11 +74,11 @@ public class ResearchGroupsExportStrategy {
 
     AdminResearchGroupExportDTO toDto(ResearchGroup rg) {
         Set<UserResearchGroupRole> roles = rg.getUserRoles() == null ? Set.of() : rg.getUserRoles();
-        List<AdminMemberRefDTO> memberRefs = roles
+        List<AdminResearchGroupExportDTO.MemberRef> memberRefs = roles
             .stream()
             .filter(r -> r.getUser() != null)
             .map(r ->
-                new AdminMemberRefDTO(
+                new AdminResearchGroupExportDTO.MemberRef(
                     r.getUser().getUserId(),
                     r.getUser().getFirstName(),
                     r.getUser().getLastName(),

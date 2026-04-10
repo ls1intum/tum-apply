@@ -2,13 +2,15 @@ package de.tum.cit.aet.core.dto.exportdata.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Flat, re-importable representation of a {@link de.tum.cit.aet.usermanagement.domain.ResearchGroup}.
- * Members are referenced by user id together with their role within this group.
+ * Flat, re-importable representation of a
+ * {@link de.tum.cit.aet.usermanagement.domain.ResearchGroup}. Members are
+ * referenced by user id together with their role within this group.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record AdminResearchGroupExportDTO(
@@ -26,7 +28,11 @@ public record AdminResearchGroupExportDTO(
     String city,
     String universityId,
     ResearchGroupState state,
-    List<AdminMemberRefDTO> members,
+    List<MemberRef> members,
     LocalDateTime createdAt,
     LocalDateTime lastModifiedAt
-) {}
+) {
+    /** Reference to a member of a research group, with the role they hold there. */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record MemberRef(UUID userId, String firstName, String lastName, String email, UserRole role) {}
+}

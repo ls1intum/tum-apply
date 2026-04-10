@@ -6,7 +6,6 @@ import de.tum.cit.aet.core.constants.AdminExportType;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminJobExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminUserExportDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminUserRoleDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.job.constants.JobState;
@@ -175,8 +174,19 @@ public class FullAdminExportStrategy {
     }
 
     private AdminUserExportDTO toUserDto(User user) {
-        List<AdminUserRoleDTO> roles =
-            user.getResearchGroupRoles() == null ? List.of() : user.getResearchGroupRoles().stream().map(this::toUserRoleDto).toList();
+        List<AdminUserExportDTO.Role> roles =
+            user.getResearchGroupRoles() == null
+                ? List.of()
+                : user
+                      .getResearchGroupRoles()
+                      .stream()
+                      .map(role ->
+                          new AdminUserExportDTO.Role(
+                              role.getResearchGroup() == null ? null : role.getResearchGroup().getResearchGroupId(),
+                              role.getRole()
+                          )
+                      )
+                      .toList();
 
         return new AdminUserExportDTO(
             user.getUserId(),
@@ -199,10 +209,6 @@ public class FullAdminExportStrategy {
             user.getCreatedAt(),
             user.getLastModifiedAt()
         );
-    }
-
-    private AdminUserRoleDTO toUserRoleDto(UserResearchGroupRole role) {
-        return new AdminUserRoleDTO(role.getResearchGroup() == null ? null : role.getResearchGroup().getResearchGroupId(), role.getRole());
     }
 
     private void writeJsonEntry(ZipOutputStream zos, String entryPath, Object payload) {

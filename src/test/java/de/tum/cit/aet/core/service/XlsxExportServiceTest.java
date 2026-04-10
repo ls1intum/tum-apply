@@ -1,8 +1,7 @@
-package de.tum.cit.aet.core.service.export.admin;
+package de.tum.cit.aet.core.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.tum.cit.aet.core.service.ZipExportService;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,12 +15,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-class AdminXlsxWriterTest {
+class XlsxExportServiceTest {
 
     private static final String ENTRY = "test/sheet.xlsx";
 
     private final ZipExportService zipExportService = createZipService();
-    private final AdminXlsxWriter writer = new AdminXlsxWriter(zipExportService);
+    private final XlsxExportService writer = new XlsxExportService(zipExportService);
 
     @Test
     void writesHeadersAndRowsThatRoundTripThroughPoi() throws IOException {

@@ -1,7 +1,6 @@
-package de.tum.cit.aet.core.service.export.admin;
+package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.exception.UserDataExportException;
-import de.tum.cit.aet.core.service.ZipExportService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
@@ -18,24 +17,24 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
- * Writes XLSX summary tables into an admin export ZIP. Each call produces a single
- * workbook entry inside the ZIP at the requested path. Built on POI's streaming
- * {@link SXSSFWorkbook} to keep memory bounded for large exports — only a small
- * window of rows is held in memory while the rest spill to disk.
+ * General-purpose XLSX writer that streams workbooks straight into a ZIP entry.
+ * Built on POI's streaming {@link SXSSFWorkbook} so memory stays bounded for
+ * large exports — only a small window of rows is held in memory while the rest
+ * spill to disk.
  *
  * <p>The header row is rendered in bold and the top row is frozen so non-technical
- * recipients can scroll long candidate lists comfortably.
+ * recipients can scroll long tables comfortably. Sits next to {@link PDFExportService}
+ * and {@link ZipExportService} as one of the shared export primitives.
  */
-@Component
+@Service
 @RequiredArgsConstructor
-public class AdminXlsxWriter {
+public class XlsxExportService {
 
     /** Sliding window size for the streaming workbook. */
     private static final int ROW_ACCESS_WINDOW = 200;
@@ -95,7 +94,7 @@ public class AdminXlsxWriter {
             // SXSSFWorkbook writes temp files; release them.
             workbook.dispose();
         } catch (IOException e) {
-            throw new UserDataExportException("Failed to write XLSX entry " + entryPath + " to admin export", e);
+            throw new UserDataExportException("Failed to write XLSX entry " + entryPath, e);
         }
     }
 

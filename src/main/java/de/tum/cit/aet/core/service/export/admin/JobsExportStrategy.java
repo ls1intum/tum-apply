@@ -8,17 +8,10 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.AdminExportType;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationExportDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationReviewDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminCustomFieldAnswerDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminCustomFieldDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminDocumentRefDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminInternalCommentDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminInterviewSlotDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminIntervieweeDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminJobExportDTO;
-import de.tum.cit.aet.core.dto.exportdata.admin.AdminRatingDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.service.PDFExportService;
+import de.tum.cit.aet.core.service.XlsxExportService;
 import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
@@ -84,7 +77,7 @@ public class JobsExportStrategy {
     private final IntervieweeRepository intervieweeRepository;
     private final PDFExportService pdfExportService;
     private final ZipExportService zipExportService;
-    private final AdminXlsxWriter xlsxWriter;
+    private final XlsxExportService xlsxWriter;
     private final ObjectMapper objectMapper;
 
     /**
@@ -325,7 +318,7 @@ public class JobsExportStrategy {
                 writeJsonEntry(zos, folder + "interview/interview.json", toIntervieweeDto(interviewee));
             }
             try {
-                Resource interviewPdf = AdminInterviewPdf.build(interviewee, app, job);
+                Resource interviewPdf = pdfExportService.exportInterviewToPDF(interviewee, app, job, AdminPdfLabels.forInterview());
                 zipExportService.addFileToZip(zos, folder + "interview/interview_summary.pdf", interviewPdf.getInputStream());
             } catch (Exception e) {
                 log.warn("Failed to write interview_summary.pdf for application {}: {}", app.getApplicationId(), e.getMessage());
@@ -493,8 +486,23 @@ public class JobsExportStrategy {
     // ----------------------------- DTO conversion -----------------------------
 
     AdminJobExportDTO toJobDto(Job job) {
-        List<AdminCustomFieldDTO> customFields =
-            job.getCustomFields() == null ? List.of() : job.getCustomFields().stream().map(this::toCustomFieldDto).toList();
+        List<AdminJobExportDTO.CustomField> customFields =
+            job.getCustomFields() == null
+                ? List.of()
+                : job
+                      .getCustomFields()
+                      .stream()
+                      .map(cf ->
+                          new AdminJobExportDTO.CustomField(
+                              cf.getCustomFieldId(),
+                              cf.getQuestion(),
+                              cf.isRequired(),
+                              cf.getCustomFieldType(),
+                              cf.getAnswerOptions(),
+                              cf.getSequence()
+                          )
+                      )
+                      .toList();
         return new AdminJobExportDTO(
             job.getJobId(),
             job.getSupervisingProfessor() == null ? null : job.getSupervisingProfessor().getUserId(),
@@ -518,42 +526,36 @@ public class JobsExportStrategy {
         );
     }
 
-    private AdminCustomFieldDTO toCustomFieldDto(CustomField cf) {
-        return new AdminCustomFieldDTO(
-            cf.getCustomFieldId(),
-            cf.getQuestion(),
-            cf.isRequired(),
-            cf.getCustomFieldType(),
-            cf.getAnswerOptions(),
-            cf.getSequence()
-        );
-    }
-
     AdminApplicationExportDTO toApplicationDto(Application app) {
         ApplicationReview review = app.getApplicationReview();
-        AdminApplicationReviewDTO reviewDto =
+        AdminApplicationExportDTO.Review reviewDto =
             review == null
                 ? null
-                : new AdminApplicationReviewDTO(
+                : new AdminApplicationExportDTO.Review(
                       review.getApplicationReviewId(),
                       review.getReviewedBy() == null ? null : review.getReviewedBy().getUserId(),
                       review.getReason(),
                       review.getReviewedAt()
                   );
 
-        Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(app.getApplicationId());
-        List<AdminRatingDTO> ratingDtos = ratings
+        List<AdminApplicationExportDTO.Rating> ratingDtos = ratingRepository
+            .findByApplicationApplicationId(app.getApplicationId())
             .stream()
             .map(r ->
-                new AdminRatingDTO(r.getRatingId(), r.getFrom() == null ? null : r.getFrom().getUserId(), r.getRating(), r.getCreatedAt())
+                new AdminApplicationExportDTO.Rating(
+                    r.getRatingId(),
+                    r.getFrom() == null ? null : r.getFrom().getUserId(),
+                    r.getRating(),
+                    r.getCreatedAt()
+                )
             )
             .toList();
 
         Set<InternalComment> comments = app.getInternalComments() == null ? Set.of() : app.getInternalComments();
-        List<AdminInternalCommentDTO> commentDtos = comments
+        List<AdminApplicationExportDTO.InternalComment> commentDtos = comments
             .stream()
             .map(c ->
-                new AdminInternalCommentDTO(
+                new AdminApplicationExportDTO.InternalComment(
                     c.getInternalCommentId(),
                     c.getCreatedBy() == null ? null : c.getCreatedBy().getUserId(),
                     c.getMessage(),
@@ -563,10 +565,10 @@ public class JobsExportStrategy {
             .toList();
 
         Set<CustomFieldAnswer> answers = app.getCustomFieldAnswers() == null ? Set.of() : app.getCustomFieldAnswers();
-        List<AdminCustomFieldAnswerDTO> answerDtos = answers
+        List<AdminApplicationExportDTO.CustomFieldAnswer> answerDtos = answers
             .stream()
             .map(a ->
-                new AdminCustomFieldAnswerDTO(
+                new AdminApplicationExportDTO.CustomFieldAnswer(
                     a.getCustomFieldAnswerId(),
                     a.getCustomField() == null ? null : a.getCustomField().getCustomFieldId(),
                     a.getAnswers()
@@ -578,14 +580,14 @@ public class JobsExportStrategy {
         // zipPath matches the actual file on disk inside the ZIP.
         Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
         FolderNameAllocator docPathAllocator = new FolderNameAllocator(false);
-        List<AdminDocumentRefDTO> docRefs = docDicts
+        List<AdminApplicationExportDTO.DocumentRef> docRefs = docDicts
             .stream()
             .filter(dd -> dd.getDocument() != null)
             .map(dd -> {
                 String typeLabel =
                     dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
                 String baseName = docPathAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
-                return new AdminDocumentRefDTO(
+                return new AdminApplicationExportDTO.DocumentRef(
                     dd.getDocument().getDocumentId(),
                     dd.getName(),
                     dd.getDocumentType(),
@@ -643,28 +645,32 @@ public class JobsExportStrategy {
         );
     }
 
-    private AdminIntervieweeDTO toIntervieweeDto(Interviewee interviewee) {
+    AdminApplicationExportDTO.Interview toIntervieweeDto(Interviewee interviewee) {
         InterviewProcess process = interviewee.getInterviewProcess();
-        List<AdminInterviewSlotDTO> slots =
-            interviewee.getSlots() == null ? List.of() : interviewee.getSlots().stream().map(this::toSlotDto).toList();
-        return new AdminIntervieweeDTO(
+        List<AdminApplicationExportDTO.Interview.Slot> slots =
+            interviewee.getSlots() == null
+                ? List.of()
+                : interviewee
+                      .getSlots()
+                      .stream()
+                      .map(slot ->
+                          new AdminApplicationExportDTO.Interview.Slot(
+                              slot.getId(),
+                              slot.getStartDateTime(),
+                              slot.getEndDateTime(),
+                              slot.getLocation(),
+                              slot.getStreamLink(),
+                              slot.getIsBooked()
+                          )
+                      )
+                      .toList();
+        return new AdminApplicationExportDTO.Interview(
             interviewee.getId(),
             process == null ? null : process.getId(),
             interviewee.getLastInvited(),
             interviewee.getRating(),
             interviewee.getAssessmentNotes(),
             slots
-        );
-    }
-
-    private AdminInterviewSlotDTO toSlotDto(InterviewSlot slot) {
-        return new AdminInterviewSlotDTO(
-            slot.getId(),
-            slot.getStartDateTime(),
-            slot.getEndDateTime(),
-            slot.getLocation(),
-            slot.getStreamLink(),
-            slot.getIsBooked()
         );
     }
 

@@ -35,7 +35,11 @@ paths:
           type: string
           enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
       responses:
-        '200': {description: OK}
+        '200':
+          description: ZIP archive containing the requested admin export
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
