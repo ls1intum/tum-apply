@@ -170,7 +170,7 @@ export class HeaderComponent {
   }
 
   navigateToHome(): void {
-    if (this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Professor]) || this.router.url === '/professor') {
+    if (this.isProfessorPage()) {
       this.redirectToProfessorLandingPage();
     } else {
       this.redirectToApplicantLandingPage();
