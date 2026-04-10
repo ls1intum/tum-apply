@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.dto.DocumentRefDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminJobExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
+import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.PDFExportService;
 import de.tum.cit.aet.core.service.XlsxExportService;
 import de.tum.cit.aet.core.service.ZipExportService;
@@ -32,6 +33,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ public class JobsExportStrategy {
     private final IntervieweeRepository intervieweeRepository;
     private final PDFExportService pdfExportService;
     private final ZipExportService zipExportService;
+    private final DocumentService documentService;
     private final XlsxExportService xlsxWriter;
     private final ObjectMapper objectMapper;
 
@@ -132,8 +135,9 @@ public class JobsExportStrategy {
 
         FolderNameAllocator rgAllocator = new FolderNameAllocator(false);
         for (ResearchGroup rg : groups) {
-            String label = rg.getAbbreviation() != null ? rg.getAbbreviation() : rg.getName();
-            String rgFolder = rgAllocator.allocate(label, rg.getResearchGroupId()) + "/";
+            // Use the full research group title; abbreviations collide too easily
+            // ("AET", null, …) and the slug() helper trims it to a safe length.
+            String rgFolder = rgAllocator.allocate(rg.getName(), rg.getResearchGroupId()) + "/";
             // Members XLSX only — no JSON dumps for the human-readable per-type exports.
             researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, false);
             writeJobsInternal(zos, rgFolder + "jobs/", jobsByRg.get(rg.getResearchGroupId()), includeDrafts, false, false);
@@ -350,8 +354,19 @@ public class JobsExportStrategy {
             String typeLabel = dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
             String baseName = docAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
             String filename = baseName + AdminExportNaming.extensionForMime(dd.getDocument().getMimeType());
+            // Read the binary FULLY into memory before touching the ZIP stream:
+            // a partial write (truncated read, broken pipe, missing file mid-stream)
+            // would otherwise leave the deflater between putNextEntry and closeEntry,
+            // producing an EBADMSG-corrupt central directory that macOS Archive
+            // Utility refuses to open. Buffering keeps the failure isolated to this
+            // single document and the catch block writes a placeholder instead.
             try {
-                zipExportService.addDocumentToZip(zos, folder + "documents/" + filename, dd.getDocument());
+                Resource resource = documentService.download(dd.getDocument());
+                byte[] bytes;
+                try (InputStream is = resource.getInputStream()) {
+                    bytes = is.readAllBytes();
+                }
+                zipExportService.addFileToZip(zos, folder + "documents/" + filename, bytes);
             } catch (Exception e) {
                 log.warn(
                     "Failed to add document {} for application {}: {}",

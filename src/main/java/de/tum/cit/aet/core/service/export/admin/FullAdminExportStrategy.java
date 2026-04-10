@@ -113,8 +113,9 @@ public class FullAdminExportStrategy {
         // abbreviation/title twice) are handled by an auto-incrementing suffix.
         FolderNameAllocator rgAllocator = new FolderNameAllocator(false);
         for (ResearchGroup rg : groups) {
-            String label = rg.getAbbreviation() != null ? rg.getAbbreviation() : rg.getName();
-            String rgFolder = rgAllocator.allocate(label, rg.getResearchGroupId()) + "/";
+            // Use the full research group title; abbreviations collide too easily
+            // ("AET", null, …) and the slug() helper trims it to a safe length.
+            String rgFolder = rgAllocator.allocate(rg.getName(), rg.getResearchGroupId()) + "/";
             researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, true);
 
             List<Job> rgJobs = jobsByRg.getOrDefault(rg.getResearchGroupId(), List.of());
