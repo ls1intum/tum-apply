@@ -115,7 +115,7 @@ public class FullAdminExportStrategy {
         for (ResearchGroup rg : groups) {
             String label = rg.getAbbreviation() != null ? rg.getAbbreviation() : rg.getName();
             String rgFolder = rgAllocator.allocate(label, rg.getResearchGroupId()) + "/";
-            researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg);
+            researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, true);
 
             List<Job> rgJobs = jobsByRg.getOrDefault(rg.getResearchGroupId(), List.of());
             if (rgJobs.isEmpty()) {
@@ -142,7 +142,7 @@ public class FullAdminExportStrategy {
         // 3. Orphan jobs (no research group) — defensive; healthy data should leave this empty.
         List<Job> orphanJobs = allJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
         if (!orphanJobs.isEmpty()) {
-            jobsExportStrategy.writeJobsInto(zos, "orphans/jobs/", orphanJobs, true, false);
+            jobsExportStrategy.writeJobsInto(zos, "orphans/jobs/", orphanJobs, true, false, true);
         }
 
         // 4. Top-level machine-readable dumps — flat lists of every entity (not state-filtered).
@@ -168,7 +168,8 @@ public class FullAdminExportStrategy {
             return;
         }
         // includeUuids=false: folder names stay clean; UUIDs live only in the JSON files.
-        jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeDrafts, false);
+        // includeJsonDumps=true: full admin keeps every machine-readable file for re-import.
+        jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeDrafts, false, true);
     }
 
     private AdminUserExportDTO toUserDto(User user) {

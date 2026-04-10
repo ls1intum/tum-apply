@@ -33,14 +33,20 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.CustomField;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +78,8 @@ public class JobsExportStrategy {
 
     private final JobRepository jobRepository;
     private final ApplicationRepository applicationRepository;
+    private final ResearchGroupRepository researchGroupRepository;
+    private final ResearchGroupsExportStrategy researchGroupsExportStrategy;
     private final RatingRepository ratingRepository;
     private final IntervieweeRepository intervieweeRepository;
     private final PDFExportService pdfExportService;
@@ -81,40 +89,96 @@ public class JobsExportStrategy {
 
     /**
      * Top-level entry point used by {@link AdminExportZipWriter} for the three
-     * jobs-only export cases. Discovers all jobs matching the type's filter,
-     * writes them at the root of the ZIP and emits a top-level overview workbook
-     * plus a re-importable JSON dump.
+     * jobs-only export cases. Produces a research-group-centric layout (matching
+     * the full admin export's per-rg structure) but contains only the relevant
+     * job-state bucket and omits all JSON / UUID noise — the per-type exports
+     * are handed to research groups directly, who don't need re-importable data.
+     *
+     * <pre>
+     * jobs_&lt;case&gt;/
+     * ├── README_*.txt
+     * ├── &lt;abbrev&gt;/                 (one folder per research group)
+     * │   ├── members_overview.xlsx
+     * │   └── jobs/
+     * │       ├── jobs_overview.xlsx
+     * │       └── job_&lt;slug&gt;/
+     * │           ├── job_details.pdf
+     * │           ├── applications_overview.xlsx
+     * │           └── applications/
+     * │               └── &lt;lastname_firstname&gt;/
+     * │                   ├── application_details.pdf
+     * │                   ├── interview/
+     * │                   │   └── interview_summary.pdf
+     * │                   └── documents/cv.pdf, ...
+     * └── orphans/jobs/...           (jobs without a research group, rare)
+     * </pre>
      *
      * @param zos  open ZIP output stream rooted at the top of the export
      * @param type which jobs-only case to apply ({@code JOBS_OPEN}, {@code JOBS_EXPIRED} or {@code JOBS_CLOSED})
      */
     public void exportJobs(ZipOutputStream zos, AdminExportType type) {
-        List<Job> jobs = filterJobs(jobRepository.findAll(), type);
+        List<Job> matchingJobs = filterJobs(jobRepository.findAll(), type);
         boolean includeDrafts = type != AdminExportType.JOBS_OPEN;
-        // Per-type exports go to research groups; UUIDs would be noise.
-        writeJobsInternal(zos, "", jobs, includeDrafts, false);
+
+        Map<UUID, List<Job>> jobsByRg = matchingJobs
+            .stream()
+            .filter(j -> j.getResearchGroup() != null)
+            .collect(Collectors.groupingBy(j -> j.getResearchGroup().getResearchGroupId()));
+
+        // Iterate research groups in name order, but only include those that have
+        // at least one matching job — otherwise we'd produce empty folders.
+        List<ResearchGroup> groups = researchGroupRepository
+            .findAll()
+            .stream()
+            .filter(rg -> jobsByRg.containsKey(rg.getResearchGroupId()))
+            .sorted(Comparator.comparing(ResearchGroup::getName, Comparator.nullsLast(Comparator.naturalOrder())))
+            .toList();
+
+        FolderNameAllocator rgAllocator = new FolderNameAllocator(false);
+        for (ResearchGroup rg : groups) {
+            String label = rg.getAbbreviation() != null ? rg.getAbbreviation() : rg.getName();
+            String rgFolder = rgAllocator.allocate(label, rg.getResearchGroupId()) + "/";
+            // Members XLSX only — no JSON dumps for the human-readable per-type exports.
+            researchGroupsExportStrategy.writeGroupFolder(zos, rgFolder, rg, false);
+            writeJobsInternal(zos, rgFolder + "jobs/", jobsByRg.get(rg.getResearchGroupId()), includeDrafts, false, false);
+        }
+
+        // Defensive: jobs that match the filter but have no research group go
+        // into orphans/. Healthy data should leave this empty.
+        List<Job> orphanJobs = matchingJobs.stream().filter(j -> j.getResearchGroup() == null).toList();
+        if (!orphanJobs.isEmpty()) {
+            writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeDrafts, false, false);
+        }
+
+        // TODO(post-export-go-live): dispatch JOB_EXPORT_NOTIFICATION to all
+        // members of each job.researchGroup, and (only for JOBS_OPEN) dispatch
+        // DRAFT_APPLICATION_REMINDER to applicants who currently hold a SAVED
+        // application against any job in `matchingJobs`. Recipient computation
+        // belongs here so the actual sending is a one-line change later.
     }
 
     /**
      * Writes a list of jobs into a sub-path of the ZIP, mirroring the same layout
-     * used at the root by {@link #exportJobs}. Used by both the full admin export
-     * (which keeps UUIDs and drafts) and the research-groups export (which embeds
-     * each group's jobs without UUIDs and without drafts).
+     * used at the root by {@link #exportJobs}. Used by the full admin export so
+     * the same builder produces stable, UUID-suffixed folder names suitable for
+     * a re-importable archive.
      *
-     * @param zos            open ZIP output stream
-     * @param basePath       prefix inside the ZIP, ending in {@code "/"} or empty
-     * @param jobs           jobs to write
-     * @param includeDrafts  whether to include {@code SAVED} applications
-     * @param includeUuids   whether to suffix folder names with the entity's short UUID
+     * @param zos               open ZIP output stream
+     * @param basePath          prefix inside the ZIP, ending in {@code "/"} or empty
+     * @param jobs              jobs to write
+     * @param includeDrafts     whether to include {@code SAVED} applications
+     * @param includeUuids      whether to suffix folder names with the entity's short UUID
+     * @param includeJsonDumps  whether to write {@code _machine_readable/} JSON files
      */
     void writeJobsInto(
         ZipOutputStream zos,
         String basePath,
         List<Job> jobs,
         boolean includeDrafts,
-        boolean includeUuids
+        boolean includeUuids,
+        boolean includeJsonDumps
     ) {
-        writeJobsInternal(zos, basePath, jobs, includeDrafts, includeUuids);
+        writeJobsInternal(zos, basePath, jobs, includeDrafts, includeUuids, includeJsonDumps);
     }
 
     private void writeJobsInternal(
@@ -122,13 +186,14 @@ public class JobsExportStrategy {
         String basePath,
         List<Job> jobs,
         boolean includeDrafts,
-        boolean includeUuids
+        boolean includeUuids,
+        boolean includeJsonDumps
     ) {
         FolderNameAllocator jobAllocator = new FolderNameAllocator(includeUuids);
         for (Job job : jobs) {
             String folder = basePath + "job_" + jobAllocator.allocate(job.getTitle(), job.getJobId()) + "/";
             try {
-                writeJobFolder(zos, folder, job, includeDrafts, includeUuids);
+                writeJobFolder(zos, folder, job, includeDrafts, includeUuids, includeJsonDumps);
             } catch (Exception e) {
                 // Defensive: one bad job (e.g. corrupt entity, missing relation) must
                 // never abort the surrounding ZIP. Drop a placeholder and continue.
@@ -142,14 +207,10 @@ public class JobsExportStrategy {
         }
         if (!jobs.isEmpty()) {
             writeJobsOverviewSheet(zos, basePath + "jobs_overview.xlsx", jobs);
-            writeJsonEntry(zos, basePath + "_machine_readable/jobs.json", jobs.stream().map(this::toJobDto).toList());
+            if (includeJsonDumps) {
+                writeJsonEntry(zos, basePath + "_machine_readable/jobs.json", jobs.stream().map(this::toJobDto).toList());
+            }
         }
-
-        // TODO(post-export-go-live): dispatch JOB_EXPORT_NOTIFICATION to all
-        // members of each job.researchGroup, and (only for JOBS_OPEN) dispatch
-        // DRAFT_APPLICATION_REMINDER to applicants who currently hold a SAVED
-        // application against any job in `jobs`. Recipient computation belongs
-        // here so the actual sending is a one-line change later.
     }
 
     // ----------------------------- filtering -----------------------------
@@ -184,7 +245,14 @@ public class JobsExportStrategy {
 
     // ----------------------------- per-job tree -----------------------------
 
-    private void writeJobFolder(ZipOutputStream zos, String folder, Job job, boolean includeDrafts, boolean includeUuids) {
+    private void writeJobFolder(
+        ZipOutputStream zos,
+        String folder,
+        Job job,
+        boolean includeDrafts,
+        boolean includeUuids,
+        boolean includeJsonDumps
+    ) {
         // 1. Job details PDF (reuses existing public job-export PDF)
         try {
             Resource pdf = pdfExportService.exportJobToPDF(job.getJobId(), AdminPdfLabels.forJob());
@@ -214,14 +282,16 @@ public class JobsExportStrategy {
             );
         }
 
-        // 3. Per-job overview xlsx + machine-readable applications dump
+        // 3. Per-job overview xlsx + (optionally) machine-readable JSON dumps.
         writeApplicationsOverviewSheet(zos, folder + "applications_overview.xlsx", apps);
-        writeJsonEntry(zos, folder + "_machine_readable/job.json", toJobDto(job));
-        writeJsonEntry(
-            zos,
-            folder + "_machine_readable/applications.json",
-            apps.stream().map(this::toApplicationDto).toList()
-        );
+        if (includeJsonDumps) {
+            writeJsonEntry(zos, folder + "_machine_readable/job.json", toJobDto(job));
+            writeJsonEntry(
+                zos,
+                folder + "_machine_readable/applications.json",
+                apps.stream().map(this::toApplicationDto).toList()
+            );
+        }
 
         // 4. One folder per application — fresh allocator scoped to this job
         FolderNameAllocator appAllocator = new FolderNameAllocator(includeUuids);
@@ -230,11 +300,11 @@ public class JobsExportStrategy {
                 "_" +
                 (app.getApplicantFirstName() == null ? "" : app.getApplicantFirstName());
             String appFolder = folder + "applications/" + appAllocator.allocate(label, app.getApplicationId()) + "/";
-            writeApplicationFolder(zos, appFolder, app, job);
+            writeApplicationFolder(zos, appFolder, app, job, includeJsonDumps);
         }
     }
 
-    private void writeApplicationFolder(ZipOutputStream zos, String folder, Application app, Job job) {
+    private void writeApplicationFolder(ZipOutputStream zos, String folder, Application app, Job job, boolean includeJsonDumps) {
         // 1. Application details PDF (reuses existing per-applicant PDF)
         try {
             ApplicationDetailDTO dto = ApplicationDetailDTO.getFromEntity(app, job);
@@ -245,14 +315,19 @@ public class JobsExportStrategy {
             writeTextEntry(zos, folder + "application_details.pdf.error.txt", "Failed to render PDF: " + e.getMessage());
         }
 
-        // 2. Machine-readable JSON (review, ratings, comments — interview data lives in
-        // its own subfolder below so it can be browsed/diffed independently).
-        writeJsonEntry(zos, folder + "_machine_readable/application.json", toApplicationDto(app));
+        // 2. Machine-readable JSON (review, ratings, comments). Skipped for the
+        // human-readable per-type exports — interview data still gets its own
+        // PDF in the subfolder below.
+        if (includeJsonDumps) {
+            writeJsonEntry(zos, folder + "_machine_readable/application.json", toApplicationDto(app));
+        }
 
         // 3. Interview subfolder, only when interview data exists for this application.
         Interviewee interviewee = lookupInterviewee(app);
         if (interviewee != null) {
-            writeJsonEntry(zos, folder + "interview/interview.json", toIntervieweeDto(interviewee));
+            if (includeJsonDumps) {
+                writeJsonEntry(zos, folder + "interview/interview.json", toIntervieweeDto(interviewee));
+            }
             try {
                 Resource interviewPdf = AdminInterviewPdf.build(interviewee, app, job);
                 zipExportService.addFileToZip(zos, folder + "interview/interview_summary.pdf", interviewPdf.getInputStream());

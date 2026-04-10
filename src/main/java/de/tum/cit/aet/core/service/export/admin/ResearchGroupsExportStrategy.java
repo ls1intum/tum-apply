@@ -32,15 +32,18 @@ public class ResearchGroupsExportStrategy {
     private final ObjectMapper objectMapper;
 
     /**
-     * Writes one research group's contents (member XLSX + machine-readable JSON)
+     * Writes one research group's contents (member XLSX, optionally a JSON dump)
      * into the supplied folder. The {@code jobs/} subtree is added by the caller.
      *
-     * @param zos    open ZIP output stream
-     * @param folder destination folder inside the ZIP, ending in {@code "/"}
-     * @param rg     the research group to export
+     * @param zos              open ZIP output stream
+     * @param folder           destination folder inside the ZIP, ending in {@code "/"}
+     * @param rg               the research group to export
+     * @param includeJsonDumps whether to write the machine-readable JSON file
      */
-    void writeGroupFolder(ZipOutputStream zos, String folder, ResearchGroup rg) {
-        writeJsonEntry(zos, folder + "_machine_readable/research_group.json", toDto(rg));
+    void writeGroupFolder(ZipOutputStream zos, String folder, ResearchGroup rg, boolean includeJsonDumps) {
+        if (includeJsonDumps) {
+            writeJsonEntry(zos, folder + "_machine_readable/research_group.json", toDto(rg));
+        }
 
         List<UserResearchGroupRole> roles = rg.getUserRoles() == null ? List.of() : new ArrayList<>(rg.getUserRoles());
         List<List<Object>> rows = new ArrayList<>(roles.size());
