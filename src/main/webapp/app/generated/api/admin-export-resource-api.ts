@@ -12,7 +12,7 @@
  * AdminExportResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -26,10 +26,10 @@ export class AdminExportResourceApi {
      * 
      * @param type 
      */
-    download(type: 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN'): Observable<void> {
+    download(type: 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN'): Observable<HttpResponse<Blob>> {
         const typePath = encodeURIComponent(String(type));
         const url = `${this.basePath}/api/admin/exports/${typePath}`;
-        return this.http.post<void>(url, null);
+        return this.http.post(url, null, { responseType: 'blob', observe: 'response' });
     }
 
 }
