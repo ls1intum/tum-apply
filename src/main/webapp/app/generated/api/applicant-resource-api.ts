@@ -106,8 +106,8 @@ export class ApplicantResourceApi {
      * 
      * @param applicantDTO 
      */
-    updateApplicantApplicationInformation(applicantDTO: ApplicantDTO): Observable<ApplicantDTO> {
-        const url = `${this.basePath}/api/applicants/profile/application-information`;
+    updateApplicantDocumentSettings(applicantDTO: ApplicantDTO): Observable<ApplicantDTO> {
+        const url = `${this.basePath}/api/applicants/profile/document-settings`;
         return this.http.put<ApplicantDTO>(url, applicantDTO);
     }
 
@@ -116,8 +116,8 @@ export class ApplicantResourceApi {
      * 
      * @param applicantDTO 
      */
-    updateApplicantDocumentSettings(applicantDTO: ApplicantDTO): Observable<ApplicantDTO> {
-        const url = `${this.basePath}/api/applicants/profile/document-settings`;
+    updateApplicantPersonalInformation(applicantDTO: ApplicantDTO): Observable<ApplicantDTO> {
+        const url = `${this.basePath}/api/applicants/profile/personal-information`;
         return this.http.put<ApplicantDTO>(url, applicantDTO);
     }
 
