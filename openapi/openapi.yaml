@@ -23,6 +23,19 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/admin/exports/{type}:
+    post:
+      tags: [admin-export-resource]
+      operationId: download
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
+      responses:
+        '200': {description: OK}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
