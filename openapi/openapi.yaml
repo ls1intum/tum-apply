@@ -2752,7 +2752,19 @@ components:
         documents:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
-    CustomFieldDTO: {}
+    CustomFieldDTO:
+      type: object
+      properties:
+        answerOptions:
+          type: array
+          items: {type: string}
+        customFieldId: {type: string, format: uuid}
+        customFieldType:
+          type: string
+          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
+        question: {type: string}
+        required: {type: boolean}
+        sequence: {type: integer, format: int32}
     DataExportStatusDTO:
       type: object
       properties:
