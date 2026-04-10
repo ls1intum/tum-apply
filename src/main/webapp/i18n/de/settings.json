@@ -9,18 +9,18 @@
       "documents": "Dokumente"
     },
     "personalInformation": {
-      "description": "Aktualisiere hier deine persönlichen Informationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
+      "description": "Aktualisiere hier deine Bewerbungsinformationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
-        "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
+        "detail": "Fehler beim Laden der Bewerbungsinformationen. Bitte versuche es erneut."
       },
       "saved": {
         "summary": "Erfolgreich gespeichert",
-        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+        "detail": "Bewerbungsinformationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
       },
       "saveFailed": {
         "summary": "Speichern fehlgeschlagen",
-        "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
+        "detail": "Fehler beim Speichern der Bewerbungsinformationen. Bitte versuche es erneut."
       }
     },
 
