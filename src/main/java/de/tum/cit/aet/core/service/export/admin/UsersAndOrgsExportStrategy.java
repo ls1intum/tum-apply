@@ -201,7 +201,11 @@ public class UsersAndOrgsExportStrategy {
                     );
                     manifest.exported(ExportManifest.Category.USER_RESEARCH_GROUP_ROLE);
                 } catch (Exception e) {
-                    log.warn("Failed to convert user_research_group_role {} for users-and-orgs export", role.getUserResearchGroupRoleId(), e);
+                    log.warn(
+                        "Failed to convert user_research_group_role {} for users-and-orgs export",
+                        role.getUserResearchGroupRoleId(),
+                        e
+                    );
                     manifest.failed(
                         ExportManifest.Category.USER_RESEARCH_GROUP_ROLE,
                         role.getUserResearchGroupRoleId(),
