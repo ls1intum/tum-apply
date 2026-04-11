@@ -199,7 +199,9 @@ public class TemplateProcessingService {
         User applicant = application.getApplicant().getUser();
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), applicant.getLastName());
-        dataModel.put(TemplateVariable.APPLICATION_ID.getValue(), application.getApplicationId());
+
+        String applicationLink = url + "/evaluation/application?sortBy=appliedAt&sortDir=DESC&applicationId=" + application.getApplicationId();
+        dataModel.put(TemplateVariable.APPLICATION_LINK.getValue(), applicationLink);
 
         addJobData(dataModel, application.getJob());
     }
