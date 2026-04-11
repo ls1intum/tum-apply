@@ -91,16 +91,18 @@ public class FullAdminExportStrategy {
             .filter(rg -> rg.getState() == ResearchGroupState.ACTIVE)
             .sorted(Comparator.comparing(ResearchGroup::getName, Comparator.nullsLast(Comparator.naturalOrder())))
             .toList();
-        log.info(
-            "Full admin export: {} research groups in DB, {} are ACTIVE and will be included. Excluded by state: {}",
-            allRgs.size(),
-            groups.size(),
-            allRgs
-                .stream()
-                .filter(rg -> rg.getState() != ResearchGroupState.ACTIVE)
-                .map(rg -> rg.getName() + "[" + rg.getState() + "]")
-                .toList()
-        );
+        if (log.isDebugEnabled()) {
+            log.debug(
+                "Full admin export: {} research groups in DB, {} are ACTIVE and will be included. Excluded by state: {}",
+                allRgs.size(),
+                groups.size(),
+                allRgs
+                    .stream()
+                    .filter(rg -> rg.getState() != ResearchGroupState.ACTIVE)
+                    .map(rg -> rg.getName() + "[" + rg.getState() + "]")
+                    .toList()
+            );
+        }
 
         // Pre-group all jobs by research group id so each group folder can read its own list once.
         List<Job> allJobs = jobRepository.findAll();
@@ -193,13 +195,15 @@ public class FullAdminExportStrategy {
         writeJsonEntry(zos, "_machine_readable/research_groups.json", groups.stream().map(researchGroupsExportStrategy::toDto).toList());
     }
 
-    private void writeBucket(ZipOutputStream zos, String basePath, List<Job> jobs, boolean includeDrafts, ExportManifest manifest) {
+    private void writeBucket(ZipOutputStream zos, String basePath, List<Job> jobs, boolean includeAllStates, ExportManifest manifest) {
         if (jobs.isEmpty()) {
             return;
         }
         // includeUuids=false: folder names stay clean; UUIDs live only in the JSON files.
         // includeJsonDumps=true: full admin keeps every machine-readable file for re-import.
-        jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeDrafts, false, true, manifest);
+        // includeAllStates is passed through: full admin backup keeps every
+        // application state including SAVED/WITHDRAWN/etc.
+        jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeAllStates, false, true, manifest);
     }
 
     private AdminUserExportDTO toUserDto(User user) {

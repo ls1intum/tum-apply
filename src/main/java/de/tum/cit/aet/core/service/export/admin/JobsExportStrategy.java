@@ -74,6 +74,24 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class JobsExportStrategy {
 
+    /**
+     * Application states that are filtered out of the three research-group-
+     * facing exports ({@code JOBS_OPEN}, {@code JOBS_EXPIRED}, {@code JOBS_CLOSED}).
+     * These states represent applications the research group has nothing to
+     * act on:
+     * <ul>
+     *   <li>{@code SAVED} — draft, never submitted</li>
+     *   <li>{@code WITHDRAWN} — applicant pulled out of the process</li>
+     * </ul>
+     *
+     * <p>The full admin export ({@code FULL_ADMIN}) keeps every state because
+     * it is a comprehensive backup, not a handover.
+     */
+    private static final Set<ApplicationState> STATES_EXCLUDED_FROM_RESEARCH_GROUP_EXPORTS = EnumSet.of(
+        ApplicationState.SAVED,
+        ApplicationState.WITHDRAWN
+    );
+
     private final JobRepository jobRepository;
     private final ApplicationRepository applicationRepository;
     private final ResearchGroupRepository researchGroupRepository;
@@ -118,7 +136,11 @@ public class JobsExportStrategy {
      */
     public void exportJobs(ZipOutputStream zos, AdminExportType type, ExportManifest manifest) {
         List<Job> matchingJobs = filterJobs(jobRepository.findAll(), type);
-        boolean includeDrafts = type != AdminExportType.JOBS_OPEN;
+        // All three per-type exports are handed to external research groups,
+        // so drafts (SAVED) and withdrawn applications are filtered out —
+        // they are noise for anyone reviewing the bucket. The full admin
+        // export keeps every state and goes through FullAdminExportStrategy.
+        boolean includeAllStates = false;
 
         Map<UUID, List<Job>> jobsByRg = matchingJobs
             .stream()
@@ -152,7 +174,7 @@ public class JobsExportStrategy {
                 manifest.failed(ExportManifest.Category.RESEARCH_GROUP, rg.getResearchGroupId(), rg.getName(), e);
                 rethrowIfStreamBroken(e);
             }
-            writeJobsInternal(zos, rgFolder + "jobs/", jobsByRg.get(rg.getResearchGroupId()), includeDrafts, false, false, manifest);
+            writeJobsInternal(zos, rgFolder + "jobs/", jobsByRg.get(rg.getResearchGroupId()), includeAllStates, false, false, manifest);
         }
 
         // Defensive: jobs that match the filter but have no research group go
@@ -162,7 +184,7 @@ public class JobsExportStrategy {
             .filter(j -> j.getResearchGroup() == null)
             .toList();
         if (!orphanJobs.isEmpty()) {
-            writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeDrafts, false, false, manifest);
+            writeJobsInternal(zos, "orphans/jobs/", orphanJobs, includeAllStates, false, false, manifest);
         }
 
         // TODO(post-export-go-live): dispatch JOB_EXPORT_NOTIFICATION to all
@@ -181,7 +203,9 @@ public class JobsExportStrategy {
      * @param zos               open ZIP output stream
      * @param basePath          prefix inside the ZIP, ending in {@code "/"} or empty
      * @param jobs              jobs to write
-     * @param includeDrafts     whether to include {@code SAVED} applications
+     * @param includeAllStates  {@code true} to include every application state (full admin backup);
+     *                          {@code false} to filter out states the research group has nothing
+     *                          to act on ({@code SAVED}, {@code WITHDRAWN})
      * @param includeUuids      whether to suffix folder names with the entity's short UUID
      * @param includeJsonDumps  whether to write {@code _machine_readable/} JSON files
      * @param manifest          export-wide audit trail; jobs/apps/documents are recorded against it
@@ -190,20 +214,20 @@ public class JobsExportStrategy {
         ZipOutputStream zos,
         String basePath,
         List<Job> jobs,
-        boolean includeDrafts,
+        boolean includeAllStates,
         boolean includeUuids,
         boolean includeJsonDumps,
         ExportManifest manifest
     ) {
         manifest.expect(ExportManifest.Category.JOB, jobs.size());
-        writeJobsInternal(zos, basePath, jobs, includeDrafts, includeUuids, includeJsonDumps, manifest);
+        writeJobsInternal(zos, basePath, jobs, includeAllStates, includeUuids, includeJsonDumps, manifest);
     }
 
     private void writeJobsInternal(
         ZipOutputStream zos,
         String basePath,
         List<Job> jobs,
-        boolean includeDrafts,
+        boolean includeAllStates,
         boolean includeUuids,
         boolean includeJsonDumps,
         ExportManifest manifest
@@ -212,7 +236,7 @@ public class JobsExportStrategy {
         for (Job job : jobs) {
             String folder = basePath + "job_" + jobAllocator.allocate(job.getTitle(), job.getJobId()) + "/";
             try {
-                writeJobFolder(zos, folder, job, includeDrafts, includeUuids, includeJsonDumps, manifest);
+                writeJobFolder(zos, folder, job, includeAllStates, includeUuids, includeJsonDumps, manifest);
                 manifest.exported(ExportManifest.Category.JOB);
             } catch (StreamAbortedException sae) {
                 manifest.failed(ExportManifest.Category.JOB, job.getJobId(), job.getTitle(), sae);
@@ -270,7 +294,7 @@ public class JobsExportStrategy {
         ZipOutputStream zos,
         String folder,
         Job job,
-        boolean includeDrafts,
+        boolean includeAllStates,
         boolean includeUuids,
         boolean includeJsonDumps,
         ExportManifest manifest
@@ -289,21 +313,23 @@ public class JobsExportStrategy {
 
         // 2. Fetch applications via an explicit query (avoids lazy-collection /
         // second-level-cache quirks that can return a stale subset of the rows)
-        // and filter according to the includeDrafts flag.
+        // and filter according to the includeAllStates flag: the three per-type
+        // exports drop SAVED + WITHDRAWN (states the research group can't act
+        // on), while FULL_ADMIN keeps every state.
         List<Application> rawApps = applicationRepository.findAllByJobId(job.getJobId());
         List<Application> apps = rawApps
             .stream()
-            .filter(a -> includeDrafts || a.getState() != ApplicationState.SAVED)
+            .filter(a -> includeAllStates || !STATES_EXCLUDED_FROM_RESEARCH_GROUP_EXPORTS.contains(a.getState()))
             .sorted(Comparator.comparing(Application::getApplicantLastName, Comparator.nullsLast(Comparator.naturalOrder())))
             .toList();
         if (rawApps.size() != apps.size()) {
             log.debug(
-                "Job {} ({}): fetched {} applications, exporting {} after draft filter (includeDrafts={})",
+                "Job {} ({}): fetched {} applications, exporting {} after state filter (includeAllStates={})",
                 job.getJobId(),
                 job.getTitle(),
                 rawApps.size(),
                 apps.size(),
-                includeDrafts
+                includeAllStates
             );
         }
 

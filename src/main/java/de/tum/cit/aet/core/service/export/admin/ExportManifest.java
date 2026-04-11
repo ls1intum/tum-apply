@@ -109,12 +109,26 @@ public final class ExportManifest {
         if (this.finishedAt == null) {
             this.finishedAt = Instant.now();
         }
+        return snapshot();
+    }
+
+    /**
+     * Returns the current state of the manifest without mutating it. Safe to
+     * call from a polling thread while the build is still running on another
+     * thread — counts and failures are read live, and {@code finishedAt} stays
+     * {@code null} until {@link #finish()} is called.
+     *
+     * @return a snapshot of the manifest's current totals and failures
+     */
+    public Payload snapshot() {
+        Instant snapshotFinishedAt = this.finishedAt;
+        Instant clockEnd = snapshotFinishedAt == null ? Instant.now() : snapshotFinishedAt;
         return new Payload(
             type.name(),
             requestedBy,
             startedAt,
-            finishedAt,
-            Duration.between(startedAt, finishedAt).toMillis() / 1000.0,
+            snapshotFinishedAt,
+            Duration.between(startedAt, clockEnd).toMillis() / 1000.0,
             status(),
             new Totals(researchGroups.snapshot(), jobs.snapshot(), applications.snapshot(), documents.snapshot(), users.snapshot()),
             aborted ? abortReason : null,

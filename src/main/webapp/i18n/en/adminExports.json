@@ -1,9 +1,14 @@
 {
   "adminExports": {
     "title": "Admin Bulk Exports",
-    "subtitle": "Generate machine-readable JSON dumps and human-readable PDF/XLSX archives for the data the university needs to hand off. Click a button to download the ZIP directly.",
+    "subtitle": "Generate machine-readable JSON dumps and human-readable PDF/XLSX archives for the data the university needs to hand off. Each export builds in the background — you can watch progress live and the file downloads automatically once it is ready.",
     "actions": {
-      "download": "Download"
+      "start": "Start export"
+    },
+    "status": {
+      "inProgress": "Building…",
+      "ready": "Ready",
+      "failed": "Failed"
     },
     "sections": {
       "jobs": "Jobs",
@@ -28,9 +33,33 @@
       }
     },
     "toast": {
+      "queued": {
+        "summary": "Export queued",
+        "detail": "The export is being built in the background. The file will download automatically when it is ready."
+      },
+      "downloaded": {
+        "summary": "Export ready",
+        "detail": "The file has been downloaded. Check manifest.json inside the ZIP to verify completeness."
+      },
+      "startError": {
+        "summary": "Could not start export",
+        "detail": "Something went wrong while queueing the export. Please try again."
+      },
+      "alreadyRunning": {
+        "summary": "Another export is already running",
+        "detail": "Only one admin export can run at a time. Wait for the current build to finish before starting another."
+      },
+      "pollError": {
+        "summary": "Lost track of export",
+        "detail": "Could not reach the server while polling for status. The export may still be running — refresh the page to reconnect."
+      },
+      "buildFailed": {
+        "summary": "Export failed",
+        "detail": "The export build failed on the server. Check the server logs for details."
+      },
       "downloadError": {
         "summary": "Could not download export",
-        "detail": "Something went wrong while building the export. Please try again."
+        "detail": "The export was built but could not be downloaded. Please try again."
       }
     }
   }

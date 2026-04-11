@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -6,6 +7,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
 import { AdminExportResourceApi } from 'app/generated/api/admin-export-resource-api';
+import { AdminExportTaskDTO, AdminExportTaskDTOStatusEnum } from 'app/generated/model/admin-export-task-dto';
 
 /**
  * Mirrors {@code de.tum.cit.aet.core.constants.AdminExportType} on the
@@ -13,7 +15,7 @@ import { AdminExportResourceApi } from 'app/generated/api/admin-export-resource-
  * sync automatically when the backend enum changes and openapi is
  * regenerated.
  */
-type AdminExportType = Parameters<AdminExportResourceApi['download']>[0];
+type AdminExportType = Parameters<AdminExportResourceApi['startExport']>[0];
 
 interface ExportButton {
   type: AdminExportType;
@@ -27,11 +29,28 @@ interface ExportSection {
   buttons: ExportButton[];
 }
 
+/** How often we poll the status endpoint while a task is in progress. */
+const POLL_INTERVAL_MS = 3000;
+
+/** sessionStorage key under which we persist the live task map across page refreshes. */
+const STORAGE_KEY = 'tumapply.adminExports.tasks';
+
 /**
- * Admin "Bulk Exports" page. Each button triggers a synchronous backend
- * download — the browser receives the ZIP as soon as it has been built and
- * the user gets a regular download dialog. No background queue, no email,
- * no recent-exports panel.
+ * Admin "Bulk Exports" page. Each button POSTs to start a background task and
+ * then polls the status endpoint until the task is READY, at which point the
+ * file is downloaded with a regular browser dialog. Build progress is shown
+ * live (research groups / jobs / applications / documents counters) so the
+ * user can see something is happening during the multi-minute build.
+ *
+ * <p>Only one export can run at a time per admin user. The backend enforces
+ * this with a {@code 409 Conflict} response; the frontend also visually
+ * disables every button while any task is in progress so the admin can't
+ * accidentally start a second build from another tab.
+ *
+ * <p>Task ids are persisted in {@code sessionStorage} and hydrated on init
+ * via {@code GET /mine}, so a page refresh (or tab crash) does not strand
+ * the admin — polling resumes automatically and the download still triggers
+ * once the task completes.
  */
 @Component({
   selector: 'jhi-admin-exports',
@@ -40,8 +59,18 @@ interface ExportSection {
   templateUrl: './admin-exports.component.html',
 })
 export class AdminExportsComponent {
-  /** Tracks which buttons are currently downloading (one signal per type). */
-  readonly busy = signal<Set<AdminExportType>>(new Set());
+  /** Live task per export type — drives both the busy flag and the progress UI. */
+  readonly tasks = signal<Map<AdminExportType, AdminExportTaskDTO>>(new Map());
+
+  /** True while *any* task is IN_PROGRESS — used to grey out all buttons at once. */
+  readonly anyBusy = computed<boolean>(() => {
+    for (const task of this.tasks().values()) {
+      if (task.status === AdminExportTaskDTOStatusEnum.InProgress) {
+        return true;
+      }
+    }
+    return false;
+  });
 
   /** Static section/button definitions rendered by the template. */
   readonly sections: ExportSection[] = [
@@ -83,44 +112,247 @@ export class AdminExportsComponent {
 
   private readonly api = inject(AdminExportResourceApi);
   private readonly toastService = inject(ToastService);
+  private readonly pollHandles = new Map<AdminExportType, ReturnType<typeof setTimeout>>();
+
+  constructor() {
+    // afterNextRender is browser-only (safe for sessionStorage) and runs
+    // once after the first render — the modern replacement for ngOnInit
+    // when the init work is browser-side only.
+    afterNextRender(() => void this.hydrate());
+
+    // DestroyRef replaces ngOnDestroy: register a teardown callback that
+    // cancels every outstanding poll timeout so we don't leak timers when
+    // the component is torn down.
+    inject(DestroyRef).onDestroy(() => {
+      for (const handle of this.pollHandles.values()) {
+        clearTimeout(handle);
+      }
+      this.pollHandles.clear();
+    });
+  }
+
+  /** True while the given type specifically is building (spinner on its button). */
+  isBusy(type: AdminExportType): boolean {
+    return this.tasks().get(type)?.status === AdminExportTaskDTOStatusEnum.InProgress;
+  }
+
+  /** Returns the live task for the given type, or undefined when there is none. */
+  taskFor(type: AdminExportType): AdminExportTaskDTO | undefined {
+    return this.tasks().get(type);
+  }
 
   /**
-   * Triggers a download for the given type. The button stays in a loading
-   * state for the entire build + transfer, then a regular browser download
-   * fires once the response Blob has arrived.
+   * Starts a new export of the given type. The button stays in a loading
+   * state while we poll the status endpoint; once the task is READY the file
+   * is automatically downloaded.
    */
-  async download(type: AdminExportType): Promise<void> {
-    if (this.busy().has(type)) return;
-    this.markBusy(type, true);
+  async start(type: AdminExportType): Promise<void> {
+    if (this.anyBusy()) return;
     try {
-      const response = await firstValueFrom(this.api.download(type));
+      const task = await firstValueFrom(this.api.startExport(type));
+      this.upsertTask(type, task);
+      this.persistTask(type, task);
+      this.toastService.showSuccessKey('adminExports.toast.queued');
+      this.scheduleNextPoll(type);
+    } catch (err) {
+      if (err instanceof HttpErrorResponse && err.status === 409) {
+        // Server says an export is already running for this admin — adopt
+        // it into the local state so the user can watch its progress
+        // instead of being stuck with a silent failure.
+        const existing = err.error as AdminExportTaskDTO | undefined;
+        if (existing?.type !== undefined) {
+          this.upsertTask(existing.type, existing);
+          this.persistTask(existing.type, existing);
+          if (existing.status === AdminExportTaskDTOStatusEnum.InProgress) {
+            this.scheduleNextPoll(existing.type);
+          }
+        }
+        this.toastService.showErrorKey('adminExports.toast.alreadyRunning');
+        return;
+      }
+      this.toastService.showErrorKey('adminExports.toast.startError');
+    }
+  }
+
+  /**
+   * Hydrates the component's state after page load. Runs inside
+   * {@link afterNextRender} so it is safe to touch {@code sessionStorage}.
+   *
+   * <p>Two sources, in priority order:
+   * <ol>
+   *   <li>{@code GET /mine} — server-side truth, catches tasks that are
+   *       still running even if sessionStorage was wiped.</li>
+   *   <li>{@code sessionStorage} fallback — covers the case where the
+   *       server already expired the task but the client still remembers
+   *       its id; we ask /status/{id} once and either resume polling or
+   *       forget the entry.</li>
+   * </ol>
+   */
+  private async hydrate(): Promise<void> {
+    try {
+      const mine = await firstValueFrom(this.api.listMine());
+      for (const task of mine) {
+        if (task.type !== undefined) {
+          this.upsertTask(task.type, task);
+          if (task.status === AdminExportTaskDTOStatusEnum.InProgress) {
+            this.scheduleNextPoll(task.type);
+          }
+        }
+      }
+    } catch {
+      // non-fatal — fall through to sessionStorage and let the user re-trigger if needed
+    }
+
+    const persisted = this.loadFromStorage();
+    for (const [key, taskId] of persisted) {
+      if (this.tasks().has(key)) {
+        // already hydrated from /mine
+        continue;
+      }
+      try {
+        const task = await firstValueFrom(this.api.getStatus(taskId));
+        this.upsertTask(key, task);
+        if (task.status === AdminExportTaskDTOStatusEnum.InProgress) {
+          this.scheduleNextPoll(key);
+        }
+      } catch {
+        // 404 or network error → forget it
+        this.clearStoredTask(key);
+      }
+    }
+  }
+
+  private scheduleNextPoll(type: AdminExportType): void {
+    // If a poll is already scheduled for this type, cancel it first so we
+    // don't fan out (hydrate + manual start could otherwise race).
+    const existing = this.pollHandles.get(type);
+    if (existing !== undefined) {
+      clearTimeout(existing);
+    }
+    const handle = setTimeout(() => void this.poll(type), POLL_INTERVAL_MS);
+    this.pollHandles.set(type, handle);
+  }
+
+  private async poll(type: AdminExportType): Promise<void> {
+    const current = this.tasks().get(type);
+    if (current?.taskId === undefined) return;
+    try {
+      const updated = await firstValueFrom(this.api.getStatus(current.taskId));
+      this.upsertTask(type, updated);
+      if (updated.status === AdminExportTaskDTOStatusEnum.InProgress) {
+        this.scheduleNextPoll(type);
+        return;
+      }
+      if (updated.status === AdminExportTaskDTOStatusEnum.Ready) {
+        await this.downloadReadyTask(type, updated);
+      } else {
+        this.toastService.showErrorKey('adminExports.toast.buildFailed');
+        this.clearStoredTask(type);
+      }
+    } catch (err) {
+      if (err instanceof HttpErrorResponse && err.status === 404) {
+        // Task expired on the server — drop it so the UI stops showing it.
+        this.forgetTask(type);
+        return;
+      }
+      this.toastService.showErrorKey('adminExports.toast.pollError');
+    }
+  }
+
+  private async downloadReadyTask(type: AdminExportType, task: AdminExportTaskDTO): Promise<void> {
+    if (task.taskId === undefined) return;
+    try {
+      const response = await firstValueFrom(this.api.download(task.taskId));
       const blob = response.body;
       if (!blob) {
         this.toastService.showErrorKey('adminExports.toast.downloadError');
         return;
       }
-      const contentDisposition = response.headers.get('Content-Disposition') ?? undefined;
-      const filename = this.parseFilename(contentDisposition) ?? `admin-export-${type.toLowerCase()}.zip`;
+      const filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? `admin-export-${type.toLowerCase()}.zip`;
       this.triggerBrowserDownload(blob, filename);
+      this.toastService.showSuccessKey('adminExports.toast.downloaded');
+      // The file has been handed over to the browser — drop the task from
+      // our remembered state so a subsequent refresh starts clean.
+      this.clearStoredTask(type);
     } catch {
       this.toastService.showErrorKey('adminExports.toast.downloadError');
-    } finally {
-      this.markBusy(type, false);
     }
   }
 
-  private markBusy(type: AdminExportType, busy: boolean): void {
-    const next = new Set(this.busy());
-    if (busy) {
-      next.add(type);
-    } else {
+  /** Immutable-update helper: adds or replaces a task in the signal's backing map. */
+  private upsertTask(type: AdminExportType, task: AdminExportTaskDTO): void {
+    this.tasks.update(prev => {
+      const next = new Map(prev);
+      next.set(type, task);
+      return next;
+    });
+  }
+
+  /**
+   * Drops a task from both the live signal and the persisted sessionStorage
+   * map. Used when a task 404s on the server (already expired) or after a
+   * successful download.
+   */
+  private forgetTask(type: AdminExportType): void {
+    this.tasks.update(prev => {
+      const next = new Map(prev);
       next.delete(type);
-    }
-    this.busy.set(next);
+      return next;
+    });
+    this.clearStoredTask(type);
   }
 
-  private parseFilename(contentDisposition: string | undefined): string | undefined {
-    if (contentDisposition === undefined) return undefined;
+  // ---------------- sessionStorage helpers ----------------
+
+  private persistTask(type: AdminExportType, task: AdminExportTaskDTO): void {
+    if (task.taskId === undefined) return;
+    const current = this.loadFromStorage();
+    current.set(type, task.taskId);
+    this.saveToStorage(current);
+  }
+
+  private clearStoredTask(type: AdminExportType): void {
+    const current = this.loadFromStorage();
+    if (!current.has(type)) return;
+    current.delete(type);
+    this.saveToStorage(current);
+  }
+
+  private loadFromStorage(): Map<AdminExportType, string> {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (raw === null) return new Map();
+      const parsed = JSON.parse(raw) as Partial<Record<AdminExportType, string>>;
+      const result = new Map<AdminExportType, string>();
+      for (const key of Object.keys(parsed) as AdminExportType[]) {
+        const value = parsed[key];
+        if (value !== undefined) {
+          result.set(key, value);
+        }
+      }
+      return result;
+    } catch {
+      return new Map();
+    }
+  }
+
+  private saveToStorage(map: Map<AdminExportType, string>): void {
+    try {
+      const serialized: Partial<Record<AdminExportType, string>> = {};
+      for (const [key, value] of map) {
+        serialized[key] = value;
+      }
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+    } catch {
+      // sessionStorage may be unavailable (private mode quota, etc.); the
+      // server-side /mine endpoint is still the authoritative fallback.
+    }
+  }
+
+  // ---------------- misc helpers ----------------
+
+  private parseFilename(contentDisposition: string | null | undefined): string | undefined {
+    if (contentDisposition === null || contentDisposition === undefined) return undefined;
     return /filename="([^"]+)"/.exec(contentDisposition)?.[1];
   }
 
