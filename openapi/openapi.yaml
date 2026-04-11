@@ -79,7 +79,8 @@ paths:
         required: true
         schema:
           type: string
-          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS]
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS,
+            APPLICATIONS_ONLY]
       responses:
         '200':
           description: OK
@@ -2891,7 +2892,8 @@ components:
         totalFailures: {type: integer, format: int32}
         type:
           type: string
-          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS]
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS,
+            APPLICATIONS_ONLY]
         userResearchGroupRoles: {$ref: '#/components/schemas/Counts'}
         users: {$ref: '#/components/schemas/Counts'}
     ApplicantDTO:

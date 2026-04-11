@@ -15,7 +15,8 @@
     "sections": {
       "jobs": "Stellen",
       "full": "Vollständiger Admin-Export",
-      "usersAndOrgs": "Benutzer & Organisation"
+      "usersAndOrgs": "Benutzer & Organisation",
+      "applicationsOnly": "Bewerbungen"
     },
     "buttons": {
       "jobsOpen": {
@@ -41,6 +42,10 @@
       "usersAndOrgs": {
         "label": "Benutzer & Organisation",
         "description": "JSON-Only-Snapshot von Schulen, Fakultäten, Forschungsgruppen, Benutzern und den Benutzer ↔ Forschungsgruppen-Rollenzuweisungen. Zum erneuten Bespielen der Datenbank nach einem kompletten Reset — enthält keine Stellen, Bewerbungen, Dokumente oder PDFs."
+      },
+      "applicationsOnly": {
+        "label": "Alle Bewerbungen",
+        "description": "Sicherheitsnetz-Export aller Bewerbungen mit zugehörigen Dokumenten, nach Bewerbern gruppiert. Erzeugt eine applications.json auf oberster Ebene sowie einen Ordner pro Bewerber mit dessen applications.json und einem documents/-Unterordner."
       }
     },
     "toast": {

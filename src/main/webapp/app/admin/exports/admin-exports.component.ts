@@ -156,6 +156,17 @@ export class AdminExportsComponent {
         },
       ],
     },
+    {
+      titleKey: 'adminExports.sections.applicationsOnly',
+      buttons: [
+        {
+          type: 'APPLICATIONS_ONLY',
+          labelKey: 'adminExports.buttons.applicationsOnly.label',
+          descriptionKey: 'adminExports.buttons.applicationsOnly.description',
+          icon: 'database',
+        },
+      ],
+    },
   ];
 
   private readonly api = inject(AdminExportResourceApi);

@@ -33,6 +33,7 @@ public class AdminExportZipWriter {
     private final JobsExportStrategy jobsExportStrategy;
     private final FullAdminExportStrategy fullAdminExportStrategy;
     private final UsersAndOrgsExportStrategy usersAndOrgsExportStrategy;
+    private final ApplicationsOnlyExportStrategy applicationsOnlyExportStrategy;
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
 
@@ -55,6 +56,7 @@ public class AdminExportZipWriter {
                     case JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT -> jobsExportStrategy.exportJobs(zos, type, manifest);
                     case FULL_ADMIN -> fullAdminExportStrategy.exportFull(zos, manifest);
                     case USERS_AND_ORGS -> usersAndOrgsExportStrategy.exportUsersAndOrgs(zos, manifest);
+                    case APPLICATIONS_ONLY -> applicationsOnlyExportStrategy.exportApplications(zos, manifest);
                 }
             } catch (JobsExportStrategy.StreamAbortedException sae) {
                 // Stream is gone — manifest write below will likely also fail,

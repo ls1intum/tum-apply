@@ -15,7 +15,8 @@
     "sections": {
       "jobs": "Jobs",
       "full": "Full Admin Export",
-      "usersAndOrgs": "Users & Organisation"
+      "usersAndOrgs": "Users & Organisation",
+      "applicationsOnly": "Applications"
     },
     "buttons": {
       "jobsOpen": {
@@ -41,6 +42,10 @@
       "usersAndOrgs": {
         "label": "Users & Organisation",
         "description": "JSON-only snapshot of schools, departments, research groups, users and the user ↔ research-group role assignments. Intended for re-seeding the database after a hard reset — contains no jobs, applications, documents or PDFs."
+      },
+      "applicationsOnly": {
+        "label": "All Applications",
+        "description": "Safety-net dump of every application with its binary documents, grouped by applicant. Produces a top-level applications.json and one folder per applicant containing their applications.json and a documents/ subfolder."
       }
     },
     "toast": {

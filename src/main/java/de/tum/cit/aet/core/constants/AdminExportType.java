@@ -23,6 +23,13 @@ package de.tum.cit.aet.core.constants;
  *       {@code user_research_group_roles} join table. Intended for re-seeding
  *       the database after a hard reset — contains no jobs, applications,
  *       documents or PDFs.</li>
+ *   <li>{@link #APPLICATIONS_ONLY} – safety-net dump of every application with
+ *       its binary documents, grouped into one folder per applicant. Produces
+ *       a top-level {@code applications.json} (every application, every
+ *       state, full DTOs with UUIDs) plus an {@code applications/} folder
+ *       where each subfolder is named after the applicant's first and last
+ *       name and contains that applicant's {@code applications.json} and a
+ *       {@code documents/} folder with their uploaded files.</li>
  * </ul>
  */
 public enum AdminExportType {
@@ -32,4 +39,5 @@ public enum AdminExportType {
     JOBS_DRAFT,
     FULL_ADMIN,
     USERS_AND_ORGS,
+    APPLICATIONS_ONLY,
 }

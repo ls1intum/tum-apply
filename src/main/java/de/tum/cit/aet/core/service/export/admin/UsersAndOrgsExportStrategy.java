@@ -251,7 +251,12 @@ public class UsersAndOrgsExportStrategy {
         List<Applicant> applicants = applicantRepository
             .findAll()
             .stream()
-            .sorted(Comparator.comparing(a -> a.getUserId() == null ? null : a.getUserId().toString(), Comparator.nullsLast(Comparator.naturalOrder())))
+            .sorted(
+                Comparator.comparing(
+                    a -> a.getUserId() == null ? null : a.getUserId().toString(),
+                    Comparator.nullsLast(Comparator.naturalOrder())
+                )
+            )
             .toList();
         manifest.expect(ExportManifest.Category.APPLICANT, applicants.size());
         List<ApplicantRow> rows = new ArrayList<>(applicants.size());

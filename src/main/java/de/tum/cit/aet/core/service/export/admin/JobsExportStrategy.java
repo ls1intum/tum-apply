@@ -292,9 +292,10 @@ public class JobsExportStrategy {
             case JOBS_CLOSED -> EnumSet.of(JobState.CLOSED, JobState.APPLICANT_FOUND).contains(job.getState());
             case JOBS_DRAFT -> job.getState() == JobState.DRAFT;
             // Full admin export funnels every job through here too, with no extra filter.
-            // USERS_AND_ORGS does not use this filter at all — its strategy
-            // ignores jobs entirely — but the switch must be exhaustive.
-            case FULL_ADMIN, USERS_AND_ORGS -> true;
+            // USERS_AND_ORGS and APPLICATIONS_ONLY do not use this filter at
+            // all — their strategies ignore jobs entirely — but the switch
+            // must be exhaustive.
+            case FULL_ADMIN, USERS_AND_ORGS, APPLICATIONS_ONLY -> true;
         };
     }
 
