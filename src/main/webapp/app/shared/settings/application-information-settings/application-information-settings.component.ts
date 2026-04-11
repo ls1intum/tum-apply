@@ -20,7 +20,7 @@ import { DatePickerComponent } from '../../components/atoms/datepicker/datepicke
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 
-export type ApplicationInformationData = {
+export interface ApplicationInformationData {
   firstName: string;
   lastName: string;
   email: string;
@@ -34,7 +34,7 @@ export type ApplicationInformationData = {
   city: string;
   country?: SelectOption;
   postcode: string;
-};
+}
 
 interface ApplicationInformationSnapshot {
   firstName: string;
