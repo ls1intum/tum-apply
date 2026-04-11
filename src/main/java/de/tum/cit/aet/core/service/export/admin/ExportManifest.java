@@ -84,9 +84,8 @@ public final class ExportManifest {
      */
     public void failed(Category category, UUID id, String context, Throwable cause) {
         counterFor(category).failed++;
-        String reason = cause == null
-            ? "unknown"
-            : cause.getClass().getSimpleName() + (cause.getMessage() == null ? "" : ": " + cause.getMessage());
+        String reason =
+            cause == null ? "unknown" : cause.getClass().getSimpleName() + (cause.getMessage() == null ? "" : ": " + cause.getMessage());
         failures.add(new Failure(category, id, context, reason));
     }
 
@@ -110,20 +109,28 @@ public final class ExportManifest {
         if (this.finishedAt == null) {
             this.finishedAt = Instant.now();
         }
+        return snapshot();
+    }
+
+    /**
+     * Returns the current state of the manifest without mutating it. Safe to
+     * call from a polling thread while the build is still running on another
+     * thread — counts and failures are read live, and {@code finishedAt} stays
+     * {@code null} until {@link #finish()} is called.
+     *
+     * @return a snapshot of the manifest's current totals and failures
+     */
+    public Payload snapshot() {
+        Instant snapshotFinishedAt = this.finishedAt;
+        Instant clockEnd = snapshotFinishedAt == null ? Instant.now() : snapshotFinishedAt;
         return new Payload(
             type.name(),
             requestedBy,
             startedAt,
-            finishedAt,
-            Duration.between(startedAt, finishedAt).toMillis() / 1000.0,
+            snapshotFinishedAt,
+            Duration.between(startedAt, clockEnd).toMillis() / 1000.0,
             status(),
-            new Totals(
-                researchGroups.snapshot(),
-                jobs.snapshot(),
-                applications.snapshot(),
-                documents.snapshot(),
-                users.snapshot()
-            ),
+            new Totals(researchGroups.snapshot(), jobs.snapshot(), applications.snapshot(), documents.snapshot(), users.snapshot()),
             aborted ? abortReason : null,
             List.copyOf(failures)
         );
@@ -181,13 +188,7 @@ public final class ExportManifest {
     public record Snapshot(int expected, int exported, int failed) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record Totals(
-        Snapshot researchGroups,
-        Snapshot jobs,
-        Snapshot applications,
-        Snapshot documents,
-        Snapshot users
-    ) {}
+    public record Totals(Snapshot researchGroups, Snapshot jobs, Snapshot applications, Snapshot documents, Snapshot users) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record Failure(Category category, UUID id, String context, String reason) {}

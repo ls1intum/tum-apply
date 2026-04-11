@@ -23,10 +23,52 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/admin/exports/download/{taskId}:
+    get:
+      tags: [admin-export-resource]
+      operationId: download
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: ZIP archive containing the built admin export
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+  /api/admin/exports/mine:
+    get:
+      tags: [admin-export-resource]
+      operationId: listMine
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/AdminExportTaskDTO'}
+  /api/admin/exports/status/{taskId}:
+    get:
+      tags: [admin-export-resource]
+      operationId: getStatus
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminExportTaskDTO'}
   /api/admin/exports/{type}:
     post:
       tags: [admin-export-resource]
-      operationId: download
+      operationId: startExport
       parameters:
       - name: type
         in: path
@@ -36,10 +78,10 @@ paths:
           enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
       responses:
         '200':
-          description: ZIP archive containing the requested admin export
+          description: OK
           content:
-            application/octet-stream:
-              schema: {type: string, format: binary}
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminExportTaskDTO'}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
@@ -2513,6 +2555,27 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
+    AdminExportTaskDTO:
+      type: object
+      properties:
+        applications: {$ref: '#/components/schemas/Counts'}
+        createdAt: {type: string, format: date-time}
+        documents: {$ref: '#/components/schemas/Counts'}
+        downloadAvailable: {type: boolean}
+        durationSeconds: {type: number, format: double}
+        error: {type: string}
+        finishedAt: {type: string, format: date-time}
+        jobs: {$ref: '#/components/schemas/Counts'}
+        researchGroups: {$ref: '#/components/schemas/Counts'}
+        status:
+          type: string
+          enum: [IN_PROGRESS, READY, FAILED]
+        taskId: {type: string, format: uuid}
+        totalFailures: {type: integer, format: int32}
+        type:
+          type: string
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
+        users: {$ref: '#/components/schemas/Counts'}
     ApplicantDTO:
       type: object
       properties:
@@ -2719,6 +2782,12 @@ components:
         slots:
           type: array
           items: {$ref: '#/components/schemas/ExistingSlotDTO'}
+    Counts:
+      type: object
+      properties:
+        expected: {type: integer, format: int32}
+        exported: {type: integer, format: int32}
+        failed: {type: integer, format: int32}
     CreateSlotsDTO:
       type: object
       properties:

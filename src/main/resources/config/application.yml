@@ -169,11 +169,6 @@ spring:
   mvc:
     problemdetails:
       enabled: true
-    async:
-      # Spring's default async dispatch timeout (~30s) is too short for the
-      # admin bulk export, which streams hundreds of PDFs/XLSX into one ZIP.
-      # 10 minutes is plenty for the largest realistic export.
-      request-timeout: 600000
   servlet:
     multipart:
       enabled: true

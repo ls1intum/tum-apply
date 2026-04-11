@@ -1,9 +1,14 @@
 {
   "adminExports": {
     "title": "Admin-Massenexporte",
-    "subtitle": "Erstellt maschinenlesbare JSON-Dumps und menschlich lesbare PDF/XLSX-Archive für die Daten, die die Universität zum Übergeben benötigt. Klicke auf einen Button, um das ZIP direkt herunterzuladen.",
+    "subtitle": "Erstellt maschinenlesbare JSON-Dumps und menschlich lesbare PDF/XLSX-Archive für die Daten, die die Universität zum Übergeben benötigt. Jeder Export wird im Hintergrund erstellt — der Fortschritt wird live angezeigt und die Datei wird automatisch heruntergeladen, sobald sie fertig ist.",
     "actions": {
-      "download": "Herunterladen"
+      "start": "Export starten"
+    },
+    "status": {
+      "inProgress": "Wird erstellt…",
+      "ready": "Fertig",
+      "failed": "Fehlgeschlagen"
     },
     "sections": {
       "jobs": "Stellen",
@@ -28,9 +33,33 @@
       }
     },
     "toast": {
+      "queued": {
+        "summary": "Export gestartet",
+        "detail": "Der Export wird im Hintergrund erstellt. Die Datei wird automatisch heruntergeladen, sobald sie fertig ist."
+      },
+      "downloaded": {
+        "summary": "Export bereit",
+        "detail": "Die Datei wurde heruntergeladen. Prüfe manifest.json im ZIP, um die Vollständigkeit zu verifizieren."
+      },
+      "startError": {
+        "summary": "Export konnte nicht gestartet werden",
+        "detail": "Beim Einreihen des Exports ist etwas schiefgelaufen. Bitte versuche es erneut."
+      },
+      "alreadyRunning": {
+        "summary": "Ein anderer Export läuft bereits",
+        "detail": "Es kann immer nur ein Admin-Export gleichzeitig laufen. Warte bis der aktuelle Build fertig ist, bevor du einen weiteren startest."
+      },
+      "pollError": {
+        "summary": "Export-Status verloren",
+        "detail": "Während der Statusabfrage war der Server nicht erreichbar. Der Export läuft möglicherweise noch weiter — lade die Seite neu, um die Verbindung wiederherzustellen."
+      },
+      "buildFailed": {
+        "summary": "Export fehlgeschlagen",
+        "detail": "Der Export ist auf dem Server fehlgeschlagen. Details findest du in den Server-Logs."
+      },
       "downloadError": {
         "summary": "Export konnte nicht heruntergeladen werden",
-        "detail": "Beim Erstellen des Exports ist etwas schiefgelaufen. Bitte versuche es erneut."
+        "detail": "Der Export wurde erstellt, konnte aber nicht heruntergeladen werden. Bitte versuche es erneut."
       }
     }
   }

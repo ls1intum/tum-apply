@@ -15,6 +15,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AdminExportTaskDTO } from '../model/admin-export-task-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AdminExportResourceApi {
@@ -24,12 +25,43 @@ export class AdminExportResourceApi {
     /**
      * 
      * 
+     * @param taskId 
+     */
+    download(taskId: string): Observable<HttpResponse<Blob>> {
+        const taskIdPath = encodeURIComponent(String(taskId));
+        const url = `${this.basePath}/api/admin/exports/download/${taskIdPath}`;
+        return this.http.get(url, { responseType: 'blob', observe: 'response' });
+    }
+
+    /**
+     * 
+     * 
+     * @param taskId 
+     */
+    getStatus(taskId: string): Observable<AdminExportTaskDTO> {
+        const taskIdPath = encodeURIComponent(String(taskId));
+        const url = `${this.basePath}/api/admin/exports/status/${taskIdPath}`;
+        return this.http.get<AdminExportTaskDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    listMine(): Observable<Array<AdminExportTaskDTO>> {
+        const url = `${this.basePath}/api/admin/exports/mine`;
+        return this.http.get<Array<AdminExportTaskDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param type 
      */
-    download(type: 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN'): Observable<HttpResponse<Blob>> {
+    startExport(type: 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN'): Observable<AdminExportTaskDTO> {
         const typePath = encodeURIComponent(String(type));
         const url = `${this.basePath}/api/admin/exports/${typePath}`;
-        return this.http.post(url, null, { responseType: 'blob', observe: 'response' });
+        return this.http.post<AdminExportTaskDTO>(url, null);
     }
 
 }
