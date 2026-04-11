@@ -1,0 +1,82 @@
+{
+  "adminExports": {
+    "title": "Admin-Massenexporte",
+    "subtitle": "Erstellt maschinenlesbare JSON-Dumps und menschlich lesbare PDF/XLSX-Archive für die Daten, die die Universität zum Übergeben benötigt. Jeder Export wird im Hintergrund erstellt — der Fortschritt wird live angezeigt und die Datei wird automatisch heruntergeladen, sobald sie fertig ist.",
+    "actions": {
+      "start": "Export starten",
+      "download": "Herunterladen"
+    },
+    "status": {
+      "inProgress": "Wird erstellt…",
+      "ready": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "downloading": "Wird heruntergeladen…"
+    },
+    "sections": {
+      "jobs": "Stellen",
+      "full": "Vollständiger Admin-Export",
+      "usersAndOrgs": "Benutzer & Organisation",
+      "applicationsOnly": "Bewerbungen"
+    },
+    "buttons": {
+      "jobsOpen": {
+        "label": "Offene Stellen",
+        "description": "Aktuell veröffentlichte Stellen, deren Bewerbungsfrist noch nicht abgelaufen ist. Enthält alle eingereichten Bewerbungen, Bewertungen und Interview-Daten; Entwürfe werden ausgeschlossen."
+      },
+      "jobsExpired": {
+        "label": "Stellen mit abgelaufener Frist",
+        "description": "Veröffentlichte Stellen, deren Bewerbungsfrist abgelaufen ist, die aber noch nicht formal geschlossen wurden. Enthält jede Bewerbung unabhängig vom Status."
+      },
+      "jobsClosed": {
+        "label": "Geschlossene Stellen",
+        "description": "Geschlossene Stellen und Stellen, für die ein Bewerber ausgewählt wurde. Enthält jede Bewerbung unabhängig vom Status."
+      },
+      "jobsDraft": {
+        "label": "Entwürfe",
+        "description": "Stellen, die sich aktuell im Entwurfszustand befinden. Eine bereits veröffentlichte Stelle kann zurück in den Entwurfsstatus verschoben worden sein — bereits eingereichte Bewerbungen bleiben enthalten, damit die Forschungsgruppe sie sieht."
+      },
+      "full": {
+        "label": "Vollständiger Admin-Export",
+        "description": "Alles: Forschungsgruppen mit ihren Mitgliedern und jede Stelle (auch Entwürfe), jede Bewerbung mit Dokumenten, plus re-importierbare JSON-Dumps. Geeignet zur Übergabe an die Universität oder für ein Backup."
+      },
+      "usersAndOrgs": {
+        "label": "Benutzer & Organisation",
+        "description": "JSON-Only-Snapshot von Schulen, Fakultäten, Forschungsgruppen, Benutzern und den Benutzer ↔ Forschungsgruppen-Rollenzuweisungen. Zum erneuten Bespielen der Datenbank nach einem kompletten Reset — enthält keine Stellen, Bewerbungen, Dokumente oder PDFs."
+      },
+      "applicationsOnly": {
+        "label": "Alle Bewerbungen",
+        "description": "Sicherheitsnetz-Export aller Bewerbungen mit zugehörigen Dokumenten, nach Bewerbern gruppiert. Erzeugt eine applications.json auf oberster Ebene sowie einen Ordner pro Bewerber mit dessen applications.json und einem documents/-Unterordner."
+      }
+    },
+    "toast": {
+      "queued": {
+        "summary": "Export gestartet",
+        "detail": "Der Export wird im Hintergrund erstellt. Die Datei wird automatisch heruntergeladen, sobald sie fertig ist."
+      },
+      "downloaded": {
+        "summary": "Export bereit",
+        "detail": "Die Datei wurde heruntergeladen. Prüfe manifest.json im ZIP, um die Vollständigkeit zu verifizieren."
+      },
+      "startError": {
+        "summary": "Export konnte nicht gestartet werden",
+        "detail": "Beim Einreihen des Exports ist etwas schiefgelaufen. Bitte versuche es erneut."
+      },
+      "alreadyRunning": {
+        "summary": "Ein anderer Export läuft bereits",
+        "detail": "Es kann immer nur ein Admin-Export gleichzeitig laufen. Warte bis der aktuelle Build fertig ist, bevor du einen weiteren startest."
+      },
+      "pollError": {
+        "summary": "Export-Status verloren",
+        "detail": "Während der Statusabfrage war der Server nicht erreichbar. Der Export läuft möglicherweise noch weiter — lade die Seite neu, um die Verbindung wiederherzustellen."
+      },
+      "buildFailed": {
+        "summary": "Export fehlgeschlagen",
+        "detail": "Der Export ist auf dem Server fehlgeschlagen. Details findest du in den Server-Logs."
+      },
+      "downloadError": {
+        "summary": "Export konnte nicht heruntergeladen werden",
+        "detail": "Der Export wurde erstellt, konnte aber nicht heruntergeladen werden. Bitte versuche es erneut."
+      }
+    }
+  }
+}

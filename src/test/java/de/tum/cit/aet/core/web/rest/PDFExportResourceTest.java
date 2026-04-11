@@ -189,7 +189,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         // Footer/Metadata
         labels.put("thisDocumentWasGeneratedOn", "This document was generated on ");
         labels.put("byUser", " by user ");
-        labels.put("usingTumapply", " using TUMapply.");
+        labels.put("usingTumapply", " using TUMApply.");
         labels.put("metaEndText", "End of document");
         labels.put("page", "Page");
         labels.put("of", "of");

@@ -84,6 +84,13 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "last_activity_at")
     private LocalDateTime lastActivityAt;
 
+    @Column(name = "ai_features_enabled", nullable = false)
+    private boolean aiFeaturesEnabled = true;
+
+    // First time the user used AI Features
+    @Column(name = "ai_consented_at")
+    private LocalDateTime aiConsentedAt;
+
     /**
      * Ensure defaults before persisting a new user.
      */

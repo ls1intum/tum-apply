@@ -28,7 +28,9 @@ public class UserSettingsExportProvider implements UserDataSectionProvider {
             context.user().getEmail(),
             context.user().getGender(),
             context.user().getNationality(),
-            context.user().getBirthday()
+            context.user().getBirthday(),
+            context.user().isAiFeaturesEnabled(),
+            context.user().getAiConsentedAt()
         );
     }
 

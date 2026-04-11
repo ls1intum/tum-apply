@@ -1,5 +1,9 @@
+api/actuator-api.ts
+api/actuator-resources.ts
 api/admin-dependency-resource-api.ts
 api/admin-dependency-resource-resources.ts
+api/admin-export-resource-api.ts
+api/admin-export-resource-resources.ts
 api/ai-resource-api.ts
 api/applicant-resource-api.ts
 api/applicant-resource-resources.ts
@@ -46,6 +50,7 @@ api/user-resource-resources.ts
 model/accept-dto.ts
 model/add-interviewees-dto.ts
 model/add-members-to-research-group-dto.ts
+model/admin-export-task-dto.ts
 model/ai-job-description-translation-dto.ts
 model/applicant-dto.ts
 model/applicant-for-application-detail-dto.ts
@@ -66,9 +71,11 @@ model/book-slot-request-dto.ts
 model/booking-dto.ts
 model/cancel-interview-dto.ts
 model/conflict-data-dto.ts
+model/counts.ts
 model/create-slots-dto.ts
 model/created-job-dto.ts
 model/custom-field-answer-dto.ts
+model/custom-field-dto.ts
 model/data-export-status-dto.ts
 model/department-creation-dto.ts
 model/department-dto.ts
@@ -100,6 +107,7 @@ model/job-filters-dto.ts
 model/job-form-dto.ts
 model/job-preview-request.ts
 model/keycloak-user-dto.ts
+model/link.ts
 model/login-request-dto.ts
 model/otp-complete-dto.ts
 model/page-application-overview-dto.ts

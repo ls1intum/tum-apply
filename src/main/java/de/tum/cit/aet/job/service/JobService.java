@@ -200,7 +200,20 @@ public class JobService {
      * @return the job detail DTO with detailed job information
      */
     public JobDetailDTO getJobDetails(UUID jobId) {
-        UUID userId = currentUserService.getUserIdIfAvailable().orElse(null);
+        // CurrentUserService is a request-scoped proxy; calling it from a
+        // background task thread (e.g. the admin bulk export running on
+        // taskExecutor) throws BeanCreationException at proxy-resolution
+        // time — before getUserIdIfAvailable's own try/catch runs. Treat
+        // "no active request" as "anonymous caller": the userId is only
+        // used downstream to look up the caller's own application state
+        // for the "already applied" indicator, which is irrelevant in an
+        // off-request context.
+        UUID userId;
+        try {
+            userId = currentUserService.getUserIdIfAvailable().orElse(null);
+        } catch (Exception e) {
+            userId = null;
+        }
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         UUID applicationId = null;
@@ -410,7 +423,7 @@ public class JobService {
                 Email.builder()
                     .to(user)
                     .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
-                    .content(new JobPublicationEmailContextDTO(user, job))
+                    .content(JobPublicationEmailContextDTO.fromEntities(user, job))
                     .language(Language.fromCode(user.getSelectedLanguage()))
                     .sendAlways(true)
                     .build()

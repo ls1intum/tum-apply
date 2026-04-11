@@ -12,6 +12,7 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -407,5 +408,17 @@ public class CurrentUserService {
      */
     private void hasAccessTo(EmailTemplate emailTemplate) {
         isAdminOrMemberOf(emailTemplate.getResearchGroup().getResearchGroupId());
+    }
+
+    /**
+     * Records the AI consent timestamp for the current user on first AI usage.
+     * Only sets aiConsentedAt if not already set.
+     */
+    public void markAiConsentForCurrentUser() {
+        User user = getUser();
+        if (user.getAiConsentedAt() == null) {
+            user.setAiConsentedAt(LocalDateTime.now());
+            userRepository.save(user);
+        }
     }
 }
