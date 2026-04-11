@@ -5,10 +5,10 @@
     "tabs": {
       "general": "Allgemein",
       "notifications": "Benachrichtigungen",
-      "personalInformation": "Bewerbungsinformationen",
+      "applicationInformation": "Bewerbungsinformationen",
       "documents": "Dokumente"
     },
-    "personalInformation": {
+    "applicationInformation": {
       "description": "Aktualisiere hier deine Bewerbungsinformationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",

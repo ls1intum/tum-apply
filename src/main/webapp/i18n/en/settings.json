@@ -5,10 +5,10 @@
     "tabs": {
       "general": "General",
       "notifications": "Notifications",
-      "personalInformation": "Application Information",
+      "applicationInformation": "Application Information",
       "documents": "Documents"
     },
-    "personalInformation": {
+    "applicationInformation": {
       "description": "Update your application information here. Your saved data will be used to prefill future application forms.",
       "loadFailed": {
         "summary": "Load failed",
