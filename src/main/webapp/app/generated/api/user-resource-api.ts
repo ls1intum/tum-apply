@@ -29,6 +29,15 @@ export class UserResourceApi {
     /**
      * 
      * 
+     */
+    getAiConsent(): Observable<boolean> {
+        const url = `${this.basePath}/api/users/ai-consent`;
+        return this.http.get<boolean>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param pageSize 
      * @param pageNumber 
      * @param searchQuery 
@@ -56,6 +65,16 @@ export class UserResourceApi {
     getCurrentUser(): Observable<UserShortDTO> {
         const url = `${this.basePath}/api/users/me`;
         return this.http.get<UserShortDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param body 
+     */
+    updateAiConsent(body: boolean): Observable<void> {
+        const url = `${this.basePath}/api/users/ai-consent`;
+        return this.http.put<void>(url, body);
     }
 
     /**

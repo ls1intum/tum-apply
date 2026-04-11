@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
@@ -213,6 +214,52 @@ class ApplicationServiceTest {
         }
 
         @Test
+        void shouldSanitizeHtmlInRichTextFields() {
+            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
+            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            String xssMotivation = "<p>My motivation</p><script>alert('xss')</script>";
+            String xssSkills = "<b>Java</b><img src=x onerror=alert(1)>";
+            String xssProjects = "<p>Project</p><iframe src='evil.com'></iframe>";
+
+            UpdateApplicationDTO update = new UpdateApplicationDTO(
+                TEST_APPLICATION_ID,
+                applicantDto("ada@example.com", "Ada", "Lovelace", "Street", "80333", "Munich", "Germany", "B.Sc.", "1.0", "M.Sc.", "1.0"),
+                LocalDate.of(2025, 11, 15),
+                ApplicationState.SAVED,
+                xssProjects,
+                xssSkills,
+                xssMotivation
+            );
+
+            ApplicationForApplicantDTO result = applicationService.updateApplication(update);
+
+            // Verify the entity was sanitized on write
+            assertThat(application.getMotivation()).contains("My motivation");
+            assertThat(application.getMotivation()).doesNotContain("<script");
+            assertThat(application.getMotivation()).doesNotContain("alert");
+            assertThat(application.getSpecialSkills()).contains("<b>Java</b>");
+            assertThat(application.getSpecialSkills()).doesNotContain("onerror");
+            assertThat(application.getSpecialSkills()).doesNotContain("<img");
+            assertThat(application.getProjects()).contains("Project");
+            assertThat(application.getProjects()).doesNotContain("<iframe");
+
+            // Verify the DTO returned to the client is also sanitized on read
+            assertThat(result.projects()).doesNotContain("<iframe");
+            assertThat(result.specialSkills()).doesNotContain("onerror");
+            assertThat(result.motivation()).doesNotContain("<script");
+
+            // Verify safe formatting tags are preserved
+            assertThat(application.getMotivation()).contains("<p>");
+            assertThat(application.getSpecialSkills()).contains("<b>");
+            assertThat(application.getProjects()).contains("<p>");
+
+            // Verify non-rich-text fields were not affected
+            assertThat(application.getApplicantEmail()).isEqualTo("ada@example.com");
+            assertThat(application.getState()).isEqualTo(ApplicationState.SAVED);
+        }
+
+        @Test
         void shouldSyncSnapshotBackToApplicantWhenStateChangesToSent() {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -269,6 +316,68 @@ class ApplicationServiceTest {
 
             verify(documentDictionaryService, times(5)).getApplicationDocumentDictionaries(eq(application), any(DocumentType.class));
             verify(documentDictionaryService, times(5)).getApplicantDocumentDictionaries(eq(applicant), any(DocumentType.class));
+        }
+    }
+
+    @Nested
+    class ApplyExtractedPdfData {
+
+        @Test
+        void shouldFillExtractedFields() {
+            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
+            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
+                "Ada",
+                "Lovelace",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
+
+            assertThat(application.getApplicantFirstName()).isEqualTo("Ada");
+            assertThat(application.getApplicantLastName()).isEqualTo("Lovelace");
+        }
+
+        @Test
+        void shouldOnlyFillEmptyFields() {
+            application.setApplicantFirstName("Existing");
+            when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
+            when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
+                "Overwrite",
+                "New",
+                null,
+                null,
+                null,
+                "New Street",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
+
+            // Existing field should not be overwritten
+            assertThat(application.getApplicantFirstName()).isEqualTo("Existing");
+            // Empty fields should be filled
+            assertThat(application.getApplicantLastName()).isEqualTo("New");
+            assertThat(application.getApplicantStreet()).isEqualTo("New Street");
         }
     }
 

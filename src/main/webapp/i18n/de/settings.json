@@ -54,11 +54,11 @@
           "emptySelection": "Noch keine Fachbereiche ausgewählt.",
           "loadFailed": {
             "summary": "Laden fehlgeschlagen",
-            "detail": "Fehler beim Laden der Fachbereich-Abonnements. Bitte versuche es erneut."
+            "detail": "Fehler beim Laden der ausgewählten Fachbereiche. Bitte versuche es erneut."
           },
           "saveFailed": {
             "summary": "Speichern fehlgeschlagen",
-            "detail": "Fehler beim Aktualisieren der Fachbereich-Abonnements. Bitte versuche es erneut."
+            "detail": "Fehler beim Aktualisieren der ausgewählten Fachbereiche. Bitte versuche es erneut."
           }
         }
       },
@@ -108,6 +108,37 @@
       "cropDialog": {
         "header": "Profilbild zuschneiden",
         "rotate": "Drehen"
+      }
+    },
+    "aiFeatures": {
+      "header": "KI-Funktionen",
+      "description": "Lege fest, ob KI-gestützte Funktionen für dein Konto aktiviert sind.",
+      "learnMore": "Mehr über die KI-Nutzung erfahren",
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "KI-Einstellungen konnten nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "KI-Einstellungen konnten nicht geladen werden. Bitte versuche es erneut."
+      },
+      "modal": {
+        "header": "Über KI-Funktionen in TUMApply",
+        "intro": "TUMApply nutzt KI, um dein Erlebnis zu verbessern. Hier ist, was du wissen solltest:",
+        "processing": {
+          "header": "Datenverarbeitung",
+          "description": "Deine Daten werden über Azure OpenAI verarbeitet, gehostet auf EU-Servern. Deine Daten werden niemals für das Training von Modellen verwendet."
+        },
+        "scope": {
+          "header": "Was KI kann",
+          "applicant": "Als Bewerber kann die KI automatisch deine persönlichen Daten aus deinem Lebenslauf extrahieren, um Bewerbungsformulare vorauszufüllen und dir Zeit zu sparen.",
+          "professorOrEmployee": "Als Professor oder Mitarbeiter kann die KI Stellenbeschreibungen generieren und zwischen Deutsch und Englisch übersetzen."
+        },
+        "consent": {
+          "header": "Deine Kontrolle",
+          "description": "Du kannst KI-Funktionen jederzeit über den Schalter in deinen Einstellungen aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten.",
+          "descriptionSettings": "Du kannst KI-Funktionen jederzeit über den Schalter aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten."
+        }
       }
     },
     "appearance": {

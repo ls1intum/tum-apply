@@ -1,23 +1,26 @@
 package de.tum.cit.aet.core.service;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.core.dto.JobOverviewData;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.util.PDFBuilder;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
+import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -49,21 +52,21 @@ public class PDFExportService {
     public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
+        // CurrentUserService is a request-scoped proxy that does not always resolve
+        // cleanly inside Spring MVC async dispatch threads (e.g. the admin bulk
+        // export's StreamingResponseBody runs on MvcAsync*). Fall back to the
+        // applicant's name in that case so the PDF still renders.
+        String displayName = currentUserService
+            .getCurrentUserFullNameIfAvailable()
+            .orElseGet(() -> app.applicant() != null && app.applicant().user() != null ? app.applicant().user().name() : "");
         builder
-            .addHeaderItem(
-                labels.get("applicationBy") +
-                    currentUserService.getCurrentUserFullName() +
-                    labels.get("forPosition") +
-                    "'" +
-                    app.jobTitle() +
-                    "'"
-            )
+            .addHeaderItem(labels.get("applicationBy") + displayName + labels.get("forPosition") + "'" + app.jobTitle() + "'")
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
+        String lang = labels.getOrDefault("lang", "en");
         if (app.jobId() != null) {
             JobDetailDTO job = jobService.getJobDetails(app.jobId());
             // Determine job description language and content
-            String lang = labels.getOrDefault("lang", "en");
             String descriptionForExport = selectJobDescriptionForLang(job.jobDescriptionEN(), job.jobDescriptionDE(), lang);
 
             // Overview Section if no in preview
@@ -103,9 +106,20 @@ public class PDFExportService {
 
         builder
             .startInfoSection(labels.get("applicantInfo"))
+            .addSectionData(labels.get("name"), getValue(app.applicant().user().name()))
+            .addSectionData(labels.get("email"), getValue(app.applicant().user().email()))
+            .addSectionData(labels.get("phoneNumber"), getValue(app.applicant().user().phoneNumber()))
             .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
             .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
             .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));
+
+        String street = formatAddress(app.applicant().street(), app.applicant().postalCode(), app.applicant().city());
+        if (hasValue(street)) {
+            builder.addSectionData(labels.get("address"), street);
+        }
+        if (hasValue(app.applicant().country())) {
+            builder.addSectionData(labels.get("country"), getCountry(app.applicant().country(), lang));
+        }
 
         if (app.applicant().user().website() != null) {
             builder.addSectionData(labels.get("website"), getValue(app.applicant().user().website()));
@@ -274,7 +288,98 @@ public class PDFExportService {
         return builder.build();
     }
 
+    /**
+     * Exports a one-page summary of an {@link Interviewee} record to PDF: header
+     * with applicant name and current rating, scheduled slots (date/time/location/
+     * stream link/booked), and the professor's assessment notes.
+     *
+     * @param interviewee the interviewee whose data should be exported
+     * @param app         the linked application (used for the applicant header)
+     * @param job         the job the application is for (used for the title)
+     * @param labels      translation labels for PDF content
+     * @return the PDF file as Resource
+     */
+    public Resource exportInterviewToPDF(Interviewee interviewee, Application app, Job job, Map<String, String> labels) {
+        String jobTitle = job == null || job.getTitle() == null ? "-" : job.getTitle();
+        String applicantName = formatApplicantName(app);
+
+        PDFBuilder builder = new PDFBuilder(labels.get("interviewHeading") + jobTitle);
+        builder.addHeaderItem(labels.get("applicantInfo") + ": " + applicantName);
+        builder.addHeaderItem(labels.get("status") + formatRating(interviewee.getRating(), labels));
+        if (interviewee.getLastInvited() != null) {
+            builder.addHeaderItem(labels.get("invitedAt") + formatInstantDateTime(interviewee.getLastInvited()));
+        }
+
+        // Schedule
+        builder.startSectionGroup(labels.get("interviewSchedule"));
+        List<InterviewSlot> slots = interviewee.getSlots() == null ? List.of() : interviewee.getSlots();
+        if (slots.isEmpty()) {
+            builder.startInfoSection(labels.get("interviewNoSlotTitle")).addSectionContent(labels.get("interviewNoSlotMessage"));
+        } else {
+            int idx = 1;
+            for (InterviewSlot slot : slots) {
+                String sectionTitle = slots.size() == 1 ? labels.get("interviewSlot") : labels.get("interviewSlot") + " " + idx++;
+                builder.startInfoSection(sectionTitle);
+                builder.addSectionData(labels.get("interviewDate"), formatInstantDate(slot.getStartDateTime()));
+                builder.addSectionData(
+                    labels.get("interviewTime"),
+                    formatInstantTime(slot.getStartDateTime()) + " – " + formatInstantTime(slot.getEndDateTime())
+                );
+                builder.addSectionData(labels.get("interviewLocation"), getValue(slot.getLocation()));
+                if (slot.getStreamLink() != null && !slot.getStreamLink().isBlank()) {
+                    builder.addSectionData(labels.get("interviewStreamLink"), slot.getStreamLink());
+                }
+                builder.addSectionData(
+                    labels.get("interviewBooked"),
+                    Boolean.TRUE.equals(slot.getIsBooked()) ? labels.get("yes") : labels.get("no")
+                );
+            }
+        }
+
+        // Assessment
+        builder.startSectionGroup(labels.get("interviewAssessment"));
+        builder
+            .startInfoSection(labels.get("interviewRating"))
+            .addSectionData(labels.get("interviewRating"), formatRating(interviewee.getRating(), labels));
+        builder.startInfoSection(labels.get("interviewNotes")).addSectionContent(getValue(interviewee.getAssessmentNotes()));
+
+        // Footer
+        builder.setMetadata(buildMetadataText(labels));
+        builder.setMetadataEnd(labels.get("metaEndText"));
+        builder.setPageLabels(labels.get("page"), labels.get("of"));
+
+        return builder.build();
+    }
+
     // ------------------- Helper methods -------------------
+
+    private String formatApplicantName(Application app) {
+        if (app == null) {
+            return "-";
+        }
+        String last = app.getApplicantLastName();
+        String first = app.getApplicantFirstName();
+        String composed = ((last == null ? "" : last) + ", " + (first == null ? "" : first)).trim();
+        return composed.replaceAll("^,\\s*|,\\s*$", "").isBlank() ? "-" : composed;
+    }
+
+    private String formatRating(AssessmentRating rating, Map<String, String> labels) {
+        return rating == null ? labels.get("interviewNotRated") : rating.name() + " (" + rating.getValue() + ")";
+    }
+
+    private String formatInstantDate(Instant instant) {
+        return instant == null ? "-" : DATE_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+    }
+
+    private String formatInstantTime(Instant instant) {
+        return instant == null
+            ? "-"
+            : DateTimeFormatter.ofPattern("HH:mm").format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+    }
+
+    private String formatInstantDateTime(Instant instant) {
+        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+    }
 
     private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
         builder
@@ -301,6 +406,28 @@ public class PDFExportService {
 
         addResearchGroupMainInfo(builder, group);
         addResearchGroupContactInfo(builder, group, labels);
+    }
+
+    private void addResearchGroupSection(PDFBuilder builder, ResearchGroupSummaryDTO group, Map<String, String> labels) {
+        builder.startSectionGroup(labels.get("researchGroup"));
+
+        builder.startInfoSection(group.name()).addSectionContent(getValue(group.description()));
+
+        String address = formatAddress(group.street(), group.postalCode(), group.city());
+        Map<String, String> items = new LinkedHashMap<>();
+        if (hasValue(address)) {
+            items.put(labels.get("address"), address);
+        }
+        if (hasValue(group.email())) {
+            items.put(labels.get("email"), group.email());
+        }
+        if (hasValue(group.website())) {
+            items.put(labels.get("website"), group.website());
+        }
+        if (!items.isEmpty()) {
+            builder.startInfoSection(labels.get("contactDetails"));
+            items.forEach(builder::addSectionData);
+        }
     }
 
     private void addResearchGroupMainInfo(PDFBuilder builder, ResearchGroup group) {
@@ -463,5 +590,19 @@ public class PDFExportService {
         } else {
             return "-";
         }
+    }
+
+    /**
+     * Converts a country code to its display name in the specified language.
+     *
+     * @param countryCode   the ISO country code (e.g., "DE" for Germany)
+     * @param lang          the language code for display (e.g., "en" or "de")
+     * @return              the display name of the country in the specified language, or "-" if the code is not provided
+     */
+    private String getCountry(String countryCode, String lang) {
+        if (!hasValue(countryCode)) return "-";
+        Locale countryLocale = Locale.of("", countryCode);
+        Locale displayLanguage = Locale.of(lang);
+        return countryLocale.getDisplayCountry(displayLanguage);
     }
 }

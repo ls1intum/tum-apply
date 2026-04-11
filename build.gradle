@@ -167,9 +167,9 @@ checkstyle {
 
 checkstyleMain.source = "src/main/java"
 
-
 configurations {
   providedRuntime
+  mockitoAgent
 }
 
 repositories {
@@ -221,6 +221,12 @@ dependencies {
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+  testImplementation "org.mockito:mockito-core:${mockito_version}"
+  // needed to add mockito as agent and avoid its warning
+  mockitoAgent ("org.mockito:mockito-core:${mockito_version}") {
+    transitive = false
+  }
+  testImplementation "org.mockito:mockito-junit-jupiter:${mockito_version}"
   implementation "org.springframework.boot:spring-boot-liquibase"
 
   // Consistently use the latest version of all spring security modules to avoid vulnerabilities
@@ -279,6 +285,8 @@ dependencies {
   implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
   // Used for pdf creation
   implementation "com.itextpdf:html2pdf:${itextVersion}"
+  // Used for XLSX creation in admin bulk exports
+  implementation "org.apache.poi:poi-ooxml:${poiVersion}"
   // Align all Spring AI modules to the same version
   implementation platform("org.springframework.ai:spring-ai-bom:${springAiVersion}")
   // Azure OpenAI (prod, or when you want Azure)
@@ -289,6 +297,8 @@ dependencies {
   // PDF to image conversion
   implementation "org.apache.pdfbox:pdfbox:${pdfboxVersion}"
 }
+
+apply from: "gradle/test.gradle"
 
 tasks.register("cleanResources", Delete) {
   delete(layout.buildDirectory.dir("resources"))

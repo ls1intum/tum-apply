@@ -23,6 +23,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/admin/exports/{type}:
+    post:
+      tags: [admin-export-resource]
+      operationId: download
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
+      responses:
+        '200':
+          description: ZIP archive containing the requested admin export
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
@@ -2321,6 +2338,26 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/users/ai-consent:
+    get:
+      tags: [user-resource]
+      operationId: getAiConsent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {type: boolean}
+    put:
+      tags: [user-resource]
+      operationId: updateAiConsent
+      requestBody:
+        content:
+          application/json:
+            schema: {type: boolean}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/users/available-for-research-group:
     get:
       tags: [user-resource]
@@ -2476,49 +2513,6 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
-    Applicant:
-      type: object
-      properties:
-        bachelorDegreeName: {type: string}
-        bachelorGrade: {type: string}
-        bachelorGradeLowerLimit: {type: string}
-        bachelorGradeUpperLimit: {type: string}
-        bachelorUniversity: {type: string}
-        city: {type: string}
-        country: {type: string}
-        documentDictionaries:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentDictionary'}
-          uniqueItems: true
-        masterDegreeName: {type: string}
-        masterGrade: {type: string}
-        masterGradeLowerLimit: {type: string}
-        masterGradeUpperLimit: {type: string}
-        masterUniversity: {type: string}
-        postalCode: {type: string}
-        street: {type: string}
-        subjectAreaSubscriptions:
-          type: array
-          items:
-            type: string
-            enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
-              ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
-              BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
-              COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
-              ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
-              ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE,
-              FINANCIAL_ENGINEERING, FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING,
-              INFORMATION_SYSTEMS, LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE,
-              MATHEMATICS, MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE,
-              PHILOSOPHY, PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE,
-              STATISTICS, TELECOMMUNICATIONS, URBAN_PLANNING]
-          uniqueItems: true
-        submittedApplications:
-          type: array
-          items: {$ref: '#/components/schemas/Application'}
-          uniqueItems: true
-        user: {$ref: '#/components/schemas/User'}
-        userId: {type: string, format: uuid}
     ApplicantDTO:
       type: object
       properties:
@@ -2546,66 +2540,17 @@ components:
         bachelorGradeLowerLimit: {type: string}
         bachelorGradeUpperLimit: {type: string}
         bachelorUniversity: {type: string}
+        city: {type: string}
+        country: {type: string}
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterGradeLowerLimit: {type: string}
         masterGradeUpperLimit: {type: string}
         masterUniversity: {type: string}
+        postalCode: {type: string}
+        street: {type: string}
         user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
       required: [user]
-    Application:
-      type: object
-      properties:
-        applicant: {$ref: '#/components/schemas/Applicant'}
-        applicantBachelorDegreeName: {type: string}
-        applicantBachelorGrade: {type: string}
-        applicantBachelorGradeLowerLimit: {type: string}
-        applicantBachelorGradeUpperLimit: {type: string}
-        applicantBachelorUniversity: {type: string}
-        applicantBirthday: {type: string, format: date}
-        applicantCity: {type: string}
-        applicantCountry: {type: string}
-        applicantEmail: {type: string}
-        applicantFirstName: {type: string}
-        applicantGender: {type: string}
-        applicantLastName: {type: string}
-        applicantLinkedinUrl: {type: string}
-        applicantMasterDegreeName: {type: string}
-        applicantMasterGrade: {type: string}
-        applicantMasterGradeLowerLimit: {type: string}
-        applicantMasterGradeUpperLimit: {type: string}
-        applicantMasterUniversity: {type: string}
-        applicantNationality: {type: string}
-        applicantPhoneNumber: {type: string}
-        applicantPostalCode: {type: string}
-        applicantStreet: {type: string}
-        applicantWebsite: {type: string}
-        applicationId: {type: string, format: uuid}
-        applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
-        appliedAt: {type: string, format: date-time}
-        createdAt: {type: string, format: date-time}
-        customFieldAnswers:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswer'}
-          uniqueItems: true
-        desiredStartDate: {type: string, format: date}
-        documentDictionaries:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentDictionary'}
-          uniqueItems: true
-        internalComments:
-          type: array
-          items: {$ref: '#/components/schemas/InternalComment'}
-          uniqueItems: true
-        job: {}
-        lastModifiedAt: {type: string, format: date-time}
-        motivation: {type: string}
-        projects: {type: string}
-        specialSkills: {type: string}
-        state:
-          type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
     ApplicationDetailDTO:
       type: object
       properties:
@@ -2719,14 +2664,6 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
-    ApplicationReview:
-      type: object
-      properties:
-        application: {$ref: '#/components/schemas/Application'}
-        applicationReviewId: {type: string, format: uuid}
-        reason: {type: string}
-        reviewedAt: {type: string, format: date-time}
-        reviewedBy: {$ref: '#/components/schemas/User'}
     AssignSlotRequestDTO:
       type: object
       properties:
@@ -2804,33 +2741,6 @@ components:
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         title: {type: string}
       required: [jobId, title]
-    CustomField:
-      type: object
-      properties:
-        answerOptions:
-          type: array
-          items: {type: string}
-        customFieldAnswers:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswer'}
-          uniqueItems: true
-        customFieldId: {type: string, format: uuid}
-        customFieldType:
-          type: string
-          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
-        job: {$ref: '#/components/schemas/Job'}
-        question: {type: string}
-        required: {type: boolean}
-        sequence: {type: integer, format: int32}
-    CustomFieldAnswer:
-      type: object
-      properties:
-        answers:
-          type: array
-          items: {type: string}
-        application: {$ref: '#/components/schemas/Application'}
-        customField: {$ref: '#/components/schemas/CustomField'}
-        customFieldAnswerId: {type: string, format: uuid}
     CustomFieldAnswerDTO:
       type: object
       properties:
@@ -2842,7 +2752,19 @@ components:
         documents:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
-    CustomFieldDTO: {}
+    CustomFieldDTO:
+      type: object
+      properties:
+        answerOptions:
+          type: array
+          items: {type: string}
+        customFieldId: {type: string, format: uuid}
+        customFieldType:
+          type: string
+          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
+        question: {type: string}
+        required: {type: boolean}
+        sequence: {type: integer, format: int32}
     DataExportStatusDTO:
       type: object
       properties:
@@ -2854,14 +2776,6 @@ components:
           type: string
           enum: [REQUESTED, IN_CREATION, EMAIL_SENT, DOWNLOADED, DOWNLOADED_DELETED,
             DELETED, FAILED]
-    Department:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        departmentId: {type: string, format: uuid}
-        lastModifiedAt: {type: string, format: date-time}
-        name: {type: string}
-        school: {$ref: '#/components/schemas/School'}
     DepartmentCreationDTO:
       type: object
       properties:
@@ -2903,62 +2817,28 @@ components:
         vulnerabilities:
           type: array
           items: {$ref: '#/components/schemas/VulnerabilityDTO'}
-    Document:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        documentId: {type: string, format: uuid}
-        lastModifiedAt: {type: string, format: date-time}
-        mimeType: {type: string}
-        path: {type: string}
-        sha256Id: {type: string}
-        sizeBytes: {type: integer, format: int64}
-        uploadedBy: {$ref: '#/components/schemas/User'}
     DocumentDTO: {}
-    DocumentDictionary:
-      type: object
-      properties:
-        applicant: {$ref: '#/components/schemas/Applicant'}
-        application: {}
-        customFieldAnswer: {$ref: '#/components/schemas/CustomFieldAnswer'}
-        document: {$ref: '#/components/schemas/Document'}
-        documentDictionaryId: {type: string, format: uuid}
-        documentType:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
-        name: {type: string}
     DocumentInformationHolderDTO:
       type: object
       properties:
+        documentType:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
         id: {type: string, format: uuid}
         name: {type: string}
         size: {type: integer, format: int64}
       required: [id, size]
-    EmailSetting:
-      type: object
-      properties:
-        emailSettingId: {type: string, format: uuid}
-        emailType:
-          type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
-            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
-        enabled: {type: boolean}
-        user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
       type: object
       properties:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
-            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
+            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
+            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
+            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
+            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2967,11 +2847,11 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
-            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
+            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
+            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
+            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
+            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2983,11 +2863,11 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION,
-            INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY,
-            USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
+            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
+            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
+            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
+            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -3041,16 +2921,6 @@ components:
         coding: {type: string}
         language: {type: string}
         originalText: {type: string}
-    Image:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        imageId: {type: string, format: uuid}
-        lastModifiedAt: {type: string, format: date-time}
-        mimeType: {type: string}
-        sizeBytes: {type: integer, format: int64}
-        uploadedBy: {$ref: '#/components/schemas/User'}
-        url: {type: string}
     ImageDTO:
       type: object
       properties:
@@ -3064,15 +2934,6 @@ components:
         sizeBytes: {type: integer, format: int64}
         uploadedById: {type: string, format: uuid}
         url: {type: string}
-    InternalComment:
-      type: object
-      properties:
-        application: {}
-        createdAt: {type: string, format: date-time}
-        createdBy: {$ref: '#/components/schemas/User'}
-        internalCommentId: {type: string, format: uuid}
-        lastModifiedAt: {type: string, format: date-time}
-        message: {type: string}
     InternalCommentDTO:
       type: object
       properties:
@@ -3148,55 +3009,6 @@ components:
         firstName: {type: string}
         lastName: {type: string}
         userId: {type: string, format: uuid}
-    Job:
-      type: object
-      properties:
-        applications:
-          type: array
-          items: {$ref: '#/components/schemas/Application'}
-          uniqueItems: true
-        contractDuration: {type: integer, format: int32}
-        createdAt: {type: string, format: date-time}
-        customFields:
-          type: array
-          items: {$ref: '#/components/schemas/CustomField'}
-        endDate: {type: string, format: date}
-        fundingType:
-          type: string
-          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-            GOVERNMENT_FUNDED, RESEARCH_GRANT]
-        image: {$ref: '#/components/schemas/Image'}
-        jobDescriptionDE: {type: string}
-        jobDescriptionEN: {type: string}
-        jobId: {type: string, format: uuid}
-        lastModifiedAt: {type: string, format: date-time}
-        location:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
-        researchArea: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        startDate: {type: string, format: date}
-        state:
-          type: string
-          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-        subjectArea:
-          type: string
-          enum: [AEROSPACE_ENGINEERING, AGRICULTURAL_ENGINEERING, AGRICULTURAL_SCIENCE,
-            ARCHITECTURE, ART_HISTORY, AUTOMOTIVE_ENGINEERING, BIOENGINEERING, BIOCHEMISTRY,
-            BIOLOGY, BIOMEDICAL_ENGINEERING, BIOTECHNOLOGY, CHEMISTRY, COMPUTER_ENGINEERING,
-            COMPUTER_SCIENCE, COMPUTER_VISION, DATA_SCIENCE, ECONOMICS, EDUCATION_TECHNOLOGY,
-            ELECTRICAL_ENGINEERING, ENERGY_SYSTEMS, ENVIRONMENTAL_BIOLOGY, ENVIRONMENTAL_CHEMISTRY,
-            ENVIRONMENTAL_ENGINEERING, ENVIRONMENTAL_LAW, ENVIRONMENTAL_SCIENCE, FINANCIAL_ENGINEERING,
-            FOOD_TECHNOLOGY, GEOLOGY, GEOSCIENCES, INDUSTRIAL_ENGINEERING, INFORMATION_SYSTEMS,
-            LIFE_SCIENCES, LINGUISTICS, MARINE_BIOLOGY, MATERIALS_SCIENCE, MATHEMATICS,
-            MECHANICAL_ENGINEERING, MEDICAL_INFORMATICS, NEUROSCIENCE, PHILOSOPHY,
-            PHYSICS, PSYCHOLOGY, SOFTWARE_ENGINEERING, SPORTS_SCIENCE, STATISTICS,
-            TELECOMMUNICATIONS, URBAN_PLANNING]
-        suitableForDisabled: {type: boolean}
-        supervisingProfessor: {$ref: '#/components/schemas/User'}
-        title: {type: string}
-        workload: {type: integer, format: int32}
     JobCardDTO:
       type: object
       properties:
@@ -3299,7 +3111,7 @@ components:
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
         researchArea: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
+        researchGroup: {$ref: '#/components/schemas/ResearchGroupSummaryDTO'}
         startDate: {type: string, format: date}
         state:
           type: string
@@ -3566,31 +3378,6 @@ components:
           type: string
           enum: [JOB_FILLED, JOB_OUTDATED, FAILED_REQUIREMENTS, OTHER_REASON]
       required: [reason]
-    ResearchGroup:
-      type: object
-      properties:
-        abbreviation: {type: string}
-        city: {type: string}
-        createdAt: {type: string, format: date-time}
-        department: {$ref: '#/components/schemas/Department'}
-        description: {type: string}
-        email: {type: string}
-        head: {type: string}
-        lastModifiedAt: {type: string, format: date-time}
-        name: {type: string}
-        postalCode: {type: string}
-        researchGroupId: {type: string, format: uuid}
-        school: {$ref: '#/components/schemas/School'}
-        state:
-          type: string
-          enum: [DRAFT, ACTIVE, DENIED]
-        street: {type: string}
-        universityId: {type: string}
-        userRoles:
-          type: array
-          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
-          uniqueItems: true
-        website: {type: string}
     ResearchGroupAdminDTO:
       type: object
       properties:
@@ -3651,14 +3438,18 @@ components:
       properties:
         name: {type: string}
         researchGroupId: {type: string, format: uuid}
-    School:
+    ResearchGroupSummaryDTO:
       type: object
       properties:
-        abbreviation: {type: string}
-        createdAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
+        city: {type: string}
+        departmentName: {type: string}
+        description: {type: string}
+        email: {type: string}
         name: {type: string}
-        schoolId: {type: string, format: uuid}
+        postalCode: {type: string}
+        researchGroupId: {type: string, format: uuid}
+        street: {type: string}
+        website: {type: string}
     SchoolCreationDTO:
       type: object
       properties:
@@ -3767,38 +3558,6 @@ components:
         firstName: {type: string}
         lastName: {type: string}
       required: [firstName, lastName]
-    User:
-      type: object
-      properties:
-        avatar: {type: string}
-        birthday: {type: string, format: date}
-        createdAt: {type: string, format: date-time}
-        email: {type: string}
-        emailSettings:
-          type: array
-          items: {$ref: '#/components/schemas/EmailSetting'}
-          uniqueItems: true
-        firstName: {type: string}
-        gender: {type: string}
-        lastActivityAt: {type: string, format: date-time}
-        lastModifiedAt: {type: string, format: date-time}
-        lastName: {type: string}
-        linkedinUrl: {type: string}
-        nationality: {type: string}
-        phoneNumber: {type: string}
-        postedJobs:
-          type: array
-          items: {$ref: '#/components/schemas/Job'}
-          uniqueItems: true
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        researchGroupRoles:
-          type: array
-          items: {$ref: '#/components/schemas/UserResearchGroupRole'}
-          uniqueItems: true
-        selectedLanguage: {type: string}
-        universityId: {type: string}
-        userId: {type: string, format: uuid}
-        website: {type: string}
     UserBookingInfoDTO:
       type: object
       properties:
@@ -3915,15 +3674,6 @@ components:
       properties:
         firstName: {type: string}
         lastName: {type: string}
-    UserResearchGroupRole:
-      type: object
-      properties:
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
-        role:
-          type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
-        user: {$ref: '#/components/schemas/User'}
-        userResearchGroupRoleId: {type: string, format: uuid}
     UserShortDTO:
       type: object
       properties:

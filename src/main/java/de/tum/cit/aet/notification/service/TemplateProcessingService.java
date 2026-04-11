@@ -10,9 +10,11 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.dto.DataExportEmailContext;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -36,6 +38,10 @@ public class TemplateProcessingService {
 
     public TemplateProcessingService(Configuration freemarkerConfig) {
         this.freemarkerConfig = freemarkerConfig;
+        // Prevent Server-Side Template Injection (SSTI) by disabling the ?new built-in,
+        // which would otherwise allow instantiation of arbitrary Java classes (e.g.
+        // freemarker.template.utility.Execute) from user-supplied email templates.
+        freemarkerConfig.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
     }
 
     /**
@@ -176,6 +182,7 @@ public class TemplateProcessingService {
             case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContext ctx -> addDataExportContextData(dataModel, ctx);
+            case JobPublicationEmailContextDTO ctx -> addJobPublicationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
             default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
@@ -204,6 +211,7 @@ public class TemplateProcessingService {
      * @param job       the job object
      */
     private void addJobData(Map<String, Object> dataModel, Job job) {
+        dataModel.put(TemplateVariable.JOB_ID.getValue(), job.getJobId());
         dataModel.put(TemplateVariable.JOB_TITLE.getValue(), job.getTitle());
 
         User supervisingProfessor = job.getSupervisingProfessor();
@@ -278,6 +286,21 @@ public class TemplateProcessingService {
         addUserData(dataModel, ctx.user());
         dataModel.put(TemplateVariable.DOWNLOAD_LINK.getValue(), ctx.downloadLink());
         dataModel.put(TemplateVariable.EXPORT_EXPIRES_DAYS.getValue(), ctx.expiresDays());
+    }
+
+    /**
+     * Adds applicant and job-related variables for subject-area job publication emails.
+     */
+    private void addJobPublicationContextData(Map<String, Object> dataModel, JobPublicationEmailContextDTO ctx) {
+        dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.applicantFirstName());
+        dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.applicantLastName());
+        dataModel.put(TemplateVariable.JOB_ID.getValue(), ctx.jobId());
+        dataModel.put(TemplateVariable.JOB_TITLE.getValue(), ctx.jobTitle());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_FIRST_NAME.getValue(), ctx.supervisingProfessorFirstName());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_LAST_NAME.getValue(), ctx.supervisingProfessorLastName());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_EMAIL.getValue(), ctx.supervisingProfessorEmail());
+        dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), ctx.researchGroupName());
+        dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), ctx.subjectArea());
     }
 
     /**

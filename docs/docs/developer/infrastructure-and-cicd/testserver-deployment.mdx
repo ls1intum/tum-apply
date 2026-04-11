@@ -1,0 +1,34 @@
+---
+sidebar_label: Testserver Deployment
+---
+
+# Testserver Deployment
+
+TUMApply uses **Helios** to deploy PR branches to the testserver at `tumapply-test.aet.cit.tum.de`. Deployments are triggered manually after the Docker image has been built by the CI workflow.
+
+---
+
+## How It Works
+
+When you open a PR, the **Build and Push Docker Image** workflow automatically builds a Docker image for your branch and pushes it to the GitHub Container Registry. Once that succeeds, you can deploy your branch to the testserver via Helios.
+
+---
+
+## Deployment Steps
+
+1. Log in to [Helios](https://helios.aet.cit.tum.de)
+2. Select the **tum-apply** project
+3. Search for your PR
+4. Verify that the **Build and Push Docker Image** workflow has completed successfully
+5. Trigger the deployment to the testserver
+6. Wait until the **Deploy to a test-server** workflow finishes successfully
+
+---
+
+## Troubleshooting
+
+If you encounter errors during deployment:
+
+- Check the workflow logs in the GitHub Actions tab for details
+- Make sure the Docker build workflow passed before attempting deployment
+- Contact an admin if the issue persists

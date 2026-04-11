@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.Email;
@@ -41,7 +42,7 @@ public record ResearchGroupDTO(
             researchGroup.getHead(),
             researchGroup.getEmail(),
             researchGroup.getWebsite(),
-            researchGroup.getDescription(),
+            HtmlSanitizer.sanitize(researchGroup.getDescription()),
             researchGroup.getStreet(),
             researchGroup.getPostalCode(),
             researchGroup.getCity(),

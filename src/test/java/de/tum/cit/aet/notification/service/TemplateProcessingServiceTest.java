@@ -11,13 +11,16 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.utility.testdata.JobTestData;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -26,6 +29,7 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,6 +47,7 @@ class TemplateProcessingServiceTest {
     void setUp() {
         freemarkerConfig = spy(new Configuration(Configuration.VERSION_2_3_32));
         service = new TemplateProcessingService(freemarkerConfig);
+        // Hardening is applied in the constructor, no separate call needed
         ReflectionTestUtils.setField(service, "url", BASE_URL);
     }
 
@@ -87,6 +92,32 @@ class TemplateProcessingServiceTest {
             String result = service.renderTemplate(translation, mockApplication().getJob());
 
             assertThat(result).contains("JobTitle");
+        }
+
+        @Test
+        void withJobPublicationContextInjectsApplicantAndJobVariables() throws Exception {
+            EmailTemplateTranslation translation = translation(
+                "${APPLICANT_FIRST_NAME} ${APPLICANT_LAST_NAME} ${JOB_TITLE} ${SUBJECT_AREA} ${RESEARCH_GROUP_NAME} " +
+                    "${SUPERVISING_PROFESSOR_FIRST_NAME} ${SUPERVISING_PROFESSOR_LAST_NAME} ${JOB_ID} ${url}",
+                Language.ENGLISH,
+                "jobPublication"
+            );
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            String result = service.renderTemplate(translation, mockJobPublicationContext());
+
+            assertThat(result).contains(
+                "Alice",
+                "Smith",
+                "JobTitle",
+                SubjectArea.BIOCHEMISTRY.getEnglishValue(),
+                "RG",
+                "John",
+                "Doe",
+                BASE_URL,
+                "123e4567-e89b-12d3-a456-426614174000"
+            );
         }
 
         @Test
@@ -217,6 +248,70 @@ class TemplateProcessingServiceTest {
     }
 
     @Nested
+    class SSTIProtectionTests {
+
+        @Test
+        void rejectsNewBuiltinInTemplateBody() throws Exception {
+            // This is the classic FreeMarker SSTI payload that would execute arbitrary commands
+            String maliciousBody = "${'freemarker.template.utility.Execute'?new()('id')}";
+            EmailTemplateTranslation translation = translation(maliciousBody, Language.ENGLISH, "ssti");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
+        }
+
+        @Test
+        void rejectsNewBuiltinInSubject() {
+            String maliciousSubject = "${'freemarker.template.utility.Execute'?new()('id')}";
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderSubject(maliciousSubject, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
+        }
+
+        @Test
+        void rejectsObjectConstructorInTemplate() throws Exception {
+            String maliciousBody = "${'freemarker.template.utility.ObjectConstructor'?new()}";
+            EmailTemplateTranslation translation = translation(maliciousBody, Language.ENGLISH, "ssti2");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            ResearchGroup group = mock(ResearchGroup.class);
+            when(group.getName()).thenReturn("RG");
+
+            assertThatThrownBy(() -> service.renderTemplate(translation, group))
+                .isInstanceOf(TemplateProcessingException.class)
+                .hasMessageContaining("Failed to render FreeMarker template");
+        }
+
+        @Test
+        void allowsNormalTemplateVariablesAfterHardening() throws Exception {
+            EmailTemplateTranslation translation = translation("Hello ${APPLICANT_FIRST_NAME}", Language.ENGLISH, "safe");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            String result = service.renderTemplate(translation, mockApplication());
+            assertThat(result).contains("Hello Alice");
+            assertThat(result).doesNotContain("${APPLICANT_FIRST_NAME}");
+        }
+
+        @Test
+        void hardeningIsAppliedInConstructor() {
+            // Verify the Configuration was hardened during construction by checking
+            // that setNewBuiltinClassResolver was called with ALLOWS_NOTHING_RESOLVER
+            verify(freemarkerConfig).setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
+        }
+    }
+
+    @Nested
     class RenderMethodTests {
 
         @Test
@@ -281,6 +376,7 @@ class TemplateProcessingServiceTest {
 
         Job job = new Job();
         job.setTitle("JobTitle");
+        job.setSubjectArea(SubjectArea.BIOCHEMISTRY);
         job.setSupervisingProfessor(professor);
         job.setResearchGroup(group);
 
@@ -288,5 +384,11 @@ class TemplateProcessingServiceTest {
         app.setApplicant(applicant);
         app.setJob(job);
         return app;
+    }
+
+    private JobPublicationEmailContextDTO mockJobPublicationContext() {
+        Application application = mockApplication();
+        application.getJob().setJobId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+        return JobPublicationEmailContextDTO.fromEntities(application.getApplicant().getUser(), application.getJob());
     }
 }
