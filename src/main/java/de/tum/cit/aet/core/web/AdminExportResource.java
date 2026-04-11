@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.export.AdminDataExportService;
 import de.tum.cit.aet.core.service.export.admin.AdminExportTask;
+import de.tum.cit.aet.core.service.export.admin.ExportManifest;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -67,12 +68,12 @@ public class AdminExportResource {
         log.info("POST /api/admin/exports/{} - Queueing admin bulk export (requested by {})", type, adminId);
         try {
             AdminExportTask task = adminDataExportService.startExport(type, adminId);
-            return ResponseEntity.accepted().body(AdminExportTaskDTO.from(task));
+            return ResponseEntity.accepted().body(toDto(task));
         } catch (AdminDataExportService.ExportAlreadyRunningException e) {
             // Another export is already running for this admin — return 409
             // with the existing task so the client can resume polling it
             // instead of kicking off a duplicate build.
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(AdminExportTaskDTO.from(e.existing()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(toDto(e.existing()));
         }
     }
 
@@ -88,7 +89,7 @@ public class AdminExportResource {
     @GetMapping("/mine")
     public ResponseEntity<List<AdminExportTaskDTO>> listMine() {
         UUID adminId = currentUserService.getUserId();
-        List<AdminExportTaskDTO> dtos = adminDataExportService.listTasksFor(adminId).stream().map(AdminExportTaskDTO::from).toList();
+        List<AdminExportTaskDTO> dtos = adminDataExportService.listTasksFor(adminId).stream().map(this::toDto).toList();
         return ResponseEntity.ok(dtos);
     }
 
@@ -105,7 +106,7 @@ public class AdminExportResource {
         if (task == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(AdminExportTaskDTO.from(task));
+        return ResponseEntity.ok(toDto(task));
     }
 
     /**
@@ -147,5 +148,43 @@ public class AdminExportResource {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
             .contentLength(size)
             .body(new FileSystemResource(path));
+    }
+
+    /**
+     * Maps a live {@link AdminExportTask} (service layer) to its wire
+     * {@link AdminExportTaskDTO} (dto layer). The controller owns this
+     * conversion because it is the only place that is allowed to depend on
+     * both layers — keeping it out of the dto keeps the layered-architecture
+     * test happy. Reads the manifest via {@link ExportManifest#snapshot()}
+     * which is safe to call while the build is still running on another
+     * thread.
+     */
+    private AdminExportTaskDTO toDto(AdminExportTask task) {
+        ExportManifest.Payload p = task.manifest().snapshot();
+        ExportManifest.Totals t = p.totals();
+        return new AdminExportTaskDTO(
+            task.taskId(),
+            task.type(),
+            mapStatus(task.status()),
+            task.createdAt(),
+            task.finishedAt(),
+            p.durationSeconds(),
+            task.error(),
+            counts(t.researchGroups()),
+            counts(t.jobs()),
+            counts(t.applications()),
+            counts(t.documents()),
+            counts(t.users()),
+            p.failures().size(),
+            task.isReady()
+        );
+    }
+
+    private static AdminExportTaskDTO.Status mapStatus(AdminExportTask.Status status) {
+        return AdminExportTaskDTO.Status.valueOf(status.name());
+    }
+
+    private static AdminExportTaskDTO.Counts counts(ExportManifest.Snapshot s) {
+        return new AdminExportTaskDTO.Counts(s.expected(), s.exported(), s.failed());
     }
 }
