@@ -30,6 +30,10 @@
         "label": "Geschlossene Stellen",
         "description": "Geschlossene Stellen und Stellen, für die ein Bewerber ausgewählt wurde. Enthält jede Bewerbung unabhängig vom Status."
       },
+      "jobsDraft": {
+        "label": "Entwürfe",
+        "description": "Stellen, die sich aktuell im Entwurfszustand befinden. Eine bereits veröffentlichte Stelle kann zurück in den Entwurfsstatus verschoben worden sein — bereits eingereichte Bewerbungen bleiben enthalten, damit die Forschungsgruppe sie sieht."
+      },
       "full": {
         "label": "Vollständiger Admin-Export",
         "description": "Alles: Forschungsgruppen mit ihren Mitgliedern und jede Stelle (auch Entwürfe), jede Bewerbung mit Dokumenten, plus re-importierbare JSON-Dumps. Geeignet zur Übergabe an die Universität oder für ein Backup."

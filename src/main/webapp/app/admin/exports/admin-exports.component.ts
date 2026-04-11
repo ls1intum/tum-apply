@@ -115,6 +115,12 @@ export class AdminExportsComponent {
           descriptionKey: 'adminExports.buttons.jobsClosed.description',
           icon: 'database',
         },
+        {
+          type: 'JOBS_DRAFT',
+          labelKey: 'adminExports.buttons.jobsDraft.label',
+          descriptionKey: 'adminExports.buttons.jobsDraft.description',
+          icon: 'database',
+        },
       ],
     },
     {

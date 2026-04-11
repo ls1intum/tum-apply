@@ -30,6 +30,10 @@
         "label": "Closed Jobs",
         "description": "Closed jobs and jobs where an applicant has been selected. Includes every application regardless of state."
       },
+      "jobsDraft": {
+        "label": "Draft Jobs",
+        "description": "Jobs currently in draft state. A job that was previously published may have been moved back to draft — any submitted applications still attached to it are included so the research group sees them."
+      },
       "full": {
         "label": "Full Admin Export",
         "description": "Everything: research groups with their members and every job (drafts included), every application with documents, plus re-importable JSON dumps. Use this for handover to the university or backup."

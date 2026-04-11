@@ -58,7 +58,7 @@ export class AdminExportResourceApi {
      * 
      * @param type 
      */
-    startExport(type: 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN' | 'USERS_AND_ORGS'): Observable<AdminExportTaskDTO> {
+    startExport(type: 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'JOBS_DRAFT' | 'FULL_ADMIN' | 'USERS_AND_ORGS'): Observable<AdminExportTaskDTO> {
         const typePath = encodeURIComponent(String(type));
         const url = `${this.basePath}/api/admin/exports/${typePath}`;
         return this.http.post<AdminExportTaskDTO>(url, null);

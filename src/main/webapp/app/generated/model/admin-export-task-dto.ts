@@ -40,15 +40,16 @@ export const AdminExportTaskDTOStatusEnum = {
 
 export const AdminExportTaskDTOStatusEnumValues = ['IN_PROGRESS', 'READY', 'FAILED'] as const;
 
-export type AdminExportTaskDTOTypeEnum = 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN' | 'USERS_AND_ORGS';
+export type AdminExportTaskDTOTypeEnum = 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'JOBS_DRAFT' | 'FULL_ADMIN' | 'USERS_AND_ORGS';
 
 export const AdminExportTaskDTOTypeEnum = {
     JobsOpen: 'JOBS_OPEN' as const,
     JobsExpired: 'JOBS_EXPIRED' as const,
     JobsClosed: 'JOBS_CLOSED' as const,
+    JobsDraft: 'JOBS_DRAFT' as const,
     FullAdmin: 'FULL_ADMIN' as const,
     UsersAndOrgs: 'USERS_AND_ORGS' as const,
 } as const;
 
-export const AdminExportTaskDTOTypeEnumValues = ['JOBS_OPEN', 'JOBS_EXPIRED', 'JOBS_CLOSED', 'FULL_ADMIN', 'USERS_AND_ORGS'] as const;
+export const AdminExportTaskDTOTypeEnumValues = ['JOBS_OPEN', 'JOBS_EXPIRED', 'JOBS_CLOSED', 'JOBS_DRAFT', 'FULL_ADMIN', 'USERS_AND_ORGS'] as const;
 
