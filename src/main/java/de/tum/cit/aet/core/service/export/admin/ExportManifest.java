@@ -45,6 +45,8 @@ public final class ExportManifest {
     private final Counter schools = new Counter();
     private final Counter departments = new Counter();
     private final Counter userResearchGroupRoles = new Counter();
+    private final Counter applicants = new Counter();
+    private final Counter applicantSubjectAreaSubscriptions = new Counter();
 
     private final List<Failure> failures = new ArrayList<>();
     private boolean aborted = false;
@@ -141,7 +143,9 @@ public final class ExportManifest {
                 users.snapshot(),
                 schools.snapshot(),
                 departments.snapshot(),
-                userResearchGroupRoles.snapshot()
+                userResearchGroupRoles.snapshot(),
+                applicants.snapshot(),
+                applicantSubjectAreaSubscriptions.snapshot()
             ),
             aborted ? abortReason : null,
             List.copyOf(failures)
@@ -160,7 +164,9 @@ public final class ExportManifest {
             users.complete() &&
             schools.complete() &&
             departments.complete() &&
-            userResearchGroupRoles.complete();
+            userResearchGroupRoles.complete() &&
+            applicants.complete() &&
+            applicantSubjectAreaSubscriptions.complete();
         return countsMatch && failures.isEmpty() ? Status.COMPLETE : Status.PARTIAL;
     }
 
@@ -174,6 +180,8 @@ public final class ExportManifest {
             case SCHOOL -> schools;
             case DEPARTMENT -> departments;
             case USER_RESEARCH_GROUP_ROLE -> userResearchGroupRoles;
+            case APPLICANT -> applicants;
+            case APPLICANT_SUBJECT_AREA_SUBSCRIPTION -> applicantSubjectAreaSubscriptions;
         };
     }
 
@@ -186,6 +194,8 @@ public final class ExportManifest {
         SCHOOL,
         DEPARTMENT,
         USER_RESEARCH_GROUP_ROLE,
+        APPLICANT,
+        APPLICANT_SUBJECT_AREA_SUBSCRIPTION,
     }
 
     public enum Status {
@@ -221,7 +231,9 @@ public final class ExportManifest {
         Snapshot users,
         Snapshot schools,
         Snapshot departments,
-        Snapshot userResearchGroupRoles
+        Snapshot userResearchGroupRoles,
+        Snapshot applicants,
+        Snapshot applicantSubjectAreaSubscriptions
     ) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

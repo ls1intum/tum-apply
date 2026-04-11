@@ -4,7 +4,9 @@ import de.tum.cit.aet.core.dto.exportdata.admin.AdminResearchGroupExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminUserExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.service.ZipExportService;
+import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
@@ -12,6 +14,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
@@ -42,7 +45,9 @@ import tools.jackson.databind.ObjectMapper;
  *     ├── departments.json
  *     ├── research_groups.json
  *     ├── users.json
- *     └── user_research_group_roles.json
+ *     ├── user_research_group_roles.json
+ *     ├── applicants.json
+ *     └── applicant_subject_area_subscriptions.json
  * </pre>
  *
  * <p>No PDFs, no XLSX, no binary documents, no jobs and no applications —
@@ -51,12 +56,11 @@ import tools.jackson.databind.ObjectMapper;
  * already covers; the users-and-orgs export is intentionally minimal so it
  * is fast to build and trivial to re-import.
  *
- * <p>The {@code user_research_group_roles.json} file mirrors the join-table
- * shape literally — one flat row per {@code (userId, researchGroupId, role)}
- * triple. Each user's roles are also embedded inside {@code users.json} for
- * convenience; the standalone file is there for re-import scripts that want
- * to {@code INSERT} straight into the {@code user_research_group_roles}
- * table without having to walk the nested users structure.
+ * <p>The {@code user_research_group_roles.json},
+ * {@code applicants.json} and {@code applicant_subject_area_subscriptions.json}
+ * files mirror their underlying tables literally — one flat row per database
+ * row — so a re-import script can {@code INSERT} straight into the target
+ * table without having to walk any nested structures.
  */
 @Slf4j
 @Component
@@ -67,20 +71,21 @@ public class UsersAndOrgsExportStrategy {
     private final DepartmentRepository departmentRepository;
     private final ResearchGroupRepository researchGroupRepository;
     private final UserRepository userRepository;
+    private final ApplicantRepository applicantRepository;
     private final ResearchGroupsExportStrategy researchGroupsExportStrategy;
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
 
     /**
-     * Writes the five JSON dumps (schools, departments, research groups,
-     * users and user↔research-group roles) into the supplied ZIP output
-     * stream and records every entity in the manifest. The method is
-     * intentionally simple: no per-job iteration, no lazy loading trickery,
-     * no XLSX / PDF work — it just serialises five flat lists.
+     * Writes all seven JSON dumps (schools, departments, research groups,
+     * users, user↔research-group roles, applicants and applicant subject-area
+     * subscriptions) into the supplied ZIP output stream and records every
+     * entity in the manifest. The method is intentionally simple: no
+     * per-job iteration, no lazy loading trickery, no XLSX / PDF work — it
+     * just serialises seven flat lists.
      *
      * @param zos      open ZIP output stream rooted at the export's top-level folder
-     * @param manifest export-wide audit trail; schools, departments, research groups,
-     *                 users and user-research-group roles are all recorded against it
+     * @param manifest export-wide audit trail; all produced entities are recorded against it
      */
     public void exportUsersAndOrgs(@NonNull ZipOutputStream zos, @NonNull ExportManifest manifest) {
         writeSchools(zos, manifest);
@@ -88,6 +93,8 @@ public class UsersAndOrgsExportStrategy {
         writeResearchGroups(zos, manifest);
         List<User> users = writeUsers(zos, manifest);
         writeUserResearchGroupRoles(zos, manifest, users);
+        List<Applicant> applicants = writeApplicants(zos, manifest);
+        writeApplicantSubjectAreaSubscriptions(zos, manifest, applicants);
     }
 
     private void writeSchools(ZipOutputStream zos, ExportManifest manifest) {
@@ -225,6 +232,131 @@ public class UsersAndOrgsExportStrategy {
      * DTO.
      */
     private record UserResearchGroupRoleRow(UUID userId, UUID researchGroupId, UserRole role) {}
+
+    /**
+     * Writes a flat dump of the {@code applicants} table: one row per applicant
+     * profile with {@code userId} as the primary key (one-to-one with
+     * {@link User} via {@code @MapsId}). The subject-area subscription join
+     * table is handled separately by
+     * {@link #writeApplicantSubjectAreaSubscriptions} — this file carries only
+     * the scalar columns that {@link ApplicantRepository#insertApplicant}
+     * expects as parameters.
+     *
+     * @param zos      open ZIP output stream
+     * @param manifest audit trail; every applicant row is recorded individually
+     * @return the applicants loaded from the repository, reused by the caller
+     *         so the subject-subscription writer does not have to hit the DB twice
+     */
+    private List<Applicant> writeApplicants(ZipOutputStream zos, ExportManifest manifest) {
+        List<Applicant> applicants = applicantRepository
+            .findAll()
+            .stream()
+            .sorted(Comparator.comparing(a -> a.getUserId() == null ? null : a.getUserId().toString(), Comparator.nullsLast(Comparator.naturalOrder())))
+            .toList();
+        manifest.expect(ExportManifest.Category.APPLICANT, applicants.size());
+        List<ApplicantRow> rows = new ArrayList<>(applicants.size());
+        for (Applicant applicant : applicants) {
+            try {
+                rows.add(
+                    new ApplicantRow(
+                        applicant.getUserId(),
+                        applicant.getStreet(),
+                        applicant.getPostalCode(),
+                        applicant.getCity(),
+                        applicant.getCountry(),
+                        applicant.getBachelorDegreeName(),
+                        applicant.getBachelorGradeUpperLimit(),
+                        applicant.getBachelorGradeLowerLimit(),
+                        applicant.getBachelorGrade(),
+                        applicant.getBachelorUniversity(),
+                        applicant.getMasterDegreeName(),
+                        applicant.getMasterGradeUpperLimit(),
+                        applicant.getMasterGradeLowerLimit(),
+                        applicant.getMasterGrade(),
+                        applicant.getMasterUniversity()
+                    )
+                );
+                manifest.exported(ExportManifest.Category.APPLICANT);
+            } catch (Exception e) {
+                log.warn("Failed to convert applicant {} for users-and-orgs export", applicant.getUserId(), e);
+                manifest.failed(ExportManifest.Category.APPLICANT, applicant.getUserId(), null, e);
+            }
+        }
+        writeJsonEntry(zos, "_machine_readable/applicants.json", rows);
+        return applicants;
+    }
+
+    /**
+     * Writes a flat dump of the {@code applicant_subject_area_subscriptions}
+     * join table: one row per {@code (userId, subjectArea)} pair, pulled
+     * straight from {@link Applicant#getSubjectAreaSubscriptions()}. Mirrors
+     * the same shape used for {@code user_research_group_roles.json} so
+     * re-import scripts can {@code INSERT} directly into the target table.
+     *
+     * @param zos        open ZIP output stream
+     * @param manifest   audit trail; each subscription row is recorded individually
+     * @param applicants the applicants loaded by {@link #writeApplicants}
+     *                   (reused so we don't hit the repository twice)
+     */
+    private void writeApplicantSubjectAreaSubscriptions(ZipOutputStream zos, ExportManifest manifest, List<Applicant> applicants) {
+        List<ApplicantSubjectAreaRow> rows = new ArrayList<>();
+        for (Applicant applicant : applicants) {
+            if (applicant.getSubjectAreaSubscriptions() == null) {
+                continue;
+            }
+            for (SubjectArea subjectArea : applicant.getSubjectAreaSubscriptions()) {
+                manifest.expect(ExportManifest.Category.APPLICANT_SUBJECT_AREA_SUBSCRIPTION, 1);
+                try {
+                    rows.add(new ApplicantSubjectAreaRow(applicant.getUserId(), subjectArea));
+                    manifest.exported(ExportManifest.Category.APPLICANT_SUBJECT_AREA_SUBSCRIPTION);
+                } catch (Exception e) {
+                    log.warn(
+                        "Failed to convert applicant subject area subscription ({}, {}) for users-and-orgs export",
+                        applicant.getUserId(),
+                        subjectArea,
+                        e
+                    );
+                    manifest.failed(
+                        ExportManifest.Category.APPLICANT_SUBJECT_AREA_SUBSCRIPTION,
+                        applicant.getUserId(),
+                        subjectArea == null ? null : subjectArea.name(),
+                        e
+                    );
+                }
+            }
+        }
+        writeJsonEntry(zos, "_machine_readable/applicant_subject_area_subscriptions.json", rows);
+    }
+
+    /**
+     * Flat representation of one row in the {@code applicants} table. Only
+     * the columns re-import needs — the linked {@link User} is already
+     * written to {@code users.json} and the subject-area subscriptions go
+     * into their own file.
+     */
+    private record ApplicantRow(
+        UUID userId,
+        String street,
+        String postalCode,
+        String city,
+        String country,
+        String bachelorDegreeName,
+        String bachelorGradeUpperLimit,
+        String bachelorGradeLowerLimit,
+        String bachelorGrade,
+        String bachelorUniversity,
+        String masterDegreeName,
+        String masterGradeUpperLimit,
+        String masterGradeLowerLimit,
+        String masterGrade,
+        String masterUniversity
+    ) {}
+
+    /**
+     * Flat representation of one row in the
+     * {@code applicant_subject_area_subscriptions} element-collection table.
+     */
+    private record ApplicantSubjectAreaRow(UUID userId, SubjectArea subjectArea) {}
 
     private void writeJsonEntry(ZipOutputStream zos, String entryPath, Object payload) {
         try {

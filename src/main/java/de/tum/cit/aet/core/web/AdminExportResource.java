@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.export.AdminDataExportService;
 import de.tum.cit.aet.core.service.export.admin.AdminExportTask;
 import de.tum.cit.aet.core.service.export.admin.ExportManifest;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,14 +19,16 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -114,8 +117,24 @@ public class AdminExportResource {
      * if the task does not exist (or its file has been cleaned up) and 409 if
      * the task exists but is not yet {@code READY}.
      *
-     * @param taskId the task id returned from {@link #startExport}
-     * @return the ZIP file as a streamed download, or an error status
+     * <p>Supports HTTP {@code Range} requests (RFC 7233) so the frontend can
+     * download the ZIP in smaller chunks instead of a single multi-minute
+     * request. This matters for large admin exports (~GB scale): a single
+     * long-lived HTTP response can hit nginx's {@code proxy_max_temp_file_size}
+     * (default 1 GB), proxy read timeouts, or client-side memory limits.
+     * Chunked range requests sidestep all of these — each chunk is a fresh
+     * request that finishes quickly.
+     *
+     * <p>When the client supplies a single {@code Range} header, the response
+     * is {@code 206 Partial Content} with a {@link ResourceRegion} covering
+     * the requested byte range. When there is no {@code Range} header, the
+     * full file is returned with {@code 200 OK}. Both responses advertise
+     * {@code Accept-Ranges: bytes} so clients know ranged requests are
+     * supported.
+     *
+     * @param taskId  the task id returned from {@link #startExport}
+     * @param headers request headers, used to pick up an optional {@code Range} header
+     * @return the ZIP file (or a byte range of it) as a streamed download
      */
     @GetMapping("/download/{taskId}")
     @ApiResponse(
@@ -123,7 +142,7 @@ public class AdminExportResource {
         description = "ZIP archive containing the built admin export",
         content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(type = "string", format = "binary"))
     )
-    public ResponseEntity<Resource> download(@PathVariable UUID taskId) {
+    public ResponseEntity<?> download(@PathVariable UUID taskId, @Parameter(hidden = true) @RequestHeader HttpHeaders headers) {
         AdminExportTask task = adminDataExportService.getTask(taskId);
         if (task == null) {
             return ResponseEntity.notFound().build();
@@ -135,19 +154,40 @@ public class AdminExportResource {
         if (path == null) {
             return ResponseEntity.notFound().build();
         }
-        long size;
+        long contentLength;
         try {
-            size = Files.size(path);
+            contentLength = Files.size(path);
         } catch (IOException e) {
             log.warn("Failed to stat admin export file {}: {}", path, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         String filename = adminDataExportService.fileNameFor(task.type());
-        return ResponseEntity.ok()
+        FileSystemResource resource = new FileSystemResource(path);
+
+        List<HttpRange> ranges = headers.getRange();
+        if (ranges.isEmpty()) {
+            // No Range header — send the entire file.
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentLength(contentLength)
+                .body(resource);
+        }
+        // Honour a single-range request. We intentionally ignore multi-range
+        // requests (more than one range in a single header) — the frontend
+        // never issues them, and multi-part responses add complexity for
+        // zero real-world benefit here.
+        HttpRange range = ranges.get(0);
+        long start = range.getRangeStart(contentLength);
+        long end = range.getRangeEnd(contentLength);
+        long rangeLength = end - start + 1;
+        ResourceRegion region = new ResourceRegion(resource, start, rangeLength);
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .header(HttpHeaders.ACCEPT_RANGES, "bytes")
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-            .contentLength(size)
-            .body(new FileSystemResource(path));
+            .body(region);
     }
 
     /**
@@ -178,6 +218,8 @@ public class AdminExportResource {
             counts(t.schools()),
             counts(t.departments()),
             counts(t.userResearchGroupRoles()),
+            counts(t.applicants()),
+            counts(t.applicantSubjectAreaSubscriptions()),
             p.failures().size(),
             task.isReady()
         );

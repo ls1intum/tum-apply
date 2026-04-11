@@ -35,6 +35,8 @@ public record AdminExportTaskDTO(
     Counts schools,
     Counts departments,
     Counts userResearchGroupRoles,
+    Counts applicants,
+    Counts applicantSubjectAreaSubscriptions,
     int totalFailures,
     boolean downloadAvailable
 ) {

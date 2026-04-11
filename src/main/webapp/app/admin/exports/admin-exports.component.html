@@ -61,6 +61,16 @@
                   @if (task.userResearchGroupRoles && task.userResearchGroupRoles.expected) {
                     <li>User ↔ RG roles: {{ task.userResearchGroupRoles.exported }}/{{ task.userResearchGroupRoles.expected }}</li>
                   }
+                  @if (task.applicants && task.applicants.expected) {
+                    <li>Applicants: {{ task.applicants.exported }}/{{ task.applicants.expected }}</li>
+                  }
+                  @if (task.applicantSubjectAreaSubscriptions && task.applicantSubjectAreaSubscriptions.expected) {
+                    <li>
+                      Applicant subject subscriptions: {{ task.applicantSubjectAreaSubscriptions.exported }}/{{
+                        task.applicantSubjectAreaSubscriptions.expected
+                      }}
+                    </li>
+                  }
                 </ul>
                 @if (isDownloading(btn.type)) {
                   <div class="mt-1">

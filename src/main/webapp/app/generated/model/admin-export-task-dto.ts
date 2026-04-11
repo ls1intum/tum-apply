@@ -11,6 +11,8 @@
 import type { Counts } from './counts';
 
 export interface AdminExportTaskDTO {
+    readonly applicantSubjectAreaSubscriptions?: Counts;
+    readonly applicants?: Counts;
     readonly applications?: Counts;
     readonly createdAt?: string;
     readonly departments?: Counts;
