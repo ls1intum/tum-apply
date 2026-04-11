@@ -52,7 +52,7 @@ public class AdminExportZipWriter {
 
             try {
                 switch (type) {
-                    case JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED -> jobsExportStrategy.exportJobs(zos, type, manifest);
+                    case JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT -> jobsExportStrategy.exportJobs(zos, type, manifest);
                     case FULL_ADMIN -> fullAdminExportStrategy.exportFull(zos, manifest);
                     case USERS_AND_ORGS -> usersAndOrgsExportStrategy.exportUsersAndOrgs(zos, manifest);
                 }

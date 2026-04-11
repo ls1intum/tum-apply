@@ -11,6 +11,10 @@ package de.tum.cit.aet.core.constants;
  *       ({@code Job.endDate}) is in the past. Excludes draft and withdrawn applications.</li>
  *   <li>{@link #JOBS_CLOSED} – jobs in state {@code CLOSED} or {@code APPLICANT_FOUND}.
  *       Excludes draft and withdrawn applications.</li>
+ *   <li>{@link #JOBS_DRAFT} – jobs in state {@code DRAFT}. Any submitted applications
+ *       are still included (a job that was previously {@code PUBLISHED} can be
+ *       moved back to draft and may carry real applicants with it). Excludes
+ *       draft and withdrawn applications like the other per-type exports.</li>
  *   <li>{@link #FULL_ADMIN} – everything: research groups with members, every job
  *       (including drafts) grouped under its owning research group, every
  *       application, and re-importable JSON dumps of all entities.</li>
@@ -25,6 +29,7 @@ public enum AdminExportType {
     JOBS_OPEN,
     JOBS_EXPIRED,
     JOBS_CLOSED,
+    JOBS_DRAFT,
     FULL_ADMIN,
     USERS_AND_ORGS,
 }

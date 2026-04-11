@@ -52,22 +52,29 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Builds the jobs portion of an admin bulk export. Handles the three job-centric
- * cases that share the same folder structure but differ in their job filter and
- * whether draft applications are included:
+ * Builds the jobs portion of an admin bulk export. Handles the four job-centric
+ * cases that share the same folder structure but differ in their job filter:
  *
  * <ul>
  *   <li>{@link AdminExportType#JOBS_OPEN} – {@code PUBLISHED} with deadline in the
- *       future or null; <strong>excludes</strong> draft applications.</li>
+ *       future or null.</li>
  *   <li>{@link AdminExportType#JOBS_EXPIRED} – {@code PUBLISHED} with deadline in the
- *       past; includes drafts.</li>
- *   <li>{@link AdminExportType#JOBS_CLOSED} – {@code CLOSED} or {@code APPLICANT_FOUND};
- *       includes drafts.</li>
+ *       past.</li>
+ *   <li>{@link AdminExportType#JOBS_CLOSED} – {@code CLOSED} or {@code APPLICANT_FOUND}.</li>
+ *   <li>{@link AdminExportType#JOBS_DRAFT} – {@code DRAFT}. A job can be flipped
+ *       back from {@code PUBLISHED} to draft and may still have real applications
+ *       attached, so submitted applications are included the same way as in the
+ *       other per-type exports.</li>
  * </ul>
  *
+ * <p>All four cases drop {@code SAVED} and {@code WITHDRAWN} applications
+ * because these exports are handed to external research groups, where those
+ * states are noise the recipients can't act on.
+ *
  * <p>This strategy is also reused by {@link FullAdminExportStrategy} via the
- * {@link #writeJobsInto(ZipOutputStream, String, List, boolean, boolean, boolean)} entry point so
- * the same folder layout is produced under {@code research_groups/<rg>/jobs/}.
+ * {@link #writeJobsInto(ZipOutputStream, String, List, boolean, boolean, boolean, ExportManifest)}
+ * entry point so the same folder layout is produced under
+ * {@code research_groups/<rg>/jobs/}.
  */
 @Slf4j
 @Component
@@ -283,6 +290,7 @@ public class JobsExportStrategy {
             case JOBS_OPEN -> job.getState() == JobState.PUBLISHED && (job.getEndDate() == null || !job.getEndDate().isBefore(today));
             case JOBS_EXPIRED -> job.getState() == JobState.PUBLISHED && job.getEndDate() != null && job.getEndDate().isBefore(today);
             case JOBS_CLOSED -> EnumSet.of(JobState.CLOSED, JobState.APPLICANT_FOUND).contains(job.getState());
+            case JOBS_DRAFT -> job.getState() == JobState.DRAFT;
             // Full admin export funnels every job through here too, with no extra filter.
             // USERS_AND_ORGS does not use this filter at all — its strategy
             // ignores jobs entirely — but the switch must be exhaustive.
