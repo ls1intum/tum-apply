@@ -15,16 +15,65 @@
               <h3 class="text-base font-semibold m-0" jhiTranslate="{{ btn.labelKey }}">{{ btn.labelKey | translate }}</h3>
             </div>
             <p class="text-sm text-text-secondary m-0" jhiTranslate="{{ btn.descriptionKey }}"></p>
+
+            @if (taskFor(btn.type); as task) {
+              <div class="text-xs text-text-secondary border-t border-border-default pt-2">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-medium">
+                    @switch (task.status) {
+                      @case ('IN_PROGRESS') {
+                        <span jhiTranslate="adminExports.status.inProgress">Building…</span>
+                      }
+                      @case ('READY') {
+                        <span jhiTranslate="adminExports.status.ready">Ready</span>
+                      }
+                      @case ('FAILED') {
+                        <span jhiTranslate="adminExports.status.failed">Failed</span>
+                      }
+                    }
+                  </span>
+                  @if (task.durationSeconds !== undefined) {
+                    <span>{{ task.durationSeconds | number: '1.0-0' }}s</span>
+                  }
+                </div>
+                @if (task.researchGroups || task.jobs || task.applications || task.documents) {
+                  <ul class="list-none m-0 p-0 space-y-0.5">
+                    @if (task.researchGroups) {
+                      <li>RG: {{ task.researchGroups.exported }}/{{ task.researchGroups.expected }}</li>
+                    }
+                    @if (task.jobs) {
+                      <li>Jobs: {{ task.jobs.exported }}/{{ task.jobs.expected }}</li>
+                    }
+                    @if (task.applications) {
+                      <li>Applications: {{ task.applications.exported }}/{{ task.applications.expected }}</li>
+                    }
+                    @if (task.documents) {
+                      <li>Documents: {{ task.documents.exported }}/{{ task.documents.expected }}</li>
+                    }
+                    @if (task.users && task.users.expected) {
+                      <li>Users: {{ task.users.exported }}/{{ task.users.expected }}</li>
+                    }
+                  </ul>
+                }
+                @if (task.totalFailures && task.totalFailures > 0) {
+                  <div class="text-orange-600 mt-1">{{ task.totalFailures }} failure(s) — see manifest.json</div>
+                }
+                @if (task.error) {
+                  <div class="text-red-600 mt-1">{{ task.error }}</div>
+                }
+              </div>
+            }
+
             <div class="mt-auto">
               <jhi-button
                 severity="primary"
                 size="sm"
                 [icon]="btn.icon"
-                [label]="'adminExports.actions.download'"
+                [label]="'adminExports.actions.start'"
                 [shouldTranslate]="true"
-                [disabled]="busy().has(btn.type)"
-                [loading]="busy().has(btn.type)"
-                (click)="download(btn.type)"
+                [disabled]="anyBusy()"
+                [loading]="isBusy(btn.type)"
+                (click)="start(btn.type)"
               />
             </div>
           </div>
