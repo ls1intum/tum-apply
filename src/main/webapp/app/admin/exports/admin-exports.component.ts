@@ -40,13 +40,22 @@ const POLL_INTERVAL_MS = 30000;
 /**
  * Size of each byte-range chunk the browser requests when downloading a
  * finished export. Using many small chunks instead of one long-lived request
- * sidesteps nginx's {@code proxy_max_temp_file_size} (defaults to 1 GB),
- * any proxy read timeouts, and keeps the download resumable — if one chunk
- * fails the whole transfer can be retried from the failing offset. 32 MB
- * keeps per-chunk latency low even on slow connections while still giving
- * good throughput on fast ones.
+ * sidesteps nginx's {@code proxy_max_temp_file_size} (defaults to 1 GB) and
+ * any proxy read timeouts. 64 MB gives good throughput on fast connections
+ * while still keeping per-chunk latency low on slow ones, and for a ~1.5 GB
+ * file that is still ~24 chunks — enough to keep the live progress UI
+ * refreshing at a useful cadence.
  */
-const DOWNLOAD_CHUNK_SIZE = 32 * 1024 * 1024;
+const DOWNLOAD_CHUNK_SIZE = 64 * 1024 * 1024;
+
+/**
+ * Delays (in ms) between chunk download attempts. The first attempt fires
+ * immediately; subsequent attempts wait for the corresponding entry. The
+ * array length minus one is therefore the retry count. Short retries
+ * absorb transient failures (network blip, proxy hiccup, token-refresh
+ * race) without making the user re-click the Download button.
+ */
+const CHUNK_RETRY_BACKOFF_MS = [0, 1000, 3000, 7000];
 
 /** sessionStorage key under which we persist the live task map across page refreshes. */
 const STORAGE_KEY = 'tumapply.adminExports.tasks';
@@ -417,10 +426,7 @@ export class AdminExportsComponent {
         const chunkEndExclusive = total === null ? nextOffset + DOWNLOAD_CHUNK_SIZE : Math.min(nextOffset + DOWNLOAD_CHUNK_SIZE, total);
         // HTTP Range header end is inclusive, so we subtract 1.
         const rangeHeader = `bytes=${nextOffset}-${chunkEndExclusive - 1}`;
-        const headers = new HttpHeaders({ Range: rangeHeader });
-        const response: HttpResponse<Blob> = await firstValueFrom(
-          this.http.get(url, { headers, responseType: 'blob', observe: 'response' }),
-        );
+        const response = await this.fetchChunkWithRetry(url, rangeHeader, type, generation);
         if (this.downloadGeneration.get(type) !== generation) return;
         const chunk = response.body;
         if (chunk === null) {
@@ -476,6 +482,48 @@ export class AdminExportsComponent {
         this.downloadGeneration.delete(type);
       }
     }
+  }
+
+  /**
+   * Fetches a single byte-range chunk with a small retry budget. Absorbs
+   * transient failures (network blip, proxy hiccup, token-refresh race)
+   * that would otherwise tear down the whole multi-GB download after a
+   * single bad chunk. Checks the download generation between attempts so
+   * a retry doesn't fire after the user superseded or canceled the
+   * download.
+   *
+   * <p>Rethrows the last seen error if every attempt failed. The outer
+   * catch in {@link downloadReadyTask} then checks the generation — if
+   * the loop was canceled it stays silent, otherwise it surfaces the
+   * {@code downloadError} toast.
+   */
+  private async fetchChunkWithRetry(
+    url: string,
+    rangeHeader: string,
+    type: AdminExportType,
+    generation: number,
+  ): Promise<HttpResponse<Blob>> {
+    let lastError: unknown = new Error('Chunk download failed');
+    for (const waitMs of CHUNK_RETRY_BACKOFF_MS) {
+      if (waitMs > 0) {
+        await new Promise<void>(resolve => setTimeout(resolve, waitMs));
+      }
+      if (this.downloadGeneration.get(type) !== generation) {
+        throw new Error('Download canceled');
+      }
+      try {
+        const headers = new HttpHeaders({ Range: rangeHeader });
+        return await firstValueFrom(this.http.get(url, { headers, responseType: 'blob', observe: 'response' }));
+      } catch (err) {
+        lastError = err;
+        // If the loop was canceled during the request, abort immediately
+        // instead of sleeping for the next backoff.
+        if (this.downloadGeneration.get(type) !== generation) {
+          throw err;
+        }
+      }
+    }
+    throw lastError;
   }
 
   /**
