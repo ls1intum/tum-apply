@@ -42,6 +42,9 @@ public final class ExportManifest {
     private final Counter applications = new Counter();
     private final Counter documents = new Counter();
     private final Counter users = new Counter();
+    private final Counter schools = new Counter();
+    private final Counter departments = new Counter();
+    private final Counter userResearchGroupRoles = new Counter();
 
     private final List<Failure> failures = new ArrayList<>();
     private boolean aborted = false;
@@ -130,7 +133,16 @@ public final class ExportManifest {
             snapshotFinishedAt,
             Duration.between(startedAt, clockEnd).toMillis() / 1000.0,
             status(),
-            new Totals(researchGroups.snapshot(), jobs.snapshot(), applications.snapshot(), documents.snapshot(), users.snapshot()),
+            new Totals(
+                researchGroups.snapshot(),
+                jobs.snapshot(),
+                applications.snapshot(),
+                documents.snapshot(),
+                users.snapshot(),
+                schools.snapshot(),
+                departments.snapshot(),
+                userResearchGroupRoles.snapshot()
+            ),
             aborted ? abortReason : null,
             List.copyOf(failures)
         );
@@ -141,7 +153,14 @@ public final class ExportManifest {
             return Status.ABORTED;
         }
         boolean countsMatch =
-            researchGroups.complete() && jobs.complete() && applications.complete() && documents.complete() && users.complete();
+            researchGroups.complete() &&
+            jobs.complete() &&
+            applications.complete() &&
+            documents.complete() &&
+            users.complete() &&
+            schools.complete() &&
+            departments.complete() &&
+            userResearchGroupRoles.complete();
         return countsMatch && failures.isEmpty() ? Status.COMPLETE : Status.PARTIAL;
     }
 
@@ -152,6 +171,9 @@ public final class ExportManifest {
             case APPLICATION -> applications;
             case DOCUMENT -> documents;
             case USER -> users;
+            case SCHOOL -> schools;
+            case DEPARTMENT -> departments;
+            case USER_RESEARCH_GROUP_ROLE -> userResearchGroupRoles;
         };
     }
 
@@ -161,6 +183,9 @@ public final class ExportManifest {
         APPLICATION,
         DOCUMENT,
         USER,
+        SCHOOL,
+        DEPARTMENT,
+        USER_RESEARCH_GROUP_ROLE,
     }
 
     public enum Status {
@@ -188,7 +213,16 @@ public final class ExportManifest {
     public record Snapshot(int expected, int exported, int failed) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record Totals(Snapshot researchGroups, Snapshot jobs, Snapshot applications, Snapshot documents, Snapshot users) {}
+    public record Totals(
+        Snapshot researchGroups,
+        Snapshot jobs,
+        Snapshot applications,
+        Snapshot documents,
+        Snapshot users,
+        Snapshot schools,
+        Snapshot departments,
+        Snapshot userResearchGroupRoles
+    ) {}
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record Failure(Category category, UUID id, String context, String reason) {}

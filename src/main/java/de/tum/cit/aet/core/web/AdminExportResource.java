@@ -175,6 +175,9 @@ public class AdminExportResource {
             counts(t.applications()),
             counts(t.documents()),
             counts(t.users()),
+            counts(t.schools()),
+            counts(t.departments()),
+            counts(t.userResearchGroupRoles()),
             p.failures().size(),
             task.isReady()
         );

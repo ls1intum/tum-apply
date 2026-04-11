@@ -1,8 +1,8 @@
 import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpRequest } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
@@ -29,11 +29,23 @@ interface ExportSection {
   buttons: ExportButton[];
 }
 
-/** How often we poll the status endpoint while a task is in progress. */
-const POLL_INTERVAL_MS = 3000;
+/**
+ * How often we poll the status endpoint while a task is in progress.
+ * Large exports take minutes — a slow cadence keeps the server load low
+ * while still surfacing progress updates often enough to reassure the
+ * admin that something is happening.
+ */
+const POLL_INTERVAL_MS = 30000;
 
 /** sessionStorage key under which we persist the live task map across page refreshes. */
 const STORAGE_KEY = 'tumapply.adminExports.tasks';
+
+interface DownloadProgress {
+  /** Bytes received so far from the server. */
+  loaded: number;
+  /** Total bytes expected, or {@code null} if the server did not set {@code Content-Length}. */
+  total: number | null;
+}
 
 /**
  * Admin "Bulk Exports" page. Each button POSTs to start a background task and
@@ -61,6 +73,14 @@ const STORAGE_KEY = 'tumapply.adminExports.tasks';
 export class AdminExportsComponent {
   /** Live task per export type — drives both the busy flag and the progress UI. */
   readonly tasks = signal<Map<AdminExportType, AdminExportTaskDTO>>(new Map());
+
+  /**
+   * Live download progress per export type. Present only while the browser
+   * is actively streaming a READY task's ZIP file. Drives the in-card
+   * "Downloading X% (Y MB / Z MB)" label and the loading state of the
+   * manual Download button.
+   */
+  readonly downloadProgress = signal<Map<AdminExportType, DownloadProgress>>(new Map());
 
   /** True while *any* task is IN_PROGRESS — used to grey out all buttons at once. */
   readonly anyBusy = computed<boolean>(() => {
@@ -108,11 +128,24 @@ export class AdminExportsComponent {
         },
       ],
     },
+    {
+      titleKey: 'adminExports.sections.usersAndOrgs',
+      buttons: [
+        {
+          type: 'USERS_AND_ORGS',
+          labelKey: 'adminExports.buttons.usersAndOrgs.label',
+          descriptionKey: 'adminExports.buttons.usersAndOrgs.description',
+          icon: 'database',
+        },
+      ],
+    },
   ];
 
   private readonly api = inject(AdminExportResourceApi);
+  private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
   private readonly pollHandles = new Map<AdminExportType, ReturnType<typeof setTimeout>>();
+  private readonly downloadSubs = new Map<AdminExportType, Subscription>();
 
   constructor() {
     // afterNextRender is browser-only (safe for sessionStorage) and runs
@@ -121,13 +154,18 @@ export class AdminExportsComponent {
     afterNextRender(() => void this.hydrate());
 
     // DestroyRef replaces ngOnDestroy: register a teardown callback that
-    // cancels every outstanding poll timeout so we don't leak timers when
+    // cancels every outstanding poll timeout and cancels any in-flight
+    // download subscriptions so we don't leak timers or HTTP handles when
     // the component is torn down.
     inject(DestroyRef).onDestroy(() => {
       for (const handle of this.pollHandles.values()) {
         clearTimeout(handle);
       }
       this.pollHandles.clear();
+      for (const sub of this.downloadSubs.values()) {
+        sub.unsubscribe();
+      }
+      this.downloadSubs.clear();
     });
   }
 
@@ -139,6 +177,41 @@ export class AdminExportsComponent {
   /** Returns the live task for the given type, or undefined when there is none. */
   taskFor(type: AdminExportType): AdminExportTaskDTO | undefined {
     return this.tasks().get(type);
+  }
+
+  /** True while the browser is actively downloading a ready ZIP for this type. */
+  isDownloading(type: AdminExportType): boolean {
+    return this.downloadProgress().has(type);
+  }
+
+  /**
+   * Returns a human-friendly progress label for an in-flight download, e.g.
+   * {@code "42% (12.3 MB / 29.1 MB)"}. Falls back to a byte-count-only label
+   * when the server did not set a {@code Content-Length} header, and returns
+   * an empty string when the given type has no active download.
+   */
+  downloadProgressLabel(type: AdminExportType): string {
+    const progress = this.downloadProgress().get(type);
+    if (progress === undefined) return '';
+    if (progress.total === null || progress.total === 0) {
+      return this.formatBytes(progress.loaded);
+    }
+    const percent = Math.floor((progress.loaded / progress.total) * 100);
+    return `${percent}% (${this.formatBytes(progress.loaded)} / ${this.formatBytes(progress.total)})`;
+  }
+
+  /**
+   * Re-triggers the download for a task that is already in the {@code READY}
+   * state. Used both for the "Download" button on every ready task and for
+   * recovery after an interrupted download — the server-side task remains
+   * available until its TTL expires, so the client can re-request the file
+   * any number of times.
+   */
+  retryDownload(type: AdminExportType): void {
+    const task = this.tasks().get(type);
+    if (task?.status !== AdminExportTaskDTOStatusEnum.Ready) return;
+    if (this.isDownloading(type)) return;
+    this.downloadReadyTask(type, task);
   }
 
   /**
@@ -244,7 +317,7 @@ export class AdminExportsComponent {
         return;
       }
       if (updated.status === AdminExportTaskDTOStatusEnum.Ready) {
-        await this.downloadReadyTask(type, updated);
+        this.downloadReadyTask(type, updated);
       } else {
         this.toastService.showErrorKey('adminExports.toast.buildFailed');
         this.clearStoredTask(type);
@@ -259,24 +332,90 @@ export class AdminExportsComponent {
     }
   }
 
-  private async downloadReadyTask(type: AdminExportType, task: AdminExportTaskDTO): Promise<void> {
+  /**
+   * Streams a READY task's ZIP to the browser while reporting progress.
+   *
+   * <p>Unlike {@code firstValueFrom(api.download())} this subscribes to the
+   * raw {@link HttpClient} event stream with {@code reportProgress: true}, so
+   * we can surface a live byte counter while the browser transfers what may
+   * be a multi-hundred-MB file. The progress signal drives the in-card
+   * "Downloading…" label and the loading state of the Download button.
+   *
+   * <p>The task itself is intentionally <em>not</em> removed from the signal
+   * on either success or failure: on success the user may want to re-download
+   * (e.g. they lost the file) and on failure they need to retry. The
+   * sessionStorage entry is cleared on success so a page refresh starts
+   * clean, but the in-memory task stays so the Download button keeps working
+   * until the server's TTL expires the task.
+   */
+  private downloadReadyTask(type: AdminExportType, task: AdminExportTaskDTO): void {
     if (task.taskId === undefined) return;
-    try {
-      const response = await firstValueFrom(this.api.download(task.taskId));
-      const blob = response.body;
-      if (!blob) {
+    // Cancel any previous download for this type — the user may have hit
+    // retry while a stale attempt was still finishing its error path.
+    this.downloadSubs.get(type)?.unsubscribe();
+
+    const url = `/api/admin/exports/download/${encodeURIComponent(task.taskId)}`;
+    const request = new HttpRequest('GET', url, null, {
+      reportProgress: true,
+      responseType: 'blob',
+    });
+
+    this.setDownloadProgress(type, 0, null);
+
+    const sub = this.http.request<Blob>(request).subscribe({
+      next: event => {
+        if (event.type === HttpEventType.DownloadProgress) {
+          this.setDownloadProgress(type, event.loaded, event.total ?? null);
+          return;
+        }
+        if (event.type === HttpEventType.Response) {
+          const response = event;
+          const blob = response.body;
+          if (blob === null) {
+            this.toastService.showErrorKey('adminExports.toast.downloadError');
+            this.clearDownloadProgress(type);
+            this.downloadSubs.delete(type);
+            return;
+          }
+          const filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? `admin-export-${type.toLowerCase()}.zip`;
+          this.triggerBrowserDownload(blob, filename);
+          this.toastService.showSuccessKey('adminExports.toast.downloaded');
+          // Drop the sessionStorage entry so a refresh starts clean, but
+          // keep the signal task around so the Download button remains
+          // usable until the server TTL expires the task.
+          this.clearStoredTask(type);
+          this.clearDownloadProgress(type);
+          this.downloadSubs.delete(type);
+        }
+      },
+      error: () => {
+        // Network blip, tab closed mid-transfer, proxy disconnect, etc.
+        // The server-side task is still READY, so leave the Download button
+        // in place for the user to retry.
         this.toastService.showErrorKey('adminExports.toast.downloadError');
-        return;
-      }
-      const filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? `admin-export-${type.toLowerCase()}.zip`;
-      this.triggerBrowserDownload(blob, filename);
-      this.toastService.showSuccessKey('adminExports.toast.downloaded');
-      // The file has been handed over to the browser — drop the task from
-      // our remembered state so a subsequent refresh starts clean.
-      this.clearStoredTask(type);
-    } catch {
-      this.toastService.showErrorKey('adminExports.toast.downloadError');
-    }
+        this.clearDownloadProgress(type);
+        this.downloadSubs.delete(type);
+      },
+    });
+
+    this.downloadSubs.set(type, sub);
+  }
+
+  private setDownloadProgress(type: AdminExportType, loaded: number, total: number | null): void {
+    this.downloadProgress.update(prev => {
+      const next = new Map(prev);
+      next.set(type, { loaded, total });
+      return next;
+    });
+  }
+
+  private clearDownloadProgress(type: AdminExportType): void {
+    this.downloadProgress.update(prev => {
+      if (!prev.has(type)) return prev;
+      const next = new Map(prev);
+      next.delete(type);
+      return next;
+    });
   }
 
   /** Immutable-update helper: adds or replaces a task in the signal's backing map. */
@@ -363,5 +502,12 @@ export class AdminExportsComponent {
     anchor.download = filename;
     anchor.click();
     URL.revokeObjectURL(url);
+  }
+
+  private formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
 }

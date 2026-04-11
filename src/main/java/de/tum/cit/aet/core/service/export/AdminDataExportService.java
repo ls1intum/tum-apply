@@ -208,6 +208,7 @@ public class AdminDataExportService {
         log.info(
             "Admin export {} (task {}) finished with status {} in {}s — RG {}/{} (failed {}), Jobs {}/{} (failed {}), " +
                 "Applications {}/{} (failed {}), Documents {}/{} (failed {}), Users {}/{} (failed {}), " +
+                "Schools {}/{} (failed {}), Departments {}/{} (failed {}), UserResearchGroupRoles {}/{} (failed {}), " +
                 "total failures: {}, file: {} bytes",
             task.type(),
             task.taskId(),
@@ -228,6 +229,15 @@ public class AdminDataExportService {
             p.totals().users().exported(),
             p.totals().users().expected(),
             p.totals().users().failed(),
+            p.totals().schools().exported(),
+            p.totals().schools().expected(),
+            p.totals().schools().failed(),
+            p.totals().departments().exported(),
+            p.totals().departments().expected(),
+            p.totals().departments().failed(),
+            p.totals().userResearchGroupRoles().exported(),
+            p.totals().userResearchGroupRoles().expected(),
+            p.totals().userResearchGroupRoles().failed(),
             p.failures().size(),
             safeFileSize(task.file())
         );

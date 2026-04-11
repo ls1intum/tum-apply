@@ -284,7 +284,9 @@ public class JobsExportStrategy {
             case JOBS_EXPIRED -> job.getState() == JobState.PUBLISHED && job.getEndDate() != null && job.getEndDate().isBefore(today);
             case JOBS_CLOSED -> EnumSet.of(JobState.CLOSED, JobState.APPLICANT_FOUND).contains(job.getState());
             // Full admin export funnels every job through here too, with no extra filter.
-            case FULL_ADMIN -> true;
+            // USERS_AND_ORGS does not use this filter at all — its strategy
+            // ignores jobs entirely — but the switch must be exhaustive.
+            case FULL_ADMIN, USERS_AND_ORGS -> true;
         };
     }
 

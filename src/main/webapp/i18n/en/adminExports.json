@@ -3,16 +3,19 @@
     "title": "Admin Bulk Exports",
     "subtitle": "Generate machine-readable JSON dumps and human-readable PDF/XLSX archives for the data the university needs to hand off. Each export builds in the background — you can watch progress live and the file downloads automatically once it is ready.",
     "actions": {
-      "start": "Start export"
+      "start": "Start export",
+      "download": "Download"
     },
     "status": {
       "inProgress": "Building…",
       "ready": "Ready",
-      "failed": "Failed"
+      "failed": "Failed",
+      "downloading": "Downloading…"
     },
     "sections": {
       "jobs": "Jobs",
-      "full": "Full Admin Export"
+      "full": "Full Admin Export",
+      "usersAndOrgs": "Users & Organisation"
     },
     "buttons": {
       "jobsOpen": {
@@ -30,6 +33,10 @@
       "full": {
         "label": "Full Admin Export",
         "description": "Everything: research groups with their members and every job (drafts included), every application with documents, plus re-importable JSON dumps. Use this for handover to the university or backup."
+      },
+      "usersAndOrgs": {
+        "label": "Users & Organisation",
+        "description": "JSON-only snapshot of schools, departments, research groups, users and the user ↔ research-group role assignments. Intended for re-seeding the database after a hard reset — contains no jobs, applications, documents or PDFs."
       }
     },
     "toast": {

@@ -13,9 +13,6 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.dto.UserDTO;
-import de.tum.cit.aet.usermanagement.dto.UserResearchGroupRoleDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.io.IOException;
@@ -174,13 +171,13 @@ public class FullAdminExportStrategy {
         List<AdminApplicationExportDTO> appDtos = allApplications.stream().map(jobsExportStrategy::toApplicationDto).toList();
         writeJsonEntry(zos, "_machine_readable/applications.json", appDtos);
 
-        List<de.tum.cit.aet.usermanagement.domain.User> allUsers = userRepository.findAll();
+        var allUsers = userRepository.findAll();
         manifest.expect(ExportManifest.Category.USER, allUsers.size());
         List<AdminUserExportDTO> userDtos = allUsers
             .stream()
             .map(u -> {
                 try {
-                    AdminUserExportDTO dto = toUserDto(u);
+                    AdminUserExportDTO dto = AdminUserExportDTO.getFromEntity(u);
                     manifest.exported(ExportManifest.Category.USER);
                     return dto;
                 } catch (Exception e) {
@@ -204,24 +201,6 @@ public class FullAdminExportStrategy {
         // includeAllStates is passed through: full admin backup keeps every
         // application state including SAVED/WITHDRAWN/etc.
         jobsExportStrategy.writeJobsInto(zos, basePath, jobs, includeAllStates, false, true, manifest);
-    }
-
-    private AdminUserExportDTO toUserDto(User user) {
-        List<UserResearchGroupRoleDTO> roles =
-            user.getResearchGroupRoles() == null
-                ? List.of()
-                : user.getResearchGroupRoles().stream().map(UserResearchGroupRoleDTO::getFromEntity).toList();
-
-        return new AdminUserExportDTO(
-            UserDTO.getFromEntity(user),
-            user.getUniversityId(),
-            user.getLastActivityAt(),
-            user.isAiFeaturesEnabled(),
-            user.getAiConsentedAt(),
-            roles,
-            user.getCreatedAt(),
-            user.getLastModifiedAt()
-        );
     }
 
     private void writeJsonEntry(ZipOutputStream zos, String entryPath, Object payload) {
