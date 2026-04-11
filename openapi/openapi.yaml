@@ -37,11 +37,7 @@ paths:
         required: true
         schema: {type: string, format: uuid}
       responses:
-        '200':
-          description: ZIP archive containing the built admin export
-          content:
-            application/octet-stream:
-              schema: {type: string, format: binary}
+        '200': {description: OK}
   /api/admin/exports/mine:
     get:
       tags: [admin-export-resource]

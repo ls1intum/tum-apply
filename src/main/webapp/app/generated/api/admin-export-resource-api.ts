@@ -12,7 +12,7 @@
  * AdminExportResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AdminExportTaskDTO } from '../model/admin-export-task-dto';
@@ -27,10 +27,10 @@ export class AdminExportResourceApi {
      * 
      * @param taskId 
      */
-    download(taskId: string): Observable<HttpResponse<Blob>> {
+    download(taskId: string): Observable<void> {
         const taskIdPath = encodeURIComponent(String(taskId));
         const url = `${this.basePath}/api/admin/exports/download/${taskIdPath}`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
+        return this.http.get<void>(url);
     }
 
     /**
