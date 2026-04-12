@@ -7,109 +7,108 @@
   (onSelect)="onFileSelected($event)"
   #fileupload_component
 >
-  <ng-template #empty>
-    <div
-      class="flex w-full items-center justify-center gap-3 cursor-pointer"
-      (click)="fileupload_component.choose()"
-      [class.flex-col]="!compact()"
-    >
-      <span
-        class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
-        tabindex="0"
-        role="button"
-        aria-label="Select file to upload"
-        (keydown.enter)="fileupload_component.choose()"
-        (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
-      >
-        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
-      </span>
-      <div class="text-color" [class.text-center]="!compact()">
-        <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
-        <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
-      </div>
-    </div>
-  </ng-template>
-
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
-    <div class="w-full mt-0">
-      <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
-        <thead>
-          <tr>
-            <th class="w-1/10"></th>
-            <th></th>
-            <th class="w-3/20"></th>
-            <th class="w-1/10"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (selectedFiles(); as selectedFiles) {
-            @for (file of selectedFiles; track $index) {
-              <tr [class]="rowClass">
-                <td>
-                  <span class="inline-flex justify-center w-full h-full">
-                    <fa-icon
-                      icon="cloud-arrow-up"
-                      class="text-warning-default"
-                      [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
-                      tooltipPosition="top"
+    <div class="flex flex-col" [class.min-h-45]="!compact()">
+      <div class="w-full mt-0">
+        <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
+          <thead>
+            <tr>
+              <th class="w-1/10"></th>
+              <th></th>
+              <th class="w-3/20"></th>
+              <th class="w-1/10"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (selectedFiles(); as selectedFiles) {
+              @for (file of selectedFiles; track $index) {
+                <tr [class]="rowClass">
+                  <td>
+                    <span class="inline-flex justify-center w-full h-full">
+                      <fa-icon
+                        icon="cloud-arrow-up"
+                        class="text-warning-default"
+                        [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
+                        tooltipPosition="top"
+                      />
+                    </span>
+                  </td>
+                  <td class="pr-3">
+                    <input [(ngModel)]="file.name" [class]="inputClass" />
+                  </td>
+                  <td class="text-center">
+                    <small class="text-muted">{{ formatSize(file.size) }}</small>
+                  </td>
+                  <td>
+                    <jhi-button
+                      icon="times"
+                      severity="danger"
+                      variant="text"
+                      size="sm"
+                      (click)="removeFileCallback($event, $index)"
+                      aria-label="Remove file"
                     />
-                  </span>
-                </td>
-                <td class="pr-3">
-                  <input [(ngModel)]="file.name" [class]="inputClass" />
-                </td>
-                <td class="text-center">
-                  <small class="text-muted">{{ formatSize(file.size) }}</small>
-                </td>
-                <td>
-                  <jhi-button
-                    icon="times"
-                    severity="danger"
-                    variant="text"
-                    size="sm"
-                    (click)="removeFileCallback($event, $index)"
-                    aria-label="Remove file"
-                  />
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              }
             }
-          }
-          @if (documentIds(); as documentIds) {
-            @for (info of documentIds; track $index) {
-              <tr [class]="rowClass">
-                <td>
-                  <span class="inline-flex justify-center w-full h-full">
-                    <fa-layers [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate" tooltipPosition="top">
-                      <fa-icon icon="file" class="text-primary" />
-                      <fa-icon icon="circle" class="text-white" transform="shrink-5 down-4 right-5" />
-                      <fa-icon icon="circle-check" class="text-positive-default" transform="shrink-7 down-4 right-5" />
-                    </fa-layers>
-                  </span>
-                </td>
-                <td class="pr-3">
-                  <input [(ngModel)]="info.name" (blur)="renameDocument(info)" [class]="inputClass" />
-                </td>
-                <td class="text-center">
-                  <small class="text-muted">{{ formatSize(info.size) }}</small>
-                </td>
-                <td>
-                  <jhi-confirm-dialog
-                    [label]="'button.delete' | translate"
-                    [header]="'entity.upload.deleteDocument.confirm.header' | translate"
-                    [message]="'entity.upload.deleteDocument.confirm.message' | translate"
-                    [severity]="'danger'"
-                    confirmIcon="trash"
-                    [iconOnly]="true"
-                    [tooltip]="'button.delete' | translate"
-                    size="sm"
-                    (confirmed)="deleteDictionary(info)"
-                  />
-                </td>
-              </tr>
+            @if (documentIds(); as documentIds) {
+              @for (info of documentIds; track $index) {
+                <tr [class]="rowClass">
+                  <td>
+                    <span class="inline-flex justify-center w-full h-full">
+                      <fa-layers [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate" tooltipPosition="top">
+                        <fa-icon icon="file" class="text-primary" />
+                        <fa-icon icon="circle" class="text-white" transform="shrink-5 down-4 right-5" />
+                        <fa-icon icon="circle-check" class="text-positive-default" transform="shrink-7 down-4 right-5" />
+                      </fa-layers>
+                    </span>
+                  </td>
+                  <td class="pr-3">
+                    <input [(ngModel)]="info.name" (blur)="renameDocument(info)" [class]="inputClass" />
+                  </td>
+                  <td class="text-center">
+                    <small class="text-muted">{{ formatSize(info.size) }}</small>
+                  </td>
+                  <td>
+                    <jhi-confirm-dialog
+                      [label]="'button.delete' | translate"
+                      [header]="'entity.upload.deleteDocument.confirm.header' | translate"
+                      [message]="'entity.upload.deleteDocument.confirm.message' | translate"
+                      [severity]="'danger'"
+                      confirmIcon="trash"
+                      [iconOnly]="true"
+                      [tooltip]="'button.delete' | translate"
+                      size="sm"
+                      (confirmed)="deleteDictionary(info)"
+                    />
+                  </td>
+                </tr>
+              }
             }
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="flex flex-1 w-full items-center justify-center gap-3 cursor-pointer py-3"
+        (click)="fileupload_component.choose()"
+        [class.flex-col]="!compact()"
+      >
+        <span
+          class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+          tabindex="0"
+          role="button"
+          aria-label="Select file to upload"
+          (keydown.enter)="fileupload_component.choose()"
+          (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
+        >
+          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
+        </span>
+        <div class="text-color" [class.text-center]="!compact()">
+          <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
+          <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
+        </div>
+      </div>
     </div>
   </ng-template>
   <ng-template #file />
