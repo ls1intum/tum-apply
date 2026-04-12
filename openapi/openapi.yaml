@@ -23,26 +23,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
-  /api/ai/extractPdfData:
-    put:
-      tags: [ai-resource]
-      operationId: extractPdfData
-      parameters:
-      - name: applicationId
-        in: query
-        required: true
-        schema: {type: string}
-      - name: docId
-        in: query
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
-  /api/ai/analyzeJobDescription:
+  /api/ai/analyze-job-description:
     post:
       tags: [ai-resource]
       operationId: analyzeJobDescriptionForCompliance
@@ -62,6 +43,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ComplianceResponseDTO'}
+  /api/ai/extractPdfData:
+    put:
+      tags: [ai-resource]
+      operationId: extractPdfData
+      parameters:
+      - name: applicationId
+        in: query
+        required: true
+        schema: {type: string}
+      - name: docId
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -100,7 +100,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {type: string}
+            schema: {$ref: '#/components/schemas/TranslateComplianceDTO'}
         required: true
       responses:
         '200':
@@ -1120,6 +1120,21 @@ paths:
     post:
       tags: [gender-bias-analysis-resource]
       operationId: analyzeHtmlContent
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+  /api/gender-bias/analyze-job-description:
+    post:
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeHtmlContentForCompliance
       requestBody:
         content:
           application/json:
@@ -2802,7 +2817,7 @@ components:
         article: {type: string}
         category:
           type: string
-          enum: [CRITICAL_AGG, CRITICAL_DSGVO, TRANSPARENCY]
+          enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
         explanation: {type: string}
         id: {type: string}
         text: {type: string}
@@ -3192,6 +3207,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/Application'}
           uniqueItems: true
+        complianceAnalysis: {$ref: '#/components/schemas/ComplianceResponseDTO'}
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         customFields:
@@ -3202,6 +3218,7 @@ components:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        genderBiasScore: {type: integer, format: int32}
         image: {$ref: '#/components/schemas/Image'}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
@@ -3273,12 +3290,14 @@ components:
     JobDTO:
       type: object
       properties:
+        complianceAnalysis: {$ref: '#/components/schemas/ComplianceResponseDTO'}
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        genderBiasScore: {type: integer, format: int32}
         imageId: {type: string, format: uuid}
         imageUrl: {type: string}
         jobDescriptionDE: {type: string}
@@ -3384,12 +3403,14 @@ components:
     JobFormDTO:
       type: object
       properties:
+        complianceAnalysis: {$ref: '#/components/schemas/ComplianceResponseDTO'}
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        genderBiasScore: {type: integer, format: int32}
         imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
@@ -3752,6 +3773,13 @@ components:
         empty: {type: boolean}
         sorted: {type: boolean}
         unsorted: {type: boolean}
+    TranslateComplianceDTO:
+      type: object
+      properties:
+        jobForm: {$ref: '#/components/schemas/JobFormDTO'}
+        originalAnalysis: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+        text: {type: string, minLength: 1}
+      required: [text]
     UpcomingInterviewDTO:
       type: object
       properties:

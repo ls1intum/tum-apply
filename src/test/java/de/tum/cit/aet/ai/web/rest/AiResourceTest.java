@@ -1,11 +1,13 @@
 package de.tum.cit.aet.ai.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.ai.web.AiResource;
 import de.tum.cit.aet.utility.MvcTestClient;
@@ -42,15 +44,16 @@ class AiResourceTest extends AbstractResourceTest {
         String mockTranslation = "Hallo Welt";
         String jobId = "job-1";
         String toLang = "de";
+        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null);
 
-        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString())).willReturn(
+        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString(), any(), any())).willReturn(
             new AIJobDescriptionTranslationDTO(mockTranslation)
         );
 
         String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang;
         AIJobDescriptionTranslationDTO response = api
             .with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_PROFESSOR"))
-            .putAndRead(url, input, AIJobDescriptionTranslationDTO.class, 200);
+            .putAndRead(url, request, AIJobDescriptionTranslationDTO.class, 200);
 
         assertThat(response).isNotNull();
         assertThat(response.translatedText()).isEqualTo(mockTranslation);
@@ -59,12 +62,14 @@ class AiResourceTest extends AbstractResourceTest {
     @Test
     void translateJobDescriptionAsStudentForbidden() {
         String url = TRANSLATE_URL + "?jobId=job-1&toLang=de";
-        api.with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_APPLICANT")).putAndRead(url, input, Void.class, 403);
+        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null);
+        api.with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
     }
 
     @Test
     void translateJobDescriptionWithoutAuthReturnsForbidden() {
         String url = TRANSLATE_URL + "?jobId=job-1&toLang=de";
-        api.putAndRead(url, input, Void.class, 401);
+        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null);
+        api.putAndRead(url, request, Void.class, 401);
     }
 }

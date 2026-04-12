@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -11,6 +12,7 @@ import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
+import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
@@ -170,12 +172,14 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescriptionEN(),
-            job.getJobDescriptionDE(),
+            sanitizeJobDescription(job.getJobDescriptionEN()),
+            sanitizeJobDescription(job.getJobDescriptionDE()),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null,
-            job.getSuitableForDisabled()
+            job.getSuitableForDisabled(),
+            job.getGenderBiasScore(),
+            job.getComplianceAnalysis()
         );
     }
 
@@ -210,8 +214,8 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescriptionEN(),
-            job.getJobDescriptionDE(),
+            sanitizeJobDescription(job.getJobDescriptionEN()),
+            sanitizeJobDescription(job.getJobDescriptionDE()),
             job.getStartDate(),
             job.getEndDate(),
             job.getCreatedAt(),
@@ -355,8 +359,8 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
-        job.setJobDescriptionEN(dto.jobDescriptionEN());
-        job.setJobDescriptionDE(dto.jobDescriptionDE());
+        job.setJobDescriptionEN(sanitizeJobDescription(dto.jobDescriptionEN()));
+        job.setJobDescriptionDE(sanitizeJobDescription(dto.jobDescriptionDE()));
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
 
@@ -405,10 +409,27 @@ public class JobService {
     public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
         Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         if ("de".equalsIgnoreCase(toLang)) {
-            job.setJobDescriptionDE(translatedText);
+            job.setJobDescriptionDE(sanitizeJobDescription(translatedText));
         } else if ("en".equalsIgnoreCase(toLang)) {
-            job.setJobDescriptionEN(translatedText);
+            job.setJobDescriptionEN(sanitizeJobDescription(translatedText));
         }
         jobRepository.save(job);
     }
+
+    public void updateAiAnalysis(UUID jobId, int score, ComplianceResponseDTO complianceAnalysis) {
+        if (jobId == null) {
+            return;
+        }
+
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        job.setGenderBiasScore(score);
+        job.setComplianceAnalysis(complianceAnalysis);
+        jobRepository.save(job);
+
+    }
+
+    private String sanitizeJobDescription(String html) {
+        return html == null ? null : HtmlSanitizer.sanitize(html);
+    }
+
 }

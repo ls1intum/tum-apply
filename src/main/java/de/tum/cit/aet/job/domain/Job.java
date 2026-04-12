@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
+import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
@@ -18,6 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * A Job.
@@ -99,4 +102,12 @@ public class Job extends AbstractAuditingEntity {
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Application> applications;
+
+    // Compliance fields for score calculation
+    @Column(name = "gender_bias_score")
+    private Integer genderBiasScore;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "compliance_analysis_json", columnDefinition = "json")
+    private ComplianceResponseDTO complianceAnalysis;
 }

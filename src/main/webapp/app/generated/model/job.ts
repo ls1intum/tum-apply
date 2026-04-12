@@ -11,16 +11,19 @@
 import type { ResearchGroup } from './research-group';
 import type { User } from './user';
 import type { CustomField } from './custom-field';
+import type { ComplianceResponseDTO } from './compliance-response-dto';
 import type { Image } from './image';
 import type { Application } from './application';
 
 export interface Job {
     readonly applications?: Array<Application>;
+    readonly complianceAnalysis?: ComplianceResponseDTO;
     readonly contractDuration?: number;
     readonly createdAt?: string;
     readonly customFields?: Array<CustomField>;
     readonly endDate?: string;
     readonly fundingType?: JobFundingTypeEnum;
+    readonly genderBiasScore?: number;
     readonly image?: Image;
     readonly jobDescriptionDE?: string;
     readonly jobDescriptionEN?: string;

@@ -68,6 +68,8 @@ model/biased-word-dto.ts
 model/book-slot-request-dto.ts
 model/booking-dto.ts
 model/cancel-interview-dto.ts
+model/compliance-issue-dto.ts
+model/compliance-response-dto.ts
 model/conflict-data-dto.ts
 model/create-slots-dto.ts
 model/created-job-dto.ts
@@ -77,8 +79,6 @@ model/custom-field.ts
 model/data-export-status-dto.ts
 model/department-creation-dto.ts
 model/department-dto.ts
-model/complianceIssueDTO.ts
-model/complianceResponseDTO.ts
 model/department-short-dto.ts
 model/department.ts
 model/dependencies-overview-dto.ts
@@ -148,6 +148,7 @@ model/send-invitations-request-dto.ts
 model/send-invitations-result-dto.ts
 model/slot-input.ts
 model/sort-object.ts
+model/translate-compliance-dto.ts
 model/upcoming-interview-dto.ts
 model/update-application-dto.ts
 model/update-assessment-dto.ts

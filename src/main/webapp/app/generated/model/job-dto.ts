@@ -8,11 +8,14 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { ComplianceResponseDTO } from './compliance-response-dto';
 
 export interface JobDTO {
+    readonly complianceAnalysis?: ComplianceResponseDTO;
     readonly contractDuration?: number;
     readonly endDate?: string;
     readonly fundingType?: JobDTOFundingTypeEnum;
+    readonly genderBiasScore?: number;
     readonly imageId?: string;
     readonly imageUrl?: string;
     readonly jobDescriptionDE?: string;

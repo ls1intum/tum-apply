@@ -3,6 +3,7 @@ package de.tum.cit.aet.ai.web;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
@@ -12,7 +13,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -54,10 +54,12 @@ public class AiResource {
      * Translate text between German and English.
      * Automatically detects the source language and translates to the other language.
      * Preserves the original text structure and formatting.
+     * Triggers a secondary gender-bias analysis for the translated version to ensure
+     * that the inclusivity score remains consistent and valid in both language contexts.
      *
      * @param jobId  the ID of the job for which the description is being translated
      * @param toLang the target language for translation ("de" or "en")
-     * @param text   the text to translate (German or English)
+     * @param request A DTO containing the text to translate, original analysis, and job context.
      * @return a ResponseEntity containing the translated text with language info
      */
     @ProfessorOrEmployeeOrAdmin
@@ -65,10 +67,10 @@ public class AiResource {
     public ResponseEntity<AIJobDescriptionTranslationDTO> translateJobDescriptionForJob(
         @RequestParam("jobId") String jobId,
         @RequestParam("toLang") String toLang,
-        @RequestBody String text
-    ) {
+        @RequestBody TranslateComplianceDTO request
+    ){
         log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
-        return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, text));
+        return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, request.text(), request.originalAnalysis(), request.jobForm()));
     }
 
     /**
@@ -89,6 +91,7 @@ public class AiResource {
         return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docId));
     }
 
+
     /**
      * Analyzes the job description in real time for compliance violations
      * and provides corresponding feedback.
@@ -99,12 +102,12 @@ public class AiResource {
      */
 
     @ProfessorOrEmployeeOrAdmin
-    @PostMapping(value = "analyzeJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "analyze-job-description", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ComplianceResponseDTO> analyzeJobDescriptionForCompliance(
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {
         log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})", descriptionLanguage);
-        return ResponseEntity.ok(aiService.analyzeJobDescription(jobForm, descriptionLanguage));
+        return ResponseEntity.ok(aiService.analyzeCurrentJobDescription(jobForm, descriptionLanguage));
     }
 }

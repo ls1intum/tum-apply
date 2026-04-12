@@ -53,12 +53,39 @@ public class GenderBiasAnalysisResource {
         log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
 
         // Strip HTML tags to get plain text
-        String plainText = Jsoup.parse(request.text()).text();
+        String plainText = extractPlainText(request.text());
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
 
         log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/gender-bias/analyze-html : Analyze HTML content (extract text
+     * first)
+     *
+     * @param request the HTML to analyze for compliance calculation
+     * @return the analysis result
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/analyze-job-description")
+    public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContentForCompliance(
+        @Valid @RequestBody GenderBiasAnalysisRequest request
+    ) {
+        log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
+
+        String plainText = extractPlainText(request.text());
+
+        GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
+
+        log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
+
+        return ResponseEntity.ok(response);
+    }
+
+    private String extractPlainText(String html) {
+        return Jsoup.parse(html == null ? "" : html).text();
     }
 }

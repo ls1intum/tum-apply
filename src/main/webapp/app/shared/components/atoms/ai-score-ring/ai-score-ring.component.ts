@@ -12,6 +12,7 @@ export class AiScoreRingComponent {
   readonly DANGER_THRESHOLD = 29;
   readonly NORMALIZED_PATH_LENGTH = 100;
   readonly animatedScore = signal(0);
+  private isFirstRender = true;
 
   readonly boundedScore = computed(() => {
     const value = this.score();
@@ -40,6 +41,12 @@ export class AiScoreRingComponent {
   private animationEffect = effect(onCleanup => {
     const targetScore = this.boundedScore();
     let currentScore = this.animatedScore();
+
+    if (this.isFirstRender) {
+      this.isFirstRender = false;
+      this.animatedScore.set(targetScore);
+      return;
+    }
 
     if (targetScore === currentScore) {
       return;
