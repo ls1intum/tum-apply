@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCvDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
@@ -327,7 +327,7 @@ class ApplicationServiceTest {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
+            ExtractedCvDataDTO extracted = new ExtractedCvDataDTO(
                 "Ada",
                 "Lovelace",
                 null,
@@ -336,14 +336,9 @@ class ApplicationServiceTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 null
             );
-            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
+            applicationService.applyExtractedCvData(TEST_APPLICATION_ID.toString(), extracted);
 
             assertThat(application.getApplicantFirstName()).isEqualTo("Ada");
             assertThat(application.getApplicantLastName()).isEqualTo("Lovelace");
@@ -355,7 +350,7 @@ class ApplicationServiceTest {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
+            ExtractedCvDataDTO extracted = new ExtractedCvDataDTO(
                 "Overwrite",
                 "New",
                 null,
@@ -364,14 +359,9 @@ class ApplicationServiceTest {
                 "New Street",
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 null
             );
-            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
+            applicationService.applyExtractedCvData(TEST_APPLICATION_ID.toString(), extracted);
 
             // Existing field should not be overwritten
             assertThat(application.getApplicantFirstName()).isEqualTo("Existing");

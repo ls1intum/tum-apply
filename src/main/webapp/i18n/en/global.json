@@ -350,7 +350,8 @@
     "applicationPage1": {
       "description": "Enter your personal details and contact information.",
       "aiExtractionHelper": "Save time by letting our AI automatically fill your details from your CV.",
-      "aiExtractionConsent": "By clicking this button, your CV will be sent to an AI service (Azure OpenAI) to extract your details.",
+      "aiExtractionConsent": "Processed via Azure OpenAI",
+      "aiExtractionCheckInfo": "Please check the extracted information for completeness and accuracy.",
       "aiExtractionButton": "AI Extraction",
       "aiExtractionLoading": "Extracting...",
       "aiExtractionFailed": {
@@ -396,7 +397,7 @@
       "label": {
         "gradeUpperLimit": "Highest Achievable Grade",
         "gradeLowerLimit": "Lowest Passing Grade",
-        "bachelorCertificate": "Bachelor Certificate",
+        "bachelorCertificate": "Bachelor's Certificate",
         "bachelorDegreeName": "Bachelor’s Study Program",
         "bachelorDegreeUniversity": "University of your Bachelor’s Degree",
         "bachelorGrade": "Final Bachelor Grade",

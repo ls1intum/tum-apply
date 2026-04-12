@@ -79,10 +79,35 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AdminExportTaskDTO'}
-  /api/ai/extractPdfData:
+  /api/ai/extractCertificateData:
     put:
       tags: [ai-resource]
-      operationId: extractPdfData
+      operationId: extractCertificateData
+      parameters:
+      - name: applicationId
+        in: query
+        required: true
+        schema: {type: string}
+      - name: docId
+        in: query
+        required: true
+        schema:
+          type: array
+          items: {type: string}
+      - name: saveData
+        in: query
+        required: false
+        schema: {type: boolean, default: false}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExtractedCertificateDataDTO'}
+  /api/ai/extractCvData:
+    put:
+      tags: [ai-resource]
+      operationId: extractCvData
       parameters:
       - name: applicationId
         in: query
@@ -92,12 +117,16 @@ paths:
         in: query
         required: true
         schema: {type: string}
+      - name: saveData
+        in: query
+        required: false
+        schema: {type: boolean, default: false}
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
+              schema: {$ref: '#/components/schemas/ExtractedCvDataDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -2962,19 +2991,23 @@ components:
         interviewProcessId: {type: string, format: uuid}
         isBooked: {type: boolean}
         startDateTime: {type: string, format: date-time}
-    ExtractedApplicationDataDTO:
+    ExtractedCertificateDataDTO:
       type: object
       properties:
         bachelorDegreeName: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
-        city: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        linkedinUrl: {type: string}
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
+    ExtractedCvDataDTO:
+      type: object
+      properties:
+        city: {type: string}
+        education: {$ref: '#/components/schemas/ExtractedCertificateDataDTO'}
+        firstName: {type: string}
+        lastName: {type: string}
+        linkedinUrl: {type: string}
         phoneNumber: {type: string}
         postalCode: {type: string}
         street: {type: string}

@@ -1,60 +1,133 @@
-<p-divider layout="horizontal">
-  <span>{{ sectionTitleKey() | translate }}</span>
-</p-divider>
-
-<div class="flex flex-col lg:flex-row lg:gap-8">
-  <div class="w-full lg:w-1/2">
-    @if (applicationId(); as currentApplicationId) {
-      <div class="mb-6 w-full">
-        <div>
-          <span>{{ certificateLabelKey() | translate }}</span>
-          @if (required()) {
-            <span class="required"> *</span>
-          }
-          <fa-icon
-            class="icon"
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-            tooltipPosition="top"
+<div class="w-full">
+  <!-- Top row: uploads for bachelor and master side-by-side -->
+  <div class="w-full grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
+    <div class="w-full">
+      @if (applicationId(); as currentApplicationId) {
+        <div class="mb-6 w-full">
+          <div>
+            <span>{{ bachelorCertificateLabelKey() | translate }}</span>
+            @if (required()) {
+              <span class="required"> *</span>
+            }
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+              tooltipPosition="top"
+            />
+          </div>
+          <jhi-upload-button
+            [documentType]="bachelorDocumentType()"
+            [applicationId]="currentApplicationId"
+            [(documentIds)]="bachelorDocumentIds"
+            [deferUpload]="deferUpload()"
+            (queuedFilesChange)="bachelorQueuedFilesChange.emit($event)"
           />
         </div>
-        <jhi-upload-button
-          [documentType]="documentType()"
-          [applicationId]="currentApplicationId"
-          [(documentIds)]="documentIds"
-          [deferUpload]="deferUpload()"
-          (queuedFilesChange)="queuedFilesChange.emit($event)"
+      }
+    </div>
+
+    <div class="w-full">
+      @if (applicationId(); as currentApplicationId) {
+        <div class="mb-6 w-full">
+          <div>
+            <span>{{ masterCertificateLabelKey() | translate }}</span>
+            @if (required()) {
+              <span class="required"> *</span>
+            }
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+              tooltipPosition="top"
+            />
+          </div>
+          <jhi-upload-button
+            [documentType]="masterDocumentType()"
+            [applicationId]="currentApplicationId"
+            [(documentIds)]="masterDocumentIds"
+            [deferUpload]="deferUpload()"
+            (queuedFilesChange)="masterQueuedFilesChange.emit($event)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- AI extraction box (between uploads and string inputs) -->
+  @if (aiFeaturesEnabled()) {
+    @if (applicationId(); as currentApplicationId) {
+      <div class="mb-4 w-full">
+        <jhi-ai-extraction-box
+          [helperTextKey]="'entity.applicationPage1.aiExtractionHelper'"
+          [consentTextKey]="'entity.applicationPage1.aiExtractionConsent'"
+          [loading]="isExtractingAi()"
+          [buttonLabelKey]="'entity.applicationPage1.aiExtractionButton'"
+          [disabled]="aiDisabled()"
+          (extract)="extract.emit()"
         />
       </div>
     }
-  </div>
+  }
 
-  <div class="flex flex-1 flex-col">
-    <jhi-string-input
-      class="mr-4 inline-block w-full"
-      [label]="degreeNameLabelKey() | translate"
-      [required]="required()"
-      [control]="degreeNameControl()"
-    />
+  <!-- Bottom row: string inputs for bachelor and master side-by-side -->
+  <div class="w-full grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
+    <div class="flex flex-col w-full">
+      <jhi-string-input
+        class="mr-4 block w-full"
+        [label]="bachelorDegreeNameLabelKey() | translate"
+        [required]="required()"
+        [control]="bachelorDegreeNameControl()"
+      />
 
-    <jhi-string-input
-      class="mr-4 inline-block w-full"
-      [label]="degreeUniversityLabelKey() | translate"
-      [required]="required()"
-      [control]="degreeUniversityControl()"
-    />
+      <jhi-string-input
+        class="mr-4 block w-full"
+        [label]="bachelorDegreeUniversityLabelKey() | translate"
+        [required]="required()"
+        [control]="bachelorDegreeUniversityControl()"
+      />
 
-    <jhi-string-input
-      class="mr-4 inline-block w-full"
-      [label]="gradeLabelKey() | translate"
-      [required]="required()"
-      [control]="gradeControl()"
-      icon="circle-info"
-      [tooltipText]="gradeTooltipKey() | translate"
-      [helperTextLeft]="gradeHelperText()"
-      [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
-      (helperTextRightClick)="changeScale.emit()"
-      [warningText]="gradeWarningText()"
-    />
+      <jhi-string-input
+        class="mr-4 block w-full"
+        [label]="bachelorGradeLabelKey() | translate"
+        [required]="required()"
+        [control]="bachelorGradeControl()"
+        icon="circle-info"
+        [tooltipText]="bachelorGradeTooltipKey() | translate"
+        [helperTextLeft]="bachelorGradeHelperText()"
+        [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+        (helperTextRightClick)="bachelorChangeScale.emit()"
+        [warningText]="bachelorGradeWarningText()"
+      />
+    </div>
+
+    <div class="flex flex-col w-full">
+      <jhi-string-input
+        class="mr-4 block w-full"
+        [label]="masterDegreeNameLabelKey() | translate"
+        [required]="required()"
+        [control]="masterDegreeNameControl()"
+      />
+
+      <jhi-string-input
+        class="mr-4 block w-full"
+        [label]="masterDegreeUniversityLabelKey() | translate"
+        [required]="required()"
+        [control]="masterDegreeUniversityControl()"
+      />
+
+      <jhi-string-input
+        class="mr-4 block w-full"
+        [label]="masterGradeLabelKey() | translate"
+        [required]="required()"
+        [control]="masterGradeControl()"
+        icon="circle-info"
+        [tooltipText]="masterGradeTooltipKey() | translate"
+        [helperTextLeft]="masterGradeHelperText()"
+        [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+        (helperTextRightClick)="masterChangeScale.emit()"
+        [warningText]="masterGradeWarningText()"
+      />
+    </div>
   </div>
 </div>

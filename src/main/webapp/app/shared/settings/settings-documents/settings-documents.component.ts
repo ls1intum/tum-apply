@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -12,9 +12,12 @@ import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { AccountService } from 'app/core/auth/account.service';
-import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map, shareReplay } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 import { DialogService } from 'primeng/dynamicdialog';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import {
@@ -29,6 +32,10 @@ import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import TranslateDirective from '../../language/translate.directive';
+
+// Track ongoing extractions per application id so spinner/requests survive navigation.
+const activeExtractions = new Map<string, Observable<ExtractedCertificateDataDTO>>();
 
 interface NormalizedSettingsDocumentsFormValue {
   bachelorDegreeName: string;
@@ -56,6 +63,7 @@ interface NormalizedSettingsDocumentsFormValue {
     TooltipModule,
     FontAwesomeModule,
     UploadButtonComponent,
+    TranslateDirective,
   ],
   templateUrl: './settings-documents.component.html',
 })
@@ -78,7 +86,6 @@ export class SettingsDocumentsComponent {
   // Document tracking for upload components
   bachelorDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   masterDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   referenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   // Placeholder ID to render the same upload UI structure as application page 2.
@@ -87,6 +94,9 @@ export class SettingsDocumentsComponent {
   saving = signal(false);
   hasLoaded = signal(false);
   hasInitialLimitsSet = signal(false);
+  // AI extraction
+  aiFeaturesEnabled = signal<boolean>(false);
+  isExtractingAi = signal<boolean>(false);
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
   lastBachelorGrade = signal<string>(this.form.controls.bachelorGrade.value ?? '');
@@ -94,12 +104,10 @@ export class SettingsDocumentsComponent {
   initialFormValue = signal(this.form.getRawValue());
   initialBachelorDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   initialMasterDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   initialReferenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   queuedBachelorFiles = signal<File[]>([]);
   queuedMasterFiles = signal<File[]>([]);
-  queuedCvFiles = signal<File[]>([]);
   queuedReferenceFiles = signal<File[]>([]);
 
   hasFormChanges = computed(() => this.hasLoaded() && !deepEqual(this.normalizedFormValue(), this.initialFormValue()));
@@ -108,7 +116,6 @@ export class SettingsDocumentsComponent {
     return (
       !deepEqual(this.normalizedDocuments(this.bachelorDocuments()), this.normalizedDocuments(this.initialBachelorDocuments())) ||
       !deepEqual(this.normalizedDocuments(this.masterDocuments()), this.normalizedDocuments(this.initialMasterDocuments())) ||
-      !deepEqual(this.normalizedDocuments(this.cvDocuments()), this.normalizedDocuments(this.initialCvDocuments())) ||
       !deepEqual(this.normalizedDocuments(this.referenceDocuments()), this.normalizedDocuments(this.initialReferenceDocuments()))
     );
   });
@@ -142,6 +149,9 @@ export class SettingsDocumentsComponent {
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
   private dialogService = inject(DialogService);
+  private aiApi = inject(AiResourceApi);
+  private userApi = inject(UserResourceApi);
+  private destroyRef = inject(DestroyRef);
 
   private currentLang = toSignal(this.translateService.onLangChange);
   private formChangeTick = toSignal(this.form.valueChanges.pipe(map(() => Date.now())), { initialValue: 0 });
@@ -169,7 +179,20 @@ export class SettingsDocumentsComponent {
 
   constructor() {
     void this.loadProfile();
+    void this.loadAiConsent();
   }
+
+  // Restores spinner and re-subscribes if a certificate extraction is still in flight
+  private restoreExtractionState = effect(() => {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const active$ = activeExtractions.get(appId);
+    if (active$) {
+      this.isExtractingAi.set(true);
+      this.subscribeToExtraction(active$, appId);
+    }
+  });
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
     const currentUpperLimit =
@@ -277,10 +300,6 @@ export class SettingsDocumentsComponent {
     this.queuedMasterFiles.set(files);
   }
 
-  onCvQueuedFilesChange(files: File[]): void {
-    this.queuedCvFiles.set(files);
-  }
-
   onReferenceQueuedFilesChange(files: File[]): void {
     this.queuedReferenceFiles.set(files);
   }
@@ -342,6 +361,70 @@ export class SettingsDocumentsComponent {
     }
   }
 
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiFeaturesEnabled.set(isEnabled);
+    } catch {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
+  }
+
+  extractAiData(): void {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const bachelorDocs = this.bachelorDocuments() ?? [];
+    const masterDocs = this.masterDocuments() ?? [];
+    const docs = [...bachelorDocs, ...masterDocs];
+    if (docs.length === 0) return;
+
+    const docIds = docs.map(d => d.id).filter(Boolean) as string[];
+    if (docIds.length === 0) return;
+
+    this.isExtractingAi.set(true);
+
+    let extraction$ = activeExtractions.get(appId);
+    if (!extraction$) {
+      extraction$ = this.aiApi.extractCertificateData(appId, docIds, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      activeExtractions.set(appId, extraction$);
+    }
+
+    this.subscribeToExtraction(extraction$, appId);
+  }
+
+  private subscribeToExtraction(extraction$: Observable<ExtractedCertificateDataDTO>, appId: string): void {
+    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: extractedData => {
+        const form = this.form;
+        const patch: Record<string, string> = {};
+        const setIfEmpty = (formKey: string, value: string | undefined): void => {
+          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+            patch[formKey] = value;
+          }
+        };
+
+          setIfEmpty('bachelorDegreeName', extractedData.bachelorDegreeName);
+          setIfEmpty('bachelorDegreeUniversity', extractedData.bachelorUniversity ?? extractedData.bachelorUniversity);
+          setIfEmpty('bachelorGrade', extractedData.bachelorGrade);
+          setIfEmpty('masterDegreeName', extractedData.masterDegreeName);
+          setIfEmpty('masterDegreeUniversity', extractedData.masterUniversity ?? extractedData.masterUniversity);
+          setIfEmpty('masterGrade', extractedData.masterGrade);
+
+
+        form.patchValue(patch);
+
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+      error: () => {
+        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+    });
+  }
+
   private updateBachelorGradeLimits(grade: string): void {
     this.lastBachelorGrade.set(grade);
     const limits = getDetectedGradeLimitsPatch(grade);
@@ -397,19 +480,16 @@ export class SettingsDocumentsComponent {
     this.initialFormValue.set(this.normalizedFormValue());
     this.initialBachelorDocuments.set(this.normalizedDocuments(this.bachelorDocuments()));
     this.initialMasterDocuments.set(this.normalizedDocuments(this.masterDocuments()));
-    this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
     this.initialReferenceDocuments.set(this.normalizedDocuments(this.referenceDocuments()));
 
     this.queuedBachelorFiles.set([]);
     this.queuedMasterFiles.set([]);
-    this.queuedCvFiles.set([]);
     this.queuedReferenceFiles.set([]);
   }
 
   private applyProfileDocumentIds(documentIds: ApplicationDocumentIdsDTO): void {
     this.bachelorDocuments.set(documentIds.bachelorDocumentDictionaryIds ?? []);
     this.masterDocuments.set(documentIds.masterDocumentDictionaryIds ?? []);
-    this.cvDocuments.set(documentIds.cvDocumentDictionaryId != null ? [documentIds.cvDocumentDictionaryId] : []);
     this.referenceDocuments.set(documentIds.referenceDocumentDictionaryIds ?? []);
   }
 
@@ -424,7 +504,6 @@ export class SettingsDocumentsComponent {
       this.queuedMasterFiles(),
       this.masterDocuments,
     );
-    await this.uploadQueuedByType(DocumentInformationHolderDTODocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
     await this.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.Reference,
       this.queuedReferenceFiles(),
@@ -435,7 +514,6 @@ export class SettingsDocumentsComponent {
   private async saveDeferredDocumentChanges(): Promise<void> {
     await this.commitDocumentTypeChanges(this.initialBachelorDocuments(), this.bachelorDocuments());
     await this.commitDocumentTypeChanges(this.initialMasterDocuments(), this.masterDocuments());
-    await this.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
     await this.commitDocumentTypeChanges(this.initialReferenceDocuments(), this.referenceDocuments());
     await this.saveQueuedDocuments();
   }

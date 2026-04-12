@@ -2,7 +2,8 @@ package de.tum.cit.aet.application.service;
 
 import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
 
-import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCvDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -541,7 +542,7 @@ public class ApplicationService {
     /**
      * Retrieves the ApplicationDetailDTO fitting to the application id
      *
-     * @param applicationId
+     * @param applicationId the UUID of the application
      * @return ApplicationDetailDTO for application id
      */
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
@@ -645,13 +646,13 @@ public class ApplicationService {
     }
 
     /**
-     * Applies AI-extracted PDF data to an application, only updating fields that
+     * Applies AI-extracted CV data to an application, only updating fields that
      * are currently null or blank. This ensures existing data is never overwritten.
      *
      * @param applicationId the ID of the application to update
      * @param extracted     the extracted data from the AI service
      */
-    public void applyExtractedPdfData(String applicationId, ExtractedApplicationDataDTO extracted) {
+    public void applyExtractedCvData(String applicationId, ExtractedCvDataDTO extracted) {
         Application application = assertCanManageApplication(UUID.fromString(applicationId));
 
         setIfEmpty(application::getApplicantFirstName, application::setApplicantFirstName, extracted.firstName());
@@ -662,6 +663,24 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantStreet, application::setApplicantStreet, extracted.street());
         setIfEmpty(application::getApplicantCity, application::setApplicantCity, extracted.city());
         setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());
+        setExtractedCertificateData(application, extracted.education());
+        applicationRepository.save(application);
+    }
+
+    /**
+     * Applies AI-extracted certificate data to an application, only updating fields that
+     * are currently null or blank. This ensures existing data is never overwritten.
+     *
+     * @param applicationId the ID of the application to update
+     * @param extracted     the extracted data from the AI service
+     */
+    public void applyExtractedCertificateData(String applicationId, ExtractedCertificateDataDTO extracted) {
+        Application application = assertCanManageApplication(UUID.fromString(applicationId));
+        setExtractedCertificateData(application, extracted);
+        applicationRepository.save(application);
+    }
+
+    private void setExtractedCertificateData(Application application, ExtractedCertificateDataDTO extracted) {
         setIfEmpty(
             application::getApplicantBachelorDegreeName,
             application::setApplicantBachelorDegreeName,
@@ -673,11 +692,17 @@ public class ApplicationService {
             extracted.bachelorUniversity()
         );
         setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.bachelorGrade());
-        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
-        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
+        setIfEmpty(
+            application::getApplicantMasterDegreeName,
+            application::setApplicantMasterDegreeName,
+            extracted.masterDegreeName()
+        );
+        setIfEmpty(
+            application::getApplicantMasterUniversity,
+            application::setApplicantMasterUniversity,
+            extracted.masterUniversity()
+        );
         setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
-
-        applicationRepository.save(application);
     }
 
     /**

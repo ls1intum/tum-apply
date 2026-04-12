@@ -1,17 +1,18 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCvDataDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -71,20 +72,44 @@ public class AiResource {
     }
 
     /**
-     * Extracts applicant data from a PDF file using AI and persists the extracted
+     * Extracts applicant data from a CV using AI and persists the extracted
      * values into the application entity.
      *
      * @param applicationId the ID of the application to update
-     * @param docId         the ID of the document dictionary entry for the PDF
+     * @param docId         the ID of the document dictionary entry for the CV
      * @return a ResponseEntity containing the extracted data
      */
     @ApplicantOrAdmin
-    @PutMapping(value = "extractPdfData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
+    @PutMapping(value = "extractCvData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExtractedCvDataDTO> extractCvData(
         @RequestParam("applicationId") String applicationId,
-        @RequestParam("docId") String docId
+        @RequestParam("docId") String docId,
+        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
     ) {
-        log.info("PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
-        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docId));
+        log.info("PUT /api/ai/extractCvData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
+        return ResponseEntity.ok(aiService.extractAndPersistCvData(applicationId, docId, saveData));
+    }
+
+    /**
+     * Extracts applicant data from certificates using AI and persists the extracted
+     * values into the application entity.
+     *
+     * @param applicationId the ID of the application to update
+     * @param docIds         the IDs of the document dictionary entry for the certificates
+     * @return a ResponseEntity containing the extracted data
+     */
+    @ApplicantOrAdmin
+    @PutMapping(value = "extractCertificateData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExtractedCertificateDataDTO> extractCertificateData(
+        @RequestParam("applicationId") String applicationId,
+        @RequestParam("docId") List<String> docIds,
+        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
+    ) {
+        log.info(
+            "PUT /api/ai/extractCertificateData - PDF extraction request received (applicationId={}, docIds={}",
+            applicationId,
+            docIds
+        );
+        return ResponseEntity.ok(aiService.extractAndPersistCertificateData(applicationId, docIds, saveData));
     }
 }

@@ -1,8 +1,8 @@
-import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Observable, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateDirective } from 'app/shared/language';
@@ -15,11 +15,18 @@ import {
   resolveGradingScaleLimits,
 } from 'app/shared/util/grading-scale.utils';
 
-import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
-import { DocumentInformationHolderDTO } from '../../../generated/model/document-information-holder-dto';
-import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
+import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
+import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { firstValueFrom } from 'rxjs';
+import { ToastService } from 'app/service/toast-service';
+
+const activeExtractions = new Map<string, Observable<ExtractedCertificateDataDTO>>();
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
@@ -69,6 +76,14 @@ export default class ApplicationCreationPage2Component {
   formbuilder = inject(FormBuilder);
   translateService = inject(TranslateService);
   dialogService = inject(DialogService);
+  private aiApi = inject(AiResourceApi);
+  private toastService = inject(ToastService);
+  private userApi = inject(UserResourceApi);
+  private destroyRef = inject(DestroyRef);
+
+  constructor() {
+    void this.loadAiConsent();
+  }
 
   currentLang = toSignal(this.translateService.onLangChange);
 
@@ -87,6 +102,9 @@ export default class ApplicationCreationPage2Component {
 
   hasInitialized = signal(false);
   hasInitialLimitsSet = signal(false);
+
+  aiFeaturesEnabled = signal<boolean>(false);
+  isExtractingAi = signal<boolean>(false);
 
   bachelorDocsValid = computed(() => (this.documentIdsBachelorTranscript()?.length ?? 0) > 0);
   masterDocsValid = computed(() => (this.documentIdsMasterTranscript()?.length ?? 0) > 0);
@@ -185,7 +203,28 @@ export default class ApplicationCreationPage2Component {
     });
   });
 
-  private bachelorGradeEffect = effect(() => {
+  // Restores spinner and re-subscribes if a certificate extraction is still in flight
+  private restoreExtractionState = effect(() => {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const active$ = activeExtractions.get(appId);
+    if (active$) {
+      this.isExtractingAi.set(true);
+      this.subscribeToExtraction(active$, appId);
+    }
+  });
+
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiFeaturesEnabled.set(isEnabled);
+    } catch {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
+  }
+
+  public bachelorGradeEffect = effect(() => {
     if (!this.hasInitialLimitsSet()) return;
 
     const grade = this.bachelorGradeValue();
@@ -274,6 +313,61 @@ export default class ApplicationCreationPage2Component {
           this.masterLimitsManuallySet.set(true);
         }
       }
+    });
+  }
+
+  extractAiData(): void {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const bachelorDocs = this.documentIdsBachelorTranscript() ?? [];
+    const masterDocs = this.documentIdsMasterTranscript() ?? [];
+    const docs = [...bachelorDocs, ...masterDocs];
+    if (docs.length === 0) return;
+
+    const docIds = docs.map(d => d.id).filter(Boolean) as string[];
+    if (docIds.length === 0) return;
+
+    this.isExtractingAi.set(true);
+
+    let extraction$ = activeExtractions.get(appId);
+    if (!extraction$) {
+      extraction$ = this.aiApi.extractCertificateData(appId, docIds, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      activeExtractions.set(appId, extraction$);
+    }
+
+    this.subscribeToExtraction(extraction$, appId);
+  }
+
+  private subscribeToExtraction(extraction$: Observable<ExtractedCertificateDataDTO>, appId: string): void {
+    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: extractedData => {
+        const form = this.page2Form;
+        const patch: Record<string, string> = {};
+        const setIfEmpty = (formKey: string, value: string | undefined): void => {
+          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+            patch[formKey] = value;
+          }
+        };
+
+          setIfEmpty('bachelorDegreeName', extractedData.bachelorDegreeName);
+          setIfEmpty('bachelorDegreeUniversity', extractedData.bachelorUniversity);
+          setIfEmpty('bachelorGrade', extractedData.bachelorGrade);
+
+          setIfEmpty('masterDegreeName', extractedData.masterDegreeName);
+          setIfEmpty('masterDegreeUniversity', extractedData.masterUniversity);
+          setIfEmpty('masterGrade', extractedData.masterGrade);
+
+        form.patchValue(patch);
+
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+      error: () => {
+        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
     });
   }
 

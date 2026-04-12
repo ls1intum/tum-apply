@@ -3,6 +3,40 @@
     <div [innerHTML]="('settings.applicationInformation.description' | translate).replace(/\n/g, '<br>')"></div>
     <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" (click)="onSave()" [disabled]="!hasChanges() || !isValid()" />
   </div>
+  @if (applicationIdForDocuments(); as applicationId) {
+    <p-divider layout="horizontal">
+      <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
+    </p-divider>
+    <div class="w-full mb-6">
+      <label>
+        <span>{{ 'entity.applicationPage1.label.curriculumVitae' | translate }}</span>
+      </label>
+      <div class="flex flex-col gap-4">
+        <div class="min-w-0 flex-1">
+          <jhi-upload-button
+            documentType="CV"
+            [applicationId]="applicationId"
+            [(documentIds)]="cvDocuments"
+            [allowMultiple]="false"
+            [compact]="true"
+            [deferUpload]="true"
+            (queuedFilesChange)="onCvQueuedFilesChange($event)"
+          />
+        </div>
+
+        @if (aiFeaturesEnabled()) {
+          <jhi-ai-extraction-box
+            [helperTextKey]="'entity.applicationPage1.aiExtractionHelper'"
+            [consentTextKey]="'entity.applicationPage1.aiExtractionConsent'"
+            [loading]="isExtractingAi()"
+            [buttonLabelKey]="'entity.applicationPage1.aiExtractionButton'"
+            [disabled]="cvDocuments() == null || cvDocuments()?.length === 0"
+            (extract)="extractAiData()"
+          />
+        }
+      </div>
+    </div>
+  }
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="form-row">
     <div class="form-field">

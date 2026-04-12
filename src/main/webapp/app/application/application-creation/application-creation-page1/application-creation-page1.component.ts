@@ -17,19 +17,19 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
-import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { ExtractedCvDataDTO } from 'app/generated/model/extracted-cv-data-dto';
 import { Observable, shareReplay } from 'rxjs';
-import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
-const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
+const activeExtractions = new Map<string, Observable<ExtractedCvDataDTO>>();
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -85,14 +85,14 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     UploadButtonComponent,
     FontAwesomeModule,
     TooltipModule,
-    ButtonComponent,
-    ProgressSpinnerComponent,
-    AiConsentModalComponent,
+    AiExtractionBoxComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
 })
 export default class ApplicationCreationPage1Component {
+  protected readonly UserShortDTORolesEnum = UserShortDTORolesEnum;
+
   data = model.required<ApplicationCreationPage1Data>();
 
   applicationIdForDocuments = input<string | undefined>();
@@ -100,7 +100,7 @@ export default class ApplicationCreationPage1Component {
 
   valid = output<boolean>();
   changed = output<boolean>();
-  educationDataExtracted = output<ExtractedApplicationDataDTO>();
+  educationDataExtracted = output<ExtractedCertificateDataDTO | undefined>();
 
   cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
@@ -129,7 +129,6 @@ export default class ApplicationCreationPage1Component {
   formbuilder = inject(FormBuilder);
   aiFeaturesEnabled = signal<boolean>(false);
   isExtractingAi = signal<boolean>(false);
-  aiConsentModalVisible = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
@@ -236,14 +235,6 @@ export default class ApplicationCreationPage1Component {
     });
   }
 
-  openAiConsentModal(): void {
-    this.aiConsentModalVisible.set(true);
-  }
-
-  closeAiConsentModal(): void {
-    this.aiConsentModalVisible.set(false);
-  }
-
   cvDocsSetValidity(cvDocs: DocumentInformationHolderDTO[] | undefined): void {
     this.currentCvDocs.set(cvDocs);
     if (cvDocs === undefined || cvDocs.length === 0) {
@@ -299,7 +290,7 @@ export default class ApplicationCreationPage1Component {
     // 2) Start or reuse an in-flight extraction request
     let extraction$ = activeExtractions.get(appId);
     if (!extraction$) {
-      extraction$ = this.aiApi.extractPdfData(appId, docId).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      extraction$ = this.aiApi.extractCvData(appId, docId, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(appId, extraction$);
     }
 
@@ -307,7 +298,7 @@ export default class ApplicationCreationPage1Component {
     this.subscribeToExtraction(extraction$, appId);
   }
 
-  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
+  private subscribeToExtraction(extraction$: Observable<ExtractedCvDataDTO>, appId: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
         // 1) Patch the page 1 form with personal fields, only filling empty ones
@@ -330,8 +321,10 @@ export default class ApplicationCreationPage1Component {
 
         form.patchValue(patch);
 
+        const education = extractedData.education;
+
         // 2) Emit education fields to the parent for page 2 prefill
-        this.educationDataExtracted.emit(extractedData);
+        this.educationDataExtracted.emit(education);
         activeExtractions.delete(appId);
         this.isExtractingAi.set(false);
       },

@@ -1,14 +1,20 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, effect, inject, signal, DestroyRef } from '@angular/core';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable, shareReplay } from 'rxjs';
+import { ExtractedCvDataDTO } from 'app/generated/model/extracted-cv-data-dto';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
@@ -19,6 +25,11 @@ import { SelectComponent, SelectOption } from '../../components/atoms/select/sel
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
+import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+
+const activeExtractions = new Map<string, Observable<ExtractedCvDataDTO>>();
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -63,6 +74,8 @@ interface ApplicationInformationSnapshot {
     TranslateModule,
     TranslateDirective,
     ButtonComponent,
+    UploadButtonComponent,
+    AiExtractionBoxComponent,
   ],
   templateUrl: './application-information-settings.component.html',
   standalone: true,
@@ -92,9 +105,12 @@ export class ApplicationInformationSettingsComponent {
     if (initial === undefined) {
       return false;
     }
-    return !deepEqual(this.toSnapshot(this.data()), initial);
+    const personalChanged = !deepEqual(this.toSnapshot(this.data()), initial);
+    const cvChanged = !deepEqual(this.normalizedDocuments(this.cvDocuments()), this.normalizedDocuments(this.initialCvDocuments()));
+    return personalChanged || cvChanged;
   });
 
+  protected readonly UserShortDTORolesEnum = UserShortDTORolesEnum;
   readonly disabledEmail = true;
 
   readonly minDate = new Date(1900, 0, 1);
@@ -110,6 +126,10 @@ export class ApplicationInformationSettingsComponent {
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
+  http = inject(HttpClient);
+  aiApi = inject(AiResourceApi);
+  userApi = inject(UserResourceApi);
+  destroyRef = inject(DestroyRef);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -160,6 +180,18 @@ export class ApplicationInformationSettingsComponent {
     });
   });
 
+  // Document (CV) handling
+  cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+  queuedCvFiles = signal<File[]>([]);
+
+  // Placeholder ID to render the same upload UI structure as application page 2.
+  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+
+  // AI extraction
+  aiFeaturesEnabled = signal<boolean>(false);
+  isExtractingAi = signal<boolean>(false);
+
   formEffect = effect(onCleanup => {
     const form = this.applicationInfoForm();
     const data = this.data();
@@ -196,15 +228,29 @@ export class ApplicationInformationSettingsComponent {
     });
   });
 
+  // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
+  private restoreExtractionState = effect(() => {
+    const appId = this.applicationIdForDocuments();
+    if (!appId) return;
+
+    const active$ = activeExtractions.get(appId);
+    if (active$) {
+      this.isExtractingAi.set(true);
+      this.subscribeToExtraction(active$, appId);
+    }
+  });
+
   constructor() {
     // Load initial data from backend API
     void this.loadApplicationInformation();
+    void this.loadAiConsent();
   }
 
   async loadApplicationInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
       const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
+      const profileDocumentIds = await firstValueFrom(this.applicantApi.getApplicantProfileDocumentIds());
 
       // Map ApplicantDTO to ApplicationInformationData
       const applicationInformation: ApplicationInformationData = {
@@ -229,6 +275,17 @@ export class ApplicationInformationSettingsComponent {
       this.loadedProfile.set(profile);
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
+      this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
+      this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
+    } catch {
+      this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
+    }
+  }
+
+  private async loadAiConsent(): Promise<void> {
+    try {
+      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
+      this.aiFeaturesEnabled.set(isEnabled);
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -250,7 +307,7 @@ export class ApplicationInformationSettingsComponent {
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
-        this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
+        this.toastService.showErrorKey('settings.personalInformation.saveFailed');
         return;
       }
 
@@ -287,11 +344,13 @@ export class ApplicationInformationSettingsComponent {
       };
 
       const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
+      await this.saveDeferredCvChanges();
       this.loadedProfile.set(updatedProfile);
-      this.toastService.showSuccessKey('settings.applicationInformation.saved');
+      this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));
+      this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
     } catch {
-      this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
+      this.toastService.showErrorKey('settings.personalInformation.saveFailed');
     }
   }
 
@@ -315,5 +374,135 @@ export class ApplicationInformationSettingsComponent {
       country: data.country?.value,
       postcode: data.postcode,
     };
+  }
+
+  // -- CV document helpers (subset of logic from SettingsDocumentsComponent) --
+  onCvQueuedFilesChange(files: File[]): void {
+    this.queuedCvFiles.set(files);
+  }
+
+  private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
+    return Array.from(docs ?? [])
+      .map(doc => ({
+        id: doc.id,
+        name: doc.name,
+        size: doc.size,
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id));
+  }
+
+  private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
+    return document.id.startsWith('temp-');
+  }
+
+  private async saveDeferredCvChanges(): Promise<void> {
+    // Commit persisted doc changes (delete/rename) for CV
+    await this.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
+    // Upload queued CV files
+    await this.uploadQueuedByType(DocumentInformationHolderDTODocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
+  }
+
+  /**
+   * Extracts personal data from the uploaded CV using AI.
+   * Logic mirrors the extraction used on the application creation page 1.
+   */
+  extractAiData(): void {
+    const appId = this.applicationIdForDocuments();
+    const cvDocs = this.cvDocuments();
+
+    if (appId === undefined || cvDocs === undefined || cvDocs.length === 0) {
+      return;
+    }
+
+    const docId = cvDocs[0].id;
+    if (!docId) return;
+
+    this.isExtractingAi.set(true);
+
+    let extraction$ = activeExtractions.get(appId);
+    if (!extraction$) {
+      extraction$ = this.aiApi.extractCvData(appId, docId, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      activeExtractions.set(appId, extraction$);
+    }
+
+    this.subscribeToExtraction(extraction$, appId);
+  }
+
+  private subscribeToExtraction(extraction$: Observable<ExtractedCvDataDTO>, appId: string): void {
+    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: extractedData => {
+        const form = this.applicationInfoForm();
+        const patch: Record<string, string> = {};
+        const setIfEmpty = (formKey: string, value: string | undefined): void => {
+          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+            patch[formKey] = value;
+          }
+        };
+
+        setIfEmpty('firstName', extractedData.firstName);
+        setIfEmpty('lastName', extractedData.lastName);
+        setIfEmpty('phoneNumber', extractedData.phoneNumber);
+        setIfEmpty('website', extractedData.website);
+        setIfEmpty('linkedIn', extractedData.linkedinUrl);
+        setIfEmpty('street', extractedData.street);
+        setIfEmpty('city', extractedData.city);
+        setIfEmpty('postcode', extractedData.postalCode);
+
+        form.patchValue(patch);
+
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+      error: () => {
+        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+        activeExtractions.delete(appId);
+        this.isExtractingAi.set(false);
+      },
+    });
+  }
+
+  private async commitDocumentTypeChanges(
+    initialDocs: DocumentInformationHolderDTO[] | undefined,
+    currentDocs: DocumentInformationHolderDTO[] | undefined,
+  ): Promise<void> {
+    const initial = this.normalizedDocuments(initialDocs);
+    const currentPersistedDocs = this.normalizedDocuments(currentDocs).filter(doc => !this.isTemporaryDocument(doc));
+    const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
+
+    const deletedIds = initial.filter(doc => !currentById.has(doc.id)).map(doc => doc.id);
+    const renamedDocs = currentPersistedDocs.flatMap(doc => {
+      const initialDoc = initial.find(existing => existing.id === doc.id);
+      const newName = doc.name?.trim();
+      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name ? [{ id: doc.id, newName }] : [];
+    });
+
+    for (const documentId of deletedIds) {
+      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
+    }
+
+    for (const document of renamedDocs) {
+      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(document.id, document.newName));
+    }
+  }
+
+  private async uploadQueuedByType(
+    documentType: DocumentInformationHolderDTODocumentTypeEnum,
+    files: File[],
+    targetSignal: { set: (_value: DocumentInformationHolderDTO[] | undefined) => void },
+  ): Promise<void> {
+    if (files.length === 0) {
+      return;
+    }
+
+    const uploadResults = await Promise.all(files.map(file => firstValueFrom(this.uploadApplicantProfileDocument(documentType, file))));
+
+    const latestResult: DocumentInformationHolderDTO[] | undefined = uploadResults[uploadResults.length - 1];
+    targetSignal.set(latestResult);
+  }
+
+  private uploadApplicantProfileDocument(documentType: DocumentInformationHolderDTODocumentTypeEnum, file: File) {
+    const formData = new FormData();
+    formData.append('files', file);
+    return this.http.post<DocumentInformationHolderDTO[]>(`/api/applicants/profile/documents/${documentType}`, formData);
   }
 }
