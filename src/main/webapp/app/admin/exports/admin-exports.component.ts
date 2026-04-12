@@ -1,5 +1,5 @@
 import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -29,11 +29,43 @@ interface ExportSection {
   buttons: ExportButton[];
 }
 
-/** How often we poll the status endpoint while a task is in progress. */
-const POLL_INTERVAL_MS = 3000;
+/**
+ * How often we poll the status endpoint while a task is in progress.
+ * Large exports take minutes — a slow cadence keeps the server load low
+ * while still surfacing progress updates often enough to reassure the
+ * admin that something is happening.
+ */
+const POLL_INTERVAL_MS = 30000;
+
+/**
+ * Size of each byte-range chunk the browser requests when downloading a
+ * finished export. Using many small chunks instead of one long-lived request
+ * sidesteps nginx's {@code proxy_max_temp_file_size} (defaults to 1 GB) and
+ * any proxy read timeouts. 64 MB gives good throughput on fast connections
+ * while still keeping per-chunk latency low on slow ones, and for a ~1.5 GB
+ * file that is still ~24 chunks — enough to keep the live progress UI
+ * refreshing at a useful cadence.
+ */
+const DOWNLOAD_CHUNK_SIZE = 64 * 1024 * 1024;
+
+/**
+ * Delays (in ms) between chunk download attempts. The first attempt fires
+ * immediately; subsequent attempts wait for the corresponding entry. The
+ * array length minus one is therefore the retry count. Short retries
+ * absorb transient failures (network blip, proxy hiccup, token-refresh
+ * race) without making the user re-click the Download button.
+ */
+const CHUNK_RETRY_BACKOFF_MS = [0, 1000, 3000, 7000];
 
 /** sessionStorage key under which we persist the live task map across page refreshes. */
 const STORAGE_KEY = 'tumapply.adminExports.tasks';
+
+interface DownloadProgress {
+  /** Bytes received so far from the server. */
+  loaded: number;
+  /** Total bytes expected, or {@code null} if the server did not set {@code Content-Length}. */
+  total: number | null;
+}
 
 /**
  * Admin "Bulk Exports" page. Each button POSTs to start a background task and
@@ -61,6 +93,14 @@ const STORAGE_KEY = 'tumapply.adminExports.tasks';
 export class AdminExportsComponent {
   /** Live task per export type — drives both the busy flag and the progress UI. */
   readonly tasks = signal<Map<AdminExportType, AdminExportTaskDTO>>(new Map());
+
+  /**
+   * Live download progress per export type. Present only while the browser
+   * is actively streaming a READY task's ZIP file. Drives the in-card
+   * "Downloading X% (Y MB / Z MB)" label and the loading state of the
+   * manual Download button.
+   */
+  readonly downloadProgress = signal<Map<AdminExportType, DownloadProgress>>(new Map());
 
   /** True while *any* task is IN_PROGRESS — used to grey out all buttons at once. */
   readonly anyBusy = computed<boolean>(() => {
@@ -95,6 +135,12 @@ export class AdminExportsComponent {
           descriptionKey: 'adminExports.buttons.jobsClosed.description',
           icon: 'database',
         },
+        {
+          type: 'JOBS_DRAFT',
+          labelKey: 'adminExports.buttons.jobsDraft.label',
+          descriptionKey: 'adminExports.buttons.jobsDraft.description',
+          icon: 'database',
+        },
       ],
     },
     {
@@ -108,11 +154,45 @@ export class AdminExportsComponent {
         },
       ],
     },
+    {
+      titleKey: 'adminExports.sections.usersAndOrgs',
+      buttons: [
+        {
+          type: 'USERS_AND_ORGS',
+          labelKey: 'adminExports.buttons.usersAndOrgs.label',
+          descriptionKey: 'adminExports.buttons.usersAndOrgs.description',
+          icon: 'database',
+        },
+      ],
+    },
+    {
+      titleKey: 'adminExports.sections.applicationsOnly',
+      buttons: [
+        {
+          type: 'APPLICATIONS_ONLY',
+          labelKey: 'adminExports.buttons.applicationsOnly.label',
+          descriptionKey: 'adminExports.buttons.applicationsOnly.description',
+          icon: 'database',
+        },
+      ],
+    },
   ];
 
   private readonly api = inject(AdminExportResourceApi);
+  private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
   private readonly pollHandles = new Map<AdminExportType, ReturnType<typeof setTimeout>>();
+  /**
+   * Monotonically increasing generation counter per export type. Every call
+   * to {@link downloadReadyTask} bumps the counter and captures the new
+   * value; the chunk loop then checks between chunks whether the map still
+   * holds its generation. If it doesn't — because a retry superseded it or
+   * because teardown cleared the map — the loop bails out silently.
+   * Using a generation counter (instead of a mutable {@code canceled} flag)
+   * keeps TypeScript's control-flow narrowing happy across {@code await}
+   * boundaries.
+   */
+  private readonly downloadGeneration = new Map<AdminExportType, number>();
 
   constructor() {
     // afterNextRender is browser-only (safe for sessionStorage) and runs
@@ -121,13 +201,15 @@ export class AdminExportsComponent {
     afterNextRender(() => void this.hydrate());
 
     // DestroyRef replaces ngOnDestroy: register a teardown callback that
-    // cancels every outstanding poll timeout so we don't leak timers when
-    // the component is torn down.
+    // cancels every outstanding poll timeout and clears the download
+    // generation map so any in-flight chunk loops bail out at their next
+    // check instead of holding on to a growing blob chain.
     inject(DestroyRef).onDestroy(() => {
       for (const handle of this.pollHandles.values()) {
         clearTimeout(handle);
       }
       this.pollHandles.clear();
+      this.downloadGeneration.clear();
     });
   }
 
@@ -139,6 +221,41 @@ export class AdminExportsComponent {
   /** Returns the live task for the given type, or undefined when there is none. */
   taskFor(type: AdminExportType): AdminExportTaskDTO | undefined {
     return this.tasks().get(type);
+  }
+
+  /** True while the browser is actively downloading a ready ZIP for this type. */
+  isDownloading(type: AdminExportType): boolean {
+    return this.downloadProgress().has(type);
+  }
+
+  /**
+   * Returns a human-friendly progress label for an in-flight download, e.g.
+   * {@code "42% (12.3 MB / 29.1 MB)"}. Falls back to a byte-count-only label
+   * when the server did not set a {@code Content-Length} header, and returns
+   * an empty string when the given type has no active download.
+   */
+  downloadProgressLabel(type: AdminExportType): string {
+    const progress = this.downloadProgress().get(type);
+    if (progress === undefined) return '';
+    if (progress.total === null || progress.total === 0) {
+      return this.formatBytes(progress.loaded);
+    }
+    const percent = Math.floor((progress.loaded / progress.total) * 100);
+    return `${percent}% (${this.formatBytes(progress.loaded)} / ${this.formatBytes(progress.total)})`;
+  }
+
+  /**
+   * Re-triggers the download for a task that is already in the {@code READY}
+   * state. Used both for the "Download" button on every ready task and for
+   * recovery after an interrupted download — the server-side task remains
+   * available until its TTL expires, so the client can re-request the file
+   * any number of times.
+   */
+  retryDownload(type: AdminExportType): void {
+    const task = this.tasks().get(type);
+    if (task?.status !== AdminExportTaskDTOStatusEnum.Ready) return;
+    if (this.isDownloading(type)) return;
+    void this.downloadReadyTask(type, task);
   }
 
   /**
@@ -244,7 +361,7 @@ export class AdminExportsComponent {
         return;
       }
       if (updated.status === AdminExportTaskDTOStatusEnum.Ready) {
-        await this.downloadReadyTask(type, updated);
+        void this.downloadReadyTask(type, updated);
       } else {
         this.toastService.showErrorKey('adminExports.toast.buildFailed');
         this.clearStoredTask(type);
@@ -259,24 +376,192 @@ export class AdminExportsComponent {
     }
   }
 
+  /**
+   * Streams a READY task's ZIP to the browser in {@link DOWNLOAD_CHUNK_SIZE}
+   * byte chunks using HTTP {@code Range} requests, reporting progress after
+   * every chunk.
+   *
+   * <p>A single long-lived download is fragile for GB-scale exports:
+   * <ul>
+   *   <li>nginx's {@code proxy_max_temp_file_size} defaults to 1 GB, which
+   *       the full admin export exceeds; anything above that cap terminates
+   *       the response.</li>
+   *   <li>Any proxy or server read timeout can kill the response mid-flight.</li>
+   *   <li>The browser has to hold the full {@code Blob} in memory at once.</li>
+   * </ul>
+   * Chunking avoids all three: each chunk is a fresh HTTP request that
+   * finishes in seconds, so no single response is ever long-lived enough or
+   * large enough to hit those limits. The chunks are accumulated in an
+   * array and combined into a single {@code Blob} only once, at the end,
+   * right before handing it to the browser.
+   *
+   * <p>The task itself is intentionally <em>not</em> removed from the signal
+   * on either success or failure: on success the user may want to re-download
+   * (e.g. they lost the file) and on failure they need to retry. The
+   * sessionStorage entry is cleared on success so a page refresh starts
+   * clean, but the in-memory task stays so the Download button keeps working
+   * until the server's TTL expires the task.
+   */
   private async downloadReadyTask(type: AdminExportType, task: AdminExportTaskDTO): Promise<void> {
     if (task.taskId === undefined) return;
+    // Bump the generation counter for this type. Any previously running
+    // download loop for the same type sees its generation mismatch on the
+    // next check and bails silently.
+    const generation = (this.downloadGeneration.get(type) ?? 0) + 1;
+    this.downloadGeneration.set(type, generation);
+
+    const taskId = task.taskId;
+    const url = `/api/admin/exports/download/${encodeURIComponent(taskId)}`;
+
+    this.setDownloadProgress(type, 0, null);
+
+    const chunks: Blob[] = [];
+    let nextOffset = 0;
+    let total: number | null = null;
+    let filename: string | null = null;
+
     try {
-      const response = await firstValueFrom(this.api.download(task.taskId));
-      const blob = response.body;
-      if (!blob) {
-        this.toastService.showErrorKey('adminExports.toast.downloadError');
-        return;
+      while (total === null || nextOffset < total) {
+        if (this.downloadGeneration.get(type) !== generation) return;
+        const chunkEndExclusive = total === null ? nextOffset + DOWNLOAD_CHUNK_SIZE : Math.min(nextOffset + DOWNLOAD_CHUNK_SIZE, total);
+        // HTTP Range header end is inclusive, so we subtract 1.
+        const rangeHeader = `bytes=${nextOffset}-${chunkEndExclusive - 1}`;
+        const response = await this.fetchChunkWithRetry(url, rangeHeader, type, generation);
+        if (this.downloadGeneration.get(type) !== generation) return;
+        const chunk = response.body;
+        if (chunk === null) {
+          throw new Error('Empty chunk body');
+        }
+        chunks.push(chunk);
+        nextOffset += chunk.size;
+
+        if (total === null) {
+          // First chunk — parse the total size from Content-Range
+          // ("bytes start-end/total") so we know how many more chunks to
+          // request. Fall back to Content-Length when the server did not
+          // return a 206 (treating the response as the whole file).
+          total =
+            this.parseTotalFromContentRange(response.headers.get('Content-Range')) ??
+            this.parseContentLength(response.headers.get('Content-Length'));
+          filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? null;
+        }
+        this.setDownloadProgress(type, nextOffset, total);
+
+        // Defensive: if the server did not return a 206 (e.g. Range was
+        // mis-handled) we've just downloaded the full file in one shot.
+        // Bail out of the loop instead of requesting a second chunk that
+        // would overlap the first.
+        if (response.status !== 206) {
+          break;
+        }
       }
-      const filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? `admin-export-${type.toLowerCase()}.zip`;
-      this.triggerBrowserDownload(blob, filename);
+
+      if (this.downloadGeneration.get(type) !== generation) return;
+
+      const finalBlob = new Blob(chunks, { type: 'application/zip' });
+      const effectiveFilename = filename ?? `admin-export-${type.toLowerCase()}.zip`;
+      this.triggerBrowserDownload(finalBlob, effectiveFilename);
       this.toastService.showSuccessKey('adminExports.toast.downloaded');
-      // The file has been handed over to the browser — drop the task from
-      // our remembered state so a subsequent refresh starts clean.
+      // Drop the sessionStorage entry so a refresh starts clean, but
+      // keep the signal task around so the Download button remains
+      // usable until the server TTL expires the task.
       this.clearStoredTask(type);
+      this.clearDownloadProgress(type);
     } catch {
-      this.toastService.showErrorKey('adminExports.toast.downloadError');
+      if (this.downloadGeneration.get(type) === generation) {
+        // Network blip, tab closed mid-transfer, proxy disconnect, etc.
+        // The server-side task is still READY, so leave the Download
+        // button in place for the user to retry. A mismatched generation
+        // means the loop was superseded (retry) or torn down, in which
+        // case stay silent.
+        this.toastService.showErrorKey('adminExports.toast.downloadError');
+        this.clearDownloadProgress(type);
+      }
+    } finally {
+      if (this.downloadGeneration.get(type) === generation) {
+        this.downloadGeneration.delete(type);
+      }
     }
+  }
+
+  /**
+   * Fetches a single byte-range chunk with a small retry budget. Absorbs
+   * transient failures (network blip, proxy hiccup, token-refresh race)
+   * that would otherwise tear down the whole multi-GB download after a
+   * single bad chunk. Checks the download generation between attempts so
+   * a retry doesn't fire after the user superseded or canceled the
+   * download.
+   *
+   * <p>Rethrows the last seen error if every attempt failed. The outer
+   * catch in {@link downloadReadyTask} then checks the generation — if
+   * the loop was canceled it stays silent, otherwise it surfaces the
+   * {@code downloadError} toast.
+   */
+  private async fetchChunkWithRetry(
+    url: string,
+    rangeHeader: string,
+    type: AdminExportType,
+    generation: number,
+  ): Promise<HttpResponse<Blob>> {
+    let lastError: unknown = new Error('Chunk download failed');
+    for (const waitMs of CHUNK_RETRY_BACKOFF_MS) {
+      if (waitMs > 0) {
+        await new Promise<void>(resolve => setTimeout(resolve, waitMs));
+      }
+      if (this.downloadGeneration.get(type) !== generation) {
+        throw new Error('Download canceled');
+      }
+      try {
+        const headers = new HttpHeaders({ Range: rangeHeader });
+        return await firstValueFrom(this.http.get(url, { headers, responseType: 'blob', observe: 'response' }));
+      } catch (err) {
+        lastError = err;
+        // If the loop was canceled during the request, abort immediately
+        // instead of sleeping for the next backoff.
+        if (this.downloadGeneration.get(type) !== generation) {
+          throw err;
+        }
+      }
+    }
+    throw lastError;
+  }
+
+  /**
+   * Parses the total file size out of an HTTP {@code Content-Range} header
+   * value like {@code "bytes 0-32767/102400"}. Returns {@code null} for
+   * malformed or missing headers, or when the server sent an unknown
+   * total (indicated by {@code *}).
+   */
+  private parseTotalFromContentRange(header: string | null): number | null {
+    if (header === null) return null;
+    const match = /\/(\d+)$/.exec(header);
+    if (match === null) return null;
+    const parsed = parseInt(match[1], 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  /** Parses a numeric {@code Content-Length} header, or {@code null} when absent/malformed. */
+  private parseContentLength(header: string | null): number | null {
+    if (header === null) return null;
+    const parsed = parseInt(header, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private setDownloadProgress(type: AdminExportType, loaded: number, total: number | null): void {
+    this.downloadProgress.update(prev => {
+      const next = new Map(prev);
+      next.set(type, { loaded, total });
+      return next;
+    });
+  }
+
+  private clearDownloadProgress(type: AdminExportType): void {
+    this.downloadProgress.update(prev => {
+      if (!prev.has(type)) return prev;
+      const next = new Map(prev);
+      next.delete(type);
+      return next;
+    });
   }
 
   /** Immutable-update helper: adds or replaces a task in the signal's backing map. */
@@ -363,5 +648,12 @@ export class AdminExportsComponent {
     anchor.download = filename;
     anchor.click();
     URL.revokeObjectURL(url);
+  }
+
+  private formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
 }

@@ -11,8 +11,11 @@
 import type { Counts } from './counts';
 
 export interface AdminExportTaskDTO {
+    readonly applicantSubjectAreaSubscriptions?: Counts;
+    readonly applicants?: Counts;
     readonly applications?: Counts;
     readonly createdAt?: string;
+    readonly departments?: Counts;
     readonly documents?: Counts;
     readonly downloadAvailable?: boolean;
     readonly durationSeconds?: number;
@@ -20,10 +23,12 @@ export interface AdminExportTaskDTO {
     readonly finishedAt?: string;
     readonly jobs?: Counts;
     readonly researchGroups?: Counts;
+    readonly schools?: Counts;
     readonly status?: AdminExportTaskDTOStatusEnum;
     readonly taskId?: string;
     readonly totalFailures?: number;
     readonly type?: AdminExportTaskDTOTypeEnum;
+    readonly userResearchGroupRoles?: Counts;
     readonly users?: Counts;
 }
 
@@ -37,14 +42,17 @@ export const AdminExportTaskDTOStatusEnum = {
 
 export const AdminExportTaskDTOStatusEnumValues = ['IN_PROGRESS', 'READY', 'FAILED'] as const;
 
-export type AdminExportTaskDTOTypeEnum = 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'FULL_ADMIN';
+export type AdminExportTaskDTOTypeEnum = 'JOBS_OPEN' | 'JOBS_EXPIRED' | 'JOBS_CLOSED' | 'JOBS_DRAFT' | 'FULL_ADMIN' | 'USERS_AND_ORGS' | 'APPLICATIONS_ONLY';
 
 export const AdminExportTaskDTOTypeEnum = {
     JobsOpen: 'JOBS_OPEN' as const,
     JobsExpired: 'JOBS_EXPIRED' as const,
     JobsClosed: 'JOBS_CLOSED' as const,
+    JobsDraft: 'JOBS_DRAFT' as const,
     FullAdmin: 'FULL_ADMIN' as const,
+    UsersAndOrgs: 'USERS_AND_ORGS' as const,
+    ApplicationsOnly: 'APPLICATIONS_ONLY' as const,
 } as const;
 
-export const AdminExportTaskDTOTypeEnumValues = ['JOBS_OPEN', 'JOBS_EXPIRED', 'JOBS_CLOSED', 'FULL_ADMIN'] as const;
+export const AdminExportTaskDTOTypeEnumValues = ['JOBS_OPEN', 'JOBS_EXPIRED', 'JOBS_CLOSED', 'JOBS_DRAFT', 'FULL_ADMIN', 'USERS_AND_ORGS', 'APPLICATIONS_ONLY'] as const;
 

@@ -36,24 +36,47 @@
                     <span>{{ task.durationSeconds | number: '1.0-0' }}s</span>
                   }
                 </div>
-                @if (task.researchGroups || task.jobs || task.applications || task.documents) {
-                  <ul class="list-none m-0 p-0 space-y-0.5">
-                    @if (task.researchGroups) {
-                      <li>RG: {{ task.researchGroups.exported }}/{{ task.researchGroups.expected }}</li>
-                    }
-                    @if (task.jobs) {
-                      <li>Jobs: {{ task.jobs.exported }}/{{ task.jobs.expected }}</li>
-                    }
-                    @if (task.applications) {
-                      <li>Applications: {{ task.applications.exported }}/{{ task.applications.expected }}</li>
-                    }
-                    @if (task.documents) {
-                      <li>Documents: {{ task.documents.exported }}/{{ task.documents.expected }}</li>
-                    }
-                    @if (task.users && task.users.expected) {
-                      <li>Users: {{ task.users.exported }}/{{ task.users.expected }}</li>
-                    }
-                  </ul>
+                <ul class="list-none m-0 p-0 space-y-0.5">
+                  @if (task.schools && task.schools.expected) {
+                    <li>Schools: {{ task.schools.exported }}/{{ task.schools.expected }}</li>
+                  }
+                  @if (task.departments && task.departments.expected) {
+                    <li>Departments: {{ task.departments.exported }}/{{ task.departments.expected }}</li>
+                  }
+                  @if (task.researchGroups && task.researchGroups.expected) {
+                    <li>RG: {{ task.researchGroups.exported }}/{{ task.researchGroups.expected }}</li>
+                  }
+                  @if (task.jobs && task.jobs.expected) {
+                    <li>Jobs: {{ task.jobs.exported }}/{{ task.jobs.expected }}</li>
+                  }
+                  @if (task.applications && task.applications.expected) {
+                    <li>Applications: {{ task.applications.exported }}/{{ task.applications.expected }}</li>
+                  }
+                  @if (task.documents && task.documents.expected) {
+                    <li>Documents: {{ task.documents.exported }}/{{ task.documents.expected }}</li>
+                  }
+                  @if (task.users && task.users.expected) {
+                    <li>Users: {{ task.users.exported }}/{{ task.users.expected }}</li>
+                  }
+                  @if (task.userResearchGroupRoles && task.userResearchGroupRoles.expected) {
+                    <li>User ↔ RG roles: {{ task.userResearchGroupRoles.exported }}/{{ task.userResearchGroupRoles.expected }}</li>
+                  }
+                  @if (task.applicants && task.applicants.expected) {
+                    <li>Applicants: {{ task.applicants.exported }}/{{ task.applicants.expected }}</li>
+                  }
+                  @if (task.applicantSubjectAreaSubscriptions && task.applicantSubjectAreaSubscriptions.expected) {
+                    <li>
+                      Applicant subject subscriptions: {{ task.applicantSubjectAreaSubscriptions.exported }}/{{
+                        task.applicantSubjectAreaSubscriptions.expected
+                      }}
+                    </li>
+                  }
+                </ul>
+                @if (isDownloading(btn.type)) {
+                  <div class="mt-1">
+                    <span jhiTranslate="adminExports.status.downloading">Downloading…</span>
+                    <span class="ml-1">{{ downloadProgressLabel(btn.type) }}</span>
+                  </div>
                 }
                 @if (task.totalFailures && task.totalFailures > 0) {
                   <div class="text-orange-600 mt-1">{{ task.totalFailures }} failure(s) — see manifest.json</div>
@@ -64,7 +87,7 @@
               </div>
             }
 
-            <div class="mt-auto">
+            <div class="mt-auto flex flex-col gap-2">
               <jhi-button
                 severity="primary"
                 size="sm"
@@ -75,6 +98,18 @@
                 [loading]="isBusy(btn.type)"
                 (click)="start(btn.type)"
               />
+              @if (taskFor(btn.type)?.status === 'READY') {
+                <jhi-button
+                  severity="secondary"
+                  size="sm"
+                  icon="download"
+                  [label]="'adminExports.actions.download'"
+                  [shouldTranslate]="true"
+                  [disabled]="isDownloading(btn.type)"
+                  [loading]="isDownloading(btn.type)"
+                  (click)="retryDownload(btn.type)"
+                />
+              }
             </div>
           </div>
         }
