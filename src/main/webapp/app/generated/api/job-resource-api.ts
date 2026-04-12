@@ -15,6 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { JobFormDTO } from '../model/job-form-dto';
 import { JobFiltersDTO } from '../model/job-filters-dto';
 import { PageJobCardDTO } from '../model/page-job-card-dto';
@@ -72,115 +74,6 @@ export class JobResourceApi {
     /**
      * 
      * 
-     */
-    getAllFilters(): Observable<JobFiltersDTO> {
-        const url = `${this.basePath}/api/jobs/filters`;
-        return this.http.get<JobFiltersDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param subjectAreas 
-     * @param locations 
-     * @param professorNames 
-     * @param sortBy 
-     * @param direction 
-     * @param searchQuery 
-     */
-    getAvailableJobs(pageSize?: number, pageNumber?: number, subjectAreas?: Array<'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'>, locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>, professorNames?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string): Observable<PageJobCardDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (subjectAreas !== undefined && subjectAreas !== null) {
-            subjectAreas.forEach(item => queryParams.append('subjectAreas', String(item)));
-        }
-        if (locations !== undefined && locations !== null) {
-            locations.forEach(item => queryParams.append('locations', String(item)));
-        }
-        if (professorNames !== undefined && professorNames !== null) {
-            professorNames.forEach(item => queryParams.append('professorNames', String(item)));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/jobs/available${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageJobCardDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param jobId 
-     */
-    getJobById(jobId: string): Observable<JobDTO> {
-        const jobIdPath = encodeURIComponent(String(jobId));
-        const url = `${this.basePath}/api/jobs/${jobIdPath}`;
-        return this.http.get<JobDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param jobId 
-     */
-    getJobDetails(jobId: string): Observable<JobDetailDTO> {
-        const jobIdPath = encodeURIComponent(String(jobId));
-        const url = `${this.basePath}/api/jobs/detail/${jobIdPath}`;
-        return this.http.get<JobDetailDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param states 
-     * @param sortBy 
-     * @param direction 
-     * @param searchQuery 
-     */
-    getJobsForCurrentResearchGroup(pageSize?: number, pageNumber?: number, states?: Array<string>, sortBy?: string, direction?: 'ASC' | 'DESC', searchQuery?: string): Observable<PageCreatedJobDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (states !== undefined && states !== null) {
-            states.forEach(item => queryParams.append('states', String(item)));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/jobs/research-group${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageCreatedJobDTO>(url);
-    }
-
-    /**
-     * 
-     * 
      * @param jobId 
      * @param jobFormDTO 
      */
@@ -191,3 +84,143 @@ export class JobResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAllFiltersResource(): HttpResourceRef<JobFiltersDTO | undefined> {
+    return httpResource<JobFiltersDTO>(() => {
+        return `${BASE_PATH}/api/jobs/filters`;
+    });
+}
+
+/**
+ * Query parameters for getAvailableJobs
+ */
+export interface GetAvailableJobsParams {
+    pageSize?: number;
+    pageNumber?: number;
+    subjectAreas?: Array<'AEROSPACE_ENGINEERING' | 'AGRICULTURAL_ENGINEERING' | 'AGRICULTURAL_SCIENCE' | 'ARCHITECTURE' | 'ART_HISTORY' | 'AUTOMOTIVE_ENGINEERING' | 'BIOENGINEERING' | 'BIOCHEMISTRY' | 'BIOLOGY' | 'BIOMEDICAL_ENGINEERING' | 'BIOTECHNOLOGY' | 'CHEMISTRY' | 'COMPUTER_ENGINEERING' | 'COMPUTER_SCIENCE' | 'COMPUTER_VISION' | 'DATA_SCIENCE' | 'ECONOMICS' | 'EDUCATION_TECHNOLOGY' | 'ELECTRICAL_ENGINEERING' | 'ENERGY_SYSTEMS' | 'ENVIRONMENTAL_BIOLOGY' | 'ENVIRONMENTAL_CHEMISTRY' | 'ENVIRONMENTAL_ENGINEERING' | 'ENVIRONMENTAL_LAW' | 'ENVIRONMENTAL_SCIENCE' | 'FINANCIAL_ENGINEERING' | 'FOOD_TECHNOLOGY' | 'GEOLOGY' | 'GEOSCIENCES' | 'INDUSTRIAL_ENGINEERING' | 'INFORMATION_SYSTEMS' | 'LIFE_SCIENCES' | 'LINGUISTICS' | 'MARINE_BIOLOGY' | 'MATERIALS_SCIENCE' | 'MATHEMATICS' | 'MECHANICAL_ENGINEERING' | 'MEDICAL_INFORMATICS' | 'NEUROSCIENCE' | 'PHILOSOPHY' | 'PHYSICS' | 'PSYCHOLOGY' | 'SOFTWARE_ENGINEERING' | 'SPORTS_SCIENCE' | 'STATISTICS' | 'TELECOMMUNICATIONS' | 'URBAN_PLANNING'>;
+    locations?: Array<'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE'>;
+    professorNames?: Array<string>;
+    sortBy?: string;
+    direction?: 'ASC' | 'DESC';
+    searchQuery?: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getAvailableJobsResource(params?: Signal<GetAvailableJobsParams>): HttpResourceRef<PageJobCardDTO | undefined> {
+    return httpResource<PageJobCardDTO>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
+            searchParams.set('pageSize', String(queryParams.pageSize));
+        }
+        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
+            searchParams.set('pageNumber', String(queryParams.pageNumber));
+        }
+        if (queryParams.subjectAreas?.length) {
+            queryParams.subjectAreas.forEach(value => searchParams.append('subjectAreas', String(value)));
+        }
+        if (queryParams.locations?.length) {
+            queryParams.locations.forEach(value => searchParams.append('locations', String(value)));
+        }
+        if (queryParams.professorNames?.length) {
+            queryParams.professorNames.forEach(value => searchParams.append('professorNames', String(value)));
+        }
+        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
+            searchParams.set('sortBy', String(queryParams.sortBy));
+        }
+        if (queryParams.direction !== undefined && queryParams.direction !== null) {
+            searchParams.set('direction', String(queryParams.direction));
+        }
+        if (queryParams.searchQuery !== undefined && queryParams.searchQuery !== null) {
+            searchParams.set('searchQuery', String(queryParams.searchQuery));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/jobs/available${query ? `?${query}` : ''}`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param jobId 
+ */
+export function getJobByIdResource(jobId: Signal<string> | string): HttpResourceRef<JobDTO | undefined> {
+    return httpResource<JobDTO>(() => {
+        const jobIdValue = typeof jobId === 'function' ? jobId() : jobId;
+        const jobIdPath = encodeURIComponent(String(jobIdValue));
+        return `${BASE_PATH}/api/jobs/${jobIdPath}`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param jobId 
+ */
+export function getJobDetailsResource(jobId: Signal<string> | string): HttpResourceRef<JobDetailDTO | undefined> {
+    return httpResource<JobDetailDTO>(() => {
+        const jobIdValue = typeof jobId === 'function' ? jobId() : jobId;
+        const jobIdPath = encodeURIComponent(String(jobIdValue));
+        return `${BASE_PATH}/api/jobs/detail/${jobIdPath}`;
+    });
+}
+
+/**
+ * Query parameters for getJobsForCurrentResearchGroup
+ */
+export interface GetJobsForCurrentResearchGroupParams {
+    pageSize?: number;
+    pageNumber?: number;
+    states?: Array<string>;
+    sortBy?: string;
+    direction?: 'ASC' | 'DESC';
+    searchQuery?: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getJobsForCurrentResearchGroupResource(params?: Signal<GetJobsForCurrentResearchGroupParams>): HttpResourceRef<PageCreatedJobDTO | undefined> {
+    return httpResource<PageCreatedJobDTO>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
+            searchParams.set('pageSize', String(queryParams.pageSize));
+        }
+        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
+            searchParams.set('pageNumber', String(queryParams.pageNumber));
+        }
+        if (queryParams.states?.length) {
+            queryParams.states.forEach(value => searchParams.append('states', String(value)));
+        }
+        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
+            searchParams.set('sortBy', String(queryParams.sortBy));
+        }
+        if (queryParams.direction !== undefined && queryParams.direction !== null) {
+            searchParams.set('direction', String(queryParams.direction));
+        }
+        if (queryParams.searchQuery !== undefined && queryParams.searchQuery !== null) {
+            searchParams.set('searchQuery', String(queryParams.searchQuery));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/jobs/research-group${query ? `?${query}` : ''}`;
+    });
+}
+

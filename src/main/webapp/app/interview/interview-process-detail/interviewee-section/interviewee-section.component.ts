@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
-import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
-import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { getApplicationsDetailsResource, GetApplicationsDetailsParams } from 'app/generated/api/application-evaluation-resource-api';
+import { InterviewResourceApi, getIntervieweesByProcessIdResource } from 'app/generated/api/interview-resource-api';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 import { AddIntervieweesDTO } from 'app/generated/model/add-interviewees-dto';
@@ -69,16 +69,30 @@ export class IntervieweeSectionComponent {
   // Component Outputs
   slotsRefresh = output();
 
+  // Interviewee Resource
+  readonly intervieweesResource = getIntervieweesByProcessIdResource(this.processId);
+
   // Interviewee List State
-  interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
-  loadingInterviewees = signal(false);
+  interviewees = computed<IntervieweeDTO[]>(() => this.intervieweesResource.value() ?? []);
+  loadingInterviewees = computed(() => this.intervieweesResource.isLoading());
   activeFilter = signal<FilterKey>('ALL'); // Currently selected filter tab
+
+  // Applicants Resource
+  private readonly applicantsParams = signal<GetApplicationsDetailsParams>({
+    offset: 0,
+    limit: 10,
+    sortBy: 'appliedAt',
+    direction: 'DESC',
+    status: [ApplicationDetailDTOApplicationStateEnum.InReview],
+    job: [],
+  });
+  private readonly applicantsResource = getApplicationsDetailsResource(this.applicantsParams);
 
   // Add Applicant Modal State
   showAddModal = signal(false);
-  applicants = signal<ApplicationEvaluationDetailDTO[]>([]); // Available applicants to add
+  applicants = computed<ApplicationEvaluationDetailDTO[]>(() => this.applicantsResource.value()?.applications ?? []);
   selectedIds = signal<Set<string>>(new Set()); // Selected application IDs
-  loadingApplicants = signal(false);
+  loadingApplicants = computed(() => this.applicantsResource.isLoading());
   processingAdd = signal(false); // True while adding interviewees
 
   // Invitation Sending State
@@ -88,7 +102,7 @@ export class IntervieweeSectionComponent {
   // Pagination for Modal Table
   pageNumber = signal(0);
   pageSize = signal(10);
-  totalApplicants = signal(0);
+  totalApplicants = computed(() => this.applicantsResource.value()?.totalRecords ?? 0);
   pendingResendId = signal<string | null>(null);
 
   // Cancellation State
@@ -193,7 +207,6 @@ export class IntervieweeSectionComponent {
 
   // Services
   private readonly interviewApi = inject(InterviewResourceApi);
-  private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -201,11 +214,11 @@ export class IntervieweeSectionComponent {
     initialValue: this.translateService.getCurrentLang(),
   });
 
-  // Effect: Auto load Interviewees when processId or refreshKey changes
+  // Effect: Reload interviewees when refreshKey changes
   private readonly loadEffect = effect(() => {
     this.refreshKey(); // Track refreshKey to trigger reload
     if (this.processId()) {
-      void this.loadInterviewees();
+      this.intervieweesResource.reload();
     }
   });
 
@@ -223,27 +236,11 @@ export class IntervieweeSectionComponent {
       await firstValueFrom(this.interviewApi.addApplicantsToInterview(processId, dto));
       this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
       this.closeAddModal();
-      void this.loadInterviewees();
+      this.intervieweesResource.reload();
     } catch {
       this.toastService.showErrorKey('interview.interviewees.error.addFailed');
     } finally {
       this.processingAdd.set(false);
-    }
-  }
-
-  // Data Loading: Interviewees
-  async loadInterviewees(): Promise<void> {
-    const processId = this.processId();
-    if (processId === '') return;
-
-    try {
-      this.loadingInterviewees.set(true);
-      const data = await firstValueFrom(this.interviewApi.getIntervieweesByProcessId(processId));
-      this.interviewees.set(data);
-    } catch {
-      this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
-    } finally {
-      this.loadingInterviewees.set(false);
     }
   }
 
@@ -290,27 +287,15 @@ export class IntervieweeSectionComponent {
   }
 
   // Data Loading: Available Applicants (for Add Modal)
-  async loadApplicants(): Promise<void> {
-    try {
-      this.loadingApplicants.set(true);
-      const result = await firstValueFrom(
-        this.evaluationApi.getApplicationsDetails(
-          this.pageNumber(),
-          this.pageSize(),
-          'appliedAt',
-          'DESC',
-          [ApplicationDetailDTOApplicationStateEnum.InReview],
-          [this.jobTitle()],
-          undefined,
-        ),
-      );
-      this.applicants.set(result.applications ?? []);
-      this.totalApplicants.set(result.totalRecords ?? 0);
-    } catch {
-      this.toastService.showErrorKey('interview.interviewees.error.loadApplicantsFailed');
-    } finally {
-      this.loadingApplicants.set(false);
-    }
+  loadApplicants(): void {
+    this.applicantsParams.set({
+      offset: this.pageNumber(),
+      limit: this.pageSize(),
+      sortBy: 'appliedAt',
+      direction: 'DESC',
+      status: [ApplicationDetailDTOApplicationStateEnum.InReview],
+      job: [this.jobTitle()],
+    });
   }
 
   // Table Pagination Handler
@@ -319,7 +304,7 @@ export class IntervieweeSectionComponent {
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
     this.pageSize.set(rows);
-    void this.loadApplicants();
+    this.loadApplicants();
   }
 
   // Filter Tab Selection
@@ -344,7 +329,7 @@ export class IntervieweeSectionComponent {
   // Modal Control
   openAddModal(): void {
     this.showAddModal.set(true);
-    void this.loadApplicants();
+    this.loadApplicants();
   }
 
   closeAddModal(): void {
@@ -377,7 +362,7 @@ export class IntervieweeSectionComponent {
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
 
       // Reload interviewees from server to get accurate state
-      await this.loadInterviewees();
+      this.intervieweesResource.reload();
 
       // Notify parent to refresh slots section
       this.slotsRefresh.emit();
@@ -418,7 +403,7 @@ export class IntervieweeSectionComponent {
       // All failed
       this.toastService.showErrorKey('interview.interviewees.invitation.error');
     }
-    void this.loadInterviewees();
+    this.intervieweesResource.reload();
   }
 
   private async performSendInvitation(processId: string, intervieweeId: string): Promise<void> {

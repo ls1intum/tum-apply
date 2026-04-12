@@ -5,7 +5,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import {
+  ApplicantResourceApi,
+  getApplicantProfileResource,
+  getApplicantProfileDocumentIdsResource,
+} from 'app/generated/api/applicant-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
@@ -142,6 +146,8 @@ export class SettingsDocumentsComponent {
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
   private dialogService = inject(DialogService);
+  private profileResource = getApplicantProfileResource();
+  private profileDocumentIdsResource = getApplicantProfileDocumentIdsResource();
 
   private currentLang = toSignal(this.translateService.onLangChange);
   private formChangeTick = toSignal(this.form.valueChanges.pipe(map(() => Date.now())), { initialValue: 0 });
@@ -290,8 +296,20 @@ export class SettingsDocumentsComponent {
     try {
       this.hasInitialLimitsSet.set(false);
 
-      const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
-      const profileDocumentIds = await firstValueFrom(this.applicantApi.getApplicantProfileDocumentIds());
+      this.profileResource.reload();
+      this.profileDocumentIdsResource.reload();
+
+      // Wait for both resources to finish loading
+      const [profile, profileDocumentIds] = await Promise.all([
+        this.waitForResource(this.profileResource),
+        this.waitForResource(this.profileDocumentIdsResource),
+      ]);
+
+      if (!profile || !profileDocumentIds) {
+        this.toastService.showErrorKey('settings.documents.loadFailed');
+        return;
+      }
+
       this.applyProfileDocumentIds(profileDocumentIds);
 
       this.form.patchValue({
@@ -340,6 +358,27 @@ export class SettingsDocumentsComponent {
     } catch {
       this.toastService.showErrorKey('settings.documents.loadFailed');
     }
+  }
+
+  private waitForResource<T>(resource: {
+    isLoading: () => boolean;
+    value: () => T | undefined;
+    error: () => unknown;
+  }): Promise<T | undefined> {
+    return new Promise<T | undefined>(resolve => {
+      const check = (): void => {
+        if (resource.isLoading()) {
+          setTimeout(check, 50);
+          return;
+        }
+        if (resource.error()) {
+          resolve(undefined);
+          return;
+        }
+        resolve(resource.value());
+      };
+      setTimeout(check, 0);
+    });
   }
 
   private updateBachelorGradeLimits(grade: string): void {

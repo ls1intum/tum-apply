@@ -9,7 +9,7 @@ import {
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
 import { MissingTranslationHandler, provideTranslateService } from '@ngx-translate/core';
@@ -20,7 +20,6 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
-import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
@@ -45,11 +44,11 @@ import { LoadingInterceptor } from './core/interceptor/loading.interceptor';
  * 2) Initialize Auth
  */
 export async function initializeApp(): Promise<void> {
-  const api = inject(PublicConfigResourceApi);
+  const http = inject(HttpClient);
   const appConfigService = inject(ApplicationConfigService);
   const authFacade = inject(AuthFacadeService);
 
-  await initializeAppConfig(api, appConfigService)();
+  await initializeAppConfig(http, appConfigService)();
   await authFacade.initAuth();
 }
 

@@ -15,6 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { DepartmentDTO } from '../model/department-dto';
 import { DepartmentCreationDTO } from '../model/department-creation-dto';
 import { PageResponseDTODepartmentDTO } from '../model/page-response-dto-department-dto';
@@ -49,67 +51,6 @@ export class DepartmentResourceApi {
      * 
      * 
      * @param id 
-     */
-    getDepartmentById(id: string): Observable<DepartmentDTO> {
-        const idPath = encodeURIComponent(String(id));
-        const url = `${this.basePath}/api/departments/${idPath}`;
-        return this.http.get<DepartmentDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param schoolId 
-     */
-    getDepartments(schoolId?: string): Observable<Array<DepartmentDTO>> {
-        const queryParams = new URLSearchParams();
-        if (schoolId !== undefined && schoolId !== null) {
-            queryParams.set('schoolId', String(schoolId));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/departments${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<DepartmentDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param schoolNames 
-     * @param searchQuery 
-     * @param sortBy 
-     * @param direction 
-     */
-    getDepartmentsForAdmin(pageSize?: number, pageNumber?: number, schoolNames?: Array<string>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTODepartmentDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (schoolNames !== undefined && schoolNames !== null) {
-            schoolNames.forEach(item => queryParams.append('schoolNames', String(item)));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/departments/admin/search${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTODepartmentDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param id 
      * @param departmentCreationDTO 
      */
     updateDepartment(id: string, departmentCreationDTO: DepartmentCreationDTO): Observable<DepartmentDTO> {
@@ -119,3 +60,90 @@ export class DepartmentResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param id 
+ */
+export function getDepartmentByIdResource(id: Signal<string> | string): HttpResourceRef<DepartmentDTO | undefined> {
+    return httpResource<DepartmentDTO>(() => {
+        const idValue = typeof id === 'function' ? id() : id;
+        const idPath = encodeURIComponent(String(idValue));
+        return `${BASE_PATH}/api/departments/${idPath}`;
+    });
+}
+
+/**
+ * Query parameters for getDepartments
+ */
+export interface GetDepartmentsParams {
+    schoolId?: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getDepartmentsResource(params?: Signal<GetDepartmentsParams>): HttpResourceRef<Array<DepartmentDTO> | undefined> {
+    return httpResource<Array<DepartmentDTO>>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.schoolId !== undefined && queryParams.schoolId !== null) {
+            searchParams.set('schoolId', String(queryParams.schoolId));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/departments${query ? `?${query}` : ''}`;
+    });
+}
+
+/**
+ * Query parameters for getDepartmentsForAdmin
+ */
+export interface GetDepartmentsForAdminParams {
+    pageSize?: number;
+    pageNumber?: number;
+    schoolNames?: Array<string>;
+    searchQuery?: string;
+    sortBy?: string;
+    direction?: 'ASC' | 'DESC';
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getDepartmentsForAdminResource(params?: Signal<GetDepartmentsForAdminParams>): HttpResourceRef<PageResponseDTODepartmentDTO | undefined> {
+    return httpResource<PageResponseDTODepartmentDTO>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
+            searchParams.set('pageSize', String(queryParams.pageSize));
+        }
+        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
+            searchParams.set('pageNumber', String(queryParams.pageNumber));
+        }
+        if (queryParams.schoolNames?.length) {
+            queryParams.schoolNames.forEach(value => searchParams.append('schoolNames', String(value)));
+        }
+        if (queryParams.searchQuery !== undefined && queryParams.searchQuery !== null) {
+            searchParams.set('searchQuery', String(queryParams.searchQuery));
+        }
+        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
+            searchParams.set('sortBy', String(queryParams.sortBy));
+        }
+        if (queryParams.direction !== undefined && queryParams.direction !== null) {
+            searchParams.set('direction', String(queryParams.direction));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/departments/admin/search${query ? `?${query}` : ''}`;
+    });
+}
+

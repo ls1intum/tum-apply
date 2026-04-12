@@ -4,7 +4,7 @@ import { RatingComponent } from 'app/shared/components/atoms/rating/rating.compo
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { RatingOverviewDTO } from 'app/generated/model/rating-overview-dto';
-import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
+import { RatingResourceApi, getRatingsResource } from 'app/generated/api/rating-resource-api';
 
 import TranslateDirective from '../../../language/translate.directive';
 import { SubSection } from '../../atoms/sub-section/sub-section';
@@ -29,10 +29,32 @@ export class RatingSection {
     return this.ratings()?.otherRatings ?? [];
   });
 
+  private safeApplicationId = computed(() => this.applicationId() ?? '');
+  private ratingsResource = getRatingsResource(this.safeApplicationId);
+  private pendingUpsert = signal(false);
+
   _loadRatingEffect = effect(() => {
     const applicationId = this.applicationId();
     if (applicationId !== undefined) {
-      void this.loadRatings(applicationId);
+      const response = this.ratingsResource.value();
+      if (response) {
+        this.ratings.set(response);
+        const mine = response.currentUserRating ?? undefined;
+        this.serverCurrent.set(mine);
+        if (!this.pendingUpsert()) {
+          this.isInitializing.set(true);
+          this.myRating.set(mine);
+          this.isInitializing.set(false);
+        } else {
+          this.myRating.set(mine);
+          this.pendingUpsert.set(false);
+          this.isInitializing.set(false);
+          this.ratingUpdated.emit();
+        }
+      } else if (this.ratingsResource.error()) {
+        this.toastService.showError({ summary: 'Error', detail: 'Failed to load ratings' });
+        this.isInitializing.set(false);
+      }
     }
   });
 
@@ -43,7 +65,7 @@ export class RatingSection {
     if (appId === undefined) {
       return;
     }
-    if (this.isInitializing()) return; // skip while we’re syncing initial state
+    if (this.isInitializing()) return; // skip while we're syncing initial state
     if (value === this.serverCurrent()) return; // no-op if no real change
 
     untracked(() => {
@@ -54,37 +76,11 @@ export class RatingSection {
   private serverCurrent = signal<number | undefined>(undefined);
   private isInitializing = signal<boolean>(true);
 
-  private async loadRatings(applicationId: string): Promise<void> {
-    this.isInitializing.set(true);
-    try {
-      const response = await firstValueFrom(this.ratingApi.getRatings(applicationId));
-      this.ratings.set(response);
-
-      // Initialize myRating from server (e.g. response.currentUserRating)
-      const mine = response.currentUserRating ?? undefined;
-      this.serverCurrent.set(mine);
-      this.myRating.set(mine);
-    } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to load ratings' });
-    } finally {
-      this.isInitializing.set(false);
-    }
-  }
-
   private async upsertMyRating(applicationId: string, value: number | undefined): Promise<void> {
     try {
       await firstValueFrom(this.ratingApi.updateRating(applicationId, value));
-
-      const refreshed = await firstValueFrom(this.ratingApi.getRatings(applicationId));
-      this.ratings.set(refreshed);
-
-      // Sync myRating and serverCurrent with the refreshed data
-      const mine = refreshed.currentUserRating ?? undefined;
-      this.serverCurrent.set(mine);
-      this.myRating.set(mine);
-
-      // Emit event to notify parent that rating was updated
-      this.ratingUpdated.emit();
+      this.pendingUpsert.set(true);
+      this.ratingsResource.reload();
     } catch {
       this.toastService.showError({ summary: 'Error', detail: 'Failed to save rating' });
       // revert UI to last known server value

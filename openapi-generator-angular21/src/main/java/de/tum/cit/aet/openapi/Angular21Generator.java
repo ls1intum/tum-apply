@@ -459,9 +459,14 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
             String paramsInterfaceName = toPascalCase(op.operationId) + "Params";
             op.vendorExtensions.put("x-params-interface-name", paramsInterfaceName);
 
+            boolean allOptional = true;
             for (CodegenParameter param : op.queryParams) {
                 param.vendorExtensions.put("x-ts-name", toCamelCase(param.paramName));
+                if (param.required) {
+                    allOptional = false;
+                }
             }
+            op.vendorExtensions.put("x-all-query-params-optional", allOptional);
         } else {
             op.vendorExtensions.put("x-has-query-params", false);
         }

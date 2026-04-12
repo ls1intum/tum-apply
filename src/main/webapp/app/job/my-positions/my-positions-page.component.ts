@@ -1,4 +1,5 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { HttpResourceRef } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -16,12 +17,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { JobResourceApi, GetJobsForCurrentResearchGroupParams, getJobsForCurrentResearchGroupResource } from 'app/generated/api/job-resource-api';
+import { PageCreatedJobDTO } from 'app/generated/model/page-created-job-dto';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { CreatedJobDTO, CreatedJobDTOStateEnum } from '../../generated/model/created-job-dto';
-import { JobResourceApi } from '../../generated/api/job-resource-api';
 @Component({
   selector: 'jhi-my-positions-page',
   standalone: true,
@@ -195,13 +197,36 @@ export class MyPositionsPageComponent {
 
   private readonly translationKey: string = 'myPositionsPage';
 
+  private readonly jobsParams = computed<GetJobsForCurrentResearchGroupParams>(() => ({
+    pageSize: this.pageSize(),
+    pageNumber: this.page(),
+    states: emptyToUndef(this.selectedStatusFilters()),
+    sortBy: this.sortBy(),
+    direction: this.sortDirection(),
+    searchQuery: this.searchQuery(),
+  }));
+
+  private readonly jobsResource: HttpResourceRef<PageCreatedJobDTO | undefined> = getJobsForCurrentResearchGroupResource(this.jobsParams);
+
+  private readonly syncJobsEffect = effect(() => {
+    const isLoading = this.jobsResource.isLoading();
+    this.loading.set(isLoading);
+    const pageData = this.jobsResource.value();
+    if (pageData) {
+      this.jobs.set(pageData.content ?? []);
+      this.totalRecords.set(pageData.totalElements ?? 0);
+    }
+    if (this.jobsResource.error()) {
+      this.toastService.showErrorKey('myPositionsPage.errors.loadJobs');
+    }
+  });
+
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
     const size = event.rows ?? this.pageSize();
 
     this.page.set(page);
     this.pageSize.set(size);
-    void this.loadJobs();
   }
 
   onSearchEmit(searchQuery: string): void {
@@ -211,7 +236,6 @@ export class MyPositionsPageComponent {
     if (normalizedQuery !== currentQuery) {
       this.page.set(0);
       this.searchQuery.set(normalizedQuery);
-      void this.loadJobs();
     }
   }
 
@@ -220,7 +244,6 @@ export class MyPositionsPageComponent {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
-      void this.loadJobs();
     }
   }
 
@@ -228,7 +251,6 @@ export class MyPositionsPageComponent {
     this.page.set(0);
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
-    void this.loadJobs();
   }
 
   onCreateJob(): void {
@@ -253,7 +275,7 @@ export class MyPositionsPageComponent {
     try {
       await firstValueFrom(this.jobApi.deleteJob(jobId));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
-      await this.loadJobs();
+      this.jobsResource.reload();
     } catch (error) {
       if (error instanceof Error) {
         this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteJobFailed`, { detail: error.message });
@@ -265,7 +287,7 @@ export class MyPositionsPageComponent {
     try {
       await firstValueFrom(this.jobApi.changeJobState(jobId, CreatedJobDTOStateEnum.Closed));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
-      await this.loadJobs();
+      this.jobsResource.reload();
     } catch (error) {
       if (error instanceof Error) {
         this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
@@ -297,31 +319,5 @@ export class MyPositionsPageComponent {
   private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
     const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
     return translationKeys.map(key => keyMap.get(key) ?? key);
-  }
-
-  private async loadJobs(): Promise<void> {
-    this.loading.set(true);
-    try {
-      this.userId.set(this.accountService.loadedUser()?.id ?? '');
-      if (this.userId() === '') {
-        return;
-      }
-      const pageData = await firstValueFrom(
-        this.jobApi.getJobsForCurrentResearchGroup(
-          this.pageSize(),
-          this.page(),
-          emptyToUndef(this.selectedStatusFilters()),
-          this.sortBy(),
-          this.sortDirection(),
-          this.searchQuery(),
-        ),
-      );
-      this.jobs.set(pageData.content ?? []);
-      this.totalRecords.set(pageData.totalElements ?? 0);
-    } catch {
-      this.toastService.showErrorKey('myPositionsPage.errors.loadJobs');
-    } finally {
-      this.loading.set(false);
-    }
   }
 }

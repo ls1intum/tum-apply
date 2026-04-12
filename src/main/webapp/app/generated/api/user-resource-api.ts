@@ -15,6 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
 import { UserShortDTO } from '../model/user-short-dto';
 import { UpdateAvatarDTO } from '../model/update-avatar-dto';
@@ -25,47 +27,6 @@ import { UpdateUserNameDTO } from '../model/update-user-name-dto';
 export class UserResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
-
-    /**
-     * 
-     * 
-     */
-    getAiConsent(): Observable<boolean> {
-        const url = `${this.basePath}/api/users/ai-consent`;
-        return this.http.get<boolean>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param searchQuery 
-     */
-    getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string): Observable<PageResponseDTOKeycloakUserDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/users/available-for-research-group${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTOKeycloakUserDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getCurrentUser(): Observable<UserShortDTO> {
-        const url = `${this.basePath}/api/users/me`;
-        return this.http.get<UserShortDTO>(url);
-    }
 
     /**
      * 
@@ -108,3 +69,61 @@ export class UserResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAiConsentResource(): HttpResourceRef<boolean | undefined> {
+    return httpResource<boolean>(() => {
+        return `${BASE_PATH}/api/users/ai-consent`;
+    });
+}
+
+/**
+ * Query parameters for getAvailableUsersForResearchGroup
+ */
+export interface GetAvailableUsersForResearchGroupParams {
+    pageSize?: number;
+    pageNumber?: number;
+    searchQuery?: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getAvailableUsersForResearchGroupResource(params?: Signal<GetAvailableUsersForResearchGroupParams>): HttpResourceRef<PageResponseDTOKeycloakUserDTO | undefined> {
+    return httpResource<PageResponseDTOKeycloakUserDTO>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
+            searchParams.set('pageSize', String(queryParams.pageSize));
+        }
+        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
+            searchParams.set('pageNumber', String(queryParams.pageNumber));
+        }
+        if (queryParams.searchQuery !== undefined && queryParams.searchQuery !== null) {
+            searchParams.set('searchQuery', String(queryParams.searchQuery));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/users/available-for-research-group${query ? `?${query}` : ''}`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getCurrentUserResource(): HttpResourceRef<UserShortDTO | undefined> {
+    return httpResource<UserShortDTO>(() => {
+        return `${BASE_PATH}/api/users/me`;
+    });
+}
+

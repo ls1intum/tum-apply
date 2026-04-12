@@ -15,6 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { SchoolCreationDTO } from '../model/school-creation-dto';
 import { SchoolShortDTO } from '../model/school-short-dto';
 import { SchoolDTO } from '../model/school-dto';
@@ -49,66 +51,6 @@ export class SchoolResourceApi {
     /**
      * 
      * 
-     */
-    getAllSchools(): Observable<Array<SchoolShortDTO>> {
-        const url = `${this.basePath}/api/schools`;
-        return this.http.get<Array<SchoolShortDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getAllSchoolsWithDepartments(): Observable<Array<SchoolDTO>> {
-        const url = `${this.basePath}/api/schools/with-departments`;
-        return this.http.get<Array<SchoolDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param id 
-     */
-    getSchoolById(id: string): Observable<SchoolDTO> {
-        const idPath = encodeURIComponent(String(id));
-        const url = `${this.basePath}/api/schools/${idPath}`;
-        return this.http.get<SchoolDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
-     * @param searchQuery 
-     * @param sortBy 
-     * @param direction 
-     */
-    getSchoolsForAdmin(pageSize?: number, pageNumber?: number, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTOSchoolDTO> {
-        const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
-        }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
-        }
-        if (searchQuery !== undefined && searchQuery !== null) {
-            queryParams.set('searchQuery', String(searchQuery));
-        }
-        if (sortBy !== undefined && sortBy !== null) {
-            queryParams.set('sortBy', String(sortBy));
-        }
-        if (direction !== undefined && direction !== null) {
-            queryParams.set('direction', String(direction));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/schools/admin/search${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<PageResponseDTOSchoolDTO>(url);
-    }
-
-    /**
-     * 
-     * 
      * @param id 
      * @param schoolCreationDTO 
      */
@@ -119,3 +61,83 @@ export class SchoolResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAllSchoolsResource(): HttpResourceRef<Array<SchoolShortDTO> | undefined> {
+    return httpResource<Array<SchoolShortDTO>>(() => {
+        return `${BASE_PATH}/api/schools`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAllSchoolsWithDepartmentsResource(): HttpResourceRef<Array<SchoolDTO> | undefined> {
+    return httpResource<Array<SchoolDTO>>(() => {
+        return `${BASE_PATH}/api/schools/with-departments`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param id 
+ */
+export function getSchoolByIdResource(id: Signal<string> | string): HttpResourceRef<SchoolDTO | undefined> {
+    return httpResource<SchoolDTO>(() => {
+        const idValue = typeof id === 'function' ? id() : id;
+        const idPath = encodeURIComponent(String(idValue));
+        return `${BASE_PATH}/api/schools/${idPath}`;
+    });
+}
+
+/**
+ * Query parameters for getSchoolsForAdmin
+ */
+export interface GetSchoolsForAdminParams {
+    pageSize?: number;
+    pageNumber?: number;
+    searchQuery?: string;
+    sortBy?: string;
+    direction?: 'ASC' | 'DESC';
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getSchoolsForAdminResource(params?: Signal<GetSchoolsForAdminParams>): HttpResourceRef<PageResponseDTOSchoolDTO | undefined> {
+    return httpResource<PageResponseDTOSchoolDTO>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
+            searchParams.set('pageSize', String(queryParams.pageSize));
+        }
+        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
+            searchParams.set('pageNumber', String(queryParams.pageNumber));
+        }
+        if (queryParams.searchQuery !== undefined && queryParams.searchQuery !== null) {
+            searchParams.set('searchQuery', String(queryParams.searchQuery));
+        }
+        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
+            searchParams.set('sortBy', String(queryParams.sortBy));
+        }
+        if (queryParams.direction !== undefined && queryParams.direction !== null) {
+            searchParams.set('direction', String(queryParams.direction));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/schools/admin/search${query ? `?${query}` : ''}`;
+    });
+}
+

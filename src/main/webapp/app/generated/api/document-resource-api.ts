@@ -12,24 +12,22 @@
  * DocumentResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
-export class DocumentResourceApi {
-    private readonly http = inject(HttpClient);
-    private readonly basePath = '';
+const BASE_PATH = '';
 
-    /**
-     * 
-     * 
-     * @param documentDictionaryId 
-     */
-    downloadDocument(documentDictionaryId: string): Observable<HttpResponse<Blob>> {
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
-        const url = `${this.basePath}/api/documents/${documentDictionaryIdPath}`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
-    }
-
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param documentDictionaryId 
+ */
+export function downloadDocumentResource(documentDictionaryId: Signal<string> | string): HttpResourceRef<Blob | undefined> {
+    return httpResource<Blob>(() => {
+        const documentDictionaryIdValue = typeof documentDictionaryId === 'function' ? documentDictionaryId() : documentDictionaryId;
+        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryIdValue));
+        return `${BASE_PATH}/api/documents/${documentDictionaryIdPath}`;
+    });
 }
+

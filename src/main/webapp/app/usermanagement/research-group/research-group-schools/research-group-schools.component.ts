@@ -10,15 +10,10 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { SchoolResourceApi, getSchoolsForAdminResource, GetSchoolsForAdminParams } from 'app/generated/api/school-resource-api';
 import { SchoolDTO } from 'app/generated/model/school-dto';
 
 import { SchoolEditDialogComponent } from './school-edit-dialog/school-edit-dialog.component';
-
-interface SchoolPageResponse {
-  content?: SchoolDTO[];
-  totalElements?: number;
-}
 
 interface SchoolTableRow {
   schoolId?: string;
@@ -40,8 +35,18 @@ export class ResearchGroupSchoolsComponent {
   sortBy = signal<string>('name');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  schools = signal<SchoolDTO[]>([]);
-  total = signal<number>(0);
+  private readonly schoolsParams = computed<GetSchoolsForAdminParams>(() => ({
+    pageSize: this.pageSize(),
+    pageNumber: this.pageNumber(),
+    searchQuery: this.searchQuery(),
+    sortBy: this.sortBy(),
+    direction: this.sortDirection(),
+  }));
+
+  private readonly schoolsResource = getSchoolsForAdminResource(this.schoolsParams);
+
+  schools = computed<SchoolDTO[]>(() => this.schoolsResource.value()?.content ?? []);
+  total = computed<number>(() => this.schoolsResource.value()?.totalElements ?? 0);
 
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly translationKey: string = 'researchGroup.schools';
@@ -76,43 +81,22 @@ export class ResearchGroupSchoolsComponent {
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
 
-  constructor() {
-    void this.loadSchools();
-  }
-
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
     this.pageSize.set(rows);
-    void this.loadSchools();
-  }
-
-  async loadSchools(): Promise<void> {
-    try {
-      const pageResponse = await firstValueFrom(
-        this.schoolApi.getSchoolsForAdmin(this.pageSize(), this.pageNumber(), this.searchQuery(), this.sortBy(), this.sortDirection()),
-      );
-
-      const typedResponse = pageResponse as SchoolPageResponse;
-      this.schools.set(typedResponse.content ?? []);
-      this.total.set(typedResponse.totalElements ?? 0);
-    } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
-    }
   }
 
   onSearchEmit(searchQuery: string): void {
     this.searchQuery.set(searchQuery);
     this.pageNumber.set(0);
-    void this.loadSchools();
   }
 
   loadOnSortEmit(event: Sort): void {
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
     this.pageNumber.set(0);
-    void this.loadSchools();
   }
 
   async onEditSchool(schoolId: string | undefined): Promise<void> {
@@ -142,7 +126,7 @@ export class ResearchGroupSchoolsComponent {
 
     const updated = await firstValueFrom(dialogRef.onClose);
     if (updated) {
-      await this.loadSchools();
+      this.schoolsResource.reload();
     }
   }
 
@@ -153,7 +137,7 @@ export class ResearchGroupSchoolsComponent {
     try {
       await firstValueFrom(this.schoolApi.deleteSchool(schoolId));
       this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteSuccess`);
-      await this.loadSchools();
+      this.schoolsResource.reload();
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteFailed`);
     }
@@ -175,7 +159,7 @@ export class ResearchGroupSchoolsComponent {
 
     const created = await firstValueFrom(dialogRef.onClose);
     if (created) {
-      await this.loadSchools();
+      this.schoolsResource.reload();
     }
   }
 

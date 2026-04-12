@@ -27,17 +27,19 @@ import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/compo
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { HttpResourceRef } from '@angular/common/http';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { UserResourceApi, getAiConsentResource } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { JobResourceApi } from 'app/generated/api/job-resource-api';
+import { JobResourceApi, getJobByIdResource } from 'app/generated/api/job-resource-api';
 import { JobFormDTO } from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
-import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { ImageResourceApi, getMyDefaultJobBannersResource, getResearchGroupJobBannersResource } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
-import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { getResearchGroupProfessorsResource } from 'app/generated/api/research-group-resource-api';
+import { UserShortDTO } from 'app/generated/model/user-short-dto';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
   ImageUploadButtonComponent,
@@ -226,8 +228,37 @@ export class JobCreationFormComponent {
   private aiApi = inject(AiResourceApi);
   private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
-  private researchGroupApi = inject(ResearchGroupResourceApi);
   private genderBiasAnalysisService = inject(GenderBiasAnalysisService);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HTTP RESOURCES (signal-based GET)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  private readonly aiConsentResource: HttpResourceRef<boolean | undefined> = getAiConsentResource();
+  private readonly defaultImagesResource: HttpResourceRef<Array<ImageDTO> | undefined> = getMyDefaultJobBannersResource();
+  private readonly researchGroupImagesResource: HttpResourceRef<Array<ImageDTO> | undefined> = getResearchGroupJobBannersResource();
+  private readonly professorsResource: HttpResourceRef<Array<UserShortDTO> | undefined> = getResearchGroupProfessorsResource();
+  private readonly jobByIdResource: HttpResourceRef<JobDTO | undefined> = getJobByIdResource(this.jobId);
+
+  private readonly syncDefaultImagesEffect = effect(() => {
+    const defaults = this.defaultImagesResource.value();
+    if (defaults) {
+      this.defaultImages.set(defaults);
+    }
+    if (this.defaultImagesResource.error()) {
+      this.defaultImages.set([]);
+    }
+  });
+
+  private readonly syncResearchGroupImagesEffect = effect(() => {
+    const images = this.researchGroupImagesResource.value();
+    if (images) {
+      this.researchGroupImages.set(images);
+    }
+    if (this.researchGroupImagesResource.error()) {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
+    }
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI SCORE SIGNALS
@@ -462,19 +493,19 @@ export class JobCreationFormComponent {
   // CONSTRUCTOR
   // ═══════════════════════════════════════════════════════════════════════════
 
-  constructor() {
-    void this.loadAiConsent();
-    this.init();
-    this.setupAutoSave();
-  }
-
-  private async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiToggleSignal.set(isEnabled);
-    } catch {
+  private readonly syncAiConsentEffect = effect(() => {
+    const consent = this.aiConsentResource.value();
+    if (consent !== undefined) {
+      this.aiToggleSignal.set(consent);
+    }
+    if (this.aiConsentResource.error()) {
       this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
     }
+  });
+
+  constructor() {
+    this.init();
+    this.setupAutoSave();
   }
 
   async onAiToggleChanged(value: boolean): Promise<void> {
@@ -590,17 +621,12 @@ export class JobCreationFormComponent {
   /**
    * Handle successful image upload from the shared component
    */
-  async onImageUploaded(uploadedImage: ImageDTO): Promise<void> {
+  onImageUploaded(uploadedImage: ImageDTO): void {
     this.selectedImage.set(uploadedImage);
     this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
-    try {
-      const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
-      this.researchGroupImages.set(researchGroupImages);
-    } catch {
-      // If refresh fails, add to local array
-      this.researchGroupImages.update(images => [...images, uploadedImage]);
-    }
+    // Reload research group images; the syncResearchGroupImagesEffect handles the update
+    this.researchGroupImagesResource.reload();
 
     this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
   }
@@ -645,12 +671,8 @@ export class JobCreationFormComponent {
         this.clearImageSelection();
       }
 
-      try {
-        const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
-        this.researchGroupImages.set(researchGroupImages);
-      } catch {
-        this.researchGroupImages.set(this.researchGroupImages().filter(img => img.imageId !== imageId));
-      }
+      // Reload research group images; the syncResearchGroupImagesEffect handles the update
+      this.researchGroupImagesResource.reload();
 
       this.toastService.showSuccessKey('jobCreationForm.imageSection.deleteImageSuccess');
     } catch {
@@ -668,21 +690,7 @@ export class JobCreationFormComponent {
   /**
    * Loads available images (defaults and research group uploads) from the server.
    */
-  async loadImages(): Promise<void> {
-    try {
-      try {
-        const defaults = await firstValueFrom(this.imageApi.getMyDefaultJobBanners());
-        this.defaultImages.set(defaults);
-      } catch {
-        this.defaultImages.set([]);
-      }
-
-      const researchGroupImages = await firstValueFrom(this.imageApi.getResearchGroupJobBanners());
-      this.researchGroupImages.set(researchGroupImages);
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
-    }
-  }
+  // Images are now loaded reactively via defaultImagesResource and researchGroupImagesResource
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION METHODS
@@ -999,59 +1007,78 @@ export class JobCreationFormComponent {
   // INITIALIZATION METHODS
   // ═══════════════════════════════════════════════════════════════════════════
 
+  /** Whether form has been initialized (prevents re-initialization from effects) */
+  private formInitialized = false;
+
   /**
    * Initializes the component based on the route.
    * - Validates user authentication
-   * - Loads available images
    * - Determines mode (create/edit) from URL
-   * - Fetches existing job data in edit mode
+   * - Sets jobId in edit mode (triggers jobByIdResource fetch)
+   * - Images and professors load reactively via resources
    */
-  private async init(): Promise<void> {
-    try {
-      const userId = this.accountService.loadedUser()?.id ?? '';
-      if (!userId) {
-        this.router.navigate(['/login']);
+  private init(): void {
+    const userId = this.accountService.loadedUser()?.id ?? '';
+    if (!userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.userId.set(userId);
+
+    const segments = this.route.snapshot.url;
+    const mode = segments[1]?.path as JobFormMode;
+
+    if (mode === 'create') {
+      this.mode.set('create');
+      // Form population happens in syncInitEffect when professors are loaded
+    } else {
+      this.mode.set('edit');
+      const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
+
+      if (!jobId) {
+        this.router.navigate(['/my-positions']);
         return;
       }
-      this.userId.set(userId);
 
-      const segments = await firstValueFrom(this.route.url);
-      const mode = segments[1]?.path as JobFormMode;
-      const loadImagesPromise = this.loadImages();
-
-      if (mode === 'create') {
-        this.mode.set('create');
-        await Promise.all([loadImagesPromise, this.loadSupervisingProfessors()]);
-        this.populateForm();
-        this.setDefaultSupervisingProfessor();
-      } else {
-        this.mode.set('edit');
-        const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
-
-        if (!jobId) {
-          this.router.navigate(['/my-positions']);
-          return;
-        }
-
-        this.jobId.set(jobId);
-        const [job] = await Promise.all([
-          firstValueFrom(this.jobApi.getJobById(jobId)),
-          loadImagesPromise,
-          this.loadSupervisingProfessors(),
-        ]);
-        this.populateForm(job);
-        this.setDefaultSupervisingProfessor(job.supervisingProfessor);
-      }
-
-      // prevent autosave from firing immediately after initialization
-      this.autoSaveInitialized = false;
-    } catch {
-      this.toastService.showErrorKey('toast.loadFailed');
-      this.router.navigate(['/my-positions']);
-    } finally {
-      this.isLoading.set(false);
+      this.jobId.set(jobId);
+      // Form population happens in syncInitEffect when both job data and professors are loaded
     }
   }
+
+  /**
+   * Effect: Populates the form once all required data is available.
+   * - Create mode: waits for professors to be loaded
+   * - Edit mode: waits for both job data and professors to be loaded
+   */
+  private readonly syncInitEffect = effect(() => {
+    if (this.formInitialized) return;
+
+    const professors = this.professorsResource.value();
+    if (!professors) return; // Professors not yet loaded
+
+    if (this.mode() === 'create') {
+      this.populateForm();
+      this.setDefaultSupervisingProfessor();
+      this.formInitialized = true;
+      this.autoSaveInitialized = false;
+      this.isLoading.set(false);
+    } else {
+      const job = this.jobByIdResource.value();
+      if (!job) {
+        // Check for error
+        if (this.jobByIdResource.error() && this.jobId() !== '') {
+          this.toastService.showErrorKey('toast.loadFailed');
+          this.router.navigate(['/my-positions']);
+        }
+        return;
+      }
+      this.populateForm(job);
+      this.setDefaultSupervisingProfessor(job.supervisingProfessor);
+      this.formInitialized = true;
+      this.autoSaveInitialized = false;
+      this.isLoading.set(false);
+    }
+  });
 
   /**
    * Populates all forms with initial/existing job data.
@@ -1117,9 +1144,9 @@ export class JobCreationFormComponent {
   /**
    * Loads professors of the current research group for the supervising professor select.
    */
-  private async loadSupervisingProfessors(): Promise<void> {
-    try {
-      const response = await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
+  private readonly syncProfessorsEffect = effect(() => {
+    const response = this.professorsResource.value();
+    if (response) {
       const options = response
         .filter(member => member.roles?.includes(UserShortDTORolesEnum.Professor) && member.userId)
         .map(member => {
@@ -1131,10 +1158,11 @@ export class JobCreationFormComponent {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       this.supervisingProfessorOptions.set(options);
-    } catch {
+    }
+    if (this.professorsResource.error()) {
       this.toastService.showErrorKey('toast.loadFailed');
     }
-  }
+  });
 
   /**
    * Selects a sensible default supervising professor (preselect, current user if professor, otherwise first option).

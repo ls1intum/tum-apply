@@ -6,7 +6,7 @@ import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-transla
 import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResourceRef } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
@@ -17,8 +17,8 @@ import { BackButtonComponent } from 'app/shared/components/atoms/back-button/bac
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
-import { JobResourceApi } from 'app/generated/api/job-resource-api';
-import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { JobResourceApi, getJobDetailsResource } from 'app/generated/api/job-resource-api';
+import { getResourceGroupDetailsResource } from 'app/generated/api/research-group-resource-api';
 import { JobFormDTO } from 'app/generated/model/job-form-dto';
 import { JobDetailDTO } from 'app/generated/model/job-detail-dto';
 import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
@@ -285,15 +285,57 @@ export class JobDetailComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  private researchGroupApi = inject(ResearchGroupResourceApi);
+
+  private readonly jobDetailsResource: HttpResourceRef<JobDetailDTO | undefined> = getJobDetailsResource(this.jobId);
+
+  private readonly researchGroupIdForPreview = signal<string>('');
+  private readonly researchGroupDetailsResource = getResourceGroupDetailsResource(this.researchGroupIdForPreview);
 
   private previewOrInitEffect = effect(() => {
     const previewDataValue = this.previewData()?.();
     if (previewDataValue) {
-      void this.loadJobDetailsFromForm(previewDataValue);
+      // Set the research group ID to trigger the resource fetch
+      const user = this.accountService.loadedUser();
+      this.researchGroupIdForPreview.set(user?.researchGroup?.researchGroupId ?? '');
     } else {
-      void this.init();
+      this.init();
     }
+  });
+
+  private readonly syncJobDetailsEffect = effect(() => {
+    const job = this.jobDetailsResource.value();
+    if (job && this.jobId() !== '') {
+      this.loadJobDetails(job);
+      this.dataLoaded.set(true);
+    }
+    const error = this.jobDetailsResource.error();
+    if (error && this.jobId() !== '') {
+      if (error instanceof HttpErrorResponse) {
+        this.toastService.showError({ detail: `Error loading job details: ${error.status} ${error.statusText}` });
+      } else if (error instanceof Error) {
+        this.toastService.showError({ detail: `Error loading job details: ${error.message}` });
+      }
+      this.location.back();
+    }
+  });
+
+  private readonly syncPreviewDetailsEffect = effect(() => {
+    const previewDataValue = this.previewData()?.();
+    if (!previewDataValue) return;
+
+    const researchGroupDetails = this.researchGroupDetailsResource.value();
+    const error = this.researchGroupDetailsResource.error();
+    const isLoading = this.researchGroupDetailsResource.isLoading();
+
+    if (isLoading) return;
+
+    if (error) {
+      this.toastService.showError({ detail: `Error loading research Group details.` });
+    }
+
+    const user = this.accountService.loadedUser();
+    this.jobDetails.set(this.mapToJobDetails(previewDataValue, user, researchGroupDetails ?? undefined, true));
+    this.dataLoaded.set(true);
   });
 
   isProfessorOrEmployee(): boolean {
@@ -424,30 +466,18 @@ export class JobDetailComponent {
     }
   }
 
-  async init(): Promise<void> {
-    try {
-      // Get logged-in user
-      this.userId.set(this.accountService.loadedUser()?.id ?? '');
+  init(): void {
+    // Get logged-in user
+    this.userId.set(this.accountService.loadedUser()?.id ?? '');
 
-      // Get current job from route parameters
-      this.jobId.set(this.route.snapshot.paramMap.get('job_id') ?? '');
-      if (this.jobId() === '') {
-        console.error('Invalid job ID');
-        this.location.back();
-        return;
-      }
-
-      const job = await firstValueFrom(this.jobApi.getJobDetails(this.jobId()));
-      this.loadJobDetails(job);
-      this.dataLoaded.set(true);
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        this.toastService.showError({ detail: `Error loading job details: ${error.status} ${error.statusText}` });
-      } else if (error instanceof Error) {
-        this.toastService.showError({ detail: `Error loading job details: ${error.message}` });
-      }
+    // Get current job from route parameters
+    this.jobId.set(this.route.snapshot.paramMap.get('job_id') ?? '');
+    if (this.jobId() === '') {
+      console.error('Invalid job ID');
       this.location.back();
+      return;
     }
+    // jobDetailsResource auto-fetches when jobId changes; syncJobDetailsEffect handles the result
   }
 
   loadJobDetails(job: JobDetailDTO): void {
@@ -543,18 +573,4 @@ export class JobDetailComponent {
     };
   }
 
-  private async loadJobDetailsFromForm(form: JobFormDTO): Promise<void> {
-    const user = this.accountService.loadedUser();
-    let researchGroupDetails;
-    try {
-      researchGroupDetails = await firstValueFrom(
-        this.researchGroupApi.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
-      );
-    } catch {
-      this.toastService.showError({ detail: `Error loading research Group details.` });
-    }
-
-    this.jobDetails.set(this.mapToJobDetails(form, user, researchGroupDetails, true));
-    this.dataLoaded.set(true);
-  }
 }

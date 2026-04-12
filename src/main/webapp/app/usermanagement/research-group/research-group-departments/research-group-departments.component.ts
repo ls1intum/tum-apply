@@ -4,7 +4,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -13,8 +12,8 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
-import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { DepartmentResourceApi, getDepartmentsForAdminResource, GetDepartmentsForAdminParams } from 'app/generated/api/department-resource-api';
+import { getAllSchoolsResource } from 'app/generated/api/school-resource-api';
 import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
@@ -45,9 +44,22 @@ export class ResearchGroupDepartmentsComponent {
   sortBy = signal<string>('name');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
-  departments = signal<DepartmentDTO[]>([]);
-  total = signal<number>(0);
-  schools = signal<SchoolShortDTO[]>([]);
+  private readonly departmentsParams = computed<GetDepartmentsForAdminParams>(() => ({
+    pageSize: this.pageSize(),
+    pageNumber: this.pageNumber(),
+    schoolNames: this.selectedSchoolFilters(),
+    searchQuery: this.searchQuery(),
+    sortBy: this.sortBy(),
+    direction: this.sortDirection(),
+  }));
+
+  private readonly departmentsResource = getDepartmentsForAdminResource(this.departmentsParams);
+
+  departments = computed<DepartmentDTO[]>(() => this.departmentsResource.value()?.content ?? []);
+  total = computed<number>(() => this.departmentsResource.value()?.totalElements ?? 0);
+
+  private readonly schoolsResource = getAllSchoolsResource();
+  schools = computed<SchoolShortDTO[]>(() => this.schoolsResource.value() ?? []);
 
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly translationKey: string = 'researchGroup.departments';
@@ -124,17 +136,11 @@ export class ResearchGroupDepartmentsComponent {
 
   private toastService = inject(ToastService);
   private readonly departmentApi = inject(DepartmentResourceApi);
-  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private activeDepartment = signal<DepartmentTableRow | undefined>(undefined);
   private activeDeleteDialog = signal<Confirmable | undefined>(undefined);
-
-  constructor() {
-    void this.loadSchools();
-    void this.loadDepartments();
-  }
 
   onMenuToggle(event: Event, menu: MenuComponent, department: DepartmentTableRow, deleteDialog: Confirmable): void {
     this.activeDepartment.set(department);
@@ -147,40 +153,21 @@ export class ResearchGroupDepartmentsComponent {
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
     this.pageSize.set(rows);
-    void this.loadDepartments();
   }
 
-  async loadDepartments(): Promise<void> {
-    try {
-      const pageResponse = await firstValueFrom(
-        this.departmentApi.getDepartmentsForAdmin(
-          this.pageSize(),
-          this.pageNumber(),
-          this.selectedSchoolFilters(),
-          this.searchQuery(),
-          this.sortBy(),
-          this.sortDirection(),
-        ),
-      );
-
-      this.departments.set(pageResponse.content ?? []);
-      this.total.set(pageResponse.totalElements ?? 0);
-    } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
-    }
+  reloadDepartments(): void {
+    this.departmentsResource.reload();
   }
 
   onSearchEmit(searchQuery: string): void {
     this.searchQuery.set(searchQuery);
     this.pageNumber.set(0);
-    void this.loadDepartments();
   }
 
   onFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterId === 'school') {
       this.selectedSchoolFilters.set(filterChange.selectedValues);
       this.pageNumber.set(0);
-      void this.loadDepartments();
     }
   }
 
@@ -188,7 +175,6 @@ export class ResearchGroupDepartmentsComponent {
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
     this.pageNumber.set(0);
-    void this.loadDepartments();
   }
 
   onEditDepartment(departmentId: string | undefined): void {
@@ -214,7 +200,7 @@ export class ResearchGroupDepartmentsComponent {
 
     dialogRef?.onClose.subscribe((updated: boolean) => {
       if (updated) {
-        void this.loadDepartments();
+        this.reloadDepartments();
       }
     });
   }
@@ -226,7 +212,7 @@ export class ResearchGroupDepartmentsComponent {
     this.departmentApi.deleteDepartment(departmentId).subscribe({
       next: () => {
         this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteSuccess`);
-        void this.loadDepartments();
+        this.reloadDepartments();
       },
       error: () => {
         this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteFailed`);
@@ -246,17 +232,8 @@ export class ResearchGroupDepartmentsComponent {
 
     dialogRef?.onClose.subscribe((created: boolean) => {
       if (created) {
-        void this.loadDepartments();
+        this.reloadDepartments();
       }
     });
-  }
-
-  private async loadSchools(): Promise<void> {
-    try {
-      const schools = await firstValueFrom(this.schoolApi.getAllSchools());
-      this.schools.set(schools);
-    } catch {
-      // non-fatal, availableSchools will be empty
-    }
   }
 }

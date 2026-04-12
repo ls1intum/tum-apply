@@ -1,11 +1,16 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import {
+  ImageResourceApi,
+  getResearchGroupJobBannersResource,
+  getResearchGroupJobBannersByResearchGroupResource,
+  GetResearchGroupJobBannersByResearchGroupParams,
+} from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -38,9 +43,28 @@ const I18N_BASE = 'researchGroup.imageLibrary';
 })
 export class ResearchGroupImagesComponent {
   readonly allImages = signal<ImageDTO[]>([]);
-  readonly isLoading = signal<boolean>(true);
   readonly selectedResearchGroupId = signal<string>('');
   readonly selectedResearchGroupName = signal<string>('');
+
+  // httpResource for images - use the appropriate resource based on whether a research group ID is set
+  private readonly allImagesResource = getResearchGroupJobBannersResource();
+  private readonly byResearchGroupParams = computed<GetResearchGroupJobBannersByResearchGroupParams>(() => ({
+    researchGroupId: this.selectedResearchGroupId(),
+  }));
+  private readonly byResearchGroupResource = getResearchGroupJobBannersByResearchGroupResource(this.byResearchGroupParams);
+
+  private readonly hasResearchGroupId = computed(() => this.selectedResearchGroupId() !== '');
+
+  readonly isLoading = computed<boolean>(() =>
+    this.hasResearchGroupId() ? this.byResearchGroupResource.isLoading() : this.allImagesResource.isLoading(),
+  );
+
+  private readonly syncImagesEffect = effect(() => {
+    const images = this.hasResearchGroupId() ? this.byResearchGroupResource.value() : this.allImagesResource.value();
+    if (images != null) {
+      this.allImages.set(images);
+    }
+  });
 
   readonly totalImages = computed(() => this.allImages().length);
 
@@ -58,28 +82,6 @@ export class ResearchGroupImagesComponent {
   constructor() {
     this.selectedResearchGroupId.set(this.route.snapshot.queryParamMap.get('researchGroupId') ?? '');
     this.selectedResearchGroupName.set(this.route.snapshot.queryParamMap.get('researchGroupName') ?? '');
-    void this.loadImages();
-  }
-
-  /**
-   * Load all images for the research group
-   */
-  async loadImages(): Promise<void> {
-    try {
-      this.isLoading.set(true);
-      const researchGroupId = this.selectedResearchGroupId();
-      const images = await firstValueFrom(
-        researchGroupId === ''
-          ? this.imageApi.getResearchGroupJobBanners()
-          : this.imageApi.getResearchGroupJobBannersByResearchGroup(researchGroupId),
-      );
-
-      this.allImages.set(images);
-    } catch {
-      this.toastService.showErrorKey(`${I18N_BASE}.error.loadFailed`);
-    } finally {
-      this.isLoading.set(false);
-    }
   }
 
   /**

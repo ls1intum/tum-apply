@@ -15,6 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { ImageDTO } from '../model/image-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -31,78 +33,6 @@ export class ImageResourceApi {
         const imageIdPath = encodeURIComponent(String(imageId));
         const url = `${this.basePath}/api/images/${imageIdPath}`;
         return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param departmentId 
-     */
-    getDefaultJobBanners(departmentId?: string): Observable<Array<ImageDTO>> {
-        const queryParams = new URLSearchParams();
-        if (departmentId !== undefined && departmentId !== null) {
-            queryParams.set('departmentId', String(departmentId));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/images/defaults/job-banners${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param schoolId 
-     */
-    getDefaultJobBannersBySchool(schoolId: string): Observable<Array<ImageDTO>> {
-        const queryParams = new URLSearchParams();
-        if (schoolId !== undefined && schoolId !== null) {
-            queryParams.set('schoolId', String(schoolId));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/images/defaults/job-banners/by-school${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getMyDefaultJobBanners(): Observable<Array<ImageDTO>> {
-        const url = `${this.basePath}/api/images/defaults/job-banners/for-me`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getMyUploadedImages(): Observable<Array<ImageDTO>> {
-        const url = `${this.basePath}/api/images/my-uploads`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getResearchGroupJobBanners(): Observable<Array<ImageDTO>> {
-        const url = `${this.basePath}/api/images/research-group/job-banners`;
-        return this.http.get<Array<ImageDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param researchGroupId 
-     */
-    getResearchGroupJobBannersByResearchGroup(researchGroupId: string): Observable<Array<ImageDTO>> {
-        const queryParams = new URLSearchParams();
-        if (researchGroupId !== undefined && researchGroupId !== null) {
-            queryParams.set('researchGroupId', String(researchGroupId));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/images/research-group/job-banners/by-research-group${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<Array<ImageDTO>>(url);
     }
 
     /**
@@ -174,3 +104,114 @@ export class ImageResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * Query parameters for getDefaultJobBanners
+ */
+export interface GetDefaultJobBannersParams {
+    departmentId?: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getDefaultJobBannersResource(params?: Signal<GetDefaultJobBannersParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
+    return httpResource<Array<ImageDTO>>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.departmentId !== undefined && queryParams.departmentId !== null) {
+            searchParams.set('departmentId', String(queryParams.departmentId));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/images/defaults/job-banners${query ? `?${query}` : ''}`;
+    });
+}
+
+/**
+ * Query parameters for getDefaultJobBannersBySchool
+ */
+export interface GetDefaultJobBannersBySchoolParams {
+    schoolId: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getDefaultJobBannersBySchoolResource(params: Signal<GetDefaultJobBannersBySchoolParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
+    return httpResource<Array<ImageDTO>>(() => {
+        const queryParams = params();
+        const searchParams = new URLSearchParams();
+        if (queryParams.schoolId !== undefined && queryParams.schoolId !== null) {
+            searchParams.set('schoolId', String(queryParams.schoolId));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/images/defaults/job-banners/by-school${query ? `?${query}` : ''}`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getMyDefaultJobBannersResource(): HttpResourceRef<Array<ImageDTO> | undefined> {
+    return httpResource<Array<ImageDTO>>(() => {
+        return `${BASE_PATH}/api/images/defaults/job-banners/for-me`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getMyUploadedImagesResource(): HttpResourceRef<Array<ImageDTO> | undefined> {
+    return httpResource<Array<ImageDTO>>(() => {
+        return `${BASE_PATH}/api/images/my-uploads`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getResearchGroupJobBannersResource(): HttpResourceRef<Array<ImageDTO> | undefined> {
+    return httpResource<Array<ImageDTO>>(() => {
+        return `${BASE_PATH}/api/images/research-group/job-banners`;
+    });
+}
+
+/**
+ * Query parameters for getResearchGroupJobBannersByResearchGroup
+ */
+export interface GetResearchGroupJobBannersByResearchGroupParams {
+    researchGroupId: string;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
+ */
+export function getResearchGroupJobBannersByResearchGroupResource(params: Signal<GetResearchGroupJobBannersByResearchGroupParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
+    return httpResource<Array<ImageDTO>>(() => {
+        const queryParams = params();
+        const searchParams = new URLSearchParams();
+        if (queryParams.researchGroupId !== undefined && queryParams.researchGroupId !== null) {
+            searchParams.set('researchGroupId', String(queryParams.researchGroupId));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/images/research-group/job-banners/by-research-group${query ? `?${query}` : ''}`;
+    });
+}
+

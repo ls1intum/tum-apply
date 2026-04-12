@@ -307,7 +307,7 @@ export class AdminExportsComponent {
    */
   private async hydrate(): Promise<void> {
     try {
-      const mine = await firstValueFrom(this.api.listMine());
+      const mine = await firstValueFrom(this.http.get<AdminExportTaskDTO[]>('/api/admin/exports/mine'));
       for (const task of mine) {
         if (task.type !== undefined) {
           this.upsertTask(task.type, task);
@@ -327,7 +327,7 @@ export class AdminExportsComponent {
         continue;
       }
       try {
-        const task = await firstValueFrom(this.api.getStatus(taskId));
+        const task = await firstValueFrom(this.http.get<AdminExportTaskDTO>(`/api/admin/exports/status/${encodeURIComponent(taskId)}`));
         this.upsertTask(key, task);
         if (task.status === AdminExportTaskDTOStatusEnum.InProgress) {
           this.scheduleNextPoll(key);
@@ -354,7 +354,7 @@ export class AdminExportsComponent {
     const current = this.tasks().get(type);
     if (current?.taskId === undefined) return;
     try {
-      const updated = await firstValueFrom(this.api.getStatus(current.taskId));
+      const updated = await firstValueFrom(this.http.get<AdminExportTaskDTO>(`/api/admin/exports/status/${encodeURIComponent(current.taskId)}`));
       this.upsertTask(type, updated);
       if (updated.status === AdminExportTaskDTOStatusEnum.InProgress) {
         this.scheduleNextPoll(type);

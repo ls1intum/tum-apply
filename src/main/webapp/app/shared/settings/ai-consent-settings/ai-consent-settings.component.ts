@@ -1,6 +1,6 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { UserResourceApi, getAiConsentResource } from 'app/generated/api/user-resource-api';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
 
@@ -25,19 +25,18 @@ export class AiConsentSettingsComponent {
 
   private readonly userApi = inject(UserResourceApi);
   private readonly toastService = inject(ToastService);
+  private readonly aiConsentResource = getAiConsentResource();
 
   constructor() {
-    void this.loadAiConsent();
-  }
-
-  async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled);
-      this.loaded.set(true);
-    } catch {
-      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
-    }
+    effect(() => {
+      const isEnabled = this.aiConsentResource.value();
+      if (isEnabled !== undefined) {
+        this.aiFeaturesEnabled.set(isEnabled);
+        this.loaded.set(true);
+      } else if (this.aiConsentResource.error()) {
+        this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+      }
+    });
   }
 
   async onToggleChanged(value: boolean): Promise<void> {

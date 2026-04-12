@@ -37,7 +37,7 @@ export interface {{vendorExtensions.x-params-interface-name}} {
  * @param params Optional signal containing query parameters
 {{/vendorExtensions.x-has-query-params}}
  */
-export function {{nickname}}Resource({{#pathParams}}{{vendorExtensions.x-ts-name}}: Signal<{{{dataType}}}> | {{{dataType}}}{{^-last}}, {{/-last}}{{/pathParams}}{{#vendorExtensions.x-has-query-params}}{{#hasPathParams}}, {{/hasPathParams}}params?: Signal<{{vendorExtensions.x-params-interface-name}}>{{/vendorExtensions.x-has-query-params}}): HttpResourceRef<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}unknown{{/returnType}} | undefined> {
+export function {{nickname}}Resource({{#pathParams}}{{vendorExtensions.x-ts-name}}: Signal<{{{dataType}}}> | {{{dataType}}}{{^-last}}, {{/-last}}{{/pathParams}}{{#vendorExtensions.x-has-query-params}}{{#hasPathParams}}, {{/hasPathParams}}{{#vendorExtensions.x-all-query-params-optional}}params?: Signal<{{vendorExtensions.x-params-interface-name}}>{{/vendorExtensions.x-all-query-params-optional}}{{^vendorExtensions.x-all-query-params-optional}}params: Signal<{{vendorExtensions.x-params-interface-name}}>{{/vendorExtensions.x-all-query-params-optional}}{{/vendorExtensions.x-has-query-params}}): HttpResourceRef<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}unknown{{/returnType}} | undefined> {
     return httpResource<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}unknown{{/returnType}}>(() => {
 {{#pathParams}}
         const {{vendorExtensions.x-ts-name}}Value = typeof {{vendorExtensions.x-ts-name}} === 'function' ? {{vendorExtensions.x-ts-name}}() : {{vendorExtensions.x-ts-name}};
@@ -46,7 +46,12 @@ export function {{nickname}}Resource({{#pathParams}}{{vendorExtensions.x-ts-name
 {{/vendorExtensions.x-is-numeric}}
 {{/pathParams}}
 {{#vendorExtensions.x-has-query-params}}
+{{#vendorExtensions.x-all-query-params-optional}}
         const queryParams = params?.() ?? {};
+{{/vendorExtensions.x-all-query-params-optional}}
+{{^vendorExtensions.x-all-query-params-optional}}
+        const queryParams = params();
+{{/vendorExtensions.x-all-query-params-optional}}
         const searchParams = new URLSearchParams();
 {{#queryParams}}
 {{#isArray}}

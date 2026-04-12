@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { EMPTY, Observable, firstValueFrom } from 'rxjs';
@@ -12,8 +12,8 @@ import {
 import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ImageDTO } from 'app/generated/model/image-dto';
-import { ImageResourceApi } from 'app/generated/api/image-resource-api';
-import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { ImageResourceApi, getDefaultJobBannersResource, GetDefaultJobBannersParams } from 'app/generated/api/image-resource-api';
+import { getDepartmentsResource } from 'app/generated/api/department-resource-api';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -39,8 +39,11 @@ interface DepartmentSelectOption {
 })
 export class DepartmentImages {
   readonly defaultImages = signal<ImageDTO[]>([]);
-  readonly departments = signal<DepartmentDTO[]>([]);
   readonly selectedDepartment = signal<DepartmentSelectOption | undefined>(undefined);
+
+  // Departments resource
+  private readonly departmentsResource = getDepartmentsResource();
+  readonly departments = computed<DepartmentDTO[]>(() => this.departmentsResource.value() ?? []);
 
   readonly departmentOptions = computed<DepartmentSelectOption[]>(() =>
     this.departments()
@@ -57,46 +60,43 @@ export class DepartmentImages {
   readonly inUseImages = computed(() => this.defaultImages().filter(image => image.isInUse === true));
   readonly notInUseImages = computed(() => this.defaultImages().filter(image => image.isInUse !== true));
 
+  // Default images resource, auto-refetches when department changes
+  private readonly defaultImagesParams = computed<GetDefaultJobBannersParams>(() => ({
+    departmentId: this.selectedDepartmentId() || undefined,
+  }));
+  private readonly defaultImagesResource = getDefaultJobBannersResource(this.defaultImagesParams);
+
   private readonly imageApi = inject(ImageResourceApi);
-  private readonly departmentApi = inject(DepartmentResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly preselectedDepartmentId = signal<string>('');
 
+  private readonly syncImagesEffect = effect(() => {
+    const images = this.defaultImagesResource.value();
+    if (images != null) {
+      this.defaultImages.set(images);
+    } else if (this.selectedDepartmentId() === '') {
+      this.defaultImages.set([]);
+    }
+  });
+
+  private readonly preselectEffect = effect(() => {
+    const departments = this.departments();
+    if (departments.length === 0) return;
+    const preselected = this.preselectedDepartmentId();
+    if (preselected === '' || this.selectedDepartmentId() !== '') return;
+    const match = this.departmentOptions().find(option => option.value === preselected);
+    if (match) {
+      this.selectedDepartment.set(match);
+    }
+  });
+
   constructor() {
     this.preselectedDepartmentId.set(this.route.snapshot.queryParamMap.get('departmentId') ?? '');
-    void this.loadDepartments();
-  }
-
-  async loadDepartments(): Promise<void> {
-    try {
-      const departments = await firstValueFrom(this.departmentApi.getDepartments());
-      this.departments.set(departments);
-      this.applyPreselectedDepartment();
-    } catch {
-      this.departments.set([]);
-      this.toastService.showErrorKey('researchGroup.departments.images.error.loadDepartments');
-    }
   }
 
   onDepartmentChange(selection: DepartmentSelectOption | undefined): void {
     this.selectedDepartment.set(selection);
-    void this.loadDefaultImages();
-  }
-
-  async loadDefaultImages(): Promise<void> {
-    const departmentId = this.selectedDepartmentId();
-    if (departmentId === '') {
-      this.defaultImages.set([]);
-      return;
-    }
-    try {
-      const images = await firstValueFrom(this.imageApi.getDefaultJobBanners(departmentId));
-      this.defaultImages.set(images);
-    } catch {
-      this.defaultImages.set([]);
-      this.toastService.showErrorKey('researchGroup.departments.images.error.loadImages');
-    }
   }
 
   uploadDefaultImage = (file: File): Observable<ImageDTO> => {
@@ -130,18 +130,4 @@ export class DepartmentImages {
     }
   }
 
-  private applyPreselectedDepartment(): void {
-    const departmentId = this.preselectedDepartmentId();
-    if (departmentId === '' || this.selectedDepartmentId() !== '') {
-      return;
-    }
-
-    const match = this.departmentOptions().find(option => option.value === departmentId);
-    if (!match) {
-      return;
-    }
-
-    this.selectedDepartment.set(match);
-    void this.loadDefaultImages();
-  }
 }

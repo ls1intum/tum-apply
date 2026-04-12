@@ -15,6 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { ApplicantDTO } from '../model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from '../model/application-document-ids-dto';
 import { DocumentInformationHolderDTO } from '../model/document-information-holder-dto';
@@ -44,33 +45,6 @@ export class ApplicantResourceApi {
         const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
         const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}`;
         return this.http.delete<void>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getApplicantProfile(): Observable<ApplicantDTO> {
-        const url = `${this.basePath}/api/applicants/profile`;
-        return this.http.get<ApplicantDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getApplicantProfileDocumentIds(): Observable<ApplicationDocumentIdsDTO> {
-        const url = `${this.basePath}/api/applicants/profile/document-ids`;
-        return this.http.get<ApplicationDocumentIdsDTO>(url);
-    }
-
-    /**
-     * 
-     * 
-     */
-    getSubjectAreaSubscriptions(): Observable<Array<string>> {
-        const url = `${this.basePath}/api/applicants/subject-area-subscriptions`;
-        return this.http.get<Array<string>>(url);
     }
 
     /**
@@ -148,3 +122,39 @@ export class ApplicantResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getApplicantProfileResource(): HttpResourceRef<ApplicantDTO | undefined> {
+    return httpResource<ApplicantDTO>(() => {
+        return `${BASE_PATH}/api/applicants/profile`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getApplicantProfileDocumentIdsResource(): HttpResourceRef<ApplicationDocumentIdsDTO | undefined> {
+    return httpResource<ApplicationDocumentIdsDTO>(() => {
+        return `${BASE_PATH}/api/applicants/profile/document-ids`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getSubjectAreaSubscriptionsResource(): HttpResourceRef<Array<string> | undefined> {
+    return httpResource<Array<string>>(() => {
+        return `${BASE_PATH}/api/applicants/subject-area-subscriptions`;
+    });
+}
+

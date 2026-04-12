@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DividerModule } from 'primeng/divider';
-import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { InterviewResourceApi, getIntervieweeDetailsResource } from 'app/generated/api/interview-resource-api';
 import { IntervieweeDetailDTO } from 'app/generated/model/interviewee-detail-dto';
 import { UpdateAssessmentDTO } from 'app/generated/model/update-assessment-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -61,6 +61,9 @@ export class IntervieweeAssessmentComponent {
   protected readonly processId = computed(() => this.params()?.get('processId') ?? '');
   protected readonly intervieweeId = computed(() => this.params()?.get('intervieweeId') ?? '');
 
+  // Resource
+  private readonly intervieweeResource = getIntervieweeDetailsResource(this.processId, this.intervieweeId);
+
   protected readonly applicantName = computed(() => {
     const user = this.interviewee()?.user;
     if (!user) return '';
@@ -107,12 +110,30 @@ export class IntervieweeAssessmentComponent {
   private readonly isInitializing = signal<boolean>(true);
 
   // Effects
-  private readonly loadEffect = effect(() => {
-    const processId = this.processId();
-    const intervieweeId = this.intervieweeId();
+  // React to resource loading state
+  private readonly resourceLoadingEffect = effect(() => {
+    this.loading.set(this.intervieweeResource.isLoading());
+  });
 
-    if (processId && intervieweeId) {
-      void this.loadInterviewee(processId, intervieweeId);
+  // React to resource data
+  private readonly resourceDataEffect = effect(() => {
+    const data = this.intervieweeResource.value();
+    if (data) {
+      this.isInitializing.set(true);
+      this.interviewee.set(data);
+      this.rating.set(data.rating ?? undefined);
+      this.serverRating.set(data.rating ?? undefined);
+      this.notesControl.setValue(data.assessmentNotes ?? '', { emitEvent: false });
+      this.error.set(undefined);
+      this.isInitializing.set(false);
+    }
+  });
+
+  // React to resource errors
+  private readonly resourceErrorEffect = effect(() => {
+    const err = this.intervieweeResource.error();
+    if (err != null) {
+      this.handleLoadError(err);
     }
   });
 
@@ -163,27 +184,6 @@ export class IntervieweeAssessmentComponent {
       void this.router.navigate(['/interviews', processId]);
     } else {
       void this.router.navigate(['/interviews/overview']);
-    }
-  }
-
-  // Fetches interviewee details, initializes form state
-  private async loadInterviewee(processId: string, intervieweeId: string): Promise<void> {
-    this.loading.set(true);
-    this.error.set(undefined);
-    this.isInitializing.set(true);
-
-    try {
-      const data = await firstValueFrom(this.interviewApi.getIntervieweeDetails(processId, intervieweeId));
-
-      this.interviewee.set(data);
-      this.rating.set(data.rating ?? undefined);
-      this.serverRating.set(data.rating ?? undefined);
-      this.notesControl.setValue(data.assessmentNotes ?? '', { emitEvent: false });
-    } catch (err) {
-      this.handleLoadError(err);
-    } finally {
-      this.loading.set(false);
-      this.isInitializing.set(false);
     }
   }
 

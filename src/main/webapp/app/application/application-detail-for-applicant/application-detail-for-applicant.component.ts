@@ -1,8 +1,7 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
-import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
@@ -20,6 +19,7 @@ import { ApplicationPDFRequest } from 'app/generated/model/application-pdf-reque
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
+import { httpResource } from '@angular/common/http';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
 import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
@@ -52,25 +52,28 @@ export default class ApplicationDetailForApplicantComponent {
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
   isSummaryPage = input<boolean>(false);
 
-  // actual application data fetched from the server
-  actualDetailDataExists = signal<boolean>(false);
-  actualDetailData = signal<ApplicationDetailDTO | null>(null);
-  actualDocumentDataExists = signal<boolean>(false);
-  actualDocumentData = signal<ApplicationDocumentIdsDTO | null>(null);
-
   applicationId = signal<string>('');
+
+  private readonly detailResource = httpResource<ApplicationDetailDTO>(() => {
+    const id = this.applicationId();
+    return id ? `/api/applications/${encodeURIComponent(id)}/detail` : undefined;
+  });
+  private readonly documentIdsResource = httpResource<ApplicationDocumentIdsDTO>(() => {
+    const id = this.applicationId();
+    return id ? `/api/applications/getDocumentIds/${encodeURIComponent(id)}` : undefined;
+  });
 
   application = computed(() => {
     const preview = this.previewDetailData();
     if (preview) return preview;
 
-    return this.actualDetailDataExists() ? this.actualDetailData() : undefined;
+    return this.detailResource.value() ?? undefined;
   });
   documentIds = computed(() => {
     const preview = this.previewDocumentData();
     if (preview) return preview;
 
-    return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
+    return this.documentIdsResource.value() ?? undefined;
   });
 
   readonly primaryActionButton = computed<ActionButton | null>(() => {
@@ -105,7 +108,7 @@ export default class ApplicationDetailForApplicantComponent {
         icon: 'file-pdf',
         severity: 'primary',
         command: () => {
-          void this.onDownloadPDF();
+          this.onDownloadPDF();
         },
       });
     }
@@ -203,42 +206,30 @@ export default class ApplicationDetailForApplicantComponent {
 
   private readonly translationKey = 'entity.toast.applyFlow';
 
+  private detailErrorEffect = effect(() => {
+    if (this.detailResource.error() && this.applicationId()) {
+      this.toastService.showErrorKey(`${this.translationKey}.fetchApplicationFailed`);
+    }
+  });
+
+  private documentIdsErrorEffect = effect(() => {
+    if (this.documentIdsResource.error() && this.applicationId()) {
+      this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`);
+    }
+  });
+
   constructor() {
     // Only initialize if we're on a detail page route (has application_id param)
     // and not in preview mode
     const applicationId = this.route.snapshot.paramMap.get('application_id');
-    if (applicationId !== null && !this.previewDetailData()) {
-      void this.init();
-    }
-  }
-
-  async init(): Promise<void> {
-    const applicationId = this.route.snapshot.paramMap.get('application_id');
-    if (applicationId === null) {
-      this.toastService.showErrorKey(`${this.translationKey}.invalidApplicationId`);
-    } else {
+    if (applicationId !== null) {
       this.applicationId.set(applicationId);
-    }
-
-    try {
-      const application = await firstValueFrom(this.applicationApi.getApplicationForDetailPage(this.applicationId()));
-      this.actualDetailData.set(application);
-      this.actualDetailDataExists.set(true);
-    } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.fetchApplicationFailed`);
-    }
-
-    try {
-      const ids = await firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()));
-      this.actualDocumentData.set(ids);
-      this.actualDocumentDataExists.set(true);
-    } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`);
+    } else if (!this.previewDetailData()) {
+      this.toastService.showErrorKey(`${this.translationKey}.invalidApplicationId`);
     }
   }
 
-  async onDownloadPDF(): Promise<void> {
-    let req: ApplicationPDFRequest;
+  onDownloadPDF(): void {
     const labels = getApplicationPDFLabels(this.translate);
 
     // Append grade display extra as the translation needs both limits as paramenters
@@ -257,20 +248,16 @@ export default class ApplicationDetailForApplicantComponent {
     );
 
     const previewData = this.previewDetailData();
+    const applicationData = previewData ?? this.detailResource.value();
 
-    if (previewData) {
-      req = {
-        application: previewData,
-        labels,
-      };
-    } else {
-      const applicationId = this.applicationId();
-      const application = await firstValueFrom(this.applicationApi.getApplicationForDetailPage(applicationId));
-      req = {
-        application,
-        labels,
-      };
+    if (!applicationData) {
+      return;
     }
+
+    const req: ApplicationPDFRequest = {
+      application: applicationData,
+      labels,
+    };
 
     this.pdfExportApi.exportApplicationToPDF(req).subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
@@ -332,7 +319,8 @@ export default class ApplicationDetailForApplicantComponent {
         next: () => {
           this.toastService.showSuccessKey(`${this.translationKey}.applicationWithdrawn`);
           // Refresh the application data to show updated state
-          void this.init();
+          this.detailResource.reload();
+          this.documentIdsResource.reload();
         },
         error: () => {
           this.toastService.showErrorKey(`${this.translationKey}.errorWithdrawingApplication`);

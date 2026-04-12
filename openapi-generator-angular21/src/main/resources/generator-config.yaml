@@ -11,7 +11,7 @@ additionalProperties:
   #   useHttpResource=false -> GET operations use HttpClient (Observable/subscription-based)
   #                            Generated alongside mutations in *-api.ts service files.
   #                            Compatible with existing .subscribe() patterns — less migration effort.
-  useHttpResource: false
+  useHttpResource: true
 
   #   useInjectFunction=true  -> Services use inject(HttpClient) (modern, functional style)
   #   useInjectFunction=false -> Services use constructor(private http: HttpClient) (classic style)

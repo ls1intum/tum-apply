@@ -1,7 +1,8 @@
 import { Component, Signal, computed, effect, inject, signal } from '@angular/core';
+import { HttpResourceRef } from '@angular/common/http';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
-import { firstValueFrom, map } from 'rxjs';
+import { map } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -14,10 +15,12 @@ import { TranslateDirective } from 'app/shared/language';
 import { AccountService } from 'app/core/auth/account.service';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { getAllFiltersResource, GetAvailableJobsParams, getAvailableJobsResource } from 'app/generated/api/job-resource-api';
+import { JobFiltersDTO } from 'app/generated/model/job-filters-dto';
+import { PageJobCardDTO } from 'app/generated/model/page-job-card-dto';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/model/job-card-dto';
-import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 
 @Component({
@@ -75,26 +78,50 @@ export class JobCardListComponent {
   );
 
   private readonly router = inject(Router);
-  private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
-  private readonly loadJobsEffect = effect(() => {
-    this.page();
-    this.pageSize();
-    this.searchQuery();
-    this.selectedSubjectAreaFilters();
-    this.selectedLocationFilters();
-    this.selectedSupervisorFilters();
-    this.sortBy();
-    this.sortDirection();
-    void this.loadJobs();
+  private readonly filtersResource: HttpResourceRef<JobFiltersDTO | undefined> = getAllFiltersResource();
+
+  private readonly availableJobsParams = computed<GetAvailableJobsParams>(() => ({
+    pageSize: this.pageSize(),
+    pageNumber: this.page(),
+    subjectAreas: emptyToUndef(this.selectedSubjectAreaFilters()),
+    locations: emptyToUndef(this.selectedLocationFilters()),
+    professorNames: emptyToUndef(this.selectedSupervisorFilters()),
+    sortBy: this.sortBy(),
+    direction: this.sortDirection(),
+    searchQuery: this.searchQuery() || undefined,
+  }));
+
+  private readonly availableJobsResource: HttpResourceRef<PageJobCardDTO | undefined> = getAvailableJobsResource(this.availableJobsParams);
+
+  private readonly syncFiltersEffect = effect(() => {
+    const filters = this.filtersResource.value();
+    if (filters) {
+      this.allSupervisorNames.set(filters.supervisorNames ?? []);
+    }
+    if (this.filtersResource.error()) {
+      this.allSupervisorNames.set([]);
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
+    }
+  });
+
+  private readonly syncJobsEffect = effect(() => {
+    const pageData = this.availableJobsResource.value();
+    if (pageData) {
+      this.jobs.set(pageData.content ?? []);
+      this.totalRecords.set(pageData.totalElements ?? 0);
+    }
+    if (this.availableJobsResource.error()) {
+      console.error('Failed to load jobs from API:', this.availableJobsResource.error());
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
+    }
   });
 
   constructor() {
     this.notificationsSettingsHref = computed(() =>
       this.router.serializeUrl(this.router.createUrlTree(['/settings'], { queryParams: { tab: 'notifications' } })),
     );
-    void this.loadAllFilter();
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -135,37 +162,6 @@ export class JobCardListComponent {
     this.sortDirection.set(event.direction);
   }
 
-  async loadAllFilter(): Promise<void> {
-    try {
-      const filterOptions = await firstValueFrom(this.jobApi.getAllFilters());
-      this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
-    } catch {
-      this.allSupervisorNames.set([]);
-      this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
-    }
-  }
-
-  async loadJobs(): Promise<void> {
-    try {
-      const pageData = await firstValueFrom(
-        this.jobApi.getAvailableJobs(
-          this.pageSize(),
-          this.page(),
-          emptyToUndef(this.selectedSubjectAreaFilters()),
-          emptyToUndef(this.selectedLocationFilters()),
-          emptyToUndef(this.selectedSupervisorFilters()),
-          this.sortBy(),
-          this.sortDirection(),
-          this.searchQuery() || undefined,
-        ),
-      );
-      this.jobs.set(pageData.content ?? []);
-      this.totalRecords.set(pageData.totalElements ?? 0);
-    } catch (error) {
-      console.error('Failed to load jobs from API:', error);
-      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
-    }
-  }
 
   getExampleImageUrl(index: number): string {
     const headerImages = [

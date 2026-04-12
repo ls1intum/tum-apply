@@ -23,9 +23,8 @@ import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-appli
 import { Observable, shareReplay } from 'rxjs';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { getAiConsentResource } from 'app/generated/api/user-resource-api';
 import { ToastService } from 'app/service/toast-service';
-import { firstValueFrom } from 'rxjs';
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
@@ -179,9 +178,10 @@ export default class ApplicationCreationPage1Component {
   });
 
   private aiApi = inject(AiResourceApi);
-  private userApi = inject(UserResourceApi);
   private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
+
+  private readonly aiConsentResource = getAiConsentResource();
 
   // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
   private restoreExtractionState = effect(() => {
@@ -200,9 +200,17 @@ export default class ApplicationCreationPage1Component {
     this.cvDocsSetValidity(cvDocs);
   });
 
-  constructor() {
-    void this.loadAiConsent();
+  private aiConsentEffect = effect(() => {
+    const consent = this.aiConsentResource.value();
+    if (consent !== undefined) {
+      this.aiFeaturesEnabled.set(consent);
+    }
+    if (this.aiConsentResource.error()) {
+      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
+    }
+  });
 
+  constructor() {
     effect(onCleanup => {
       const form = this.page1Form();
       const data = this.data();
@@ -343,12 +351,4 @@ export default class ApplicationCreationPage1Component {
     });
   }
 
-  private async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled);
-    } catch {
-      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
-    }
-  }
 }

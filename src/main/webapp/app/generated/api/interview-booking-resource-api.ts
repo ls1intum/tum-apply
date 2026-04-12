@@ -15,6 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { BookSlotRequestDTO } from '../model/book-slot-request-dto';
 import { InterviewSlotDTO } from '../model/interview-slot-dto';
 import { BookingDTO } from '../model/booking-dto';
@@ -36,33 +38,47 @@ export class InterviewBookingResourceApi {
         return this.http.post<InterviewSlotDTO>(url, bookSlotRequestDTO);
     }
 
-    /**
-     * 
-     * 
-     * @param processId 
-     * @param year 
-     * @param month 
-     * @param page 
-     * @param size 
-     */
-    getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number): Observable<BookingDTO> {
-        const processIdPath = encodeURIComponent(String(processId));
-        const queryParams = new URLSearchParams();
-        if (year !== undefined && year !== null) {
-            queryParams.set('year', String(year));
-        }
-        if (month !== undefined && month !== null) {
-            queryParams.set('month', String(month));
-        }
-        if (page !== undefined && page !== null) {
-            queryParams.set('page', String(page));
-        }
-        if (size !== undefined && size !== null) {
-            queryParams.set('size', String(size));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/interviews/booking/${processIdPath}${queryString ? `?${queryString}` : ''}`;
-        return this.http.get<BookingDTO>(url);
-    }
-
 }
+
+const BASE_PATH = '';
+
+/**
+ * Query parameters for getBookingData
+ */
+export interface GetBookingDataParams {
+    year?: number;
+    month?: number;
+    page?: number;
+    size?: number;
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param processId 
+ * @param params Optional signal containing query parameters
+ */
+export function getBookingDataResource(processId: Signal<string> | string, params?: Signal<GetBookingDataParams>): HttpResourceRef<BookingDTO | undefined> {
+    return httpResource<BookingDTO>(() => {
+        const processIdValue = typeof processId === 'function' ? processId() : processId;
+        const processIdPath = encodeURIComponent(String(processIdValue));
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.year !== undefined && queryParams.year !== null) {
+            searchParams.set('year', String(queryParams.year));
+        }
+        if (queryParams.month !== undefined && queryParams.month !== null) {
+            searchParams.set('month', String(queryParams.month));
+        }
+        if (queryParams.page !== undefined && queryParams.page !== null) {
+            searchParams.set('page', String(queryParams.page));
+        }
+        if (queryParams.size !== undefined && queryParams.size !== null) {
+            searchParams.set('size', String(queryParams.size));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/interviews/booking/${processIdPath}${query ? `?${query}` : ''}`;
+    });
+}
+

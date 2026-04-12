@@ -12,35 +12,17 @@
  * UserDataExportResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { DataExportStatusDTO } from '../model/data-export-status-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataExportResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
-
-    /**
-     * Download a prepared data export
-     * 
-     * @param token 
-     */
-    downloadDataExport(token: string): Observable<HttpResponse<Blob>> {
-        const tokenPath = encodeURIComponent(String(token));
-        const url = `${this.basePath}/api/users/data-export/download/${tokenPath}`;
-        return this.http.get(url, { responseType: 'blob', observe: 'response' });
-    }
-
-    /**
-     * Get data export status for the current user
-     * 
-     */
-    getDataExportStatus(): Observable<DataExportStatusDTO> {
-        const url = `${this.basePath}/api/users/data-export/status`;
-        return this.http.get<DataExportStatusDTO>(url);
-    }
 
     /**
      * Request a data export for the current user
@@ -52,3 +34,31 @@ export class UserDataExportResourceApi {
     }
 
 }
+
+const BASE_PATH = '';
+
+/**
+ * Download a prepared data export
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param token 
+ */
+export function downloadDataExportResource(token: Signal<string> | string): HttpResourceRef<Blob | undefined> {
+    return httpResource<Blob>(() => {
+        const tokenValue = typeof token === 'function' ? token() : token;
+        const tokenPath = encodeURIComponent(String(tokenValue));
+        return `${BASE_PATH}/api/users/data-export/download/${tokenPath}`;
+    });
+}
+
+/**
+ * Get data export status for the current user
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getDataExportStatusResource(): HttpResourceRef<DataExportStatusDTO | undefined> {
+    return httpResource<DataExportStatusDTO>(() => {
+        return `${BASE_PATH}/api/users/data-export/status`;
+    });
+}
+

@@ -1,7 +1,6 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
-import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
+import { downloadDocumentResource } from 'app/generated/api/document-resource-api';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 
@@ -17,34 +16,31 @@ export class DocumentViewerComponent {
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
-  private documentApi = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
+
+  private docId = computed(() => this.documentDictionaryId().id);
+  private documentResource = downloadDocumentResource(this.docId);
 
   constructor() {
     effect(() => {
-      void this.initDocument();
+      const docId = this.docId();
+      const blob = this.documentResource.value();
+
+      // check cache first
+      const cached = this.cache.get(docId);
+      if (cached !== undefined) {
+        this.sanitizedBlobUrl.set(cached);
+        return;
+      }
+
+      if (blob) {
+        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+        const safeUrl = this.cache.set(docId, pdfBlob);
+        this.sanitizedBlobUrl.set(safeUrl);
+      } else if (this.documentResource.error()) {
+        console.error('Document download failed:', this.documentResource.error());
+        this.sanitizedBlobUrl.set(undefined);
+      }
     });
-  }
-
-  async initDocument(): Promise<void> {
-    const docId = this.documentDictionaryId().id;
-
-    // check cache first
-    const cached = this.cache.get(docId);
-    if (cached !== undefined) {
-      this.sanitizedBlobUrl.set(cached);
-      return;
-    }
-
-    try {
-      const response = await firstValueFrom(this.documentApi.downloadDocument(docId));
-      const body = response.body;
-      const pdfBlob = body ? new Blob([body], { type: 'application/pdf' }) : new Blob([], { type: 'application/pdf' });
-      const safeUrl = this.cache.set(docId, pdfBlob);
-      this.sanitizedBlobUrl.set(safeUrl);
-    } catch (error) {
-      console.error('Document download failed:', error);
-      this.sanitizedBlobUrl.set(undefined);
-    }
   }
 }

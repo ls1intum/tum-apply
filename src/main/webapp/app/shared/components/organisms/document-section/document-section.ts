@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
-import { HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -13,7 +13,6 @@ import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
 import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
 import { DocumentInformationHolderDTO } from '../../../../generated/model/document-information-holder-dto';
-import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 
 export interface DocumentHolder {
@@ -41,7 +40,7 @@ export class DocumentSection {
 
   readonly NUMBER_OF_DOCUMENTS = 3;
 
-  evaluationApi = inject(ApplicationEvaluationResourceApi);
+  private http = inject(HttpClient);
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
@@ -94,7 +93,13 @@ export class DocumentSection {
     }
 
     try {
-      const response: HttpResponse<Blob> = await firstValueFrom(this.evaluationApi.downloadAll(applicationId));
+      const applicationIdPath = encodeURIComponent(String(applicationId));
+      const response: HttpResponse<Blob> = await firstValueFrom(
+        this.http.get(`/api/evaluation/applications/${applicationIdPath}/documents-download`, {
+          observe: 'response',
+          responseType: 'blob',
+        }),
+      );
 
       const blob = response.body;
 

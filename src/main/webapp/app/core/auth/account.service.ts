@@ -1,4 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { ResearchGroupShortDTO } from '../../generated/model/research-group-short-dto';
@@ -44,6 +45,7 @@ export class AccountService {
     const user = this.user();
     return this.loaded() && user !== undefined;
   });
+  private readonly http = inject(HttpClient);
   private readonly userApi = inject(UserResourceApi);
 
   /**
@@ -131,7 +133,7 @@ export class AccountService {
 
   private async getCurrentUser(): Promise<UserShortDTO | null> {
     try {
-      const user = await firstValueFrom(this.userApi.getCurrentUser());
+      const user = await firstValueFrom(this.http.get<UserShortDTO>('/api/users/me'));
       return user;
     } catch (error) {
       console.error('Failed to fetch user:', error);

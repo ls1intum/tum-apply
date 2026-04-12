@@ -3,8 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
-import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
-import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
+import { getAllSchoolsResource } from 'app/generated/api/school-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -20,14 +19,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class DepartmentEditDialogComponent {
   isSubmitting = signal(false);
-  schools = signal<SchoolShortDTO[]>([]);
+  readonly schoolsResource = getAllSchoolsResource();
 
   // Edit mode
   departmentId = signal<string | undefined>(undefined);
   isEditMode = computed(() => !!this.departmentId());
 
   schoolOptions = computed<SelectOption[]>(() =>
-    this.schools().map(school => ({
+    (this.schoolsResource.value() ?? []).map(school => ({
       name: school.name ?? '',
       value: school.schoolId ?? '',
     })),
@@ -51,7 +50,6 @@ export class DepartmentEditDialogComponent {
   private readonly config = inject(DynamicDialogConfig);
   private readonly ref = inject(DynamicDialogRef);
   private readonly departmentApi = inject(DepartmentResourceApi);
-  private readonly schoolApi = inject(SchoolResourceApi);
   private readonly toastService = inject(ToastService);
 
   constructor() {
@@ -63,17 +61,6 @@ export class DepartmentEditDialogComponent {
         schoolId: data.department.school?.schoolId,
       });
       this.selectedSchoolId.set(data.department.school?.schoolId);
-    }
-
-    void this.loadSchools();
-  }
-
-  async loadSchools(): Promise<void> {
-    try {
-      const schools = await firstValueFrom(this.schoolApi.getAllSchools());
-      this.schools.set(schools);
-    } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.errors.loadSchoolsFailed`);
     }
   }
 
