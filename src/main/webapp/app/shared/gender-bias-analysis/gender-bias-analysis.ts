@@ -3,7 +3,6 @@ import { Observable, Subject, catchError, debounceTime, merge, of, shareReplay, 
 import { GenderBiasAnalysisRequest } from 'app/generated/model/gender-bias-analysis-request';
 import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
 import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
-import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 @Injectable({ providedIn: 'root' })
 export class GenderBiasAnalysisService {

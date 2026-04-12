@@ -12,7 +12,6 @@ export class AiScoreRingComponent {
   readonly DANGER_THRESHOLD = 29;
   readonly NORMALIZED_PATH_LENGTH = 100;
   readonly animatedScore = signal(0);
-  private isFirstRender = true;
 
   readonly boundedScore = computed(() => {
     const value = this.score();
@@ -37,6 +36,8 @@ export class AiScoreRingComponent {
 
     return 'var(--color-primary-default)';
   });
+
+  private isFirstRender = true;
 
   private animationEffect = effect(onCleanup => {
     const targetScore = this.boundedScore();

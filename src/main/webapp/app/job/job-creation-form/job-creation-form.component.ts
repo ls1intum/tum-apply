@@ -956,8 +956,8 @@ export class JobCreationFormComponent {
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
-      startDate: positionDetailsValue.startDate || undefined,
-      endDate: positionDetailsValue.applicationDeadline || undefined,
+      startDate: positionDetailsValue.startDate ?? undefined,
+      endDate: positionDetailsValue.applicationDeadline ?? undefined,
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
@@ -1290,7 +1290,7 @@ export class JobCreationFormComponent {
     this.isTranslating.set(true);
 
     const request = {
-      text: text,
+      text,
       originalAnalysis: undefined,
       jobForm: this.createJobDTO(JobFormDTOStateEnum.Draft),
     };
