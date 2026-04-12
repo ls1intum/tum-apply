@@ -12,18 +12,20 @@ import { SelectComponent, SelectOption } from '../components/atoms/select/select
 import TranslateDirective from '../language/translate.directive';
 import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
+import { AiConsentSettingsComponent } from './ai-consent-settings/ai-consent-settings.component';
 import { NotificationSettingsComponent } from './notifications/notification-settings.component';
-import { PersonalInformationSettingsComponent } from './personal-information-settings';
+import { ApplicationInformationSettingsComponent } from './application-information-settings';
 import { ProfilePictureSettingsComponent } from './profile-picture-settings/profile-picture-settings.component';
 import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
 
-type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'documents';
+type SettingsTab = 'general' | 'notifications' | 'application-information' | 'documents';
 @Component({
   selector: 'jhi-settings',
   imports: [
     TranslateDirective,
+    AiConsentSettingsComponent,
     NotificationSettingsComponent,
-    PersonalInformationSettingsComponent,
+    ApplicationInformationSettingsComponent,
     ProfilePictureSettingsComponent,
     SettingsDocumentsComponent,
     SelectComponent,
@@ -46,9 +48,9 @@ export class SettingsComponent {
       baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications' });
     }
 
-    // Add Personal Information and documents tabs only for applicants
+    // Add application information and documents tabs only for applicants
     if (this.role() === UserShortDTORolesEnum.Applicant) {
-      baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
+      baseTabs.push({ id: 'application-information', translationKey: 'settings.tabs.applicationInformation' });
       baseTabs.push({ id: 'documents', translationKey: 'settings.tabs.documents' });
     }
 

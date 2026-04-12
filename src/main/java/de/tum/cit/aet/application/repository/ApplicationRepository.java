@@ -260,6 +260,17 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     List<UUID> findApplicantsToBeWarnedBeforeDeletion(LocalDateTime warningCutoff);
 
+    /**
+     * Returns every application that references the given job id, regardless of
+     * application state. Used by the admin bulk export to bypass any second-level
+     * cache or lazy-collection quirks on {@code Job.applications}.
+     *
+     * @param jobId the job id
+     * @return all applications for that job
+     */
+    @Query("SELECT a FROM Application a WHERE a.job.jobId = :jobId")
+    List<Application> findAllByJobId(@Param("jobId") UUID jobId);
+
     @Query(
         """
             SELECT a.applicationId FROM Application a

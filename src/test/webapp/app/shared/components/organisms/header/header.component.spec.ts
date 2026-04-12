@@ -1,3 +1,4 @@
+import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NavigationEnd } from '@angular/router';
@@ -80,21 +81,23 @@ describe('HeaderComponent', () => {
   });
 
   describe('onLogoClick', () => {
-    it('should navigate to professor landing page when user is professor', () => {
-      accountService.setAuthorities(['PROFESSOR']);
+    it.each<[string, UserShortDTORolesEnum[], string, boolean, string[]]>([
+      ['professor', [UserShortDTORolesEnum.Professor], '/', true, ['/professor']],
+      ['employee', [UserShortDTORolesEnum.Employee], '/', true, ['/professor']],
+      ['signed-out user on the public /professor page', [], '/professor', false, ['/professor']],
+      ['signed-in user on /professor without professor portal roles', [], '/professor', true, ['/']],
+    ])('should navigate to the correct landing page for %s', (_desc, authorities, url, signedIn, expectedRoute) => {
+      router.url = url;
+      (accountService.signedIn as WritableSignal<boolean>).set(signedIn);
+      accountService.setAuthorities(authorities);
+
+      fixture = TestBed.createComponent(HeaderComponent);
+      component = fixture.componentInstance as HeaderComponentTestInstance;
+      fixture.detectChanges();
 
       component.navigateToHome();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/professor']);
-    });
-
-    it('should navigate to professor landing page when on professor URL and not applicant', () => {
-      router.url = '/professor';
-      accountService.setAuthorities([]);
-
-      component.navigateToHome();
-
-      expect(router.navigate).toHaveBeenCalledWith(['/professor']);
+      expect(router.navigate).toHaveBeenCalledWith(expectedRoute);
     });
 
     it('should navigate to applicant landing page when not professor and not on professor URL', () => {
@@ -137,25 +140,21 @@ describe('HeaderComponent', () => {
   });
 
   describe('isProfessorPage', () => {
-    it('should consider page as professor page when account has PROFESSOR authority', () => {
-      accountService.setAuthorities(['PROFESSOR']);
+    it.each<[string, UserShortDTORolesEnum[], string, boolean, boolean]>([
+      ['account has PROFESSOR authority', [UserShortDTORolesEnum.Professor], '/', true, true],
+      ['account has EMPLOYEE authority', [UserShortDTORolesEnum.Employee], '/', true, true],
+      ['public /professor landing page when signed out', [], '/professor', false, true],
+      ['signed-in user on /professor without professor portal roles', [], '/professor', true, false],
+    ])('should derive professor page state when %s', (_desc, authorities, url, signedIn, expected) => {
+      router.url = url;
+      (accountService.signedIn as WritableSignal<boolean>).set(signedIn);
+      accountService.setAuthorities(authorities);
 
       fixture = TestBed.createComponent(HeaderComponent);
       component = fixture.componentInstance as HeaderComponentTestInstance;
       fixture.detectChanges();
 
-      expect(component.isProfessorPage()).toBe(true);
-    });
-
-    it('should consider page as professor page when URL is /professor and user is not APPLICANT', () => {
-      router.url = '/professor';
-      accountService.setAuthorities([]);
-
-      fixture = TestBed.createComponent(HeaderComponent);
-      component = fixture.componentInstance as HeaderComponentTestInstance;
-      fixture.detectChanges();
-
-      expect(component.isProfessorPage()).toBe(true);
+      expect(component.isProfessorPage()).toBe(expected);
     });
 
     it('should consider page as professor page when route authorities contain Professor role', () => {
@@ -170,6 +169,25 @@ describe('HeaderComponent', () => {
       fixture.detectChanges();
 
       expect(component.isProfessorPage()).toBe(true);
+    });
+
+    it('should not consider page as professor page when route authorities mix professor and non-professor roles and user lacks professor portal roles', () => {
+      router.url = '/settings';
+      accountService.setAuthorities([]);
+      router.routerState.snapshot.root.data = {
+        authorities: [
+          UserShortDTORolesEnum.Admin,
+          UserShortDTORolesEnum.Professor,
+          UserShortDTORolesEnum.Applicant,
+          UserShortDTORolesEnum.Employee,
+        ],
+      };
+
+      fixture = TestBed.createComponent(HeaderComponent);
+      component = fixture.componentInstance as HeaderComponentTestInstance;
+      fixture.detectChanges();
+
+      expect(component.isProfessorPage()).toBe(false);
     });
 
     it('should consider page as professor page when nested route snapshot contains Professor role (initial snapshot)', () => {

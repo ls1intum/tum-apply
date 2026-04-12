@@ -113,6 +113,35 @@ public class UserResource {
     }
 
     /**
+     * Returns the AI consent status of the currently authenticated user.
+     *
+     * @param jwt of the authenticated user
+     * @return the AI consent status
+     */
+    @Authenticated
+    @GetMapping("/ai-consent")
+    public ResponseEntity<Boolean> getAiConsent(@AuthenticationPrincipal Jwt jwt) {
+        log.info("GET /api/users/ai-consent - Retrieving AI consent for subject={}", jwt.getSubject());
+        User user = userService.findById(jwt.getSubject());
+        return ResponseEntity.ok(user.isAiFeaturesEnabled());
+    }
+
+    /**
+     * Updates the AI consent setting of the currently authenticated user.
+     *
+     * @param jwt of the authenticated user
+     * @param aiFeaturesEnabled contains the new AI consent value
+     * @return 204 No Content if updated successfully
+     */
+    @Authenticated
+    @PutMapping("/ai-consent")
+    public ResponseEntity<Void> updateAiConsent(@AuthenticationPrincipal Jwt jwt, @RequestBody Boolean aiFeaturesEnabled) {
+        log.info("PUT /api/users/ai-consent - Updating AI features for subject={} to {}", jwt.getSubject(), aiFeaturesEnabled);
+        userService.updateAiConsent(jwt.getSubject(), aiFeaturesEnabled);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Retrieves a paginated list of users who are TUM-affiliated and not currently assigned to any research group.
      *
      * @param pageDTO     pagination parameters

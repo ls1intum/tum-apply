@@ -39,6 +39,7 @@ export class FilterMultiselect {
   shouldTranslateOptions = input<boolean>(false);
   showSelectedChipsInTrigger = input<boolean>(true);
   selectedValuesInput = input<string[] | undefined>(undefined);
+  inline = input<boolean>(false);
   focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);

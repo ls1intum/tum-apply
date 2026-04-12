@@ -2,6 +2,10 @@ openapi: 3.1.0
 info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
+tags:
+- name: Actuator
+  description: Monitor and interact
+  externalDocs: {description: Spring Boot Actuator Web API Documentation, url: 'https://docs.spring.io/spring-boot/docs/current/actuator-api/html/'}
 paths:
   /api/admin/dependencies:
     get:
@@ -23,6 +27,62 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
+  /api/admin/exports/download/{taskId}:
+    get:
+      tags: [admin-export-resource]
+      operationId: download
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/admin/exports/mine:
+    get:
+      tags: [admin-export-resource]
+      operationId: listMine
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/AdminExportTaskDTO'}
+  /api/admin/exports/status/{taskId}:
+    get:
+      tags: [admin-export-resource]
+      operationId: getStatus
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminExportTaskDTO'}
+  /api/admin/exports/{type}:
+    post:
+      tags: [admin-export-resource]
+      operationId: startExport
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS,
+            APPLICATIONS_ONLY]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminExportTaskDTO'}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
@@ -2321,6 +2381,26 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/users/ai-consent:
+    get:
+      tags: [user-resource]
+      operationId: getAiConsent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {type: boolean}
+    put:
+      tags: [user-resource]
+      operationId: updateAiConsent
+      requestBody:
+        content:
+          application/json:
+            schema: {type: boolean}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/users/available-for-research-group:
     get:
       tags: [user-resource]
@@ -2448,6 +2528,315 @@ paths:
         required: true
       responses:
         '200': {description: OK}
+  /management:
+    get:
+      tags: [Actuator]
+      summary: Actuator root web endpoint
+      operationId: links
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: {$ref: '#/components/schemas/Link'}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: {$ref: '#/components/schemas/Link'}
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: {$ref: '#/components/schemas/Link'}
+  /management/caches:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches'
+      operationId: caches
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+    delete:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches'
+      operationId: clearCaches
+      responses:
+        '204': {description: No Content}
+  /management/caches/{cache}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches-cache'
+      operationId: cache
+      parameters:
+      - name: cache
+        in: path
+        required: true
+        schema: {type: string}
+      - name: cacheManager
+        in: query
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+    delete:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches-cache'
+      operationId: clearCache
+      parameters:
+      - name: cache
+        in: path
+        required: true
+        schema: {type: string}
+      - name: cacheManager
+        in: query
+        schema: {type: string}
+      responses:
+        '204': {description: No Content}
+        '404': {description: Not Found}
+  /management/configprops:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'configprops'
+      operationId: configurationProperties
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/configprops/{prefix}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'configprops-prefix'
+      operationId: configurationPropertiesWithPrefix
+      parameters:
+      - name: prefix
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+  /management/env:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'env'
+      operationId: environment
+      parameters:
+      - name: pattern
+        in: query
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/env/{toMatch}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'env-toMatch'
+      operationId: environmentEntry
+      parameters:
+      - name: toMatch
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+  /management/health:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'health'
+      operationId: health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/info:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'info'
+      operationId: info
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/jhimetrics:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'jhimetrics'
+      operationId: allMetrics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/jhiopenapigroups:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'jhiopenapigroups'
+      operationId: allOpenApi
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/liquibase:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'liquibase'
+      operationId: liquibaseBeans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/loggers:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'loggers'
+      operationId: loggers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/loggers/{name}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'loggers-name'
+      operationId: loggerLevels
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+    post:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'loggers-name'
+      operationId: configureLogLevel
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              enum: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL, 'OFF']
+      responses:
+        '204': {description: No Content}
+        '400': {description: Bad Request}
+  /management/threaddump:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'threaddump'
+      operationId: threadDump
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain;charset=UTF-8:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
 components:
   schemas:
     AIJobDescriptionTranslationDTO:
@@ -2476,6 +2865,33 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
+    AdminExportTaskDTO:
+      type: object
+      properties:
+        applicantSubjectAreaSubscriptions: {$ref: '#/components/schemas/Counts'}
+        applicants: {$ref: '#/components/schemas/Counts'}
+        applications: {$ref: '#/components/schemas/Counts'}
+        createdAt: {type: string, format: date-time}
+        departments: {$ref: '#/components/schemas/Counts'}
+        documents: {$ref: '#/components/schemas/Counts'}
+        downloadAvailable: {type: boolean}
+        durationSeconds: {type: number, format: double}
+        error: {type: string}
+        finishedAt: {type: string, format: date-time}
+        jobs: {$ref: '#/components/schemas/Counts'}
+        researchGroups: {$ref: '#/components/schemas/Counts'}
+        schools: {$ref: '#/components/schemas/Counts'}
+        status:
+          type: string
+          enum: [IN_PROGRESS, READY, FAILED]
+        taskId: {type: string, format: uuid}
+        totalFailures: {type: integer, format: int32}
+        type:
+          type: string
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS,
+            APPLICATIONS_ONLY]
+        userResearchGroupRoles: {$ref: '#/components/schemas/Counts'}
+        users: {$ref: '#/components/schemas/Counts'}
     ApplicantDTO:
       type: object
       properties:
@@ -2503,11 +2919,15 @@ components:
         bachelorGradeLowerLimit: {type: string}
         bachelorGradeUpperLimit: {type: string}
         bachelorUniversity: {type: string}
+        city: {type: string}
+        country: {type: string}
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterGradeLowerLimit: {type: string}
         masterGradeUpperLimit: {type: string}
         masterUniversity: {type: string}
+        postalCode: {type: string}
+        street: {type: string}
         user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
       required: [user]
     ApplicationDetailDTO:
@@ -2678,6 +3098,12 @@ components:
         slots:
           type: array
           items: {$ref: '#/components/schemas/ExistingSlotDTO'}
+    Counts:
+      type: object
+      properties:
+        expected: {type: integer, format: int32}
+        exported: {type: integer, format: int32}
+        failed: {type: integer, format: int32}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2711,7 +3137,19 @@ components:
         documents:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
-    CustomFieldDTO: {}
+    CustomFieldDTO:
+      type: object
+      properties:
+        answerOptions:
+          type: array
+          items: {type: string}
+        customFieldId: {type: string, format: uuid}
+        customFieldType:
+          type: string
+          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
+        question: {type: string}
+        required: {type: boolean}
+        sequence: {type: integer, format: int32}
     DataExportStatusDTO:
       type: object
       properties:
@@ -3159,6 +3597,11 @@ components:
         lastName: {type: string}
         universityId: {type: string}
         username: {type: string}
+    Link:
+      type: object
+      properties:
+        href: {type: string}
+        templated: {type: boolean}
     LoginRequestDTO:
       type: object
       properties:

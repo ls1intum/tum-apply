@@ -9,7 +9,7 @@ import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
-import { PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
+import { ApplicationInformationSettingsComponent } from 'app/shared/settings/application-information-settings';
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
 import { createApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -95,7 +95,7 @@ describe('Profile save isolation', () => {
     });
   });
 
-  it('documents save uses the latest personal information saved in another tab', async () => {
+  it('documents save uses the latest application information saved in another tab', async () => {
     const profileAfterPersonalSave = cloneValue(baseProfile);
     profileAfterPersonalSave.user!.firstName = 'Grace';
     const profileAfterBothSaves = cloneValue(profileAfterPersonalSave);
@@ -118,8 +118,8 @@ describe('Profile save isolation', () => {
       .mockReturnValueOnce(of(profileAfterPersonalSave));
     applicantApiMock.updateApplicantDocumentSettings.mockReturnValueOnce(of(profileAfterBothSaves));
 
-    const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
-    await personalComponent.loadPersonalInformation();
+    const personalComponent = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
+    await personalComponent.loadApplicationInformation();
 
     const documentsComponent = await createDocumentsComponent();
 
@@ -150,7 +150,7 @@ describe('Profile save isolation', () => {
     );
   });
 
-  it('personal information save uses the latest document settings saved in another tab', async () => {
+  it('application information save uses the latest document settings saved in another tab', async () => {
     const profileAfterDocumentsSave = cloneValue(baseProfile);
     profileAfterDocumentsSave.bachelorGrade = '1.0';
     const profileAfterBothSaves = cloneValue(profileAfterDocumentsSave);
@@ -175,8 +175,8 @@ describe('Profile save isolation', () => {
 
     const documentsComponent = await createDocumentsComponent();
 
-    const personalComponent = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
-    await personalComponent.loadPersonalInformation();
+    const personalComponent = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
+    await personalComponent.loadApplicationInformation();
 
     documentsComponent.form.patchValue({
       bachelorGrade: '1.0',
@@ -231,13 +231,13 @@ describe('Profile save isolation', () => {
     vi.useRealTimers();
   });
 
-  it('preserves disabled email field when another personal information field changes', async () => {
-    const fixture = TestBed.createComponent(PersonalInformationSettingsComponent);
+  it('preserves disabled email field when another application information field changes', async () => {
+    const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
     const personalComponent = fixture.componentInstance;
-    await personalComponent.loadPersonalInformation();
+    await personalComponent.loadApplicationInformation();
     fixture.detectChanges();
 
-    const form = personalComponent.personalInfoForm();
+    const form = personalComponent.applicationInfoForm();
     form.controls.firstName.setValue('Grace');
     fixture.detectChanges();
 

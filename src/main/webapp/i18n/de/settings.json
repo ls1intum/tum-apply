@@ -5,22 +5,22 @@
     "tabs": {
       "general": "Allgemein",
       "notifications": "Benachrichtigungen",
-      "personalInformation": "Persönliche Informationen",
+      "applicationInformation": "Bewerbungsinformationen",
       "documents": "Dokumente"
     },
-    "personalInformation": {
-      "description": "Aktualisiere hier deine persönlichen Informationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
+    "applicationInformation": {
+      "description": "Aktualisiere hier deine Bewerbungsinformationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
-        "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
+        "detail": "Fehler beim Laden der Bewerbungsinformationen. Bitte versuche es erneut."
       },
       "saved": {
         "summary": "Erfolgreich gespeichert",
-        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+        "detail": "Bewerbungsinformationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
       },
       "saveFailed": {
         "summary": "Speichern fehlgeschlagen",
-        "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
+        "detail": "Fehler beim Speichern der Bewerbungsinformationen. Bitte versuche es erneut."
       }
     },
 
@@ -108,6 +108,37 @@
       "cropDialog": {
         "header": "Profilbild zuschneiden",
         "rotate": "Drehen"
+      }
+    },
+    "aiFeatures": {
+      "header": "KI-Funktionen",
+      "description": "Lege fest, ob KI-gestützte Funktionen für dein Konto aktiviert sind.",
+      "learnMore": "Mehr über die KI-Nutzung erfahren",
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "KI-Einstellungen konnten nicht aktualisiert werden. Bitte versuche es erneut."
+      },
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "KI-Einstellungen konnten nicht geladen werden. Bitte versuche es erneut."
+      },
+      "modal": {
+        "header": "Über KI-Funktionen in TUMApply",
+        "intro": "TUMApply nutzt KI, um dein Erlebnis zu verbessern. Hier ist, was du wissen solltest:",
+        "processing": {
+          "header": "Datenverarbeitung",
+          "description": "Deine Daten werden über Azure OpenAI verarbeitet, gehostet auf EU-Servern. Deine Daten werden niemals für das Training von Modellen verwendet."
+        },
+        "scope": {
+          "header": "Was KI kann",
+          "applicant": "Als Bewerber kann die KI automatisch deine persönlichen Daten aus deinem Lebenslauf extrahieren, um Bewerbungsformulare vorauszufüllen und dir Zeit zu sparen.",
+          "professorOrEmployee": "Als Professor oder Mitarbeiter kann die KI Stellenbeschreibungen generieren und zwischen Deutsch und Englisch übersetzen."
+        },
+        "consent": {
+          "header": "Deine Kontrolle",
+          "description": "Du kannst KI-Funktionen jederzeit über den Schalter in deinen Einstellungen aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten.",
+          "descriptionSettings": "Du kannst KI-Funktionen jederzeit über den Schalter aktivieren oder deaktivieren. Das Deaktivieren der KI löscht keine zuvor verarbeiteten Daten."
+        }
       }
     },
     "appearance": {

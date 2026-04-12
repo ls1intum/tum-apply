@@ -185,7 +185,7 @@ public class UserExportZipWriter {
         addCsvFileToZip(
             zipOut,
             "data/profile.csv",
-            List.of("first_name", "last_name", "email", "gender", "nationality", "birthday"),
+            List.of("first_name", "last_name", "email", "gender", "nationality", "birthday", "ai_features_enabled", "ai_consented_at"),
             List.of(
                 List.of(
                     toCsvValue(userData.profile().firstName()),
@@ -193,7 +193,9 @@ public class UserExportZipWriter {
                     toCsvValue(userData.profile().email()),
                     toCsvValue(userData.profile().gender()),
                     toCsvValue(userData.profile().nationality()),
-                    toCsvValue(userData.profile().birthday())
+                    toCsvValue(userData.profile().birthday()),
+                    toCsvValue(userData.profile().aiFeaturesEnabled()),
+                    toCsvValue(userData.profile().aiConsentedAt())
                 )
             )
         );
