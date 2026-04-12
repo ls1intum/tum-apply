@@ -236,10 +236,7 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
                 // No resource file for tags without GET operations
                 openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
             }
-            if (useHttpResource && separateResources && !usage.hasMutation) {
-                // No api file for tags that only have GET operations (they go in resources)
-                openapiGeneratorIgnoreList.add("api/" + apiFilename + "-api.ts");
-            }
+            // Service files are always generated — they contain Observable methods for all operations
         }
     }
 
@@ -396,7 +393,7 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         operations.put("hasGetOperations", !getOperations.isEmpty());
         operations.put("hasMutationOperations", !mutationOperations.isEmpty());
         operations.put("hasInlineResources", useHttpResource && !separateResources && !getOperations.isEmpty());
-        operations.put("hasServiceClass", !mutationOperations.isEmpty() || (!useHttpResource && !getOperations.isEmpty()));
+        operations.put("hasServiceClass", !mutationOperations.isEmpty() || !getOperations.isEmpty());
 
         // Step 6: Collect model imports and map to kebab-case file paths
         Set<String> modelImports = new LinkedHashSet<>();

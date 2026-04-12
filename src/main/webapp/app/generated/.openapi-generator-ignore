@@ -30,30 +30,8 @@
 
 # The following entries are pre-populated based on the input obtained via
 # the option `openapiGeneratorIgnoreList` (--openapi-generator-ignore-list in CLI for example).
-api/user-resource-resources.ts
-api/email-template-resource-resources.ts
 api/email-verification-resource-resources.ts
-api/application-evaluation-resource-resources.ts
+api/gender-bias-analysis-resource-resources.ts
+api/pdf-export-resource-resources.ts
 api/ai-resource-resources.ts
 api/authentication-resource-resources.ts
-api/admin-export-resource-resources.ts
-api/school-resource-resources.ts
-api/admin-dependency-resource-resources.ts
-api/actuator-resources.ts
-api/email-setting-resource-resources.ts
-api/research-group-resource-resources.ts
-api/gender-bias-analysis-resource-resources.ts
-api/applicant-resource-resources.ts
-api/rating-resource-resources.ts
-api/user-data-export-resource-resources.ts
-api/interview-resource-resources.ts
-api/document-resource-resources.ts
-api/job-resource-resources.ts
-api/pdf-export-resource-resources.ts
-api/application-resource-resources.ts
-api/image-resource-resources.ts
-api/public-config-resource-resources.ts
-api/interview-booking-resource-resources.ts
-api/prof-onboarding-resource-resources.ts
-api/department-resource-resources.ts
-api/internal-comment-resource-resources.ts

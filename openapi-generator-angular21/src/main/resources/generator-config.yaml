@@ -19,7 +19,7 @@ additionalProperties:
 
   #   separateResources=true  -> GET httpResource functions in separate *-resources.ts files (only with useHttpResource=true)
   #   separateResources=false -> Everything in one *-api.ts file per tag
-  separateResources: false
+  separateResources: true
 
   #   readonlyModels=true  -> Output DTO properties are marked readonly
   #                           Input DTOs (names ending with Create/Update/Request/Input) stay mutable
