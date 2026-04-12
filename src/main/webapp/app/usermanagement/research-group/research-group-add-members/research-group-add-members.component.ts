@@ -7,7 +7,7 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { getAvailableUsersForResearchGroupResource, GetAvailableUsersForResearchGroupParams } from 'app/generated/api/user-resource-api';
+import { GetAvailableUsersForResearchGroupParams, getAvailableUsersForResearchGroupResource } from 'app/generated/api/user-resource-api';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';

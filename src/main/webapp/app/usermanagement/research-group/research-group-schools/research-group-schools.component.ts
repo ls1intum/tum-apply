@@ -10,7 +10,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { SchoolResourceApi, getSchoolsForAdminResource, GetSchoolsForAdminParams } from 'app/generated/api/school-resource-api';
+import { GetSchoolsForAdminParams, SchoolResourceApi, getSchoolsForAdminResource } from 'app/generated/api/school-resource-api';
 import { SchoolDTO } from 'app/generated/model/school-dto';
 
 import { SchoolEditDialogComponent } from './school-edit-dialog/school-edit-dialog.component';

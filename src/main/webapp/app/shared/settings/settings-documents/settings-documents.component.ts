@@ -7,8 +7,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   ApplicantResourceApi,
-  getApplicantProfileResource,
   getApplicantProfileDocumentIdsResource,
+  getApplicantProfileResource,
 } from 'app/generated/api/applicant-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';

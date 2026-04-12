@@ -8,7 +8,11 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { TooltipModule } from 'primeng/tooltip';
-import { InterviewResourceApi, getConflictDataForDateResource, GetConflictDataForDateParams } from 'app/generated/api/interview-resource-api';
+import {
+  GetConflictDataForDateParams,
+  InterviewResourceApi,
+  getConflictDataForDateResource,
+} from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ConflictDataDTO } from 'app/generated/model/conflict-data-dto';

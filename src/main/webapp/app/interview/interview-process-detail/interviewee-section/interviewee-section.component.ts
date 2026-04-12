@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
-import { getApplicationsDetailsResource, GetApplicationsDetailsParams } from 'app/generated/api/application-evaluation-resource-api';
+import { GetApplicationsDetailsParams, getApplicationsDetailsResource } from 'app/generated/api/application-evaluation-resource-api';
 import { InterviewResourceApi, getIntervieweesByProcessIdResource } from 'app/generated/api/interview-resource-api';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';

@@ -17,9 +17,9 @@ import { UserAvatarComponent } from '../../shared/components/atoms/user-avatar/u
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import {
+  GetApplicationsOverviewsParams,
   getAllJobNamesResource,
   getApplicationsOverviewsResource,
-  GetApplicationsOverviewsParams,
 } from '../../generated/api/application-evaluation-resource-api';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/application-evaluation-overview-dto';
 import { ApplicationEvaluationOverviewListDTO } from '../../generated/model/application-evaluation-overview-list-dto';
@@ -120,7 +120,9 @@ export class ApplicationOverviewComponent {
     };
   });
 
-  private readonly overviewsResource: HttpResourceRef<ApplicationEvaluationOverviewListDTO | undefined> = getApplicationsOverviewsResource(this.overviewsParams);
+  private readonly overviewsResource: HttpResourceRef<ApplicationEvaluationOverviewListDTO | undefined> = getApplicationsOverviewsResource(
+    this.overviewsParams,
+  );
 
   private readonly _jobNamesEffect = effect(() => {
     const jobNames = this.jobNamesResource.value();

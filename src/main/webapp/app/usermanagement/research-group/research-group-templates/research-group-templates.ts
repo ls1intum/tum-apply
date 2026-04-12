@@ -11,7 +11,7 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/compo
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApi, getTemplatesResource, GetTemplatesParams } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateResourceApi, GetTemplatesParams, getTemplatesResource } from '../../../generated/api/email-template-resource-api';
 import { EmailTemplateOverviewDTO } from '../../../generated/model/email-template-overview-dto';
 import { AccountService } from '../../../core/auth/account.service';
 

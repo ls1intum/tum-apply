@@ -10,9 +10,9 @@ import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-res
 import { getAllSchoolsResource } from 'app/generated/api/school-resource-api';
 import { getDepartmentsResource } from 'app/generated/api/department-resource-api';
 import {
-  getCurrentUserResource,
-  getAvailableUsersForResearchGroupResource,
   GetAvailableUsersForResearchGroupParams,
+  getAvailableUsersForResearchGroupResource,
+  getCurrentUserResource,
 } from 'app/generated/api/user-resource-api';
 import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { DepartmentDTO } from 'app/generated/model/department-dto';

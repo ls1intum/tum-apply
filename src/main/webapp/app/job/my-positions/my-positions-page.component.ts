@@ -17,7 +17,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
-import { JobResourceApi, GetJobsForCurrentResearchGroupParams, getJobsForCurrentResearchGroupResource } from 'app/generated/api/job-resource-api';
+import {
+  GetJobsForCurrentResearchGroupParams,
+  JobResourceApi,
+  getJobsForCurrentResearchGroupResource,
+} from 'app/generated/api/job-resource-api';
 import { PageCreatedJobDTO } from 'app/generated/model/page-created-job-dto';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';

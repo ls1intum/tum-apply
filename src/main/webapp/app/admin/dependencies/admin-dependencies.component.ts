@@ -61,8 +61,8 @@ export class AdminDependenciesComponent {
   private readonly refreshedOverview = signal<DependenciesOverviewDTO | undefined>(undefined);
 
   /** The full dependencies overview response from the server. */
-  readonly dependenciesOverview = computed<DependenciesOverviewDTO | undefined>(() =>
-    this.refreshedOverview() ?? this.overviewResource.value(),
+  readonly dependenciesOverview = computed<DependenciesOverviewDTO | undefined>(
+    () => this.refreshedOverview() ?? this.overviewResource.value(),
   );
 
   /** Current zero-based page index for table pagination. */

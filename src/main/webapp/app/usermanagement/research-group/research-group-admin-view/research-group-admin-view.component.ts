@@ -4,7 +4,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
-import { ResearchGroupResourceApi, getResearchGroupsForAdminResource, GetResearchGroupsForAdminParams } from 'app/generated/api/research-group-resource-api';
+import {
+  GetResearchGroupsForAdminParams,
+  ResearchGroupResourceApi,
+  getResearchGroupsForAdminResource,
+} from 'app/generated/api/research-group-resource-api';
 import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/model/research-group-admin-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';

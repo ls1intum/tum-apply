@@ -354,7 +354,9 @@ export class AdminExportsComponent {
     const current = this.tasks().get(type);
     if (current?.taskId === undefined) return;
     try {
-      const updated = await firstValueFrom(this.http.get<AdminExportTaskDTO>(`/api/admin/exports/status/${encodeURIComponent(current.taskId)}`));
+      const updated = await firstValueFrom(
+        this.http.get<AdminExportTaskDTO>(`/api/admin/exports/status/${encodeURIComponent(current.taskId)}`),
+      );
       this.upsertTask(type, updated);
       if (updated.status === AdminExportTaskDTOStatusEnum.InProgress) {
         this.scheduleNextPoll(type);

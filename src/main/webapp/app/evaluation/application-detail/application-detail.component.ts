@@ -16,11 +16,11 @@ import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/use
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import {
+  GetApplicationsDetailsParams,
+  GetApplicationsDetailsWindowParams,
   getAllJobNamesResource,
   getApplicationsDetailsResource,
-  GetApplicationsDetailsParams,
   getApplicationsDetailsWindowResource,
-  GetApplicationsDetailsWindowParams,
 } from 'app/generated/api/application-evaluation-resource-api';
 import { getDocumentDictionaryIdsResource } from 'app/generated/api/application-resource-api';
 import { InterviewResourceApi, getInterviewOverviewResource } from 'app/generated/api/interview-resource-api';
@@ -352,7 +352,7 @@ export class ApplicationDetailComponent {
   });
 
   constructor() {
-    void this.init();
+    this.init();
   }
 
   init(): void {

@@ -6,10 +6,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import {
-  ImageResourceApi,
-  getResearchGroupJobBannersResource,
-  getResearchGroupJobBannersByResearchGroupResource,
   GetResearchGroupJobBannersByResearchGroupParams,
+  ImageResourceApi,
+  getResearchGroupJobBannersByResearchGroupResource,
+  getResearchGroupJobBannersResource,
 } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
 import { ToastService } from 'app/service/toast-service';

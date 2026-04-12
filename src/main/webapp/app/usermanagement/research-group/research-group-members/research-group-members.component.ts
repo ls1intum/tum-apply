@@ -23,12 +23,12 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import {
-  ResearchGroupResourceApi,
-  getResearchGroupResource,
-  getResearchGroupMembersResource,
-  getResearchGroupMembersByIdResource,
-  GetResearchGroupMembersParams,
   GetResearchGroupMembersByIdParams,
+  GetResearchGroupMembersParams,
+  ResearchGroupResourceApi,
+  getResearchGroupMembersByIdResource,
+  getResearchGroupMembersResource,
+  getResearchGroupResource,
 } from '../../../generated/api/research-group-resource-api';
 import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';

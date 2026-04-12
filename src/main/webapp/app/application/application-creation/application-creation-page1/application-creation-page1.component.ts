@@ -350,5 +350,4 @@ export default class ApplicationCreationPage1Component {
       },
     });
   }
-
 }

@@ -15,7 +15,7 @@ import { TranslateDirective } from 'app/shared/language';
 import { AccountService } from 'app/core/auth/account.service';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import { getAllFiltersResource, GetAvailableJobsParams, getAvailableJobsResource } from 'app/generated/api/job-resource-api';
+import { GetAvailableJobsParams, getAllFiltersResource, getAvailableJobsResource } from 'app/generated/api/job-resource-api';
 import { JobFiltersDTO } from 'app/generated/model/job-filters-dto';
 import { PageJobCardDTO } from 'app/generated/model/page-job-card-dto';
 
@@ -161,7 +161,6 @@ export class JobCardListComponent {
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
   }
-
 
   getExampleImageUrl(index: number): string {
     const headerImages = [

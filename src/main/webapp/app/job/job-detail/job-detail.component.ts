@@ -572,5 +572,4 @@ export class JobDetailComponent {
       suitableForDisabled: isForm ? (data as JobFormDTO).suitableForDisabled : jobDetailDTO.suitableForDisabled,
     };
   }
-
 }

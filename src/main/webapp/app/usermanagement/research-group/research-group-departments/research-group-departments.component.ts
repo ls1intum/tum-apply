@@ -12,7 +12,11 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
-import { DepartmentResourceApi, getDepartmentsForAdminResource, GetDepartmentsForAdminParams } from 'app/generated/api/department-resource-api';
+import {
+  DepartmentResourceApi,
+  GetDepartmentsForAdminParams,
+  getDepartmentsForAdminResource,
+} from 'app/generated/api/department-resource-api';
 import { getAllSchoolsResource } from 'app/generated/api/school-resource-api';
 import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';

@@ -371,5 +371,4 @@ export class ResearchGroupTemplateEdit {
       }
     }
   }
-
 }

@@ -6,8 +6,8 @@ import { filter, map, startWith } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import { checkResource } from '../generated/api/prof-onboarding-resource-api';
 
+import { checkResource } from '../generated/api/prof-onboarding-resource-api';
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { AccountService } from '../core/auth/account.service';
 

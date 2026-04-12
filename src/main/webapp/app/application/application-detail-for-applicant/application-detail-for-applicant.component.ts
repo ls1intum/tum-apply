@@ -17,9 +17,9 @@ import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/men
 import { createMenuActionSignals } from 'app/shared/util/util';
 import { ApplicationPDFRequest } from 'app/generated/model/application-pdf-request';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { httpResource } from '@angular/common/http';
 
 import * as DropDownOptions from '../../job/dropdown-options';
-import { httpResource } from '@angular/common/http';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
 import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';

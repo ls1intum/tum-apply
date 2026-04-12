@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
-import { getAvailableJobsResource, GetAvailableJobsParams } from 'app/generated/api/job-resource-api';
+import { GetAvailableJobsParams, getAvailableJobsResource } from 'app/generated/api/job-resource-api';
 import { JobCardDTO } from 'app/generated/model/job-card-dto';
 import { ToastService } from 'app/service/toast-service';
 import { Router } from '@angular/router';

@@ -5,7 +5,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { InterviewBookingResourceApi, getBookingDataResource, GetBookingDataParams } from 'app/generated/api/interview-booking-resource-api';
+import {
+  GetBookingDataParams,
+  InterviewBookingResourceApi,
+  getBookingDataResource,
+} from 'app/generated/api/interview-booking-resource-api';
 import { BookingDTO } from 'app/generated/model/booking-dto';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';

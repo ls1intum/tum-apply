@@ -235,9 +235,9 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   private readonly aiConsentResource: HttpResourceRef<boolean | undefined> = getAiConsentResource();
-  private readonly defaultImagesResource: HttpResourceRef<Array<ImageDTO> | undefined> = getMyDefaultJobBannersResource();
-  private readonly researchGroupImagesResource: HttpResourceRef<Array<ImageDTO> | undefined> = getResearchGroupJobBannersResource();
-  private readonly professorsResource: HttpResourceRef<Array<UserShortDTO> | undefined> = getResearchGroupProfessorsResource();
+  private readonly defaultImagesResource: HttpResourceRef<ImageDTO[] | undefined> = getMyDefaultJobBannersResource();
+  private readonly researchGroupImagesResource: HttpResourceRef<ImageDTO[] | undefined> = getResearchGroupJobBannersResource();
+  private readonly professorsResource: HttpResourceRef<UserShortDTO[] | undefined> = getResearchGroupProfessorsResource();
   private readonly jobByIdResource: HttpResourceRef<JobDTO | undefined> = getJobByIdResource(this.jobId);
 
   private readonly syncDefaultImagesEffect = effect(() => {

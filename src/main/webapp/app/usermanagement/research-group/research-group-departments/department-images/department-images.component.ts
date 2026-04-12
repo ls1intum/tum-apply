@@ -12,7 +12,7 @@ import {
 import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ImageDTO } from 'app/generated/model/image-dto';
-import { ImageResourceApi, getDefaultJobBannersResource, GetDefaultJobBannersParams } from 'app/generated/api/image-resource-api';
+import { GetDefaultJobBannersParams, ImageResourceApi, getDefaultJobBannersResource } from 'app/generated/api/image-resource-api';
 import { getDepartmentsResource } from 'app/generated/api/department-resource-api';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -129,5 +129,4 @@ export class DepartmentImages {
       this.toastService.showErrorKey('researchGroup.departments.images.error.deleteFailed');
     }
   }
-
 }

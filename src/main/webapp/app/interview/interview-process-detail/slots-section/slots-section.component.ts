@@ -9,7 +9,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { getTemplatesResource } from 'app/generated/api/email-template-resource-api';
-import { InterviewResourceApi, getSlotsByProcessIdResource, GetSlotsByProcessIdParams } from 'app/generated/api/interview-resource-api';
+import { GetSlotsByProcessIdParams, InterviewResourceApi, getSlotsByProcessIdResource } from 'app/generated/api/interview-resource-api';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -79,7 +79,11 @@ export class SlotsSectionComponent {
   private readonly anySlotsParams = signal<GetSlotsByProcessIdParams>({ page: 0, size: 1 });
   private readonly anySlotsResource = getSlotsByProcessIdResource(this.processId, this.anySlotsParams);
 
-  private readonly futureUnbookedParams = signal<GetSlotsByProcessIdParams>({ afterDateTime: new Date().toISOString(), page: 0, size: 1000 });
+  private readonly futureUnbookedParams = signal<GetSlotsByProcessIdParams>({
+    afterDateTime: new Date().toISOString(),
+    page: 0,
+    size: 1000,
+  });
   private readonly futureUnbookedResource = getSlotsByProcessIdResource(this.processId, this.futureUnbookedParams);
 
   private readonly monthSlotsParams = signal<GetSlotsByProcessIdParams>({ page: 0, size: 1000 });
@@ -590,5 +594,4 @@ export class SlotsSectionComponent {
   private safeDate(value?: string): number {
     return value !== undefined && value !== '' ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
   }
-
 }
