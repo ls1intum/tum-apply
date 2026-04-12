@@ -112,9 +112,9 @@ export interface GetApplicationsDetailsWindowParams {
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param params Optional signal containing query parameters
  */
-export function getApplicationsDetailsWindowResource(params?: Signal<GetApplicationsDetailsWindowParams>): HttpResourceRef<ApplicationEvaluationDetailListDTO | undefined> {
+export function getApplicationsDetailsWindowResource(params: Signal<GetApplicationsDetailsWindowParams>): HttpResourceRef<ApplicationEvaluationDetailListDTO | undefined> {
     return httpResource<ApplicationEvaluationDetailListDTO>(() => {
-        const queryParams = params?.() ?? {};
+        const queryParams = params();
         const searchParams = new URLSearchParams();
         if (queryParams.applicationId !== undefined && queryParams.applicationId !== null) {
             searchParams.set('applicationId', String(queryParams.applicationId));

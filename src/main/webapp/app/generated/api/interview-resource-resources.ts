@@ -37,11 +37,11 @@ export interface GetConflictDataForDateParams {
  * @param processId 
  * @param params Optional signal containing query parameters
  */
-export function getConflictDataForDateResource(processId: Signal<string> | string, params?: Signal<GetConflictDataForDateParams>): HttpResourceRef<ConflictDataDTO | undefined> {
+export function getConflictDataForDateResource(processId: Signal<string> | string, params: Signal<GetConflictDataForDateParams>): HttpResourceRef<ConflictDataDTO | undefined> {
     return httpResource<ConflictDataDTO>(() => {
         const processIdValue = typeof processId === 'function' ? processId() : processId;
         const processIdPath = encodeURIComponent(String(processIdValue));
-        const queryParams = params?.() ?? {};
+        const queryParams = params();
         const searchParams = new URLSearchParams();
         if (queryParams.date !== undefined && queryParams.date !== null) {
             searchParams.set('date', String(queryParams.date));
