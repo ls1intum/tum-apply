@@ -306,11 +306,11 @@
     "errors": {
       "loadFilter": {
         "summary": "Error",
-        "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+        "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem persists."
       },
       "loadJobs": {
         "summary": "Error",
-        "detail": "Failed to load available positions. Please try refreshing the page, or contact us if the problem continues."
+        "detail": "Failed to load available positions. Please try refreshing the page, or contact us if the problem persists."
       }
     }
   },
@@ -344,7 +344,7 @@
     "errors": {
       "loadJobs": {
         "summary": "Error",
-        "detail": "Failed to load jobs. Please try refreshing the page, or contact us if the problem continues."
+        "detail": "Failed to load jobs. Please try refreshing the page, or contact us if the problem persists."
       }
     },
     "toastMessages": {

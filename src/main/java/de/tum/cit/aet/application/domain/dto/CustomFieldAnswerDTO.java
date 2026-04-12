@@ -15,10 +15,19 @@ public record CustomFieldAnswerDTO(
     List<String> answers,
     List<DocumentDTO> documents
 ) {
+    /**
+     * @param answer the entity to convert; may be {@code null}
+     * @return a DTO embedding the related custom field, or {@code null} if {@code answer} is {@code null}
+     */
     public static CustomFieldAnswerDTO getFromEntity(CustomFieldAnswer answer) {
         if (answer == null) {
             return null;
         }
-        return new CustomFieldAnswerDTO(answer.getCustomFieldAnswerId(), new CustomFieldDTO(), answer.getAnswers(), new ArrayList<>());
+        return new CustomFieldAnswerDTO(
+            answer.getCustomFieldAnswerId(),
+            CustomFieldDTO.getFromEntity(answer.getCustomField()),
+            answer.getAnswers(),
+            new ArrayList<>()
+        );
     }
 }

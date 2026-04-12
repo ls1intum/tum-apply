@@ -47,6 +47,12 @@ public enum EmailType {
     APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false),
 
     /**
+     * Notification when a job with a matching subject area is published
+     * To: Applicants subscribed to the exact subject area
+     */
+    JOB_PUBLISHED_SUBJECT_AREA("JOB_PUBLISHED_SUBJECT_AREA", Set.of(UserRole.APPLICANT), false, false),
+
+    /**
      * Interview invitation when applicant is assigned to an interview slot
      * To: Applicant who was assigned to the slot
      */

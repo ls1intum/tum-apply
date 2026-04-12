@@ -39,9 +39,10 @@
         "info": "TUMApply - Meine Gruppe"
       },
       "admin": {
-        "dependencies": "TUMApply - Abhängigkeiten"
+        "dependencies": "TUMApply - Abhängigkeiten",
+        "exports": "TUMApply - Admin-Exporte"
       },
-      "about-us": "TumApply - Über uns",
+      "about-us": "TUMApply - Über uns",
       "interview": {
         "overview": "TUMApply - Interviewübersicht",
         "detail": "Interview - {{jobTitle}}",
@@ -349,6 +350,7 @@
     "applicationPage1": {
       "description": "Gib deine persönlichen Daten und Kontaktdaten ein.",
       "aiExtractionHelper": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
+      "aiExtractionConsent": "Durch Klicken auf diese Schaltfläche wird dein Lebenslauf an einen KI-Dienst (Azure OpenAI) gesendet, um deine Daten zu extrahieren.",
       "aiExtractionButton": "KI-Extraktion",
       "aiExtractionLoading": "Extrahiert...",
       "aiExtractionFailed": {

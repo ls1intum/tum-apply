@@ -7,31 +7,8 @@
   (onSelect)="onFileSelected($event)"
   #fileupload_component
 >
-  <ng-template #empty>
-    <div
-      class="flex w-full items-center justify-center gap-3 cursor-pointer"
-      (click)="fileupload_component.choose()"
-      [class.flex-col]="!compact()"
-    >
-      <span
-        class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
-        tabindex="0"
-        role="button"
-        aria-label="Select file to upload"
-        (keydown.enter)="fileupload_component.choose()"
-        (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
-      >
-        <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
-      </span>
-      <div class="text-color" [class.text-center]="!compact()">
-        <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
-        <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
-      </div>
-    </div>
-  </ng-template>
-
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
-    <div class="w-full mt-0">
+    <div class="flex flex-col" [class.min-h-45]="!compact()">
       <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
         <thead>
           <tr>
@@ -110,6 +87,26 @@
           }
         </tbody>
       </table>
+      <div
+        class="flex flex-1 items-center justify-center gap-3 py-3 cursor-pointer"
+        (click)="fileupload_component.choose()"
+        [class.flex-col]="!compact()"
+      >
+        <span
+          class="flex items-center justify-center size-15 rounded-pill border border-primary outline-none transition-all focus-visible:ring-3 focus-visible:ring-primary/30"
+          tabindex="0"
+          role="button"
+          aria-label="Select file to upload"
+          (keydown.enter)="fileupload_component.choose()"
+          (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
+        >
+          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
+        </span>
+        <div class="text-color" [class.text-center]="!compact()">
+          <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
+          <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
+        </div>
+      </div>
     </div>
   </ng-template>
   <ng-template #file />

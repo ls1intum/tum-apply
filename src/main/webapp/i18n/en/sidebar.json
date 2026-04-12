@@ -39,7 +39,8 @@
     "system": {
       "system": "System",
       "systemsettings": "System Settings",
-      "dependencies": "Dependencies"
+      "dependencies": "Dependencies",
+      "exports": "Bulk Exports"
     }
   }
 }

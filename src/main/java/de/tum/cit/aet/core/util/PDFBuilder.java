@@ -190,7 +190,7 @@ public class PDFBuilder {
      * PDF
      *
      * @param metadataText the beginning of metadata text to display (before
-     *                     TumApply label)
+     *                     TUMApply label)
      * @return this builder for method chaining
      */
     public PDFBuilder setMetadata(String metadataText) {
@@ -202,7 +202,7 @@ public class PDFBuilder {
      * Sets the end of the metadata text to be displayed at the bottom of the
      * PDF
      *
-     * @param metadataEndText the end of metadata text to display (after TumApply
+     * @param metadataEndText the end of metadata text to display (after TUMApply
      *                        label)
      * @return this builder for method chaining
      */
@@ -247,7 +247,15 @@ public class PDFBuilder {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdfDoc = new PdfDocument(writer);
-            Document document = new Document(pdfDoc);
+            // immediateFlush=false: keep all pages in memory until pdfDoc.close().
+            // The default (true) flushes intermediate pages as soon as they're full,
+            // which releases their PdfDictionary state. addMetadata() below walks
+            // every page via pdfDoc.getPage(i).getPageSize() and would NPE on the
+            // already-flushed pages (this.map == null inside iText's PdfDictionary).
+            // The bug only surfaced for multi-page PDFs (e.g. application details);
+            // single-page PDFs accidentally avoided it because the only page was
+            // still the "current" page when addMetadata ran.
+            Document document = new Document(pdfDoc, pdfDoc.getDefaultPageSize(), false);
 
             document.setTopMargin(MARGIN_PDF_TOP_AND_BOTTOM);
             document.setBottomMargin(MARGIN_PDF_TOP_AND_BOTTOM * 3);
@@ -477,8 +485,8 @@ public class PDFBuilder {
 
             metadataParagraph.add(new Text(metadataText));
 
-            // add TumApply as clickable Link
-            Link tumapplyLink = new Link("TumApply", PdfAction.createURI(TUMAPPLY_URL));
+            // add TUMApply as clickable Link
+            Link tumapplyLink = new Link("TUMApply", PdfAction.createURI(TUMAPPLY_URL));
             tumapplyLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(normalFont).setFontSize(FONT_SIZE_METADATA);
 
             metadataParagraph.add(tumapplyLink);

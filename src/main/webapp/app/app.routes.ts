@@ -311,6 +311,7 @@ const routes: Routes = [
     children: [
       {
         path: 'overview',
+        canActivate: [UserRouteAccessService],
         loadComponent: () =>
           import('./interview/interview-processes-overview/interview-processes-overview.component').then(
             m => m.InterviewProcessesOverviewComponent,
@@ -322,8 +323,12 @@ const routes: Routes = [
       },
       {
         path: ':processId',
+        canActivate: [UserRouteAccessService],
         component: InterviewProcessDetailComponent,
         title: 'global.routes.interview.detail',
+        data: {
+          authorities: [UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Employee],
+        },
       },
       {
         path: 'process/:processId/interviewee/:intervieweeId/assessment',
@@ -366,6 +371,17 @@ const routes: Routes = [
     data: { authorities: [UserShortDTORolesEnum.Admin] },
     loadComponent: () => import('./admin/dependencies/admin-dependencies.component').then(m => m.AdminDependenciesComponent),
     title: 'global.routes.admin.dependencies',
+  },
+
+  // ======================================================================================
+  // Admin - Bulk Exports
+  // ======================================================================================
+  {
+    path: 'admin-exports',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
+    loadComponent: () => import('./admin/exports/admin-exports.component').then(m => m.AdminExportsComponent),
+    title: 'global.routes.admin.exports',
   },
 
   // ======================================================================================

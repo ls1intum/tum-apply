@@ -57,9 +57,9 @@ export interface GetDefaultJobBannersBySchoolParams {
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param params Optional signal containing query parameters
  */
-export function getDefaultJobBannersBySchoolResource(params?: Signal<GetDefaultJobBannersBySchoolParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
+export function getDefaultJobBannersBySchoolResource(params: Signal<GetDefaultJobBannersBySchoolParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
     return httpResource<Array<ImageDTO>>(() => {
-        const queryParams = params?.() ?? {};
+        const queryParams = params();
         const searchParams = new URLSearchParams();
         if (queryParams.schoolId !== undefined && queryParams.schoolId !== null) {
             searchParams.set('schoolId', String(queryParams.schoolId));
@@ -115,9 +115,9 @@ export interface GetResearchGroupJobBannersByResearchGroupParams {
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param params Optional signal containing query parameters
  */
-export function getResearchGroupJobBannersByResearchGroupResource(params?: Signal<GetResearchGroupJobBannersByResearchGroupParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
+export function getResearchGroupJobBannersByResearchGroupResource(params: Signal<GetResearchGroupJobBannersByResearchGroupParams>): HttpResourceRef<Array<ImageDTO> | undefined> {
     return httpResource<Array<ImageDTO>>(() => {
-        const queryParams = params?.() ?? {};
+        const queryParams = params();
         const searchParams = new URLSearchParams();
         if (queryParams.researchGroupId !== undefined && queryParams.researchGroupId !== null) {
             searchParams.set('researchGroupId', String(queryParams.researchGroupId));

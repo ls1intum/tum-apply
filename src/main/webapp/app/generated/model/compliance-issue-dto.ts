@@ -18,13 +18,14 @@ export interface ComplianceIssueDTO {
     readonly text?: string;
 }
 
-export type ComplianceIssueDTOCategoryEnum = 'CRITICAL_AGG' | 'CRITICAL_DSGVO' | 'TRANSPARENCY';
+export type ComplianceIssueDTOCategoryEnum = 'CRITICAL_AGG' | 'TRANSPARENCY' | 'GENDER_INCLUSIVE' | 'GENDER_EXCLUSIVE';
 
 export const ComplianceIssueDTOCategoryEnum = {
     CriticalAgg: 'CRITICAL_AGG' as const,
-    CriticalDsgvo: 'CRITICAL_DSGVO' as const,
     Transparency: 'TRANSPARENCY' as const,
+    GenderInclusive: 'GENDER_INCLUSIVE' as const,
+    GenderExclusive: 'GENDER_EXCLUSIVE' as const,
 } as const;
 
-export const ComplianceIssueDTOCategoryEnumValues = ['CRITICAL_AGG', 'CRITICAL_DSGVO', 'TRANSPARENCY'] as const;
+export const ComplianceIssueDTOCategoryEnumValues = ['CRITICAL_AGG', 'TRANSPARENCY', 'GENDER_INCLUSIVE', 'GENDER_EXCLUSIVE'] as const;
 

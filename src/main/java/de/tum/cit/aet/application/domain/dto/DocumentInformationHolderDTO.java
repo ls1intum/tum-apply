@@ -1,6 +1,7 @@
 package de.tum.cit.aet.application.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
@@ -22,6 +23,8 @@ public class DocumentInformationHolderDTO {
 
     private String name;
 
+    private DocumentType documentType;
+
     /**
      * Creates a {@link DocumentInformationHolderDTO} from a given
      * {@link DocumentDictionary}.
@@ -33,7 +36,8 @@ public class DocumentInformationHolderDTO {
         return new DocumentInformationHolderDTO(
             dictionary.getDocumentDictionaryId(),
             dictionary.getDocument().getSizeBytes(),
-            dictionary.getName()
+            dictionary.getName(),
+            dictionary.getDocumentType()
         );
     }
 }

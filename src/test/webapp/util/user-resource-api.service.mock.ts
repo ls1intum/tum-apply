@@ -6,6 +6,7 @@ export type UserResourceApiMock = {
   getCurrentUser: ReturnType<typeof vi.fn>;
   updateUserName: ReturnType<typeof vi.fn>;
   updatePassword: ReturnType<typeof vi.fn>;
+  getAiConsent: ReturnType<typeof vi.fn>;
 };
 
 export function createUserResourceApiMock(): UserResourceApiMock {
@@ -13,6 +14,7 @@ export function createUserResourceApiMock(): UserResourceApiMock {
     getCurrentUser: vi.fn(),
     updateUserName: vi.fn(),
     updatePassword: vi.fn(),
+    getAiConsent: vi.fn(),
   };
 }
 

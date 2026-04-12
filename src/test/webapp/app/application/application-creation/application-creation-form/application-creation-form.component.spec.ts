@@ -1,14 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Params, UrlSegment } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach, MockInstance } from 'vitest';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import ApplicationCreationFormComponent from '../../../../../../main/webapp/app/application/application-creation/application-creation-form/application-creation-form.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { AccountService } from 'app/core/auth/account.service';
-import { of, Subject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { TranslateService } from '@ngx-translate/core';
 import { SavingStates } from 'app/shared/constants/saving-states';
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
 import { HttpResponse } from '@angular/common/http';
@@ -37,6 +35,7 @@ import {
   createMockApplicationDTO,
 } from 'util/application-resource-api.service.mock';
 import { createJobResourceApiMock, provideJobResourceApiMock, JobResourceApiMock } from 'util/job-resource-api.service.mock';
+import { createUserResourceApiMock, provideUserResourceApiMock, UserResourceApiMock } from 'util/user-resource-api.service.mock';
 import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {
@@ -75,6 +74,7 @@ interface TestBedConfig {
   localStorageService: LocalStorageServiceMock;
   translateService: TranslateServiceMock;
   jobApi: JobResourceApiMock;
+  userApi: UserResourceApiMock;
 }
 
 async function configureTestBed(config: TestBedConfig) {
@@ -92,6 +92,7 @@ async function configureTestBed(config: TestBedConfig) {
       provideAuthOrchestratorServiceMock(config.authOrchestrator),
       provideLocalStorageServiceMock(config.localStorageService),
       provideJobResourceApiMock(config.jobApi),
+      provideUserResourceApiMock(config.userApi),
       provideTranslateMock(config.translateService),
       provideFontAwesomeTesting(),
     ],
@@ -130,6 +131,7 @@ describe('ApplicationForm', () => {
   let translateService: TranslateServiceMock;
   let activatedRoute: ActivatedRouteMock;
   let jobApi: JobResourceApiMock;
+  let userApi: UserResourceApiMock;
 
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
@@ -157,6 +159,9 @@ describe('ApplicationForm', () => {
     jobApi = createJobResourceApiMock();
     jobApi.getJobDetails = vi.fn().mockReturnValue({ title: 'Test Job' });
 
+    userApi = createUserResourceApiMock();
+    userApi.getAiConsent = vi.fn().mockReturnValue(of(true));
+
     activatedRoute = createActivatedRouteMock({}, { job: '123', application: '456' });
 
     await configureTestBed({
@@ -172,6 +177,7 @@ describe('ApplicationForm', () => {
       localStorageService,
       translateService,
       jobApi,
+      userApi,
     });
     fixture = TestBed.createComponent(ApplicationCreationFormComponent);
     comp = fixture.componentInstance;
@@ -211,6 +217,7 @@ describe('ApplicationForm', () => {
       localStorageService,
       translateService,
       jobApi,
+      userApi,
     });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
@@ -243,6 +250,7 @@ describe('ApplicationForm', () => {
       localStorageService,
       translateService,
       jobApi,
+      userApi,
     });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);

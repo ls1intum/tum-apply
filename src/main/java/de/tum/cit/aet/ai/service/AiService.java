@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import de.tum.cit.aet.job.constants.ComplianceCategory;
@@ -21,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -60,6 +60,8 @@ public class AiService {
 
     private final DocumentDictionaryService documentDictionaryService;
 
+    private final CurrentUserService currentUserService;
+
     private final GenderBiasAnalysisService genderBiasAnalysisService;
 
     private static final double FACTOR_NEUTRAL = 1.0;
@@ -71,12 +73,14 @@ public class AiService {
         JobService jobService,
         ApplicationService applicationService,
         DocumentDictionaryService documentDictionaryService,
+        CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
         this.applicationService = applicationService;
         this.documentDictionaryService = documentDictionaryService;
+        this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
     }
 
@@ -163,6 +167,7 @@ public class AiService {
         GenderBiasAnalysisResponse originalAnalysis,
         JobFormDTO jobFormDTO
     ) {
+        currentUserService.markAiConsentForCurrentUser();
         UUID parsedJobId = parseJobId(jobId);
         if (parsedJobId == null) {
             throw new InvalidParameterException("The provided jobId is missing or not a valid UUID.");
@@ -245,6 +250,7 @@ public class AiService {
      * @return the extracted data as a structured DTO
      */
     public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
+        currentUserService.markAiConsentForCurrentUser();
         // 1) Download the document
         Resource doc = documentDictionaryService.downloadDocument(UUID.fromString(docId));
         // 2) Extract data from the PDF via AI

@@ -1,4 +1,4 @@
-import { Component, computed, input, output, viewChild } from '@angular/core';
+import { Component, computed, input, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -18,6 +18,8 @@ export interface SubjectAreaOption {
   templateUrl: './subject-area-subscription-selector.component.html',
 })
 export class SubjectAreaSubscriptionSelectorComponent {
+  private static readonly REMOVE_ANIMATION_MS = 150;
+
   saving = input<boolean>(false);
   filterOptions = input<string[]>([]);
   selectedValues = input<string[]>([]);
@@ -26,6 +28,7 @@ export class SubjectAreaSubscriptionSelectorComponent {
   filterChange = output<FilterChange>();
   removeSubjectArea = output<SubjectArea>();
 
+  protected readonly removingSubjectArea = signal<SubjectArea | undefined>(undefined);
   protected readonly filterMultiselect = viewChild(FilterMultiselect);
   protected readonly isDropdownOpen = computed(() => this.filterMultiselect()?.isOpen() ?? false);
 
@@ -34,6 +37,14 @@ export class SubjectAreaSubscriptionSelectorComponent {
   }
 
   onRemoveSubjectArea(subjectArea: SubjectArea): void {
-    this.removeSubjectArea.emit(subjectArea);
+    if (this.removingSubjectArea() !== undefined) {
+      return;
+    }
+
+    this.removingSubjectArea.set(subjectArea);
+    setTimeout(() => {
+      this.removeSubjectArea.emit(subjectArea);
+      this.removingSubjectArea.set(undefined);
+    }, SubjectAreaSubscriptionSelectorComponent.REMOVE_ANIMATION_MS);
   }
 }

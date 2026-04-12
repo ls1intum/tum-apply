@@ -8,10 +8,11 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { CustomFieldDTO } from './custom-field-dto';
 
 export interface CustomFieldAnswerDTO {
     readonly answers?: Array<string>;
-    readonly customField?: any | null;
+    readonly customField?: CustomFieldDTO;
     readonly customFieldAnswerId?: string;
     readonly documents?: Array<any>;
 }

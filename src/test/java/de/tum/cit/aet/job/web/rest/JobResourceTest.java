@@ -544,7 +544,6 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.supervisingProfessorName()).isEqualTo(
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName()
         );
-        assertThat(returnedJob.researchGroup().getResearchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
         assertThat(returnedJob.subjectArea()).isEqualTo(job.getSubjectArea());
         assertThat(returnedJob.researchArea()).isEqualTo(job.getResearchArea());
@@ -559,6 +558,18 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.createdAt()).isEqualTo(job.getCreatedAt());
         assertThat(returnedJob.lastModifiedAt()).isEqualTo(job.getLastModifiedAt());
         assertThat(returnedJob.state()).isEqualTo(job.getState());
+
+        // Verify the research group summary DTO is correctly populated
+        assertThat(returnedJob.researchGroup()).isNotNull();
+        assertThat(returnedJob.researchGroup().researchGroupId()).isEqualTo(job.getResearchGroup().getResearchGroupId());
+        assertThat(returnedJob.researchGroup().name()).isEqualTo(job.getResearchGroup().getName());
+        assertThat(returnedJob.researchGroup().description()).isEqualTo(job.getResearchGroup().getDescription());
+        assertThat(returnedJob.researchGroup().email()).isEqualTo(job.getResearchGroup().getEmail());
+        assertThat(returnedJob.researchGroup().website()).isEqualTo(job.getResearchGroup().getWebsite());
+        assertThat(returnedJob.researchGroup().street()).isEqualTo(job.getResearchGroup().getStreet());
+        assertThat(returnedJob.researchGroup().postalCode()).isEqualTo(job.getResearchGroup().getPostalCode());
+        assertThat(returnedJob.researchGroup().city()).isEqualTo(job.getResearchGroup().getCity());
+        assertThat(returnedJob.researchGroup().departmentName()).isEqualTo(job.getResearchGroup().getDepartment().getName());
     }
 
     @Test

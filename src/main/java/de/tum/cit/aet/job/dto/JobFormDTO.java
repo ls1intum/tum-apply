@@ -35,8 +35,12 @@ public record JobFormDTO(
     ComplianceResponseDTO complianceAnalysis
 ) {
     /**
-     * @param job The job entity to convert
-     * @return A JobFormDTO containing the data from the job entity.
+     * Converts a Job entity to a form DTO.
+     * Job description fields are sanitized on read as defense-in-depth
+     * before sending to the client.
+     *
+     * @param job the job entity to convert
+     * @return a JobFormDTO containing the data from the job entity
      */
     public static JobFormDTO getFromEntity(Job job) {
         if (job == null) {
@@ -55,17 +59,13 @@ public record JobFormDTO(
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            sanitizeJobDescription(job.getJobDescriptionEN()),
-            sanitizeJobDescription(job.getJobDescriptionDE()),
+            HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
+            HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getSuitableForDisabled(),
             job.getGenderBiasScore(),
             job.getComplianceAnalysis()
         );
-    }
-
-    private static String sanitizeJobDescription(String html) {
-        return html == null ? null : HtmlSanitizer.sanitize(html);
     }
 }
