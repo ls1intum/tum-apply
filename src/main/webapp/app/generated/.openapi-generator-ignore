@@ -36,8 +36,10 @@ api/email-verification-resource-resources.ts
 api/application-evaluation-resource-resources.ts
 api/ai-resource-resources.ts
 api/authentication-resource-resources.ts
+api/admin-export-resource-resources.ts
 api/school-resource-resources.ts
 api/admin-dependency-resource-resources.ts
+api/actuator-resources.ts
 api/email-setting-resource-resources.ts
 api/research-group-resource-resources.ts
 api/gender-bias-analysis-resource-resources.ts

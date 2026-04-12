@@ -4,8 +4,9 @@
 additionalProperties:
 
   #   useHttpResource=true  -> GET operations use httpResource (Signal-based, reactive)
-  #                            Generated in separate *-resources.ts files.
-  #                            Requires client code to use resource functions instead of .subscribe()
+  #                            Combined with separateResources, controls file layout:
+  #                            - separateResources=true  -> GETs in *-resources.ts, mutations in *-api.ts
+  #                            - separateResources=false -> Both inline in *-api.ts (httpResource GETs + Observable mutations)
   #
   #   useHttpResource=false -> GET operations use HttpClient (Observable/subscription-based)
   #                            Generated alongside mutations in *-api.ts service files.
@@ -16,8 +17,8 @@ additionalProperties:
   #   useInjectFunction=false -> Services use constructor(private http: HttpClient) (classic style)
   useInjectFunction: true
 
-  #   separateResources=true  -> GET operations are generated in separate *-resources.ts files
-  #   separateResources=false -> GET operations are generated inline in the *-api.ts service files
+  #   separateResources=true  -> GET httpResource functions in separate *-resources.ts files (only with useHttpResource=true)
+  #   separateResources=false -> Everything in one *-api.ts file per tag
   separateResources: false
 
   #   readonlyModels=true  -> Output DTO properties are marked readonly
