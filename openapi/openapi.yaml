@@ -23,25 +23,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DependenciesOverviewDTO'}
-  /api/ai/extractPdfData:
-    put:
-      tags: [ai-resource]
-      operationId: extractPdfData
-      parameters:
-      - name: applicationId
-        in: query
-        required: true
-        schema: {type: string}
-      - name: docId
-        in: query
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
   /api/ai/analyzeJobDescription:
     post:
       tags: [ai-resource]
@@ -62,6 +43,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ComplianceResponseDTO'}
+  /api/ai/extractPdfData:
+    put:
+      tags: [ai-resource]
+      operationId: extractPdfData
+      parameters:
+      - name: applicationId
+        in: query
+        required: true
+        schema: {type: string}
+      - name: docId
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]

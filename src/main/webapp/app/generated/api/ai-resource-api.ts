@@ -15,14 +15,31 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
+import { ComplianceResponseDTO } from '../model/compliance-response-dto';
 import { JobFormDTO } from '../model/job-form-dto';
+import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
 import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-translation-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AiResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     * @param lang 
+     * @param jobFormDTO 
+     */
+    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO): Observable<ComplianceResponseDTO> {
+        const queryParams = new URLSearchParams();
+        if (lang !== undefined && lang !== null) {
+            queryParams.set('lang', String(lang));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/ai/analyzeJobDescription${queryString ? `?${queryString}` : ''}`;
+        return this.http.post<ComplianceResponseDTO>(url, jobFormDTO);
+    }
 
     /**
      * 
