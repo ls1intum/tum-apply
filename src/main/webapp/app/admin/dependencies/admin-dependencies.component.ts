@@ -1,5 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { HttpClient, HttpResourceRef } from '@angular/common/http';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,7 +14,7 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { ToastService } from 'app/service/toast-service';
-import { getOverviewResource } from 'app/generated/api/admin-dependency-resource-api';
+import { AdminDependencyResourceApi } from 'app/generated/api/admin-dependency-resource-api';
 import { DependenciesOverviewDTO } from 'app/generated/model/dependencies-overview-dto';
 import { DependencyDTO } from 'app/generated/model/dependency-dto';
 import { VulnerabilityDTO } from 'app/generated/model/vulnerability-dto';
@@ -45,25 +44,14 @@ import { VulnerabilityDTO } from 'app/generated/model/vulnerability-dto';
   templateUrl: './admin-dependencies.component.html',
 })
 export class AdminDependenciesComponent {
-  /** Reactive resource for the cached dependency overview (auto-fetches on init). */
-  readonly overviewResource: HttpResourceRef<DependenciesOverviewDTO | undefined> = getOverviewResource();
-
   /** Whether the initial dependency data is being loaded. */
-  readonly isLoading = computed(() => this.overviewResource.isLoading() && !this.refreshedOverview());
+  readonly isLoading = signal(false);
 
   /** Whether a manual vulnerability refresh is in progress. */
   readonly isRefreshing = signal(false);
 
-  /**
-   * Holds the latest refreshed overview after the user clicks "Refresh".
-   * Takes precedence over the initial resource value.
-   */
-  private readonly refreshedOverview = signal<DependenciesOverviewDTO | undefined>(undefined);
-
   /** The full dependencies overview response from the server. */
-  readonly dependenciesOverview = computed<DependenciesOverviewDTO | undefined>(
-    () => this.refreshedOverview() ?? this.overviewResource.value(),
-  );
+  readonly dependenciesOverview = signal<DependenciesOverviewDTO | undefined>(undefined);
 
   /** Current zero-based page index for table pagination. */
   readonly currentPage = signal(0);
@@ -190,16 +178,12 @@ export class AdminDependenciesComponent {
   /** Icon used for vulnerability warning badges in the security column. */
   protected readonly faExclamationTriangle = faExclamationTriangle;
 
-  private readonly http = inject(HttpClient);
+  private readonly dependencyApi = inject(AdminDependencyResourceApi);
   private readonly toastService = inject(ToastService);
 
+  /** Loads the dependencies overview on component initialization. */
   constructor() {
-    // Show toast on initial load error.
-    effect(() => {
-      if (this.overviewResource.error()) {
-        this.toastService.showErrorKey('dependencies.toast.loadError');
-      }
-    });
+    void this.loadDependencies();
   }
 
   /**
@@ -230,14 +214,32 @@ export class AdminDependenciesComponent {
   }
 
   /**
+   * Fetches the dependencies overview using the cached endpoint.
+   * Sets the loading state while the request is in progress and updates
+   * the dependenciesOverview signal with the response.
+   */
+  async loadDependencies(): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      const overview = await firstValueFrom(this.dependencyApi.getOverview());
+      this.dependenciesOverview.set(overview);
+    } catch {
+      this.toastService.showErrorKey('dependencies.toast.loadError');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  /**
    * Triggers a forced refresh of vulnerability data, bypassing the server cache.
-   * Uses HttpClient directly since this is an imperative action (not auto-fetch).
+   * Sets the refreshing state while the request is in progress and updates
+   * the dependenciesOverview signal with the fresh response.
    */
   async refreshVulnerabilities(): Promise<void> {
     this.isRefreshing.set(true);
     try {
-      const overview = await firstValueFrom(this.http.get<DependenciesOverviewDTO>('/api/admin/dependencies/refresh'));
-      this.refreshedOverview.set(overview);
+      const overview = await firstValueFrom(this.dependencyApi.refresh());
+      this.dependenciesOverview.set(overview);
       this.toastService.showSuccessKey('dependencies.toast.vulnerabilityRefreshSuccess');
     } catch {
       this.toastService.showErrorKey('dependencies.toast.vulnerabilityLoadError');

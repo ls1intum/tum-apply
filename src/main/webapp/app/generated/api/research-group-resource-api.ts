@@ -15,8 +15,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { ResearchGroupDTO } from '../model/research-group-dto';
 import { AddMembersToResearchGroupDTO } from '../model/add-members-to-research-group-dto';
 import { EmployeeResearchGroupRequestDTO } from '../model/employee-research-group-request-dto';
@@ -97,6 +95,150 @@ export class ResearchGroupResourceApi {
     /**
      * 
      * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getAllResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/research-groups${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOResearchGroupDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getDraftResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/research-groups/draft${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOResearchGroupDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param id 
+     */
+    getResearchGroup(id: string): Observable<ResearchGroupDTO> {
+        const idPath = encodeURIComponent(String(id));
+        const url = `${this.basePath}/api/research-groups/${idPath}`;
+        return this.http.get<ResearchGroupDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getResearchGroupMembers(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOUserShortDTO> {
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/research-groups/members${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOUserShortDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param researchGroupId 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getResearchGroupMembersById(researchGroupId: string, pageSize?: number, pageNumber?: number): Observable<PageResponseDTOUserShortDTO> {
+        const researchGroupIdPath = encodeURIComponent(String(researchGroupId));
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/research-groups/${researchGroupIdPath}/members${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOUserShortDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getResearchGroupProfessors(): Observable<Array<UserShortDTO>> {
+        const url = `${this.basePath}/api/research-groups/professors`;
+        return this.http.get<Array<UserShortDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     * @param status 
+     * @param searchQuery 
+     * @param sortBy 
+     * @param direction 
+     */
+    getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC'): Observable<PageResponseDTOResearchGroupAdminDTO> {
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        if (status !== undefined && status !== null) {
+            status.forEach(item => queryParams.append('status', String(item)));
+        }
+        if (searchQuery !== undefined && searchQuery !== null) {
+            queryParams.set('searchQuery', String(searchQuery));
+        }
+        if (sortBy !== undefined && sortBy !== null) {
+            queryParams.set('sortBy', String(sortBy));
+        }
+        if (direction !== undefined && direction !== null) {
+            queryParams.set('direction', String(direction));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/research-groups/admin${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOResearchGroupAdminDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param researchGroupId 
+     */
+    getResourceGroupDetails(researchGroupId: string): Observable<ResearchGroupLargeDTO> {
+        const researchGroupIdPath = encodeURIComponent(String(researchGroupId));
+        const url = `${this.basePath}/api/research-groups/detail/${researchGroupIdPath}`;
+        return this.http.get<ResearchGroupLargeDTO>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param userId 
      */
     removeMemberFromResearchGroup(userId: string): Observable<void> {
@@ -129,209 +271,3 @@ export class ResearchGroupResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * Query parameters for getAllResearchGroups
- */
-export interface GetAllResearchGroupsParams {
-    pageSize?: number;
-    pageNumber?: number;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getAllResearchGroupsResource(params?: Signal<GetAllResearchGroupsParams>): HttpResourceRef<PageResponseDTOResearchGroupDTO | undefined> {
-    return httpResource<PageResponseDTOResearchGroupDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
-        }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/research-groups${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * Query parameters for getDraftResearchGroups
- */
-export interface GetDraftResearchGroupsParams {
-    pageSize?: number;
-    pageNumber?: number;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getDraftResearchGroupsResource(params?: Signal<GetDraftResearchGroupsParams>): HttpResourceRef<PageResponseDTOResearchGroupDTO | undefined> {
-    return httpResource<PageResponseDTOResearchGroupDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
-        }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/research-groups/draft${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param id 
- */
-export function getResearchGroupResource(id: Signal<string> | string): HttpResourceRef<ResearchGroupDTO | undefined> {
-    return httpResource<ResearchGroupDTO>(() => {
-        const idValue = typeof id === 'function' ? id() : id;
-        const idPath = encodeURIComponent(String(idValue));
-        return `${BASE_PATH}/api/research-groups/${idPath}`;
-    });
-}
-
-/**
- * Query parameters for getResearchGroupMembers
- */
-export interface GetResearchGroupMembersParams {
-    pageSize?: number;
-    pageNumber?: number;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getResearchGroupMembersResource(params?: Signal<GetResearchGroupMembersParams>): HttpResourceRef<PageResponseDTOUserShortDTO | undefined> {
-    return httpResource<PageResponseDTOUserShortDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
-        }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/research-groups/members${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * Query parameters for getResearchGroupMembersById
- */
-export interface GetResearchGroupMembersByIdParams {
-    pageSize?: number;
-    pageNumber?: number;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param researchGroupId 
- * @param params Optional signal containing query parameters
- */
-export function getResearchGroupMembersByIdResource(researchGroupId: Signal<string> | string, params?: Signal<GetResearchGroupMembersByIdParams>): HttpResourceRef<PageResponseDTOUserShortDTO | undefined> {
-    return httpResource<PageResponseDTOUserShortDTO>(() => {
-        const researchGroupIdValue = typeof researchGroupId === 'function' ? researchGroupId() : researchGroupId;
-        const researchGroupIdPath = encodeURIComponent(String(researchGroupIdValue));
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
-        }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/research-groups/${researchGroupIdPath}/members${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getResearchGroupProfessorsResource(): HttpResourceRef<Array<UserShortDTO> | undefined> {
-    return httpResource<Array<UserShortDTO>>(() => {
-        return `${BASE_PATH}/api/research-groups/professors`;
-    });
-}
-
-/**
- * Query parameters for getResearchGroupsForAdmin
- */
-export interface GetResearchGroupsForAdminParams {
-    pageSize?: number;
-    pageNumber?: number;
-    status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>;
-    searchQuery?: string;
-    sortBy?: string;
-    direction?: 'ASC' | 'DESC';
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getResearchGroupsForAdminResource(params?: Signal<GetResearchGroupsForAdminParams>): HttpResourceRef<PageResponseDTOResearchGroupAdminDTO | undefined> {
-    return httpResource<PageResponseDTOResearchGroupAdminDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
-        }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
-        }
-        if (queryParams.status?.length) {
-            queryParams.status.forEach(value => searchParams.append('status', String(value)));
-        }
-        if (queryParams.searchQuery !== undefined && queryParams.searchQuery !== null) {
-            searchParams.set('searchQuery', String(queryParams.searchQuery));
-        }
-        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
-            searchParams.set('sortBy', String(queryParams.sortBy));
-        }
-        if (queryParams.direction !== undefined && queryParams.direction !== null) {
-            searchParams.set('direction', String(queryParams.direction));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/research-groups/admin${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param researchGroupId 
- */
-export function getResourceGroupDetailsResource(researchGroupId: Signal<string> | string): HttpResourceRef<ResearchGroupLargeDTO | undefined> {
-    return httpResource<ResearchGroupLargeDTO>(() => {
-        const researchGroupIdValue = typeof researchGroupId === 'function' ? researchGroupId() : researchGroupId;
-        const researchGroupIdPath = encodeURIComponent(String(researchGroupIdValue));
-        return `${BASE_PATH}/api/research-groups/detail/${researchGroupIdPath}`;
-    });
-}
-

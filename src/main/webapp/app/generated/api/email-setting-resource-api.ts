@@ -15,13 +15,21 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { EmailSettingDTO } from '../model/email-setting-dto';
 
 @Injectable({ providedIn: 'root' })
 export class EmailSettingResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     */
+    getEmailSettings(): Observable<Array<EmailSettingDTO>> {
+        const url = `${this.basePath}/api/settings/emails`;
+        return this.http.get<Array<EmailSettingDTO>>(url);
+    }
 
     /**
      * 
@@ -34,17 +42,3 @@ export class EmailSettingResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getEmailSettingsResource(): HttpResourceRef<Array<EmailSettingDTO> | undefined> {
-    return httpResource<Array<EmailSettingDTO>>(() => {
-        return `${BASE_PATH}/api/settings/emails`;
-    });
-}
-

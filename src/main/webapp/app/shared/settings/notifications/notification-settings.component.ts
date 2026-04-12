@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { EmailSettingResourceApi, getEmailSettingsResource } from 'app/generated/api/email-setting-resource-api';
+import { EmailSettingResourceApi } from 'app/generated/api/email-setting-resource-api';
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum as EmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -51,9 +51,6 @@ export class NotificationSettingsComponent {
   // to control that switches are only displayed when settings are loaded
   protected loaded = signal(false);
 
-  private emailSettingsResource = getEmailSettingsResource();
-  private pendingRoleLoad = signal<RolesEnum | undefined>(undefined);
-
   protected readonly animationClasses = computed(() =>
     this.subjectAreaNotificationsEnabled() ? 'overflow-visible mt-4 max-h-screen opacity-100' : 'overflow-hidden mt-0 max-h-0 opacity-0',
   );
@@ -63,16 +60,6 @@ export class NotificationSettingsComponent {
     if (!role) return;
 
     void this.loadSettings(role);
-  });
-
-  private readonly emailSettingsEffect = effect(() => {
-    const settings = this.emailSettingsResource.value();
-    const role = this.pendingRoleLoad();
-    if (settings && role) {
-      this.applyEmailSettings(role, settings);
-    } else if (this.emailSettingsResource.error() && role) {
-      this.toastService.showErrorKey('settings.notifications.loadFailed');
-    }
   });
 
   protected roleSettings: WritableSignal<Map<RolesEnum, NotificationGroup[]>> = signal(
@@ -131,34 +118,39 @@ export class NotificationSettingsComponent {
     ]),
   );
 
-  private applyEmailSettings(role: RolesEnum, settings: EmailSettingDTO[]): void {
-    const updatedGroups = this.roleSettings()
-      .get(role)
-      ?.map(group => {
-        const relevantTypes = group.emailTypes;
-        const matched = settings.filter(setting => relevantTypes.includes(setting.emailType as EmailTypeEnum));
+  async loadEmailNotificationGroups(role: RolesEnum): Promise<void> {
+    try {
+      const settings = await firstValueFrom(this.emailSettingApi.getEmailSettings());
 
-        const isEnabled = matched.every((s): boolean => s.enabled ?? true);
+      const updatedGroups = this.roleSettings()
+        .get(role)
+        ?.map(group => {
+          const relevantTypes = group.emailTypes;
+          const matched = settings.filter(setting => relevantTypes.includes(setting.emailType as EmailTypeEnum));
 
-        return { ...group, enabled: isEnabled };
-      });
+          const isEnabled = matched.every((s): boolean => s.enabled ?? true);
 
-    if (updatedGroups) {
-      const newMap = new Map(this.roleSettings());
-      newMap.set(role, updatedGroups);
-      this.roleSettings.set(newMap);
+          return { ...group, enabled: isEnabled };
+        });
+
+      if (updatedGroups) {
+        const newMap = new Map(this.roleSettings());
+        newMap.set(role, updatedGroups);
+        this.roleSettings.set(newMap);
+      }
+
+      this.subjectAreaNotificationsEnabled.set(
+        settings.find(setting => setting.emailType === NotificationSettingsComponent.SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE)?.enabled ?? true,
+      );
+    } catch {
+      this.toastService.showErrorKey('settings.notifications.loadFailed');
     }
-
-    this.subjectAreaNotificationsEnabled.set(
-      settings.find(setting => setting.emailType === NotificationSettingsComponent.SUBJECT_AREA_NOTIFICATION_EMAIL_TYPE)?.enabled ?? true,
-    );
   }
 
   async loadSettings(role: RolesEnum): Promise<void> {
     this.loaded.set(false);
-    this.pendingRoleLoad.set(role);
-    this.emailSettingsResource.reload();
 
+    await this.loadEmailNotificationGroups(role);
     if (role === RolesEnum.Applicant) {
       await this.subjectAreaSubscriptions.load();
     } else {
@@ -179,11 +171,11 @@ export class NotificationSettingsComponent {
           enabled,
         },
       ]),
-    ).catch(() => {
+    ).catch(async () => {
       this.toastService.showErrorKey('settings.notifications.saveFailed');
 
       if (role) {
-        this.emailSettingsResource.reload();
+        await this.loadEmailNotificationGroups(role);
       }
     });
   }
@@ -196,18 +188,18 @@ export class NotificationSettingsComponent {
     }));
 
     try {
-      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(() => {
+      void firstValueFrom(this.emailSettingApi.updateEmailSettings(updatedSettings)).catch(async () => {
         this.toastService.showErrorKey('settings.notifications.saveFailed');
 
         if (role) {
-          this.emailSettingsResource.reload();
+          await this.loadEmailNotificationGroups(role);
         }
       });
     } catch {
       this.toastService.showErrorKey('settings.notifications.saveFailed');
 
       if (role) {
-        this.emailSettingsResource.reload();
+        void this.loadEmailNotificationGroups(role);
       }
     }
   }

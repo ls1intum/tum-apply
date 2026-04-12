@@ -15,14 +15,43 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { AdminExportTaskDTO } from '../model/admin-export-task-dto';
 
 @Injectable({ providedIn: 'root' })
 export class AdminExportResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     * @param taskId 
+     */
+    download(taskId: string): Observable<void> {
+        const taskIdPath = encodeURIComponent(String(taskId));
+        const url = `${this.basePath}/api/admin/exports/download/${taskIdPath}`;
+        return this.http.get<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param taskId 
+     */
+    getStatus(taskId: string): Observable<AdminExportTaskDTO> {
+        const taskIdPath = encodeURIComponent(String(taskId));
+        const url = `${this.basePath}/api/admin/exports/status/${taskIdPath}`;
+        return this.http.get<AdminExportTaskDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    listMine(): Observable<Array<AdminExportTaskDTO>> {
+        const url = `${this.basePath}/api/admin/exports/mine`;
+        return this.http.get<Array<AdminExportTaskDTO>>(url);
+    }
 
     /**
      * 
@@ -36,45 +65,3 @@ export class AdminExportResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param taskId 
- */
-export function downloadResource(taskId: Signal<string> | string): HttpResourceRef<unknown | undefined> {
-    return httpResource<unknown>(() => {
-        const taskIdValue = typeof taskId === 'function' ? taskId() : taskId;
-        const taskIdPath = encodeURIComponent(String(taskIdValue));
-        return `${BASE_PATH}/api/admin/exports/download/${taskIdPath}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param taskId 
- */
-export function getStatusResource(taskId: Signal<string> | string): HttpResourceRef<AdminExportTaskDTO | undefined> {
-    return httpResource<AdminExportTaskDTO>(() => {
-        const taskIdValue = typeof taskId === 'function' ? taskId() : taskId;
-        const taskIdPath = encodeURIComponent(String(taskIdValue));
-        return `${BASE_PATH}/api/admin/exports/status/${taskIdPath}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function listMineResource(): HttpResourceRef<Array<AdminExportTaskDTO> | undefined> {
-    return httpResource<Array<AdminExportTaskDTO>>(() => {
-        return `${BASE_PATH}/api/admin/exports/mine`;
-    });
-}
-

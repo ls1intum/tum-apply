@@ -9,8 +9,8 @@ import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ResearchGroupResourceApi, getResearchGroupResource } from 'app/generated/api/research-group-resource-api';
-import { getDepartmentByIdResource } from 'app/generated/api/department-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { DividerModule } from 'primeng/divider';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
@@ -42,31 +42,22 @@ export interface ResearchGroupFormData {
   templateUrl: './research-group-info.component.html',
 })
 export class ResearchGroupInfoComponent {
+  // Effect to initialize when user data becomes available
+  initEffect = effect(() => {
+    const currentUser = this.currentUser();
+    if (currentUser && !this.hasInitialized()) {
+      void this.init();
+    }
+  });
+
   // State signals
   isSaving = signal<boolean>(false);
-  hasInitialized = computed<boolean>(() => !this.researchGroupResource.isLoading());
+  hasInitialized = signal<boolean>(false);
+  departmentName = signal<string | null>(null);
+  schoolName = signal<string | null>(null);
 
   // Computed properties
   researchGroupId = computed(() => this.currentUser()?.researchGroup?.researchGroupId);
-
-  // httpResource for research group - auto-fetches when researchGroupId changes
-  private readonly researchGroupIdForResource = computed(() => this.researchGroupId() ?? '');
-  private readonly researchGroupResource = getResearchGroupResource(this.researchGroupIdForResource);
-
-  // httpResource for department info - auto-fetches when departmentId changes
-  private readonly departmentIdFromResearchGroup = computed(() => this.researchGroupResource.value()?.departmentId ?? '');
-  private readonly departmentResource = getDepartmentByIdResource(this.departmentIdFromResearchGroup);
-
-  departmentName = computed<string | null>(() => this.departmentResource.value()?.name ?? null);
-  schoolName = computed<string | null>(() => this.departmentResource.value()?.school?.name ?? null);
-
-  // Effect to populate form when research group data arrives
-  private readonly initEffect = effect(() => {
-    const researchGroup = this.researchGroupResource.value();
-    if (researchGroup != null) {
-      this.populateFormData(researchGroup);
-    }
-  });
 
   // Reactive forms
   form = new FormGroup({
@@ -84,6 +75,7 @@ export class ResearchGroupInfoComponent {
   // Services
   private accountService = inject(AccountService);
   private researchGroupApi = inject(ResearchGroupResourceApi);
+  private departmentApi = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private translate = inject(TranslateService);
 
@@ -135,6 +127,50 @@ export class ResearchGroupInfoComponent {
       });
     } finally {
       this.isSaving.set(false);
+    }
+  }
+
+  /**
+   * Initializes the form data by fetching the research group data from the API.
+   */
+  private async init(): Promise<void> {
+    try {
+      const researchGroupId = this.researchGroupId();
+
+      if (researchGroupId == null || researchGroupId.trim() === '') {
+        // No research group ID available, leave form empty
+        return;
+      }
+
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
+      this.populateFormData(researchGroup);
+
+      // Fetch department info if departmentId exists
+      if (researchGroup.departmentId != null) {
+        await this.loadDepartmentInfo(researchGroup.departmentId);
+      }
+    } catch {
+      this.toastService.showError({
+        summary: this.translate.instant(`${this.translationKey}.toasts.loadFailed`),
+        detail: this.translate.instant(`${this.translationKey}.toasts.loadFailed`),
+      });
+    } finally {
+      this.hasInitialized.set(true);
+    }
+  }
+
+  /**
+   * Loads department and school information from the API.
+   */
+  private async loadDepartmentInfo(departmentId: string): Promise<void> {
+    try {
+      const department = await firstValueFrom(this.departmentApi.getDepartmentById(departmentId));
+      this.departmentName.set(department.name ?? null);
+      this.schoolName.set(department.school?.name ?? null);
+    } catch {
+      // Silently fail - the organization info is optional display-only data
+      this.departmentName.set(null);
+      this.schoolName.set(null);
     }
   }
 

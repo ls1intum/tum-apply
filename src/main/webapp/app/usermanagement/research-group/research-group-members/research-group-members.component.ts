@@ -22,14 +22,7 @@ import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/c
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
-import {
-  GetResearchGroupMembersByIdParams,
-  GetResearchGroupMembersParams,
-  ResearchGroupResourceApi,
-  getResearchGroupMembersByIdResource,
-  getResearchGroupMembersResource,
-  getResearchGroupResource,
-} from '../../../generated/api/research-group-resource-api';
+import { ResearchGroupResourceApi } from '../../../generated/api/research-group-resource-api';
 import { formatFullName } from '../../../shared/util/name.util';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
@@ -66,39 +59,13 @@ interface MembersRow {
   templateUrl: './research-group-members.component.html',
 })
 export class ResearchGroupMembersComponent {
+  members = signal<UserShortDTO[]>([]);
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
+  total = signal<number>(0);
 
   researchGroupId = signal<string | undefined>(undefined);
-
-  // httpResource for members by ID (when researchGroupId is set)
-  private readonly membersByIdParams = computed<GetResearchGroupMembersByIdParams>(() => ({
-    pageSize: this.pageSize(),
-    pageNumber: this.pageNumber(),
-  }));
-  private readonly researchGroupIdForResource = computed(() => this.researchGroupId() ?? '');
-  private readonly membersByIdResource = getResearchGroupMembersByIdResource(this.researchGroupIdForResource, this.membersByIdParams);
-
-  // httpResource for members (when no researchGroupId)
-  private readonly membersParams = computed<GetResearchGroupMembersParams>(() => ({
-    pageSize: this.pageSize(),
-    pageNumber: this.pageNumber(),
-  }));
-  private readonly membersResource = getResearchGroupMembersResource(this.membersParams);
-
-  // httpResource for research group name
-  private readonly researchGroupNameResource = getResearchGroupResource(this.researchGroupIdForResource);
-  researchGroupName = computed<string | undefined>(() => this.researchGroupNameResource.value()?.name);
-
-  // Derived members/total from the appropriate resource
-  members = computed<UserShortDTO[]>(() => {
-    const data = this.researchGroupId() ? this.membersByIdResource.value() : this.membersResource.value();
-    return data?.content ?? [];
-  });
-  total = computed<number>(() => {
-    const data = this.researchGroupId() ? this.membersByIdResource.value() : this.membersResource.value();
-    return data?.totalElements ?? 0;
-  });
+  researchGroupName = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -164,6 +131,11 @@ export class ResearchGroupMembersComponent {
   private readonly routeIdEffect = effect(() => {
     const id = this.routeId();
     this.researchGroupId.set(id);
+    this.researchGroupName.set(undefined);
+    if (id) {
+      void this.loadResearchGroupName(id);
+    }
+    void this.loadMembers();
   });
 
   private readonly translationKey: string = 'researchGroup.members';
@@ -173,14 +145,8 @@ export class ResearchGroupMembersComponent {
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
     this.pageSize.set(rows);
-  }
 
-  private reloadMembers(): void {
-    if (this.researchGroupId()) {
-      this.membersByIdResource.reload();
-    } else {
-      this.membersResource.reload();
-    }
+    void this.loadMembers();
   }
 
   async removeMember(member: UserShortDTO): Promise<void> {
@@ -191,11 +157,25 @@ export class ResearchGroupMembersComponent {
       });
 
       // Refresh the members list
-      this.reloadMembers();
+      await this.loadMembers();
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
         memberName: formatFullName(member.firstName, member.lastName),
       });
+    }
+  }
+
+  async loadMembers(): Promise<void> {
+    try {
+      const id = this.researchGroupId();
+      const members = id
+        ? await firstValueFrom(this.researchGroupApi.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
+        : await firstValueFrom(this.researchGroupApi.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+
+      this.members.set(members.content ?? []);
+      this.total.set(members.totalElements ?? 0);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
     }
   }
 
@@ -211,7 +191,7 @@ export class ResearchGroupMembersComponent {
 
     ref?.onClose.subscribe((added: boolean) => {
       if (added) {
-        this.reloadMembers();
+        void this.loadMembers();
       }
     });
   }
@@ -228,5 +208,14 @@ export class ResearchGroupMembersComponent {
 
   private isCurrentUser(member: UserShortDTO): boolean {
     return member.userId === this.accountService.userId;
+  }
+
+  private async loadResearchGroupName(researchGroupId: string): Promise<void> {
+    try {
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
+      this.researchGroupName.set(researchGroup.name);
+    } catch {
+      this.researchGroupName.set(undefined);
+    }
   }
 }

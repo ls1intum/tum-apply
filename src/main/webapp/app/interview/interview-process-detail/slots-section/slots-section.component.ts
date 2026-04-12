@@ -8,8 +8,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import { getTemplatesResource } from 'app/generated/api/email-template-resource-api';
-import { GetSlotsByProcessIdParams, InterviewResourceApi, getSlotsByProcessIdResource } from 'app/generated/api/interview-resource-api';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -65,6 +65,7 @@ export class SlotsSectionComponent {
 
   // Services
   readonly interviewApi = inject(InterviewResourceApi);
+  readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   readonly translateService = inject(TranslateService);
   readonly toastService = inject(ToastService);
   readonly breakpointObserver = inject(BreakpointObserver);
@@ -74,23 +75,6 @@ export class SlotsSectionComponent {
   isClosed = input<boolean>(false);
   refreshKey = input<number>(0);
   invitedCount = input(0);
-
-  // Resources for slot queries
-  private readonly anySlotsParams = signal<GetSlotsByProcessIdParams>({ page: 0, size: 1 });
-  private readonly anySlotsResource = getSlotsByProcessIdResource(this.processId, this.anySlotsParams);
-
-  private readonly futureUnbookedParams = signal<GetSlotsByProcessIdParams>({
-    afterDateTime: new Date().toISOString(),
-    page: 0,
-    size: 1000,
-  });
-  private readonly futureUnbookedResource = getSlotsByProcessIdResource(this.processId, this.futureUnbookedParams);
-
-  private readonly monthSlotsParams = signal<GetSlotsByProcessIdParams>({ page: 0, size: 1000 });
-  private readonly monthSlotsResource = getSlotsByProcessIdResource(this.processId, this.monthSlotsParams);
-
-  // Resource for email templates (to find INTERVIEW_LOCATION_CHANGED template)
-  private readonly templatesResource = getTemplatesResource(signal({ pageSize: 100, pageNumber: 0 }));
 
   // Outputs
   slotAssigned = output();
@@ -272,109 +256,13 @@ export class SlotsSectionComponent {
     this.currentDatePage.set(0);
   });
 
-  // Effect: React to global slots resource results (anySlots + futureUnbooked)
-  private readonly globalSlotsEffect = effect(() => {
-    const anySlotsResponse = this.anySlotsResource.value();
-    const unbookedResponse = this.futureUnbookedResource.value();
-
-    if (anySlotsResponse && unbookedResponse) {
-      const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
-      const unbookedCount = unbookedResponse.content?.filter(s => s.isBooked !== true).length ?? 0;
-
-      untracked(() => {
-        this.hasAnySlots.set(hasSlots);
-        this.globalFutureUnbookedCount.set(unbookedCount);
-        this.initialized.set(true);
-      });
-
-      this.hasSlotsChange.emit(hasSlots && unbookedCount > 0);
-    }
-  });
-
-  // Effect: React to global slots resource errors
-  private readonly globalSlotsErrorEffect = effect(() => {
-    const anySlotsError = this.anySlotsResource.error();
-    const unbookedError = this.futureUnbookedResource.error();
-    if (anySlotsError != null || unbookedError != null) {
-      untracked(() => {
-        this.error.set(true);
-        this.initialized.set(true);
-      });
-    }
-  });
-
-  // Effect: React to month slots resource results
-  private readonly monthSlotsEffect = effect(() => {
-    const response = this.monthSlotsResource.value();
-    if (response) {
-      const allSlots = response.content ?? [];
-      const now = Date.now();
-      const past = allSlots.filter(s => new Date(this.safeDate(s.startDateTime)).getTime() < now);
-      const future = allSlots.filter(s => new Date(this.safeDate(s.startDateTime)).getTime() >= now);
-
-      const currentOffset = this.currentMonthOffset();
-      const year = this.monthSlotsParams().year;
-      const month = this.monthSlotsParams().month;
-
-      untracked(() => {
-        this.pastSlots.set(past);
-        this.futureSlots.set(future);
-
-        // Auto-navigate to the first future-slot page for the current month
-        const isCurrent = currentOffset === 0 || (year === dayjs().year() && month === dayjs().month() + 1);
-
-        if (isCurrent && future.length > 0) {
-          const pastGroupsLength = this.groupByDate(past).length;
-          let paddedPastLength = pastGroupsLength;
-          const columnsPerPage = this.datesPerPage();
-
-          if (pastGroupsLength > 0) {
-            const pastColumnsInLastPage = pastGroupsLength % columnsPerPage;
-            if (pastColumnsInLastPage !== 0) {
-              paddedPastLength += columnsPerPage - pastColumnsInLastPage;
-            }
-          }
-
-          this.currentDatePage.set(Math.floor(paddedPastLength / columnsPerPage));
-        } else {
-          this.currentDatePage.set(0);
-        }
-      });
-    }
-  });
-
-  // Effect: React to month slots resource errors
-  private readonly monthSlotsErrorEffect = effect(() => {
-    if (this.monthSlotsResource.error() != null) {
-      this.toastService.showErrorKey('interview.slots.error.loadFailed');
-      this.error.set(true);
-    }
-  });
-
-  // Effect: Derive loading state from resources
-  private readonly loadingEffect = effect(() => {
-    const isLoading = this.anySlotsResource.isLoading() || this.futureUnbookedResource.isLoading() || this.monthSlotsResource.isLoading();
-    this.loading.set(isLoading);
-  });
-
-  // Effect: Extract location changed template ID from templates resource
-  private readonly templateEffect = effect(() => {
-    const res = this.templatesResource.value();
-    if (res && this.locationChangedTemplateId() === undefined) {
-      const template = res.content?.find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED');
-      if (template?.emailTemplateId) {
-        this.locationChangedTemplateId.set(template.emailTemplateId);
-      }
-    }
-  });
-
   private readonly initEffect = effect(() => {
     this.refreshKey(); // track external refresh key
     this.internalRefreshKey(); // track internal refresh key
     const id = this.processId();
     if (id !== '') {
-      this.triggerGlobalSlotsRefresh();
-      this.triggerMonthSlotsRefresh();
+      void this.checkGlobalSlots(id);
+      void this.fetchLocationChangedTemplateId();
     }
   });
 
@@ -382,28 +270,34 @@ export class SlotsSectionComponent {
     this.showSlotCreationForm.set(true);
   }
 
-  refreshSlots(): void {
-    this.triggerGlobalSlotsRefresh();
-    this.triggerMonthSlotsRefresh();
+  async refreshSlots(): Promise<void> {
+    const id = this.processId();
+    if (id !== '') {
+      await this.checkGlobalSlots(id);
+    }
   }
 
   onSlotsCreated(): void {
     this.hasAnySlots.set(true);
-    this.refreshSlots();
+    void this.refreshSlots();
   }
 
-  previousMonth(): void {
-    const prevOffset = this.currentMonthOffset() - 1;
-    this.currentMonthOffset.set(prevOffset);
-    this.currentDatePage.set(0);
-    this.triggerMonthSlotsRefresh();
+  async previousMonth(): Promise<void> {
+    const id = this.processId();
+    if (id !== '') {
+      const prevOffset = this.currentMonthOffset() - 1;
+      const target = dayjs().add(prevOffset, 'month');
+      await this.loadMonthSlots(id, target.year(), target.month() + 1, prevOffset, false);
+    }
   }
 
-  nextMonth(): void {
-    const nextOffset = this.currentMonthOffset() + 1;
-    this.currentMonthOffset.set(nextOffset);
-    this.currentDatePage.set(0);
-    this.triggerMonthSlotsRefresh();
+  async nextMonth(): Promise<void> {
+    const id = this.processId();
+    if (id !== '') {
+      const nextOffset = this.currentMonthOffset() + 1;
+      const target = dayjs().add(nextOffset, 'month');
+      await this.loadMonthSlots(id, target.year(), target.month() + 1, nextOffset, false);
+    }
   }
 
   previousDatePage(): void {
@@ -448,7 +342,7 @@ export class SlotsSectionComponent {
       await firstValueFrom(this.interviewApi.updateSlotLocation(slot.id, { location: this.editLocation().trim() }));
       this.toastService.showSuccessKey('interview.slots.edit.success');
       this.closeEditDialog();
-      this.refreshSlots();
+      await this.refreshSlots();
     } catch (error: unknown) {
       const httpError = error as { status?: number };
       if (httpError.status === 403) {
@@ -476,8 +370,7 @@ export class SlotsSectionComponent {
     try {
       // Opt out of global loading to prevent UI flicker, we could add a local loading spinner later if needed
       await firstValueFrom(this.interviewApi.deleteSlot(slotId));
-      this.triggerGlobalSlotsRefresh();
-      this.triggerMonthSlotsRefresh();
+      await this.checkGlobalSlots(this.processId(), false);
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
@@ -503,8 +396,7 @@ export class SlotsSectionComponent {
       this.pastSlots.update(slots => slots.map(s => (s.id === updatedSlot.id ? updatedSlot : s)));
     }
 
-    this.triggerGlobalSlotsRefresh();
-    this.triggerMonthSlotsRefresh();
+    void this.checkGlobalSlots(this.processId(), false);
     this.slotAssigned.emit();
   }
 
@@ -520,8 +412,7 @@ export class SlotsSectionComponent {
     try {
       await firstValueFrom(this.interviewApi.cancelInterview(this.processId(), slot.id, cancelParams));
 
-      this.triggerGlobalSlotsRefresh();
-      this.triggerMonthSlotsRefresh();
+      await this.checkGlobalSlots(this.processId(), false);
 
       this.toastService.showSuccessKey('interview.slots.cancelInterview.success');
 
@@ -536,23 +427,137 @@ export class SlotsSectionComponent {
   }
 
   /**
-   * Triggers a refresh of global slot queries (anySlots + futureUnbooked).
+   * Performs the initial data check for this interview process by firing two
+   * lightweight REST calls in parallel, then loads the current month's slots.
+   *
+   * Separate calls are necessary because each serves a distinct purpose:
+   * 1. `anySlotsTask` — fetches a single slot (page size 1) to determine whether
+   *    the process has ANY slots at all. This drives the empty-state UI.
+   * 2. `unbookedTask` — fetches all future slots (afterDateTime = now) so we can
+   *    count unbooked ones across ALL months for the global "Not Enough Slots" warning.
+   *    A month-scoped query would miss slots in other months and produce false warnings.
+   *
+   * After both resolve, [loadMonthSlots](cci:1://file:///Users/abinayasivaguru/LokalTUMApply/src/main/webapp/app/interview/interview-process-detail/slots-section/slots-section.component.ts:443:2-515:3) is called to populate the calendar view.
+   *
+   * @param processId - the interview process ID
+   * @param showLoading - whether to show the loading spinner (false for silent refreshes, e.g. after delete)
    */
-  private triggerGlobalSlotsRefresh(): void {
-    this.anySlotsParams.set({ page: 0, size: 1 });
-    this.futureUnbookedParams.set({ afterDateTime: new Date().toISOString(), page: 0, size: 1000 });
-    this.anySlotsResource.reload();
-    this.futureUnbookedResource.reload();
+  private async checkGlobalSlots(processId: string, showLoading = true): Promise<void> {
+    try {
+      if (showLoading) {
+        this.loading.set(true);
+      }
+
+      // 1. Check if ANY slots exist (page size 1 — we only need totalElements)
+      const anySlotsTask = firstValueFrom(
+        this.interviewApi.getSlotsByProcessId(processId, undefined, undefined, undefined, undefined, 0, 1),
+      );
+
+      // 2. Fetch all future slots to count unbooked ones globally (across all months)
+      const unbookedTask = firstValueFrom(
+        this.interviewApi.getSlotsByProcessId(processId, undefined, undefined, new Date().toISOString(), undefined, 0, 1000),
+      );
+
+      // 3. Run both in parallel — they are independent queries
+      const [anySlotsResponse, unbookedResponse] = await Promise.all([anySlotsTask, unbookedTask]);
+
+      // 4. Count future unbooked slots for the "Not Enough Slots" warning
+      const unbookedCount = unbookedResponse.content?.filter(s => s.isBooked !== true).length ?? 0;
+
+      // 5. Batch signal writes to avoid intermediate re-renders
+      const hasSlots = (anySlotsResponse.totalElements ?? 0) > 0;
+
+      untracked(() => {
+        this.hasAnySlots.set(hasSlots);
+        this.globalFutureUnbookedCount.set(unbookedCount);
+        this.initialized.set(true);
+      });
+
+      this.hasSlotsChange.emit(hasSlots && unbookedCount > 0);
+
+      // 6. Load the current month's slots for the calendar view
+      await this.loadMonthSlots(processId, this.currentYear(), this.currentMonthNumber(), this.currentMonthOffset(), showLoading);
+    } catch {
+      untracked(() => {
+        this.error.set(true);
+        this.initialized.set(true);
+        if (showLoading) {
+          this.loading.set(false);
+        }
+      });
+    }
   }
 
   /**
-   * Triggers a refresh of month-specific slots for the calendar view.
+   * Fetches all slots for the given month and partitions them into past/future.
+   * All signal writes are batched inside `untracked()` to produce a single re-render.
+   *
+   * Steps:
+   * 1. Fetch all slots for the month via a single API call (year + month filter)
+   * 2. Partition them into past and future based on current time
+   * 3. Determine the initial date page — for the current month, auto-navigate
+   *    to the first page containing future slots so users see upcoming slots first
+   * 4. Batch all signal writes to avoid flickering from intermediate states
+   *
+   * @param processId - the interview process ID
+   * @param year - target year
+   * @param month - target month (1-based)
+   * @param newOffset - month offset from today (0 = current month)
+   * @param showLoading - set to false for silent month transitions (no loading spinner).
+   *   The loading spinner is only needed for initial load and delete operations.
    */
-  private triggerMonthSlotsRefresh(): void {
-    this.error.set(false);
-    const target = this.targetDate();
-    this.monthSlotsParams.set({ year: target.year(), month: target.month() + 1, page: 0, size: 1000 });
-    this.monthSlotsResource.reload();
+  private async loadMonthSlots(processId: string, year: number, month: number, newOffset: number, showLoading = true): Promise<void> {
+    try {
+      this.error.set(false);
+      if (showLoading) {
+        this.loading.set(true);
+      }
+
+      // 1. Fetch all slots for the target month
+      const response = await firstValueFrom(this.interviewApi.getSlotsByProcessId(processId, year, month, undefined, undefined, 0, 1000));
+      const allSlots = response.content ?? [];
+
+      // 2. Partition into past and future based on current time
+      const now = Date.now();
+      const past = allSlots.filter(s => new Date(this.safeDate(s.startDateTime)).getTime() < now);
+      const future = allSlots.filter(s => new Date(this.safeDate(s.startDateTime)).getTime() >= now);
+
+      // 3. Batch all signal writes to avoid intermediate re-renders
+      untracked(() => {
+        this.currentMonthOffset.set(newOffset);
+        this.pastSlots.set(past);
+        this.futureSlots.set(future);
+
+        // 4. Auto-navigate to the first future-slot page for the current month
+        const isCurrent = newOffset === 0 || (year === dayjs().year() && month === dayjs().month() + 1);
+
+        if (isCurrent && future.length > 0) {
+          // Past-slot groups are padded with invisible spacers to fill complete pages,
+          // so the first future group always starts at index `paddedPastLength`.
+          const pastGroupsLength = this.groupByDate(past).length;
+          let paddedPastLength = pastGroupsLength;
+          const columnsPerPage = this.datesPerPage();
+
+          if (pastGroupsLength > 0) {
+            const pastColumnsInLastPage = pastGroupsLength % columnsPerPage;
+            if (pastColumnsInLastPage !== 0) {
+              paddedPastLength += columnsPerPage - pastColumnsInLastPage;
+            }
+          }
+
+          this.currentDatePage.set(Math.floor(paddedPastLength / columnsPerPage));
+        } else {
+          this.currentDatePage.set(0);
+        }
+      });
+    } catch {
+      this.toastService.showErrorKey('interview.slots.error.loadFailed');
+      this.error.set(true);
+    } finally {
+      if (showLoading) {
+        this.loading.set(false);
+      }
+    }
   }
 
   /**
@@ -593,5 +598,19 @@ export class SlotsSectionComponent {
 
   private safeDate(value?: string): number {
     return value !== undefined && value !== '' ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
+  }
+
+  private async fetchLocationChangedTemplateId(): Promise<void> {
+    if (this.locationChangedTemplateId() !== undefined) return;
+
+    try {
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(100, 0));
+      const template = res.content?.find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED');
+      if (template?.emailTemplateId) {
+        this.locationChangedTemplateId.set(template.emailTemplateId);
+      }
+    } catch {
+      // Fail silently, the link will fallback to overview
+    }
   }
 }

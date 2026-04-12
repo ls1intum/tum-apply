@@ -1,6 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { HttpResourceRef } from '@angular/common/http';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,13 +16,8 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { UserAvatarComponent } from '../../shared/components/atoms/user-avatar/user-avatar.component';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
-import {
-  GetApplicationsOverviewsParams,
-  getAllJobNamesResource,
-  getApplicationsOverviewsResource,
-} from '../../generated/api/application-evaluation-resource-api';
+import { ApplicationEvaluationResourceApi } from '../../generated/api/application-evaluation-resource-api';
 import { ApplicationEvaluationOverviewDTO } from '../../generated/model/application-evaluation-overview-dto';
-import { ApplicationEvaluationOverviewListDTO } from '../../generated/model/application-evaluation-overview-list-dto';
 
 @Component({
   selector: 'jhi-application-overview',
@@ -96,56 +91,12 @@ export class ApplicationOverviewComponent {
   private isSearchInitiatedByUser = false;
   private isSortInitiatedByUser = false;
 
+  private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
   private readonly queryParamsSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
-
-  // Resources
-  private readonly jobNamesResource = getAllJobNamesResource();
-
-  private readonly overviewsParams = computed<GetApplicationsOverviewsParams>(() => {
-    const statusFilters = this.selectedStatusFilters();
-    const jobFilters = this.selectedJobFilters();
-    const search = this.searchQuery();
-    return {
-      offset: this.pageSize() * this.page(),
-      limit: this.pageSize(),
-      sortBy: this.sortBy(),
-      direction: this.sortDirection(),
-      status: statusFilters.length ? statusFilters : undefined,
-      job: jobFilters.length ? jobFilters : undefined,
-      search: search || undefined,
-    };
-  });
-
-  private readonly overviewsResource: HttpResourceRef<ApplicationEvaluationOverviewListDTO | undefined> = getApplicationsOverviewsResource(
-    this.overviewsParams,
-  );
-
-  private readonly _jobNamesEffect = effect(() => {
-    const jobNames = this.jobNamesResource.value();
-    if (jobNames !== undefined) {
-      this.allAvailableJobNames.set([...jobNames].sort());
-    }
-    if (this.jobNamesResource.error()) {
-      this.allAvailableJobNames.set([]);
-      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
-    }
-  });
-
-  private readonly _overviewsEffect = effect(() => {
-    const res = this.overviewsResource.value();
-    if (res !== undefined) {
-      this.pageData.set(res.applications ?? []);
-      this.total.set(res.totalRecords ?? 0);
-    }
-    if (this.overviewsResource.error()) {
-      this.toastService.showErrorKey('evaluation.errors.loadApplications');
-    }
-    this.loading.set(this.overviewsResource.isLoading());
-  });
 
   constructor() {
     effect(() => {
@@ -169,7 +120,21 @@ export class ApplicationOverviewComponent {
       }
 
       this.isSearchInitiatedByUser = false;
+
+      void this.loadAllJobNames();
+
+      void this.loadPage();
     });
+  }
+
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.evaluationApi.getAllJobNames());
+      this.allAvailableJobNames.set(jobNames.sort());
+    } catch {
+      this.allAvailableJobNames.set([]);
+      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
+    }
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -219,6 +184,42 @@ export class ApplicationOverviewComponent {
     void this.router.navigate(['/evaluation/application'], {
       queryParams,
     });
+  }
+
+  async loadPage(): Promise<void> {
+    this.loading.set(true);
+    try {
+      const offset = this.pageSize() * this.page();
+      const limit = this.pageSize();
+      const sortBy = this.sortBy();
+      const direction = this.sortDirection();
+      const search = this.searchQuery();
+
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+
+      const res = await firstValueFrom(
+        this.evaluationApi.getApplicationsOverviews(
+          offset,
+          limit,
+          sortBy,
+          direction,
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
+          search || undefined,
+        ),
+      );
+
+      setTimeout(() => {
+        this.pageData.set(res.applications ?? []);
+        this.total.set(res.totalRecords ?? 0);
+      });
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {

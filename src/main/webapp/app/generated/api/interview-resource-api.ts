@@ -15,8 +15,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { AddIntervieweesDTO } from '../model/add-interviewees-dto';
 import { IntervieweeDTO } from '../model/interviewee-dto';
 import { AssignSlotRequestDTO } from '../model/assign-slot-request-dto';
@@ -103,6 +101,113 @@ export class InterviewResourceApi {
      * 
      * 
      * @param processId 
+     * @param date 
+     */
+    getConflictDataForDate(processId: string, date: string): Observable<ConflictDataDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const queryParams = new URLSearchParams();
+        if (date !== undefined && date !== null) {
+            queryParams.set('date', String(date));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/slots/conflict-data${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<ConflictDataDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getInterviewOverview(): Observable<Array<InterviewOverviewDTO>> {
+        const url = `${this.basePath}/api/interviews/overview`;
+        return this.http.get<Array<InterviewOverviewDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     */
+    getInterviewProcessDetails(processId: string): Observable<InterviewOverviewDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}`;
+        return this.http.get<InterviewOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     * @param intervieweeId 
+     */
+    getIntervieweeDetails(processId: string, intervieweeId: string): Observable<IntervieweeDetailDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const intervieweeIdPath = encodeURIComponent(String(intervieweeId));
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/interviewees/${intervieweeIdPath}`;
+        return this.http.get<IntervieweeDetailDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     */
+    getIntervieweesByProcessId(processId: string): Observable<Array<IntervieweeDTO>> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/interviewees`;
+        return this.http.get<Array<IntervieweeDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
+     * @param year 
+     * @param month 
+     * @param afterDateTime 
+     * @param beforeDateTime 
+     * @param page 
+     * @param size 
+     */
+    getSlotsByProcessId(processId: string, year?: number, month?: number, afterDateTime?: string, beforeDateTime?: string, page?: number, size?: number): Observable<PageResponseDTOInterviewSlotDTO> {
+        const processIdPath = encodeURIComponent(String(processId));
+        const queryParams = new URLSearchParams();
+        if (year !== undefined && year !== null) {
+            queryParams.set('year', String(year));
+        }
+        if (month !== undefined && month !== null) {
+            queryParams.set('month', String(month));
+        }
+        if (afterDateTime !== undefined && afterDateTime !== null) {
+            queryParams.set('afterDateTime', String(afterDateTime));
+        }
+        if (beforeDateTime !== undefined && beforeDateTime !== null) {
+            queryParams.set('beforeDateTime', String(beforeDateTime));
+        }
+        if (page !== undefined && page !== null) {
+            queryParams.set('page', String(page));
+        }
+        if (size !== undefined && size !== null) {
+            queryParams.set('size', String(size));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/interviews/processes/${processIdPath}/slots${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOInterviewSlotDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    getUpcomingInterviews(): Observable<Array<UpcomingInterviewDTO>> {
+        const url = `${this.basePath}/api/interviews/upcoming`;
+        return this.http.get<Array<UpcomingInterviewDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param processId 
      * @param sendInvitationsRequestDTO 
      */
     sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO): Observable<SendInvitationsResultDTO> {
@@ -138,149 +243,3 @@ export class InterviewResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * Query parameters for getConflictDataForDate
- */
-export interface GetConflictDataForDateParams {
-    date: string;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param processId 
- * @param params Optional signal containing query parameters
- */
-export function getConflictDataForDateResource(processId: Signal<string> | string, params: Signal<GetConflictDataForDateParams>): HttpResourceRef<ConflictDataDTO | undefined> {
-    return httpResource<ConflictDataDTO>(() => {
-        const processIdValue = typeof processId === 'function' ? processId() : processId;
-        const processIdPath = encodeURIComponent(String(processIdValue));
-        const queryParams = params();
-        const searchParams = new URLSearchParams();
-        if (queryParams.date !== undefined && queryParams.date !== null) {
-            searchParams.set('date', String(queryParams.date));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/interviews/processes/${processIdPath}/slots/conflict-data${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getInterviewOverviewResource(): HttpResourceRef<Array<InterviewOverviewDTO> | undefined> {
-    return httpResource<Array<InterviewOverviewDTO>>(() => {
-        return `${BASE_PATH}/api/interviews/overview`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param processId 
- */
-export function getInterviewProcessDetailsResource(processId: Signal<string> | string): HttpResourceRef<InterviewOverviewDTO | undefined> {
-    return httpResource<InterviewOverviewDTO>(() => {
-        const processIdValue = typeof processId === 'function' ? processId() : processId;
-        const processIdPath = encodeURIComponent(String(processIdValue));
-        return `${BASE_PATH}/api/interviews/processes/${processIdPath}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param processId 
- * @param intervieweeId 
- */
-export function getIntervieweeDetailsResource(processId: Signal<string> | string, intervieweeId: Signal<string> | string): HttpResourceRef<IntervieweeDetailDTO | undefined> {
-    return httpResource<IntervieweeDetailDTO>(() => {
-        const processIdValue = typeof processId === 'function' ? processId() : processId;
-        const processIdPath = encodeURIComponent(String(processIdValue));
-        const intervieweeIdValue = typeof intervieweeId === 'function' ? intervieweeId() : intervieweeId;
-        const intervieweeIdPath = encodeURIComponent(String(intervieweeIdValue));
-        return `${BASE_PATH}/api/interviews/processes/${processIdPath}/interviewees/${intervieweeIdPath}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param processId 
- */
-export function getIntervieweesByProcessIdResource(processId: Signal<string> | string): HttpResourceRef<Array<IntervieweeDTO> | undefined> {
-    return httpResource<Array<IntervieweeDTO>>(() => {
-        const processIdValue = typeof processId === 'function' ? processId() : processId;
-        const processIdPath = encodeURIComponent(String(processIdValue));
-        return `${BASE_PATH}/api/interviews/processes/${processIdPath}/interviewees`;
-    });
-}
-
-/**
- * Query parameters for getSlotsByProcessId
- */
-export interface GetSlotsByProcessIdParams {
-    year?: number;
-    month?: number;
-    afterDateTime?: string;
-    beforeDateTime?: string;
-    page?: number;
-    size?: number;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param processId 
- * @param params Optional signal containing query parameters
- */
-export function getSlotsByProcessIdResource(processId: Signal<string> | string, params?: Signal<GetSlotsByProcessIdParams>): HttpResourceRef<PageResponseDTOInterviewSlotDTO | undefined> {
-    return httpResource<PageResponseDTOInterviewSlotDTO>(() => {
-        const processIdValue = typeof processId === 'function' ? processId() : processId;
-        const processIdPath = encodeURIComponent(String(processIdValue));
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.year !== undefined && queryParams.year !== null) {
-            searchParams.set('year', String(queryParams.year));
-        }
-        if (queryParams.month !== undefined && queryParams.month !== null) {
-            searchParams.set('month', String(queryParams.month));
-        }
-        if (queryParams.afterDateTime !== undefined && queryParams.afterDateTime !== null) {
-            searchParams.set('afterDateTime', String(queryParams.afterDateTime));
-        }
-        if (queryParams.beforeDateTime !== undefined && queryParams.beforeDateTime !== null) {
-            searchParams.set('beforeDateTime', String(queryParams.beforeDateTime));
-        }
-        if (queryParams.page !== undefined && queryParams.page !== null) {
-            searchParams.set('page', String(queryParams.page));
-        }
-        if (queryParams.size !== undefined && queryParams.size !== null) {
-            searchParams.set('size', String(queryParams.size));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/interviews/processes/${processIdPath}/slots${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getUpcomingInterviewsResource(): HttpResourceRef<Array<UpcomingInterviewDTO> | undefined> {
-    return httpResource<Array<UpcomingInterviewDTO>>(() => {
-        return `${BASE_PATH}/api/interviews/upcoming`;
-    });
-}
-

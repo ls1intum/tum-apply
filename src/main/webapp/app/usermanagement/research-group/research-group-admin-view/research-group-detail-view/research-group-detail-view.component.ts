@@ -1,10 +1,10 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { ResearchGroupResourceApi, getResearchGroupResource } from 'app/generated/api/research-group-resource-api';
-import { getDepartmentsResource } from 'app/generated/api/department-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -34,7 +34,7 @@ import { TranslateDirective } from 'app/shared/language';
   ],
   templateUrl: './research-group-detail-view.component.html',
 })
-export class ResearchGroupDetailViewComponent {
+export class ResearchGroupDetailViewComponent implements OnInit {
   form = new FormGroup({
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
@@ -51,10 +51,10 @@ export class ResearchGroupDetailViewComponent {
   researchGroupId = computed(() => this.routeParamMap().get('researchGroupId') ?? undefined);
 
   isSaving = signal<boolean>(false);
+  isLoading = signal<boolean>(true);
 
-  // Department data via httpResource
-  private readonly departmentsResource = getDepartmentsResource();
-  departments = computed<DepartmentDTO[]>(() => this.departmentsResource.value() ?? []);
+  // Department data
+  departments = signal<DepartmentDTO[]>([]);
   selectedDepartmentId = signal<string | undefined>(undefined);
 
   departmentOptions = computed<SelectOption[]>(() =>
@@ -70,24 +70,26 @@ export class ResearchGroupDetailViewComponent {
     return this.departmentOptions().find(opt => opt.value === deptId);
   });
 
-  // Research group via httpResource
-  private readonly researchGroupIdForResource = computed(() => this.researchGroupId() ?? '');
-  private readonly researchGroupResource = getResearchGroupResource(this.researchGroupIdForResource);
-
-  isLoading = computed<boolean>(() => this.researchGroupResource.isLoading());
-
   readonly researchGroupApi = inject(ResearchGroupResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
   private toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly routeParamMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
 
-  private readonly initEffect = effect(() => {
-    const researchGroup = this.researchGroupResource.value();
-    if (researchGroup != null) {
-      this.populateFormData(researchGroup);
+  ngOnInit(): void {
+    void this.loadDepartments();
+    void this.init();
+  }
+
+  async loadDepartments(): Promise<void> {
+    try {
+      const departments = await firstValueFrom(this.departmentApi.getDepartments());
+      this.departments.set(departments);
+    } catch {
+      this.toastService.showErrorKey('researchGroup.detailView.errors.loadDepartments');
     }
-  });
+  }
 
   onDepartmentChange(option: SelectOption): void {
     const deptId = option.value as string;
@@ -130,6 +132,24 @@ export class ResearchGroupDetailViewComponent {
       this.toastService.showErrorKey('researchGroup.detailView.errors.save');
     } finally {
       this.isSaving.set(false);
+    }
+  }
+
+  private async init(): Promise<void> {
+    const researchGroupId = this.researchGroupId();
+    if (researchGroupId == null || researchGroupId.trim() === '') {
+      // No research group ID available, leave form empty
+      this.isLoading.set(false);
+      return;
+    }
+
+    try {
+      const researchGroup = await firstValueFrom(this.researchGroupApi.getResearchGroup(researchGroupId));
+      this.populateFormData(researchGroup);
+    } catch {
+      this.toastService.showErrorKey('researchGroup.detailView.errors.view');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 

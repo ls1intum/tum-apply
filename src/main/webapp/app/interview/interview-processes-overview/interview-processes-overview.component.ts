@@ -4,12 +4,13 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { InterviewOverviewDTO } from 'app/generated/model/interview-overview-dto';
 import { UpcomingInterviewDTO } from 'app/generated/model/upcoming-interview-dto';
-import { getInterviewOverviewResource, getUpcomingInterviewsResource } from 'app/generated/api/interview-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { MonthNavigationComponent } from 'app/interview/interview-process-detail/slots-section/month-navigation/month-navigation.component';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
@@ -40,22 +41,11 @@ interface GroupedUpcomingInterviews {
   templateUrl: './interview-processes-overview.component.html',
 })
 export class InterviewProcessesOverviewComponent {
-  // Resources
-  private readonly overviewResource = getInterviewOverviewResource();
-  private readonly upcomingResource = getUpcomingInterviewsResource();
-
   // Signals
-  interviewProcesses = computed<InterviewOverviewDTO[]>(() => {
-    const data = this.overviewResource.value();
-    if (!data) return [];
-    return data.map((process, index) => ({
-      ...process,
-      imageUrl: process.imageUrl ?? this.getExampleImageUrl(index),
-    }));
-  });
-  upcomingInterviews = computed<UpcomingInterviewDTO[]>(() => this.upcomingResource.value() ?? []);
-  loading = computed<boolean>(() => this.overviewResource.isLoading() || this.upcomingResource.isLoading());
-  error = computed<boolean>(() => this.overviewResource.error() != null || this.upcomingResource.error() != null);
+  interviewProcesses = signal<InterviewOverviewDTO[]>([]);
+  upcomingInterviews = signal<UpcomingInterviewDTO[]>([]);
+  loading = signal<boolean>(true);
+  error = signal<boolean>(false);
   currentMonthOffset = signal(0);
   currentDatePage = signal(0);
 
@@ -117,6 +107,7 @@ export class InterviewProcessesOverviewComponent {
   private readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
+  private readonly interviewApi = inject(InterviewResourceApi);
   private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
@@ -156,6 +147,10 @@ export class InterviewProcessesOverviewComponent {
     this.currentDatePage.set(0);
   });
 
+  constructor() {
+    void this.loadData();
+  }
+
   // Public Methods
   previousMonth(): void {
     this.currentMonthOffset.update(offset => offset - 1);
@@ -189,6 +184,27 @@ export class InterviewProcessesOverviewComponent {
   }
 
   // Private Methods
+  private async loadData(): Promise<void> {
+    try {
+      this.loading.set(true);
+      this.error.set(false);
+      const [overviewData, upcomingData] = await Promise.all([
+        firstValueFrom(this.interviewApi.getInterviewOverview()),
+        firstValueFrom(this.interviewApi.getUpcomingInterviews()),
+      ]);
+      const processesWithImages = overviewData.map((process, index) => ({
+        ...process,
+        imageUrl: process.imageUrl ?? this.getExampleImageUrl(index),
+      }));
+      this.interviewProcesses.set(processesWithImages);
+      this.upcomingInterviews.set(upcomingData);
+    } catch {
+      this.error.set(true);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   private getExampleImageUrl(index: number): string {
     const headerImages = [
       '/content/images/job-banner/job-banner1.jpg',

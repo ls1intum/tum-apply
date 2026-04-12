@@ -15,18 +15,12 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
-import {
-  GetApplicationsDetailsParams,
-  GetApplicationsDetailsWindowParams,
-  getAllJobNamesResource,
-  getApplicationsDetailsResource,
-  getApplicationsDetailsWindowResource,
-} from 'app/generated/api/application-evaluation-resource-api';
-import { getDocumentDictionaryIdsResource } from 'app/generated/api/application-resource-api';
-import { InterviewResourceApi, getInterviewOverviewResource } from 'app/generated/api/interview-resource-api';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 import { AcceptDTO } from 'app/generated/model/accept-dto';
 import { RejectDTO } from 'app/generated/model/reject-dto';
+import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/application-evaluation-detail-list-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { formatGradeWithTranslation } from 'app/core/util/grade-conversion';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
@@ -43,9 +37,6 @@ import { CommentSection } from '../../shared/components/molecules/comment-sectio
 import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
 type ApplicationStateEnum = ApplicationDetailDTOApplicationStateEnum;
-
-type DetailsLoadMode = 'next' | 'prev' | 'initial' | 'idle';
-type WindowLoadMode = 'carousel' | 'rating' | 'idle';
 
 const CAROUSEL_SIZE = 7;
 
@@ -170,6 +161,7 @@ export class ApplicationDetailComponent {
   private isSortInitiatedByUser = false;
 
   private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
+  private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly interviewApi = inject(InterviewResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -178,160 +170,6 @@ export class ApplicationDetailComponent {
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   private currentLang = toSignal(this.translateService.onLangChange);
-
-  // --- Resources ---
-
-  // Job names resource (auto-fetches once)
-  private readonly jobNamesResource = getAllJobNamesResource();
-
-  private readonly _jobNamesEffect = effect(() => {
-    const jobNames = this.jobNamesResource.value();
-    if (jobNames !== undefined) {
-      this.allAvailableJobNames.set([...jobNames].sort());
-    }
-    if (this.jobNamesResource.error()) {
-      this.allAvailableJobNames.set([]);
-      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
-    }
-  });
-
-  // Interview overview resource (auto-fetches once, used in onAddToInterview)
-  private readonly interviewOverviewResource = getInterviewOverviewResource();
-
-  // Document IDs resource (auto-refetches when documentApplicationId changes)
-  private readonly documentApplicationId = signal<string>('');
-  private readonly documentIdsResource = getDocumentDictionaryIdsResource(this.documentApplicationId);
-
-  private readonly _documentIdsEffect = effect(() => {
-    if (!this.documentApplicationId()) return;
-    const ids = this.documentIdsResource.value();
-    if (ids !== undefined) {
-      this.currentDocumentIds.set(ids);
-    }
-    if (this.documentIdsResource.error()) {
-      this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' });
-    }
-  });
-
-  // Details page resource (for loadPage: loadNext, loadPrev, loadInitialPage)
-  private readonly detailsRequestParams = signal<GetApplicationsDetailsParams>({});
-  private readonly detailsRequestVersion = signal(0);
-  private readonly detailsLoadMode = signal<DetailsLoadMode>('idle');
-  private readonly detailsResource = getApplicationsDetailsResource(
-    computed<GetApplicationsDetailsParams>(() => {
-      this.detailsRequestVersion(); // track version to force re-fetch on same params
-      return this.detailsRequestParams();
-    }),
-  );
-  private detailsProcessedVersion = 0;
-
-  private readonly _detailsEffect = effect(() => {
-    const mode = this.detailsLoadMode();
-    const res = this.detailsResource.value();
-    const error = this.detailsResource.error();
-    const version = this.detailsRequestVersion();
-
-    if (mode === 'idle' || version === this.detailsProcessedVersion) return;
-
-    if (error) {
-      this.detailsProcessedVersion = version;
-      this.toastService.showErrorKey('evaluation.errors.loadApplications');
-      return;
-    }
-
-    if (res === undefined) return;
-
-    this.detailsProcessedVersion = version;
-    const applications = res.applications;
-    this.totalRecords.set(res.totalRecords ?? 0);
-
-    if (!applications?.length) {
-      this.detailsLoadMode.set('idle');
-      return;
-    }
-
-    if (mode === 'initial') {
-      this.currentIndex.set(0);
-      this.carouselIndex.set(0);
-      this.applications.set(applications);
-      this.currentApplication.set(applications[0]);
-      void this.markCurrentApplicationAsInReview();
-      this.updateUrlQueryParams();
-      this.updateDocumentInformation(applications[this.carouselIndex()].applicationDetailDTO.applicationId);
-    } else if (mode === 'next') {
-      let apps = [...this.applications(), ...applications];
-      if (apps.length > CAROUSEL_SIZE) {
-        apps = apps.slice(apps.length - CAROUSEL_SIZE);
-        this.carouselIndex.update(v => v - 1);
-      }
-      this.applications.set(apps);
-      this.updateDocumentInformation(apps[this.carouselIndex()].applicationDetailDTO.applicationId);
-    } else if (mode === 'prev') {
-      let apps = [...applications, ...this.applications()];
-      if (apps.length > CAROUSEL_SIZE) {
-        apps = apps.slice(0, CAROUSEL_SIZE);
-      }
-      this.carouselIndex.update(v => v + 1);
-      this.applications.set(apps);
-      this.updateDocumentInformation(apps[this.carouselIndex()].applicationDetailDTO.applicationId);
-    }
-
-    this.detailsLoadMode.set('idle');
-  });
-
-  // Window resource (for loadCarousel and onRatingUpdated)
-  private readonly windowRequestParams = signal<GetApplicationsDetailsWindowParams>({ applicationId: '', windowSize: 0 });
-  private readonly windowRequestVersion = signal(0);
-  private readonly windowLoadMode = signal<WindowLoadMode>('idle');
-  private readonly windowResource = getApplicationsDetailsWindowResource(
-    computed<GetApplicationsDetailsWindowParams>(() => {
-      this.windowRequestVersion(); // track version to force re-fetch on same params
-      return this.windowRequestParams();
-    }),
-  );
-  private windowProcessedVersion = 0;
-
-  private readonly _windowEffect = effect(() => {
-    const mode = this.windowLoadMode();
-    const res = this.windowResource.value();
-    const error = this.windowResource.error();
-    const version = this.windowRequestVersion();
-
-    if (mode === 'idle' || version === this.windowProcessedVersion) return;
-
-    if (error) {
-      this.windowProcessedVersion = version;
-      if (mode === 'carousel') {
-        this.toastService.showErrorKey('evaluation.errors.loadApplications');
-      }
-      // For 'rating' mode, silently fail (rating is already saved, this is just a UI refresh)
-      this.windowLoadMode.set('idle');
-      return;
-    }
-
-    if (res === undefined) return;
-
-    this.windowProcessedVersion = version;
-
-    if (mode === 'carousel') {
-      this.totalRecords.set(res.totalRecords ?? 0);
-      this.applications.set(res.applications ?? []);
-      this.carouselIndex.set(res.windowIndex ?? 0);
-      this.currentIndex.set(res.currentIndex ?? 0);
-      this.currentApplication.set(this.applications()[this.carouselIndex()]);
-      this.updateDocumentInformation(this.applications()[this.carouselIndex()].applicationDetailDTO.applicationId);
-      void this.markCurrentApplicationAsInReview();
-    } else if (mode === 'rating') {
-      const updated = res.applications?.[0];
-      if (updated) {
-        const id = updated.applicationDetailDTO.applicationId;
-        this.applications.update(apps => apps.map(app => (app.applicationDetailDTO.applicationId === id ? updated : app)));
-        this.currentApplication.set(updated);
-      }
-    }
-
-    this.windowLoadMode.set('idle');
-  });
 
   private _queryParamEffect = effect(() => {
     const qp = this.qpSignal();
@@ -352,33 +190,45 @@ export class ApplicationDetailComponent {
   });
 
   constructor() {
-    this.init();
+    void this.init();
   }
 
-  init(): void {
+  async init(): Promise<void> {
+    await this.loadAllJobNames();
+
     const id = this.qpSignal().get('applicationId');
     if (id !== null && id !== '') {
-      this.loadCarousel(id);
+      void this.loadCarousel(id);
     } else {
       // Load initial batch of applications
-      this.loadInitialPage();
+      void this.loadInitialPage();
+    }
+  }
+
+  async loadAllJobNames(): Promise<void> {
+    try {
+      const jobNames = await firstValueFrom(this.evaluationApi.getAllJobNames());
+      this.allAvailableJobNames.set(jobNames.sort());
+    } catch {
+      this.allAvailableJobNames.set([]);
+      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
     }
   }
 
   onSearchEmit(searchQuery: string): void {
     this.isSearchInitiatedByUser = true;
     this.searchQuery.set(searchQuery);
-    this.loadInitialPage();
+    void this.loadInitialPage();
   }
 
   onFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterId === 'jobTitle') {
       this.selectedJobFilters.set(filterChange.selectedValues);
-      this.loadInitialPage();
+      void this.loadInitialPage();
     } else if (filterChange.filterId === 'status') {
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
-      this.loadInitialPage();
+      void this.loadInitialPage();
     }
   }
 
@@ -388,7 +238,7 @@ export class ApplicationDetailComponent {
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
 
-    this.loadInitialPage();
+    void this.loadInitialPage();
   }
 
   // Navigate to next application
@@ -404,7 +254,7 @@ export class ApplicationDetailComponent {
 
     if (this.currentIndex() + this.half < this.totalRecords()) {
       // Load next item if within bounds
-      this.loadNext(this.currentIndex() + this.half);
+      void this.loadNext(this.currentIndex() + this.half);
     } else {
       // Otherwise update the visible carousel
       this.updateApplications();
@@ -425,7 +275,7 @@ export class ApplicationDetailComponent {
 
     if (this.currentIndex() - this.half >= 0) {
       // Load previous item if within bounds
-      this.loadPrev(this.currentIndex() - this.half);
+      void this.loadPrev(this.currentIndex() - this.half);
     } else {
       // Otherwise update the visible carousel
       this.updateApplications();
@@ -459,11 +309,7 @@ export class ApplicationDetailComponent {
     }
 
     try {
-      const processes = this.interviewOverviewResource.value();
-      if (!processes) {
-        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
-        return;
-      }
+      const processes = await firstValueFrom(this.interviewApi.getInterviewOverview());
       const matchingProcess = processes.find(p => p.jobId === application.jobId);
 
       if (!matchingProcess) {
@@ -566,28 +412,41 @@ export class ApplicationDetailComponent {
     });
   }
 
-  onRatingUpdated(): void {
+  async onRatingUpdated(): Promise<void> {
     const current = this.currentApplication();
     if (!current) {
       return;
     }
 
     const id = current.applicationDetailDTO.applicationId;
-    const statusFilters = this.selectedStatusFilters();
-    const jobFilters = this.selectedJobFilters();
-    const search = this.searchQuery();
 
-    this.windowLoadMode.set('rating');
-    this.windowRequestParams.set({
-      applicationId: id,
-      windowSize: 1,
-      sortBy: this.sortBy(),
-      direction: this.sortDirection(),
-      status: statusFilters.length ? statusFilters : undefined,
-      job: jobFilters.length ? jobFilters : undefined,
-      search: search || undefined,
-    });
-    this.windowRequestVersion.update(v => v + 1);
+    try {
+      // Fetch the updated application with server-calculated average rating
+      const result = await firstValueFrom(
+        this.evaluationApi.getApplicationsDetailsWindow(
+          id,
+          1, // windowSize = 1 to get just this application
+          this.sortBy(),
+          this.sortDirection(),
+          this.selectedStatusFilters().length ? this.selectedStatusFilters() : undefined,
+          this.selectedJobFilters().length ? this.selectedJobFilters() : undefined,
+          this.searchQuery() || undefined,
+        ),
+      );
+
+      const updated = result.applications?.[0];
+      if (!updated) {
+        return;
+      }
+
+      // Update applications array with refreshed data
+      this.applications.update(apps => apps.map(app => (app.applicationDetailDTO.applicationId === id ? updated : app)));
+
+      // Update current application
+      this.currentApplication.set(updated);
+    } catch {
+      // Silent fail - rating is already saved, this is just a UI refresh
+    }
   }
 
   /**
@@ -618,67 +477,113 @@ export class ApplicationDetailComponent {
   }
 
   /**
-   * Triggers loading a page of applications from server via the details resource.
-   * The result is processed by _detailsEffect based on detailsLoadMode.
+   * Loads a page of applications from server.
+   * Also updates total count of applications.
    */
-  private triggerDetailsLoad(offset: number, limit: number, mode: DetailsLoadMode): void {
-    const statusFilters = this.selectedStatusFilters();
-    const jobFilters = this.selectedJobFilters();
-    const search = this.searchQuery();
-
-    this.detailsLoadMode.set(mode);
-    this.detailsRequestParams.set({
-      offset,
-      limit,
-      sortBy: this.sortBy(),
-      direction: this.sortDirection(),
-      status: statusFilters.length ? statusFilters : undefined,
-      job: jobFilters.length ? jobFilters : undefined,
-      search: search || undefined,
-    });
-    this.detailsRequestVersion.update(v => v + 1);
+  private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
+    try {
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
+      const search = this.searchQuery();
+      const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
+        this.evaluationApi.getApplicationsDetails(
+          offset,
+          limit,
+          this.sortBy(),
+          this.sortDirection(),
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
+          search || undefined,
+        ),
+      );
+      this.totalRecords.set(res.totalRecords ?? 0);
+      return res.applications ?? undefined;
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
+      return undefined;
+    }
   }
 
-  private loadCarousel(applicationId: string): void {
-    const statusFilters = this.selectedStatusFilters();
-    const jobFilters = this.selectedJobFilters();
-    const search = this.searchQuery();
+  private async loadCarousel(applicationId: string): Promise<void> {
+    try {
+      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
+      const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
 
-    this.windowLoadMode.set('carousel');
-    this.windowRequestParams.set({
-      applicationId,
-      windowSize: CAROUSEL_SIZE,
-      sortBy: this.sortBy(),
-      direction: this.sortDirection(),
-      status: statusFilters.length ? statusFilters : undefined,
-      job: jobFilters.length ? jobFilters : undefined,
-      search: search || undefined,
-    });
-    this.windowRequestVersion.update(v => v + 1);
+      const search = this.searchQuery();
+      const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
+        this.evaluationApi.getApplicationsDetailsWindow(
+          applicationId,
+          CAROUSEL_SIZE,
+          this.sortBy(),
+          this.sortDirection(),
+          statusFilters.length ? statusFilters : undefined,
+          jobFilters.length ? jobFilters : undefined,
+          search || undefined,
+        ),
+      );
+      this.totalRecords.set(res.totalRecords ?? 0);
+      this.applications.set(res.applications ?? []);
+      this.carouselIndex.set(res.windowIndex ?? 0);
+      this.currentIndex.set(res.currentIndex ?? 0);
+      this.currentApplication.set(this.applications()[this.carouselIndex()]);
+      this.updateDocumentInformation(this.applications()[this.carouselIndex()].applicationDetailDTO.applicationId);
+      void this.markCurrentApplicationAsInReview();
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
+      return undefined;
+    }
   }
 
   /**
    * Loads the next application and appends it to the right side of the current carousel.
    * Adjusts carousel to keep the size fixed (CAROUSEL_SIZE).
    */
-  private loadNext(i: number): void {
-    this.triggerDetailsLoad(i, 1, 'next');
+  private async loadNext(i: number): Promise<void> {
+    const newEntry = await this.loadPage(i, 1);
+    if (newEntry) {
+      let apps = [...this.applications(), ...newEntry];
+      // Keep carousel size fixed
+      if (apps.length > CAROUSEL_SIZE) {
+        apps = apps.slice(apps.length - CAROUSEL_SIZE);
+        this.carouselIndex.update(v => v - 1); // Adjust index to match slice
+      }
+      this.applications.set(apps);
+      this.updateDocumentInformation(apps[this.carouselIndex()].applicationDetailDTO.applicationId);
+    }
   }
 
   /**
    * Loads the previous application and prepends it to the left side of the carousel.
    * Adjusts carousel to keep the size fixed (CAROUSEL_SIZE).
    */
-  private loadPrev(i: number): void {
-    this.triggerDetailsLoad(i, 1, 'prev');
+  private async loadPrev(i: number): Promise<void> {
+    const newEntry = await this.loadPage(i, 1);
+    if (newEntry) {
+      let apps = [...newEntry, ...this.applications()];
+      if (apps.length > CAROUSEL_SIZE) {
+        apps = apps.slice(0, CAROUSEL_SIZE);
+      }
+      this.carouselIndex.update(v => v + 1); // Adjust index to match new position
+      this.applications.set(apps);
+      this.updateDocumentInformation(apps[this.carouselIndex()].applicationDetailDTO.applicationId);
+    }
   }
 
   /**
    * Loads the initial carousel of applications when component initializes.
    * Uses half of the carousel size to center the first item.
    */
-  private loadInitialPage(): void {
-    this.triggerDetailsLoad(0, this.half + 1, 'initial');
+  private async loadInitialPage(): Promise<void> {
+    const data = await this.loadPage(0, this.half + 1);
+    if (data) {
+      this.currentIndex.set(0);
+      this.carouselIndex.set(0);
+      this.applications.set(data);
+      this.currentApplication.set(data[0]);
+      void this.markCurrentApplicationAsInReview();
+      this.updateUrlQueryParams();
+      this.updateDocumentInformation(data[this.carouselIndex()].applicationDetailDTO.applicationId);
+    }
   }
 
   /**
@@ -731,6 +636,10 @@ export class ApplicationDetailComponent {
   }
 
   private updateDocumentInformation(applicationId: string): void {
-    this.documentApplicationId.set(applicationId);
+    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(applicationId))
+      .then(ids => {
+        this.currentDocumentIds.set(ids);
+      })
+      .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
   }
 }

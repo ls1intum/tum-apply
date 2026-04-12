@@ -4,11 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
-import {
-  GetResearchGroupsForAdminParams,
-  ResearchGroupResourceApi,
-  getResearchGroupsForAdminResource,
-} from 'app/generated/api/research-group-resource-api';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { ResearchGroupAdminDTO, ResearchGroupAdminDTOStatusEnum } from 'app/generated/model/research-group-admin-dto';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -39,28 +35,14 @@ const I18N_BASE = 'researchGroup.adminView';
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {
+  researchGroups = signal<ResearchGroupAdminDTO[]>([]);
+  totalRecords = signal<number>(0);
   page = signal<number>(0);
   pageSize = signal<number>(10);
   searchQuery = signal<string>('');
 
   sortBy = signal<string>('state');
   sortDirection = signal<SortDirection>('DESC');
-
-  readonly selectedStatusFilters = signal<ResearchGroupAdminDTOStatusEnum[]>([]);
-
-  private readonly resourceParams = computed<GetResearchGroupsForAdminParams>(() => ({
-    pageSize: this.pageSize(),
-    pageNumber: this.page(),
-    status: this.selectedStatusFilters(),
-    searchQuery: this.searchQuery(),
-    sortBy: this.sortBy(),
-    direction: this.sortDirection(),
-  }));
-
-  private readonly researchGroupsResource = getResearchGroupsForAdminResource(this.resourceParams);
-
-  researchGroups = computed<ResearchGroupAdminDTO[]>(() => this.researchGroupsResource.value()?.content ?? []);
-  totalRecords = computed<number>(() => this.researchGroupsResource.value()?.totalElements ?? 0);
 
   readonly availableStatusOptions: { key: string; label: string }[] = [
     { key: ResearchGroupAdminDTOStatusEnum.Draft, label: `${I18N_BASE}.groupState.draft` },
@@ -91,6 +73,8 @@ export class ResearchGroupAdminView {
   showWithdrawDialog = signal(false);
 
   currentResearchGroupId = signal<string | undefined>(undefined);
+
+  readonly selectedStatusFilters = signal<ResearchGroupAdminDTOStatusEnum[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const stateTpl = this.stateTemplate();
@@ -224,12 +208,14 @@ export class ResearchGroupAdminView {
 
     this.page.set(page);
     this.pageSize.set(size);
+    void this.loadResearchGroups();
   }
 
   onSearchEmit(searchQuery: string): void {
     if (searchQuery !== this.searchQuery()) {
       this.page.set(0);
       this.searchQuery.set(searchQuery);
+      void this.loadResearchGroups();
     }
   }
 
@@ -238,6 +224,7 @@ export class ResearchGroupAdminView {
       this.page.set(0);
       const selectedKeys = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(selectedKeys);
+      void this.loadResearchGroups();
     }
   }
 
@@ -245,6 +232,7 @@ export class ResearchGroupAdminView {
     this.page.set(0);
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
+    void this.loadResearchGroups();
   }
 
   onViewResearchGroup(researchGroupId: string): void {
@@ -264,7 +252,7 @@ export class ResearchGroupAdminView {
 
     dialogRef?.onClose.subscribe(result => {
       if (result) {
-        this.researchGroupsResource.reload();
+        void this.loadResearchGroups();
       }
     });
   }
@@ -283,7 +271,7 @@ export class ResearchGroupAdminView {
     try {
       await firstValueFrom(this.researchGroupApi.activateResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.approve`);
-      this.researchGroupsResource.reload();
+      await this.loadResearchGroups();
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.errors.approve`);
     }
@@ -293,7 +281,7 @@ export class ResearchGroupAdminView {
     try {
       await firstValueFrom(this.researchGroupApi.denyResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.deny`);
-      this.researchGroupsResource.reload();
+      await this.loadResearchGroups();
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.errors.deny`);
     }
@@ -303,7 +291,7 @@ export class ResearchGroupAdminView {
     try {
       await firstValueFrom(this.researchGroupApi.withdrawResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.withdraw`);
-      this.researchGroupsResource.reload();
+      await this.loadResearchGroups();
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.errors.withdraw`);
     }
@@ -333,5 +321,24 @@ export class ResearchGroupAdminView {
   private mapTranslationKeysToEnumValues(translationKeys: string[]): ResearchGroupAdminDTOStatusEnum[] {
     const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
     return translationKeys.map(key => (keyMap.get(key) ?? key) as ResearchGroupAdminDTOStatusEnum);
+  }
+
+  private async loadResearchGroups(): Promise<void> {
+    try {
+      const pageData = await firstValueFrom(
+        this.researchGroupApi.getResearchGroupsForAdmin(
+          this.pageSize(),
+          this.page(),
+          this.selectedStatusFilters(),
+          this.searchQuery(),
+          this.sortBy(),
+          this.sortDirection(),
+        ),
+      );
+      this.researchGroups.set(pageData.content ?? []);
+      this.totalRecords.set(pageData.totalElements ?? 0);
+    } catch {
+      this.toastService.showErrorKey(`${I18N_BASE}.errors.loadResearchGroups`);
+    }
   }
 }

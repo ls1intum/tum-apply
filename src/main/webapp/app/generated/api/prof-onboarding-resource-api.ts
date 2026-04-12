@@ -15,13 +15,21 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { ProfOnboardingDTO } from '../model/prof-onboarding-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ProfOnboardingResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     */
+    check(): Observable<ProfOnboardingDTO> {
+        const url = `${this.basePath}/api/me/prof-onboarding`;
+        return this.http.get<ProfOnboardingDTO>(url);
+    }
 
     /**
      * 
@@ -42,17 +50,3 @@ export class ProfOnboardingResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function checkResource(): HttpResourceRef<ProfOnboardingDTO | undefined> {
-    return httpResource<ProfOnboardingDTO>(() => {
-        return `${BASE_PATH}/api/me/prof-onboarding`;
-    });
-}
-

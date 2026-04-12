@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, model, output, signal, viewChildren } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal, viewChildren } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
@@ -8,11 +8,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { TooltipModule } from 'primeng/tooltip';
-import {
-  GetConflictDataForDateParams,
-  InterviewResourceApi,
-  getConflictDataForDateResource,
-} from 'app/generated/api/interview-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ConflictDataDTO } from 'app/generated/model/conflict-data-dto';
@@ -144,23 +140,6 @@ export class SlotCreationFormComponent {
 
   readonly minDate = new Date();
 
-  // Conflict data resource - single resource that fetches one date at a time
-  private readonly conflictDateParam = signal<GetConflictDataForDateParams>({ date: '' });
-  private readonly conflictResource = getConflictDataForDateResource(this.processId, this.conflictDateParam);
-
-  // Effect: Accumulate conflict data results into the cache map
-  private readonly conflictDataEffect = effect(() => {
-    const data = this.conflictResource.value();
-    const dateStr = this.conflictDateParam().date;
-    if (data && dateStr !== '') {
-      this.conflictDataByDate.update(map => {
-        const newMap = new Map(map);
-        newMap.set(dateStr, data);
-        return newMap;
-      });
-    }
-  });
-
   // Dependencies
   private readonly interviewApi = inject(InterviewResourceApi);
   private readonly toastService = inject(ToastService);
@@ -241,7 +220,7 @@ export class SlotCreationFormComponent {
 
     // Load conflict data for all selected dates
     newSelection.forEach(date => {
-      this.loadConflictDataForDate(date);
+      void this.loadConflictDataForDate(date);
     });
   }
 
@@ -474,9 +453,9 @@ export class SlotCreationFormComponent {
   }
 
   /**
-   * Loads conflict data for a specific date from server via httpResource.
+   * Loads conflict data for a specific date from server.
    */
-  private loadConflictDataForDate(date: Date): void {
+  private async loadConflictDataForDate(date: Date): Promise<void> {
     const dateStr = toLocalDateString(date);
 
     // Skip if already loaded
@@ -484,7 +463,15 @@ export class SlotCreationFormComponent {
       return;
     }
 
-    // Update the param signal to trigger a new fetch
-    this.conflictDateParam.set({ date: dateStr });
+    try {
+      const conflictData = await firstValueFrom(this.interviewApi.getConflictDataForDate(this.processId(), dateStr));
+      this.conflictDataByDate.update(map => {
+        const newMap = new Map(map);
+        newMap.set(dateStr, conflictData);
+        return newMap;
+      });
+    } catch {
+      /* Fail silently as conflict data is optional and only used for UI warnings */
+    }
   }
 }

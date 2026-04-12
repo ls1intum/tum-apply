@@ -4,6 +4,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ToastService } from 'app/service/toast-service';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,7 +14,7 @@ import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
-import { ApplicationResourceApi, GetApplicationPagesParams, getApplicationPagesResource } from 'app/generated/api/application-resource-api';
+import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicationOverviewDTO } from 'app/generated/model/application-overview-dto';
 import { ApplicationOverviewDTOApplicationStateEnum } from 'app/generated/model/application-overview-dto';
 
@@ -196,40 +197,29 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private applicantId = signal<string>('');
 
-  private readonly pageNumber = signal<number>(0);
-
-  private readonly applicationPagesParams = computed<GetApplicationPagesParams>(() => ({
-    pageSize: this.pageSize(),
-    pageNumber: this.pageNumber(),
-    sortBy: this.sortBy(),
-    direction: this.sortDirection(),
-  }));
-
-  private readonly applicationPagesResource = getApplicationPagesResource(this.applicationPagesParams);
-
-  private applicationPagesEffect = effect(() => {
-    const page = this.applicationPagesResource.value();
-    if (page) {
-      this.pageData.set(page.content ?? []);
-      this.total.set(page.totalElements ?? 0);
-    }
-    // Update loading state: loading when the resource is loading, not loading otherwise
-    this.loading.set(this.applicationPagesResource.isLoading());
-  });
-
   private initEffect = effect(() => {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
   });
 
-  loadPage(event: TableLazyLoadEvent): void {
+  async loadPage(event: TableLazyLoadEvent): Promise<void> {
     this.lastLazyLoadEvent.set(event);
+    this.loading.set(true);
 
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     const pageIndex = first / rows;
 
-    this.pageSize.set(rows);
-    this.pageNumber.set(pageIndex);
+    try {
+      const page = await firstValueFrom(
+        this.applicationApi.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
+      );
+      this.pageData.set(page.content ?? []);
+      this.total.set(page.totalElements ?? 0);
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   onViewApplication(applicationId: string): void {
@@ -248,7 +238,8 @@ export default class ApplicationOverviewForApplicantComponent {
     this.applicationApi.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });
-        this.applicationPagesResource.reload();
+        const event = this.lastLazyLoadEvent();
+        if (event) void this.loadPage(event);
       },
       error: err => {
         this.toastService.showError({ detail: 'Error deleting the application' });
@@ -261,7 +252,8 @@ export default class ApplicationOverviewForApplicantComponent {
     this.applicationApi.withdrawApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
-        this.applicationPagesResource.reload();
+        const event = this.lastLazyLoadEvent();
+        if (event) void this.loadPage(event);
       },
       error: err => {
         this.toastService.showError({ detail: 'Error withdrawing the application' });

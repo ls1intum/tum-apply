@@ -12,30 +12,32 @@
  * AdminDependencyResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { DependenciesOverviewDTO } from '../model/dependencies-overview-dto';
 
-const BASE_PATH = '';
+@Injectable({ providedIn: 'root' })
+export class AdminDependencyResourceApi {
+    private readonly http = inject(HttpClient);
+    private readonly basePath = '';
 
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getOverviewResource(): HttpResourceRef<DependenciesOverviewDTO | undefined> {
-    return httpResource<DependenciesOverviewDTO>(() => {
-        return `${BASE_PATH}/api/admin/dependencies`;
-    });
+    /**
+     * 
+     * 
+     */
+    getOverview(): Observable<DependenciesOverviewDTO> {
+        const url = `${this.basePath}/api/admin/dependencies`;
+        return this.http.get<DependenciesOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    refresh(): Observable<DependenciesOverviewDTO> {
+        const url = `${this.basePath}/api/admin/dependencies/refresh`;
+        return this.http.get<DependenciesOverviewDTO>(url);
+    }
+
 }
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function refreshResource(): HttpResourceRef<DependenciesOverviewDTO | undefined> {
-    return httpResource<DependenciesOverviewDTO>(() => {
-        return `${BASE_PATH}/api/admin/dependencies/refresh`;
-    });
-}
-

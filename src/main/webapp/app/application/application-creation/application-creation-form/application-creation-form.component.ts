@@ -3,7 +3,7 @@ import { ProgressStepperComponent, StepData } from 'app/shared/components/molecu
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -19,7 +19,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
-import { JobDetailDTO } from 'app/generated/model/job-detail-dto';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
@@ -341,7 +341,6 @@ export default class ApplicationCreationFormComponent {
     return steps;
   });
   private readonly applicationApi = inject(ApplicationResourceApi);
-  private readonly httpClient = inject(HttpClient);
   private readonly accountService = inject(AccountService);
   private readonly authFacade = inject(AuthFacadeService);
   private readonly route = inject(ActivatedRoute);
@@ -350,38 +349,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
-
-  // httpResource for fetching job title in local storage (unauthenticated) mode
-  private readonly jobDetailsResource = httpResource<JobDetailDTO>(() => {
-    const id = this.jobId();
-    return id ? `/api/jobs/detail/${encodeURIComponent(id)}` : undefined;
-  });
-
-  private readonly jobTitleEffect = effect(() => {
-    const jobDetails = this.jobDetailsResource.value();
-    if (jobDetails?.title) {
-      this.title.set(jobDetails.title);
-    }
-  });
-
-  // httpResource for fetching document IDs, only when not using local storage and applicationId is set
-  private readonly documentIdsResource = httpResource<ApplicationDocumentIdsDTO>(() => {
-    const appId = this.applicationId();
-    if (!appId || this.useLocalStorage()) {
-      return undefined;
-    }
-    return `/api/applications/getDocumentIds/${encodeURIComponent(appId)}`;
-  });
-
-  private readonly documentIdsEffect = effect(() => {
-    const ids = this.documentIdsResource.value();
-    if (ids) {
-      this.documentIds.set(ids);
-    }
-    if (this.documentIdsResource.error() && this.applicationId()) {
-      this.toastService.showErrorKey(`${applyflow}.fetchDocumentIdsFailed`);
-    }
-  });
+  private readonly jobApi = inject(JobResourceApi);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -449,15 +417,24 @@ export default class ApplicationCreationFormComponent {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
       this.applicationState.set(ApplicationForApplicantDTOApplicationStateEnum.Saved);
-      // Job title is fetched automatically by jobDetailsResource when jobId signal changes
+
+      // Fetch job title for display
+      firstValueFrom(this.jobApi.getJobDetails(jobId))
+        .then(jobDetails => {
+          if (jobDetails.title) {
+            this.title.set(jobDetails.title);
+          }
+        })
+        .catch(() => {
+          // Silently ignore errors when fetching job title - this is non-critical for the application flow
+        });
     } else {
       this.showInitErrorMessage(`${applyflow}.missingJobIdUnauthenticated`);
     }
   }
 
   async initPageLoadExistingApplication(applicationId: string): Promise<ApplicationForApplicantDTO> {
-    const applicationIdPath = encodeURIComponent(String(applicationId));
-    const application = await firstValueFrom(this.httpClient.get<ApplicationForApplicantDTO>(`/api/applications/${applicationIdPath}`));
+    const application = await firstValueFrom(this.applicationApi.getApplicationById(applicationId));
 
     if (application.applicationState !== ApplicationForApplicantDTOApplicationStateEnum.Saved) {
       this.toastService.showErrorKey(`${applyflow}.notEditable`);
@@ -562,8 +539,11 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    // Trigger a reload of the document IDs resource
-    this.documentIdsResource.reload();
+    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()))
+      .then(ids => {
+        this.documentIds.set(ids);
+      })
+      .catch(() => this.toastService.showErrorKey(`${applyflow}.fetchDocumentIdsFailed`));
   }
 
   onValueChanged(): void {

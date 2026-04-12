@@ -7,7 +7,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
-import { ApplicantResourceApi, getApplicantProfileResource } from 'app/generated/api/applicant-resource-api';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
@@ -111,7 +111,6 @@ export class ApplicationInformationSettingsComponent {
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
   toastService = inject(ToastService);
-  private profileResource = getApplicantProfileResource();
 
   currentLang = toSignal(this.translate.onLangChange);
 
@@ -198,41 +197,41 @@ export class ApplicationInformationSettingsComponent {
   });
 
   constructor() {
-    // Load initial data from backend API via httpResource
-    effect(() => {
-      const profile = this.profileResource.value();
-      if (profile) {
-        this.applyProfile(profile);
-      } else if (this.profileResource.error()) {
-        this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
-      }
-    });
+    // Load initial data from backend API
+    void this.loadApplicationInformation();
   }
 
-  private applyProfile(profile: ApplicantDTO): void {
-    // Map ApplicantDTO to ApplicationInformationData
-    const applicationInformation: ApplicationInformationData = {
-      firstName: profile.user.firstName ?? '',
-      lastName: profile.user.lastName ?? '',
-      email: profile.user.email ?? '',
-      phoneNumber: profile.user.phoneNumber ?? '',
-      gender: profile.user.gender != null ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
-      nationality:
-        profile.user.nationality != null
-          ? { value: profile.user.nationality, name: `nationalities.${profile.user.nationality}` }
-          : undefined,
-      dateOfBirth: profile.user.birthday ?? '',
-      website: profile.user.website ?? '',
-      linkedIn: profile.user.linkedinUrl ?? '',
-      street: profile.street ?? '',
-      city: profile.city ?? '',
-      country: profile.country != null ? { value: profile.country, name: `countries.${profile.country}` } : undefined,
-      postcode: profile.postalCode ?? '',
-    };
+  async loadApplicationInformation(): Promise<void> {
+    try {
+      // Load current applicant profile directly from database (like createApplication does)
+      const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
 
-    this.loadedProfile.set(profile);
-    this.data.set(applicationInformation);
-    this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
+      // Map ApplicantDTO to ApplicationInformationData
+      const applicationInformation: ApplicationInformationData = {
+        firstName: profile.user.firstName ?? '',
+        lastName: profile.user.lastName ?? '',
+        email: profile.user.email ?? '',
+        phoneNumber: profile.user.phoneNumber ?? '',
+        gender: profile.user.gender != null ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
+        nationality:
+          profile.user.nationality != null
+            ? { value: profile.user.nationality, name: `nationalities.${profile.user.nationality}` }
+            : undefined,
+        dateOfBirth: profile.user.birthday ?? '',
+        website: profile.user.website ?? '',
+        linkedIn: profile.user.linkedinUrl ?? '',
+        street: profile.street ?? '',
+        city: profile.city ?? '',
+        country: profile.country != null ? { value: profile.country, name: `countries.${profile.country}` } : undefined,
+        postcode: profile.postalCode ?? '',
+      };
+
+      this.loadedProfile.set(profile);
+      this.data.set(applicationInformation);
+      this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
+    } catch {
+      this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
+    }
   }
 
   setDateOfBirth($event: string | undefined): void {
@@ -296,8 +295,8 @@ export class ApplicationInformationSettingsComponent {
     }
   }
 
-  onCancel(): void {
-    this.profileResource.reload();
+  async onCancel(): Promise<void> {
+    await this.loadApplicationInformation();
   }
 
   private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {

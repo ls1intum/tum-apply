@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { ApplicantResourceApi, getSubjectAreaSubscriptionsResource } from 'app/generated/api/applicant-resource-api';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { JobCardDTOSubjectAreaEnum } from 'app/generated/model/job-card-dto';
 import { ToastService } from 'app/service/toast-service';
 import * as DropDownOptions from 'app/job/dropdown-options';
@@ -46,7 +46,6 @@ export class SubjectAreaSubscriptionsStore {
 
   private readonly applicantApi = inject(ApplicantResourceApi);
   private readonly toastService = inject(ToastService);
-  private readonly subscriptionsResource = getSubjectAreaSubscriptionsResource();
 
   /**
    * Loads the persisted subscriptions for the current applicant.
@@ -54,31 +53,13 @@ export class SubjectAreaSubscriptionsStore {
    * On failure, the store is reset so the UI does not keep stale values.
    */
   async load(): Promise<void> {
-    this.subscriptionsResource.reload();
-
-    // Wait for the resource to finish loading
-    return new Promise<void>(resolve => {
-      const check = (): void => {
-        if (this.subscriptionsResource.isLoading()) {
-          setTimeout(check, 50);
-          return;
-        }
-        const error = this.subscriptionsResource.error();
-        if (error) {
-          this.reset();
-          this.toastService.showErrorKey('settings.notifications.applicant.subjectAreas.loadFailed');
-          resolve();
-          return;
-        }
-        const subscriptions = this.subscriptionsResource.value();
-        if (subscriptions !== undefined) {
-          this.selected.set(this.sortSubjectAreas(subscriptions as SubjectArea[]));
-        }
-        resolve();
-      };
-      // Start checking after a microtask to allow reload to begin
-      setTimeout(check, 0);
-    });
+    try {
+      const subscriptions = await firstValueFrom(this.applicantApi.getSubjectAreaSubscriptions());
+      this.selected.set(this.sortSubjectAreas(subscriptions as SubjectArea[]));
+    } catch {
+      this.reset();
+      this.toastService.showErrorKey('settings.notifications.applicant.subjectAreas.loadFailed');
+    }
   }
 
   /** Clears the currently selected subject areas. */

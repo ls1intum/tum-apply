@@ -11,7 +11,7 @@ import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/compo
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApi, GetTemplatesParams, getTemplatesResource } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
 import { EmailTemplateOverviewDTO } from '../../../generated/model/email-template-overview-dto';
 import { AccountService } from '../../../core/auth/account.service';
 
@@ -24,15 +24,7 @@ import { AccountService } from '../../../core/auth/account.service';
 export class ResearchGroupTemplates {
   protected pageNumber = signal<number>(0);
   protected pageSize = signal<number>(10);
-
-  private readonly templatesParams = computed<GetTemplatesParams>(() => ({
-    pageSize: this.pageSize(),
-    pageNumber: this.pageNumber(),
-  }));
-
-  private readonly templatesResource = getTemplatesResource(this.templatesParams);
-
-  protected total = computed<number>(() => this.templatesResource.value()?.totalElements ?? 0);
+  protected total = signal<number>(0);
 
   protected readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   protected readonly toastService = inject(ToastService);
@@ -84,12 +76,18 @@ export class ResearchGroupTemplates {
     });
   });
 
-  private readonly responseData = computed<EmailTemplateOverviewDTO[]>(() => this.templatesResource.value()?.content ?? []);
+  private readonly responseData = signal<EmailTemplateOverviewDTO[]>([]);
+
+  constructor() {
+    void this.loadPage();
+  }
 
   onTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
+
+    void this.loadPage();
   }
 
   async delete(templateId: string): Promise<void> {
@@ -99,7 +97,7 @@ export class ResearchGroupTemplates {
     } catch {
       this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.deleteFailed`) });
     } finally {
-      this.templatesResource.reload();
+      void this.loadPage();
     }
   }
 
@@ -109,5 +107,16 @@ export class ResearchGroupTemplates {
 
   protected navigateToEdit(templateId: string): void {
     void this.router.navigate(['/research-group/template', templateId, 'edit']);
+  }
+
+  private async loadPage(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageSize(), this.pageNumber()));
+
+      this.responseData.set(res.content ?? []);
+      this.total.set(res.totalElements ?? 0);
+    } catch {
+      this.toastService.showError({ detail: 'Failed to load templates' });
+    }
   }
 }

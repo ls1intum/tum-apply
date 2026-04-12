@@ -1,6 +1,7 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
-import { GetAvailableJobsParams, getAvailableJobsResource } from 'app/generated/api/job-resource-api';
+import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { JobCardDTO } from 'app/generated/model/job-card-dto';
 import { ToastService } from 'app/service/toast-service';
 import { Router } from '@angular/router';
@@ -14,6 +15,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
   templateUrl: './jobs-preview-section.component.html',
 })
 export class JobsPreviewSectionComponent {
+  readonly jobApi = inject(JobResourceApi);
   readonly toastService = inject(ToastService);
   readonly router = inject(Router);
 
@@ -22,24 +24,20 @@ export class JobsPreviewSectionComponent {
 
   readonly hasJobs = computed(() => this.jobs().length > 0);
 
-  private jobsParams = signal<GetAvailableJobsParams>({
-    pageSize: 4,
-    pageNumber: 0,
-    sortBy: 'startDate',
-    direction: 'DESC',
-  });
-  private jobsResource = getAvailableJobsResource(this.jobsParams);
-
   constructor() {
-    effect(() => {
-      const response = this.jobsResource.value();
-      if (response) {
-        this.jobs.set(response.content ?? []);
-      } else if (this.jobsResource.error()) {
-        this.jobs.set([]);
-        this.toastService.showErrorKey('landingPage.jobsPreview.loadFailed');
-      }
-    });
+    void this.loadJobs();
+  }
+
+  async loadJobs(): Promise<void> {
+    try {
+      const jobs = await firstValueFrom(
+        this.jobApi.getAvailableJobs(this.pageSize(), 0, undefined, undefined, undefined, 'startDate', 'DESC'),
+      );
+      this.jobs.set(jobs.content ?? []);
+    } catch {
+      this.jobs.set([]);
+      this.toastService.showErrorKey('landingPage.jobsPreview.loadFailed');
+    }
   }
 
   // Rotate through bundled banner images when a job has no dedicated header image.

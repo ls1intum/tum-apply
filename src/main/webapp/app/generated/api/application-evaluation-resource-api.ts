@@ -12,11 +12,9 @@
  * ApplicationEvaluationResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { AcceptDTO } from '../model/accept-dto';
 import { ApplicationEvaluationDetailListDTO } from '../model/application-evaluation-detail-list-dto';
 import { ApplicationEvaluationOverviewListDTO } from '../model/application-evaluation-overview-list-dto';
@@ -44,6 +42,143 @@ export class ApplicationEvaluationResourceApi {
      * 
      * @param applicationId 
      */
+    downloadAll(applicationId: string): Observable<HttpResponse<Blob>> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/documents-download`;
+        return this.http.get(url, { responseType: 'blob', observe: 'response' });
+    }
+
+    /**
+     * 
+     * 
+     */
+    getAllJobNames(): Observable<Array<string>> {
+        const url = `${this.basePath}/api/evaluation/job-names`;
+        return this.http.get<Array<string>>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param offset 
+     * @param limit 
+     * @param sortBy 
+     * @param direction 
+     * @param status 
+     * @param job 
+     * @param search 
+     */
+    getApplicationsDetails(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
+        const queryParams = new URLSearchParams();
+        if (offset !== undefined && offset !== null) {
+            queryParams.set('offset', String(offset));
+        }
+        if (limit !== undefined && limit !== null) {
+            queryParams.set('limit', String(limit));
+        }
+        if (sortBy !== undefined && sortBy !== null) {
+            queryParams.set('sortBy', String(sortBy));
+        }
+        if (direction !== undefined && direction !== null) {
+            queryParams.set('direction', String(direction));
+        }
+        if (status !== undefined && status !== null) {
+            status.forEach(item => queryParams.append('status', String(item)));
+        }
+        if (job !== undefined && job !== null) {
+            job.forEach(item => queryParams.append('job', String(item)));
+        }
+        if (search !== undefined && search !== null) {
+            queryParams.set('search', String(search));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/evaluation/application-details${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<ApplicationEvaluationDetailListDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     * @param windowSize 
+     * @param sortBy 
+     * @param direction 
+     * @param status 
+     * @param job 
+     * @param search 
+     */
+    getApplicationsDetailsWindow(applicationId: string, windowSize: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationDetailListDTO> {
+        const queryParams = new URLSearchParams();
+        if (applicationId !== undefined && applicationId !== null) {
+            queryParams.set('applicationId', String(applicationId));
+        }
+        if (windowSize !== undefined && windowSize !== null) {
+            queryParams.set('windowSize', String(windowSize));
+        }
+        if (sortBy !== undefined && sortBy !== null) {
+            queryParams.set('sortBy', String(sortBy));
+        }
+        if (direction !== undefined && direction !== null) {
+            queryParams.set('direction', String(direction));
+        }
+        if (status !== undefined && status !== null) {
+            status.forEach(item => queryParams.append('status', String(item)));
+        }
+        if (job !== undefined && job !== null) {
+            job.forEach(item => queryParams.append('job', String(item)));
+        }
+        if (search !== undefined && search !== null) {
+            queryParams.set('search', String(search));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/evaluation/application-details/window${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<ApplicationEvaluationDetailListDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param offset 
+     * @param limit 
+     * @param sortBy 
+     * @param direction 
+     * @param status 
+     * @param job 
+     * @param search 
+     */
+    getApplicationsOverviews(offset?: number, limit?: number, sortBy?: string, direction?: 'ASC' | 'DESC', status?: Array<string>, job?: Array<string>, search?: string): Observable<ApplicationEvaluationOverviewListDTO> {
+        const queryParams = new URLSearchParams();
+        if (offset !== undefined && offset !== null) {
+            queryParams.set('offset', String(offset));
+        }
+        if (limit !== undefined && limit !== null) {
+            queryParams.set('limit', String(limit));
+        }
+        if (sortBy !== undefined && sortBy !== null) {
+            queryParams.set('sortBy', String(sortBy));
+        }
+        if (direction !== undefined && direction !== null) {
+            queryParams.set('direction', String(direction));
+        }
+        if (status !== undefined && status !== null) {
+            status.forEach(item => queryParams.append('status', String(item)));
+        }
+        if (job !== undefined && job !== null) {
+            job.forEach(item => queryParams.append('job', String(item)));
+        }
+        if (search !== undefined && search !== null) {
+            queryParams.set('search', String(search));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/evaluation/applications${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<ApplicationEvaluationOverviewListDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
     markApplicationAsInReview(applicationId: string): Observable<void> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/evaluation/applications/${applicationIdPath}/open`;
@@ -63,178 +198,3 @@ export class ApplicationEvaluationResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param applicationId 
- */
-export function downloadAllResource(applicationId: Signal<string> | string): HttpResourceRef<Blob | undefined> {
-    return httpResource<Blob>(() => {
-        const applicationIdValue = typeof applicationId === 'function' ? applicationId() : applicationId;
-        const applicationIdPath = encodeURIComponent(String(applicationIdValue));
-        return `${BASE_PATH}/api/evaluation/applications/${applicationIdPath}/documents-download`;
-    });
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getAllJobNamesResource(): HttpResourceRef<Array<string> | undefined> {
-    return httpResource<Array<string>>(() => {
-        return `${BASE_PATH}/api/evaluation/job-names`;
-    });
-}
-
-/**
- * Query parameters for getApplicationsDetails
- */
-export interface GetApplicationsDetailsParams {
-    offset?: number;
-    limit?: number;
-    sortBy?: string;
-    direction?: 'ASC' | 'DESC';
-    status?: Array<string>;
-    job?: Array<string>;
-    search?: string;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getApplicationsDetailsResource(params?: Signal<GetApplicationsDetailsParams>): HttpResourceRef<ApplicationEvaluationDetailListDTO | undefined> {
-    return httpResource<ApplicationEvaluationDetailListDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.offset !== undefined && queryParams.offset !== null) {
-            searchParams.set('offset', String(queryParams.offset));
-        }
-        if (queryParams.limit !== undefined && queryParams.limit !== null) {
-            searchParams.set('limit', String(queryParams.limit));
-        }
-        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
-            searchParams.set('sortBy', String(queryParams.sortBy));
-        }
-        if (queryParams.direction !== undefined && queryParams.direction !== null) {
-            searchParams.set('direction', String(queryParams.direction));
-        }
-        if (queryParams.status?.length) {
-            queryParams.status.forEach(value => searchParams.append('status', String(value)));
-        }
-        if (queryParams.job?.length) {
-            queryParams.job.forEach(value => searchParams.append('job', String(value)));
-        }
-        if (queryParams.search !== undefined && queryParams.search !== null) {
-            searchParams.set('search', String(queryParams.search));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/evaluation/application-details${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * Query parameters for getApplicationsDetailsWindow
- */
-export interface GetApplicationsDetailsWindowParams {
-    applicationId: string;
-    windowSize: number;
-    sortBy?: string;
-    direction?: 'ASC' | 'DESC';
-    status?: Array<string>;
-    job?: Array<string>;
-    search?: string;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getApplicationsDetailsWindowResource(params: Signal<GetApplicationsDetailsWindowParams>): HttpResourceRef<ApplicationEvaluationDetailListDTO | undefined> {
-    return httpResource<ApplicationEvaluationDetailListDTO>(() => {
-        const queryParams = params();
-        const searchParams = new URLSearchParams();
-        if (queryParams.applicationId !== undefined && queryParams.applicationId !== null) {
-            searchParams.set('applicationId', String(queryParams.applicationId));
-        }
-        if (queryParams.windowSize !== undefined && queryParams.windowSize !== null) {
-            searchParams.set('windowSize', String(queryParams.windowSize));
-        }
-        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
-            searchParams.set('sortBy', String(queryParams.sortBy));
-        }
-        if (queryParams.direction !== undefined && queryParams.direction !== null) {
-            searchParams.set('direction', String(queryParams.direction));
-        }
-        if (queryParams.status?.length) {
-            queryParams.status.forEach(value => searchParams.append('status', String(value)));
-        }
-        if (queryParams.job?.length) {
-            queryParams.job.forEach(value => searchParams.append('job', String(value)));
-        }
-        if (queryParams.search !== undefined && queryParams.search !== null) {
-            searchParams.set('search', String(queryParams.search));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/evaluation/application-details/window${query ? `?${query}` : ''}`;
-    });
-}
-
-/**
- * Query parameters for getApplicationsOverviews
- */
-export interface GetApplicationsOverviewsParams {
-    offset?: number;
-    limit?: number;
-    sortBy?: string;
-    direction?: 'ASC' | 'DESC';
-    status?: Array<string>;
-    job?: Array<string>;
-    search?: string;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getApplicationsOverviewsResource(params?: Signal<GetApplicationsOverviewsParams>): HttpResourceRef<ApplicationEvaluationOverviewListDTO | undefined> {
-    return httpResource<ApplicationEvaluationOverviewListDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.offset !== undefined && queryParams.offset !== null) {
-            searchParams.set('offset', String(queryParams.offset));
-        }
-        if (queryParams.limit !== undefined && queryParams.limit !== null) {
-            searchParams.set('limit', String(queryParams.limit));
-        }
-        if (queryParams.sortBy !== undefined && queryParams.sortBy !== null) {
-            searchParams.set('sortBy', String(queryParams.sortBy));
-        }
-        if (queryParams.direction !== undefined && queryParams.direction !== null) {
-            searchParams.set('direction', String(queryParams.direction));
-        }
-        if (queryParams.status?.length) {
-            queryParams.status.forEach(value => searchParams.append('status', String(value)));
-        }
-        if (queryParams.job?.length) {
-            queryParams.job.forEach(value => searchParams.append('job', String(value)));
-        }
-        if (queryParams.search !== undefined && queryParams.search !== null) {
-            searchParams.set('search', String(queryParams.search));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/evaluation/applications${query ? `?${query}` : ''}`;
-    });
-}
-

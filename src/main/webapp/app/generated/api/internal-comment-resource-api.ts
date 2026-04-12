@@ -15,8 +15,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { InternalCommentDTO } from '../model/internal-comment-dto';
 import { InternalCommentUpdateDTO } from '../model/internal-comment-update-dto';
 
@@ -51,6 +49,17 @@ export class InternalCommentResourceApi {
     /**
      * 
      * 
+     * @param applicationId 
+     */
+    listComments(applicationId: string): Observable<Array<InternalCommentDTO>> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/comments`;
+        return this.http.get<Array<InternalCommentDTO>>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param commentId 
      * @param internalCommentUpdateDTO 
      */
@@ -61,20 +70,3 @@ export class InternalCommentResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param applicationId 
- */
-export function listCommentsResource(applicationId: Signal<string> | string): HttpResourceRef<Array<InternalCommentDTO> | undefined> {
-    return httpResource<Array<InternalCommentDTO>>(() => {
-        const applicationIdValue = typeof applicationId === 'function' ? applicationId() : applicationId;
-        const applicationIdPath = encodeURIComponent(String(applicationIdValue));
-        return `${BASE_PATH}/api/applications/${applicationIdPath}/comments`;
-    });
-}
-

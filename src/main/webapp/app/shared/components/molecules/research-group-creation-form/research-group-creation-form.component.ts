@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -7,13 +7,9 @@ import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resou
 import { ResearchGroupRequestDTO } from 'app/generated/model/research-group-request-dto';
 import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
 import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-resource-api';
-import { getAllSchoolsResource } from 'app/generated/api/school-resource-api';
-import { getDepartmentsResource } from 'app/generated/api/department-resource-api';
-import {
-  GetAvailableUsersForResearchGroupParams,
-  getAvailableUsersForResearchGroupResource,
-  getCurrentUserResource,
-} from 'app/generated/api/user-resource-api';
+import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
+import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { firstValueFrom } from 'rxjs';
@@ -150,85 +146,31 @@ export class ResearchGroupCreationFormComponent {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly researchGroupApi = inject(ResearchGroupResourceApi);
   private readonly profOnboardingApi = inject(ProfOnboardingResourceApi);
+  private readonly schoolApi = inject(SchoolResourceApi);
+  private readonly departmentApi = inject(DepartmentResourceApi);
+  private readonly userApi = inject(UserResourceApi);
   private readonly toastService = inject(ToastService);
   private readonly ADMIN_LOADER_DELAY_MS = 250;
   private adminLoaderTimeout: number | undefined = undefined;
   private latestAdminSearchRequestId = 0;
 
-  // httpResource for schools and departments
-  private schoolsResource = getAllSchoolsResource();
-  private departmentsResource = getDepartmentsResource();
-  private currentUserResource = getCurrentUserResource();
-
-  // httpResource for admin professor search
-  private adminSearchParams = signal<GetAvailableUsersForResearchGroupParams>({ pageSize: 25, pageNumber: 0, searchQuery: '' });
-  private adminSearchResource = getAvailableUsersForResearchGroupResource(this.adminSearchParams);
-  private adminSearchAppend = signal(false);
-
   constructor() {
     this.form = this.createForm();
+    void this.prefillProfessorData();
+    void this.loadSchoolsAndDepartments();
+  }
 
-    // Load schools and departments via resource effects
-    effect(() => {
-      const schoolsData = this.schoolsResource.value();
-      if (schoolsData) {
-        this.schools.set(schoolsData);
-      } else if (this.schoolsResource.error()) {
-        this.toastService.showErrorKey('onboarding.professorRequest.loadDataFailed');
-      }
-    });
-
-    effect(() => {
-      const departmentsData = this.departmentsResource.value();
-      if (departmentsData) {
-        this.departments.set(departmentsData);
-      } else if (this.departmentsResource.error()) {
-        this.toastService.showErrorKey('onboarding.professorRequest.loadDataFailed');
-      }
-    });
-
-    // Prefill professor data via resource effect
-    if (this.mode() === 'professor') {
-      effect(() => {
-        const currentUser = this.currentUserResource.value();
-        if (currentUser) {
-          const firstName = this.normalizePrefillValue(currentUser.firstName);
-          const lastName = this.normalizePrefillValue(currentUser.lastName);
-          const email = this.normalizePrefillValue(currentUser.email);
-          const universityId = this.normalizePrefillValue(currentUser.universityId);
-          const fullName = formatFullName(firstName, lastName);
-
-          this.setControlValueIfEmpty('firstName', firstName);
-          this.setControlValueIfEmpty('lastName', lastName);
-          this.setControlValueIfEmpty('tumID', universityId);
-          this.setControlValueIfEmpty('researchGroupHead', fullName);
-          this.setControlValueIfEmpty('researchGroupContactEmail', email);
-        }
-      });
+  async loadSchoolsAndDepartments(): Promise<void> {
+    try {
+      const [schools, departments] = await Promise.all([
+        firstValueFrom(this.schoolApi.getAllSchools()),
+        firstValueFrom(this.departmentApi.getDepartments()),
+      ]);
+      this.schools.set(schools);
+      this.departments.set(departments);
+    } catch {
+      this.toastService.showErrorKey('onboarding.professorRequest.loadDataFailed');
     }
-
-    // Admin search result effect
-    effect(() => {
-      const response = this.adminSearchResource.value();
-
-      if (response) {
-        const pageContent = response.content ?? [];
-        const nextCandidates = this.adminSearchAppend() ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
-
-        this.adminProfessorCandidates.set(nextCandidates);
-        this.adminProfessorTotalCount.set(response.totalElements ?? nextCandidates.length);
-        this.adminProfessorCurrentPage.set(this.adminSearchParams().pageNumber ?? 0);
-
-        clearTimeout(this.adminLoaderTimeout);
-        this.adminLoaderTimeout = undefined;
-        this.isLoadingAdminUsers.set(false);
-      } else if (this.adminSearchResource.error()) {
-        this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
-        clearTimeout(this.adminLoaderTimeout);
-        this.adminLoaderTimeout = undefined;
-        this.isLoadingAdminUsers.set(false);
-      }
-    });
   }
 
   onSchoolChange(option: SelectOption): void {
@@ -275,12 +217,12 @@ export class ResearchGroupCreationFormComponent {
     this.ref?.close();
   }
 
-  onAdminProfessorSearch(searchQuery: string): void {
+  async onAdminProfessorSearch(searchQuery: string): Promise<void> {
     if (this.mode() !== 'admin') {
       return;
     }
 
-    ++this.latestAdminSearchRequestId;
+    const requestId = ++this.latestAdminSearchRequestId;
 
     this.adminProfessorSearchQuery.set(searchQuery);
     const trimmedQuery = searchQuery.trim();
@@ -298,10 +240,10 @@ export class ResearchGroupCreationFormComponent {
       return;
     }
 
-    this.loadAdminProfessorPage(trimmedQuery, 0, false);
+    await this.loadAdminProfessorPage(trimmedQuery, 0, false, requestId);
   }
 
-  onLoadMoreAdminProfessors(): void {
+  async onLoadMoreAdminProfessors(): Promise<void> {
     if (this.mode() !== 'admin' || this.isLoadingAdminUsers() || !this.hasMoreAdminProfessorCandidates()) {
       return;
     }
@@ -311,9 +253,9 @@ export class ResearchGroupCreationFormComponent {
       return;
     }
 
-    ++this.latestAdminSearchRequestId;
+    const requestId = ++this.latestAdminSearchRequestId;
     const nextPage = this.adminProfessorCurrentPage() + 1;
-    this.loadAdminProfessorPage(trimmedQuery, nextPage, true);
+    await this.loadAdminProfessorPage(trimmedQuery, nextPage, true, requestId);
   }
 
   selectAdminProfessor(user: KeycloakUserDTO): void {
@@ -325,21 +267,39 @@ export class ResearchGroupCreationFormComponent {
   clearSelectedAdminProfessor(): void {
     this.selectedAdminProfessor.set(undefined);
     this.form.patchValue({ tumID: '' });
-    this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
+    void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
   }
 
-  private loadAdminProfessorPage(searchQuery: string, page: number, append: boolean): void {
+  private async loadAdminProfessorPage(searchQuery: string, page: number, append: boolean, requestId: number): Promise<void> {
     this.adminLoaderTimeout = window.setTimeout(() => {
-      this.isLoadingAdminUsers.set(true);
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.isLoadingAdminUsers.set(true);
+      }
     }, this.ADMIN_LOADER_DELAY_MS);
 
-    this.adminSearchAppend.set(append);
-    this.adminSearchParams.set({
-      pageSize: this.ADMIN_USERS_PAGE_SIZE,
-      pageNumber: page,
-      searchQuery,
-    });
-    this.adminSearchResource.reload();
+    try {
+      const response = await firstValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.ADMIN_USERS_PAGE_SIZE, page, searchQuery));
+      if (requestId !== this.latestAdminSearchRequestId) {
+        return;
+      }
+
+      const pageContent = response.content ?? [];
+      const nextCandidates = append ? this.adminProfessorCandidates().concat(pageContent) : pageContent;
+
+      this.adminProfessorCandidates.set(nextCandidates);
+      this.adminProfessorTotalCount.set(response.totalElements ?? nextCandidates.length);
+      this.adminProfessorCurrentPage.set(page);
+    } catch {
+      if (requestId === this.latestAdminSearchRequestId) {
+        this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+      }
+    } finally {
+      if (requestId === this.latestAdminSearchRequestId) {
+        clearTimeout(this.adminLoaderTimeout);
+        this.adminLoaderTimeout = undefined;
+        this.isLoadingAdminUsers.set(false);
+      }
+    }
   }
 
   private createForm(): FormGroup {
@@ -446,6 +406,29 @@ export class ResearchGroupCreationFormComponent {
       postalCode: s(v.researchGroupPostalCode),
       city: s(v.researchGroupCity),
     };
+  }
+
+  private async prefillProfessorData(): Promise<void> {
+    if (this.mode() !== 'professor') {
+      return;
+    }
+
+    try {
+      const currentUser = await firstValueFrom(this.userApi.getCurrentUser());
+      const firstName = this.normalizePrefillValue(currentUser.firstName);
+      const lastName = this.normalizePrefillValue(currentUser.lastName);
+      const email = this.normalizePrefillValue(currentUser.email);
+      const universityId = this.normalizePrefillValue(currentUser.universityId);
+      const fullName = formatFullName(firstName, lastName);
+
+      this.setControlValueIfEmpty('firstName', firstName);
+      this.setControlValueIfEmpty('lastName', lastName);
+      this.setControlValueIfEmpty('tumID', universityId);
+      this.setControlValueIfEmpty('researchGroupHead', fullName);
+      this.setControlValueIfEmpty('researchGroupContactEmail', email);
+    } catch {
+      // If fetching user data fails, we simply don't prefill the form. No need to show an error message.
+    }
   }
 
   private normalizePrefillValue(value: unknown): string {

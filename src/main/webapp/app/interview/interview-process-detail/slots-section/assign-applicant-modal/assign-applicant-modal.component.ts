@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { InterviewResourceApi, getIntervieweesByProcessIdResource } from 'app/generated/api/interview-resource-api';
+import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { IntervieweeDTO } from 'app/generated/model/interviewee-dto';
 import { IntervieweeDTOStateEnum } from 'app/generated/model/interviewee-dto';
@@ -46,11 +46,8 @@ export class AssignApplicantModalComponent {
   visibleChange = output<boolean>();
   applicantAssigned = output<InterviewSlotDTO | undefined>();
 
-  // Resource
-  private readonly intervieweesResource = getIntervieweesByProcessIdResource(this.processId);
-
   // Signals
-  interviewees = computed<IntervieweeDTO[]>(() => this.intervieweesResource.value() ?? []);
+  interviewees = signal<IntervieweeDTO[]>([]);
   selectedApplicantId = signal<string | null>(null);
 
   // Filters out already scheduled and completed interviewees (UNCONTACTED + INVITED are assignable)
@@ -83,11 +80,11 @@ export class AssignApplicantModalComponent {
   private readonly translateService = inject(TranslateService);
 
   // Effects
-  // Reloads interviewees when modal becomes visible or refreshKey changes
+  // Fetches interviewees when modal becomes visible or refreshKey changes
   private readonly loadEffect = effect(() => {
     this.refreshKey(); // Track refreshKey to trigger reload
     if (this.visible()) {
-      this.intervieweesResource.reload();
+      void this.fetchInterviewees();
     }
   });
 
@@ -168,8 +165,20 @@ export class AssignApplicantModalComponent {
     this.onVisibleChange(false);
   }
 
-  // Clears selection
+  // Fetches all interviewees for the current interview process
+  private async fetchInterviewees(): Promise<void> {
+    try {
+      const processId = this.processId();
+      const data = await firstValueFrom(this.interviewApi.getIntervieweesByProcessId(processId));
+      this.interviewees.set(data);
+    } catch {
+      this.toastService.showErrorKey('interview.assign.error.loadFailed');
+    }
+  }
+
+  // Clears selection and interviewees list
   private resetState(): void {
     this.selectedApplicantId.set(null);
+    this.interviewees.set([]);
   }
 }

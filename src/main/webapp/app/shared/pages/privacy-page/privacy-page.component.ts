@@ -1,10 +1,10 @@
-import { Component, DestroyRef, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
-import { UserDataExportResourceApi, getDataExportStatusResource } from 'app/generated/api/user-data-export-resource-api';
+import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
 import { DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { AccountService } from 'app/core/auth/account.service';
@@ -51,16 +51,8 @@ export class PrivacyPageComponent {
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
-  private statusResource = getDataExportStatusResource();
-
   constructor() {
-    effect(() => {
-      const status = this.statusResource.value();
-      if (status) {
-        this.currentExportStatus.set(status.status as ExportStatus);
-        this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
-      }
-    });
+    void this.refreshStatus();
 
     this.translateService.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => this.currentLang.set(event.lang));
   }
@@ -79,7 +71,7 @@ export class PrivacyPageComponent {
 
     try {
       await firstValueFrom(this.userDataExportApi.requestDataExport());
-      this.statusResource.reload();
+      await this.refreshStatus();
       this.toastService.showInfoKey('privacy.export.requested');
     } catch (error) {
       this.currentExportStatus.set(undefined);
@@ -97,6 +89,19 @@ export class PrivacyPageComponent {
       } else {
         this.toastService.showErrorKey('privacy.export.requestFailed');
       }
+    }
+  }
+
+  private async refreshStatus(): Promise<void> {
+    if (!this.accountService.signedIn()) {
+      return;
+    }
+    try {
+      const status = await firstValueFrom(this.userDataExportApi.getDataExportStatus());
+      this.currentExportStatus.set(status.status as ExportStatus);
+      this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
+    } catch {
+      // ignore status fetch errors
     }
   }
 }

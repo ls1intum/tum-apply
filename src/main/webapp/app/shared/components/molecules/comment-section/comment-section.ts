@@ -1,9 +1,9 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { Comment } from 'app/shared/components/molecules/comment/comment';
-import { InternalCommentResourceApi, listCommentsResource } from 'app/generated/api/internal-comment-resource-api';
+import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
 import { InternalCommentDTO } from 'app/generated/model/internal-comment-dto';
 
 import TranslateDirective from '../../../language/translate.directive';
@@ -25,23 +25,28 @@ export class CommentSection {
   protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
 
-  private safeApplicationId = computed(() => this.applicationId() ?? '');
-  private commentsResource = listCommentsResource(this.safeApplicationId);
-
   protected _loadCommentsEffect = effect(() => {
     const id = this.applicationId();
     this.createDraft.set('');
     if (id !== undefined) {
-      const data = this.commentsResource.value();
-      if (data) {
-        this.comments.set(data);
-      } else if (this.commentsResource.error()) {
-        this.toast.showError({ summary: 'Error', detail: 'Failed to load comments' });
-      }
+      void this.loadComments();
     } else {
       this.comments.set([]);
     }
   });
+
+  async loadComments(): Promise<void> {
+    const id = this.applicationId();
+    if (id === undefined) {
+      return;
+    }
+    try {
+      const data = await firstValueFrom(this.commentApi.listComments(id));
+      this.comments.set(data);
+    } catch {
+      this.toast.showError({ summary: 'Error', detail: 'Failed to load comments' });
+    }
+  }
 
   async createComment(message: string): Promise<void> {
     const id = this.applicationId();
@@ -80,7 +85,7 @@ export class CommentSection {
     }
   }
 
-  refresh(): void {
-    this.commentsResource.reload();
+  async refresh(): Promise<void> {
+    await this.loadComments();
   }
 }

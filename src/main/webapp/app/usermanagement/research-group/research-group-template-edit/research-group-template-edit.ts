@@ -17,7 +17,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
-import { EmailTemplateResourceApi, getTemplateResource } from '../../../generated/api/email-template-resource-api';
+import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
 import { EmailTemplateDTO } from '../../../generated/model/email-template-dto';
 import { AccountService } from '../../../core/auth/account.service';
 
@@ -61,10 +61,6 @@ export class ResearchGroupTemplateEdit {
 
   readonly currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
   readonly templateId = computed(() => this.paramMapSignal().get('templateId') ?? undefined);
-
-  // Signal-based resource for loading template; uses empty string when no templateId to avoid fetching
-  private readonly templateIdForResource = computed(() => this.templateId() ?? '');
-  private readonly templateResource = getTemplateResource(this.templateIdForResource);
 
   // === Form State ===
   readonly formModel = signal<EmailTemplateDTO>({
@@ -178,24 +174,9 @@ export class ResearchGroupTemplateEdit {
 
   readonly loadEffect = effect(() => {
     const templateId = this.templateId();
-    if (templateId == null) {
-      return;
+    if (templateId != null) {
+      void this.load(templateId);
     }
-    const res = this.templateResource.value();
-    if (res == null) {
-      return;
-    }
-    const safeTemplate: EmailTemplateDTO = {
-      ...res,
-      english: res.english ?? { subject: '', body: '' },
-      german: res.german ?? { subject: '', body: '' },
-    };
-
-    const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
-    this.skipNextAutosave = true;
-    this.formModel.set(translatedTemplate);
-    this.lastSavedSnapshot.set(translatedTemplate);
-    this.savingState.set('SAVED');
   });
 
   readonly translateVariablesEffect = effect(() => {
@@ -369,6 +350,28 @@ export class ResearchGroupTemplateEdit {
       } else {
         this.toastService.showError({ detail: 'Autosave failed' });
       }
+    }
+  }
+
+  // Load and sanitize template data from server
+  private async load(templateId: string): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplate(templateId));
+      const safeTemplate: EmailTemplateDTO = {
+        ...res,
+        english: res.english ?? { subject: '', body: '' },
+        german: res.german ?? { subject: '', body: '' },
+      };
+
+      const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
+      this.skipNextAutosave = true; // prevent sending update request after loading
+      this.formModel.set(translatedTemplate);
+      this.lastSavedSnapshot.set(translatedTemplate);
+      this.savingState.set('SAVED');
+    } catch {
+      this.toastService.showError({
+        detail: 'Failed to load template',
+      });
     }
   }
 }

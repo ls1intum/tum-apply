@@ -12,17 +12,22 @@
  * PublicConfigResourceApi - API service
  * @generated from OpenAPI specification
  */
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-const BASE_PATH = '';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function configResource(): HttpResourceRef<{ [key: string]: any; } | undefined> {
-    return httpResource<{ [key: string]: any; }>(() => {
-        return `${BASE_PATH}/api/public/config`;
-    });
+@Injectable({ providedIn: 'root' })
+export class PublicConfigResourceApi {
+    private readonly http = inject(HttpClient);
+    private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     */
+    config(): Observable<{ [key: string]: any; }> {
+        const url = `${this.basePath}/api/public/config`;
+        return this.http.get<{ [key: string]: any; }>(url);
+    }
+
 }
-

@@ -5,11 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
-import {
-  GetBookingDataParams,
-  InterviewBookingResourceApi,
-  getBookingDataResource,
-} from 'app/generated/api/interview-booking-resource-api';
+import { InterviewBookingResourceApi } from 'app/generated/api/interview-booking-resource-api';
 import { BookingDTO } from 'app/generated/model/booking-dto';
 import { InterviewSlotDTO } from 'app/generated/model/interview-slot-dto';
 import { ToastService } from 'app/service/toast-service';
@@ -44,15 +40,8 @@ export class InterviewBookingComponent {
   // Constants
   readonly MAX_VISIBLE_SLOTS = 8;
 
-  // Route param
-  private readonly routeProcessId = signal<string>('');
-
-  // Resource params - initially no year/month for auto-detection
-  private readonly bookingParams = signal<GetBookingDataParams>({ page: 0, size: 100 });
-  private readonly bookingResource = getBookingDataResource(this.routeProcessId, this.bookingParams);
-
-  bookingData = computed<BookingDTO | null>(() => this.bookingResource.value() ?? null);
-  loading = computed(() => this.bookingResource.isLoading());
+  bookingData = signal<BookingDTO | null>(null);
+  loading = signal(true);
   error = signal(false);
   isClosed = signal(false);
   selectedSlot = signal<InterviewSlotDTO | null>(null);
@@ -174,42 +163,16 @@ export class InterviewBookingComponent {
     }
   });
 
-  // Effect: React to resource errors (detect 403 for closed state)
-  private readonly resourceErrorEffect = effect(() => {
-    const err = this.bookingResource.error();
-    if (err != null) {
-      const httpError = err as { status?: number };
-      if (httpError.status === 403) {
-        this.isClosed.set(true);
-      } else {
-        this.error.set(true);
-      }
-    }
-  });
-
-  // Effect: Auto-select first available month on initial load
-  private readonly initDataEffect = effect(() => {
-    const data = this.bookingResource.value();
-    if (data && !this.initialized()) {
-      const slots = data.availableSlots;
-      if (slots && slots.length > 0 && slots[0].startDateTime !== undefined && slots[0].startDateTime !== '') {
-        const firstSlotDate = dayjs(slots[0].startDateTime);
-        const now = dayjs();
-        const offset = (firstSlotDate.year() - now.year()) * 12 + (firstSlotDate.month() - now.month());
-        if (offset !== 0) {
-          this.currentMonthOffset.set(offset);
-        }
-      }
-      this.initialized.set(true);
-    }
-  });
-
-  constructor() {
+  private readonly loadEffect = effect(() => {
     const processId = this.route.snapshot.paramMap.get('processId');
     if (processId !== null && processId !== '') {
-      this.routeProcessId.set(processId);
+      if (!this.initialized()) {
+        void this.loadData(processId);
+      } else {
+        void this.loadData(processId, this.currentYear(), this.currentMonthNumber());
+      }
     }
-  }
+  });
 
   /** Toggles slot selection. */
   onSlotSelected(slot: InterviewSlotDTO): void {
@@ -221,20 +184,20 @@ export class InterviewBookingComponent {
     const slot = this.selectedSlot();
     if (slot?.id === undefined) return;
 
-    const processId = this.routeProcessId();
-    if (processId === '') return;
+    const processId = this.route.snapshot.paramMap.get('processId');
+    if (processId === null) return;
 
     try {
       await firstValueFrom(this.bookingApi.bookSlot(processId, { slotId: slot.id }));
       this.toastService.showSuccessKey('interview.booking.bookingSuccess');
       this.selectedSlot.set(null);
       // Reload data to show confirmation
-      this.bookingResource.reload();
+      await this.loadData(processId, this.currentYear(), this.currentMonthNumber());
     } catch (error: unknown) {
       if (error !== null && typeof error === 'object' && 'status' in error && error.status === 409) {
         this.toastService.showErrorKey('interview.booking.slotAlreadyBooked');
         // Reload to get updated slot availability
-        this.bookingResource.reload();
+        await this.loadData(processId, this.currentYear(), this.currentMonthNumber());
       } else {
         this.toastService.showErrorKey('interview.booking.bookingError');
       }
@@ -246,7 +209,6 @@ export class InterviewBookingComponent {
     this.currentMonthOffset.update(v => v - 1);
     this.currentDatePage.set(0);
     this.expandedDates.set(new Set());
-    this.updateBookingParams();
   }
 
   /** Navigates to the next month and reloads slots. */
@@ -254,7 +216,6 @@ export class InterviewBookingComponent {
     this.currentMonthOffset.update(v => v + 1);
     this.currentDatePage.set(0);
     this.expandedDates.set(new Set());
-    this.updateBookingParams();
   }
 
   /** Navigates to the previous date page. */
@@ -301,14 +262,38 @@ export class InterviewBookingComponent {
     return `${count} ${this.translateService.instant(key)}`;
   }
 
-  /** Updates booking resource params with current year/month for month-filtered fetch. */
-  private updateBookingParams(): void {
-    this.bookingParams.set({
-      year: this.currentYear(),
-      month: this.currentMonthNumber(),
-      page: 0,
-      size: 100,
-    });
+  /** Loads booking data from server with month filter for server-side pagination. */
+  private async loadData(processId: string, year?: number, month?: number): Promise<void> {
+    try {
+      this.loading.set(true);
+      this.error.set(false);
+      const data = await firstValueFrom(this.bookingApi.getBookingData(processId, year, month, 0, 100));
+
+      // Auto-select first available month on initial load using first slot's date
+      if (!this.initialized()) {
+        const slots = data.availableSlots;
+        if (slots && slots.length > 0 && slots[0].startDateTime !== undefined && slots[0].startDateTime !== '') {
+          const firstSlotDate = dayjs(slots[0].startDateTime);
+          const now = dayjs();
+          // Calculate calendar month difference for offset
+          const offset = (firstSlotDate.year() - now.year()) * 12 + (firstSlotDate.month() - now.month());
+          if (offset !== 0) {
+            this.currentMonthOffset.set(offset);
+          }
+        }
+        this.initialized.set(true);
+      }
+
+      this.bookingData.set(data);
+    } catch (error: unknown) {
+      if (error !== null && typeof error === 'object' && 'status' in error && error.status === 403) {
+        this.isClosed.set(true);
+      } else {
+        this.error.set(true);
+      }
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   /** Safely converts date string to timestamp. */

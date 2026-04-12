@@ -15,8 +15,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { EmailTemplateDTO } from '../model/email-template-dto';
 import { PageResponseDTOEmailTemplateOverviewDTO } from '../model/page-response-dto-email-template-overview-dto';
 
@@ -49,6 +47,36 @@ export class EmailTemplateResourceApi {
     /**
      * 
      * 
+     * @param templateId 
+     */
+    getTemplate(templateId: string): Observable<EmailTemplateDTO> {
+        const templateIdPath = encodeURIComponent(String(templateId));
+        const url = `${this.basePath}/api/email-templates/${templateIdPath}`;
+        return this.http.get<EmailTemplateDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
+     */
+    getTemplates(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOEmailTemplateOverviewDTO> {
+        const queryParams = new URLSearchParams();
+        if (pageSize !== undefined && pageSize !== null) {
+            queryParams.set('pageSize', String(pageSize));
+        }
+        if (pageNumber !== undefined && pageNumber !== null) {
+            queryParams.set('pageNumber', String(pageNumber));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/email-templates${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOEmailTemplateOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
      * @param emailTemplateDTO 
      */
     updateTemplate(emailTemplateDTO: EmailTemplateDTO): Observable<EmailTemplateDTO> {
@@ -57,49 +85,3 @@ export class EmailTemplateResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param templateId 
- */
-export function getTemplateResource(templateId: Signal<string> | string): HttpResourceRef<EmailTemplateDTO | undefined> {
-    return httpResource<EmailTemplateDTO>(() => {
-        const templateIdValue = typeof templateId === 'function' ? templateId() : templateId;
-        const templateIdPath = encodeURIComponent(String(templateIdValue));
-        return `${BASE_PATH}/api/email-templates/${templateIdPath}`;
-    });
-}
-
-/**
- * Query parameters for getTemplates
- */
-export interface GetTemplatesParams {
-    pageSize?: number;
-    pageNumber?: number;
-}
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param params Optional signal containing query parameters
- */
-export function getTemplatesResource(params?: Signal<GetTemplatesParams>): HttpResourceRef<PageResponseDTOEmailTemplateOverviewDTO | undefined> {
-    return httpResource<PageResponseDTOEmailTemplateOverviewDTO>(() => {
-        const queryParams = params?.() ?? {};
-        const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
-        }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
-        }
-        const query = searchParams.toString();
-        return `${BASE_PATH}/api/email-templates${query ? `?${query}` : ''}`;
-    });
-}
-

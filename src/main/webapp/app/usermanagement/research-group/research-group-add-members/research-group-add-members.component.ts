@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +7,7 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { KeycloakUserDTO } from 'app/generated/model/keycloak-user-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { GetAvailableUsersForResearchGroupParams, getAvailableUsersForResearchGroupResource } from 'app/generated/api/user-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -36,6 +36,7 @@ type UserListItem = KeycloakUserDTO & { displayName: string };
   templateUrl: './research-group-add-members.component.html',
 })
 export class ResearchGroupAddMembersComponent {
+  totalRecords = signal<number>(0);
   page = signal<number>(0);
   pageSize = signal<number>(10);
   loading = signal<boolean>(false);
@@ -43,32 +44,10 @@ export class ResearchGroupAddMembersComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  // Only search when query meets minimum length
-  private readonly effectiveSearchQuery = computed(() => {
-    const query = this.searchQuery().trim();
-    return query.length >= this.MIN_SEARCH_LENGTH ? query : undefined;
-  });
-
-  // httpResource for available users - auto-refetches when params change
-  private readonly usersParams = computed<GetAvailableUsersForResearchGroupParams>(() => ({
-    pageSize: this.pageSize(),
-    pageNumber: this.page(),
-    searchQuery: this.effectiveSearchQuery(),
-  }));
-  private readonly usersResource = getAvailableUsersForResearchGroupResource(this.usersParams);
-
-  totalRecords = computed<number>(() => {
-    if (this.effectiveSearchQuery() == null) return 0;
-    return this.usersResource.value()?.totalElements ?? 0;
-  });
-
-  users = computed<UserListItem[]>(() => {
-    if (this.effectiveSearchQuery() == null) return [];
-    return this.toUserListItems(this.usersResource.value()?.content ?? []);
-  });
-
+  users = signal<UserListItem[]>([]);
   selectedUserCount = computed(() => this.selectedUsers().size);
 
+  userApi = inject(UserResourceApi);
   researchGroupApi = inject(ResearchGroupResourceApi);
   toastService = inject(ToastService);
 
@@ -77,31 +56,90 @@ export class ResearchGroupAddMembersComponent {
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
 
-  private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
-
-  // Sync loading state from resource with delayed visibility
+  // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | undefined;
 
-  private readonly loadingEffect = effect(() => {
-    const isLoading = this.usersResource.isLoading();
-    if (isLoading) {
-      if (this.loaderTimeout === undefined) {
-        this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
+  private latestRequestId = 0;
+  private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
+
+  constructor() {
+    void this.loadAvailableUsers();
+  }
+
+  /**
+   * Loads the available users for the research group based on the provided search query.
+   * This method handles debouncing, manages a loading spinner, and updates the user list
+   * and total record count based on the response from the user service.
+   *
+   * @param searchQuery - An optional string representing the search query to filter users.
+   *                      If not provided, the current search query is used.
+   *
+   * @returns A promise that resolves when the operation is complete.
+   *
+   * Behavior:
+   * - If the search query is empty and there are existing users, the user list and total
+   *   record count are cleared.
+   * - If the search query is empty and there are no users, the method exits early.
+   * - If the search query is shorter than the minimum search length, the method exits early.
+   * - A loading spinner is displayed after a delay while the user data is being fetched.
+   * - Ensures that the loading spinner is hidden and any pending timers are cleared.
+   */
+  async loadAvailableUsers(searchQuery?: string): Promise<void> {
+    const rawQuery = searchQuery ?? this.searchQuery();
+    const query = rawQuery.trim();
+
+    if (query === '' && this.users().length > 0) {
+      this.users.set([]);
+      this.totalRecords.set(0);
+      return;
+    }
+
+    if (query === '' && this.users().length === 0) {
+      return;
+    }
+
+    if (query !== '' && query.length < this.MIN_SEARCH_LENGTH) {
+      return;
+    }
+
+    if (this.loaderTimeout !== undefined) {
+      clearTimeout(this.loaderTimeout);
+      this.loaderTimeout = undefined;
+    }
+    this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
+
+    // ensure we only apply the latest response
+    const requestId = ++this.latestRequestId;
+
+    try {
+      const response = await lastValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
+      // If another newer request has been started, ignore the response of this (stale) one
+      if (requestId !== this.latestRequestId) {
+        return;
       }
-    } else {
-      if (this.loaderTimeout !== undefined) {
+      this.totalRecords.set(response.totalElements ?? 0);
+      this.users.set(this.toUserListItems(response.content ?? []));
+    } catch {
+      // Only show an error toast for the most recent request; stale errors shouldn't alarm the user
+      if (requestId === this.latestRequestId) {
+        this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
+      }
+    } finally {
+      // only touch loading/timeout if this is the latest request
+      if (requestId === this.latestRequestId) {
         clearTimeout(this.loaderTimeout);
         this.loaderTimeout = undefined;
+        this.loading.set(false);
       }
-      this.loading.set(false);
     }
-  });
+  }
 
   onSearch(searchQuery: string): void {
     if (searchQuery !== this.searchQuery()) {
       this.page.set(0);
       this.searchQuery.set(searchQuery);
+      void this.loadAvailableUsers(searchQuery);
     }
   }
 
@@ -113,6 +151,8 @@ export class ResearchGroupAddMembersComponent {
     if (rows != null) {
       this.pageSize.set(rows);
     }
+    const query = this.searchQuery();
+    void this.loadAvailableUsers(query.length > 0 ? query : undefined);
   }
 
   toggleUserSelection(user: KeycloakUserDTO): void {

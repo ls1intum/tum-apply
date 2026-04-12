@@ -15,14 +15,23 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { httpResource, HttpResourceRef } from '@angular/common/http';
-import { Signal } from '@angular/core';
 import { RatingOverviewDTO } from '../model/rating-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class RatingResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    getRatings(applicationId: string): Observable<RatingOverviewDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/ratings`;
+        return this.http.get<RatingOverviewDTO>(url);
+    }
 
     /**
      * 
@@ -42,20 +51,3 @@ export class RatingResourceApi {
     }
 
 }
-
-const BASE_PATH = '';
-
-/**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param applicationId 
- */
-export function getRatingsResource(applicationId: Signal<string> | string): HttpResourceRef<RatingOverviewDTO | undefined> {
-    return httpResource<RatingOverviewDTO>(() => {
-        const applicationIdValue = typeof applicationId === 'function' ? applicationId() : applicationId;
-        const applicationIdPath = encodeURIComponent(String(applicationIdValue));
-        return `${BASE_PATH}/api/applications/${applicationIdPath}/ratings`;
-    });
-}
-
