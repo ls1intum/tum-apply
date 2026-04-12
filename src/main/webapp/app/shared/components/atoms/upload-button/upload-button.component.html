@@ -9,7 +9,6 @@
 >
   <ng-template #content let-files let-removeFileCallback="removeFileCallback">
     <div class="flex flex-col" [class.min-h-45]="!compact()">
-      <div class="w-full mt-0">
         <table class="w-full border-collapse table-fixed [&_td]:py-1 [&_td]:text-sm [&_td]:align-middle">
           <thead>
             <tr>
@@ -88,9 +87,8 @@
             }
           </tbody>
         </table>
-      </div>
       <div
-        class="flex flex-1 w-full items-center justify-center gap-3 cursor-pointer py-3"
+        class="flex flex-1 items-center justify-center gap-3 cursor-pointer py-3"
         (click)="fileupload_component.choose()"
         [class.flex-col]="!compact()"
       >
