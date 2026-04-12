@@ -3,18 +3,17 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
+import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.InvalidParameterException;
-import de.tum.cit.aet.job.constants.ComplianceCategory;
-import org.jsoup.Jsoup;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
+import de.tum.cit.aet.job.constants.ComplianceCategory;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.awt.image.BufferedImage;
@@ -28,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.jsoup.Jsoup;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -71,7 +71,8 @@ public class AiService {
         JobService jobService,
         ApplicationService applicationService,
         DocumentDictionaryService documentDictionaryService,
-        GenderBiasAnalysisService genderBiasAnalysisService) {
+        GenderBiasAnalysisService genderBiasAnalysisService
+    ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
         this.applicationService = applicationService;
@@ -155,7 +156,13 @@ public class AiService {
      * @param jobFormDTO job form context required for compliance update
      * @return The translated text response with detected and target language info
      */
-    public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(String jobId, String toLang, String text, GenderBiasAnalysisResponse originalAnalysis, JobFormDTO jobFormDTO) {
+    public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(
+        String jobId,
+        String toLang,
+        String text,
+        GenderBiasAnalysisResponse originalAnalysis,
+        JobFormDTO jobFormDTO
+    ) {
         UUID parsedJobId = parseJobId(jobId);
         if (parsedJobId == null) {
             throw new InvalidParameterException("The provided jobId is missing or not a valid UUID.");
@@ -179,7 +186,7 @@ public class AiService {
                     GenderBiasAnalysisResponse translatedAnalysis = genderBiasAnalysisService.analyzeText(plainTranslatedText, toLang);
                     analyzeJobDescription(jobFormDTO, parsedJobId, plainTranslatedText, toLang, sourceAnalysis, translatedAnalysis);
                 }
-            }   catch (Exception e) {
+            } catch (Exception e) {
                 log.warn("Translation generated, but persistence/compliance update failed for jobId={}", jobId, e);
                 throw new InternalServerException("Translation generated, but storage failed", e);
             }
@@ -296,22 +303,22 @@ public class AiService {
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
         ComplianceResponseDTO complianceResponse;
-            try {
-                complianceResponse = chatClient
-                    .prompt()
-                    .user(u ->
-                        u
-                            .text(complianceResource)
-                            .param("descriptionLanguage", lang)
-                            .param("jobDescription", text)
-                            .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
-                    )
-                    .call()
-                    .entity(ComplianceResponseDTO.class);
-            } catch (Exception e) {
-                log.warn("Compliance response parsing failed for jobId={}, storing score without compliance details", jobId, e);
-                complianceResponse = new ComplianceResponseDTO(Collections.emptyList());
-            }
+        try {
+            complianceResponse = chatClient
+                .prompt()
+                .user(u ->
+                    u
+                        .text(complianceResource)
+                        .param("descriptionLanguage", lang)
+                        .param("jobDescription", text)
+                        .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
+                )
+                .call()
+                .entity(ComplianceResponseDTO.class);
+        } catch (Exception e) {
+            log.warn("Compliance response parsing failed for jobId={}, storing score without compliance details", jobId, e);
+            complianceResponse = new ComplianceResponseDTO(Collections.emptyList());
+        }
 
         int genderScore = calculateGenderScore(analysis, translatedAnalysis);
 
@@ -343,7 +350,9 @@ public class AiService {
             return 100;
         }
 
-        long criticalCount = compliance.issues().stream()
+        long criticalCount = compliance
+            .issues()
+            .stream()
             .filter(i -> i.category() == ComplianceCategory.CRITICAL_AGG)
             .count();
 
@@ -351,7 +360,9 @@ public class AiService {
             return 0;
         }
 
-        long transparencyCount = compliance.issues().stream()
+        long transparencyCount = compliance
+            .issues()
+            .stream()
             .filter(i -> i.category() == ComplianceCategory.TRANSPARENCY)
             .count();
 
@@ -369,7 +380,6 @@ public class AiService {
      * @return the combined gender bias score (0-100)
      */
     public int calculateCombinedScore(GenderBiasAnalysisResponse originalAnalysis, GenderBiasAnalysisResponse translatedAnalysis) {
-
         int scoreDE = calculateScore(originalAnalysis);
         int scoreEN = calculateScore(translatedAnalysis);
 
@@ -400,7 +410,6 @@ public class AiService {
         return 0;
     }
 
-
     /**
      * Calculates the compliance score of a job posting based on the gender bias analysis.
      * The calculation is performed in several steps:
@@ -427,11 +436,13 @@ public class AiService {
         }
         List<BiasedWordDTO> biasedWords = analysis.biasedWords() != null ? analysis.biasedWords() : Collections.emptyList();
 
-        long inclusiveCount = biasedWords.stream()
+        long inclusiveCount = biasedWords
+            .stream()
             .filter(word -> "inclusive".equals(word.type()))
             .count();
 
-        long nonInclusiveCount = biasedWords.stream()
+        long nonInclusiveCount = biasedWords
+            .stream()
             .filter(word -> "non-inclusive".equals(word.type()))
             .count();
 
@@ -465,5 +476,4 @@ public class AiService {
             return null;
         }
     }
-
 }

@@ -4,5 +4,5 @@ public enum ComplianceCategory {
     CRITICAL_AGG,
     TRANSPARENCY,
     GENDER_INCLUSIVE,
-    GENDER_EXCLUSIVE
+    GENDER_EXCLUSIVE,
 }

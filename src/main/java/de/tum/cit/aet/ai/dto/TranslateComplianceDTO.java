@@ -6,9 +6,4 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
-public record TranslateComplianceDTO(
-    @NotBlank String text,
-    @Nullable GenderBiasAnalysisResponse originalAnalysis,
-    JobFormDTO jobForm
-) {}
-
+public record TranslateComplianceDTO(@NotBlank String text, @Nullable GenderBiasAnalysisResponse originalAnalysis, JobFormDTO jobForm) {}

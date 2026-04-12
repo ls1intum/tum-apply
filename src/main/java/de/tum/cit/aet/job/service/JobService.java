@@ -425,11 +425,9 @@ public class JobService {
         job.setGenderBiasScore(score);
         job.setComplianceAnalysis(complianceAnalysis);
         jobRepository.save(job);
-
     }
 
     private String sanitizeJobDescription(String html) {
         return html == null ? null : HtmlSanitizer.sanitize(html);
     }
-
 }

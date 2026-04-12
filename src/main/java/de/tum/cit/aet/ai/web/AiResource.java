@@ -1,8 +1,8 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
@@ -68,9 +68,11 @@ public class AiResource {
         @RequestParam("jobId") String jobId,
         @RequestParam("toLang") String toLang,
         @RequestBody TranslateComplianceDTO request
-    ){
+    ) {
         log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
-        return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, request.text(), request.originalAnalysis(), request.jobForm()));
+        return ResponseEntity.ok(
+            aiService.translateAndPersistJobDescription(jobId, toLang, request.text(), request.originalAnalysis(), request.jobForm())
+        );
     }
 
     /**
@@ -90,7 +92,6 @@ public class AiResource {
         log.info("PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
         return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docId));
     }
-
 
     /**
      * Analyzes the job description in real time for compliance violations

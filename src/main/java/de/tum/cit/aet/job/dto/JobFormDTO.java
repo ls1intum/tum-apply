@@ -64,8 +64,8 @@ public record JobFormDTO(
             job.getComplianceAnalysis()
         );
     }
+
     private static String sanitizeJobDescription(String html) {
         return html == null ? null : HtmlSanitizer.sanitize(html);
     }
-
 }

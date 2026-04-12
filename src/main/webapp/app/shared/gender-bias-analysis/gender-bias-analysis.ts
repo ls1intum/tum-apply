@@ -68,5 +68,4 @@ export class GenderBiasAnalysisService {
     this.lastLanguages.set(fieldId, language);
     this.firstLoads.add(fieldId);
   }
-
 }

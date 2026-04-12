@@ -232,7 +232,6 @@ export class JobCreationFormComponent {
   /** Score shown in the AI sidebar */
   readonly aiScore = signal<number>(0);
 
-
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1271,7 +1270,7 @@ export class JobCreationFormComponent {
     const request = {
       text: text,
       originalAnalysis: undefined,
-      jobForm: this.createJobDTO(JobFormDTOStateEnum.Draft)
+      jobForm: this.createJobDTO(JobFormDTOStateEnum.Draft),
     };
 
     try {
