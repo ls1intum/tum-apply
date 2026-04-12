@@ -35,7 +35,7 @@ export class SearchFilterSortBar {
   totalRecords = input<number>(0);
   showRecords = input<boolean>(true);
   searchText = input<string | undefined>(undefined);
-  fullWidth = input<boolean>(false);
+  searchWidth = input<string | undefined>(undefined);
 
   // list of filters to be displayed
   filters = input<Filter[]>([]);
@@ -60,6 +60,7 @@ export class SearchFilterSortBar {
   selectedSortField = signal<string | undefined>(undefined);
   selectedSortDirection = signal<SortDirection>('DESC');
 
+  readonly searchFieldClass = computed(() => (this.searchWidth() ? this.searchWidth() + ' min-w-0' : 'max-w-[18rem] min-w-[12rem]'));
   readonly hasMobileActions = computed(() => this.filters().length || (this.sortableFields()?.length ?? 0));
   readonly hasActiveFilters = computed(() => Object.values(this.selectedFiltersById()).some(values => values.length));
 
