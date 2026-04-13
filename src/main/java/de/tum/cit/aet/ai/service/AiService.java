@@ -42,8 +42,11 @@ public class AiService {
     @Value("classpath:prompts/TranslateText.st")
     private Resource translationResource;
 
-    @Value("classpath:prompts/ExtractPdfData.st")
-    private Resource pdfExtractionResource;
+    @Value("classpath:prompts/ExtractCvData.st")
+    private Resource cVExtractionResource;
+
+    @Value("classpath:prompts/ExtractCertificateData.st")
+    private Resource certificateExtractionResource;
 
     private final ChatClient chatClient;
 
@@ -163,7 +166,7 @@ public class AiService {
     private ExtractedApplicationDataDTO extractPdfData(List<Resource> pdfFiles, boolean isCv) {
         List<ByteArrayResource> pageImages = new ArrayList<>();
 
-        Resource prompt = isCv ? pdfExtractionResource : pdfExtractionResource;
+        Resource prompt = isCv ? cVExtractionResource : certificateExtractionResource;
         Class<?> targetClass = isCv ? ExtractedApplicationDataDTO.class : ExtractedCertificateDataDTO.class;
 
         try {
