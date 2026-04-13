@@ -14,7 +14,7 @@ import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.EmailTemplateService;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -748,7 +748,7 @@ public class ResearchGroupService {
             .to(user)
             .language(language)
             .emailType(EmailType.RESEARCH_GROUP_MEMBER_ADDED)
-            .content(new ResearchGroupEmailContext(user, researchGroup))
+            .content(new ResearchGroupEmailContextDTO(user, researchGroup))
             .researchGroup(researchGroup)
             .build();
 
@@ -768,7 +768,7 @@ public class ResearchGroupService {
             .to(prof)
             .language(language)
             .emailType(EmailType.RESEARCH_GROUP_APPROVED)
-            .content(new ResearchGroupEmailContext(prof, researchGroup))
+            .content(new ResearchGroupEmailContextDTO(prof, researchGroup))
             .researchGroup(researchGroup)
             .build();
 
