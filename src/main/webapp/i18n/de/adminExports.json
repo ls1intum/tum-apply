@@ -3,16 +3,20 @@
     "title": "Admin-Massenexporte",
     "subtitle": "Erstellt maschinenlesbare JSON-Dumps und menschlich lesbare PDF/XLSX-Archive für die Daten, die die Universität zum Übergeben benötigt. Jeder Export wird im Hintergrund erstellt — der Fortschritt wird live angezeigt und die Datei wird automatisch heruntergeladen, sobald sie fertig ist.",
     "actions": {
-      "start": "Export starten"
+      "start": "Export starten",
+      "download": "Herunterladen"
     },
     "status": {
       "inProgress": "Wird erstellt…",
       "ready": "Fertig",
-      "failed": "Fehlgeschlagen"
+      "failed": "Fehlgeschlagen",
+      "downloading": "Wird heruntergeladen…"
     },
     "sections": {
       "jobs": "Stellen",
-      "full": "Vollständiger Admin-Export"
+      "full": "Vollständiger Admin-Export",
+      "usersAndOrgs": "Benutzer & Organisation",
+      "applicationsOnly": "Bewerbungen"
     },
     "buttons": {
       "jobsOpen": {
@@ -27,9 +31,21 @@
         "label": "Geschlossene Stellen",
         "description": "Geschlossene Stellen und Stellen, für die ein Bewerber ausgewählt wurde. Enthält jede Bewerbung unabhängig vom Status."
       },
+      "jobsDraft": {
+        "label": "Entwürfe",
+        "description": "Stellen, die sich aktuell im Entwurfszustand befinden. Eine bereits veröffentlichte Stelle kann zurück in den Entwurfsstatus verschoben worden sein — bereits eingereichte Bewerbungen bleiben enthalten, damit die Forschungsgruppe sie sieht."
+      },
       "full": {
         "label": "Vollständiger Admin-Export",
         "description": "Alles: Forschungsgruppen mit ihren Mitgliedern und jede Stelle (auch Entwürfe), jede Bewerbung mit Dokumenten, plus re-importierbare JSON-Dumps. Geeignet zur Übergabe an die Universität oder für ein Backup."
+      },
+      "usersAndOrgs": {
+        "label": "Benutzer & Organisation",
+        "description": "JSON-Only-Snapshot von Schulen, Fakultäten, Forschungsgruppen, Benutzern und den Benutzer ↔ Forschungsgruppen-Rollenzuweisungen. Zum erneuten Bespielen der Datenbank nach einem kompletten Reset — enthält keine Stellen, Bewerbungen, Dokumente oder PDFs."
+      },
+      "applicationsOnly": {
+        "label": "Alle Bewerbungen",
+        "description": "Sicherheitsnetz-Export aller Bewerbungen mit zugehörigen Dokumenten, nach Bewerbern gruppiert. Erzeugt eine applications.json auf oberster Ebene sowie einen Ordner pro Bewerber mit dessen applications.json und einem documents/-Unterordner."
       }
     },
     "toast": {

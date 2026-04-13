@@ -33,11 +33,7 @@ paths:
         required: true
         schema: {type: string, format: uuid}
       responses:
-        '200':
-          description: ZIP archive containing the built admin export
-          content:
-            application/octet-stream:
-              schema: {type: string, format: binary}
+        '200': {description: OK}
   /api/admin/exports/mine:
     get:
       tags: [admin-export-resource]
@@ -75,7 +71,8 @@ paths:
         required: true
         schema:
           type: string
-          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS,
+            APPLICATIONS_ONLY]
       responses:
         '200':
           description: OK
@@ -2558,8 +2555,11 @@ components:
     AdminExportTaskDTO:
       type: object
       properties:
+        applicantSubjectAreaSubscriptions: {$ref: '#/components/schemas/Counts'}
+        applicants: {$ref: '#/components/schemas/Counts'}
         applications: {$ref: '#/components/schemas/Counts'}
         createdAt: {type: string, format: date-time}
+        departments: {$ref: '#/components/schemas/Counts'}
         documents: {$ref: '#/components/schemas/Counts'}
         downloadAvailable: {type: boolean}
         durationSeconds: {type: number, format: double}
@@ -2567,6 +2567,7 @@ components:
         finishedAt: {type: string, format: date-time}
         jobs: {$ref: '#/components/schemas/Counts'}
         researchGroups: {$ref: '#/components/schemas/Counts'}
+        schools: {$ref: '#/components/schemas/Counts'}
         status:
           type: string
           enum: [IN_PROGRESS, READY, FAILED]
@@ -2574,7 +2575,9 @@ components:
         totalFailures: {type: integer, format: int32}
         type:
           type: string
-          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, FULL_ADMIN]
+          enum: [JOBS_OPEN, JOBS_EXPIRED, JOBS_CLOSED, JOBS_DRAFT, FULL_ADMIN, USERS_AND_ORGS,
+            APPLICATIONS_ONLY]
+        userResearchGroupRoles: {$ref: '#/components/schemas/Counts'}
         users: {$ref: '#/components/schemas/Counts'}
     ApplicantDTO:
       type: object

@@ -7,7 +7,7 @@
     [tabs]="tabs()"
     [activeTabId]="activeTab()"
     [lazyLoad]="true"
-    [tabPanelsClass]="'px-4 xl:px-32 2xl:px-64'"
+    [tabPanelsClass]="'w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10'"
     (tabChange)="onTabChange($event)"
   >
     <ng-template jhiTabPanel="general">
@@ -24,16 +24,18 @@
         <jhi-select [items]="themeOptions" [selected]="selectedTheme()" (selectedChange)="onThemeChange($event)" [translateItems]="true" />
       </div>
 
-      <p-divider class="my-6" layout="horizontal" />
-      <jhi-ai-consent-settings [currentRole]="role()" />
+      @if (role() !== UserShortDTORolesEnum.Admin) {
+        <p-divider class="my-6" layout="horizontal" />
+        <jhi-ai-consent-settings [currentRole]="role()" />
+      }
     </ng-template>
 
     <ng-template jhiTabPanel="notifications">
       <jhi-notification-settings class="w-full" [currentRole]="role()" />
     </ng-template>
 
-    <ng-template jhiTabPanel="personal-information">
-      <jhi-personal-information-settings class="w-full" />
+    <ng-template jhiTabPanel="application-information">
+      <jhi-application-information-settings class="w-full" />
     </ng-template>
 
     <ng-template jhiTabPanel="documents">

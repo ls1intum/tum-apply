@@ -25,8 +25,8 @@ const BASE_PATH = '';
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param taskId 
  */
-export function downloadResource(taskId: Signal<string> | string): HttpResourceRef<Blob | undefined> {
-    return httpResource<Blob>(() => {
+export function downloadResource(taskId: Signal<string> | string): HttpResourceRef<unknown | undefined> {
+    return httpResource<unknown>(() => {
         const taskIdValue = typeof taskId === 'function' ? taskId() : taskId;
         const taskIdPath = encodeURIComponent(String(taskIdValue));
         return `${BASE_PATH}/api/admin/exports/download/${taskIdPath}`;

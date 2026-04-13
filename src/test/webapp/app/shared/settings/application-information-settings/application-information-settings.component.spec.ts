@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
-import { PersonalInformationData, PersonalInformationSettingsComponent } from 'app/shared/settings/personal-information-settings';
+import { ApplicationInformationData, ApplicationInformationSettingsComponent } from 'app/shared/settings/application-information-settings';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -13,7 +13,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 
-describe('PersonalInformationSettingsComponent', () => {
+describe('ApplicationInformationSettingsComponent', () => {
   const createProfile = (): Mutable<ApplicantDTO> => ({
     user: {
       userId: 'user-1',
@@ -48,8 +48,8 @@ describe('PersonalInformationSettingsComponent', () => {
     await Promise.resolve();
   };
 
-  const createComponent = async (): Promise<PersonalInformationSettingsComponent> => {
-    const component = TestBed.runInInjectionContext(() => new PersonalInformationSettingsComponent());
+  const createComponent = async (): Promise<ApplicationInformationSettingsComponent> => {
+    const component = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
     await flushAsyncWork();
     return component;
   };
@@ -126,14 +126,14 @@ describe('PersonalInformationSettingsComponent', () => {
       expect(component.hasChanges()).toBe(false);
     });
 
-    it('should show an error toast when loading personal information fails', async () => {
+    it('should show an error toast when loading application information fails', async () => {
       applicantApiMock.getApplicantProfile.mockReturnValue(throwError(() => new Error('load failed')));
 
       const component = await createComponent();
 
       expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.personalInformation.loadFailed');
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.loadFailed');
       expect(component.loadedProfile()).toBeUndefined();
     });
 
@@ -247,8 +247,8 @@ describe('PersonalInformationSettingsComponent', () => {
       const component = await createComponent();
       expect(component.hasChanges()).toBe(false);
 
-      const originalData: PersonalInformationData = structuredClone(component.data());
-      const updatedData: PersonalInformationData = structuredClone(component.data());
+      const originalData: ApplicationInformationData = structuredClone(component.data());
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
       updatedData.city = 'Berlin';
       component.data.set(updatedData);
 
@@ -261,7 +261,7 @@ describe('PersonalInformationSettingsComponent', () => {
   });
 
   describe('saving', () => {
-    it('should save personal information with the expected payload and reset change tracking', async () => {
+    it('should save application information with the expected payload and reset change tracking', async () => {
       const updatedProfile = createProfile();
       if (updatedProfile.user) {
         updatedProfile.user.firstName = 'Grace';
@@ -282,7 +282,7 @@ describe('PersonalInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
-      const updatedData: PersonalInformationData = structuredClone(component.data());
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
       updatedData.firstName = 'Grace';
       updatedData.email = '';
       updatedData.phoneNumber = '';
@@ -328,7 +328,7 @@ describe('PersonalInformationSettingsComponent', () => {
         masterUniversity: undefined,
       });
       expect(toastServiceMock.showSuccessKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.personalInformation.saved');
+      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.applicationInformation.saved');
       expect(toastServiceMock.showErrorKey).not.toHaveBeenCalled();
       expect(component.loadedProfile()).toEqual(updatedProfile);
       expect(component.initialDataSnapshot()).toEqual({
@@ -353,7 +353,7 @@ describe('PersonalInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
-      const updatedData: PersonalInformationData = structuredClone(component.data());
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
       updatedData.firstName = '';
       updatedData.lastName = '';
       updatedData.city = '';
@@ -392,7 +392,7 @@ describe('PersonalInformationSettingsComponent', () => {
       });
     });
 
-    it('should show an error toast when saving personal information fails', async () => {
+    it('should show an error toast when saving application information fails', async () => {
       applicantApiMock.updateApplicantPersonalInformation.mockReturnValue(throwError(() => new Error('save failed')));
 
       const component = await createComponent();
@@ -402,19 +402,19 @@ describe('PersonalInformationSettingsComponent', () => {
 
       expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.personalInformation.saveFailed');
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.saveFailed');
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
     });
   });
 
   describe('cancel behavior', () => {
-    it('should reload personal information on cancel', async () => {
+    it('should reload application information on cancel', async () => {
       const component = await createComponent();
-      const loadPersonalInformationSpy = vi.spyOn(component, 'loadPersonalInformation').mockResolvedValue();
+      const loadApplicationInformationSpy = vi.spyOn(component, 'loadApplicationInformation').mockResolvedValue();
 
       await component.onCancel();
 
-      expect(loadPersonalInformationSpy).toHaveBeenCalledOnce();
+      expect(loadApplicationInformationSpy).toHaveBeenCalledOnce();
     });
   });
 });

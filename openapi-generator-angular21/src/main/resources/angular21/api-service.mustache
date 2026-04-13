@@ -3,12 +3,19 @@
  * {{classname}} - API service
  * @generated from OpenAPI specification
  */
+{{#operations.hasServiceClass}}
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+{{/operations.hasServiceClass}}
+{{#operations.hasInlineResources}}
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
+{{/operations.hasInlineResources}}
 {{#tsImports}}
 import { {{classname}} } from '../model/{{filename}}';
 {{/tsImports}}
+{{#operations.hasServiceClass}}
 
 @Injectable({ providedIn: 'root' })
 export class {{classname}} {
@@ -90,3 +97,81 @@ export class {{classname}} {
 {{/operation}}
 {{/operations}}
 }
+{{/operations.hasServiceClass}}
+{{#operations.hasInlineResources}}
+
+const BASE_PATH = '{{contextPath}}';
+
+{{#operations}}
+{{#operation}}
+{{#vendorExtensions.x-inline-resource}}
+{{#vendorExtensions.x-has-query-params}}
+/**
+ * Query parameters for {{nickname}}
+ */
+export interface {{vendorExtensions.x-params-interface-name}} {
+{{#queryParams}}
+    {{vendorExtensions.x-ts-name}}{{^required}}?{{/required}}: {{{dataType}}};
+{{/queryParams}}
+}
+
+{{/vendorExtensions.x-has-query-params}}
+/**
+ * {{summary}}
+ * {{notes}}
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+{{#pathParams}}
+ * @param {{vendorExtensions.x-ts-name}} {{description}}
+{{/pathParams}}
+{{#vendorExtensions.x-has-query-params}}
+ * @param params Optional signal containing query parameters
+{{/vendorExtensions.x-has-query-params}}
+ */
+export function {{nickname}}Resource({{#pathParams}}{{vendorExtensions.x-ts-name}}: Signal<{{{dataType}}}> | {{{dataType}}}{{^-last}}, {{/-last}}{{/pathParams}}{{#vendorExtensions.x-has-query-params}}{{#hasPathParams}}, {{/hasPathParams}}{{#vendorExtensions.x-all-query-params-optional}}params?: Signal<{{vendorExtensions.x-params-interface-name}}>{{/vendorExtensions.x-all-query-params-optional}}{{^vendorExtensions.x-all-query-params-optional}}params: Signal<{{vendorExtensions.x-params-interface-name}}>{{/vendorExtensions.x-all-query-params-optional}}{{/vendorExtensions.x-has-query-params}}): HttpResourceRef<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}unknown{{/returnType}} | undefined> {
+    return httpResource<{{#returnType}}{{{.}}}{{/returnType}}{{^returnType}}unknown{{/returnType}}>(() => {
+{{#pathParams}}
+        const {{vendorExtensions.x-ts-name}}Value = typeof {{vendorExtensions.x-ts-name}} === 'function' ? {{vendorExtensions.x-ts-name}}() : {{vendorExtensions.x-ts-name}};
+{{^vendorExtensions.x-is-numeric}}
+        const {{vendorExtensions.x-ts-name}}Path = encodeURIComponent(String({{vendorExtensions.x-ts-name}}Value));
+{{/vendorExtensions.x-is-numeric}}
+{{/pathParams}}
+{{#vendorExtensions.x-has-query-params}}
+{{#vendorExtensions.x-all-query-params-optional}}
+        const queryParams = params?.() ?? {};
+{{/vendorExtensions.x-all-query-params-optional}}
+{{^vendorExtensions.x-all-query-params-optional}}
+        const queryParams = params();
+{{/vendorExtensions.x-all-query-params-optional}}
+        const searchParams = new URLSearchParams();
+{{#queryParams}}
+{{#isArray}}
+        if (queryParams.{{vendorExtensions.x-ts-name}}?.length) {
+            queryParams.{{vendorExtensions.x-ts-name}}.forEach(value => searchParams.append('{{baseName}}', String(value)));
+        }
+{{/isArray}}
+{{^isArray}}
+{{#isBoolean}}
+        if (queryParams.{{vendorExtensions.x-ts-name}} !== undefined) {
+            searchParams.set('{{baseName}}', String(queryParams.{{vendorExtensions.x-ts-name}}));
+        }
+{{/isBoolean}}
+{{^isBoolean}}
+        if (queryParams.{{vendorExtensions.x-ts-name}} !== undefined && queryParams.{{vendorExtensions.x-ts-name}} !== null) {
+            searchParams.set('{{baseName}}', String(queryParams.{{vendorExtensions.x-ts-name}}));
+        }
+{{/isBoolean}}
+{{/isArray}}
+{{/queryParams}}
+        const query = searchParams.toString();
+        return `${BASE_PATH}{{{vendorExtensions.xResourcePathTemplate}}}${query ? `?${query}` : ''}`;
+{{/vendorExtensions.x-has-query-params}}
+{{^vendorExtensions.x-has-query-params}}
+        return `${BASE_PATH}{{{vendorExtensions.xResourcePathTemplate}}}`;
+{{/vendorExtensions.x-has-query-params}}
+    });
+}
+
+{{/vendorExtensions.x-inline-resource}}
+{{/operation}}
+{{/operations}}
+{{/operations.hasInlineResources}}

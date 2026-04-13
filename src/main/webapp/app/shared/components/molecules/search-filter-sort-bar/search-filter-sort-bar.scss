@@ -4,31 +4,17 @@
   display: flex;
   flex-direction: column;
 
-  &.full-width {
-    .p-iconfield {
-      max-width: none;
-      min-width: 0;
-    }
-  }
-
-  .p-iconfield {
+  .p-inputtext {
     width: 100%;
-    max-width: 18rem;
-    min-width: 12rem;
-    flex: 1;
+    border: var(--p-border-default) solid 0.1rem;
+    border-radius: var(--border-radius-md);
 
-    .p-inputtext {
-      width: 100%;
-      border: var(--p-border-default) solid 0.1rem;
-      border-radius: var(--border-radius-md);
+    &::placeholder {
+      color: var(--p-text-tertiary);
+    }
 
-      &::placeholder {
-        color: var(--p-text-tertiary);
-      }
-
-      &:hover {
-        border-color: var(--color-border-hover);
-      }
+    &:hover {
+      border-color: var(--color-border-hover);
     }
   }
 }

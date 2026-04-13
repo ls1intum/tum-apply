@@ -5,22 +5,22 @@
     "tabs": {
       "general": "General",
       "notifications": "Notifications",
-      "personalInformation": "Personal Information",
+      "applicationInformation": "Application Information",
       "documents": "Documents"
     },
-    "personalInformation": {
-      "description": "Update your personal information here. Your saved data will be used to prefill future application forms.",
+    "applicationInformation": {
+      "description": "Update your application information here. Your saved data will be used to prefill future application forms.",
       "loadFailed": {
         "summary": "Load failed",
-        "detail": "Failed to load personal information. Please try again."
+        "detail": "Failed to load application information. Please try again."
       },
       "saved": {
         "summary": "Successfully saved",
-        "detail": "Personal information saved successfully. Changes will be applied to your next application."
+        "detail": "Application information saved successfully. Changes will be applied to your next application."
       },
       "saveFailed": {
         "summary": "Save failed",
-        "detail": "Failed to save personal information. Please try again."
+        "detail": "Failed to save application information. Please try again."
       }
     },
 

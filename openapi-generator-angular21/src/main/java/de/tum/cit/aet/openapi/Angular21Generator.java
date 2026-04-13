@@ -229,9 +229,14 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         for (Map.Entry<String, TagUsage> entry : usageByTag.entrySet()) {
             String apiFilename = toApiFilename(entry.getKey());
             TagUsage usage = entry.getValue();
-            if (useHttpResource && separateResources && !usage.hasGet) {
+            if (!useHttpResource || !separateResources) {
+                // No resource files when httpResource is disabled or resources are inline
+                openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
+            } else if (!usage.hasGet) {
+                // No resource file for tags without GET operations
                 openapiGeneratorIgnoreList.add("api/" + apiFilename + "-resources.ts");
             }
+            // Service files are always generated — they contain Observable methods for all operations
         }
     }
 
@@ -359,7 +364,8 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
 
             if ("GET".equalsIgnoreCase(op.httpMethod)) {
                 op.vendorExtensions.put("x-is-get", true);
-                op.vendorExtensions.put("x-use-http-resource", useHttpResource);
+                op.vendorExtensions.put("x-use-http-resource", useHttpResource && separateResources);
+                op.vendorExtensions.put("x-inline-resource", useHttpResource && !separateResources);
                 getOperations.add(op);
             } else {
                 op.vendorExtensions.put("x-is-get", false);
@@ -386,6 +392,8 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
         operations.put("mutationOperations", mutationOperations);
         operations.put("hasGetOperations", !getOperations.isEmpty());
         operations.put("hasMutationOperations", !mutationOperations.isEmpty());
+        operations.put("hasInlineResources", useHttpResource && !separateResources && !getOperations.isEmpty());
+        operations.put("hasServiceClass", !mutationOperations.isEmpty() || !getOperations.isEmpty());
 
         // Step 6: Collect model imports and map to kebab-case file paths
         Set<String> modelImports = new LinkedHashSet<>();
@@ -448,9 +456,14 @@ public class Angular21Generator extends TypeScriptAngularClientCodegen {
             String paramsInterfaceName = toPascalCase(op.operationId) + "Params";
             op.vendorExtensions.put("x-params-interface-name", paramsInterfaceName);
 
+            boolean allOptional = true;
             for (CodegenParameter param : op.queryParams) {
                 param.vendorExtensions.put("x-ts-name", toCamelCase(param.paramName));
+                if (param.required) {
+                    allOptional = false;
+                }
             }
+            op.vendorExtensions.put("x-all-query-params-optional", allOptional);
         } else {
             op.vendorExtensions.put("x-has-query-params", false);
         }
