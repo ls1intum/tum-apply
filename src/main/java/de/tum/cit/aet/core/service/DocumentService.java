@@ -21,7 +21,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.PathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -175,7 +175,7 @@ public class DocumentService {
             throw new IllegalStateException("Stored path lies outside storage root: " + path);
         }
 
-        Resource resource = new PathResource(path);
+        Resource resource = new FileSystemResource(path);
         if (!resource.exists()) {
             throw new NoSuchFileException("Binary not found on disk: " + path);
         }
