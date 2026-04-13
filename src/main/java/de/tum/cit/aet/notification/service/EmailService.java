@@ -144,7 +144,7 @@ public class EmailService {
      * @param body    the rendered HTML body
      */
     private void simulateEmail(Email email, String subject, String body) {
-        var parsedBody = Jsoup.parse(body);
+        org.jsoup.nodes.Document parsedBody = Jsoup.parse(body);
         log.info(
             """
             >>>> Sending Simulated Email <<<<
