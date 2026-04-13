@@ -10,9 +10,10 @@
     <jhi-degree-document-section
       [applicationId]="applicationIdForDocuments()"
       [deferUpload]="true"
-      [aiFeaturesEnabled]="aiFeaturesEnabled()"
-      [isExtractingAi]="isExtractingAi()"
-      (extract)="extractAiData()"
+      [saveData]="false"
+      [bachelorQueuedFiles]="queuedBachelorFiles()"
+      [masterQueuedFiles]="queuedMasterFiles()"
+      (extracted)="onAiDataExtracted($event)"
       [(bachelorDocumentIds)]="bachelorDocuments"
       [bachelorDegreeNameControl]="form.controls.bachelorDegreeName"
       [bachelorDegreeUniversityControl]="form.controls.bachelorDegreeUniversity"

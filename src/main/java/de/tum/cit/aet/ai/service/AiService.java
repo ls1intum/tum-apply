@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -231,6 +232,36 @@ public class AiService {
         ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
         // 3) Persist the extracted data into the application
         if (extracted != null && saveData) {
+            applicationService.applyExtractedCvData(applicationId, extracted);
+        }
+        return extracted;
+    }
+
+    /**
+     * Extracts applicant data from uploaded PDF files (multipart) without requiring
+     * persisted document IDs. Files are processed in-memory only.
+     *
+     * @param applicationId the ID of the application to update (only used if saveData is true)
+     * @param files         the uploaded PDF files
+     * @param isCv          whether the documents are CVs or certificates
+     * @param saveData      whether to persist the extracted data into the application
+     * @return the extracted data as a structured DTO
+     */
+    public ExtractedApplicationDataDTO extractPdfDataFromFiles(String applicationId, List<MultipartFile> files, boolean isCv, boolean saveData) {
+        currentUserService.markAiConsentForCurrentUser();
+        // 1) Convert multipart files to Resource objects
+        List<Resource> docs = new ArrayList<>();
+        for (MultipartFile file : files) {
+            try {
+                docs.add(new ByteArrayResource(file.getBytes()));
+            } catch (IOException e) {
+                throw new PDFExtractionException("Failed to read uploaded file", e);
+            }
+        }
+        // 2) Extract data from the PDFs via AI
+        ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
+        // 3) Persist the extracted data into the application if requested
+        if (extracted != null && saveData && applicationId != null && !applicationId.isBlank()) {
             applicationService.applyExtractedCvData(applicationId, extracted);
         }
         return extracted;

@@ -6,9 +6,8 @@
       <jhi-degree-document-section
         [applicationId]="applicationIdForDocuments()"
         [required]="true"
-        [aiFeaturesEnabled]="aiFeaturesEnabled()"
-        [isExtractingAi]="isExtractingAi()"
-        (extract)="extractAiData()"
+        [saveData]="true"
+        (extracted)="onAiDataExtracted($event)"
         [bachelorDocumentIds]="documentIdsBachelorTranscript()"
         [bachelorDegreeNameControl]="page2Form.controls.bachelorDegreeName"
         [bachelorDegreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"

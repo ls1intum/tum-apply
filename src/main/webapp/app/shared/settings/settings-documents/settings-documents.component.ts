@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -12,11 +12,9 @@ import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { AccountService } from 'app/core/auth/account.service';
-import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map, shareReplay } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
-import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AiResourceApi } from 'app/generated/api/ai-resource-api';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import {
@@ -28,14 +26,11 @@ import {
 } from 'app/shared/util/grading-scale.utils';
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 import TranslateDirective from '../../language/translate.directive';
-import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
-
-// Track ongoing extractions per application id so spinner/requests survive navigation.
-const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 interface NormalizedSettingsDocumentsFormValue {
   bachelorDegreeName: string;
@@ -94,9 +89,6 @@ export class SettingsDocumentsComponent {
   saving = signal(false);
   hasLoaded = signal(false);
   hasInitialLimitsSet = signal(false);
-  // AI extraction
-  aiFeaturesEnabled = signal<boolean>(false);
-  isExtractingAi = signal<boolean>(false);
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
   masterGradeLimits = signal<GradingScaleLimitsResult>(null);
   lastBachelorGrade = signal<string>(this.form.controls.bachelorGrade.value ?? '');
@@ -149,9 +141,6 @@ export class SettingsDocumentsComponent {
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
   private dialogService = inject(DialogService);
-  private aiApi = inject(AiResourceApi);
-  private userApi = inject(UserResourceApi);
-  private destroyRef = inject(DestroyRef);
 
   private currentLang = toSignal(this.translateService.onLangChange);
   private formChangeTick = toSignal(this.form.valueChanges.pipe(map(() => Date.now())), { initialValue: 0 });
@@ -179,20 +168,7 @@ export class SettingsDocumentsComponent {
 
   constructor() {
     void this.loadProfile();
-    void this.loadAiConsent();
   }
-
-  // Restores spinner and re-subscribes if a certificate extraction is still in flight
-  private restoreExtractionState = effect(() => {
-    const appId = this.applicationIdForDocuments();
-    if (!appId) return;
-
-    const active$ = activeExtractions.get(appId);
-    if (active$) {
-      this.isExtractingAi.set(true);
-      this.subscribeToExtraction(active$, appId);
-    }
-  });
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
     const currentUpperLimit =
@@ -361,71 +337,26 @@ export class SettingsDocumentsComponent {
     }
   }
 
-  private async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled);
-    } catch {
-      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
-    }
-  }
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.form;
+    const patch: Record<string, string> = {};
+    const setIfEmpty = (formKey: string, value: string | undefined): void => {
+      if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+        patch[formKey] = value;
+      }
+    };
 
-  extractAiData(): void {
-    const appId = this.applicationIdForDocuments();
-    if (!appId) return;
-
-    const bachelorDocs = this.bachelorDocuments() ?? [];
-    const masterDocs = this.masterDocuments() ?? [];
-    const docs = [...bachelorDocs, ...masterDocs];
-    if (docs.length === 0) return;
-
-    const docIds = docs.map(d => d.id).filter(Boolean) as string[];
-    if (docIds.length === 0) return;
-
-    this.isExtractingAi.set(true);
-
-    let extraction$ = activeExtractions.get(appId);
-    if (!extraction$) {
-      extraction$ = this.aiApi.extractPdfData(appId, docIds, false, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
-      activeExtractions.set(appId, extraction$);
+    const edu = extractedData.education;
+    if (edu) {
+      setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
+      setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity);
+      setIfEmpty('bachelorGrade', edu.bachelorGrade);
+      setIfEmpty('masterDegreeName', edu.masterDegreeName);
+      setIfEmpty('masterDegreeUniversity', edu.masterUniversity);
+      setIfEmpty('masterGrade', edu.masterGrade);
     }
 
-    this.subscribeToExtraction(extraction$, appId);
-  }
-
-  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
-    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: extractedData => {
-        const form = this.form;
-        const patch: Record<string, string> = {};
-        const setIfEmpty = (formKey: string, value: string | undefined): void => {
-          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
-            patch[formKey] = value;
-          }
-        };
-
-        const edu = extractedData.education;
-
-        if (edu) {
-          setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
-          setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity ?? edu.bachelorUniversity);
-          setIfEmpty('bachelorGrade', edu.bachelorGrade);
-          setIfEmpty('masterDegreeName', edu.masterDegreeName);
-          setIfEmpty('masterDegreeUniversity', edu.masterUniversity ?? edu.masterUniversity);
-          setIfEmpty('masterGrade', edu.masterGrade);
-        }
-
-        form.patchValue(patch);
-
-        activeExtractions.delete(appId);
-        this.isExtractingAi.set(false);
-      },
-      error: () => {
-        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
-        activeExtractions.delete(appId);
-        this.isExtractingAi.set(false);
-      },
-    });
+    form.patchValue(patch);
   }
 
   private updateBachelorGradeLimits(grade: string): void {

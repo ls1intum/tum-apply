@@ -55,20 +55,18 @@
   </div>
 
   <!-- AI extraction box (between uploads and string inputs) -->
-  @if (aiFeaturesEnabled()) {
-    @if (applicationId(); as currentApplicationId) {
-      <div class="mb-4 w-full">
-        <jhi-ai-extraction-box
-          [helperTextKey]="'entity.applicationPage1.aiExtractionHelper'"
-          [consentTextKey]="'entity.applicationPage1.aiExtractionConsent'"
-          [loading]="isExtractingAi()"
-          [buttonLabelKey]="'entity.applicationPage1.aiExtractionButton'"
-          [disabled]="aiDisabled()"
-          (extract)="extract.emit()"
-        />
-      </div>
-    }
-  }
+  <div class="mb-4 w-full">
+    <jhi-ai-extraction-box
+      [applicationId]="applicationId()"
+      [documentIds]="combinedDocumentIds()"
+      [queuedFiles]="combinedQueuedFiles()"
+      [isCv]="false"
+      [saveData]="saveData()"
+      [helperTextKey]="'entity.applicationPage1.aiExtractionHelper'"
+      [consentTextKey]="'entity.applicationPage1.aiExtractionConsent'"
+      (extracted)="extracted.emit($event)"
+    />
+  </div>
 
   <!-- Bottom row: string inputs for bachelor and master side-by-side -->
   <div class="w-full grid grid-cols-1 lg:grid-cols-2 lg:gap-6">

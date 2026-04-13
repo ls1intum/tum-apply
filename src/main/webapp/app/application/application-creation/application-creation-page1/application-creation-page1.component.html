@@ -24,16 +24,15 @@
           [allowMultiple]="false"
           [compact]="true"
         />
-        @if (aiFeaturesEnabled()) {
-          <jhi-ai-extraction-box
-            [helperTextKey]="'entity.applicationPage1.aiExtractionHelper'"
-            [consentTextKey]="'entity.applicationPage1.aiExtractionConsent'"
-            [loading]="isExtractingAi()"
-            [buttonLabelKey]="'entity.applicationPage1.aiExtractionButton'"
-            [disabled]="!cvValid()"
-            (extract)="extractAiData()"
-          />
-        }
+        <jhi-ai-extraction-box
+          [applicationId]="applicationId"
+          [documentIds]="currentCvDocs() ?? []"
+          [isCv]="true"
+          [saveData]="true"
+          [helperTextKey]="'entity.applicationPage1.aiExtractionHelper'"
+          [consentTextKey]="'entity.applicationPage1.aiExtractionConsent'"
+          (extracted)="onAiDataExtracted($event)"
+        />
       </div>
     </div>
   }

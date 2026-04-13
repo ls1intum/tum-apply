@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,5 +95,33 @@ public class AiResource {
             saveData
         );
         return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docIds, isCv, saveData));
+    }
+
+    /**
+     * Extracts applicant data from uploaded PDF files using AI without requiring
+     * persisted document IDs. Files are processed in-memory only.
+     *
+     * @param applicationId the ID of the application to update (if saveData is true)
+     * @param files         the PDF files to extract data from
+     * @param isCv          whether the documents are CVs or certificates
+     * @param saveData      whether to persist the extracted data into the application
+     * @return a ResponseEntity containing the extracted data
+     */
+    @ApplicantOrAdmin
+    @PostMapping(value = "extractPdfDataFromFiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExtractedApplicationDataDTO> extractPdfDataFromFiles(
+        @RequestParam(value = "applicationId", required = false) String applicationId,
+        @RequestPart("files") List<MultipartFile> files,
+        @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
+        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
+    ) {
+        log.info(
+            "POST /api/ai/extractPdfDataFromFiles - File upload extraction request received (applicationId={}, fileCount={}, isCV={}, saveData={})",
+            applicationId,
+            files.size(),
+            isCv,
+            saveData
+        );
+        return ResponseEntity.ok(aiService.extractPdfDataFromFiles(applicationId, files, isCv, saveData));
     }
 }

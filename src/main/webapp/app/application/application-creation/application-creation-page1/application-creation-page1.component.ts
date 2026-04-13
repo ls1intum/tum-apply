@@ -1,5 +1,5 @@
-import { Component, DestroyRef, computed, effect, inject, input, model, output, signal } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -18,18 +18,8 @@ import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/date
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
-import { Observable, shareReplay } from 'rxjs';
-import { AiResourceApi } from 'app/generated/api/ai-resource-api';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
-import { ToastService } from 'app/service/toast-service';
-import { firstValueFrom } from 'rxjs';
-import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
-
-// Holds in-flight extraction observables across component re-creation (e.g. page navigation).
-// Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
-const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -91,8 +81,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   standalone: true,
 })
 export default class ApplicationCreationPage1Component {
-  protected readonly UserShortDTORolesEnum = UserShortDTORolesEnum;
-
   data = model.required<ApplicationCreationPage1Data>();
 
   applicationIdForDocuments = input<string | undefined>();
@@ -127,8 +115,6 @@ export default class ApplicationCreationPage1Component {
   accountService = inject(AccountService);
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
-  aiFeaturesEnabled = signal<boolean>(false);
-  isExtractingAi = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
@@ -177,31 +163,12 @@ export default class ApplicationCreationPage1Component {
     });
   });
 
-  private aiApi = inject(AiResourceApi);
-  private userApi = inject(UserResourceApi);
-  private toastService = inject(ToastService);
-  private destroyRef = inject(DestroyRef);
-
-  // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
-  private restoreExtractionState = effect(() => {
-    const appId = this.applicationIdForDocuments();
-    if (!appId) return;
-
-    const active$ = activeExtractions.get(appId);
-    if (active$) {
-      this.isExtractingAi.set(true);
-      this.subscribeToExtraction(active$, appId);
-    }
-  });
-
   private initializeCvDocs = effect(() => {
     const cvDocs = this.computedDocumentIdsCvSet();
     this.cvDocsSetValidity(cvDocs);
   });
 
   constructor() {
-    void this.loadAiConsent();
-
     effect(onCleanup => {
       const form = this.page1Form();
       const data = this.data();
@@ -264,84 +231,26 @@ export default class ApplicationCreationPage1Component {
     this.emitChanged();
   }
 
-  /**
-   * Extracts personal and education data from the uploaded CV using AI.
-   * 1) Validates that an application and CV document exist
-   * 2) Starts or reuses an in-flight extraction request
-   * 3) Subscribes to patch form fields and emit education data on completion
-   */
-  extractAiData(): void {
-    // 1) Validate that an application and CV document exist
-    const appId = this.applicationIdForDocuments();
-    const cvDocs = this.currentCvDocs();
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.page1Form();
+    const patch: Record<string, string> = {};
+    const setIfEmpty = (formKey: string, value: string | undefined): void => {
+      if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+        patch[formKey] = value;
+      }
+    };
 
-    if (appId === undefined || cvDocs === undefined || cvDocs.length === 0) {
-      return;
-    }
+    setIfEmpty('firstName', extractedData.firstName);
+    setIfEmpty('lastName', extractedData.lastName);
+    setIfEmpty('phoneNumber', extractedData.phoneNumber);
+    setIfEmpty('website', extractedData.website);
+    setIfEmpty('linkedIn', extractedData.linkedinUrl);
+    setIfEmpty('street', extractedData.street);
+    setIfEmpty('city', extractedData.city);
+    setIfEmpty('postcode', extractedData.postalCode);
 
-    const docId = cvDocs[0].id;
+    form.patchValue(patch);
 
-    if (!docId) {
-      return;
-    }
-
-    this.isExtractingAi.set(true);
-
-    // 2) Start or reuse an in-flight extraction request
-    let extraction$ = activeExtractions.get(appId);
-    if (!extraction$) {
-      extraction$ = this.aiApi.extractPdfData(appId, [docId], true, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
-      activeExtractions.set(appId, extraction$);
-    }
-
-    // 3) Subscribe to patch form fields and emit education data on completion
-    this.subscribeToExtraction(extraction$, appId);
-  }
-
-  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
-    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: extractedData => {
-        // 1) Patch the page 1 form with personal fields, only filling empty ones
-        const form = this.page1Form();
-        const patch: Record<string, string> = {};
-        const setIfEmpty = (formKey: string, value: string | undefined): void => {
-          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
-            patch[formKey] = value;
-          }
-        };
-
-        setIfEmpty('firstName', extractedData.firstName);
-        setIfEmpty('lastName', extractedData.lastName);
-        setIfEmpty('phoneNumber', extractedData.phoneNumber);
-        setIfEmpty('website', extractedData.website);
-        setIfEmpty('linkedIn', extractedData.linkedinUrl);
-        setIfEmpty('street', extractedData.street);
-        setIfEmpty('city', extractedData.city);
-        setIfEmpty('postcode', extractedData.postalCode);
-
-        form.patchValue(patch);
-
-        const education = extractedData.education;
-
-        // 2) Emit education fields to the parent for page 2 prefill
-        this.educationDataExtracted.emit(education);
-        activeExtractions.delete(appId);
-        this.isExtractingAi.set(false);
-      },
-      error: () => {
-        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
-        activeExtractions.delete(appId);
-        this.isExtractingAi.set(false);
-      },
-    });
-  }
-
-  private async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled);
-    } catch {
-      this.toastService.showErrorKey('settings.aiFeatures.loadFailed');
-    }
+    this.educationDataExtracted.emit(extractedData.education);
   }
 }

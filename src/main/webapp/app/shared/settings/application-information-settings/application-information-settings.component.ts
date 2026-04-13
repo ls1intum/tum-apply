@@ -1,14 +1,12 @@
-import { Component, computed, effect, inject, signal, DestroyRef } from '@angular/core';
-import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AiResourceApi } from 'app/generated/api/ai-resource-api';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import { firstValueFrom, Observable, shareReplay } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
@@ -26,10 +24,7 @@ import { DatePickerComponent } from '../../components/atoms/datepicker/datepicke
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
-import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-
-const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -110,7 +105,6 @@ export class ApplicationInformationSettingsComponent {
     return personalChanged || cvChanged;
   });
 
-  protected readonly UserShortDTORolesEnum = UserShortDTORolesEnum;
   readonly disabledEmail = true;
 
   readonly minDate = new Date(1900, 0, 1);
@@ -127,9 +121,6 @@ export class ApplicationInformationSettingsComponent {
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
   http = inject(HttpClient);
-  aiApi = inject(AiResourceApi);
-  userApi = inject(UserResourceApi);
-  destroyRef = inject(DestroyRef);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -188,10 +179,6 @@ export class ApplicationInformationSettingsComponent {
   // Placeholder ID to render the same upload UI structure as application page 2.
   applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
 
-  // AI extraction
-  aiFeaturesEnabled = signal<boolean>(false);
-  isExtractingAi = signal<boolean>(false);
-
   formEffect = effect(onCleanup => {
     const form = this.applicationInfoForm();
     const data = this.data();
@@ -228,22 +215,9 @@ export class ApplicationInformationSettingsComponent {
     });
   });
 
-  // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
-  private restoreExtractionState = effect(() => {
-    const appId = this.applicationIdForDocuments();
-    if (!appId) return;
-
-    const active$ = activeExtractions.get(appId);
-    if (active$) {
-      this.isExtractingAi.set(true);
-      this.subscribeToExtraction(active$, appId);
-    }
-  });
-
   constructor() {
     // Load initial data from backend API
     void this.loadApplicationInformation();
-    void this.loadAiConsent();
   }
 
   async loadApplicationInformation(): Promise<void> {
@@ -277,15 +251,6 @@ export class ApplicationInformationSettingsComponent {
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
       this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
       this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
-    } catch {
-      this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
-    }
-  }
-
-  private async loadAiConsent(): Promise<void> {
-    try {
-      const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
-      this.aiFeaturesEnabled.set(isEnabled);
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -402,63 +367,25 @@ export class ApplicationInformationSettingsComponent {
     await this.uploadQueuedByType(DocumentInformationHolderDTODocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
   }
 
-  /**
-   * Extracts personal data from the uploaded CV using AI.
-   * Logic mirrors the extraction used on the application creation page 1.
-   */
-  extractAiData(): void {
-    const appId = this.applicationIdForDocuments();
-    const cvDocs = this.cvDocuments();
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.applicationInfoForm();
+    const patch: Record<string, string> = {};
+    const setIfEmpty = (formKey: string, value: string | undefined): void => {
+      if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+        patch[formKey] = value;
+      }
+    };
 
-    if (appId === undefined || cvDocs === undefined || cvDocs.length === 0) {
-      return;
-    }
+    setIfEmpty('firstName', extractedData.firstName);
+    setIfEmpty('lastName', extractedData.lastName);
+    setIfEmpty('phoneNumber', extractedData.phoneNumber);
+    setIfEmpty('website', extractedData.website);
+    setIfEmpty('linkedIn', extractedData.linkedinUrl);
+    setIfEmpty('street', extractedData.street);
+    setIfEmpty('city', extractedData.city);
+    setIfEmpty('postcode', extractedData.postalCode);
 
-    const docId = cvDocs[0].id;
-    if (!docId) return;
-
-    this.isExtractingAi.set(true);
-
-    let extraction$ = activeExtractions.get(appId);
-    if (!extraction$) {
-      extraction$ = this.aiApi.extractPdfData(appId, [docId], true, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
-      activeExtractions.set(appId, extraction$);
-    }
-
-    this.subscribeToExtraction(extraction$, appId);
-  }
-
-  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
-    extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: extractedData => {
-        const form = this.applicationInfoForm();
-        const patch: Record<string, string> = {};
-        const setIfEmpty = (formKey: string, value: string | undefined): void => {
-          if (value !== undefined && (form.get(formKey)?.value as string) === '') {
-            patch[formKey] = value;
-          }
-        };
-
-        setIfEmpty('firstName', extractedData.firstName);
-        setIfEmpty('lastName', extractedData.lastName);
-        setIfEmpty('phoneNumber', extractedData.phoneNumber);
-        setIfEmpty('website', extractedData.website);
-        setIfEmpty('linkedIn', extractedData.linkedinUrl);
-        setIfEmpty('street', extractedData.street);
-        setIfEmpty('city', extractedData.city);
-        setIfEmpty('postcode', extractedData.postalCode);
-
-        form.patchValue(patch);
-
-        activeExtractions.delete(appId);
-        this.isExtractingAi.set(false);
-      },
-      error: () => {
-        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
-        activeExtractions.delete(appId);
-        this.isExtractingAi.set(false);
-      },
-    });
+    form.patchValue(patch);
   }
 
   private async commitDocumentTypeChanges(

@@ -9,6 +9,7 @@ import {
   DocumentInformationHolderDTO,
   DocumentInformationHolderDTODocumentTypeEnum,
 } from 'app/generated/model/document-information-holder-dto';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
@@ -52,16 +53,20 @@ export class DegreeDocumentSectionComponent {
   masterGradeWarningText = input<string>('');
   masterQueuedFilesChange = output<File[]>();
   masterChangeScale = output();
-  // AI extraction integration
-  aiFeaturesEnabled = input<boolean>(false);
-  isExtractingAi = input<boolean>(false);
-  extract = output<void>();
 
-  readonly aiDisabled = computed(() => {
-    const hasBachelor = (this.bachelorDocumentIds()?.length ?? 0) > 0;
-    const hasMaster = (this.masterDocumentIds()?.length ?? 0) > 0;
-    return !(hasBachelor || hasMaster);
+  // AI extraction integration
+  saveData = input<boolean>(true);
+  bachelorQueuedFiles = input<File[]>([]);
+  masterQueuedFiles = input<File[]>([]);
+  extracted = output<ExtractedApplicationDataDTO>();
+
+  readonly combinedDocumentIds = computed(() => {
+    const bachelor = this.bachelorDocumentIds() ?? [];
+    const master = this.masterDocumentIds() ?? [];
+    return [...bachelor, ...master];
   });
+
+  readonly combinedQueuedFiles = computed(() => [...this.bachelorQueuedFiles(), ...this.masterQueuedFiles()]);
 
   readonly bachelorCertificateLabelKey = computed(() => `entity.applicationPage2.label.bachelorCertificate`);
   readonly masterCertificateLabelKey = computed(() => `entity.applicationPage2.label.masterCertificate`);

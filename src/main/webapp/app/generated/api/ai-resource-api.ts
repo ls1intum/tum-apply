@@ -25,12 +25,41 @@ export class AiResourceApi {
     private readonly basePath = '';
 
     /**
-     * 
-     * 
-     * @param applicationId 
-     * @param docIds 
-     * @param isCv 
-     * @param saveData 
+     * Extract data from uploaded PDF files directly (multipart).
+     * Files are processed in-memory without persisting them.
+     *
+     * @param files the PDF files to extract data from
+     * @param isCv whether the documents are CVs
+     * @param saveData whether to persist extracted data
+     * @param applicationId optional application ID (required if saveData is true)
+     */
+    extractPdfDataFromFiles(files: File[], isCv?: boolean, saveData?: boolean, applicationId?: string): Observable<ExtractedApplicationDataDTO> {
+        const formData = new FormData();
+        for (const file of files) {
+            formData.append('files', file);
+        }
+        const queryParams = new URLSearchParams();
+        if (applicationId !== undefined && applicationId !== null) {
+            queryParams.set('applicationId', String(applicationId));
+        }
+        if (isCv !== undefined && isCv !== null) {
+            queryParams.set('isCv', String(isCv));
+        }
+        if (saveData !== undefined && saveData !== null) {
+            queryParams.set('saveData', String(saveData));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/ai/extractPdfDataFromFiles${queryString ? `?${queryString}` : ''}`;
+        return this.http.post<ExtractedApplicationDataDTO>(url, formData);
+    }
+
+    /**
+     *
+     *
+     * @param applicationId
+     * @param docIds
+     * @param isCv
+     * @param saveData
      */
     extractPdfData(applicationId: string, docIds: Array<string>, isCv?: boolean, saveData?: boolean): Observable<ExtractedApplicationDataDTO> {
         const queryParams = new URLSearchParams();
