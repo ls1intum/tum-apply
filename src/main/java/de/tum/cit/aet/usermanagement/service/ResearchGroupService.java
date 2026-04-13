@@ -748,7 +748,7 @@ public class ResearchGroupService {
             .to(user)
             .language(language)
             .emailType(EmailType.RESEARCH_GROUP_MEMBER_ADDED)
-            .content(new ResearchGroupEmailContextDTO(user, researchGroup))
+            .content(ResearchGroupEmailContextDTO.fromEntities(user, researchGroup))
             .researchGroup(researchGroup)
             .build();
 
@@ -768,7 +768,7 @@ public class ResearchGroupService {
             .to(prof)
             .language(language)
             .emailType(EmailType.RESEARCH_GROUP_APPROVED)
-            .content(new ResearchGroupEmailContextDTO(prof, researchGroup))
+            .content(ResearchGroupEmailContextDTO.fromEntities(prof, researchGroup))
             .researchGroup(researchGroup)
             .build();
 

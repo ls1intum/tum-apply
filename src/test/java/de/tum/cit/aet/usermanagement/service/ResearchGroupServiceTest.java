@@ -390,8 +390,9 @@ class ResearchGroupServiceTest {
             Email sent = emailCaptor.getValue();
             assertThat(sent.getContent()).isInstanceOf(ResearchGroupEmailContextDTO.class);
             ResearchGroupEmailContextDTO context = (ResearchGroupEmailContextDTO) sent.getContent();
-            assertThat(context.researchGroup()).isEqualTo(testResearchGroup);
-            assertThat(context.user().getEmail()).isEqualTo("prof@test.com");
+            assertThat(context.researchGroupName()).isEqualTo(testResearchGroup.getName());
+            assertThat(context.userFirstName()).isEqualTo("Prof");
+            assertThat(context.userLastName()).isEqualTo("X");
             assertThat(sent.getTo()).anyMatch(u -> u.getEmail().equals("prof@test.com"));
         }
     }

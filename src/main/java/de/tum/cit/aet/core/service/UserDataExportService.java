@@ -258,7 +258,7 @@ public class UserDataExportService {
             .to(user)
             .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.DATA_EXPORT_READY)
-            .content(new DataExportEmailContextDTO(user, downloadLink, exportExpiresDays))
+            .content(DataExportEmailContextDTO.fromUser(user, downloadLink, exportExpiresDays))
             .build();
 
         sender.sendAsync(email);
