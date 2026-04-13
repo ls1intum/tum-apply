@@ -94,7 +94,11 @@ public class TemplateProcessingService {
                     ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
                     : "inline";
 
-            Template inlineTemplate = new Template(templateName, new StringReader(asHtmlTemplate(emailTemplateTranslation.getBodyHtml())), freemarkerConfig);
+            Template inlineTemplate = new Template(
+                templateName,
+                new StringReader(asHtmlTemplate(emailTemplateTranslation.getBodyHtml())),
+                freemarkerConfig
+            );
 
             String htmlBody = render(inlineTemplate, dataModel);
             return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody, false);

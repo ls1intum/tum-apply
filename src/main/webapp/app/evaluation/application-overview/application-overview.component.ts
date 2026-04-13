@@ -109,7 +109,7 @@ export class ApplicationOverviewComponent {
 
       if (!this.isSortInitiatedByUser) {
         this.sortBy.set(queryParams.get('sortBy') ?? this.sortableFields[0].fieldName);
-        const rawSD = queryParams.get('sortDir') ?? queryParams.get('sortDirection');
+        const rawSD = queryParams.get('sortDir');
         this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
       } else {
         this.isSortInitiatedByUser = false;
