@@ -79,21 +79,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AdminExportTaskDTO'}
-  /api/ai/extractCertificateData:
+  /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
-      operationId: extractCertificateData
+      operationId: extractPdfData
       parameters:
       - name: applicationId
         in: query
         required: true
         schema: {type: string}
-      - name: docId
+      - name: docIds
         in: query
         required: true
         schema:
           type: array
           items: {type: string}
+      - name: isCv
+        in: query
+        required: false
+        schema: {type: boolean, default: true}
       - name: saveData
         in: query
         required: false
@@ -103,30 +107,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ExtractedCertificateDataDTO'}
-  /api/ai/extractCvData:
-    put:
-      tags: [ai-resource]
-      operationId: extractCvData
-      parameters:
-      - name: applicationId
-        in: query
-        required: true
-        schema: {type: string}
-      - name: docId
-        in: query
-        required: true
-        schema: {type: string}
-      - name: saveData
-        in: query
-        required: false
-        schema: {type: boolean, default: false}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ExtractedCvDataDTO'}
+              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -2991,16 +2972,7 @@ components:
         interviewProcessId: {type: string, format: uuid}
         isBooked: {type: boolean}
         startDateTime: {type: string, format: date-time}
-    ExtractedCertificateDataDTO:
-      type: object
-      properties:
-        bachelorDegreeName: {type: string}
-        bachelorGrade: {type: string}
-        bachelorUniversity: {type: string}
-        masterDegreeName: {type: string}
-        masterGrade: {type: string}
-        masterUniversity: {type: string}
-    ExtractedCvDataDTO:
+    ExtractedApplicationDataDTO:
       type: object
       properties:
         city: {type: string}
@@ -3012,6 +2984,15 @@ components:
         postalCode: {type: string}
         street: {type: string}
         website: {type: string}
+    ExtractedCertificateDataDTO:
+      type: object
+      properties:
+        bachelorDegreeName: {type: string}
+        bachelorGrade: {type: string}
+        bachelorUniversity: {type: string}
+        masterDegreeName: {type: string}
+        masterGrade: {type: string}
+        masterUniversity: {type: string}
     GenderBiasAnalysisRequest:
       type: object
       properties:

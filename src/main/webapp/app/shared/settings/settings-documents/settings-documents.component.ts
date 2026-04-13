@@ -17,7 +17,6 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
-import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 import { DialogService } from 'primeng/dynamicdialog';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import {
@@ -33,9 +32,10 @@ import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 import TranslateDirective from '../../language/translate.directive';
+import {ExtractedApplicationDataDTO} from "app/generated/model/extracted-application-data-dto";
 
 // Track ongoing extractions per application id so spinner/requests survive navigation.
-const activeExtractions = new Map<string, Observable<ExtractedCertificateDataDTO>>();
+const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 interface NormalizedSettingsDocumentsFormValue {
   bachelorDegreeName: string;
@@ -386,14 +386,14 @@ export class SettingsDocumentsComponent {
 
     let extraction$ = activeExtractions.get(appId);
     if (!extraction$) {
-      extraction$ = this.aiApi.extractCertificateData(appId, docIds, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      extraction$ = this.aiApi.extractPdfData(appId, docIds, false, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(appId, extraction$);
     }
 
     this.subscribeToExtraction(extraction$, appId);
   }
 
-  private subscribeToExtraction(extraction$: Observable<ExtractedCertificateDataDTO>, appId: string): void {
+  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
         const form = this.form;
@@ -404,13 +404,16 @@ export class SettingsDocumentsComponent {
           }
         };
 
-          setIfEmpty('bachelorDegreeName', extractedData.bachelorDegreeName);
-          setIfEmpty('bachelorDegreeUniversity', extractedData.bachelorUniversity ?? extractedData.bachelorUniversity);
-          setIfEmpty('bachelorGrade', extractedData.bachelorGrade);
-          setIfEmpty('masterDegreeName', extractedData.masterDegreeName);
-          setIfEmpty('masterDegreeUniversity', extractedData.masterUniversity ?? extractedData.masterUniversity);
-          setIfEmpty('masterGrade', extractedData.masterGrade);
+        const edu = extractedData.education;
 
+        if(edu) {
+          setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
+          setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity ?? edu.bachelorUniversity);
+          setIfEmpty('bachelorGrade', edu.bachelorGrade);
+          setIfEmpty('masterDegreeName', edu.masterDegreeName);
+          setIfEmpty('masterDegreeUniversity', edu.masterUniversity ?? edu.masterUniversity);
+          setIfEmpty('masterGrade', edu.masterGrade);
+        }
 
         form.patchValue(patch);
 

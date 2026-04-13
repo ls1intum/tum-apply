@@ -20,13 +20,13 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
-import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
+import {ExtractedApplicationDataDTO} from "app/generated/model/extracted-application-data-dto";
 
-const activeExtractions = new Map<string, Observable<ExtractedCertificateDataDTO>>();
+const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
@@ -332,14 +332,14 @@ export default class ApplicationCreationPage2Component {
 
     let extraction$ = activeExtractions.get(appId);
     if (!extraction$) {
-      extraction$ = this.aiApi.extractCertificateData(appId, docIds, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      extraction$ = this.aiApi.extractPdfData(appId, docIds, false,true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(appId, extraction$);
     }
 
     this.subscribeToExtraction(extraction$, appId);
   }
 
-  private subscribeToExtraction(extraction$: Observable<ExtractedCertificateDataDTO>, appId: string): void {
+  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
         const form = this.page2Form;
@@ -350,13 +350,16 @@ export default class ApplicationCreationPage2Component {
           }
         };
 
-          setIfEmpty('bachelorDegreeName', extractedData.bachelorDegreeName);
-          setIfEmpty('bachelorDegreeUniversity', extractedData.bachelorUniversity);
-          setIfEmpty('bachelorGrade', extractedData.bachelorGrade);
+        const edu = extractedData.education;
+        if(edu) {
+          setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
+          setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity);
+          setIfEmpty('bachelorGrade', edu.bachelorGrade);
 
-          setIfEmpty('masterDegreeName', extractedData.masterDegreeName);
-          setIfEmpty('masterDegreeUniversity', extractedData.masterUniversity);
-          setIfEmpty('masterGrade', extractedData.masterGrade);
+          setIfEmpty('masterDegreeName', edu.masterDegreeName);
+          setIfEmpty('masterDegreeUniversity', edu.masterUniversity);
+          setIfEmpty('masterGrade', edu.masterGrade);
+        }
 
         form.patchValue(patch);
 

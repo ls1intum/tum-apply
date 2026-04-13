@@ -9,7 +9,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom, Observable, shareReplay } from 'rxjs';
-import { ExtractedCvDataDTO } from 'app/generated/model/extracted-cv-data-dto';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
@@ -29,7 +29,7 @@ import { UploadButtonComponent } from '../../components/atoms/upload-button/uplo
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
 
-const activeExtractions = new Map<string, Observable<ExtractedCvDataDTO>>();
+const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -421,14 +421,14 @@ export class ApplicationInformationSettingsComponent {
 
     let extraction$ = activeExtractions.get(appId);
     if (!extraction$) {
-      extraction$ = this.aiApi.extractCvData(appId, docId, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      extraction$ = this.aiApi.extractPdfData(appId, [docId], true, false).pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(appId, extraction$);
     }
 
     this.subscribeToExtraction(extraction$, appId);
   }
 
-  private subscribeToExtraction(extraction$: Observable<ExtractedCvDataDTO>, appId: string): void {
+  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
         const form = this.applicationInfoForm();

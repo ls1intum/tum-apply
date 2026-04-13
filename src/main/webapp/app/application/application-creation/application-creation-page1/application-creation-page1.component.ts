@@ -17,7 +17,7 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
-import { ExtractedCvDataDTO } from 'app/generated/model/extracted-cv-data-dto';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { Observable, shareReplay } from 'rxjs';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
@@ -29,7 +29,7 @@ import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certi
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Module-level so it survives component destruction but the HTTP request stays alive via shareReplay.
-const activeExtractions = new Map<string, Observable<ExtractedCvDataDTO>>();
+const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -290,7 +290,7 @@ export default class ApplicationCreationPage1Component {
     // 2) Start or reuse an in-flight extraction request
     let extraction$ = activeExtractions.get(appId);
     if (!extraction$) {
-      extraction$ = this.aiApi.extractCvData(appId, docId, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      extraction$ = this.aiApi.extractPdfData(appId, [docId], true, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(appId, extraction$);
     }
 
@@ -298,7 +298,7 @@ export default class ApplicationCreationPage1Component {
     this.subscribeToExtraction(extraction$, appId);
   }
 
-  private subscribeToExtraction(extraction$: Observable<ExtractedCvDataDTO>, appId: string): void {
+  private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, appId: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
         // 1) Patch the page 1 form with personal fields, only filling empty ones

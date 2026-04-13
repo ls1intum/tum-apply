@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import de.tum.cit.aet.ai.dto.ExtractedCvDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
@@ -327,7 +327,7 @@ class ApplicationServiceTest {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ExtractedCvDataDTO extracted = new ExtractedCvDataDTO(
+            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
                 "Ada",
                 "Lovelace",
                 null,
@@ -350,7 +350,7 @@ class ApplicationServiceTest {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            ExtractedCvDataDTO extracted = new ExtractedCvDataDTO(
+            ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
                 "Overwrite",
                 "New",
                 null,

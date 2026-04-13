@@ -1,8 +1,7 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
-import de.tum.cit.aet.ai.dto.ExtractedCvDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
@@ -72,44 +71,28 @@ public class AiResource {
     }
 
     /**
-     * Extracts applicant data from a CV using AI and persists the extracted
+     * Extracts applicant data from PDF files using AI and persists the extracted
      * values into the application entity.
      *
      * @param applicationId the ID of the application to update
-     * @param docId         the ID of the document dictionary entry for the CV
+     * @param docIds        the IDs of the document dictionary entries for the PDFs
      * @return a ResponseEntity containing the extracted data
      */
     @ApplicantOrAdmin
-    @PutMapping(value = "extractCvData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExtractedCvDataDTO> extractCvData(
+    @PutMapping(value = "extractPdfData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
         @RequestParam("applicationId") String applicationId,
-        @RequestParam("docId") String docId,
-        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
-    ) {
-        log.info("PUT /api/ai/extractCvData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
-        return ResponseEntity.ok(aiService.extractAndPersistCvData(applicationId, docId, saveData));
-    }
-
-    /**
-     * Extracts applicant data from certificates using AI and persists the extracted
-     * values into the application entity.
-     *
-     * @param applicationId the ID of the application to update
-     * @param docIds         the IDs of the document dictionary entry for the certificates
-     * @return a ResponseEntity containing the extracted data
-     */
-    @ApplicantOrAdmin
-    @PutMapping(value = "extractCertificateData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExtractedCertificateDataDTO> extractCertificateData(
-        @RequestParam("applicationId") String applicationId,
-        @RequestParam("docId") List<String> docIds,
+        @RequestParam("docIds") List<String> docIds,
+        @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
         @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
     ) {
         log.info(
-            "PUT /api/ai/extractCertificateData - PDF extraction request received (applicationId={}, docIds={}",
+            "PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docIds={}, isCV={}, saveData={}",
             applicationId,
-            docIds
+            docIds,
+            isCv,
+            saveData
         );
-        return ResponseEntity.ok(aiService.extractAndPersistCertificateData(applicationId, docIds, saveData));
+        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docIds, isCv, saveData));
     }
 }

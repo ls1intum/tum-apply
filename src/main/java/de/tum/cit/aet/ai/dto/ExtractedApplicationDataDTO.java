@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * All fields are nullable — null means the field was not found in the PDF.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record ExtractedCvDataDTO(
+public record ExtractedApplicationDataDTO(
     String firstName,
     String lastName,
     String phoneNumber,
@@ -17,4 +17,8 @@ public record ExtractedCvDataDTO(
     String city,
     String postalCode,
     ExtractedCertificateDataDTO education
-) {}
+) {
+    public static ExtractedApplicationDataDTO onlyEducationDTO(ExtractedCertificateDataDTO certificateDataDTO) {
+        return new ExtractedApplicationDataDTO(null, null, null, null, null, null, null, null, certificateDataDTO);
+    }
+}

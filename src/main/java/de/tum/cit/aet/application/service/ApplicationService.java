@@ -2,8 +2,8 @@ package de.tum.cit.aet.application.service;
 
 import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
 
+import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
-import de.tum.cit.aet.ai.dto.ExtractedCvDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -652,7 +652,7 @@ public class ApplicationService {
      * @param applicationId the ID of the application to update
      * @param extracted     the extracted data from the AI service
      */
-    public void applyExtractedCvData(String applicationId, ExtractedCvDataDTO extracted) {
+    public void applyExtractedCvData(String applicationId, ExtractedApplicationDataDTO extracted) {
         Application application = assertCanManageApplication(UUID.fromString(applicationId));
 
         setIfEmpty(application::getApplicantFirstName, application::setApplicantFirstName, extracted.firstName());
@@ -692,16 +692,8 @@ public class ApplicationService {
             extracted.bachelorUniversity()
         );
         setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.bachelorGrade());
-        setIfEmpty(
-            application::getApplicantMasterDegreeName,
-            application::setApplicantMasterDegreeName,
-            extracted.masterDegreeName()
-        );
-        setIfEmpty(
-            application::getApplicantMasterUniversity,
-            application::setApplicantMasterUniversity,
-            extracted.masterUniversity()
-        );
+        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
+        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
         setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
     }
 
