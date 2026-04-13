@@ -68,7 +68,6 @@ public class AiService {
         this.currentUserService = currentUserService;
     }
 
-
     /**
      * Generates a job application draft using streaming for faster perceived response time.
      * Returns a Flux that emits content chunks as they are generated.

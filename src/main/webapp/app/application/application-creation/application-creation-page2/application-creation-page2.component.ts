@@ -306,4 +306,19 @@ export default class ApplicationCreationPage2Component {
       { emitEvent: true },
     );
   }
+
+  public updateMasterGradeLimit(grade: string): void {
+    this.lastMasterGrade.set(grade);
+    this.masterLimitsManuallySet.set(false);
+    const limits = getDetectedGradeLimitsPatch(grade);
+    this.masterGradeLimits.set(resolveGradingScaleLimits(grade));
+
+    this.page2Form.patchValue(
+      {
+        masterGradeUpperLimit: limits.upperLimit,
+        masterGradeLowerLimit: limits.lowerLimit,
+      },
+      { emitEvent: true },
+    );
+  }
 }
