@@ -109,7 +109,7 @@ export class ApplicationOverviewComponent {
 
       if (!this.isSortInitiatedByUser) {
         this.sortBy.set(queryParams.get('sortBy') ?? this.sortableFields[0].fieldName);
-        const rawSD = queryParams.get('sortDir');
+        const rawSD = queryParams.get('sortDir') ?? queryParams.get('sortDirection');
         this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
       } else {
         this.isSortInitiatedByUser = false;
@@ -177,7 +177,7 @@ export class ApplicationOverviewComponent {
   navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
     const queryParams: Params = {
       sortBy: this.sortBy(),
-      sortDirection: this.sortDirection(),
+      sortDir: this.sortDirection(),
       applicationId: application.applicationId,
     };
 

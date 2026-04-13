@@ -171,25 +171,25 @@ export class ApplicationDetailComponent {
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   private currentLang = toSignal(this.translateService.onLangChange);
 
-  private _queryParamEffect = effect(() => {
-    const qp = this.qpSignal();
-    const rawSD = qp.get('sortDir');
-    this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
-
-    if (!this.isSortInitiatedByUser) {
-      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
-      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
-    } else {
-      this.isSortInitiatedByUser = false;
-    }
-
-    if (!this.isSearchInitiatedByUser) {
-      this.searchQuery.set(qp.get('search') ?? '');
-    }
-    this.isSearchInitiatedByUser = false;
-  });
-
   constructor() {
+    effect(() => {
+      const qp = this.qpSignal();
+      const rawSD = qp.get('sortDir') ?? qp.get('sortDirection');
+      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+
+      if (!this.isSortInitiatedByUser) {
+        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+      } else {
+        this.isSortInitiatedByUser = false;
+      }
+
+      if (!this.isSearchInitiatedByUser) {
+        this.searchQuery.set(qp.get('search') ?? '');
+      }
+      this.isSearchInitiatedByUser = false;
+    });
+
     void this.init();
   }
 
