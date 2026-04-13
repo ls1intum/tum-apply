@@ -24,7 +24,7 @@ import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
-import {ExtractedApplicationDataDTO} from "app/generated/model/extracted-application-data-dto";
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
@@ -332,7 +332,7 @@ export default class ApplicationCreationPage2Component {
 
     let extraction$ = activeExtractions.get(appId);
     if (!extraction$) {
-      extraction$ = this.aiApi.extractPdfData(appId, docIds, false,true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+      extraction$ = this.aiApi.extractPdfData(appId, docIds, false, true).pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(appId, extraction$);
     }
 
@@ -351,7 +351,7 @@ export default class ApplicationCreationPage2Component {
         };
 
         const edu = extractedData.education;
-        if(edu) {
+        if (edu) {
           setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
           setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity);
           setIfEmpty('bachelorGrade', edu.bachelorGrade);

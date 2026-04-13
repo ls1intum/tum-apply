@@ -32,7 +32,7 @@ import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 import TranslateDirective from '../../language/translate.directive';
-import {ExtractedApplicationDataDTO} from "app/generated/model/extracted-application-data-dto";
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 // Track ongoing extractions per application id so spinner/requests survive navigation.
 const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
@@ -406,7 +406,7 @@ export class SettingsDocumentsComponent {
 
         const edu = extractedData.education;
 
-        if(edu) {
+        if (edu) {
           setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
           setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity ?? edu.bachelorUniversity);
           setIfEmpty('bachelorGrade', edu.bachelorGrade);
