@@ -18,6 +18,43 @@ import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
+import Quill from 'quill';
+
+const Inline = Quill.import('blots/inline') as any;
+
+class HighlightBlot extends Inline {
+  static blotName = 'customHighlight';
+  static tagName = 'span';
+  static className = 'compliance-highlight';
+  static utilityClasses = [
+    'border-b-2',
+    '[border-bottom-style:solid]',
+    '[border-bottom-color:var(--highlight-color)]',
+    'rounded-[var(--border-radius-xs)]',
+    '[box-decoration-break:clone]',
+    '[-webkit-box-decoration-break:clone]',
+    'transition-colors',
+    'duration-150',
+    'cursor-pointer',
+    'hover:[background-color:var(--highlight-bg)]',
+  ];
+
+  static create(value: string) {
+    const node = super.create() as HTMLElement;
+    node.classList.add(...HighlightBlot.utilityClasses);
+    node.style.setProperty('--highlight-color', value);
+    node.style.setProperty('--highlight-bg', `color-mix(in srgb, ${value} 18%, transparent)`);
+    return node;
+  }
+
+  static formats(node: HTMLElement) {
+    return node.style.getPropertyValue('--highlight-color');
+  }
+}
+
+// Bei Quill registrieren
+Quill.register(HighlightBlot);
+
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 300;
 
@@ -265,6 +302,43 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     this.cdRef.markForCheck();
   }
+
+  /**
+   * Highlights specific text passages in the editor.
+   * @param highlights Array of {text, color} to highlight
+   */
+  public highlightTexts(highlights: Array<{ text: string; color: string }>): void {
+    const editor = this.quillEditorComponent()?.quillEditor;
+    if (!editor) return;
+
+    // Clear all existing highlights first
+    editor.formatText(0, editor.getLength(), 'background', false);
+    editor.formatText(0, editor.getLength(), 'customHighlight', false);
+
+    const fullText = editor.getText().toLowerCase();
+
+    for (const { text, color } of highlights) {
+      const searchText = text.toLowerCase();
+      let startIndex = 0;
+
+      while (startIndex < fullText.length) {
+        const index = fullText.indexOf(searchText, startIndex);
+        if (index === -1) break;
+        editor.formatText(index, text.length, 'customHighlight', color);
+        startIndex = index + text.length;
+      }
+    }
+  }
+
+  /** Clears all highlights */
+  public clearHighlights(): void {
+    const editor = this.quillEditorComponent()?.quillEditor;
+    if (!editor) return;
+    editor.formatText(0, editor.getLength(), 'background', false);
+    editor.formatText(0, editor.getLength(), 'customHighlight', false);
+  }
+
+
 
   private mapToLanguageCode(francCode: string): string {
     const validCodes = ['deu', 'eng', 'und'] as const;

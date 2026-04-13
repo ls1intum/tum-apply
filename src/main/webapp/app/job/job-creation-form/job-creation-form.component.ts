@@ -54,6 +54,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
+import {ComplianceResponseDTO} from "app/generated/model/compliance-response-dto";
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -673,6 +674,25 @@ export class JobCreationFormComponent {
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI COMPLIANCE METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  private applyHighlights(compliance: ComplianceResponseDTO | undefined, job: JobDTO): void {
+    const highlights: Array<{ text: string; color: string }> = [];
+
+    // Compliance issues
+    for (const issue of compliance?.issues ?? []) {
+      if (!issue.text) continue;
+      const color = issue.category === 'CRITICAL_AGG'
+        ? 'var(--color-negative-DEFAULT)'
+        : 'var(--color-warning-DEFAULT)';
+      highlights.push({ text: issue.text, color });
+    }
+
+    this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1352,11 +1372,12 @@ export class JobCreationFormComponent {
     if (!jobId) return;
 
     try {
-      await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
       if (updatedJob.genderBiasScore != null) {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
+      this.applyHighlights(compliance, updatedJob);
     } catch {
       // silent error
     }
