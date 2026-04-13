@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -465,7 +465,7 @@ public class JobService {
         jobRepository.save(job);
     }
 
-    public void updateAiAnalysis(UUID jobId, int score, ComplianceResponseDTO complianceAnalysis) {
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssueDTO> complianceAnalysis) {
         if (jobId == null) {
             return;
         }
@@ -474,9 +474,5 @@ public class JobService {
         job.setGenderBiasScore(score);
         job.setComplianceAnalysis(complianceAnalysis);
         jobRepository.save(job);
-    }
-
-    private String sanitizeJobDescription(String html) {
-        return html == null ? null : HtmlSanitizer.sanitize(html);
     }
 }

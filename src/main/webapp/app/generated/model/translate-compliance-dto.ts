@@ -9,10 +9,8 @@
  */
 
 import type { GenderBiasAnalysisResponse } from './gender-bias-analysis-response';
-import type { JobFormDTO } from './job-form-dto';
 
 export interface TranslateComplianceDTO {
-    readonly jobForm?: JobFormDTO;
     readonly originalAnalysis?: GenderBiasAnalysisResponse;
     readonly text: string;
 }

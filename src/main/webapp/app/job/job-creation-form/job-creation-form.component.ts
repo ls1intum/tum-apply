@@ -980,7 +980,7 @@ export class JobCreationFormComponent {
     this.jobDescriptionDE.set(saved.jobDescriptionDE ?? '');
     this.lastSavedData.set(saved);
 
-    if (saved.genderBiasScore != null) {
+    if (saved.genderBiasScore != undefined) {
       this.aiScore.set(saved.genderBiasScore);
     }
 
@@ -1074,7 +1074,7 @@ export class JobCreationFormComponent {
     this.jobDescriptionDE.set(de);
     this.lastTranslatedDE.set(de);
 
-    if (job?.genderBiasScore != null) {
+    if (job?.genderBiasScore != undefined) {
       this.aiScore.set(job.genderBiasScore);
     }
 
@@ -1254,7 +1254,7 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      if (saved.genderBiasScore != null) {
+      if (saved.genderBiasScore != undefined) {
         this.aiScore.set(saved.genderBiasScore);
       }
 
@@ -1262,8 +1262,26 @@ export class JobCreationFormComponent {
 
       if (this.aiToggleSignal()) {
         const analysisData: JobFormDTO = {
-          ...currentData,
+          title: saved.title,
+          researchArea: saved.researchArea,
+          subjectArea: saved.subjectArea,
+          supervisingProfessor: saved.supervisingProfessor,
+          location: saved.location,
+
+          jobDescriptionEN: this.jobDescriptionEN() || undefined,
+          jobDescriptionDE: this.jobDescriptionDE() || undefined,
+
+          startDate: saved.startDate,
+          endDate: saved.endDate,
+          workload: saved.workload,
+          contractDuration: saved.contractDuration,
+          fundingType: saved.fundingType,
+          imageId: saved.imageId,
+          state: saved.state,
           jobId: saved.jobId ?? currentData.jobId,
+
+          genderBiasScore: saved.genderBiasScore,
+          complianceAnalysis: saved.complianceAnalysis,
         };
         void this.analyzeAndUpdateScore(currentLang, analysisData);
         // fire-and-forget translation (don't block autosave UX)
@@ -1277,6 +1295,7 @@ export class JobCreationFormComponent {
 
   private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
     const jobId = this.jobId();
+    const title = this.basicInfoForm.get('title')?.value ?? '';
     const text = currentText.trim();
     if (!jobId || !text) return;
 
@@ -1292,11 +1311,10 @@ export class JobCreationFormComponent {
     const request = {
       text,
       originalAnalysis: undefined,
-      jobForm: this.createJobDTO(JobFormDTOStateEnum.Draft),
     };
 
     try {
-      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, request));
+      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, title, request));
 
       const translatedText = (response.translatedText ?? '').trim();
       if (!translatedText) return;
@@ -1313,7 +1331,7 @@ export class JobCreationFormComponent {
       }
 
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-      if (updatedJob.genderBiasScore != null) {
+      if (updatedJob.genderBiasScore != undefined) {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
 
@@ -1354,11 +1372,12 @@ export class JobCreationFormComponent {
     try {
       await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-      if (updatedJob.genderBiasScore != null) {
+      if (updatedJob.genderBiasScore != undefined) {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
     } catch {
       // silent error
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
     }
   }
 

@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
@@ -109,5 +109,5 @@ public class Job extends AbstractAuditingEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "compliance_analysis_json", columnDefinition = "json")
-    private ComplianceResponseDTO complianceAnalysis;
+    private List<ComplianceIssueDTO> complianceAnalysis;
 }

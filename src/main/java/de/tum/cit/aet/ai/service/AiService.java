@@ -3,10 +3,9 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
-import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.InvalidParameterException;
@@ -14,7 +13,6 @@ import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
-import de.tum.cit.aet.job.constants.ComplianceCategory;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.awt.image.BufferedImage;
@@ -64,9 +62,7 @@ public class AiService {
 
     private final GenderBiasAnalysisService genderBiasAnalysisService;
 
-    private static final double FACTOR_NEUTRAL = 1.0;
-    private static final double FACTOR_NON_INCLUSIVE = 0.5;
-    private static final double PENALTY_FACTOR = 0.85;
+    private ComplianceService complianceService;
 
     public AiService(
         ChatClient.Builder chatClientBuilder,
@@ -74,7 +70,8 @@ public class AiService {
         ApplicationService applicationService,
         DocumentDictionaryService documentDictionaryService,
         CurrentUserService currentUserService,
-        GenderBiasAnalysisService genderBiasAnalysisService
+        GenderBiasAnalysisService genderBiasAnalysisService,
+        ComplianceService complianceService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
@@ -82,6 +79,7 @@ public class AiService {
         this.documentDictionaryService = documentDictionaryService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
+        this.complianceService = complianceService;
     }
 
     /**
@@ -155,17 +153,17 @@ public class AiService {
      *
      * @param jobId  the ID of the job to update
      * @param toLang the target language for translation ("de" or "en")
+     * @param title job form title required for compliance update
      * @param text   the job description text to translate
      * @param originalAnalysis original gender analysis of the source text
-     * @param jobFormDTO job form context required for compliance update
      * @return The translated text response with detected and target language info
      */
     public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(
         String jobId,
         String toLang,
+        String title,
         String text,
-        GenderBiasAnalysisResponse originalAnalysis,
-        JobFormDTO jobFormDTO
+        GenderBiasAnalysisResponse originalAnalysis
     ) {
         currentUserService.markAiConsentForCurrentUser();
         UUID parsedJobId = parseJobId(jobId);
@@ -179,18 +177,15 @@ public class AiService {
         if (translatedText != null && !translatedText.isBlank()) {
             try {
                 jobService.updateJobDescriptionLanguage(jobId, toLang, translatedText);
-
-                if (jobFormDTO != null) {
-                    String plainText = Jsoup.parse(text).text();
-                    String plainTranslatedText = Jsoup.parse(translatedText).text();
-                    GenderBiasAnalysisResponse sourceAnalysis = originalAnalysis;
-                    if (sourceAnalysis == null && !plainText.isBlank()) {
-                        String sourceLang = "de".equalsIgnoreCase(toLang) ? "en" : "de";
-                        sourceAnalysis = genderBiasAnalysisService.analyzeText(plainText, sourceLang);
-                    }
-                    GenderBiasAnalysisResponse translatedAnalysis = genderBiasAnalysisService.analyzeText(plainTranslatedText, toLang);
-                    analyzeJobDescription(jobFormDTO, parsedJobId, plainTranslatedText, toLang, sourceAnalysis, translatedAnalysis);
+                String plainText = Jsoup.parse(text).text();
+                String plainTranslatedText = Jsoup.parse(translatedText).text();
+                GenderBiasAnalysisResponse sourceAnalysis = originalAnalysis;
+                if (sourceAnalysis == null && !plainText.isBlank()) {
+                    String sourceLang = "de".equalsIgnoreCase(toLang) ? "en" : "de";
+                    sourceAnalysis = genderBiasAnalysisService.analyzeText(plainText, sourceLang);
                 }
+                GenderBiasAnalysisResponse translatedAnalysis = genderBiasAnalysisService.analyzeText(plainTranslatedText, toLang);
+                analyzeJobDescription(title, parsedJobId, plainTranslatedText, toLang, sourceAnalysis, translatedAnalysis);
             } catch (Exception e) {
                 log.warn("Translation generated, but persistence/compliance update failed for jobId={}", jobId, e);
                 throw new InternalServerException("Translation generated, but storage failed", e);
@@ -272,13 +267,13 @@ public class AiService {
      *
      * @param jobFormDTO The data transfer object containing the current state of the job posting.
      * @param lang The language identifier (de/en) currently active in the editor.
-     * @return A ComplianceResponseDTO containing the combined legal and linguistic findings.
+     * @return A list of compliance issues containing the combined legal and linguistic findings.
      */
-    public ComplianceResponseDTO analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang) {
+    public List<ComplianceIssueDTO> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang) {
         String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         String input = raw != null ? Jsoup.parse(raw).text() : "";
         GenderBiasAnalysisResponse genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
-        return analyzeJobDescription(jobFormDTO, jobFormDTO.jobId(), input, lang, genderAnalysis, null);
+        return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, genderAnalysis, null);
     }
 
     /**
@@ -291,185 +286,51 @@ public class AiService {
      * to minimize latency. The results are merged using a geometric mean to ensure that a failure in one
      * dimension (e.g., severe legal risk) significantly impacts the total score.
      *
-     * @param jobFormDTO the job form data containing language-specific job descriptions
+     * @param title the job form title
      * @param jobId Unique identifier for the job.
      * @param text Extracted raw text of the job description.
      * @param lang the analysis language, expected to be `de` or `en`
      * @param analysis Result of the primary linguistic gender analysis.
      * @param translatedAnalysis Second analysis of the translated counterpart.
-     * @return A structured ComplianceResponseDTO containing all identified issues.
+     * @return A list containing all identified compliance issues.
      */
 
-    public ComplianceResponseDTO analyzeJobDescription(
-        JobFormDTO jobFormDTO,
+    public List<ComplianceIssueDTO> analyzeJobDescription(
+        String title,
         UUID jobId,
         String text,
         String lang,
         GenderBiasAnalysisResponse analysis,
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
-        ComplianceResponseDTO complianceResponse;
+        List<ComplianceIssueDTO> complianceIssues;
         try {
-            complianceResponse = chatClient
+            ComplianceIssueDTO[] parsedIssues = chatClient
                 .prompt()
                 .user(u ->
                     u
                         .text(complianceResource)
                         .param("descriptionLanguage", lang)
                         .param("jobDescription", text)
-                        .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
+                        .param("title", title != null ? title : "")
                 )
                 .call()
-                .entity(ComplianceResponseDTO.class);
+                .entity(ComplianceIssueDTO[].class);
+            complianceIssues = parsedIssues != null ? Arrays.stream(parsedIssues).toList() : Collections.emptyList();
         } catch (Exception e) {
             log.warn("Compliance response parsing failed for jobId={}, storing score without compliance details", jobId, e);
-            complianceResponse = new ComplianceResponseDTO(Collections.emptyList());
+            complianceIssues = Collections.emptyList();
         }
 
-        int genderScore = calculateGenderScore(analysis, translatedAnalysis);
+        int genderScore = complianceService.calculateGenderScore(analysis, translatedAnalysis);
 
-        int legalScore = calculateLegalScore(complianceResponse);
+        int legalScore = complianceService.calculateLegalScore(complianceIssues);
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
-        jobService.updateAiAnalysis(jobId, combinedScore, complianceResponse);
+        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues);
 
-        return complianceResponse;
-    }
-
-    /**
-     * Calculates a legal compliance score based on a hierarchical risk model.
-     * * The calculation follows the Gatekeeper-Principle for severe risks and Exponential Decay
-     * for minor issues. If a CRITICAL_AGG violation is detected, the score is immediately 0
-     * (Veto-Principle), as these represent non-negotiable legal liabilities.
-     * * For transparency issues, the score is reduced multiplicatively using the formula
-     * S(n) = 100 * 0.85^n. The decay factor of 0.85 is set to trigger a critical
-     * threshold (~60%) after three cumulative issues, reflecting the diminishing
-     * marginal quality of the job description. This approach mirrors risk assessment
-     * standards like ISO 31000 and prevents negative scores common in linear models.
-     *
-     * @param compliance the structured analysis containing identified compliance issues
-     * @return an integer score from 0 to 100 representing legal integrity
-     */
-    private int calculateLegalScore(ComplianceResponseDTO compliance) {
-        if (compliance == null || compliance.issues() == null || compliance.issues().isEmpty()) {
-            return 100;
-        }
-
-        long criticalCount = compliance
-            .issues()
-            .stream()
-            .filter(i -> i.category() == ComplianceCategory.CRITICAL_AGG)
-            .count();
-
-        if (criticalCount > 0) {
-            return 0;
-        }
-
-        long transparencyCount = compliance
-            .issues()
-            .stream()
-            .filter(i -> i.category() == ComplianceCategory.TRANSPARENCY)
-            .count();
-
-        double score = 100.0 * Math.pow(PENALTY_FACTOR, transparencyCount);
-
-        return (int) Math.max(0, Math.round(score));
-    }
-
-    /**
-     * Calculates the combined gender bias score for a job description for consistency.
-     * Analyzes both languages (DE and EN) and returns the average score.
-     *
-     * @param originalAnalysis The analysis results for the primary description language.
-     * @param translatedAnalysis The analysis results for the secondary/translated language.
-     * @return the combined gender bias score (0-100)
-     */
-    public int calculateCombinedScore(GenderBiasAnalysisResponse originalAnalysis, GenderBiasAnalysisResponse translatedAnalysis) {
-        int scoreDE = calculateScore(originalAnalysis);
-        int scoreEN = calculateScore(translatedAnalysis);
-
-        return (int) Math.round((scoreDE + scoreEN) / 2.0);
-    }
-
-    /**
-     * Determines the final gender score by evaluating available language analyses.
-     * 1. If both language versions (original and translated) are available, the combined version is set.
-     * 2. If only one version is present, it falls back to the single-language score calculation.
-     * This approach ensures scoring stability and consistency across multilingual job descriptions after
-     * translation, while preventing data gaps when a translation is still pending or partially available.
-     *
-     * @param originalAnalysis Analysis results for the primary description language.
-     * @param translatedAnalysis Analysis results for the secondary/translated language.
-     * @return A compiled integer score (0-100) based on the most comprehensive data available.
-     */
-    private int calculateGenderScore(GenderBiasAnalysisResponse originalAnalysis, GenderBiasAnalysisResponse translatedAnalysis) {
-        if (originalAnalysis != null && translatedAnalysis != null) {
-            return calculateCombinedScore(originalAnalysis, translatedAnalysis);
-        }
-        if (originalAnalysis != null) {
-            return calculateScore(originalAnalysis);
-        }
-        if (translatedAnalysis != null) {
-            return calculateScore(translatedAnalysis);
-        }
-        return 0;
-    }
-
-    /**
-     * Calculates the compliance score of a job posting based on the gender bias analysis.
-     * The calculation is performed in several steps:
-     * 1. If no analysis is available (or coding is 'empty'), it returns 100 if there is text, or 0 if content is empty.
-     * 2. Calculates the ratio (`inclusiveWeight`) of inclusive words to the total number of flagged words (inclusive + non-inclusive)
-     * 3. Applies a penalty factor based on the overall coding of the analysis:
-     * - 'neutral-coded': 1.0 (no penalty)
-     * - 'inclusive-coded': 1.0 (no penalty))
-     * - 'non-inclusive-coded': 0.5 (penalty)
-     * 4. The final score is derived from the square root of (`inclusiveWeight` * factor) and scaled to a 0-100 range.
-     * The square root is applied to soften the penalty curve and avoid overly harsh scores.
-     *
-     * @param analysis - The result of the gender bias analysis (including identified words and overall coding).
-     * @returns An integer between 0 and 100 representing the inclusivity score.
-     */
-    private int calculateScore(GenderBiasAnalysisResponse analysis) {
-        if (analysis == null) {
-            return 100;
-        }
-
-        if ("empty".equals(analysis.coding())) {
-            boolean hasWords = analysis.biasedWords() != null && !analysis.biasedWords().isEmpty();
-            return hasWords ? 0 : 100;
-        }
-        List<BiasedWordDTO> biasedWords = analysis.biasedWords() != null ? analysis.biasedWords() : Collections.emptyList();
-
-        long inclusiveCount = biasedWords
-            .stream()
-            .filter(word -> "inclusive".equals(word.type()))
-            .count();
-
-        long nonInclusiveCount = biasedWords
-            .stream()
-            .filter(word -> "non-inclusive".equals(word.type()))
-            .count();
-
-        if (nonInclusiveCount == 0) {
-            return 100;
-        }
-
-        double totalCount = (double) inclusiveCount + (double) nonInclusiveCount;
-        double inclusiveWeight = inclusiveCount / totalCount;
-
-        double factor = getCodingFactor(analysis.coding());
-        double score = Math.sqrt(inclusiveWeight * factor) * 100.0;
-
-        return (int) Math.max(0, Math.min(100, Math.round(score)));
-    }
-
-    private double getCodingFactor(String coding) {
-        return switch (coding) {
-            case "neutral", "inclusive-coded" -> FACTOR_NEUTRAL;
-            default -> FACTOR_NON_INCLUSIVE;
-        };
+        return complianceIssues;
     }
 
     private UUID parseJobId(String jobId) {

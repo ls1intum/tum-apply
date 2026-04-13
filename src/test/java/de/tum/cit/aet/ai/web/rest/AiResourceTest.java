@@ -44,13 +44,13 @@ class AiResourceTest extends AbstractResourceTest {
         String mockTranslation = "Hallo Welt";
         String jobId = "job-1";
         String toLang = "de";
-        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null);
+        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
 
-        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString(), any(), any())).willReturn(
+        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString(), anyString(), any())).willReturn(
             new AIJobDescriptionTranslationDTO(mockTranslation)
         );
 
-        String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang;
+        String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang + "&title=Test";
         AIJobDescriptionTranslationDTO response = api
             .with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_PROFESSOR"))
             .putAndRead(url, request, AIJobDescriptionTranslationDTO.class, 200);
@@ -61,15 +61,15 @@ class AiResourceTest extends AbstractResourceTest {
 
     @Test
     void translateJobDescriptionAsStudentForbidden() {
-        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de";
-        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null);
+        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
+        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
         api.with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
     }
 
     @Test
     void translateJobDescriptionWithoutAuthReturnsForbidden() {
-        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de";
-        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null);
-        api.putAndRead(url, request, Void.class, 401);
+        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
+        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+        api.withoutPostProcessors().putAndRead(url, request, Void.class, 401);
     }
 }

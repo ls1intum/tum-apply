@@ -264,6 +264,10 @@
       "aiGenerationFailed": {
         "summary": "KI-Generierung fehlgeschlagen",
         "detail": "Die Stellenbeschreibung konnte nicht generiert werden. Bitte versuche es erneut."
+      },
+      "aiComplianceFailed": {
+        "summary": "Compliance-Prüfung fehlgeschlagen",
+        "detail": "Der Inhalt entspricht nicht den geltenden Richtlinien."
       }
     }
   },

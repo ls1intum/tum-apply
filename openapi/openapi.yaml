@@ -98,7 +98,9 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ComplianceResponseDTO'}
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
@@ -150,6 +152,10 @@ paths:
         required: true
         schema: {type: string}
       - name: toLang
+        in: query
+        required: true
+        schema: {type: string}
+      - name: title
         in: query
         required: true
         schema: {type: string}
@@ -1176,21 +1182,6 @@ paths:
     post:
       tags: [gender-bias-analysis-resource]
       operationId: analyzeHtmlContent
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
-  /api/gender-bias/analyze-job-description:
-    post:
-      tags: [gender-bias-analysis-resource]
-      operationId: analyzeHtmlContentForCompliance
       requestBody:
         content:
           application/json:
@@ -2824,12 +2815,6 @@ components:
         explanation: {type: string}
         id: {type: string}
         text: {type: string}
-    ComplianceResponseDTO:
-      type: object
-      properties:
-        issues:
-          type: array
-          items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
     ConflictDataDTO:
       type: object
       properties:
@@ -3172,7 +3157,9 @@ components:
     JobDTO:
       type: object
       properties:
-        complianceAnalysis: {$ref: '#/components/schemas/ComplianceResponseDTO'}
+        complianceAnalysis:
+          type: array
+          items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
         fundingType:
@@ -3285,7 +3272,9 @@ components:
     JobFormDTO:
       type: object
       properties:
-        complianceAnalysis: {$ref: '#/components/schemas/ComplianceResponseDTO'}
+        complianceAnalysis:
+          type: array
+          items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
         fundingType:
@@ -3637,7 +3626,6 @@ components:
     TranslateComplianceDTO:
       type: object
       properties:
-        jobForm: {$ref: '#/components/schemas/JobFormDTO'}
         originalAnalysis: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
         text: {type: string, minLength: 1}
       required: [text]
