@@ -74,6 +74,7 @@ export class SettingsComponent {
   exportInProgress = signal<boolean>(false);
   exportButtonDisabled = computed(() => this.exportCooldownRemaining() > 0 || this.exportInProgress());
 
+  protected readonly UserShortDTORolesEnum = UserShortDTORolesEnum;
   protected readonly themeService = inject(ThemeService);
   protected readonly accountService = inject(AccountService);
   private readonly destroyRef = inject(DestroyRef);

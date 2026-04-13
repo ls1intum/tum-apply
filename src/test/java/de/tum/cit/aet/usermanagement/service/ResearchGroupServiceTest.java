@@ -10,7 +10,7 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.EmailTemplateService;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -388,10 +388,11 @@ class ResearchGroupServiceTest {
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
             verify(emailSender).sendAsync(emailCaptor.capture());
             Email sent = emailCaptor.getValue();
-            assertThat(sent.getContent()).isInstanceOf(ResearchGroupEmailContext.class);
-            ResearchGroupEmailContext context = (ResearchGroupEmailContext) sent.getContent();
-            assertThat(context.researchGroup()).isEqualTo(testResearchGroup);
-            assertThat(context.user().getEmail()).isEqualTo("prof@test.com");
+            assertThat(sent.getContent()).isInstanceOf(ResearchGroupEmailContextDTO.class);
+            ResearchGroupEmailContextDTO context = (ResearchGroupEmailContextDTO) sent.getContent();
+            assertThat(context.researchGroupName()).isEqualTo(testResearchGroup.getName());
+            assertThat(context.userFirstName()).isEqualTo("Prof");
+            assertThat(context.userLastName()).isEqualTo("X");
             assertThat(sent.getTo()).anyMatch(u -> u.getEmail().equals("prof@test.com"));
         }
     }
