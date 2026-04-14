@@ -360,6 +360,8 @@ describe('JobCardListComponent', () => {
     await fixture.whenStable();
 
     expect(navigateByUrlSpy).toHaveBeenCalledOnce();
-    expect(router.serializeUrl(navigateByUrlSpy.mock.calls[0][0])).toBe('/settings?tab=notifications');
+    const navigationTarget = navigateByUrlSpy.mock.calls[0][0];
+    const serializedTarget = typeof navigationTarget === 'string' ? navigationTarget : router.serializeUrl(navigationTarget);
+    expect(serializedTarget).toBe('/settings?tab=notifications');
   });
 });
