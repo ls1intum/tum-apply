@@ -6,10 +6,12 @@
 
   <changeSet id="033a_add_gender_bias_score_to_jobs" author="melissa">
     <preConditions onFail="MARK_RAN">
-      <tableExists tableName="jobs"/>
-      <not>
-        <columnExists tableName="jobs" columnName="gender_bias_score"/>
-      </not>
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(*)
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE LOWER(TABLE_NAME) = 'jobs'
+          AND LOWER(COLUMN_NAME) = 'gender_bias_score'
+      </sqlCheck>
     </preConditions>
     <addColumn tableName="jobs">
       <column name="gender_bias_score" type="integer"/>
