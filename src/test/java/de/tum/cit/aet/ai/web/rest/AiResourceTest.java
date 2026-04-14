@@ -9,17 +9,29 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.ai.service.ComplianceIssue;
 import de.tum.cit.aet.ai.web.AiResource;
+import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.core.type.TypeReference;
 
 class AiResourceTest extends AbstractResourceTest {
+
+    private static final UUID PROFESSOR_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000111");
+    private static final UUID APPLICANT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000222");
+    private static final UUID SUPERVISING_PROFESSOR_ID = UUID.fromString("00000000-0000-0000-0000-000000000333");
+    private static final UUID JOB_ID = UUID.fromString("00000000-0000-0000-0000-000000000444");
 
     @Autowired
     private MvcTestClient api;
@@ -30,6 +42,7 @@ class AiResourceTest extends AbstractResourceTest {
     private AiService aiService;
 
     private final String TRANSLATE_URL = "/api/ai/translateJobDescriptionForJob";
+    private final String ANALYZE_URL = "/api/ai/analyze-job-description";
 
     private final String input = "Hello World";
 
@@ -40,7 +53,7 @@ class AiResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void translateJobDescriptionReturnsTranslatedText() {
+    void shouldReturnTranslatedTextWhenProfessorTranslatesJobDescription() {
         String mockTranslation = "Hallo Welt";
         String jobId = "job-1";
         String toLang = "de";
@@ -52,7 +65,7 @@ class AiResourceTest extends AbstractResourceTest {
 
         String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang + "&title=Test";
         AIJobDescriptionTranslationDTO response = api
-            .with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_PROFESSOR"))
+            .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
             .putAndRead(url, request, AIJobDescriptionTranslationDTO.class, 200);
 
         assertThat(response).isNotNull();
@@ -60,16 +73,67 @@ class AiResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void translateJobDescriptionAsStudentForbidden() {
+    void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
         String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api.with(JwtPostProcessors.jwtUser(UUID.randomUUID(), "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
+        api.with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
     }
 
     @Test
-    void translateJobDescriptionWithoutAuthReturnsForbidden() {
+    void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
         String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
         api.withoutPostProcessors().putAndRead(url, request, Void.class, 401);
+    }
+
+    @Test
+    void shouldReturnComplianceIssuesWhenProfessorAnalyzesJobDescription() {
+        List<ComplianceIssue> expectedIssues = List.of(
+            new ComplianceIssue("1", "CRITICAL_AGG", "I don't allow disabled applicants", "§ 1 AGG", "Discriminatory sentence", "REPLACE")
+        );
+
+        given(aiService.analyzeCurrentJobDescription(any(JobFormDTO.class), anyString())).willReturn(expectedIssues);
+
+        List<ComplianceIssue> response = api
+            .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
+            .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), new TypeReference<List<ComplianceIssue>>() {}, 200);
+
+        assertThat(response).hasSize(1);
+        assertThat(response.getFirst().getCategory()).isEqualTo("CRITICAL_AGG");
+    }
+
+    @Test
+    void shouldReturnForbiddenWhenApplicantAnalyzesJobDescription() {
+        api
+            .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
+            .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 403);
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenAnalyzeJobDescriptionWithoutAuthentication() {
+        api.withoutPostProcessors().postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 401);
+    }
+
+    private JobFormDTO createValidJobForm() {
+        return new JobFormDTO(
+            JOB_ID,
+            "Research Assistant",
+            "AI",
+            SubjectArea.COMPUTER_SCIENCE,
+            SUPERVISING_PROFESSOR_ID,
+            Campus.MUNICH,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "I don't allow disabled applicants",
+            "Ich erlaube keine Bewerber mit Behinderung",
+            JobState.DRAFT,
+            null,
+            true,
+            null,
+            null
+        );
     }
 }

@@ -1,4 +1,5 @@
 package de.tum.cit.aet.ai.service;
+
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ComplianceIssue {
+
     private String id;
     private String category;
     private String text;

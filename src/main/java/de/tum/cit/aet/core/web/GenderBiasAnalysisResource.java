@@ -42,7 +42,11 @@ public class GenderBiasAnalysisResource {
     }
 
     /**
-     * POST /api/gender-bias/analyze-html : Analyze HTML content (extract text first)
+     * POST /api/gender-bias/analyze-html :
+     * Extracts the readable plain text from the provided HTML content by removing all HTML tags,
+     * and then performs a gender bias analysis on the extracted text.
+     * Utilizes the HtmlTextExtractionService for text extraction and the GenderBiasAnalysisService for
+     * compliance analysis.
      *
      * @param request the HTML to analyze
      * @return the analysis result

@@ -2,8 +2,6 @@ package de.tum.cit.aet.ai.service;
 
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
@@ -34,6 +32,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
@@ -322,7 +322,7 @@ public class AiService {
                 )
                 .call()
                 .content();
-            complianceIssues = parseComplianceIssues(rawComplianceResponse);;
+            complianceIssues = parseComplianceIssues(rawComplianceResponse);
         } catch (Exception e) {
             log.warn("Compliance response parsing failed for jobId={}", jobId, e);
             throw new InternalServerException("Compliance analysis parsing failed", e);
@@ -350,6 +350,18 @@ public class AiService {
         }
     }
 
+    /**
+     * Parses compliance findings from the raw AI response.
+     * Supports both supported response shapes:
+     * - JSON array
+     * - object containing an issues array
+     * and removes optional Markdown code fences before parsing.
+     *
+     * @param raw raw AI response text
+     * @return parsed compliance issues, or an empty list if the input is blank
+     * @throws Exception if JSON parsing or mapping fails
+     */
+
     private List<ComplianceIssue> parseComplianceIssues(String raw) throws Exception {
         if (raw == null || raw.isBlank()) {
             return Collections.emptyList();
@@ -357,10 +369,7 @@ public class AiService {
 
         String normalized = raw.trim();
         if (normalized.startsWith("```")) {
-            normalized = normalized
-                .replaceFirst("^```(?:json)?\\s*", "")
-                .replaceFirst("\\s*```$", "")
-                .trim();
+            normalized = normalized.replaceFirst("^```(?:json)?\\s*", "").replaceFirst("\\s*```$", "").trim();
         }
 
         JsonNode root = objectMapper.readTree(normalized);
@@ -373,5 +382,4 @@ public class AiService {
         ComplianceIssue[] issues = objectMapper.treeToValue(issuesNode, ComplianceIssue[].class);
         return issues == null ? Collections.emptyList() : Arrays.asList(issues);
     }
-
 }
