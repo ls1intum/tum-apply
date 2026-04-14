@@ -144,6 +144,7 @@ public class EmailService {
      * @param body    the rendered HTML body
      */
     private void simulateEmail(Email email, String subject, String body) {
+        org.jsoup.nodes.Document parsedBody = Jsoup.parse(body);
         log.info(
             """
             >>>> Sending Simulated Email <<<<
@@ -151,13 +152,15 @@ public class EmailService {
               CC: {}
               BCC: {}
               Subject: {}
-              Parsed Body: {}
+              Anchor Hrefs: {}
+              Body HTML: {}
             """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),
             subject,
-            Jsoup.parse(body)
+            parsedBody.select("a[href]").eachAttr("href"),
+            body
         );
     }
 

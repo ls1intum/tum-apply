@@ -15,7 +15,7 @@ import de.tum.cit.aet.core.service.export.UserDataExportBuilder;
 import de.tum.cit.aet.core.service.export.UserDataSectionProvider;
 import de.tum.cit.aet.core.service.export.UserExportZipWriter;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.dto.DataExportEmailContext;
+import de.tum.cit.aet.notification.dto.DataExportEmailContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -258,7 +258,7 @@ public class UserDataExportService {
             .to(user)
             .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.DATA_EXPORT_READY)
-            .content(new DataExportEmailContext(user, downloadLink, exportExpiresDays))
+            .content(DataExportEmailContextDTO.fromUser(user, downloadLink, exportExpiresDays))
             .build();
 
         sender.sendAsync(email);

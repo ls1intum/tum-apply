@@ -8,8 +8,12 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ComplianceIssueDTO } from './compliance-issue-dto';
 
-export interface ComplianceResponseDTO {
-    readonly issues?: Array<ComplianceIssueDTO>;
+export interface ComplianceIssue {
+    readonly action?: string;
+    readonly article?: string;
+    readonly category?: string;
+    readonly explanation?: string;
+    readonly id?: string;
+    readonly text?: string;
 }

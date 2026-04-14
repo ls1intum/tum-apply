@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
@@ -14,13 +14,12 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 /**
  * A Job.
@@ -107,7 +106,7 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "gender_bias_score")
     private Integer genderBiasScore;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "compliance_analysis_json", columnDefinition = "json")
-    private ComplianceResponseDTO complianceAnalysis;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "job_compliance_issues", joinColumns = @JoinColumn(name = "job_id"))
+    private List<ComplianceIssue> complianceIssues = new ArrayList<>();
 }

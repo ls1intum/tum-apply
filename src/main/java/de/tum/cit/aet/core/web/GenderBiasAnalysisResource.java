@@ -4,10 +4,10 @@ import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
+import de.tum.cit.aet.core.service.HtmlTextExtractionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class GenderBiasAnalysisResource {
 
     private final GenderBiasAnalysisService analysisService;
+    private final HtmlTextExtractionService htmlTextExtractionService;
 
     /**
      * POST /api/gender-bias/analyze : Analyze text for gender bias
@@ -41,8 +42,11 @@ public class GenderBiasAnalysisResource {
     }
 
     /**
-     * POST /api/gender-bias/analyze-html : Analyze HTML content (extract text
-     * first)
+     * POST /api/gender-bias/analyze-html :
+     * Extracts the readable plain text from the provided HTML content by removing all HTML tags,
+     * and then performs a gender bias analysis on the extracted text.
+     * Utilizes the HtmlTextExtractionService for text extraction and the GenderBiasAnalysisService for
+     * compliance analysis.
      *
      * @param request the HTML to analyze
      * @return the analysis result
@@ -53,39 +57,10 @@ public class GenderBiasAnalysisResource {
         log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
 
         // Strip HTML tags to get plain text
-        String plainText = extractPlainText(request.text());
+        String plainText = htmlTextExtractionService.extractPlainText(request.text());
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
 
-        log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
-
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * POST /api/gender-bias/analyze-html : Analyze HTML content (extract text
-     * first)
-     *
-     * @param request the HTML to analyze for compliance calculation
-     * @return the analysis result
-     */
-    @ProfessorOrEmployee
-    @PostMapping("/analyze-job-description")
-    public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContentForCompliance(
-        @Valid @RequestBody GenderBiasAnalysisRequest request
-    ) {
-        log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
-
-        String plainText = extractPlainText(request.text());
-
-        GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
-
-        log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
-
-        return ResponseEntity.ok(response);
-    }
-
-    private String extractPlainText(String html) {
-        return Jsoup.parse(html == null ? "" : html).text();
     }
 }

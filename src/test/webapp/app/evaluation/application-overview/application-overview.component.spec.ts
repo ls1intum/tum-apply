@@ -211,7 +211,7 @@ describe('ApplicationOverviewComponent', () => {
       expect(call[0]).toEqual(['/evaluation/application']);
       expect(call[1].queryParams.applicationId).toBe('abc');
       expect(call[1].queryParams.sortBy).toBe('name');
-      expect(call[1].queryParams.sortDirection).toBe('DESC');
+      expect(call[1].queryParams.sortDir).toBe('DESC');
     });
   });
 

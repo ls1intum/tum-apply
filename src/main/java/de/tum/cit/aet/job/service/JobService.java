@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -191,7 +191,7 @@ public class JobService {
             job.getImage() != null ? job.getImage().getUrl() : null,
             job.getSuitableForDisabled(),
             job.getGenderBiasScore(),
-            job.getComplianceAnalysis()
+            job.getComplianceIssues()
         );
     }
 
@@ -465,18 +465,21 @@ public class JobService {
         jobRepository.save(job);
     }
 
-    public void updateAiAnalysis(UUID jobId, int score, ComplianceResponseDTO complianceAnalysis) {
+    /**
+     * Updates AI-generated analysis fields for a job.
+     *
+     * @param jobId the job identifier
+     * @param score the combined AI score to persist
+     * @param complianceAnalysis the compliance issues detected for the job description
+     */
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis) {
         if (jobId == null) {
             return;
         }
 
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         job.setGenderBiasScore(score);
-        job.setComplianceAnalysis(complianceAnalysis);
+        job.setComplianceIssues(complianceAnalysis);
         jobRepository.save(job);
-    }
-
-    private String sanitizeJobDescription(String html) {
-        return html == null ? null : HtmlSanitizer.sanitize(html);
     }
 }

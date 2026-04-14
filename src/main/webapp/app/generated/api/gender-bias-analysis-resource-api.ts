@@ -38,16 +38,6 @@ export class GenderBiasAnalysisResourceApi {
      * 
      * @param genderBiasAnalysisRequest 
      */
-    analyzeHtmlContentForCompliance(genderBiasAnalysisRequest: GenderBiasAnalysisRequest): Observable<GenderBiasAnalysisResponse> {
-        const url = `${this.basePath}/api/gender-bias/analyze-job-description`;
-        return this.http.post<GenderBiasAnalysisResponse>(url, genderBiasAnalysisRequest);
-    }
-
-    /**
-     * 
-     * 
-     * @param genderBiasAnalysisRequest 
-     */
     analyzeText(genderBiasAnalysisRequest: GenderBiasAnalysisRequest): Observable<GenderBiasAnalysisResponse> {
         const url = `${this.basePath}/api/gender-bias/analyze`;
         return this.http.post<GenderBiasAnalysisResponse>(url, genderBiasAnalysisRequest);

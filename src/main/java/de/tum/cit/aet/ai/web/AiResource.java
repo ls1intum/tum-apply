@@ -1,13 +1,14 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ComplianceResponseDTO;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -59,7 +60,8 @@ public class AiResource {
      *
      * @param jobId  the ID of the job for which the description is being translated
      * @param toLang the target language for translation ("de" or "en")
-     * @param request A DTO containing the text to translate, original analysis, and job context.
+     * @param title the title of job
+     * @param request A DTO containing the text to translate and original analysis
      * @return a ResponseEntity containing the translated text with language info
      */
     @ProfessorOrEmployeeOrAdmin
@@ -67,11 +69,12 @@ public class AiResource {
     public ResponseEntity<AIJobDescriptionTranslationDTO> translateJobDescriptionForJob(
         @RequestParam("jobId") String jobId,
         @RequestParam("toLang") String toLang,
+        @RequestParam("title") String title,
         @RequestBody TranslateComplianceDTO request
     ) {
         log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
         return ResponseEntity.ok(
-            aiService.translateAndPersistJobDescription(jobId, toLang, request.text(), request.originalAnalysis(), request.jobForm())
+            aiService.translateAndPersistJobDescription(jobId, toLang, title, request.text(), request.originalAnalysis())
         );
     }
 
@@ -104,7 +107,7 @@ public class AiResource {
 
     @ProfessorOrEmployeeOrAdmin
     @PostMapping(value = "analyze-job-description", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComplianceResponseDTO> analyzeJobDescriptionForCompliance(
+    public ResponseEntity<List<ComplianceIssue>> analyzeJobDescriptionForCompliance(
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {

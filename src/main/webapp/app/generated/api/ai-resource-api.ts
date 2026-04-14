@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ComplianceResponseDTO } from '../model/compliance-response-dto';
+import { ComplianceIssue } from '../model/compliance-issue';
 import { JobFormDTO } from '../model/job-form-dto';
 import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
 import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-translation-dto';
@@ -32,14 +32,14 @@ export class AiResourceApi {
      * @param lang 
      * @param jobFormDTO 
      */
-    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO): Observable<ComplianceResponseDTO> {
+    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO): Observable<Array<ComplianceIssue>> {
         const queryParams = new URLSearchParams();
         if (lang !== undefined && lang !== null) {
             queryParams.set('lang', String(lang));
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/analyze-job-description${queryString ? `?${queryString}` : ''}`;
-        return this.http.post<ComplianceResponseDTO>(url, jobFormDTO);
+        return this.http.post<Array<ComplianceIssue>>(url, jobFormDTO);
     }
 
     /**
@@ -82,15 +82,19 @@ export class AiResourceApi {
      * 
      * @param jobId 
      * @param toLang 
+     * @param title 
      * @param translateComplianceDTO 
      */
-    translateJobDescriptionForJob(jobId: string, toLang: string, translateComplianceDTO: TranslateComplianceDTO): Observable<AIJobDescriptionTranslationDTO> {
+    translateJobDescriptionForJob(jobId: string, toLang: string, title: string, translateComplianceDTO: TranslateComplianceDTO): Observable<AIJobDescriptionTranslationDTO> {
         const queryParams = new URLSearchParams();
         if (jobId !== undefined && jobId !== null) {
             queryParams.set('jobId', String(jobId));
         }
         if (toLang !== undefined && toLang !== null) {
             queryParams.set('toLang', String(toLang));
+        }
+        if (title !== undefined && title !== null) {
+            queryParams.set('title', String(title));
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/translateJobDescriptionForJob${queryString ? `?${queryString}` : ''}`;
