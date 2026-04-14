@@ -2,8 +2,9 @@ package de.tum.cit.aet.ai.service;
 
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
@@ -62,7 +63,9 @@ public class AiService {
 
     private final GenderBiasAnalysisService genderBiasAnalysisService;
 
-    private ComplianceService complianceService;
+    private final ComplianceService complianceService;
+
+    private final ObjectMapper objectMapper;
 
     public AiService(
         ChatClient.Builder chatClientBuilder,
@@ -71,7 +74,8 @@ public class AiService {
         DocumentDictionaryService documentDictionaryService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceService complianceService
+        ComplianceService complianceService,
+        ObjectMapper objectMapper
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
@@ -80,6 +84,7 @@ public class AiService {
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
         this.complianceService = complianceService;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -269,7 +274,7 @@ public class AiService {
      * @param lang The language identifier (de/en) currently active in the editor.
      * @return A list of compliance issues containing the combined legal and linguistic findings.
      */
-    public List<ComplianceIssueDTO> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang) {
+    public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang) {
         String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         String input = raw != null ? Jsoup.parse(raw).text() : "";
         GenderBiasAnalysisResponse genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
@@ -295,7 +300,7 @@ public class AiService {
      * @return A list containing all identified compliance issues.
      */
 
-    public List<ComplianceIssueDTO> analyzeJobDescription(
+    public List<ComplianceIssue> analyzeJobDescription(
         String title,
         UUID jobId,
         String text,
@@ -303,9 +308,10 @@ public class AiService {
         GenderBiasAnalysisResponse analysis,
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
-        List<ComplianceIssueDTO> complianceIssues;
+        List<ComplianceIssue> complianceIssues;
+        String rawComplianceResponse = null;
         try {
-            ComplianceIssueDTO[] parsedIssues = chatClient
+            rawComplianceResponse = chatClient
                 .prompt()
                 .user(u ->
                     u
@@ -315,11 +321,11 @@ public class AiService {
                         .param("title", title != null ? title : "")
                 )
                 .call()
-                .entity(ComplianceIssueDTO[].class);
-            complianceIssues = parsedIssues != null ? Arrays.stream(parsedIssues).toList() : Collections.emptyList();
+                .content();
+            complianceIssues = parseComplianceIssues(rawComplianceResponse);;
         } catch (Exception e) {
-            log.warn("Compliance response parsing failed for jobId={}, storing score without compliance details", jobId, e);
-            complianceIssues = Collections.emptyList();
+            log.warn("Compliance response parsing failed for jobId={}", jobId, e);
+            throw new InternalServerException("Compliance analysis parsing failed", e);
         }
 
         int genderScore = complianceService.calculateGenderScore(analysis, translatedAnalysis);
@@ -343,4 +349,29 @@ public class AiService {
             return null;
         }
     }
+
+    private List<ComplianceIssue> parseComplianceIssues(String raw) throws Exception {
+        if (raw == null || raw.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        String normalized = raw.trim();
+        if (normalized.startsWith("```")) {
+            normalized = normalized
+                .replaceFirst("^```(?:json)?\\s*", "")
+                .replaceFirst("\\s*```$", "")
+                .trim();
+        }
+
+        JsonNode root = objectMapper.readTree(normalized);
+        JsonNode issuesNode = root.isObject() && root.has("issues") ? root.get("issues") : root;
+
+        if (!issuesNode.isArray()) {
+            throw new IllegalArgumentException("Expected JSON array or object with 'issues' array");
+        }
+
+        ComplianceIssue[] issues = objectMapper.treeToValue(issuesNode, ComplianceIssue[].class);
+        return issues == null ? Collections.emptyList() : Arrays.asList(issues);
+    }
+
 }

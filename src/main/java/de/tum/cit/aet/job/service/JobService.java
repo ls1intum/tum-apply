@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
+import de.tum.cit.aet.ai.service.ComplianceIssue;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -191,7 +191,7 @@ public class JobService {
             job.getImage() != null ? job.getImage().getUrl() : null,
             job.getSuitableForDisabled(),
             job.getGenderBiasScore(),
-            job.getComplianceAnalysis()
+            job.getComplianceIssues()
         );
     }
 
@@ -465,14 +465,14 @@ public class JobService {
         jobRepository.save(job);
     }
 
-    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssueDTO> complianceAnalysis) {
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis) {
         if (jobId == null) {
             return;
         }
 
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         job.setGenderBiasScore(score);
-        job.setComplianceAnalysis(complianceAnalysis);
+        job.setComplianceIssues(complianceAnalysis);
         jobRepository.save(job);
     }
 }

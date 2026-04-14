@@ -8,10 +8,10 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { ComplianceIssueDTO } from './compliance-issue-dto';
+import type { ComplianceIssue } from './compliance-issue';
 
 export interface JobDTO {
-    readonly complianceAnalysis?: Array<ComplianceIssueDTO>;
+    readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
     readonly endDate?: string;
     readonly fundingType?: JobDTOFundingTypeEnum;

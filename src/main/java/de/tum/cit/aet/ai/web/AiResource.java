@@ -1,7 +1,7 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
-import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
+import de.tum.cit.aet.ai.service.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
@@ -107,7 +107,7 @@ public class AiResource {
 
     @ProfessorOrEmployeeOrAdmin
     @PostMapping(value = "analyze-job-description", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ComplianceIssueDTO>> analyzeJobDescriptionForCompliance(
+    public ResponseEntity<List<ComplianceIssue>> analyzeJobDescriptionForCompliance(
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {

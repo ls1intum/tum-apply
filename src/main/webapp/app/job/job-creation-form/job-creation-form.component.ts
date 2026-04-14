@@ -1281,7 +1281,7 @@ export class JobCreationFormComponent {
           jobId: saved.jobId ?? currentData.jobId,
 
           genderBiasScore: saved.genderBiasScore,
-          complianceAnalysis: saved.complianceAnalysis,
+          complianceIssues: saved.complianceIssues,
         };
         void this.analyzeAndUpdateScore(currentLang, analysisData);
         // fire-and-forget translation (don't block autosave UX)

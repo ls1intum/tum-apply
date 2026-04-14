@@ -1,9 +1,8 @@
 package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
+import de.tum.cit.aet.ai.service.ComplianceIssue;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
-import de.tum.cit.aet.job.constants.ComplianceCategory;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -18,17 +17,23 @@ public class ComplianceService {
     /**
      * Calculates a legal compliance score based on a hierarchical risk model.
      */
-    protected int calculateLegalScore(List<ComplianceIssueDTO> compliance) {
+    protected int calculateLegalScore(List<ComplianceIssue> compliance) {
         if (compliance == null || compliance.isEmpty()) {
             return 100;
         }
 
-        long criticalCount = compliance.stream().filter(i -> i.category() == ComplianceCategory.CRITICAL_AGG).count();
+        long criticalCount = compliance.stream()
+                .filter(i -> "CRITICAL_AGG".equals(i.getCategory()))
+                .count();
+
         if (criticalCount > 0) {
             return 0;
         }
 
-        long transparencyCount = compliance.stream().filter(i -> i.category() == ComplianceCategory.TRANSPARENCY).count();
+        long transparencyCount = compliance.stream()
+                .filter(i -> "TRANSPARENCY".equals(i.getCategory()))
+                .count();
+
         double score = 100.0 * Math.pow(PENALTY_FACTOR, transparencyCount);
         return (int) Math.max(0, Math.round(score));
     }

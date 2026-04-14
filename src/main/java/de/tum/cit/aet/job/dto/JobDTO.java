@@ -1,7 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.ai.dto.ComplianceIssueDTO;
+import de.tum.cit.aet.ai.service.ComplianceIssue;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -31,5 +31,5 @@ public record JobDTO(
     String imageUrl,
     Boolean suitableForDisabled,
     Integer genderBiasScore,
-    List<ComplianceIssueDTO> complianceAnalysis
+    List<ComplianceIssue> complianceIssues
 ) {}

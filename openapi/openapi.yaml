@@ -100,7 +100,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
+                items: {$ref: '#/components/schemas/ComplianceIssue'}
   /api/ai/extractPdfData:
     put:
       tags: [ai-resource]
@@ -2804,14 +2804,12 @@ components:
         deleteSlot: {type: boolean}
         sendReinvite: {type: boolean}
       required: [deleteSlot, sendReinvite]
-    ComplianceIssueDTO:
+    ComplianceIssue:
       type: object
       properties:
         action: {type: string}
         article: {type: string}
-        category:
-          type: string
-          enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
+        category: {type: string}
         explanation: {type: string}
         id: {type: string}
         text: {type: string}
@@ -3157,9 +3155,9 @@ components:
     JobDTO:
       type: object
       properties:
-        complianceAnalysis:
+        complianceIssues:
           type: array
-          items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
+          items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
         fundingType:
@@ -3272,9 +3270,9 @@ components:
     JobFormDTO:
       type: object
       properties:
-        complianceAnalysis:
+        complianceIssues:
           type: array
-          items: {$ref: '#/components/schemas/ComplianceIssueDTO'}
+          items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
         endDate: {type: string, format: date}
         fundingType:

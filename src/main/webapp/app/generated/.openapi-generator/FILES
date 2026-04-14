@@ -68,7 +68,7 @@ model/biased-word-dto.ts
 model/book-slot-request-dto.ts
 model/booking-dto.ts
 model/cancel-interview-dto.ts
-model/compliance-issue-dto.ts
+model/compliance-issue.ts
 model/conflict-data-dto.ts
 model/counts.ts
 model/create-slots-dto.ts

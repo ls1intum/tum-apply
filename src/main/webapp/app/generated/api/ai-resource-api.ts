@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ComplianceIssueDTO } from '../model/compliance-issue-dto';
+import { ComplianceIssue } from '../model/compliance-issue';
 import { JobFormDTO } from '../model/job-form-dto';
 import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
 import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-translation-dto';
@@ -32,14 +32,14 @@ export class AiResourceApi {
      * @param lang 
      * @param jobFormDTO 
      */
-    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO): Observable<Array<ComplianceIssueDTO>> {
+    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO): Observable<Array<ComplianceIssue>> {
         const queryParams = new URLSearchParams();
         if (lang !== undefined && lang !== null) {
             queryParams.set('lang', String(lang));
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/analyze-job-description${queryString ? `?${queryString}` : ''}`;
-        return this.http.post<Array<ComplianceIssueDTO>>(url, jobFormDTO);
+        return this.http.post<Array<ComplianceIssue>>(url, jobFormDTO);
     }
 
     /**
