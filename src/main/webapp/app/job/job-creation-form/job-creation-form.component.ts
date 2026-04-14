@@ -980,7 +980,7 @@ export class JobCreationFormComponent {
     this.jobDescriptionDE.set(saved.jobDescriptionDE ?? '');
     this.lastSavedData.set(saved);
 
-    if (saved.genderBiasScore != undefined) {
+    if (saved.genderBiasScore !== undefined) {
       this.aiScore.set(saved.genderBiasScore);
     }
 
@@ -1074,7 +1074,7 @@ export class JobCreationFormComponent {
     this.jobDescriptionDE.set(de);
     this.lastTranslatedDE.set(de);
 
-    if (job?.genderBiasScore != undefined) {
+    if (job?.genderBiasScore !== undefined) {
       this.aiScore.set(job.genderBiasScore);
     }
 
@@ -1254,7 +1254,7 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      if (saved.genderBiasScore != undefined) {
+      if (saved.genderBiasScore !== undefined) {
         this.aiScore.set(saved.genderBiasScore);
       }
 
@@ -1331,7 +1331,7 @@ export class JobCreationFormComponent {
       }
 
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-      if (updatedJob.genderBiasScore != undefined) {
+      if (updatedJob.genderBiasScore !== undefined) {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
 
@@ -1372,7 +1372,7 @@ export class JobCreationFormComponent {
     try {
       await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-      if (updatedJob.genderBiasScore != undefined) {
+      if (updatedJob.genderBiasScore !== undefined) {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
     } catch {
