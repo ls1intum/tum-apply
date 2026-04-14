@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
-import de.tum.cit.aet.ai.service.ComplianceIssue;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;

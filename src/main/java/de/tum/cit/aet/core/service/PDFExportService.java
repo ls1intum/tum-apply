@@ -627,7 +627,9 @@ public class PDFExportService {
      * @return              the display name of the country in the specified language, or "-" if the code is not provided
      */
     private String getCountry(String countryCode, String lang) {
-        if (!hasValue(countryCode)) return "-";
+        if (!hasValue(countryCode)) {
+            return "-";
+        }
         Locale countryLocale = Locale.of("", countryCode);
         Locale displayLanguage = Locale.of(lang);
         return countryLocale.getDisplayCountry(displayLanguage);

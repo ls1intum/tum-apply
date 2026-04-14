@@ -1,4 +1,4 @@
-package de.tum.cit.aet.ai.service;
+package de.tum.cit.aet.ai.dto;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

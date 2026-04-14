@@ -1,5 +1,6 @@
 package de.tum.cit.aet.ai.service;
 
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import java.util.Collections;

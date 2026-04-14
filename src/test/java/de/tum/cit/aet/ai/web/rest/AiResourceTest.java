@@ -9,7 +9,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
-import de.tum.cit.aet.ai.service.ComplianceIssue;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.web.AiResource;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;

@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.ai.service.ComplianceIssue;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -465,6 +465,13 @@ public class JobService {
         jobRepository.save(job);
     }
 
+    /**
+     * Updates AI-generated analysis fields for a job.
+     *
+     * @param jobId the job identifier
+     * @param score the combined AI score to persist
+     * @param complianceAnalysis the compliance issues detected for the job description
+     */
     public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis) {
         if (jobId == null) {
             return;
