@@ -66,7 +66,7 @@
 />
 @if (canManageSubjectAreaSubscriptions()) {
   <p class="mx-auto mt-5 mb-8 max-w-3xl text-center text-sm text-text-secondary">
-    <span>{{ 'jobOverviewPage.notificationsCta.text' | translate }}</span>
+    <span>{{ 'jobOverviewPage.notificationsCta.textPrefix' | translate }}</span>
     <a
       class="font-medium text-primary hover:underline"
       data-testid="notifications-settings-link"
@@ -75,5 +75,6 @@
     >
       {{ 'jobOverviewPage.notificationsCta.link' | translate }}
     </a>
+    <span>{{ 'jobOverviewPage.notificationsCta.textSuffix' | translate }}</span>
   </p>
 }
