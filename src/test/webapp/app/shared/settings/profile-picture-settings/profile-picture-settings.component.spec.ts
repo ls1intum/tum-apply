@@ -36,10 +36,10 @@ describe('ProfilePictureSettingsComponent', () => {
     return file;
   };
 
-  const createFileSelectionEvent = (file: File, value: string): Event => {
+  const createFileSelectionEvent = (file: File | undefined, value: string): Event => {
     const input = document.createElement('input');
     Object.defineProperty(input, 'files', {
-      value: [file],
+      value: file ? [file] : [],
     });
     input.value = value;
 
@@ -59,7 +59,11 @@ describe('ProfilePictureSettingsComponent', () => {
     translateUnit: 'px',
   };
 
-  const getButtons = () => fixture.debugElement.queryAll(By.directive(ButtonComponent));
+  const getButtonByIcon = (icon: string) =>
+    fixture.debugElement
+      .queryAll(By.directive(ButtonComponent))
+      .find(debugElement => (debugElement.componentInstance as ButtonComponent).icon() === icon);
+
   const setImageCropper = (cropper: ImageCropperTestDouble | undefined): void => {
     Object.assign(component, {
       imageCropper: () => cropper,
@@ -123,13 +127,19 @@ describe('ProfilePictureSettingsComponent', () => {
     const fileInput = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
     const clickSpy = vi.spyOn(fileInput, 'click');
 
-    (getButtons()[0].nativeElement as HTMLElement).click();
+    const editButton = getButtonByIcon('pen');
+    expect(editButton).not.toBeUndefined();
+
+    (editButton!.nativeElement as HTMLElement).click();
     expect(clickSpy).toHaveBeenCalledOnce();
 
     accountServiceMock.user.update(currentUser => (currentUser ? Object.assign({}, currentUser, { avatar: undefined }) : currentUser));
     fixture.detectChanges();
 
-    const removeButton = getButtons()[1].componentInstance as ButtonComponent;
+    const removeButtonDebugElement = getButtonByIcon('trash');
+    expect(removeButtonDebugElement).not.toBeUndefined();
+
+    const removeButton = removeButtonDebugElement!.componentInstance as ButtonComponent;
     expect(removeButton.disabled()).toBe(true);
   });
 
@@ -148,6 +158,34 @@ describe('ProfilePictureSettingsComponent', () => {
     expect(component.cropDialogVisible()).toBe(true);
     expect(component.cropTransform).toEqual(defaultTransform);
     expect((validEvent.target as HTMLInputElement).value).toBe('');
+  });
+
+  it('should ignore empty file selection and reset the crop dialog on cancel', () => {
+    const selectedFile = createMockFile('avatar.jpg', 'image/jpeg', 1024);
+    component.selectedFile.set(selectedFile);
+    component.cropDialogVisible.set(true);
+    component.imageLoaded.set(true);
+    component.onTransformChange({
+      scale: 2,
+      rotate: 90,
+      flipH: true,
+      flipV: false,
+      translateH: 8,
+      translateV: 12,
+      translateUnit: '%',
+    });
+
+    component.onFileSelected(createFileSelectionEvent(undefined, ''));
+
+    expect(component.selectedFile()).toBe(selectedFile);
+    expect(component.cropDialogVisible()).toBe(true);
+
+    component.onCancel();
+
+    expect(component.selectedFile()).toBeUndefined();
+    expect(component.cropDialogVisible()).toBe(false);
+    expect(component.imageLoaded()).toBe(false);
+    expect(component.cropTransform).toEqual(defaultTransform);
   });
 
   it('should update crop state and reset on image load failure', () => {
@@ -198,6 +236,11 @@ describe('ProfilePictureSettingsComponent', () => {
     await component.onSave();
 
     setImageCropper({
+      crop: vi.fn().mockResolvedValue(undefined),
+    });
+    await component.onSave();
+
+    setImageCropper({
       crop: vi.fn().mockResolvedValue({ blob: undefined }),
     });
     await component.onSave();
@@ -206,13 +249,18 @@ describe('ProfilePictureSettingsComponent', () => {
     setImageCropper({
       crop: vi.fn().mockResolvedValue({ blob }),
     });
+    imageApiMock.uploadProfilePicture.mockReturnValue(of({ imageId: 'img-1', url: '   ' }));
+
+    await component.onSave();
+
     imageApiMock.uploadProfilePicture.mockReturnValue(throwError(() => new Error('upload failed')));
 
     await component.onSave();
 
-    expect(imageApiMock.uploadProfilePicture).toHaveBeenCalledOnce();
+    expect(imageApiMock.uploadProfilePicture).toHaveBeenCalledTimes(2);
     expect(accountServiceMock.setAvatar).not.toHaveBeenCalled();
-    expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.profilePicture.saveFailed');
+    expect(toastServiceMock.showErrorKey).toHaveBeenNthCalledWith(1, 'settings.profilePicture.saveFailed');
+    expect(toastServiceMock.showErrorKey).toHaveBeenNthCalledWith(2, 'settings.profilePicture.saveFailed');
   });
 
   it('should remove the current profile picture', async () => {
