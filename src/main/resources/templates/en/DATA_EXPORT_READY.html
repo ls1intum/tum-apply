@@ -2,8 +2,13 @@
 
 <p>Your data export is ready. You can download it using the link below:</p>
 
-<p>
-  <a href="${(DOWNLOAD_LINK!'')?no_esc}" style="display:inline-block;padding:10px 18px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Download data export</a>
+<p style="margin: 1.25rem 0">
+  <a
+    href="${DOWNLOAD_LINK}"
+    style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; background-color: #3070b3; color: #ffffff; text-decoration: none; border-radius: 0.375rem; font-weight: 600"
+  >
+    Data export
+  </a>
 </p>
 
 <p>The link expires after ${EXPORT_EXPIRES_DAYS!} days.</p>
