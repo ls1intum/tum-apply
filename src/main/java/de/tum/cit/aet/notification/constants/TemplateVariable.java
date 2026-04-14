@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TemplateVariable {
+    APPLICATION_LINK("APPLICATION_LINK"),
     APPLICANT_FIRST_NAME("APPLICANT_FIRST_NAME"),
     APPLICANT_LAST_NAME("APPLICANT_LAST_NAME"),
     APPLICANT_GENDER("APPLICANT_GENDER"),

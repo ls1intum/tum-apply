@@ -96,7 +96,7 @@ public class TemplateProcessingService {
 
             Template inlineTemplate = new Template(
                 templateName,
-                new StringReader(emailTemplateTranslation.getBodyHtml()),
+                new StringReader(asHtmlTemplate(emailTemplateTranslation.getBodyHtml())),
                 freemarkerConfig
             );
 
@@ -111,6 +111,10 @@ public class TemplateProcessingService {
                 ex
             );
         }
+    }
+
+    private String asHtmlTemplate(String html) {
+        return "<#ftl output_format=\"HTML\">" + System.lineSeparator() + html;
     }
 
     /**
@@ -184,9 +188,7 @@ public class TemplateProcessingService {
             case DataExportEmailContextDTO ctx -> addDataExportContextData(dataModel, ctx);
             case JobPublicationEmailContextDTO ctx -> addJobPublicationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
-            default -> {
-                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
-            }
+            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
         return dataModel;
     }
@@ -201,6 +203,10 @@ public class TemplateProcessingService {
         User applicant = application.getApplicant().getUser();
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), applicant.getLastName());
+
+        String applicationLink =
+            url + "/evaluation/application?sortBy=appliedAt&sortDir=DESC&applicationId=" + application.getApplicationId();
+        dataModel.put(TemplateVariable.APPLICATION_LINK.getValue(), applicationLink);
 
         addJobData(dataModel, application.getJob());
     }
