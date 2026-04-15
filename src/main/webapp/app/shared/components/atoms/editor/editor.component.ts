@@ -15,17 +15,25 @@ import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analys
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
-
 import { BaseInputDirective } from '../base-input/base-input.component';
-
 import Quill from 'quill';
 
 const Inline = Quill.import('blots/inline') as any;
 
+/**
+ * Custom Quill Blot for highlighting text with Tailwind utility classes.
+ * This teaches Quill how to render our custom compliance highlights safely
+ * without destroying the classes when the user types in the editor.
+ */
 class HighlightBlot extends Inline {
+  // unique ID used to trigger editor.formatText()
   static blotName = 'customHighlight';
+  // HTML tag that will wrap the highlighted text
   static tagName = 'span';
+  // CSS class that allows Quill to identify elements in DOM
   static className = 'compliance-highlight';
+
+  // Tailwind classes applied to every highlighted text span
   static utilityClasses = [
     'border-b-2',
     '[border-bottom-style:solid]',
@@ -39,9 +47,14 @@ class HighlightBlot extends Inline {
     'hover:[background-color:var(--highlight-bg)]',
   ];
 
+  /**
+   * Factory method called by Quill to create the DOM node.
+   * @param value The color variable passed
+   */
   static create(value: string) {
     const node = super.create() as HTMLElement;
-    node.classList.add(...HighlightBlot.utilityClasses);
+    HighlightBlot.utilityClasses.forEach(cls => node.classList.add(cls));
+    // Sets variables with the specific severity color and its hover background
     node.style.setProperty('--highlight-color', value);
     node.style.setProperty('--highlight-bg', `color-mix(in srgb, ${value} 18%, transparent)`);
     return node;
@@ -52,7 +65,7 @@ class HighlightBlot extends Inline {
   }
 }
 
-// Bei Quill registrieren
+// Register in Quill so the editor recognizes it
 Quill.register(HighlightBlot);
 
 const STANDARD_CHARACTER_LIMIT = 500;
@@ -329,16 +342,6 @@ export class EditorComponent extends BaseInputDirective<string> {
       }
     }
   }
-
-  /** Clears all highlights */
-  public clearHighlights(): void {
-    const editor = this.quillEditorComponent()?.quillEditor;
-    if (!editor) return;
-    editor.formatText(0, editor.getLength(), 'background', false);
-    editor.formatText(0, editor.getLength(), 'customHighlight', false);
-  }
-
-
 
   private mapToLanguageCode(francCode: string): string {
     const validCodes = ['deu', 'eng', 'und'] as const;

@@ -19,4 +19,5 @@ public class ComplianceIssue {
     private String article;
     private String explanation;
     private String action;
+    private String language;
 }

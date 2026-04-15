@@ -3125,6 +3125,7 @@ components:
         category: {type: string}
         explanation: {type: string}
         id: {type: string}
+        language: {type: string}
         text: {type: string}
     ConflictDataDTO:
       type: object

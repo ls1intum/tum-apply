@@ -324,6 +324,7 @@ public class AiService {
                 .call()
                 .content();
             complianceIssues = parseComplianceIssues(rawComplianceResponse);
+            complianceIssues.forEach(issue -> issue.setLanguage(lang));
         } catch (Exception e) {
             log.warn("Compliance response parsing failed for jobId={}", jobId, e);
             throw new InternalServerException("Compliance analysis parsing failed", e);

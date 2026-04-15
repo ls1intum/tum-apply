@@ -54,7 +54,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
-import {ComplianceResponseDTO} from "app/generated/model/compliance-response-dto";
+import { ComplianceIssue } from 'app/generated/model/compliance-issue';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -229,11 +229,14 @@ export class JobCreationFormComponent {
   private researchGroupApi = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AI SCORE SIGNALS
+  // AI SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Score shown in the AI sidebar */
   readonly aiScore = signal<number>(0);
+
+  /** List of detected compliance issues to update the UI and editor highlights */
+  readonly complianceIssues = signal<ComplianceIssue[]>([]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -529,6 +532,10 @@ export class JobCreationFormComponent {
     this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
     this.jobDescriptionSignal.set(targetContent);
     this.jobDescriptionEditor()?.forceUpdate(targetContent);
+
+    setTimeout(() => {
+      this.applyHighlights(this.complianceIssues(), newLanguage);
+    }, 50);
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -680,18 +687,22 @@ export class JobCreationFormComponent {
   // AI COMPLIANCE METHODS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  private applyHighlights(compliance: ComplianceResponseDTO | undefined, job: JobDTO): void {
+  /**
+   * Applies highlights to the editor based on compliance issues.
+   * Issues are filtered by language, and colors are assigned based on category.
+   * @param compliance List of issues to process
+   * @param lang The current language of the editor content
+   */
+  private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
     const highlights: Array<{ text: string; color: string }> = [];
 
-    // Compliance issues
-    for (const issue of compliance?.issues ?? []) {
-      if (!issue.text) continue;
-      const color = issue.category === 'CRITICAL_AGG'
-        ? 'var(--color-negative-DEFAULT)'
-        : 'var(--color-warning-DEFAULT)';
-      highlights.push({ text: issue.text, color });
-    }
+    const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
 
+    for (const issues of filtered) {
+      if (!issues.text) continue;
+      const color = issues.category === 'CRITICAL_AGG' ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
+      highlights.push({ text: issues.text, color });
+    }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 
@@ -1002,6 +1013,9 @@ export class JobCreationFormComponent {
 
     if (saved.genderBiasScore !== undefined) {
       this.aiScore.set(saved.genderBiasScore);
+    }
+    if (saved.complianceIssues) {
+      this.complianceIssues.set(saved.complianceIssues);
     }
 
     // keep editor in sync with selected language (without triggering autosave loop)
@@ -1355,6 +1369,19 @@ export class JobCreationFormComponent {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
 
+      // Update the analysis for the target language while preserving issues found in other languages
+      if (updatedJob.complianceIssues) {
+        const existingLang = this.complianceIssues().filter(issue => issue.language === currentLang);
+        const incomingLang = updatedJob.complianceIssues.filter(issue => issue.language === targetLang);
+        const combined = existingLang.concat(incomingLang);
+        this.complianceIssues.set(combined);
+
+        // applies highlights if editor currently shows translated language
+        if (this.currentDescriptionLanguage() === targetLang) {
+          setTimeout(() => this.applyHighlights(combined, targetLang), 50);
+        }
+      }
+
       // Keep lastSavedData in sync so hasUnsavedChanges stays stable
       const lastSaved = this.lastSavedData();
       if (lastSaved) {
@@ -1391,11 +1418,23 @@ export class JobCreationFormComponent {
 
     try {
       const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
+      const otherLang = lang === 'en' ? 'de' : 'en';
+      const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);
+
+      const incomingLang = (compliance ?? []).map(issue => {
+        const copy: any = structuredClone(issue);
+        copy.language = lang;
+        return copy;
+      });
+
+      this.complianceIssues.set(existingLang.concat(incomingLang));
+
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
       if (updatedJob.genderBiasScore !== undefined) {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
-      this.applyHighlights(compliance, updatedJob);
+      this.applyHighlights(compliance, lang);
     } catch {
       // silent error
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
