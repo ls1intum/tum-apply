@@ -8,11 +8,14 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { ComplianceIssue } from './compliance-issue';
 
 export interface JobFormDTO {
+    readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
     readonly endDate?: string;
     readonly fundingType?: JobFormDTOFundingTypeEnum;
+    readonly genderBiasScore?: number;
     readonly imageId?: string;
     readonly jobDescriptionDE?: string;
     readonly jobDescriptionEN?: string;

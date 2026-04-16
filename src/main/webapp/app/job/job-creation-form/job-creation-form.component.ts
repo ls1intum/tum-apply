@@ -25,7 +25,6 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
-import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
@@ -37,6 +36,7 @@ import { JobFormDTO } from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
+import { TranslateComplianceDTO } from 'app/generated/model/translate-compliance-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
@@ -227,21 +227,13 @@ export class JobCreationFormComponent {
   private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
   private researchGroupApi = inject(ResearchGroupResourceApi);
-  private genderBiasAnalysisService = inject(GenderBiasAnalysisService);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI SCORE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Latest gender decoder result for the job description */
-  readonly jobDescriptionAnalysis = toSignal(this.genderBiasAnalysisService.getAnalysisForField('jobDescription'), {
-    initialValue: undefined,
-  });
-
   /** Score shown in the AI sidebar */
-  readonly aiScore = computed(() =>
-    this.genderBiasAnalysisService.calculateScore(this.jobDescriptionAnalysis(), this.jobDescriptionSignal()),
-  );
+  readonly aiScore = signal<number>(0);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -955,6 +947,7 @@ export class JobCreationFormComponent {
     const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
 
     return {
+      jobId: this.jobId() || undefined,
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
       subjectArea: basicInfoValue.subjectArea?.value as JobFormDTOSubjectAreaEnum,
@@ -964,8 +957,8 @@ export class JobCreationFormComponent {
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
-      startDate: positionDetailsValue.startDate ?? '',
-      endDate: positionDetailsValue.applicationDeadline ?? '',
+      startDate: positionDetailsValue.startDate ?? undefined,
+      endDate: positionDetailsValue.applicationDeadline ?? undefined,
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
@@ -978,6 +971,7 @@ export class JobCreationFormComponent {
   /**
    * Applies server-returned job data to local state.
    * Used after save operations to sync with server-side changes.
+   * Also reads genderBiasScore from the server response to update the AI score ring.
    *
    * @param saved - The job form DTO returned from the server
    */
@@ -986,6 +980,10 @@ export class JobCreationFormComponent {
     this.jobDescriptionEN.set(saved.jobDescriptionEN ?? '');
     this.jobDescriptionDE.set(saved.jobDescriptionDE ?? '');
     this.lastSavedData.set(saved);
+
+    if (saved.genderBiasScore !== undefined) {
+      this.aiScore.set(saved.genderBiasScore);
+    }
 
     // keep editor in sync with selected language (without triggering autosave loop)
     const lang = this.currentDescriptionLanguage();
@@ -1076,6 +1074,10 @@ export class JobCreationFormComponent {
     this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
     this.lastTranslatedDE.set(de);
+
+    if (job?.genderBiasScore !== undefined) {
+      this.aiScore.set(job.genderBiasScore);
+    }
 
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
@@ -1215,7 +1217,7 @@ export class JobCreationFormComponent {
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
         void this.performAutoSave();
-      }, 3000);
+      }, 5000);
     });
   }
 
@@ -1253,10 +1255,14 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
+      if (saved.genderBiasScore !== undefined) {
+        this.aiScore.set(saved.genderBiasScore);
+      }
 
       this.savingState.set('SAVED');
 
       if (this.aiToggleSignal()) {
+        void this.analyzeAndUpdateScore(currentLang, saved);
         // fire-and-forget translation (don't block autosave UX)
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
@@ -1268,6 +1274,7 @@ export class JobCreationFormComponent {
 
   private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
     const jobId = this.jobId();
+    const title = this.basicInfoForm.get('title')?.value ?? '';
     const text = currentText.trim();
     if (!jobId || !text) return;
 
@@ -1279,8 +1286,14 @@ export class JobCreationFormComponent {
     const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
 
     this.isTranslating.set(true);
+
+    const translateDTO: TranslateComplianceDTO = {
+      text,
+      originalAnalysis: undefined,
+    };
+
     try {
-      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, text));
+      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, title, translateDTO));
 
       const translatedText = (response.translatedText ?? '').trim();
       if (!translatedText) return;
@@ -1294,6 +1307,11 @@ export class JobCreationFormComponent {
         this.jobDescriptionDE.set(translatedText);
         this.lastTranslatedDE.set(translatedText);
         this.lastTranslatedEN.set(text);
+      }
+
+      const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
+      if (updatedJob.genderBiasScore !== undefined) {
+        this.aiScore.set(updatedJob.genderBiasScore);
       }
 
       // Keep lastSavedData in sync so hasUnsavedChanges stays stable
@@ -1323,6 +1341,22 @@ export class JobCreationFormComponent {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
       this.isTranslating.set(false);
+    }
+  }
+
+  private async analyzeAndUpdateScore(lang: string, jobForm: JobFormDTO): Promise<void> {
+    const jobId = this.jobId();
+    if (!jobId) return;
+
+    try {
+      await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
+      if (updatedJob.genderBiasScore !== undefined) {
+        this.aiScore.set(updatedJob.genderBiasScore);
+      }
+    } catch {
+      // silent error
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
     }
   }
 

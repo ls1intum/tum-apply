@@ -424,7 +424,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "Stellenbeschreibung",
                 JobState.DRAFT,
                 null,
-                true
+                true,
+                null,
+                null
             );
             Map<String, String> labels = createCompleteLabelsMap();
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels);
@@ -488,7 +490,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "Beschreibung",
                 JobState.DRAFT,
                 null,
-                true
+                true,
+                null,
+                null
             );
 
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap());

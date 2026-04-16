@@ -37,9 +37,17 @@ export class AiScoreRingComponent {
     return 'var(--color-primary-default)';
   });
 
+  private isFirstRender = true;
+
   private animationEffect = effect(onCleanup => {
     const targetScore = this.boundedScore();
     let currentScore = this.animatedScore();
+
+    if (this.isFirstRender) {
+      this.isFirstRender = false;
+      this.animatedScore.set(targetScore);
+      return;
+    }
 
     if (targetScore === currentScore) {
       return;

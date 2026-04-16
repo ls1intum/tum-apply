@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.constants.Campus;
@@ -10,6 +11,7 @@ import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -29,7 +31,9 @@ public record JobFormDTO(
     String jobDescriptionDE,
     @NotNull JobState state,
     UUID imageId, // Optional job banner image
-    Boolean suitableForDisabled // Position suitable for persons with severe disabilities
+    Boolean suitableForDisabled, // Position suitable for persons with severe disabilities
+    Integer genderBiasScore,
+    List<ComplianceIssue> complianceIssues
 ) {
     /**
      * Converts a Job entity to a form DTO.
@@ -60,7 +64,9 @@ public record JobFormDTO(
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
-            job.getSuitableForDisabled()
+            job.getSuitableForDisabled(),
+            job.getGenderBiasScore(),
+            job.getComplianceIssues()
         );
     }
 }

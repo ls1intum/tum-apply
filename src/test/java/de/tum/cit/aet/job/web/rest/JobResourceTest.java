@@ -100,7 +100,9 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobDescriptionDE(),
             JobState.DRAFT,
             imageId,
-            true
+            true,
+            null,
+            null
         );
     }
 
@@ -196,7 +198,9 @@ class JobResourceTest extends AbstractResourceTest {
             "ML Pipeline erstellen",
             JobState.PUBLISHED,
             null,
-            true
+            true,
+            null,
+            null
         );
 
         JobFormDTO returned = api
@@ -287,7 +291,9 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             JobState.DRAFT,
             null,
-            true
+            true,
+            null,
+            null
         );
         MvcTestClient client = role != null ? api.with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), role)) : api;
         client.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
@@ -313,7 +319,9 @@ class JobResourceTest extends AbstractResourceTest {
             "Neue Beschreibung",
             JobState.DRAFT,
             null,
-            true
+            true,
+            null,
+            null
         );
 
         JobFormDTO returnedJob = api
@@ -356,7 +364,9 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             JobState.DRAFT,
             null,
-            true
+            true,
+            null,
+            null
         );
 
         api
@@ -385,7 +395,9 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             JobState.DRAFT,
             null,
-            true
+            true,
+            null,
+            null
         );
         MvcTestClient client = role != null ? api.with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), role)) : api;
         client.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);

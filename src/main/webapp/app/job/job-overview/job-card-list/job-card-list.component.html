@@ -65,9 +65,16 @@
   [tableStyle]="{ width: '100%' }"
 />
 @if (canManageSubjectAreaSubscriptions()) {
-  <div
-    class="mx-auto mt-5 mb-8 max-w-3xl text-center text-sm text-text-secondary"
-    jhiTranslate="jobOverviewPage.notificationsCta.text"
-    [translateValues]="notificationsCtaTranslateValues()"
-  ></div>
+  <p class="mx-auto mt-5 mb-8 max-w-3xl text-center text-sm text-text-secondary">
+    <span>{{ 'jobOverviewPage.notificationsCta.textPrefix' | translate }}</span>
+    <a
+      class="font-medium text-primary hover:underline"
+      data-testid="notifications-settings-link"
+      [routerLink]="['/settings']"
+      [queryParams]="{ tab: 'notifications' }"
+    >
+      {{ 'jobOverviewPage.notificationsCta.link' | translate }}
+    </a>
+    <span>{{ 'jobOverviewPage.notificationsCta.textSuffix' | translate }}</span>
+  </p>
 }

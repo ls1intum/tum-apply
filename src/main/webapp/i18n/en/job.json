@@ -264,6 +264,10 @@
       "aiGenerationFailed": {
         "summary": "AI Generation Failed",
         "detail": "Could not generate the job description. Please try again."
+      },
+      "aiComplianceFailed": {
+        "summary": "Compliance check failed",
+        "detail": "The content does not meet the required guidelines."
       }
     }
   },
@@ -300,8 +304,9 @@
     },
     "hoursPerWeek": "{{workload}} h/week",
     "notificationsCta": {
-      "text": "No suitable job? Receive {{link}}.",
-      "link": "notifications"
+      "textPrefix": "No suitable job? Receive",
+      "link": "notifications",
+      "textSuffix": "."
     },
     "errors": {
       "loadFilter": {
