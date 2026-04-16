@@ -36,6 +36,7 @@ import { JobFormDTO } from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
+import { TranslateComplianceDTO } from 'app/generated/model/translate-compliance-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
@@ -1261,29 +1262,7 @@ export class JobCreationFormComponent {
       this.savingState.set('SAVED');
 
       if (this.aiToggleSignal()) {
-        const analysisData: JobFormDTO = {
-          title: saved.title,
-          researchArea: saved.researchArea,
-          subjectArea: saved.subjectArea,
-          supervisingProfessor: saved.supervisingProfessor,
-          location: saved.location,
-
-          jobDescriptionEN: this.jobDescriptionEN() || undefined,
-          jobDescriptionDE: this.jobDescriptionDE() || undefined,
-
-          startDate: saved.startDate,
-          endDate: saved.endDate,
-          workload: saved.workload,
-          contractDuration: saved.contractDuration,
-          fundingType: saved.fundingType,
-          imageId: saved.imageId,
-          state: saved.state,
-          jobId: saved.jobId ?? currentData.jobId,
-
-          genderBiasScore: saved.genderBiasScore,
-          complianceIssues: saved.complianceIssues,
-        };
-        void this.analyzeAndUpdateScore(currentLang, analysisData);
+        void this.analyzeAndUpdateScore(currentLang, saved);
         // fire-and-forget translation (don't block autosave UX)
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
@@ -1308,13 +1287,13 @@ export class JobCreationFormComponent {
 
     this.isTranslating.set(true);
 
-    const request = {
+    const translateDTO: TranslateComplianceDTO = {
       text,
       originalAnalysis: undefined,
     };
 
     try {
-      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, title, request));
+      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, title, translateDTO));
 
       const translatedText = (response.translatedText ?? '').trim();
       if (!translatedText) return;
