@@ -2807,9 +2807,13 @@ components:
     ComplianceIssue:
       type: object
       properties:
-        action: {type: string}
+        action:
+          type: string
+          enum: [REPLACE, ADD, REMOVE]
         article: {type: string}
-        category: {type: string}
+        category:
+          type: string
+          enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
         explanation: {type: string}
         id: {type: string}
         text: {type: string}

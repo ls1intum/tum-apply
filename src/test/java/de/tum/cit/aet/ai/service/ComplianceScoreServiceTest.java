@@ -2,6 +2,8 @@ package de.tum.cit.aet.ai.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.tum.cit.aet.ai.constants.ComplianceAction;
+import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
@@ -9,18 +11,18 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ComplianceServiceTest {
+class ComplianceScoreServiceTest {
 
-    private ComplianceService complianceService;
+    private ComplianceScoreService complianceScoreService;
 
     @BeforeEach
     void setUp() {
-        complianceService = new ComplianceService();
+        complianceScoreService = new ComplianceScoreService();
     }
 
     @Test
     void shouldReturnHundredLegalScoreWhenComplianceIssuesAreEmpty() {
-        int score = complianceService.calculateLegalScore(List.of());
+        int score = complianceScoreService.calculateLegalScore(List.of());
 
         assertThat(score).isEqualTo(100);
     }
@@ -28,10 +30,17 @@ class ComplianceServiceTest {
     @Test
     void shouldReturnZeroLegalScoreWhenCriticalAggIssueExists() {
         List<ComplianceIssue> issues = List.of(
-            new ComplianceIssue("1", "CRITICAL_AGG", "I don't allow disabled applicants", "§ 1 AGG", "Discriminatory sentence", "REPLACE")
+            new ComplianceIssue(
+                "1",
+                ComplianceCategory.CRITICAL_AGG,
+                "I don't allow disabled applicants",
+                "§ 1 AGG",
+                "Discriminatory sentence",
+                ComplianceAction.REPLACE
+            )
         );
 
-        int score = complianceService.calculateLegalScore(issues);
+        int score = complianceScoreService.calculateLegalScore(issues);
 
         assertThat(score).isZero();
     }
@@ -39,11 +48,25 @@ class ComplianceServiceTest {
     @Test
     void shouldApplyTransparencyPenaltyWhenOnlyTransparencyIssuesExist() {
         List<ComplianceIssue> issues = List.of(
-            new ComplianceIssue("1", "TRANSPARENCY", "Shared with partner A", "Art. 13 DSGVO", "Missing disclosure", "ADD"),
-            new ComplianceIssue("2", "TRANSPARENCY", "Shared with partner B", "Art. 13 DSGVO", "Missing disclosure", "ADD")
+            new ComplianceIssue(
+                "1",
+                ComplianceCategory.TRANSPARENCY,
+                "Shared with partner A",
+                "Art. 13 DSGVO",
+                "Missing disclosure",
+                ComplianceAction.ADD
+            ),
+            new ComplianceIssue(
+                "2",
+                ComplianceCategory.TRANSPARENCY,
+                "Shared with partner B",
+                "Art. 13 DSGVO",
+                "Missing disclosure",
+                ComplianceAction.ADD
+            )
         );
 
-        int score = complianceService.calculateLegalScore(issues);
+        int score = complianceScoreService.calculateLegalScore(issues);
 
         assertThat(score).isEqualTo(72);
     }
@@ -63,7 +86,7 @@ class ComplianceServiceTest {
             "de"
         );
 
-        int score = complianceService.calculateGenderScore(original, translated);
+        int score = complianceScoreService.calculateGenderScore(original, translated);
 
         assertThat(score).isEqualTo(86);
     }
@@ -77,7 +100,7 @@ class ComplianceServiceTest {
             "en"
         );
 
-        int score = complianceService.calculateGenderScore(original, null);
+        int score = complianceScoreService.calculateGenderScore(original, null);
 
         assertThat(score).isEqualTo(71);
     }

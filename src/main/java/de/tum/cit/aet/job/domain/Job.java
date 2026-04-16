@@ -106,7 +106,7 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "gender_bias_score")
     private Integer genderBiasScore;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "job_compliance_issues", joinColumns = @JoinColumn(name = "job_id"))
     private List<ComplianceIssue> complianceIssues = new ArrayList<>();
 }

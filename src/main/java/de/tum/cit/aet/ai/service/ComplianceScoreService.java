@@ -1,5 +1,6 @@
 package de.tum.cit.aet.ai.service;
 
+import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
@@ -8,7 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ComplianceService {
+public class ComplianceScoreService {
 
     private static final double FACTOR_NEUTRAL = 1.0;
     private static final double FACTOR_NON_INCLUSIVE = 0.5;
@@ -35,7 +36,7 @@ public class ComplianceService {
 
         long criticalCount = compliance
             .stream()
-            .filter(i -> "CRITICAL_AGG".equals(i.getCategory()))
+            .filter(i -> ComplianceCategory.CRITICAL_AGG == i.getCategory())
             .count();
 
         if (criticalCount > 0) {
@@ -44,7 +45,7 @@ public class ComplianceService {
 
         long transparencyCount = compliance
             .stream()
-            .filter(i -> "TRANSPARENCY".equals(i.getCategory()))
+            .filter(i -> ComplianceCategory.TRANSPARENCY == i.getCategory())
             .count();
 
         double score = 100.0 * Math.pow(PENALTY_FACTOR, transparencyCount);
