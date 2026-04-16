@@ -150,7 +150,7 @@ paths:
       - name: jobId
         in: query
         required: true
-        schema: {type: string}
+        schema: {type: string, format: uuid}
       - name: toLang
         in: query
         required: true
