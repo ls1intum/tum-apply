@@ -15,6 +15,7 @@ import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { createAccountServiceMock, provideAccountServiceMock } from 'src/test/webapp/util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
+import { getRequiredAnchor } from 'src/test/webapp/util/utility-methods/dom-query.util';
 
 describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
@@ -351,12 +352,11 @@ describe('JobCardListComponent', () => {
     const navigateByUrlSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
     fixture.detectChanges();
-    const link = fixture.nativeElement.querySelector('[data-testid="notifications-settings-link"]') as HTMLAnchorElement | null;
+    const link = getRequiredAnchor(fixture.nativeElement, '[data-testid="notifications-settings-link"]');
 
-    expect(link).not.toBeNull();
-    expect(link?.getAttribute('href')).toContain('/settings?tab=notifications');
+    expect(link.getAttribute('href')).toContain('/settings?tab=notifications');
 
-    link?.click();
+    link.click();
     await fixture.whenStable();
 
     expect(navigateByUrlSpy).toHaveBeenCalledOnce();
