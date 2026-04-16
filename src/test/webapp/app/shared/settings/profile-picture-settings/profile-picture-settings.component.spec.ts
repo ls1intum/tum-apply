@@ -4,13 +4,12 @@ import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImageCropperComponent } from 'ngx-image-cropper';
 
-import { AccountService } from 'app/core/auth/account.service';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ProfilePictureSettingsComponent } from 'app/shared/settings/profile-picture-settings/profile-picture-settings.component';
-import { createAccountServiceMock } from 'util/account.service.mock';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideThemeServiceMock } from 'util/theme.service.mock';
 import { createToastServiceMock } from 'util/toast-service.mock';
@@ -90,7 +89,7 @@ describe('ProfilePictureSettingsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ProfilePictureSettingsComponent],
       providers: [
-        { provide: AccountService, useValue: accountServiceMock },
+        provideAccountServiceMock(accountServiceMock),
         { provide: ImageResourceApi, useValue: imageApiMock },
         { provide: UserResourceApi, useValue: userApiMock },
         { provide: ToastService, useValue: toastServiceMock },
