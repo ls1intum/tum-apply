@@ -5,4 +5,3 @@ export const getRequiredAnchor = (root: ParentNode, selector: string): HTMLAncho
   }
   return element;
 };
-
