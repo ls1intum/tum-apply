@@ -57,7 +57,6 @@ class AiResourceTest extends AbstractResourceTest {
     @Test
     void shouldReturnTranslatedTextWhenProfessorTranslatesJobDescription() {
         String mockTranslation = "Hallo Welt";
-        String jobId = "job-1";
         String toLang = "de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
 
@@ -65,7 +64,7 @@ class AiResourceTest extends AbstractResourceTest {
             new AIJobDescriptionTranslationDTO(mockTranslation)
         );
 
-        String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang + "&title=Test";
+        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=" + toLang + "&title=Test";
         AIJobDescriptionTranslationDTO response = api
             .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
             .putAndRead(url, request, AIJobDescriptionTranslationDTO.class, 200);
@@ -76,14 +75,14 @@ class AiResourceTest extends AbstractResourceTest {
 
     @Test
     void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
-        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
+        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=de&title=Test";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
         api.with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
     }
 
     @Test
     void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
-        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
+        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=de&title=Test";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
         api.withoutPostProcessors().putAndRead(url, request, Void.class, 401);
     }
