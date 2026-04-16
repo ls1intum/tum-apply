@@ -264,6 +264,10 @@
       "aiGenerationFailed": {
         "summary": "AI Generation Failed",
         "detail": "Could not generate the job description. Please try again."
+      },
+      "aiComplianceFailed": {
+        "summary": "Compliance check failed",
+        "detail": "The content does not meet the required guidelines."
       }
     }
   },
