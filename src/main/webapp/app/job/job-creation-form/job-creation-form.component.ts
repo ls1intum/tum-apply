@@ -805,8 +805,12 @@ export class JobCreationFormComponent {
             this.jobDescriptionDE.set(finalContent);
           }
 
-          // 6) Immediately save + analyze + translate (skip autosave delay)
+          // 6) Immediately save + analyze + translate (skip autosave delay).
+          //    Pre-set isAnalyzing so isScoreProcessing stays true when
+          //    isGeneratingDraft goes false in finally (postGenerationSaveAndProcess
+          //    is async and hasn't reached its own pre-set yet).
           this.syncCurrentEditorIntoLanguageSignals();
+          this.isAnalyzing.set(true);
           void this.postGenerationSaveAndProcess(language, finalContent);
         } else {
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
@@ -861,6 +865,7 @@ export class JobCreationFormComponent {
       }
     } catch {
       this.savingState.set('FAILED');
+      this.isAnalyzing.set(false);
       this.toastService.showErrorKey('toast.saveFailed');
     }
   }
