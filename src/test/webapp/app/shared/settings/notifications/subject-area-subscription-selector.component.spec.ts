@@ -5,6 +5,7 @@ import { FilterChange, FilterMultiselect } from 'app/shared/components/atoms/fil
 import { SubjectAreaSubscriptionSelectorComponent } from 'app/shared/settings/notifications/subject-area-subscription-selector.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
+import { getRequiredButton, getRequiredParagraph } from 'util/utility-methods/dom-query.util';
 
 describe('SubjectAreaSubscriptionSelectorComponent', () => {
   let fixture: ComponentFixture<SubjectAreaSubscriptionSelectorComponent>;
@@ -59,10 +60,8 @@ describe('SubjectAreaSubscriptionSelectorComponent', () => {
   });
 
   it('should render the empty state when no subject areas are selected and the dropdown is closed', () => {
-    const emptyState = fixture.nativeElement.querySelector('p.text-text-secondary');
-
-    expect(emptyState).toBeTruthy();
-    expect(emptyState?.textContent).toContain('settings.notifications.applicant.subjectAreas.emptySelection');
+    const emptyState = getRequiredParagraph(fixture.nativeElement, 'p.text-text-secondary');
+    expect(emptyState.textContent).toContain('settings.notifications.applicant.subjectAreas.emptySelection');
   });
 
   it('should render selected subject area chips when the dropdown is closed', () => {
@@ -110,8 +109,8 @@ describe('SubjectAreaSubscriptionSelectorComponent', () => {
     });
     const emitSpy = vi.spyOn(component.removeSubjectArea, 'emit');
 
-    const removeButton = fixture.nativeElement.querySelector('button[aria-label]') as HTMLButtonElement | null;
-    removeButton?.click();
+    const removeButton = getRequiredButton(fixture.nativeElement, 'button[aria-label]');
+    removeButton.click();
 
     expect(component['removingSubjectArea']()).toBe(SubjectAreaEnum.ComputerScience);
     expect(emitSpy).not.toHaveBeenCalled();

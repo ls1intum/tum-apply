@@ -10,6 +10,7 @@ import { JobCardDTOSubjectAreaEnum as ApplicantSubjectAreaSubscriptionsEnum } fr
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { getRequiredDiv } from 'util/utility-methods/dom-query.util';
 
 const RolesEnum = UserShortDTORolesEnum;
 const EmailTypeEnum = EmailSettingDTOEmailTypeEnum;
@@ -27,6 +28,14 @@ describe('NotificationSettingsComponent', () => {
   const applicantApiMock = createApplicantResourceApiMock();
   const toastServiceMock = createToastServiceMock();
   const subjectAreaSubscriptions = () => component['subjectAreaSubscriptions'];
+  const getSubmissionGroup = () => {
+    const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
+    const group = groups.find(entry => entry.groupKey.includes('submission'));
+    if (!group) {
+      throw new Error('Expected applicant submission notification group');
+    }
+    return group;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -74,8 +83,7 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      expect(groups.find(group => group.groupKey.includes('submission'))?.enabled).toBe(false);
+      expect(getSubmissionGroup().enabled).toBe(false);
       expect(component['loaded']()).toBe(true);
     });
 
@@ -101,9 +109,7 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      const submissionGroup = groups.find(group => group.groupKey.includes('submission'));
-      expect(submissionGroup?.enabled).toBe(true);
+      expect(getSubmissionGroup().enabled).toBe(true);
       expect(component['loaded']()).toBe(true);
     });
 
@@ -155,11 +161,11 @@ describe('NotificationSettingsComponent', () => {
       fixture.detectChanges();
 
       const renderedText = fixture.nativeElement.textContent ?? '';
-      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+      const animatedContainer = getRequiredDiv(fixture.nativeElement, '[aria-hidden]');
 
       expect(renderedText).toContain('settings.notifications.applicant.subjectAreas.title');
-      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('false');
-      expect(animatedContainer?.className).toContain('max-h-screen');
+      expect(animatedContainer.getAttribute('aria-hidden')).toBe('false');
+      expect(animatedContainer.className).toContain('max-h-screen');
     });
 
     it('should keep the subject area selector collapsed when the notification toggle is disabled', async () => {
@@ -173,10 +179,10 @@ describe('NotificationSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Applicant);
       fixture.detectChanges();
 
-      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+      const animatedContainer = getRequiredDiv(fixture.nativeElement, '[aria-hidden]');
 
-      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('true');
-      expect(animatedContainer?.className).toContain('max-h-0');
+      expect(animatedContainer.getAttribute('aria-hidden')).toBe('true');
+      expect(animatedContainer.className).toContain('max-h-0');
     });
 
     it('should not render the subject area section for non-applicant roles', async () => {
