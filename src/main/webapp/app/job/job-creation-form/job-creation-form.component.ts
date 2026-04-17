@@ -1493,10 +1493,21 @@ export class JobCreationFormComponent {
 
     this.isAnalyzing.set(true);
     try {
-      await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
-      const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-      if (updatedJob.genderBiasScore !== undefined) {
-        this.aiScore.set(updatedJob.genderBiasScore);
+      const complianceIssues = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+
+      // The analysis endpoint persists the score on the backend.
+      // Fetch the updated job to retrieve it. Retry once if the score
+      // is still missing (DB transaction may not have committed yet).
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
+        if (updatedJob.genderBiasScore !== undefined && updatedJob.genderBiasScore !== null) {
+          this.aiScore.set(updatedJob.genderBiasScore);
+          return;
+        }
+        // Short wait before retry to allow the DB transaction to settle
+        if (attempt === 0) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
