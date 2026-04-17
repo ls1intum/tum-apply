@@ -290,6 +290,23 @@ export class SettingsDocumentsComponent {
     this.queuedReferenceFiles.set(files);
   }
 
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.form;
+    const patch: Record<string, string> = {};
+
+    const edu = extractedData.education;
+    if (edu) {
+      setIfEmpty(form, patch, 'bachelorDegreeName', edu.bachelorDegreeName);
+      setIfEmpty(form, patch, 'bachelorDegreeUniversity', edu.bachelorUniversity);
+      setIfEmpty(form, patch, 'bachelorGrade', edu.bachelorGrade);
+      setIfEmpty(form, patch, 'masterDegreeName', edu.masterDegreeName);
+      setIfEmpty(form, patch, 'masterDegreeUniversity', edu.masterUniversity);
+      setIfEmpty(form, patch, 'masterGrade', edu.masterGrade);
+    }
+
+    form.patchValue(patch);
+  }
+
   // Loads the persisted profile + document state and resets the change-tracking baseline to that backend snapshot.
   private async loadProfile(): Promise<void> {
     try {
@@ -347,23 +364,6 @@ export class SettingsDocumentsComponent {
     }
   }
 
-  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
-    const form = this.form;
-    const patch: Record<string, string> = {};
-
-    const edu = extractedData.education;
-    if (edu) {
-      setIfEmpty(form, patch, 'bachelorDegreeName', edu.bachelorDegreeName);
-      setIfEmpty(form, patch, 'bachelorDegreeUniversity', edu.bachelorUniversity);
-      setIfEmpty(form, patch, 'bachelorGrade', edu.bachelorGrade);
-      setIfEmpty(form, patch, 'masterDegreeName', edu.masterDegreeName);
-      setIfEmpty(form, patch, 'masterDegreeUniversity', edu.masterUniversity);
-      setIfEmpty(form, patch, 'masterGrade', edu.masterGrade);
-    }
-
-    form.patchValue(patch);
-  }
-
   private updateBachelorGradeLimits(grade: string): void {
     this.lastBachelorGrade.set(grade);
     const limits = getDetectedGradeLimitsPatch(grade);
@@ -403,17 +403,12 @@ export class SettingsDocumentsComponent {
     };
   }
 
-  // Sorts by stable backend id so document comparisons stay insensitive to UI ordering.
-  private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
-    return this.profileDocumentService.normalizedDocuments(docs);
-  }
-
   // Persists the current form/document state as the new clean baseline after a successful load or save.
   private storeInitialStateSnapshot(): void {
     this.initialFormValue.set(this.normalizedFormValue());
-    this.initialBachelorDocuments.set(this.normalizedDocuments(this.bachelorDocuments()));
-    this.initialMasterDocuments.set(this.normalizedDocuments(this.masterDocuments()));
-    this.initialReferenceDocuments.set(this.normalizedDocuments(this.referenceDocuments()));
+    this.initialBachelorDocuments.set(this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()));
+    this.initialMasterDocuments.set(this.profileDocumentService.normalizedDocuments(this.masterDocuments()));
+    this.initialReferenceDocuments.set(this.profileDocumentService.normalizedDocuments(this.referenceDocuments()));
 
     this.queuedBachelorFiles.set([]);
     this.queuedMasterFiles.set([]);

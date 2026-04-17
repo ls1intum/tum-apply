@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import {
   DocumentInformationHolderDTO,
@@ -9,11 +9,10 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ProfileDocumentService {
-  constructor(
-    private http: HttpClient,
-    private applicantApi: ApplicantResourceApi,
-  ) {}
+  private readonly http = inject(HttpClient);
+  private readonly applicantApi = inject(ApplicantResourceApi);
 
+  // Sorts by stable server id so document comparisons stay insensitive to UI ordering.
   normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
     return Array.from(docs ?? [])
       .map(doc => ({
@@ -52,7 +51,10 @@ export class ProfileDocumentService {
     }
   }
 
-  uploadApplicantProfileDocument(documentType: DocumentInformationHolderDTODocumentTypeEnum, file: File) {
+  uploadApplicantProfileDocument(
+    documentType: DocumentInformationHolderDTODocumentTypeEnum,
+    file: File,
+  ): Observable<DocumentInformationHolderDTO[]> {
     const formData = new FormData();
     formData.append('files', file);
     return this.http.post<DocumentInformationHolderDTO[]>(`/api/applicants/profile/documents/${documentType}`, formData);

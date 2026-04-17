@@ -5,7 +5,7 @@
       @if (applicationId(); as currentApplicationId) {
         <div class="w-full">
           <div>
-            <span>{{ bachelorCertificateLabelKey() | translate }}</span>
+            <span>{{ bachelorCertificateLabelKey | translate }}</span>
             @if (required()) {
               <span class="required"> *</span>
             }
@@ -17,7 +17,7 @@
             />
           </div>
           <jhi-upload-button
-            [documentType]="bachelorDocumentType()"
+            [documentType]="DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript"
             [applicationId]="currentApplicationId"
             [(documentIds)]="bachelorDocumentIds"
             [deferUpload]="deferUpload()"
@@ -31,7 +31,7 @@
       @if (applicationId(); as currentApplicationId) {
         <div class="w-full">
           <div>
-            <span>{{ masterCertificateLabelKey() | translate }}</span>
+            <span>{{ masterCertificateLabelKey | translate }}</span>
             @if (required()) {
               <span class="required"> *</span>
             }
@@ -43,7 +43,7 @@
             />
           </div>
           <jhi-upload-button
-            [documentType]="masterDocumentType()"
+            [documentType]="DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript"
             [applicationId]="currentApplicationId"
             [(documentIds)]="masterDocumentIds"
             [deferUpload]="deferUpload()"
@@ -72,25 +72,25 @@
     <div class="flex flex-col w-full">
       <jhi-string-input
         class="mr-4 block w-full"
-        [label]="bachelorDegreeNameLabelKey() | translate"
+        [label]="bachelorDegreeNameLabelKey | translate"
         [required]="required()"
         [control]="bachelorDegreeNameControl()"
       />
 
       <jhi-string-input
         class="mr-4 block w-full"
-        [label]="bachelorDegreeUniversityLabelKey() | translate"
+        [label]="bachelorDegreeUniversityLabelKey | translate"
         [required]="required()"
         [control]="bachelorDegreeUniversityControl()"
       />
 
       <jhi-string-input
         class="mr-4 block w-full"
-        [label]="bachelorGradeLabelKey() | translate"
+        [label]="bachelorGradeLabelKey | translate"
         [required]="required()"
         [control]="bachelorGradeControl()"
         icon="circle-info"
-        [tooltipText]="bachelorGradeTooltipKey() | translate"
+        [tooltipText]="bachelorGradeTooltipKey | translate"
         [helperTextLeft]="bachelorGradeHelperText()"
         [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
         (helperTextRightClick)="bachelorChangeScale.emit()"
@@ -101,25 +101,25 @@
     <div class="flex flex-col w-full">
       <jhi-string-input
         class="mr-4 block w-full"
-        [label]="masterDegreeNameLabelKey() | translate"
+        [label]="masterDegreeNameLabelKey | translate"
         [required]="required()"
         [control]="masterDegreeNameControl()"
       />
 
       <jhi-string-input
         class="mr-4 block w-full"
-        [label]="masterDegreeUniversityLabelKey() | translate"
+        [label]="masterDegreeUniversityLabelKey | translate"
         [required]="required()"
         [control]="masterDegreeUniversityControl()"
       />
 
       <jhi-string-input
         class="mr-4 block w-full"
-        [label]="masterGradeLabelKey() | translate"
+        [label]="masterGradeLabelKey | translate"
         [required]="required()"
         [control]="masterGradeControl()"
         icon="circle-info"
-        [tooltipText]="masterGradeTooltipKey() | translate"
+        [tooltipText]="masterGradeTooltipKey | translate"
         [helperTextLeft]="masterGradeHelperText()"
         [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
         (helperTextRightClick)="masterChangeScale.emit()"

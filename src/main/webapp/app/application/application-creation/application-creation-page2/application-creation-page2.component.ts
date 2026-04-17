@@ -14,7 +14,6 @@ import {
   hasGradeLimits,
   resolveGradingScaleLimits,
 } from 'app/shared/util/grading-scale.utils';
-
 import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
@@ -187,7 +186,7 @@ export default class ApplicationCreationPage2Component {
     });
   });
 
-  public bachelorGradeEffect = effect(() => {
+  private bachelorGradeEffect = effect(() => {
     if (!this.hasInitialLimitsSet()) return;
 
     const grade = this.bachelorGradeValue();

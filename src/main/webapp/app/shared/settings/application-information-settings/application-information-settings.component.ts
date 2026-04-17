@@ -18,14 +18,14 @@ import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
+import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
-import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -125,7 +125,7 @@ export class ApplicationInformationSettingsComponent {
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
   http = inject(HttpClient);
-  private profileDocumentService = inject(ProfileDocumentService);
+  profileDocumentService = inject(ProfileDocumentService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -328,37 +328,8 @@ export class ApplicationInformationSettingsComponent {
     await this.loadApplicationInformation();
   }
 
-  private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {
-    return {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      gender: data.gender?.value,
-      nationality: data.nationality?.value,
-      dateOfBirth: data.dateOfBirth,
-      website: data.website,
-      linkedIn: data.linkedIn,
-      street: data.street,
-      city: data.city,
-      country: data.country?.value,
-      postcode: data.postcode,
-    };
-  }
-
-  // -- CV document helpers (subset of logic from SettingsDocumentsComponent) --
   onCvQueuedFilesChange(files: File[]): void {
     this.queuedCvFiles.set(files);
-  }
-  private async saveDeferredCvChanges(): Promise<void> {
-    // Commit persisted doc changes (delete/rename) for CV
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
-    // Upload queued CV files
-    const latest = await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.Cv,
-      this.queuedCvFiles(),
-    );
-    if (latest) this.cvDocuments.set(latest);
   }
 
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
@@ -375,5 +346,34 @@ export class ApplicationInformationSettingsComponent {
     setIfEmpty(form, patch, 'postcode', extractedData.postalCode);
 
     form.patchValue(patch);
+  }
+
+  private async saveDeferredCvChanges(): Promise<void> {
+    // Commit persisted doc changes (delete/rename) for CV
+    await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
+    // Upload queued CV files
+    const latest = await this.profileDocumentService.uploadQueuedByType(
+      DocumentInformationHolderDTODocumentTypeEnum.Cv,
+      this.queuedCvFiles(),
+    );
+    if (latest) this.cvDocuments.set(latest);
+  }
+
+  private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {
+    return {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      gender: data.gender?.value,
+      nationality: data.nationality?.value,
+      dateOfBirth: data.dateOfBirth,
+      website: data.website,
+      linkedIn: data.linkedIn,
+      street: data.street,
+      city: data.city,
+      country: data.country?.value,
+      postcode: data.postcode,
+    };
   }
 }

@@ -68,16 +68,16 @@ export class DegreeDocumentSectionComponent {
 
   readonly combinedQueuedFiles = computed(() => [...this.bachelorQueuedFiles(), ...this.masterQueuedFiles()]);
 
-  readonly bachelorCertificateLabelKey = computed(() => `entity.applicationPage2.label.bachelorCertificate`);
-  readonly masterCertificateLabelKey = computed(() => `entity.applicationPage2.label.masterCertificate`);
-  readonly bachelorDegreeNameLabelKey = computed(() => `entity.applicationPage2.label.bachelorDegreeName`);
-  readonly masterDegreeNameLabelKey = computed(() => `entity.applicationPage2.label.masterDegreeName`);
-  readonly bachelorDegreeUniversityLabelKey = computed(() => `entity.applicationPage2.label.bachelorDegreeUniversity`);
-  readonly masterDegreeUniversityLabelKey = computed(() => `entity.applicationPage2.label.masterDegreeUniversity`);
-  readonly bachelorGradeLabelKey = computed(() => `entity.applicationPage2.label.bachelorGrade`);
-  readonly masterGradeLabelKey = computed(() => `entity.applicationPage2.label.masterGrade`);
-  readonly bachelorGradeTooltipKey = computed(() => `entity.applicationPage2.tooltip.bachelorGrade`);
-  readonly masterGradeTooltipKey = computed(() => `entity.applicationPage2.tooltip.masterGrade`);
-  readonly bachelorDocumentType = computed(() => DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript);
-  readonly masterDocumentType = computed(() => DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript);
+  readonly bachelorCertificateLabelKey = 'entity.applicationPage2.label.bachelorCertificate';
+  readonly masterCertificateLabelKey = 'entity.applicationPage2.label.masterCertificate';
+  readonly bachelorDegreeNameLabelKey = 'entity.applicationPage2.label.bachelorDegreeName';
+  readonly masterDegreeNameLabelKey = 'entity.applicationPage2.label.masterDegreeName';
+  readonly bachelorDegreeUniversityLabelKey = 'entity.applicationPage2.label.bachelorDegreeUniversity';
+  readonly masterDegreeUniversityLabelKey = 'entity.applicationPage2.label.masterDegreeUniversity';
+  readonly bachelorGradeLabelKey = 'entity.applicationPage2.label.bachelorGrade';
+  readonly masterGradeLabelKey = 'entity.applicationPage2.label.masterGrade';
+  readonly bachelorGradeTooltipKey = 'entity.applicationPage2.tooltip.bachelorGrade';
+  readonly masterGradeTooltipKey = 'entity.applicationPage2.tooltip.masterGrade';
+
+  protected readonly DocumentInformationHolderDTODocumentTypeEnum = DocumentInformationHolderDTODocumentTypeEnum;
 }

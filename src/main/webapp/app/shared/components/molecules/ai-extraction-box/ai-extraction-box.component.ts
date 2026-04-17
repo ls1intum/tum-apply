@@ -10,9 +10,10 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
+import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
+
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
-import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 import TranslateDirective from '../../../language/translate.directive';
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
@@ -69,10 +70,6 @@ export class AiExtractionBoxComponent {
   private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
 
-  constructor() {
-    void this.loadAiConsent();
-  }
-
   // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
   private restoreExtractionState = effect(() => {
     const key = this.extractionKey();
@@ -85,6 +82,9 @@ export class AiExtractionBoxComponent {
     }
   });
 
+  constructor() {
+    void this.loadAiConsent();
+  }
   extractAiData(): void {
     const key = this.extractionKey();
     const appId = this.applicationId();

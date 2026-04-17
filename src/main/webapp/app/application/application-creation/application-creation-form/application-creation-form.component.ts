@@ -23,19 +23,6 @@ import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationForApplicantDTOApplicationStateEnum } from 'app/generated/model/application-for-applicant-dto';
-
-import ApplicationCreationPage1Component, {
-  ApplicationCreationPage1Data,
-  getPage1FromApplication,
-} from '../application-creation-page1/application-creation-page1.component';
-import ApplicationCreationPage3Component, {
-  ApplicationCreationPage3Data,
-  getPage3FromApplication,
-} from '../application-creation-page3/application-creation-page3.component';
-import ApplicationCreationPage2Component, {
-  ApplicationCreationPage2Data,
-  getPage2FromApplication,
-} from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { ApplicationDetailDTO } from 'app/generated/model/application-detail-dto';
@@ -45,6 +32,19 @@ import { ApplicationResourceApi } from 'app/generated/api/application-resource-a
 import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
+
+import ApplicationCreationPage2Component, {
+  ApplicationCreationPage2Data,
+  getPage2FromApplication,
+} from '../application-creation-page2/application-creation-page2.component';
+import ApplicationCreationPage3Component, {
+  ApplicationCreationPage3Data,
+  getPage3FromApplication,
+} from '../application-creation-page3/application-creation-page3.component';
+import ApplicationCreationPage1Component, {
+  ApplicationCreationPage1Data,
+  getPage1FromApplication,
+} from '../application-creation-page1/application-creation-page1.component';
 
 const applyflow = 'entity.toast.applyFlow';
 
