@@ -16,6 +16,7 @@ import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.constants.SubjectArea;
 import de.tum.cit.aet.job.dto.JobFormDTO;
+import org.springframework.http.MediaType;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import java.util.List;
@@ -62,7 +63,9 @@ class AiResourceTest extends AbstractResourceTest {
         given(aiService.translateTextStream(anyString(), anyString())).willReturn(Flux.just("Hallo", " Welt"));
 
         String url = TRANSLATE_STREAM_URL + "?toLang=" + toLang;
-        api.with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR")).putAndRead(url, request, String.class, 200);
+        api
+            .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
+            .putAndRead(url, request, Void.class, 200, MediaType.TEXT_EVENT_STREAM);
     }
 
     @Test
