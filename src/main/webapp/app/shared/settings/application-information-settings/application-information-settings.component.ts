@@ -24,7 +24,7 @@ import { DatePickerComponent } from '../../components/atoms/datepicker/datepicke
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
-import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -370,20 +370,15 @@ export class ApplicationInformationSettingsComponent {
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
     const form = this.applicationInfoForm();
     const patch: Record<string, string> = {};
-    const setIfEmpty = (formKey: string, value: string | undefined): void => {
-      if (value !== undefined && (form.get(formKey)?.value as string) === '') {
-        patch[formKey] = value;
-      }
-    };
 
-    setIfEmpty('firstName', extractedData.firstName);
-    setIfEmpty('lastName', extractedData.lastName);
-    setIfEmpty('phoneNumber', extractedData.phoneNumber);
-    setIfEmpty('website', extractedData.website);
-    setIfEmpty('linkedIn', extractedData.linkedinUrl);
-    setIfEmpty('street', extractedData.street);
-    setIfEmpty('city', extractedData.city);
-    setIfEmpty('postcode', extractedData.postalCode);
+    setIfEmpty(form, patch, 'firstName', extractedData.firstName);
+    setIfEmpty(form, patch, 'lastName', extractedData.lastName);
+    setIfEmpty(form, patch, 'phoneNumber', extractedData.phoneNumber);
+    setIfEmpty(form, patch, 'website', extractedData.website);
+    setIfEmpty(form, patch, 'linkedIn', extractedData.linkedinUrl);
+    setIfEmpty(form, patch, 'street', extractedData.street);
+    setIfEmpty(form, patch, 'city', extractedData.city);
+    setIfEmpty(form, patch, 'postcode', extractedData.postalCode);
 
     form.patchValue(patch);
   }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, computed, effect, inject, input, output, signal } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom, shareReplay } from 'rxjs';
@@ -153,3 +154,14 @@ export class AiExtractionBoxComponent {
     }
   }
 }
+
+/**
+ * Helper: set a patch field if the corresponding form control is empty.
+ * Exported so consumers (pages) can reuse the same logic when applying AI-extracted values.
+ */
+export function setIfEmpty(form: FormGroup, patch: Record<string, string>, formKey: string, value: string | undefined): void {
+  if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+    patch[formKey] = value;
+  }
+}
+

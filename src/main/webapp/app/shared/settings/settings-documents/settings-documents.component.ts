@@ -27,6 +27,7 @@ import {
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
@@ -340,20 +341,15 @@ export class SettingsDocumentsComponent {
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
     const form = this.form;
     const patch: Record<string, string> = {};
-    const setIfEmpty = (formKey: string, value: string | undefined): void => {
-      if (value !== undefined && (form.get(formKey)?.value as string) === '') {
-        patch[formKey] = value;
-      }
-    };
 
     const edu = extractedData.education;
     if (edu) {
-      setIfEmpty('bachelorDegreeName', edu.bachelorDegreeName);
-      setIfEmpty('bachelorDegreeUniversity', edu.bachelorUniversity);
-      setIfEmpty('bachelorGrade', edu.bachelorGrade);
-      setIfEmpty('masterDegreeName', edu.masterDegreeName);
-      setIfEmpty('masterDegreeUniversity', edu.masterUniversity);
-      setIfEmpty('masterGrade', edu.masterGrade);
+      setIfEmpty(form, patch, 'bachelorDegreeName', edu.bachelorDegreeName);
+      setIfEmpty(form, patch, 'bachelorDegreeUniversity', edu.bachelorUniversity);
+      setIfEmpty(form, patch, 'bachelorGrade', edu.bachelorGrade);
+      setIfEmpty(form, patch, 'masterDegreeName', edu.masterDegreeName);
+      setIfEmpty(form, patch, 'masterDegreeUniversity', edu.masterUniversity);
+      setIfEmpty(form, patch, 'masterGrade', edu.masterGrade);
     }
 
     form.patchValue(patch);
