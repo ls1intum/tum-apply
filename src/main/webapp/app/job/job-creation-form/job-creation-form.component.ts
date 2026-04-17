@@ -1181,6 +1181,7 @@ export class JobCreationFormComponent {
     this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
     this.lastTranslatedDE.set(de);
+    this.lastAnalyzedText = en;
 
     if (job?.genderBiasScore !== undefined) {
       this.aiScore.set(job.genderBiasScore);
