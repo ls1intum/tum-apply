@@ -28,7 +28,8 @@
           label="?"
           severity="primary"
           variant="outlined"
-          styleClass="!flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
+          size="xs"
+          class="[&_button]:flex [&_button]:h-6 [&_button]:w-7 [&_button]:min-w-5 [&_button]:shrink-0 [&_button]:items-center [&_button]:justify-center [&_button]:rounded-full [&_button]:border [&_button]:border-primary-default [&_button]:bg-background-default [&_button]:p-0 [&_button]:text-xs [&_button]:font-bold [&_button]:leading-none [&_button]:text-text-secondary hover:[&_button]:text-primary-default"
           (click)="openAiInfoDialog()"
         />
       </div>
@@ -432,7 +433,8 @@
     [appendTo]="'body'"
     header="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.title"
     (visibleChange)="aiInfoDialogVisible.set($event)"
-    styleClass="!w-[90vw] md:!w-[36rem]"
+    width="36rem"
+    maxWidth="90vw"
   >
     <div class="space-y-4 text-sm leading-relaxed text-text-primary">
       <p>
