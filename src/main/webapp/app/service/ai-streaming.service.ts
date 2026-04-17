@@ -90,12 +90,7 @@ export class AiStreamingService {
    * @param signal Optional AbortSignal for cancellation support
    * @returns Promise resolving to the full accumulated content
    */
-  private async streamSSE(
-    url: string,
-    body: string,
-    onChunk: (accumulatedContent: string) => void,
-    signal?: AbortSignal,
-  ): Promise<string> {
+  private async streamSSE(url: string, body: string, onChunk: (accumulatedContent: string) => void, signal?: AbortSignal): Promise<string> {
     // 1) Build authenticated request headers
     const token = this.keycloakService.getToken();
     const headers: Record<string, string> = {

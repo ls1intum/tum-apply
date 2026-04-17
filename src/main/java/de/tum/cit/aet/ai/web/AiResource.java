@@ -60,10 +60,7 @@ public class AiResource {
      */
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "translateJobDescriptionStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> translateJobDescriptionStream(
-        @RequestParam("toLang") String toLang,
-        @RequestBody TranslateComplianceDTO request
-    ) {
+    public Flux<String> translateJobDescriptionStream(@RequestParam("toLang") String toLang, @RequestBody TranslateComplianceDTO request) {
         log.info("PUT /api/ai/translateJobDescriptionStream - Streaming translation request received (toLang={})", toLang);
         return aiService.translateTextStream(request.text(), toLang);
     }

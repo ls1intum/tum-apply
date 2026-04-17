@@ -174,7 +174,6 @@ export class JobCreationFormComponent {
   /** Last analyzed description text (used to avoid redundant compliance analysis) */
   private lastAnalyzedText = '';
 
-
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
