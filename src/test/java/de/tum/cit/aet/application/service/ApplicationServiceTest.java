@@ -338,7 +338,7 @@ class ApplicationServiceTest {
                 null,
                 null
             );
-            applicationService.applyExtractedCvData(TEST_APPLICATION_ID.toString(), extracted);
+            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
 
             assertThat(application.getApplicantFirstName()).isEqualTo("Ada");
             assertThat(application.getApplicantLastName()).isEqualTo("Lovelace");
@@ -361,7 +361,7 @@ class ApplicationServiceTest {
                 null,
                 null
             );
-            applicationService.applyExtractedCvData(TEST_APPLICATION_ID.toString(), extracted);
+            applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
 
             // Existing field should not be overwritten
             assertThat(application.getApplicantFirstName()).isEqualTo("Existing");

@@ -236,7 +236,7 @@ public class AiService {
         ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
         // 3) Persist the extracted data into the application
         if (extracted != null && saveData) {
-            applicationService.applyExtractedCvData(applicationId, extracted);
+            applicationService.applyExtractedPdfData(applicationId, extracted);
         }
         return extracted;
     }
@@ -271,7 +271,7 @@ public class AiService {
         ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
         // 3) Persist the extracted data into the application if requested
         if (extracted != null && saveData && applicationId != null && !applicationId.isBlank()) {
-            applicationService.applyExtractedCvData(applicationId, extracted);
+            applicationService.applyExtractedPdfData(applicationId, extracted);
         }
         return extracted;
     }
