@@ -22,7 +22,7 @@ RULES:
 - Detect missing transparency when applicant data is processed or shared by external parties.
 - This includes mentions of external consultants, partners, systems, or entities involved in recruitment, such as headhunters, assessment centers, ATS providers, or cooperative arrangements with universities or consortia.
 - NOT triggered by: what data is requested from the applicant.
-- Action: Suggest adding a message that clarifies whether applicant data is shared with external recipients (Art. 13 DSGVO)
+- Action: Suggest a message that clarifies whether applicant data is shared with external recipients (Art. 13 DSGVO)
 
 INPUT TEXT:
 {jobDescription}
@@ -33,7 +33,7 @@ OUTPUT:
 - No prose.
 - One object per issue.
 - Object fields must be exactly:
-  id, text, category, article, explanation, action
+  id, text, category, article, explanation, action, language
 - category must be exactly CRITICAL_AGG or TRANSPARENCY.
 - action must be exactly REPLACE or ADD or REMOVE.
 - text must be an exact snippet from input text (plain text, no HTML tags).

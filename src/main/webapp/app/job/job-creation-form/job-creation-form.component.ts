@@ -53,7 +53,10 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
-import { ComplianceIssue } from 'app/generated/model/compliance-issue';
+import {
+  ComplianceIssue,
+  ComplianceIssueCategoryEnum
+} from 'app/generated/model/compliance-issue';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -761,7 +764,7 @@ export class JobCreationFormComponent {
 
     for (const issues of filtered) {
       if (!issues.text) continue;
-      const color = issues.category === 'CRITICAL_AGG' ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
+      const color = issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
       highlights.push({ text: issues.text, color });
     }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
@@ -1511,7 +1514,8 @@ export class JobCreationFormComponent {
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
               this.isAnalyzing.set(true);
-              void this.analyzeAndUpdateScore(targetLang);
+              await this.analyzeAndUpdateScore(currentLang);
+              await this.analyzeAndUpdateScore(targetLang);
             } catch {
               // Silent save failure — will be caught by next autosave
             }
@@ -1553,7 +1557,9 @@ export class JobCreationFormComponent {
 
     this.isAnalyzing.set(true);
     try {
+      // 2) Send the description to the analysis endpoint (persists score on the backend)
       const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      this.lastAnalyzedText = descriptionText;
       // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
       const otherLang = lang === 'en' ? 'de' : 'en';
       const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);
@@ -1566,9 +1572,7 @@ export class JobCreationFormComponent {
 
       this.complianceIssues.set(existingLang.concat(incomingLang));
 
-      // 2) Send the description to the analysis endpoint (persists score on the backend)
-      await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
-      this.lastAnalyzedText = descriptionText;
+
 
       // 3) Fetch the updated job to retrieve the persisted score.
       //    Retry once with a short delay if the score is still missing
@@ -1577,11 +1581,15 @@ export class JobCreationFormComponent {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
         if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
-          return;
+          break;
         }
         if (attempt === 0) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
+      }
+      const currentLang = this.currentDescriptionLanguage();
+      if (currentLang === lang) {
+        this.applyHighlights(incomingLang, lang);
       }
       this.applyHighlights(compliance, lang);
     } catch {
