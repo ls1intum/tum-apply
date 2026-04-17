@@ -11,12 +11,13 @@ import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-anal
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
+import Quill from 'quill';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
+
 import { BaseInputDirective } from '../base-input/base-input.component';
-import Quill from 'quill';
 
 const Inline = Quill.import('blots/inline') as any;
 
@@ -51,7 +52,7 @@ class HighlightBlot extends Inline {
    * Factory method called by Quill to create the DOM node.
    * @param value The color variable passed
    */
-  static create(value: string) {
+  static create(value: string): HTMLElement {
     const node = super.create() as HTMLElement;
     HighlightBlot.utilityClasses.forEach(cls => node.classList.add(cls));
     // Sets variables with the specific severity color and its hover background
@@ -60,7 +61,7 @@ class HighlightBlot extends Inline {
     return node;
   }
 
-  static formats(node: HTMLElement) {
+  static formats(node: HTMLElement): string {
     return node.style.getPropertyValue('--highlight-color');
   }
 }
@@ -320,7 +321,7 @@ export class EditorComponent extends BaseInputDirective<string> {
    * Highlights specific text passages in the editor.
    * @param highlights Array of {text, color} to highlight
    */
-  public highlightTexts(highlights: Array<{ text: string; color: string }>): void {
+  public highlightTexts(highlights: { text: string; color: string }[]): void {
     const editor = this.quillEditorComponent()?.quillEditor;
     if (!editor) return;
 

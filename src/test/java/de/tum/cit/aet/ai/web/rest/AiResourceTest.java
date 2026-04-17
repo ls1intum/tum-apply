@@ -93,7 +93,8 @@ class AiResourceTest extends AbstractResourceTest {
                 "I don't allow disabled applicants",
                 "§ 1 AGG",
                 "Discriminatory sentence",
-                ComplianceAction.REPLACE
+                ComplianceAction.REPLACE,
+                "en"
             )
         );
 

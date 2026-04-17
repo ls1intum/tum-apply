@@ -50,13 +50,10 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
-import {
-  ComplianceIssue,
-  ComplianceIssueCategoryEnum
-} from 'app/generated/model/compliance-issue';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -758,13 +755,14 @@ export class JobCreationFormComponent {
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
-    const highlights: Array<{ text: string; color: string }> = [];
+    const highlights: { text: string; color: string }[] = [];
 
     const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
 
     for (const issues of filtered) {
       if (!issues.text) continue;
-      const color = issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
+      const color =
+        issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
       highlights.push({ text: issues.text, color });
     }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
@@ -1564,15 +1562,13 @@ export class JobCreationFormComponent {
       const otherLang = lang === 'en' ? 'de' : 'en';
       const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);
 
-      const incomingLang = (compliance ?? []).map(issue => {
+      const incomingLang = compliance.map(issue => {
         const copy: any = structuredClone(issue);
         copy.language = lang;
         return copy;
       });
 
       this.complianceIssues.set(existingLang.concat(incomingLang));
-
-
 
       // 3) Fetch the updated job to retrieve the persisted score.
       //    Retry once with a short delay if the score is still missing

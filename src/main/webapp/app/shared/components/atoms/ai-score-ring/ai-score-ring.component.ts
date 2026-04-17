@@ -63,7 +63,7 @@ export class AiScoreRingComponent {
       return;
     }
 
-    let currentAnimated = this.animatedScore();
+    const currentAnimated = this.animatedScore();
 
     if (currentAnimated === undefined) {
       this.animatedScore.set(targetScore);
