@@ -855,12 +855,9 @@ export class JobCreationFormComponent {
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
       this.savingState.set('SAVED');
 
-      // 3) Fire compliance analysis and translation in parallel.
-      //    Set isAnalyzing before the fire-and-forget call so isScoreLoading
-      //    is true immediately (no flash of N/A between generation and analysis).
+      // 3) Start translation only — analysis runs once at the end of translation,
+      //    after both languages are available, for the most accurate score.
       if (this.aiToggleSignal()) {
-        this.isAnalyzing.set(true);
-        void this.analyzeAndUpdateScore(sourceLang);
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
     } catch {
