@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
-import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
@@ -25,7 +24,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
+import reactor.core.publisher.Flux;
 import tools.jackson.core.type.TypeReference;
 
 class AiResourceTest extends AbstractResourceTest {
@@ -43,7 +44,7 @@ class AiResourceTest extends AbstractResourceTest {
 
     private AiService aiService;
 
-    private final String TRANSLATE_URL = "/api/ai/translateJobDescriptionForJob";
+    private final String TRANSLATE_STREAM_URL = "/api/ai/translateJobDescriptionStream";
     private final String ANALYZE_URL = "/api/ai/analyze-job-description";
 
     private final String input = "Hello World";
@@ -55,36 +56,32 @@ class AiResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void shouldReturnTranslatedTextWhenProfessorTranslatesJobDescription() {
-        String mockTranslation = "Hallo Welt";
+    void shouldReturnStreamWhenProfessorTranslatesJobDescription() {
         String toLang = "de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
 
-        given(aiService.translateAndPersistJobDescription(any(UUID.class), anyString(), anyString(), anyString(), any())).willReturn(
-            new AIJobDescriptionTranslationDTO(mockTranslation)
-        );
+        given(aiService.translateTextStream(anyString(), anyString())).willReturn(Flux.just("Hallo", " Welt"));
 
-        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=" + toLang + "&title=Test";
-        AIJobDescriptionTranslationDTO response = api
+        String url = TRANSLATE_STREAM_URL + "?toLang=" + toLang;
+        api
             .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
-            .putAndRead(url, request, AIJobDescriptionTranslationDTO.class, 200);
-
-        assertThat(response).isNotNull();
-        assertThat(response.translatedText()).isEqualTo(mockTranslation);
+            .putAndRead(url, request, Void.class, 200, MediaType.TEXT_EVENT_STREAM);
     }
 
     @Test
     void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
-        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=de&title=Test";
+        String url = TRANSLATE_STREAM_URL + "?toLang=de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api.with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
+        api
+            .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
+            .putAndRead(url, request, Void.class, 403, MediaType.TEXT_EVENT_STREAM);
     }
 
     @Test
     void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
-        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=de&title=Test";
+        String url = TRANSLATE_STREAM_URL + "?toLang=de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api.withoutPostProcessors().putAndRead(url, request, Void.class, 401);
+        api.withoutPostProcessors().putAndRead(url, request, Void.class, 401, MediaType.TEXT_EVENT_STREAM);
     }
 
     @Test
