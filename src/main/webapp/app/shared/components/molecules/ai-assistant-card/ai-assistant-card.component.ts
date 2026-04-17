@@ -26,8 +26,9 @@ import { TooltipModule } from 'primeng/tooltip';
   templateUrl: './ai-assistant-card.component.html',
 })
 export class AiAssistantCardComponent {
-  score = input<number>(0);
+  score = input<number | null>(null);
   isGenerating = input<boolean>(false);
+  isAnalyzing = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
   generate = output();
@@ -35,19 +36,25 @@ export class AiAssistantCardComponent {
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly EXCELLENCE_THRESHOLD = 90;
-  readonly displayedScore = signal(0);
+  readonly displayedScore = signal<number | null>(null);
   readonly scoreDialogVisible = signal(false);
+
+  /** Whether the score ring should appear greyed out (generating or analyzing) */
+  readonly isScoreLoading = computed(() => this.isGenerating() || this.isAnalyzing());
 
   readonly boundedScore = computed(() => {
     const value = this.score();
-    if (!Number.isFinite(value)) {
-      return 0;
+    if (value === null || !Number.isFinite(value)) {
+      return null;
     }
     return Math.max(0, Math.min(100, Math.round(value)));
   });
 
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
+    if (score === null) {
+      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.pending';
+    }
 
     if (score <= this.DANGER_THRESHOLD) {
       return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical';
@@ -65,10 +72,10 @@ export class AiAssistantCardComponent {
   });
 
   private readonly displayedScoreEffect = effect(() => {
-    const generating = this.isGenerating();
+    const loading = this.isScoreLoading();
     const score = this.boundedScore();
 
-    if (generating) {
+    if (loading) {
       return;
     }
 

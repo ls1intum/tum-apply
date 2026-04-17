@@ -197,6 +197,7 @@
         "languageGerman": "German",
         "translating": "Translating",
         "aiScoreFeedback": {
+          "pending": "The inclusivity score will be calculated after your job description is analyzed.",
           "critical": "Your posting may come across as exclusionary to many strong candidates. Rework wording and requirements to make them more inclusive.",
           "warning": "Your job could be more inclusive. Job descriptions with a higher score attract more diverse applicants and get more responses.",
           "good": "This is already a solid foundation. Your posting is inclusive and reaches many candidates. With a few targeted refinements, it can perform even better.",

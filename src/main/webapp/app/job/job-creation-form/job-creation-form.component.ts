@@ -242,8 +242,11 @@ export class JobCreationFormComponent {
   // AI SCORE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Score shown in the AI sidebar */
-  readonly aiScore = signal<number>(0);
+  /** Score shown in the AI sidebar (null = not yet calculated) */
+  readonly aiScore = signal<number | null>(null);
+
+  /** Whether compliance analysis is currently running */
+  readonly isAnalyzing = signal(false);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -1488,6 +1491,7 @@ export class JobCreationFormComponent {
     const jobId = this.jobId();
     if (!jobId) return;
 
+    this.isAnalyzing.set(true);
     try {
       await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
       const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
@@ -1495,8 +1499,9 @@ export class JobCreationFormComponent {
         this.aiScore.set(updatedJob.genderBiasScore);
       }
     } catch {
-      // silent error
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
+    } finally {
+      this.isAnalyzing.set(false);
     }
   }
 

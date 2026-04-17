@@ -198,6 +198,7 @@
           <jhi-ai-assistant-card
             [score]="aiScore()"
             [isGenerating]="isGeneratingDraft()"
+            [isAnalyzing]="isAnalyzing()"
             [isRewriteMode]="rewriteButtonSignal()"
             (generate)="generateJobApplicationDraft()"
           />

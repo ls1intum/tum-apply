@@ -6,25 +6,34 @@ import { Component, computed, effect, input, signal } from '@angular/core';
   templateUrl: './ai-score-ring.component.html',
 })
 export class AiScoreRingComponent {
-  score = input<number>(0);
+  score = input<number | null>(null);
 
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly NORMALIZED_PATH_LENGTH = 100;
-  readonly animatedScore = signal(0);
+  readonly animatedScore = signal<number | null>(null);
+
+  /** Whether a numeric score is available */
+  readonly hasScore = computed(() => this.score() !== null);
 
   readonly boundedScore = computed(() => {
     const value = this.score();
-    if (!Number.isFinite(value)) {
-      return 0;
+    if (value === null || !Number.isFinite(value)) {
+      return null;
     }
     return Math.max(0, Math.min(100, Math.round(value)));
   });
 
-  readonly strokeOffset = computed(() => this.NORMALIZED_PATH_LENGTH - this.animatedScore());
+  readonly strokeOffset = computed(() => {
+    const score = this.animatedScore();
+    return this.NORMALIZED_PATH_LENGTH - (score ?? 0);
+  });
 
   readonly scoreColor = computed(() => {
     const score = this.animatedScore();
+    if (score === null) {
+      return 'var(--color-text-tertiary)';
+    }
 
     if (score <= this.DANGER_THRESHOLD) {
       return 'var(--color-negative-default)';
@@ -41,13 +50,19 @@ export class AiScoreRingComponent {
 
   private animationEffect = effect(onCleanup => {
     const targetScore = this.boundedScore();
-    let currentScore = this.animatedScore();
 
     if (this.isFirstRender) {
       this.isFirstRender = false;
       this.animatedScore.set(targetScore);
       return;
     }
+
+    if (targetScore === null) {
+      this.animatedScore.set(null);
+      return;
+    }
+
+    let currentScore = this.animatedScore() ?? 0;
 
     if (targetScore === currentScore) {
       return;
