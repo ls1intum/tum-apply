@@ -53,7 +53,9 @@ export class AiAssistantCardComponent {
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
     if (score === null) {
-      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.pending';
+      return this.isScoreLoading()
+        ? 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.calculating'
+        : 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.pending';
     }
 
     if (score <= this.DANGER_THRESHOLD) {

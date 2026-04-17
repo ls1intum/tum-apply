@@ -7,6 +7,7 @@ import { Component, computed, effect, input, signal } from '@angular/core';
 })
 export class AiScoreRingComponent {
   score = input<number | null>(null);
+  isLoading = input<boolean>(false);
 
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;

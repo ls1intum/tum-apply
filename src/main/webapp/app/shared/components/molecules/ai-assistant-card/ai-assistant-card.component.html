@@ -1,8 +1,8 @@
 <div class="px-4 pt-4 pb-2">
   <div class="flex flex-col mx-auto w-full max-w-72 gap-4 lg:mx-0">
     <div class="flex flex-col ai-score-block gap-4">
-      <div class="flex justify-center ai-score-ring-wrapper" [class.opacity-50]="isScoreLoading()">
-        <jhi-ai-score-ring [score]="displayedScore()" />
+      <div class="flex justify-center ai-score-ring-wrapper" [class.opacity-50]="isScoreLoading() && displayedScore() !== null">
+        <jhi-ai-score-ring [score]="displayedScore()" [isLoading]="isScoreLoading()" />
       </div>
 
       <div class="flex items-center justify-center gap-2 lg:justify-start">

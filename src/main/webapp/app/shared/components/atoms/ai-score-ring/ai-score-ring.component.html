@@ -27,6 +27,8 @@
     @if (hasScore()) {
       <span class="text-3xl font-bold text-text-primary">{{ animatedScore() }}</span>
       <span class="text-base font-bold text-text-tertiary">%</span>
+    } @else if (isLoading()) {
+      <span class="text-lg font-bold text-text-tertiary animate-pulse">...</span>
     } @else {
       <span class="text-2xl font-bold text-text-tertiary">N/A</span>
     }

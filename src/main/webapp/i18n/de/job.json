@@ -197,7 +197,8 @@
         "languageGerman": "Deutsch",
         "translating": "Übersetzt",
         "aiScoreFeedback": {
-          "pending": "Der Inklusivitäts-Score wird berechnet, sobald deine Stellenbeschreibung analysiert wurde.",
+          "pending": "Der Inklusivitäts-Score wird berechnet, sobald deine Stellenbeschreibung analysiert wurde. Dies kann einige Sekunden dauern.",
+          "calculating": "Dein Inklusivitäts-Score wird gerade berechnet. Dies kann einige Sekunden dauern.",
           "critical": "Deine Ausschreibung kann auf viele passende Talente exkludierend wirken. Überarbeite Sprache und Anforderungen gezielt inklusiver.",
           "warning": "Deine Ausschreibung könnte inklusiver sein. Stellenanzeigen mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
           "good": "Das ist schon eine gute Grundlage. Deine Ausschreibung ist bereits inklusiv und spricht viele Bewerbende an. Mit gezielten Verfeinerungen kannst du sie noch stärker machen.",
