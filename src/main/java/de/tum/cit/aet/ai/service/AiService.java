@@ -220,7 +220,12 @@ public class AiService {
      * @param saveData      whether to persist the extracted data into the application entity
      * @return the extracted data as a structured DTO
      */
-    public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, List<String> docIds, boolean isCv, boolean saveData) {
+    public ExtractedApplicationDataDTO extractAndPersistPdfDataFromUUID(
+        String applicationId,
+        List<String> docIds,
+        boolean isCv,
+        boolean saveData
+    ) {
         currentUserService.markAiConsentForCurrentUser();
         // 1) Download the document
         List<Resource> docs = new ArrayList<>();

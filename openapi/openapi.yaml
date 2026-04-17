@@ -130,6 +130,39 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
+  /api/ai/extractPdfDataFromFiles:
+    post:
+      tags: [ai-resource]
+      operationId: extractPdfDataFromFiles
+      parameters:
+      - name: applicationId
+        in: query
+        required: false
+        schema: {type: string}
+      - name: isCv
+        in: query
+        required: false
+        schema: {type: boolean, default: true}
+      - name: saveData
+        in: query
+        required: false
+        schema: {type: boolean, default: false}
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items: {type: string, format: binary}
+              required: [files]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]

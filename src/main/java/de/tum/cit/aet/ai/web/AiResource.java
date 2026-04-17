@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -88,7 +89,7 @@ public class AiResource {
             isCv,
             saveData
         );
-        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docIds, isCv, saveData));
+        return ResponseEntity.ok(aiService.extractAndPersistPdfDataFromUUID(applicationId, docIds, isCv, saveData));
     }
 
     /**

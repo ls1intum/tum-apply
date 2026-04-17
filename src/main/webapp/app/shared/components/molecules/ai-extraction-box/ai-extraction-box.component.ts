@@ -13,7 +13,7 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
-import TranslateDirective from "../../../language/translate.directive";
+import TranslateDirective from '../../../language/translate.directive';
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Keyed by `${applicationId}_${isCv}` so CV and certificate extractions don't collide.
@@ -105,7 +105,7 @@ export class AiExtractionBoxComponent {
       if (queued.length > 0) {
         // Use file upload endpoint for queued (deferred) files
         extraction$ = this.aiApi
-          .extractPdfDataFromFiles(queued, this.isCv(), this.saveData(), appId)
+          .extractPdfDataFromFiles(queued, appId, this.isCv(), this.saveData())
           .pipe(shareReplay({ bufferSize: 1, refCount: false }));
       } else {
         // Use document ID endpoint for persisted documents
