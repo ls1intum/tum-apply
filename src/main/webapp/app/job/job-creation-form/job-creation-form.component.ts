@@ -65,7 +65,7 @@ type JobFormMode = 'create' | 'edit';
  * - 4-step form wizard (Basic Info → Position Details → Image Selection → Summary)
  * - Dual-language support (EN/DE) with automatic AI translation
  * - AI-powered job description generation
- * - Auto-save functionality with 3-second debounce
+ * - Auto-save functionality with 2-second debounce
  * - Image upload and selection for job banners
  *
  */
@@ -315,16 +315,17 @@ export class JobCreationFormComponent {
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
 
-  /**
-   * Effect: Updates validity signals whenever form status changes.
-   * This keeps the stepper navigation buttons in sync with form state.
-   */
+  /** Computed: true when both EN and DE job descriptions have non-empty content */
   bothDescriptionsFilled = computed(() => {
     const en = this.jobDescriptionEN().trim();
     const de = this.jobDescriptionDE().trim();
     return en.length > 0 && de.length > 0;
   });
 
+  /**
+   * Effect: Updates validity signals whenever form status changes.
+   * This keeps the stepper navigation buttons in sync with form state.
+   */
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
     this.positionDetailsChanges();
@@ -377,17 +378,12 @@ export class JobCreationFormComponent {
   // LANGUAGE TOGGLE HELPERS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /**
-   * Converts a language code to the corresponding segmented toggle value.
-   * @param lang - The language code ('en' or 'de')
-   * @returns 'left' for English, 'right' for German
-   */
-  segmentValueForLang(lang: Language): SegmentedToggleValue {
-    return lang === 'en' ? 'left' : 'right';
-  }
+  /** Computed: maps the current description language to the segmented toggle position */
+  segmentValueForCurrentLang = computed<SegmentedToggleValue>(() => (this.currentDescriptionLanguage() === 'en' ? 'left' : 'right'));
 
   /**
    * Converts a segmented toggle value to the corresponding language code.
+   *
    * @param toggleValue - The toggle position ('left' or 'right')
    * @returns 'en' for left, 'de' for right
    */
@@ -464,7 +460,7 @@ export class JobCreationFormComponent {
   // AUTO-SAVE INTERNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Timer ID for the debounced auto-save (3-second delay) */
+  /** Timer ID for the debounced auto-save (2-second delay) */
   private autoSaveTimer: number | undefined;
 
   /** Flag to prevent auto-save from triggering during initial form population */
@@ -482,6 +478,7 @@ export class JobCreationFormComponent {
     this.setupAutoSave();
   }
 
+  /** Loads the user's AI consent preference from the server and applies it to the toggle. */
   private async loadAiConsent(): Promise<void> {
     try {
       const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
@@ -491,6 +488,12 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Persists the AI consent toggle change to the server.
+   * Reverts the toggle on failure.
+   *
+   * @param value - Whether AI features should be enabled
+   */
   async onAiToggleChanged(value: boolean): Promise<void> {
     try {
       await firstValueFrom(this.userApi.updateAiConsent(value));
@@ -501,10 +504,12 @@ export class JobCreationFormComponent {
     }
   }
 
+  /** Opens the AI features info dialog. */
   openAiInfoDialog(): void {
     this.aiInfoDialogVisible.set(true);
   }
 
+  /** Aborts the active translation stream (if any) and resets translation state. */
   private cancelTranslation(): void {
     if (this.translationAbortController) {
       this.translationAbortController.abort();
@@ -1291,7 +1296,7 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Sets up the auto-save effect with 3-second debounce.
+   * Sets up the auto-save effect with 2-second debounce.
    * Triggers save when any form value changes.
    * Skips during initial population and AI generation.
    */
