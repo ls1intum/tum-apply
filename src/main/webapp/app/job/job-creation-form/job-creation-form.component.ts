@@ -159,11 +159,11 @@ export class JobCreationFormComponent {
   /** Indicates whether AI translation is in progress */
   isTranslating = signal<boolean>(false);
 
-  /** The target language of the active translation, or null if idle */
-  translationTargetLang = signal<Language | null>(null);
+  /** The target language of the active translation, or undefined if idle */
+  translationTargetLang = signal<Language | undefined>(undefined);
 
   /** AbortController for cancelling active translation streams */
-  private translationAbortController: AbortController | null = null;
+  private translationAbortController: AbortController | undefined;
 
   /** Last successfully translated English text (used to avoid redundant translations) */
   lastTranslatedEN = signal<string>('');
@@ -520,10 +520,10 @@ export class JobCreationFormComponent {
   private cancelTranslation(): void {
     if (this.translationAbortController) {
       this.translationAbortController.abort();
-      this.translationAbortController = null;
+      this.translationAbortController = undefined;
     }
     this.isTranslating.set(false);
-    this.translationTargetLang.set(null);
+    this.translationTargetLang.set(undefined);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1493,8 +1493,8 @@ export class JobCreationFormComponent {
       // 8) Clear translation state only if this is still the active run
       if (this.translationAbortController === abortController) {
         this.isTranslating.set(false);
-        this.translationTargetLang.set(null);
-        this.translationAbortController = null;
+        this.translationTargetLang.set(undefined);
+        this.translationAbortController = undefined;
       }
     }
   }
