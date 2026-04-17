@@ -25,6 +25,7 @@ import { StringInputComponent } from '../../components/atoms/string-input/string
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -101,7 +102,10 @@ export class ApplicationInformationSettingsComponent {
       return false;
     }
     const personalChanged = !deepEqual(this.toSnapshot(this.data()), initial);
-    const cvChanged = !deepEqual(this.normalizedDocuments(this.cvDocuments()), this.normalizedDocuments(this.initialCvDocuments()));
+    const cvChanged = !deepEqual(
+      this.profileDocumentService.normalizedDocuments(this.cvDocuments()),
+      this.profileDocumentService.normalizedDocuments(this.initialCvDocuments()),
+    );
     return personalChanged || cvChanged;
   });
 
@@ -121,6 +125,7 @@ export class ApplicationInformationSettingsComponent {
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
   http = inject(HttpClient);
+  private profileDocumentService = inject(ProfileDocumentService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -250,7 +255,7 @@ export class ApplicationInformationSettingsComponent {
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
       this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
-      this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
+      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -272,7 +277,7 @@ export class ApplicationInformationSettingsComponent {
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
-        this.toastService.showErrorKey('settings.personalInformation.saveFailed');
+        this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
         return;
       }
 
@@ -311,11 +316,11 @@ export class ApplicationInformationSettingsComponent {
       const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
       await this.saveDeferredCvChanges();
       this.loadedProfile.set(updatedProfile);
-      this.toastService.showSuccessKey('settings.personalInformation.saved');
+      this.toastService.showSuccessKey('settings.applicationInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));
-      this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
+      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
     } catch {
-      this.toastService.showErrorKey('settings.personalInformation.saveFailed');
+      this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
     }
   }
 
@@ -345,26 +350,15 @@ export class ApplicationInformationSettingsComponent {
   onCvQueuedFilesChange(files: File[]): void {
     this.queuedCvFiles.set(files);
   }
-
-  private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
-    return Array.from(docs ?? [])
-      .map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        size: doc.size,
-      }))
-      .sort((a, b) => a.id.localeCompare(b.id));
-  }
-
-  private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
-    return document.id.startsWith('temp-');
-  }
-
   private async saveDeferredCvChanges(): Promise<void> {
     // Commit persisted doc changes (delete/rename) for CV
-    await this.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
+    await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
     // Upload queued CV files
-    await this.uploadQueuedByType(DocumentInformationHolderDTODocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
+    const latest = await this.profileDocumentService.uploadQueuedByType(
+      DocumentInformationHolderDTODocumentTypeEnum.Cv,
+      this.queuedCvFiles(),
+    );
+    if (latest) this.cvDocuments.set(latest);
   }
 
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
@@ -381,50 +375,5 @@ export class ApplicationInformationSettingsComponent {
     setIfEmpty(form, patch, 'postcode', extractedData.postalCode);
 
     form.patchValue(patch);
-  }
-
-  private async commitDocumentTypeChanges(
-    initialDocs: DocumentInformationHolderDTO[] | undefined,
-    currentDocs: DocumentInformationHolderDTO[] | undefined,
-  ): Promise<void> {
-    const initial = this.normalizedDocuments(initialDocs);
-    const currentPersistedDocs = this.normalizedDocuments(currentDocs).filter(doc => !this.isTemporaryDocument(doc));
-    const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
-
-    const deletedIds = initial.filter(doc => !currentById.has(doc.id)).map(doc => doc.id);
-    const renamedDocs = currentPersistedDocs.flatMap(doc => {
-      const initialDoc = initial.find(existing => existing.id === doc.id);
-      const newName = doc.name?.trim();
-      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name ? [{ id: doc.id, newName }] : [];
-    });
-
-    for (const documentId of deletedIds) {
-      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
-    }
-
-    for (const document of renamedDocs) {
-      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(document.id, document.newName));
-    }
-  }
-
-  private async uploadQueuedByType(
-    documentType: DocumentInformationHolderDTODocumentTypeEnum,
-    files: File[],
-    targetSignal: { set: (_value: DocumentInformationHolderDTO[] | undefined) => void },
-  ): Promise<void> {
-    if (files.length === 0) {
-      return;
-    }
-
-    const uploadResults = await Promise.all(files.map(file => firstValueFrom(this.uploadApplicantProfileDocument(documentType, file))));
-
-    const latestResult: DocumentInformationHolderDTO[] | undefined = uploadResults[uploadResults.length - 1];
-    targetSignal.set(latestResult);
-  }
-
-  private uploadApplicantProfileDocument(documentType: DocumentInformationHolderDTODocumentTypeEnum, file: File) {
-    const formData = new FormData();
-    formData.append('files', file);
-    return this.http.post<DocumentInformationHolderDTO[]>(`/api/applicants/profile/documents/${documentType}`, formData);
   }
 }
