@@ -6,21 +6,21 @@ import { Component, computed, effect, input, signal } from '@angular/core';
   templateUrl: './ai-score-ring.component.html',
 })
 export class AiScoreRingComponent {
-  score = input<number | null>(null);
+  score = input<number | undefined>(undefined);
   isLoading = input<boolean>(false);
 
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly NORMALIZED_PATH_LENGTH = 100;
-  readonly animatedScore = signal<number | null>(null);
+  readonly animatedScore = signal<number | undefined>(undefined);
 
   /** Whether a numeric score is available */
-  readonly hasScore = computed(() => this.score() !== null);
+  readonly hasScore = computed(() => this.score() !== undefined);
 
   readonly boundedScore = computed(() => {
     const value = this.score();
-    if (value === null || !Number.isFinite(value)) {
-      return null;
+    if (value === undefined || !Number.isFinite(value)) {
+      return undefined;
     }
     return Math.max(0, Math.min(100, Math.round(value)));
   });
@@ -32,7 +32,7 @@ export class AiScoreRingComponent {
 
   readonly scoreColor = computed(() => {
     const score = this.animatedScore();
-    if (score === null) {
+    if (score === undefined) {
       return 'var(--color-text-tertiary)';
     }
 
@@ -58,8 +58,8 @@ export class AiScoreRingComponent {
       return;
     }
 
-    if (targetScore === null) {
-      this.animatedScore.set(null);
+    if (targetScore === undefined) {
+      this.animatedScore.set(undefined);
       return;
     }
 

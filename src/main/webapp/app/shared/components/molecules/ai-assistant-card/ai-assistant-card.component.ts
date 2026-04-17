@@ -26,7 +26,7 @@ import { TooltipModule } from 'primeng/tooltip';
   templateUrl: './ai-assistant-card.component.html',
 })
 export class AiAssistantCardComponent {
-  score = input<number | null>(null);
+  score = input<number | undefined>(undefined);
   isGenerating = input<boolean>(false);
   isAnalyzing = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
@@ -36,7 +36,7 @@ export class AiAssistantCardComponent {
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly EXCELLENCE_THRESHOLD = 90;
-  readonly displayedScore = signal<number | null>(null);
+  readonly displayedScore = signal<number | undefined>(undefined);
   readonly scoreDialogVisible = signal(false);
 
   /** Whether the score ring should appear greyed out (generating or analyzing) */
@@ -44,15 +44,15 @@ export class AiAssistantCardComponent {
 
   readonly boundedScore = computed(() => {
     const value = this.score();
-    if (value === null || !Number.isFinite(value)) {
-      return null;
+    if (value === undefined || !Number.isFinite(value)) {
+      return undefined;
     }
     return Math.max(0, Math.min(100, Math.round(value)));
   });
 
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
-    if (score === null) {
+    if (score === undefined) {
       return this.isScoreLoading()
         ? 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.calculating'
         : 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.pending';

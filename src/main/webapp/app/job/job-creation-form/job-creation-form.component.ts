@@ -242,8 +242,8 @@ export class JobCreationFormComponent {
   // AI SCORE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Score shown in the AI sidebar (null = not yet calculated) */
-  readonly aiScore = signal<number | null>(null);
+  /** Score shown in the AI sidebar (undefined = not yet calculated) */
+  readonly aiScore = signal<number | undefined>(undefined);
 
   /** Whether compliance analysis is currently running */
   readonly isAnalyzing = signal(false);
