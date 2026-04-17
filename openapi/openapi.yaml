@@ -142,20 +142,12 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/ai/translateJobDescriptionForJob:
+  /api/ai/translateJobDescriptionStream:
     put:
       tags: [ai-resource]
-      operationId: translateJobDescriptionForJob
+      operationId: translateJobDescriptionStream
       parameters:
-      - name: jobId
-        in: query
-        required: true
-        schema: {type: string, format: uuid}
       - name: toLang
-        in: query
-        required: true
-        schema: {type: string}
-      - name: title
         in: query
         required: true
         schema: {type: string}
@@ -168,8 +160,10 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
-              schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
+            text/event-stream:
+              schema:
+                type: array
+                items: {type: string}
   /api/applicants/profile:
     get:
       tags: [applicant-resource]
@@ -2552,10 +2546,6 @@ paths:
         '200': {description: OK}
 components:
   schemas:
-    AIJobDescriptionTranslationDTO:
-      type: object
-      properties:
-        translatedText: {type: string}
     AcceptDTO:
       type: object
       properties:
