@@ -13,6 +13,7 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
+import TranslateDirective from "../../../language/translate.directive";
 
 // Holds in-flight extraction observables across component re-creation (e.g. page navigation).
 // Keyed by `${applicationId}_${isCv}` so CV and certificate extractions don't collide.
@@ -21,18 +22,12 @@ const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO
 @Component({
   selector: 'jhi-ai-extraction-box',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ButtonComponent, ProgressSpinnerComponent, AiConsentModalComponent],
+  imports: [CommonModule, TranslateModule, ButtonComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
   templateUrl: './ai-extraction-box.component.html',
 })
 export class AiExtractionBoxComponent {
   /** translation key for helper text shown at the top */
   helperTextKey = input<string>('');
-
-  /** translation key for consent sentence shown next to the info button */
-  consentTextKey = input<string>('');
-
-  /** label translation key for the action button */
-  buttonLabelKey = input<string>('entity.applicationPage1.aiExtractionButton');
 
   /** application ID for the extraction API call */
   applicationId = input<string | undefined>();
@@ -138,7 +133,7 @@ export class AiExtractionBoxComponent {
         this.isExtractingAi.set(false);
       },
       error: () => {
-        this.toastService.showErrorKey('entity.applicationPage1.aiExtractionFailed');
+        this.toastService.showErrorKey('entity.aiExtraction.aiExtractionFailed');
         activeExtractions.delete(key);
         this.isExtractingAi.set(false);
       },

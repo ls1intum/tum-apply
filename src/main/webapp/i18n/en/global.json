@@ -347,17 +347,20 @@
         "FAILED": "Failed saving changes"
       }
     },
-    "applicationPage1": {
-      "description": "Enter your personal details and contact information.",
-      "aiExtractionHelper": "Save time by letting our AI automatically fill your details from your CV.",
-      "aiExtractionConsent": "Processed via Azure OpenAI",
-      "aiExtractionCheckInfo": "Please check the extracted information for completeness and accuracy.",
-      "aiExtractionButton": "AI Extraction",
-      "aiExtractionLoading": "Extracting...",
+    "aiExtraction": {
+      "helperCv": "Save time by letting our AI automatically fill your details from your CV.",
+      "helperCertificates": "Save time by letting our AI automatically fill your degree information from your certificates.",
+      "consent": "Processed via Azure OpenAI",
+      "checkInfo": "Please check the extracted information for completeness and accuracy.",
+      "button": "AI Extraction",
+      "loading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
         "detail": "Could not extract the data. Please try again."
-      },
+      }
+    },
+    "applicationPage1": {
+      "description": "Enter your personal details and contact information.",
       "label": {
         "curriculumVitae": "Curriculum Vitae",
         "firstName": "First Name",
