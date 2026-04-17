@@ -1,5 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -1308,12 +1308,14 @@ export class JobCreationFormComponent {
         return;
       }
 
-      if (this.isGeneratingDraft()) {
+      // Read generation/translation state without tracking — changes to these
+      // should NOT re-trigger the autosave effect (only form value changes should)
+      if (untracked(() => this.isGeneratingDraft())) {
         return;
       }
 
       // If user edits while viewing the translation target, cancel translation immediately
-      if (this.isTranslating() && this.translationTargetLang() === this.currentDescriptionLanguage()) {
+      if (untracked(() => this.isTranslating() && this.translationTargetLang() === this.currentDescriptionLanguage())) {
         this.cancelTranslation();
       }
 
