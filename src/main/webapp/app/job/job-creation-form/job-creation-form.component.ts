@@ -1327,7 +1327,7 @@ export class JobCreationFormComponent {
       this.autoSaveTimer = window.setTimeout(() => {
         this.syncCurrentEditorIntoLanguageSignals();
         void this.performAutoSave();
-      }, 5000);
+      }, 2000);
     });
   }
 
