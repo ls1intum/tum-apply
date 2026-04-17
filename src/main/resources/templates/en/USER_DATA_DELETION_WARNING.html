@@ -4,13 +4,6 @@
 
 <p>To prevent the deletion of your data, please log in to your TUMApply account:</p>
 
-<p style="margin: 1.25rem 0">
-  <a
-    href="${LOGIN_LINK!url!}"
-    style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; background-color: #3070b3; color: #ffffff; text-decoration: none; border-radius: 0.375rem; font-weight: 600"
-  >
-    Log in to TUMApply
-  </a>
-</p>
+<@ui.ctaButton href=(LOGIN_LINK!(url!'')) label="Log in to TUMApply" />
 
 <p>Best regards,<br />Your TUMApply Team</p>

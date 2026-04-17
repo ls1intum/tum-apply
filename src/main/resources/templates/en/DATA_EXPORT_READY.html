@@ -2,14 +2,7 @@
 
 <p>Your data export is ready. You can download it here:</p>
 
-<p style="margin: 1.25rem 0">
-  <a
-    href="${DOWNLOAD_LINK!}"
-    style="display: inline-block; padding: 0.5rem 1rem; font-size: 1rem; background-color: #3070b3; color: #ffffff; text-decoration: none; border-radius: 0.375rem; font-weight: 600"
-  >
-    Download Data
-  </a>
-</p>
+<@ui.ctaButton href=(DOWNLOAD_LINK!'') label="Download Data" />
 
 <p>The link expires after ${EXPORT_EXPIRES_DAYS!} days.</p>
 

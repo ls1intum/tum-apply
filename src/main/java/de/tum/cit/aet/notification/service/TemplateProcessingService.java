@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 public class TemplateProcessingService {
 
     private static final String DOCUMENTATION_URL = "https://ls1intum.github.io/tum-apply/";
+    private static final String EMAIL_COMPONENTS_IMPORT = "<#import \"base/email-components.ftl\" as ui>" + System.lineSeparator();
     private final Configuration freemarkerConfig;
     private static final String BASE_RAW_TEMPLATE = "base/raw.ftl";
 
@@ -115,7 +116,7 @@ public class TemplateProcessingService {
     }
 
     private String asHtmlTemplate(String html) {
-        return "<#ftl output_format=\"HTML\">" + System.lineSeparator() + html;
+        return "<#ftl output_format=\"HTML\">" + System.lineSeparator() + EMAIL_COMPONENTS_IMPORT + html;
     }
 
     /**
