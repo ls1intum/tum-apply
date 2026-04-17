@@ -1528,7 +1528,7 @@ export class JobCreationFormComponent {
       //    (DB transaction may not have committed yet).
       for (let attempt = 0; attempt < 2; attempt++) {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-        if (updatedJob.genderBiasScore !== undefined && updatedJob.genderBiasScore !== null) {
+        if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
           return;
         }

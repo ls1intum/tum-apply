@@ -72,14 +72,16 @@ class AiResourceTest extends AbstractResourceTest {
     void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
         String url = TRANSLATE_STREAM_URL + "?toLang=de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api.with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
+        api
+            .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
+            .putAndRead(url, request, Void.class, 403, MediaType.TEXT_EVENT_STREAM);
     }
 
     @Test
     void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
         String url = TRANSLATE_STREAM_URL + "?toLang=de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api.withoutPostProcessors().putAndRead(url, request, Void.class, 401);
+        api.withoutPostProcessors().putAndRead(url, request, Void.class, 401, MediaType.TEXT_EVENT_STREAM);
     }
 
     @Test

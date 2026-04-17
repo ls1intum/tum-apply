@@ -158,7 +158,7 @@ export class AiStreamingService {
       }
     } catch (e) {
       // On abort or error, cancel the reader to release the connection
-      reader.cancel();
+      void reader.cancel();
       throw e;
     }
 
