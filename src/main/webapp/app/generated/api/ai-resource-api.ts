@@ -18,7 +18,6 @@ import { Observable } from 'rxjs';
 import { ComplianceIssue } from '../model/compliance-issue';
 import { JobFormDTO } from '../model/job-form-dto';
 import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
-import { AIJobDescriptionTranslationDTO } from '../model/ai-job-description-translation-dto';
 import { TranslateComplianceDTO } from '../model/translate-compliance-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -80,25 +79,17 @@ export class AiResourceApi {
     /**
      * 
      * 
-     * @param jobId 
      * @param toLang 
-     * @param title 
      * @param translateComplianceDTO 
      */
-    translateJobDescriptionForJob(jobId: string, toLang: string, title: string, translateComplianceDTO: TranslateComplianceDTO): Observable<AIJobDescriptionTranslationDTO> {
+    translateJobDescriptionStream(toLang: string, translateComplianceDTO: TranslateComplianceDTO): Observable<Array<string>> {
         const queryParams = new URLSearchParams();
-        if (jobId !== undefined && jobId !== null) {
-            queryParams.set('jobId', String(jobId));
-        }
         if (toLang !== undefined && toLang !== null) {
             queryParams.set('toLang', String(toLang));
         }
-        if (title !== undefined && title !== null) {
-            queryParams.set('title', String(title));
-        }
         const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/ai/translateJobDescriptionForJob${queryString ? `?${queryString}` : ''}`;
-        return this.http.put<AIJobDescriptionTranslationDTO>(url, translateComplianceDTO);
+        const url = `${this.basePath}/api/ai/translateJobDescriptionStream${queryString ? `?${queryString}` : ''}`;
+        return this.http.put<Array<string>>(url, translateComplianceDTO);
     }
 
 }

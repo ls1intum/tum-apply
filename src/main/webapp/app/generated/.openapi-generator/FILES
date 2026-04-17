@@ -49,7 +49,6 @@ model/accept-dto.ts
 model/add-interviewees-dto.ts
 model/add-members-to-research-group-dto.ts
 model/admin-export-task-dto.ts
-model/ai-job-description-translation-dto.ts
 model/applicant-dto.ts
 model/applicant-for-application-detail-dto.ts
 model/application-detail-dto.ts
