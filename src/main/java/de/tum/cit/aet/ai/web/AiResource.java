@@ -8,11 +8,11 @@ import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -108,7 +108,11 @@ public class AiResource {
      * @return a ResponseEntity containing the extracted data
      */
     @ApplicantOrAdmin
-    @PostMapping(value = "extractPdfDataFromFiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+        value = "extractPdfDataFromFiles",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ExtractedApplicationDataDTO> extractPdfDataFromFiles(
         @RequestParam(value = "applicationId", required = false) String applicationId,
         @RequestPart("files") List<MultipartFile> files,

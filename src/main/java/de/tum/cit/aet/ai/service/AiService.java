@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -31,6 +30,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 @Service
@@ -247,7 +247,12 @@ public class AiService {
      * @param saveData      whether to persist the extracted data into the application
      * @return the extracted data as a structured DTO
      */
-    public ExtractedApplicationDataDTO extractPdfDataFromFiles(String applicationId, List<MultipartFile> files, boolean isCv, boolean saveData) {
+    public ExtractedApplicationDataDTO extractPdfDataFromFiles(
+        String applicationId,
+        List<MultipartFile> files,
+        boolean isCv,
+        boolean saveData
+    ) {
         currentUserService.markAiConsentForCurrentUser();
         // 1) Convert multipart files to Resource objects
         List<Resource> docs = new ArrayList<>();
