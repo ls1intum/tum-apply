@@ -848,8 +848,11 @@ export class JobCreationFormComponent {
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
       this.savingState.set('SAVED');
 
-      // 3) Fire compliance analysis and translation in parallel
+      // 3) Fire compliance analysis and translation in parallel.
+      //    Set isAnalyzing before the fire-and-forget call so isScoreLoading
+      //    is true immediately (no flash of N/A between generation and analysis).
       if (this.aiToggleSignal()) {
+        this.isAnalyzing.set(true);
         void this.analyzeAndUpdateScore(sourceLang);
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
@@ -1457,13 +1460,16 @@ export class JobCreationFormComponent {
             this.jobDescriptionEditor()?.forceUpdate(finalContent);
           }
 
-          // 7) Persist the translated content and run compliance analysis
+          // 7) Persist the translated content and run compliance analysis.
+          //    Set isAnalyzing BEFORE the finally block clears isTranslating,
+          //    so isScoreLoading never drops to false between the two states.
           const jobId = this.jobId();
           if (jobId) {
             try {
               const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
+              this.isAnalyzing.set(true);
               void this.analyzeAndUpdateScore(targetLang);
             } catch {
               // Silent save failure — will be caught by next autosave
@@ -1499,7 +1505,10 @@ export class JobCreationFormComponent {
     // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
-    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) return;
+    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) {
+      this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
+      return;
+    }
 
     this.isAnalyzing.set(true);
     try {
