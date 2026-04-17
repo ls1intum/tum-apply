@@ -304,8 +304,9 @@
     },
     "hoursPerWeek": "{{workload}} h/week",
     "notificationsCta": {
-      "text": "No suitable job? Receive {{link}}.",
-      "link": "notifications"
+      "textPrefix": "No suitable job? Receive",
+      "link": "notifications",
+      "textSuffix": "."
     },
     "errors": {
       "loadFilter": {

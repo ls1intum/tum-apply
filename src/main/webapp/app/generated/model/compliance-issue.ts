@@ -10,11 +10,33 @@
 
 
 export interface ComplianceIssue {
-    readonly action?: string;
+    readonly action?: ComplianceIssueActionEnum;
     readonly article?: string;
-    readonly category?: string;
+    readonly category?: ComplianceIssueCategoryEnum;
     readonly explanation?: string;
     readonly id?: string;
     readonly language?: string;
     readonly text?: string;
 }
+
+export type ComplianceIssueActionEnum = 'REPLACE' | 'ADD' | 'REMOVE';
+
+export const ComplianceIssueActionEnum = {
+    Replace: 'REPLACE' as const,
+    Add: 'ADD' as const,
+    Remove: 'REMOVE' as const,
+} as const;
+
+export const ComplianceIssueActionEnumValues = ['REPLACE', 'ADD', 'REMOVE'] as const;
+
+export type ComplianceIssueCategoryEnum = 'CRITICAL_AGG' | 'TRANSPARENCY' | 'GENDER_INCLUSIVE' | 'GENDER_EXCLUSIVE';
+
+export const ComplianceIssueCategoryEnum = {
+    CriticalAgg: 'CRITICAL_AGG' as const,
+    Transparency: 'TRANSPARENCY' as const,
+    GenderInclusive: 'GENDER_INCLUSIVE' as const,
+    GenderExclusive: 'GENDER_EXCLUSIVE' as const,
+} as const;
+
+export const ComplianceIssueCategoryEnumValues = ['CRITICAL_AGG', 'TRANSPARENCY', 'GENDER_INCLUSIVE', 'GENDER_EXCLUSIVE'] as const;
+

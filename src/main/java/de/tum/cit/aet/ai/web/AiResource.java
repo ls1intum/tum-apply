@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -67,7 +68,7 @@ public class AiResource {
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "translateJobDescriptionForJob", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AIJobDescriptionTranslationDTO> translateJobDescriptionForJob(
-        @RequestParam("jobId") String jobId,
+        @RequestParam("jobId") UUID jobId,
         @RequestParam("toLang") String toLang,
         @RequestParam("title") String title,
         @RequestBody TranslateComplianceDTO request

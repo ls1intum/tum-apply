@@ -45,8 +45,6 @@ public class GenderBiasAnalysisResource {
      * POST /api/gender-bias/analyze-html :
      * Extracts the readable plain text from the provided HTML content by removing all HTML tags,
      * and then performs a gender bias analysis on the extracted text.
-     * Utilizes the HtmlTextExtractionService for text extraction and the GenderBiasAnalysisService for
-     * compliance analysis.
      *
      * @param request the HTML to analyze
      * @return the analysis result
@@ -56,7 +54,6 @@ public class GenderBiasAnalysisResource {
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
 
-        // Strip HTML tags to get plain text
         String plainText = htmlTextExtractionService.extractPlainText(request.text());
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());

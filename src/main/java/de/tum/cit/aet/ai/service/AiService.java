@@ -8,7 +8,6 @@ import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.InternalServerException;
-import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
@@ -28,6 +27,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.jsoup.Jsoup;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -64,9 +64,7 @@ public class AiService {
 
     private final GenderBiasAnalysisService genderBiasAnalysisService;
 
-    private final ComplianceService complianceService;
-
-    private final ObjectMapper objectMapper;
+    private final ComplianceScoreService complianceScoreService;
 
     public AiService(
         ChatClient.Builder chatClientBuilder,
@@ -75,8 +73,7 @@ public class AiService {
         DocumentDictionaryService documentDictionaryService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceService complianceService,
-        ObjectMapper objectMapper
+        ComplianceScoreService complianceScoreService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
@@ -84,8 +81,7 @@ public class AiService {
         this.documentDictionaryService = documentDictionaryService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
-        this.complianceService = complianceService;
-        this.objectMapper = objectMapper;
+        this.complianceScoreService = complianceScoreService;
     }
 
     /**
@@ -165,24 +161,20 @@ public class AiService {
      * @return The translated text response with detected and target language info
      */
     public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(
-        String jobId,
+        UUID jobId,
         String toLang,
         String title,
         String text,
         GenderBiasAnalysisResponse originalAnalysis
     ) {
         currentUserService.markAiConsentForCurrentUser();
-        UUID parsedJobId = parseJobId(jobId);
-        if (parsedJobId == null) {
-            throw new InvalidParameterException("The provided jobId is missing or not a valid UUID.");
-        }
 
         AIJobDescriptionTranslationDTO translated = translateText(text, toLang);
         String translatedText = translated.translatedText();
 
         if (translatedText != null && !translatedText.isBlank()) {
             try {
-                jobService.updateJobDescriptionLanguage(jobId, toLang, translatedText);
+                jobService.updateJobDescriptionLanguage(jobId.toString(), toLang, translatedText);
                 String plainText = Jsoup.parse(text).text();
                 String plainTranslatedText = Jsoup.parse(translatedText).text();
                 GenderBiasAnalysisResponse sourceAnalysis = originalAnalysis;
@@ -191,9 +183,8 @@ public class AiService {
                     sourceAnalysis = genderBiasAnalysisService.analyzeText(plainText, sourceLang);
                 }
                 GenderBiasAnalysisResponse translatedAnalysis = genderBiasAnalysisService.analyzeText(plainTranslatedText, toLang);
-                analyzeJobDescription(title, parsedJobId, plainTranslatedText, toLang, sourceAnalysis, translatedAnalysis);
+                analyzeJobDescription(title, jobId, plainTranslatedText, toLang, sourceAnalysis, translatedAnalysis);
             } catch (Exception e) {
-                log.warn("Translation generated, but persistence/compliance update failed for jobId={}", jobId, e);
                 throw new InternalServerException("Translation generated, but storage failed", e);
             }
         }
@@ -310,9 +301,8 @@ public class AiService {
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
-        String rawComplianceResponse = null;
         try {
-            rawComplianceResponse = chatClient
+            complianceIssues = chatClient
                 .prompt()
                 .user(u ->
                     u
@@ -322,66 +312,20 @@ public class AiService {
                         .param("title", title != null ? title : "")
                 )
                 .call()
-                .content();
-            complianceIssues = parseComplianceIssues(rawComplianceResponse);
+                .entity(new ParameterizedTypeReference<>() {});
             complianceIssues.forEach(issue -> issue.setLanguage(lang));
         } catch (Exception e) {
-            log.warn("Compliance response parsing failed for jobId={}", jobId, e);
             throw new InternalServerException("Compliance analysis parsing failed", e);
         }
 
-        int genderScore = complianceService.calculateGenderScore(analysis, translatedAnalysis);
+        int genderScore = complianceScoreService.calculateGenderScore(analysis, translatedAnalysis);
 
-        int legalScore = complianceService.calculateLegalScore(complianceIssues);
+        int legalScore = complianceScoreService.calculateLegalScore(complianceIssues);
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
         jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues);
 
         return complianceIssues;
-    }
-
-    private UUID parseJobId(String jobId) {
-        if (jobId == null || jobId.isBlank()) {
-            return null;
-        }
-        try {
-            return UUID.fromString(jobId);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parses compliance findings from the raw AI response.
-     * Supports both supported response shapes:
-     * - JSON array
-     * - object containing an issues array
-     * and removes optional Markdown code fences before parsing.
-     *
-     * @param raw raw AI response text
-     * @return parsed compliance issues, or an empty list if the input is blank
-     * @throws Exception if JSON parsing or mapping fails
-     */
-
-    private List<ComplianceIssue> parseComplianceIssues(String raw) throws Exception {
-        if (raw == null || raw.isBlank()) {
-            return Collections.emptyList();
-        }
-
-        String normalized = raw.trim();
-        if (normalized.startsWith("```")) {
-            normalized = normalized.replaceFirst("^```(?:json)?\\s*", "").replaceFirst("\\s*```$", "").trim();
-        }
-
-        JsonNode root = objectMapper.readTree(normalized);
-        JsonNode issuesNode = root.isObject() && root.has("issues") ? root.get("issues") : root;
-
-        if (!issuesNode.isArray()) {
-            throw new IllegalArgumentException("Expected JSON array or object with 'issues' array");
-        }
-
-        ComplianceIssue[] issues = objectMapper.treeToValue(issuesNode, ComplianceIssue[].class);
-        return issues == null ? Collections.emptyList() : Arrays.asList(issues);
     }
 }

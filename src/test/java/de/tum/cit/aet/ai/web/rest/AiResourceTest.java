@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.ai.constants.ComplianceAction;
+import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
@@ -55,15 +57,14 @@ class AiResourceTest extends AbstractResourceTest {
     @Test
     void shouldReturnTranslatedTextWhenProfessorTranslatesJobDescription() {
         String mockTranslation = "Hallo Welt";
-        String jobId = "job-1";
         String toLang = "de";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
 
-        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString(), anyString(), any())).willReturn(
+        given(aiService.translateAndPersistJobDescription(any(UUID.class), anyString(), anyString(), anyString(), any())).willReturn(
             new AIJobDescriptionTranslationDTO(mockTranslation)
         );
 
-        String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang + "&title=Test";
+        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=" + toLang + "&title=Test";
         AIJobDescriptionTranslationDTO response = api
             .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
             .putAndRead(url, request, AIJobDescriptionTranslationDTO.class, 200);
@@ -74,14 +75,14 @@ class AiResourceTest extends AbstractResourceTest {
 
     @Test
     void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
-        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
+        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=de&title=Test";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
         api.with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT")).putAndRead(url, request, Void.class, 403);
     }
 
     @Test
     void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
-        String url = TRANSLATE_URL + "?jobId=job-1&toLang=de&title=Test";
+        String url = TRANSLATE_URL + "?jobId=" + JOB_ID + "&toLang=de&title=Test";
         TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
         api.withoutPostProcessors().putAndRead(url, request, Void.class, 401);
     }
@@ -89,7 +90,14 @@ class AiResourceTest extends AbstractResourceTest {
     @Test
     void shouldReturnComplianceIssuesWhenProfessorAnalyzesJobDescription() {
         List<ComplianceIssue> expectedIssues = List.of(
-            new ComplianceIssue("1", "CRITICAL_AGG", "I don't allow disabled applicants", "§ 1 AGG", "Discriminatory sentence", "REPLACE")
+            new ComplianceIssue(
+                "1",
+                ComplianceCategory.CRITICAL_AGG,
+                "I don't allow disabled applicants",
+                "§ 1 AGG",
+                "Discriminatory sentence",
+                ComplianceAction.REPLACE
+            )
         );
 
         given(aiService.analyzeCurrentJobDescription(any(JobFormDTO.class), anyString())).willReturn(expectedIssues);
@@ -99,7 +107,7 @@ class AiResourceTest extends AbstractResourceTest {
             .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), new TypeReference<List<ComplianceIssue>>() {}, 200);
 
         assertThat(response).hasSize(1);
-        assertThat(response.getFirst().getCategory()).isEqualTo("CRITICAL_AGG");
+        assertThat(response.getFirst().getCategory()).isEqualTo(ComplianceCategory.CRITICAL_AGG);
     }
 
     @Test

@@ -154,8 +154,12 @@ paths:
       - name: jobId
         in: query
         required: true
-        schema: {type: string}
+        schema: {type: string, format: uuid}
       - name: toLang
+        in: query
+        required: true
+        schema: {type: string}
+      - name: title
         in: query
         required: true
         schema: {type: string}
@@ -3120,13 +3124,17 @@ components:
     ComplianceIssue:
       type: object
       properties:
-        action: {type: string}
+        action:
+          type: string
+          enum: [REPLACE, ADD, REMOVE]
         article: {type: string}
-        category: {type: string}
+        category:
+          type: string
+          enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
         explanation: {type: string}
         id: {type: string}
-        language: {type: string}
         text: {type: string}
+        language: {type: string}
     ConflictDataDTO:
       type: object
       properties:
