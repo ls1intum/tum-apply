@@ -9,18 +9,17 @@ import { firstValueFrom } from 'rxjs';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TranslateDirective } from 'app/shared/language';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
-import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
@@ -90,14 +89,13 @@ type JobFormMode = 'create' | 'edit';
     NumberInputComponent,
     EditorComponent,
     ConfirmDialog,
+    DialogComponent,
     JobDetailComponent,
     DividerModule,
     ButtonComponent,
     ProgressSpinnerModule,
     CheckboxModule,
-    ToggleSwitchModule,
     ProgressSpinnerComponent,
-    ToggleSwitchComponent,
     InfoBoxComponent,
     MessageComponent,
     SegmentedToggleComponent,
@@ -270,6 +268,9 @@ export class JobCreationFormComponent {
   /** Signal controlling publish confirmation dialog visibility */
   showPublishDialog = signal(false);
 
+  /** Signal controlling AI info dialog visibility */
+  aiInfoDialogVisible = signal(false);
+
   /** Reference to the job description rich-text editor */
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
 
@@ -303,12 +304,18 @@ export class JobCreationFormComponent {
    * Effect: Updates validity signals whenever form status changes.
    * This keeps the stepper navigation buttons in sync with form state.
    */
+  bothDescriptionsFilled = computed(() => {
+    const en = this.jobDescriptionEN().trim();
+    const de = this.jobDescriptionDE().trim();
+    return en.length > 0 && de.length > 0;
+  });
+
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
     this.positionDetailsChanges();
     this.jobDescriptionSignal();
 
-    this.basicInfoValid.set(this.basicInfoForm.valid);
+    this.basicInfoValid.set(this.basicInfoForm.valid && this.bothDescriptionsFilled());
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
   });
 
@@ -477,6 +484,10 @@ export class JobCreationFormComponent {
       this.aiToggleSignal.set(!value);
       this.toastService.showErrorKey('settings.aiFeatures.saveFailed');
     }
+  }
+
+  openAiInfoDialog(): void {
+    this.aiInfoDialogVisible.set(true);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

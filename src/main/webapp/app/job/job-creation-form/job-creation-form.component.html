@@ -13,8 +13,25 @@
 />
 @if (!isLoading()) {
   <div class="page-container">
-    <div class="page-header">
+    <div class="page-header flex items-center justify-between">
       <h1 jhiTranslate="{{ pageTitle() }}"></h1>
+      <div class="flex items-center gap-2">
+        <jhi-segmented-toggle
+          class="[&_button]:!min-w-[7rem] [&_button]:!whitespace-nowrap"
+          [value]="aiToggleSignal() ? 'right' : 'left'"
+          [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.aiToggleOff'"
+          [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.aiToggleOn'"
+          [translateLabels]="true"
+          (valueChange)="onAiToggleChanged($event === 'right')"
+        />
+        <jhi-button
+          label="?"
+          severity="primary"
+          variant="outlined"
+          styleClass="!flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
+          (click)="openAiInfoDialog()"
+        />
+      </div>
     </div>
     <div>
       <jhi-progress-stepper [steps]="stepData()" [shouldTranslate]="true" />
@@ -106,38 +123,29 @@
               </div>
 
               <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
-              <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
+              <p jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.languageChoiceInfo"></p>
+              <p class="text-sm italic text-text-secondary" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.languageNote"></p>
 
-              <div class="flex flex-col gap-3 mt-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex items-center gap-3">
-                  <jhi-segmented-toggle
-                    [value]="segmentValueForLang(currentDescriptionLanguage())"
-                    [disabled]="isTranslating() || isGeneratingDraft() || savingState() === 'SAVING'"
-                    [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
-                    [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
-                    [translateLabels]="true"
-                    (valueChange)="changeDescriptionLanguage(langForSegmentValue($event))"
-                  />
+              <div class="flex items-center gap-3 mt-3 mb-3">
+                <jhi-segmented-toggle
+                  [value]="segmentValueForLang(currentDescriptionLanguage())"
+                  [disabled]="isTranslating() || isGeneratingDraft() || savingState() === 'SAVING'"
+                  [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
+                  [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
+                  [translateLabels]="true"
+                  (valueChange)="changeDescriptionLanguage(langForSegmentValue($event))"
+                />
 
-                  <!-- Translation indicator -->
-                  @if (isTranslating()) {
-                    <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
-                      <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
-                      <span
-                        class="text-sm font-semibold text-text-primary whitespace-nowrap"
-                        jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
-                      ></span>
-                    </div>
-                  }
-                </div>
-
-                <div class="flex items-center gap-2 sm:ml-auto sm:justify-end">
-                  <jhi-toggle-switch [model]="aiToggleSignal()" (modelChange)="onAiToggleChanged($event)" class="flex" />
-                  <label
-                    class="text-sm whitespace-nowrap"
-                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"
-                  ></label>
-                </div>
+                <!-- Translation indicator -->
+                @if (isTranslating()) {
+                  <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
+                    <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+                    <span
+                      class="text-sm font-semibold text-text-primary whitespace-nowrap"
+                      jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
+                    ></span>
+                  </div>
+                }
               </div>
             </div>
           </div>
@@ -414,4 +422,28 @@
       </span>
     </div>
   </ng-template>
+
+  <!-- AI Info Dialog -->
+  <jhi-dialog
+    [visible]="aiInfoDialogVisible()"
+    [modal]="true"
+    [draggable]="false"
+    [appendTo]="'body'"
+    header="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.title"
+    (visibleChange)="aiInfoDialogVisible.set($event)"
+    styleClass="!w-[90vw] md:!w-[36rem]"
+  >
+    <div class="space-y-4 text-sm leading-relaxed text-text-primary">
+      <p>
+        <strong jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.aiEnabledLabel"></strong>
+        <span> </span>
+        <span jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.aiEnabledText"></span>
+      </p>
+      <p>
+        <strong jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.aiDisabledLabel"></strong>
+        <span> </span>
+        <span jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.aiDisabledText"></span>
+      </p>
+    </div>
+  </jhi-dialog>
 }

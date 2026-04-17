@@ -183,6 +183,17 @@
           }
         },
         "aiToggle": "Enable AI",
+        "aiToggleOff": "AI Disabled",
+        "aiToggleOn": "AI Enabled",
+        "aiInfoDialog": {
+          "title": "AI Features",
+          "aiEnabledLabel": "AI enabled:",
+          "aiEnabledText": "The AI Assistant helps you draft your job description and the translation is generated automatically.",
+          "aiDisabledLabel": "AI disabled:",
+          "aiDisabledText": "The AI Assistant is not available and the translation must be provided manually."
+        },
+        "languageChoiceInfo": "Please choose and write the job description in either English or German:",
+        "languageNote": "Note: Both English and German descriptions are mandatory. Language switching is unavailable during translation or saving.",
         "languageEnglish": "English",
         "languageGerman": "German",
         "translating": "Translating...",
