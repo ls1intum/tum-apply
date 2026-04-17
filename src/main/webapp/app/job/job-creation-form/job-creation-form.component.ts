@@ -792,7 +792,9 @@ export class JobCreationFormComponent {
         const finalContent = this.extractJobDescriptionFromStream(accumulatedContent);
 
         if (finalContent && finalContent.length > 0) {
-          this.basicInfoForm.get('jobDescription')?.setValue(finalContent);
+          // Use emitEvent:false to avoid triggering the autosave effect —
+          // postGenerationSaveAndProcess handles saving directly.
+          this.basicInfoForm.get('jobDescription')?.setValue(finalContent, { emitEvent: false });
           this.basicInfoForm.get('jobDescription')?.markAsDirty();
           this.jobDescriptionSignal.set(finalContent);
           this.jobDescriptionEditor()?.forceUpdate(finalContent);
