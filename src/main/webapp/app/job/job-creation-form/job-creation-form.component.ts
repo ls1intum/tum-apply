@@ -1384,9 +1384,10 @@ export class JobCreationFormComponent {
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
       this.savingState.set('SAVED');
 
-      // 4) Fire compliance analysis and translation in parallel (fire-and-forget)
+      // 4) Fire translation (fire-and-forget). Analysis runs once at the end
+      //    of translation after both languages are available — avoids duplicate
+      //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal()) {
-        void this.analyzeAndUpdateScore(currentLang);
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
     } catch {
