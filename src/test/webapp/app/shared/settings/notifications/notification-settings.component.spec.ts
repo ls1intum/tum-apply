@@ -170,6 +170,18 @@ describe('NotificationSettingsComponent', () => {
 
       expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
     });
+
+    it('should ignore role-specific groups when the role has no configured notification groups', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
+      );
+
+      await component.loadSettings(RolesEnum.Admin);
+
+      expect(component['roleSettings']().has(RolesEnum.Admin)).toBe(false);
+      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
+      expect(component['loaded']()).toBe(true);
+    });
   });
 
   describe('template', () => {
@@ -255,6 +267,44 @@ describe('NotificationSettingsComponent', () => {
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
     });
+
+    it('should reload the email notification groups when the async update fails and a role is set', async () => {
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of([]));
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
+
+      component.onToggleChanged({
+        groupKey: 'test',
+        descriptionKey: 'desc',
+        emailTypes: [EmailTypeEnum.ApplicationAccepted],
+        enabled: false,
+      });
+      await Promise.resolve();
+
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
+    });
+
+    it('should reload the email notification groups when a synchronous update error occurs and a role is set', () => {
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      emailSettingServiceMock.updateEmailSettings.mockImplementation(() => {
+        throw new Error('boom');
+      });
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
+
+      component.onToggleChanged({
+        groupKey: 'test',
+        descriptionKey: 'desc',
+        emailTypes: [EmailTypeEnum.ApplicationAccepted],
+        enabled: false,
+      });
+
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
+    });
   });
 
   describe('subjectAreaSubscriptions.updateSelection', () => {
@@ -315,6 +365,30 @@ describe('NotificationSettingsComponent', () => {
 
       expect(applicantApiMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
+    });
+
+    it('should reload the email notification groups when the subject area toggle save fails and a role is set', async () => {
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
+
+      component.onSubjectAreaToggleChanged(false);
+      await Promise.resolve();
+
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
+    });
+
+    it('should not reload the email notification groups when the subject area toggle save fails without a current role', async () => {
+      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
+
+      component.onSubjectAreaToggleChanged(false);
+      await Promise.resolve();
+
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).not.toHaveBeenCalled();
     });
   });
 
