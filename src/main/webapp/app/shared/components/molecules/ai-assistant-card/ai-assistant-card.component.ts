@@ -26,8 +26,9 @@ import { TooltipModule } from 'primeng/tooltip';
   templateUrl: './ai-assistant-card.component.html',
 })
 export class AiAssistantCardComponent {
-  score = input<number>(0);
+  score = input<number | undefined>(undefined);
   isGenerating = input<boolean>(false);
+  isAnalyzing = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
   generate = output();
@@ -35,19 +36,35 @@ export class AiAssistantCardComponent {
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly EXCELLENCE_THRESHOLD = 90;
-  readonly displayedScore = signal(0);
+  readonly displayedScore = signal<number | undefined>(undefined);
   readonly scoreDialogVisible = signal(false);
+
+  /** Whether the score ring should appear greyed out (generating or analyzing) */
+  readonly isScoreLoading = computed(() => this.isGenerating() || this.isAnalyzing());
 
   readonly boundedScore = computed(() => {
     const value = this.score();
-    if (!Number.isFinite(value)) {
-      return 0;
+    if (value === undefined || !Number.isFinite(value)) {
+      return undefined;
     }
     return Math.max(0, Math.min(100, Math.round(value)));
   });
 
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
+    const loading = this.isScoreLoading();
+
+    // No score yet: show "calculating..." or "pending" depending on loading state
+    if (score === undefined) {
+      return loading
+        ? 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.calculating'
+        : 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.pending';
+    }
+
+    // Score exists but re-analysis is running: show "calculating..." alongside greyed-out score
+    if (loading) {
+      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.calculating';
+    }
 
     if (score <= this.DANGER_THRESHOLD) {
       return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.critical';
@@ -65,10 +82,10 @@ export class AiAssistantCardComponent {
   });
 
   private readonly displayedScoreEffect = effect(() => {
-    const generating = this.isGenerating();
+    const loading = this.isScoreLoading();
     const score = this.boundedScore();
 
-    if (generating) {
+    if (loading) {
       return;
     }
 

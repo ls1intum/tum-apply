@@ -148,7 +148,6 @@
       "header": "AI-Assistant"
     },
     "positionDetailsSection": {
-      "languageInfo": "Please choose and write the job description in either English or German:<br><b>AI enabled:</b> The AI Assistant helps you draft your job description and the translation is generated automatically.<br><b>AI disabled:</b> The AI Assistant is not available and the translation must be provided manually.<br><br><i>Note: Language switching is unavailable during translation or saving.</i>",
       "jobDescription": {
         "label": "Job Description",
         "aiLabel": "AI writes, improves and translates for you.",
@@ -182,11 +181,24 @@
             "body": "The score is weighted to ensure that individual, poorly chosen words do not disproportionately affect your final result."
           }
         },
-        "aiToggle": "Enable AI",
+        "aiToggleOff": "AI Disabled",
+        "aiToggleOn": "AI Enabled",
+        "aiInfoDialog": {
+          "title": "AI Features",
+          "aiEnabledLabel": "AI enabled:",
+          "aiEnabledText": "The AI Assistant helps you draft your job description and the translation is generated automatically.",
+          "aiDisabledLabel": "AI disabled:",
+          "aiDisabledText": "The AI Assistant is not available and the translation must be provided manually."
+        },
+        "languageChoiceInfo": "Please choose and write the job description in either English or German:",
+        "languageNote": "Note: Both English and German descriptions are mandatory.",
+        "translatingPlaceholder": "Translation is being generated...",
         "languageEnglish": "English",
         "languageGerman": "German",
-        "translating": "Translating...",
+        "translating": "Translating",
         "aiScoreFeedback": {
+          "pending": "The inclusivity score will be calculated after your job description is analyzed. This may take a few seconds.",
+          "calculating": "Your inclusivity score is being calculated. This may take a few seconds.",
           "critical": "Your posting may come across as exclusionary to many strong candidates. Rework wording and requirements to make them more inclusive.",
           "warning": "Your job could be more inclusive. Job descriptions with a higher score attract more diverse applicants and get more responses.",
           "good": "This is already a solid foundation. Your posting is inclusive and reaches many candidates. With a few targeted refinements, it can perform even better.",

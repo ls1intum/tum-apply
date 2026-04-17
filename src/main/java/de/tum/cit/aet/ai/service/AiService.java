@@ -2,7 +2,6 @@ package de.tum.cit.aet.ai.service;
 
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
-import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
@@ -124,13 +123,14 @@ public class AiService {
     }
 
     /**
-     * Translates the provided text between German and English.
-     * The translation preserves the original text structure and formatting.
+     * Streams the translation of a job description text using SSE.
+     * Returns a Flux that emits content chunks as they are generated.
      *
-     * @param text the text to translate (German or English)
-     * @return The translated text response with detected and target language info
+     * @param text   the text to translate
+     * @param toLang the target language ("de" or "en")
+     * @return Flux of content chunks as they are generated
      */
-    private AIJobDescriptionTranslationDTO translateText(String text, String toLang) {
+    public Flux<String> translateTextStream(String text, String toLang) {
         Set<String> inclusive = "de".equals(toLang) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(toLang) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
 
@@ -144,52 +144,9 @@ public class AiService {
                     .param("inclusiveWords", String.join(", ", inclusive))
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
-            .call()
-            .entity(AIJobDescriptionTranslationDTO.class);
-    }
-
-    /**
-     * Translates the provided job description text and persists the translated version
-     * in the job entity for the specified language.
-     * If persistence succeeds and a job form is available, the method triggers secondary
-     * gender-bias analysis and updates the job-description compliance state with translated version.
-     *
-     * @param jobId  the ID of the job to update
-     * @param toLang the target language for translation ("de" or "en")
-     * @param title job form title required for compliance update
-     * @param text   the job description text to translate
-     * @param originalAnalysis original gender analysis of the source text
-     * @return The translated text response with detected and target language info
-     */
-    public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(
-        UUID jobId,
-        String toLang,
-        String title,
-        String text,
-        GenderBiasAnalysisResponse originalAnalysis
-    ) {
-        currentUserService.markAiConsentForCurrentUser();
-
-        AIJobDescriptionTranslationDTO translated = translateText(text, toLang);
-        String translatedText = translated.translatedText();
-
-        if (translatedText != null && !translatedText.isBlank()) {
-            try {
-                jobService.updateJobDescriptionLanguage(jobId.toString(), toLang, translatedText);
-                String plainText = Jsoup.parse(text).text();
-                String plainTranslatedText = Jsoup.parse(translatedText).text();
-                GenderBiasAnalysisResponse sourceAnalysis = originalAnalysis;
-                if (sourceAnalysis == null && !plainText.isBlank()) {
-                    String sourceLang = "de".equalsIgnoreCase(toLang) ? "en" : "de";
-                    sourceAnalysis = genderBiasAnalysisService.analyzeText(plainText, sourceLang);
-                }
-                GenderBiasAnalysisResponse translatedAnalysis = genderBiasAnalysisService.analyzeText(plainTranslatedText, toLang);
-                analyzeJobDescription(title, jobId, plainTranslatedText, toLang, sourceAnalysis, translatedAnalysis);
-            } catch (Exception e) {
-                throw new InternalServerException("Translation generated, but storage failed", e);
-            }
-        }
-        return translated;
+            .stream()
+            .content()
+            .delayElements(Duration.ofMillis(35));
     }
 
     /**
