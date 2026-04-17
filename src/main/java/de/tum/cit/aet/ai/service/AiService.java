@@ -124,6 +124,33 @@ public class AiService {
     }
 
     /**
+     * Streams the translation of a job description text using SSE.
+     * Returns a Flux that emits content chunks as they are generated.
+     *
+     * @param text   the text to translate
+     * @param toLang the target language ("de" or "en")
+     * @return Flux of content chunks as they are generated
+     */
+    public Flux<String> translateTextStream(String text, String toLang) {
+        Set<String> inclusive = "de".equals(toLang) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
+        Set<String> nonInclusive = "de".equals(toLang) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+
+        return chatClient
+            .prompt()
+            .user(u ->
+                u
+                    .text(translationResource)
+                    .param("text", text)
+                    .param("targetLanguage", toLang)
+                    .param("inclusiveWords", String.join(", ", inclusive))
+                    .param("nonInclusiveWords", String.join(", ", nonInclusive))
+            )
+            .stream()
+            .content()
+            .delayElements(Duration.ofMillis(35));
+    }
+
+    /**
      * Translates the provided text between German and English.
      * The translation preserves the original text structure and formatting.
      *

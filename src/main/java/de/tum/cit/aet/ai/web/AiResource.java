@@ -53,6 +53,24 @@ public class AiResource {
     }
 
     /**
+     * Stream-translate a job description text using SSE.
+     * Returns Server-Sent Events that emit content chunks as they are generated.
+     *
+     * @param toLang  the target language for translation ("de" or "en")
+     * @param request A DTO containing the text to translate
+     * @return a Flux of content chunks streamed as Server-Sent Events
+     */
+    @ProfessorOrEmployeeOrAdmin
+    @PutMapping(value = "translateJobDescriptionStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> translateJobDescriptionStream(
+        @RequestParam("toLang") String toLang,
+        @RequestBody TranslateComplianceDTO request
+    ) {
+        log.info("PUT /api/ai/translateJobDescriptionStream - Streaming translation request received (toLang={})", toLang);
+        return aiService.translateTextStream(request.text(), toLang);
+    }
+
+    /**
      * Translate text between German and English.
      * Automatically detects the source language and translates to the other language.
      * Preserves the original text structure and formatting.

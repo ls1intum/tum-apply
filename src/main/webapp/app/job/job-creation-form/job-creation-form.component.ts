@@ -35,7 +35,6 @@ import { JobFormDTO } from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
-import { TranslateComplianceDTO } from 'app/generated/model/translate-compliance-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
@@ -160,6 +159,12 @@ export class JobCreationFormComponent {
   /** Indicates whether AI translation is in progress */
   isTranslating = signal<boolean>(false);
 
+  /** The target language of the active translation, or null if idle */
+  translationTargetLang = signal<Language | null>(null);
+
+  /** AbortController for cancelling active translation streams */
+  private translationAbortController: AbortController | null = null;
+
   /** Last successfully translated English text (used to avoid redundant translations) */
   lastTranslatedEN = signal<string>('');
 
@@ -185,6 +190,13 @@ export class JobCreationFormComponent {
       ? 'jobCreationForm.positionDetailsSection.jobDescription.placeholderEN'
       : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
   );
+
+  /** Computed: direction label shown during translation (e.g. "EN → DE") */
+  translationDirectionLabel = computed(() => {
+    const target = this.translationTargetLang();
+    if (!target) return '';
+    return target === 'de' ? 'EN → DE' : 'DE → EN';
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD SIGNALS
@@ -490,6 +502,15 @@ export class JobCreationFormComponent {
     this.aiInfoDialogVisible.set(true);
   }
 
+  private cancelTranslation(): void {
+    if (this.translationAbortController) {
+      this.translationAbortController.abort();
+      this.translationAbortController = null;
+    }
+    this.isTranslating.set(false);
+    this.translationTargetLang.set(null);
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LANGUAGE SWITCHING METHODS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -502,7 +523,7 @@ export class JobCreationFormComponent {
    */
   changeDescriptionLanguage(newLang: Language): void {
     const currentLang = this.currentDescriptionLanguage();
-    if (newLang === currentLang || this.isTranslating()) return;
+    if (newLang === currentLang) return;
 
     // If a save is pending, flush it first so we don't lose text
     if (this.autoSaveTimer !== undefined) {
@@ -518,8 +539,11 @@ export class JobCreationFormComponent {
    * Called before saving or switching languages to ensure no content is lost.
    */
   private syncCurrentEditorIntoLanguageSignals(): void {
-    const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
     const lang = this.currentDescriptionLanguage();
+    // Don't sync if viewing the translation target (editor shows AI-streamed content)
+    if (this.isTranslating() && this.translationTargetLang() === lang) return;
+
+    const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
     if (lang === 'en') {
       this.jobDescriptionEN.set(description);
     } else {
@@ -533,7 +557,18 @@ export class JobCreationFormComponent {
    */
   languageChangeEffect = effect(() => {
     const newLanguage = this.currentDescriptionLanguage();
+    const translating = this.isTranslating();
+    const translationTarget = this.translationTargetLang();
     if (!this.autoSaveInitialized) return;
+
+    // If switching to a language that is currently being translated, show placeholder
+    if (translating && translationTarget === newLanguage) {
+      const placeholder = `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.translatingPlaceholder') as string}</em></p>`;
+      this.basicInfoForm.get('jobDescription')?.setValue('', { emitEvent: false });
+      this.jobDescriptionSignal.set('');
+      this.jobDescriptionEditor()?.forceUpdate(placeholder);
+      return;
+    }
 
     const targetContent = newLanguage === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
 
@@ -785,13 +820,28 @@ export class JobCreationFormComponent {
 
   /**
    * Extracts the jobDescription content from the AI response.
-   * The AI returns JSON like: {"jobDescription":"<html content>"}
+   */
+  private extractJobDescriptionFromStream(content: string): string | null {
+    return this.extractJsonFieldFromStream(content, 'jobDescription');
+  }
+
+  /**
+   * Extracts the translatedText content from the AI translation response.
+   */
+  private extractTranslatedTextFromStream(content: string): string | null {
+    return this.extractJsonFieldFromStream(content, 'translatedText');
+  }
+
+  /**
+   * Extracts a named field from a streaming JSON response.
+   * The AI returns JSON like: {"fieldName":"<html content>"}
    * This method extracts the HTML content from the JSON wrapper.
    *
    * @param content The complete streamed content (should be valid JSON when complete)
+   * @param fieldName The JSON field name to extract
    * @returns The extracted HTML content, or null if extraction fails
    */
-  private extractJobDescriptionFromStream(content: string): string | null {
+  private extractJsonFieldFromStream(content: string, fieldName: string): string | null {
     if (!content || content.trim().length === 0) {
       return null;
     }
@@ -801,16 +851,15 @@ export class JobCreationFormComponent {
     // Method 1: Try to parse as complete JSON (most reliable)
     try {
       const parsed = JSON.parse(trimmed);
-      if (parsed.jobDescription && typeof parsed.jobDescription === 'string') {
-        return parsed.jobDescription;
+      if (parsed[fieldName] && typeof parsed[fieldName] === 'string') {
+        return parsed[fieldName];
       }
     } catch {
       // JSON parsing failed, try manual extraction
     }
 
     // Method 2: Manual extraction from JSON structure
-    // Look for the pattern: {"jobDescription":"<content>"}
-    const startMarker = '"jobDescription"';
+    const startMarker = `"${fieldName}"`;
     const startIndex = trimmed.indexOf(startMarker);
 
     if (startIndex === -1) {
@@ -942,9 +991,12 @@ export class JobCreationFormComponent {
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
     const imageValue = this.imageForm.getRawValue();
 
-    // Ensure current editor content is always included in the right language bucket
+    // Ensure current editor content is always included in the right language bucket.
+    // When viewing the translation target during active streaming, the editor shows AI content
+    // and the form value is empty — fall back to the signal to avoid saving empty content.
     const lang = this.currentDescriptionLanguage();
-    const currentText = (basicInfoValue.jobDescription ?? '').trim();
+    const isViewingTranslationTarget = this.isTranslating() && this.translationTargetLang() === lang;
+    const currentText = isViewingTranslationTarget ? '' : (basicInfoValue.jobDescription ?? '').trim();
 
     const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
     const supervisingProfessorId =
@@ -954,8 +1006,8 @@ export class JobCreationFormComponent {
       this.preferredSupervisingProfessorId() ??
       this.userId();
 
-    const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
-    const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
+    const jobDescriptionEN = !isViewingTranslationTarget && lang === 'en' ? currentText : this.jobDescriptionEN();
+    const jobDescriptionDE = !isViewingTranslationTarget && lang === 'de' ? currentText : this.jobDescriptionDE();
 
     return {
       jobId: this.jobId() || undefined,
@@ -1220,6 +1272,11 @@ export class JobCreationFormComponent {
         return;
       }
 
+      // If user edits while viewing the translation target, cancel translation immediately
+      if (this.isTranslating() && this.translationTargetLang() === this.currentDescriptionLanguage()) {
+        this.cancelTranslation();
+      }
+
       this.jobDescriptionSignal.set(description);
 
       this.clearAutoSaveTimer();
@@ -1284,74 +1341,102 @@ export class JobCreationFormComponent {
   }
 
   private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
-    const jobId = this.jobId();
-    const title = this.basicInfoForm.get('title')?.value ?? '';
     const text = currentText.trim();
-    if (!jobId || !text) return;
+    if (!text) return;
 
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
 
-    if (this.isTranslating()) return;
+    // Cancel any active translation before starting a new one
+    this.cancelTranslation();
 
     const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
 
+    // Set up cancellation and state
+    const abortController = new AbortController();
+    this.translationAbortController = abortController;
     this.isTranslating.set(true);
+    this.translationTargetLang.set(targetLang);
 
-    const translateDTO: TranslateComplianceDTO = {
-      text,
-      originalAnalysis: undefined,
-    };
+    // If user is already viewing the target language, show placeholder
+    if (this.currentDescriptionLanguage() === targetLang) {
+      const placeholder = `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.translatingPlaceholder') as string}</em></p>`;
+      this.jobDescriptionEditor()?.forceUpdate(placeholder);
+    }
 
     try {
-      const response = await firstValueFrom(this.aiApi.translateJobDescriptionForJob(jobId, targetLang, title, translateDTO));
+      let lastRendered = '';
+      const accumulatedContent = await this.aiStreamingService.translateJobDescriptionStream(
+        targetLang,
+        text,
+        content => {
+          const extracted = this.extractTranslatedTextFromStream(content);
+          if (!extracted?.startsWith('<')) return;
 
-      const translatedText = (response.translatedText ?? '').trim();
-      if (!translatedText) return;
+          const safeHtml = extractCompleteHtmlTags(extracted);
+          if (safeHtml && safeHtml !== lastRendered) {
+            lastRendered = safeHtml;
+            // If user is viewing the target language, update editor in real-time
+            if (this.currentDescriptionLanguage() === targetLang) {
+              this.jobDescriptionEditor()?.forceUpdate(safeHtml);
+            }
+          }
+        },
+        abortController.signal,
+      );
 
-      // Update local hidden language signals only (no editor update)
-      if (targetLang === 'en') {
-        this.jobDescriptionEN.set(translatedText);
-        this.lastTranslatedEN.set(translatedText);
-        this.lastTranslatedDE.set(text);
-      } else {
-        this.jobDescriptionDE.set(translatedText);
-        this.lastTranslatedDE.set(translatedText);
-        this.lastTranslatedEN.set(text);
+      // Stream completed - extract final content
+      if (accumulatedContent) {
+        const finalContent = this.extractTranslatedTextFromStream(accumulatedContent);
+
+        if (finalContent && finalContent.length > 0) {
+          // Update the target language signal
+          if (targetLang === 'en') {
+            this.jobDescriptionEN.set(finalContent);
+            this.lastTranslatedEN.set(finalContent);
+            this.lastTranslatedDE.set(text);
+          } else {
+            this.jobDescriptionDE.set(finalContent);
+            this.lastTranslatedDE.set(finalContent);
+            this.lastTranslatedEN.set(text);
+          }
+
+          // If user is viewing the target language, finalize the editor
+          if (this.currentDescriptionLanguage() === targetLang) {
+            this.basicInfoForm.get('jobDescription')?.setValue(finalContent, { emitEvent: false });
+            this.jobDescriptionSignal.set(finalContent);
+            this.jobDescriptionEditor()?.forceUpdate(finalContent);
+          }
+
+          // Persist the translated content and update score
+          const jobId = this.jobId();
+          if (jobId) {
+            try {
+              const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
+              const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
+              this.lastSavedData.set(saved);
+              if (saved.genderBiasScore !== undefined) {
+                this.aiScore.set(saved.genderBiasScore);
+              }
+            } catch {
+              // Silent save failure - will be caught by next autosave
+            }
+          }
+        }
       }
-
-      const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
-      if (updatedJob.genderBiasScore !== undefined) {
-        this.aiScore.set(updatedJob.genderBiasScore);
+    } catch (e) {
+      // If aborted, silently ignore
+      if (e instanceof DOMException && e.name === 'AbortError') {
+        return;
       }
-
-      // Keep lastSavedData in sync so hasUnsavedChanges stays stable
-      const lastSaved = this.lastSavedData();
-      if (lastSaved) {
-        this.lastSavedData.set({
-          title: lastSaved.title,
-          researchArea: lastSaved.researchArea,
-          subjectArea: lastSaved.subjectArea,
-          supervisingProfessor: lastSaved.supervisingProfessor,
-          location: lastSaved.location,
-
-          jobDescriptionEN: this.jobDescriptionEN() || undefined,
-          jobDescriptionDE: this.jobDescriptionDE() || undefined,
-
-          startDate: lastSaved.startDate,
-          endDate: lastSaved.endDate,
-          workload: lastSaved.workload,
-          contractDuration: lastSaved.contractDuration,
-          fundingType: lastSaved.fundingType,
-          imageId: lastSaved.imageId,
-          state: lastSaved.state,
-          jobId: lastSaved.jobId,
-        });
-      }
-    } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
-      this.isTranslating.set(false);
+      // Only clear state if this is still the active translation (not replaced by a new one)
+      if (this.translationAbortController === abortController) {
+        this.isTranslating.set(false);
+        this.translationTargetLang.set(null);
+        this.translationAbortController = null;
+      }
     }
   }
 

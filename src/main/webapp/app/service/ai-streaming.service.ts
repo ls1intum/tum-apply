@@ -101,4 +101,87 @@ export class AiStreamingService {
 
     return accumulatedContent;
   }
+
+  /**
+   * Translates a job description using streaming SSE.
+   * Supports cancellation via AbortSignal.
+   *
+   * @param toLang The target language ('en' or 'de')
+   * @param text The text to translate
+   * @param onChunk Callback function called for each content chunk received
+   * @param signal Optional AbortSignal for cancellation
+   * @returns Promise that resolves with the full accumulated content, or rejects on error/abort
+   */
+  async translateJobDescriptionStream(
+    toLang: string,
+    text: string,
+    onChunk: (accumulatedContent: string) => void,
+    signal?: AbortSignal,
+  ): Promise<string> {
+    const url = `/api/ai/translateJobDescriptionStream?toLang=${encodeURIComponent(toLang)}`;
+
+    const token = this.keycloakService.getToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'text/event-stream',
+    };
+
+    if (token?.length) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ text }),
+      credentials: 'include',
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      return '';
+    }
+
+    const decoder = new TextDecoder();
+    let accumulatedContent = '';
+    let lineBuffer = '';
+    let done = false;
+
+    try {
+      while (!done) {
+        const result = await reader.read();
+        done = result.done;
+
+        if (result.value) {
+          const chunk = lineBuffer + decoder.decode(result.value, { stream: true });
+          const lines = chunk.split('\n');
+          lineBuffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const content = line.slice(5);
+              accumulatedContent += content;
+              onChunk(accumulatedContent);
+            }
+          }
+        }
+      }
+
+      if (lineBuffer.startsWith('data:')) {
+        const content = lineBuffer.slice(5);
+        accumulatedContent += content;
+        onChunk(accumulatedContent);
+      }
+    } catch (e) {
+      reader.cancel();
+      throw e;
+    }
+
+    return accumulatedContent;
+  }
 }

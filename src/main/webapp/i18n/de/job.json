@@ -148,7 +148,6 @@
       "header": "KI-Assistent"
     },
     "positionDetailsSection": {
-      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Der KI-Assistent hilft dir beim Erstellen deiner Stellenbeschreibung und die Übersetzung wird automatisch generiert.<br><b>KI deaktiviert:</b> Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",
@@ -182,7 +181,6 @@
             "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
           }
         },
-        "aiToggle": "KI aktivieren",
         "aiToggleOff": "KI Deaktiviert",
         "aiToggleOn": "KI Aktiviert",
         "aiInfoDialog": {
@@ -193,7 +191,8 @@
           "aiDisabledText": "Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden."
         },
         "languageChoiceInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:",
-        "languageNote": "Hinweis: Beide Beschreibungen auf Englisch und Deutsch sind erforderlich. Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.",
+        "languageNote": "Hinweis: Beide Beschreibungen auf Englisch und Deutsch sind erforderlich.",
+        "translatingPlaceholder": "Übersetzung wird generiert...",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
         "translating": "Übersetzt...",
