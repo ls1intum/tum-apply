@@ -171,6 +171,10 @@ export class JobCreationFormComponent {
   /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
 
+  /** Last analyzed description text (used to avoid redundant compliance analysis) */
+  private lastAnalyzedText = '';
+
+
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1491,14 +1495,16 @@ export class JobCreationFormComponent {
     const jobId = this.jobId();
     if (!jobId) return;
 
-    // 1) Build a fresh DTO from local signals (not from save response which may
-    //    have fields stripped by @JsonInclude(NON_EMPTY) on the backend)
+    // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
+    const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
+    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) return;
 
     this.isAnalyzing.set(true);
     try {
       // 2) Send the description to the analysis endpoint (persists score on the backend)
       await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      this.lastAnalyzedText = descriptionText;
 
       // 3) Fetch the updated job to retrieve the persisted score.
       //    Retry once with a short delay if the score is still missing

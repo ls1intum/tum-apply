@@ -52,10 +52,18 @@ export class AiAssistantCardComponent {
 
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
+    const loading = this.isScoreLoading();
+
+    // No score yet: show "calculating..." or "pending" depending on loading state
     if (score === undefined) {
-      return this.isScoreLoading()
+      return loading
         ? 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.calculating'
         : 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.pending';
+    }
+
+    // Score exists but re-analysis is running: show "calculating..." alongside greyed-out score
+    if (loading) {
+      return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.calculating';
     }
 
     if (score <= this.DANGER_THRESHOLD) {
