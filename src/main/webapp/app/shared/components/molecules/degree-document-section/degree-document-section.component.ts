@@ -63,10 +63,10 @@ export class DegreeDocumentSectionComponent {
   readonly combinedDocumentIds = computed(() => {
     const bachelor = this.bachelorDocumentIds() ?? [];
     const master = this.masterDocumentIds() ?? [];
-    return [...bachelor, ...master];
+    return bachelor.concat(master);
   });
 
-  readonly combinedQueuedFiles = computed(() => [...this.bachelorQueuedFiles(), ...this.masterQueuedFiles()]);
+  readonly combinedQueuedFiles = computed(() => this.bachelorQueuedFiles().concat(this.masterQueuedFiles()));
 
   readonly bachelorCertificateLabelKey = 'entity.applicationPage2.label.bachelorCertificate';
   readonly masterCertificateLabelKey = 'entity.applicationPage2.label.masterCertificate';
