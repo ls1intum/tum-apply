@@ -148,7 +148,6 @@
       "header": "KI-Assistent"
     },
     "positionDetailsSection": {
-      "languageInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:<br><b>KI aktiviert:</b> Der KI-Assistent hilft dir beim Erstellen deiner Stellenbeschreibung und die Übersetzung wird automatisch generiert.<br><b>KI deaktiviert:</b> Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden.<br><br><i>Hinweis: Während der Übersetzung oder beim Speichern ist ein Sprachwechsel nicht möglich.</i>",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",
@@ -182,11 +181,24 @@
             "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
           }
         },
-        "aiToggle": "KI aktivieren",
+        "aiToggleOff": "KI Deaktiviert",
+        "aiToggleOn": "KI Aktiviert",
+        "aiInfoDialog": {
+          "title": "KI-Funktionen",
+          "aiEnabledLabel": "KI aktiviert:",
+          "aiEnabledText": "Der KI-Assistent hilft dir beim Erstellen deiner Stellenbeschreibung und die Übersetzung wird automatisch generiert.",
+          "aiDisabledLabel": "KI deaktiviert:",
+          "aiDisabledText": "Der KI-Assistent ist nicht verfügbar und die Übersetzung muss manuell eingefügt werden."
+        },
+        "languageChoiceInfo": "Wähle und schreibe die Stellenbeschreibung entweder auf Deutsch oder Englisch:",
+        "languageNote": "Hinweis: Beide Beschreibungen auf Englisch und Deutsch sind erforderlich.",
+        "translatingPlaceholder": "Übersetzung wird generiert...",
         "languageEnglish": "Englisch",
         "languageGerman": "Deutsch",
-        "translating": "Übersetzt...",
+        "translating": "Übersetzt",
         "aiScoreFeedback": {
+          "pending": "Der Inklusivitäts-Score wird berechnet, sobald deine Stellenbeschreibung analysiert wurde. Dies kann einige Sekunden dauern.",
+          "calculating": "Dein Inklusivitäts-Score wird gerade berechnet. Dies kann einige Sekunden dauern.",
           "critical": "Deine Ausschreibung kann auf viele passende Talente exkludierend wirken. Überarbeite Sprache und Anforderungen gezielt inklusiver.",
           "warning": "Deine Ausschreibung könnte inklusiver sein. Stellenanzeigen mit höherem Score sprechen vielfältigere Bewerbende an und erhalten mehr Rückmeldungen.",
           "good": "Das ist schon eine gute Grundlage. Deine Ausschreibung ist bereits inklusiv und spricht viele Bewerbende an. Mit gezielten Verfeinerungen kannst du sie noch stärker machen.",
