@@ -41,8 +41,9 @@ public class GenderBiasAnalysisResource {
     }
 
     /**
-     * POST /api/gender-bias/analyze-html : Analyze HTML content (extract text
-     * first)
+     * POST /api/gender-bias/analyze-html :
+     * Extracts the readable plain text from the provided HTML content by removing all HTML tags,
+     * and then performs a gender bias analysis on the extracted text.
      *
      * @param request the HTML to analyze
      * @return the analysis result
@@ -52,12 +53,9 @@ public class GenderBiasAnalysisResource {
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());
 
-        // Strip HTML tags to get plain text
         String plainText = Jsoup.parse(request.text()).text();
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
-
-        log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
 
         return ResponseEntity.ok(response);
     }

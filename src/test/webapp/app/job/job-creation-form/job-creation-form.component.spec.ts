@@ -325,7 +325,7 @@ describe('JobCreationFormComponent', () => {
 
       component.basicInfoForm.patchValue({ title: 'new title' });
       fixture.detectChanges();
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(5000);
 
       expect(spy).toHaveBeenCalledOnce();
       vi.useRealTimers();

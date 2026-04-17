@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
+import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
@@ -13,6 +14,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -99,4 +101,12 @@ public class Job extends AbstractAuditingEntity {
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Application> applications;
+
+    // Compliance fields for score calculation
+    @Column(name = "gender_bias_score")
+    private Integer genderBiasScore;
+
+    @ElementCollection
+    @CollectionTable(name = "job_compliance_issues", joinColumns = @JoinColumn(name = "job_id"))
+    private List<ComplianceIssue> complianceIssues = new ArrayList<>();
 }

@@ -9,9 +9,9 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
-import de.tum.cit.aet.notification.dto.DataExportEmailContext;
+import de.tum.cit.aet.notification.dto.DataExportEmailContextDTO;
 import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
-import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.core.TemplateClassResolver;
@@ -96,7 +96,7 @@ public class TemplateProcessingService {
 
             Template inlineTemplate = new Template(
                 templateName,
-                new StringReader(emailTemplateTranslation.getBodyHtml()),
+                new StringReader(asHtmlTemplate(emailTemplateTranslation.getBodyHtml())),
                 freemarkerConfig
             );
 
@@ -111,6 +111,10 @@ public class TemplateProcessingService {
                 ex
             );
         }
+    }
+
+    private String asHtmlTemplate(String html) {
+        return "<#ftl output_format=\"HTML\">" + System.lineSeparator() + html;
     }
 
     /**
@@ -179,14 +183,12 @@ public class TemplateProcessingService {
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
             case InterviewSlot slot -> addInterviewSlotData(dataModel, slot);
-            case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
+            case ResearchGroupEmailContextDTO ctx -> addResearchGroupContextData(dataModel, ctx);
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
-            case DataExportEmailContext ctx -> addDataExportContextData(dataModel, ctx);
+            case DataExportEmailContextDTO ctx -> addDataExportContextData(dataModel, ctx);
             case JobPublicationEmailContextDTO ctx -> addJobPublicationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
-            default -> {
-                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
-            }
+            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
         return dataModel;
     }
@@ -201,6 +203,10 @@ public class TemplateProcessingService {
         User applicant = application.getApplicant().getUser();
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
         dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), applicant.getLastName());
+
+        String applicationLink =
+            url + "/evaluation/application?sortBy=appliedAt&sortDir=DESC&applicationId=" + application.getApplicationId();
+        dataModel.put(TemplateVariable.APPLICATION_LINK.getValue(), applicationLink);
 
         addJobData(dataModel, application.getJob());
     }
@@ -252,9 +258,10 @@ public class TemplateProcessingService {
     /**
      * Adds combined user and research group data for research-group-related emails.
      */
-    private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContext context) {
-        addUserData(dataModel, context.user());
-        addResearchGroupData(dataModel, context.researchGroup());
+    private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContextDTO context) {
+        dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), context.userFirstName());
+        dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), context.userLastName());
+        dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), context.researchGroupName());
     }
 
     /**
@@ -283,8 +290,9 @@ public class TemplateProcessingService {
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), researchGroup.getName());
     }
 
-    private void addDataExportContextData(Map<String, Object> dataModel, DataExportEmailContext ctx) {
-        addUserData(dataModel, ctx.user());
+    private void addDataExportContextData(Map<String, Object> dataModel, DataExportEmailContextDTO ctx) {
+        dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), ctx.userFirstName());
+        dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), ctx.userLastName());
         dataModel.put(TemplateVariable.DOWNLOAD_LINK.getValue(), ctx.downloadLink());
         dataModel.put(TemplateVariable.EXPORT_EXPIRES_DAYS.getValue(), ctx.expiresDays());
     }

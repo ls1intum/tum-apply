@@ -168,20 +168,3 @@ jobs:
             });
 
             console.log('Updated PR description with coverage results');
-
-            // Notify the author
-            let commentBody;
-            if (prCheckConclusion === 'failure') {
-              commentBody = `@${pr.user.login} Test coverage could not be fully measured because some tests failed. Please check the [workflow logs](${runUrl}) for details.`;
-            } else if (hasTable) {
-              commentBody = `@${pr.user.login} Test coverage has been automatically updated in the PR description.`;
-            } else {
-              commentBody = `@${pr.user.login} No code changes detected - test coverage not required for this PR.`;
-            }
-
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: prNumber,
-              body: commentBody
-            });

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
+import { provideRouter, Router } from '@angular/router';
 
 import { JobCardListComponent } from 'app/job/job-overview/job-card-list/job-card-list.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
@@ -9,13 +10,17 @@ import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.test
 import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { JobCardDTOLocationEnum as JobLocationEnum } from 'app/generated/model/job-card-dto';
+import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
+import { createAccountServiceMock, provideAccountServiceMock } from 'src/test/webapp/util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
+import { getRequiredAnchor } from 'src/test/webapp/util/utility-methods/dom-query.util';
 
 describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
   let component: JobCardListComponent;
+  let accountService = createAccountServiceMock();
 
   let jobApi: {
     getAllFilters: ReturnType<typeof vi.fn>;
@@ -46,6 +51,8 @@ describe('JobCardListComponent', () => {
         }),
       ),
     };
+    accountService = createAccountServiceMock();
+    accountService.setAuthorities([UserShortDTORolesEnum.Applicant]);
 
     await TestBed.configureTestingModule({
       imports: [JobCardListComponent],
@@ -54,6 +61,8 @@ describe('JobCardListComponent', () => {
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideToastServiceMock(mockToastService),
+        provideAccountServiceMock(accountService),
+        provideRouter([]),
       ],
     }).compileComponents();
 
@@ -336,5 +345,23 @@ describe('JobCardListComponent', () => {
     fixture2.detectChanges();
 
     expect(component2.currentLanguage()).toBe('EN');
+  });
+
+  it('should navigate to notification settings through the Angular router', async () => {
+    const router = TestBed.inject(Router);
+    const navigateByUrlSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+    fixture.detectChanges();
+    const link = getRequiredAnchor(fixture.nativeElement, '[data-testid="notifications-settings-link"]');
+
+    expect(link.getAttribute('href')).toContain('/settings?tab=notifications');
+
+    link.click();
+    await fixture.whenStable();
+
+    expect(navigateByUrlSpy).toHaveBeenCalledOnce();
+    const navigationTarget = navigateByUrlSpy.mock.calls[0][0];
+    const serializedTarget = typeof navigationTarget === 'string' ? navigationTarget : router.serializeUrl(navigationTarget);
+    expect(serializedTarget).toBe('/settings?tab=notifications');
   });
 });

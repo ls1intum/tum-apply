@@ -49,7 +49,6 @@ model/accept-dto.ts
 model/add-interviewees-dto.ts
 model/add-members-to-research-group-dto.ts
 model/admin-export-task-dto.ts
-model/ai-job-description-translation-dto.ts
 model/applicant-dto.ts
 model/applicant-for-application-detail-dto.ts
 model/application-detail-dto.ts
@@ -68,6 +67,7 @@ model/biased-word-dto.ts
 model/book-slot-request-dto.ts
 model/booking-dto.ts
 model/cancel-interview-dto.ts
+model/compliance-issue.ts
 model/conflict-data-dto.ts
 model/counts.ts
 model/create-slots-dto.ts
@@ -139,6 +139,7 @@ model/send-invitations-request-dto.ts
 model/send-invitations-result-dto.ts
 model/slot-input.ts
 model/sort-object.ts
+model/translate-compliance-dto.ts
 model/upcoming-interview-dto.ts
 model/update-application-dto.ts
 model/update-assessment-dto.ts

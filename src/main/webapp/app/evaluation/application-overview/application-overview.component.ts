@@ -177,7 +177,7 @@ export class ApplicationOverviewComponent {
   navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
     const queryParams: Params = {
       sortBy: this.sortBy(),
-      sortDirection: this.sortDirection(),
+      sortDir: this.sortDirection(),
       applicationId: application.applicationId,
     };
 
