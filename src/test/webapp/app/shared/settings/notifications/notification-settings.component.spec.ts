@@ -9,6 +9,7 @@ import { provideTranslateMock } from '../../../../util/translate.mock';
 import { JobCardDTOSubjectAreaEnum as ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/job-card-dto';
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 const RolesEnum = UserShortDTORolesEnum;
 const EmailTypeEnum = EmailSettingDTOEmailTypeEnum;
@@ -35,6 +36,7 @@ describe('NotificationSettingsComponent', () => {
       providers: [
         { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
         provideApplicantResourceApiMock(applicantApiMock),
+        provideFontAwesomeTesting(),
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(),
       ],
@@ -137,6 +139,55 @@ describe('NotificationSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Applicant);
 
       expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
+    });
+  });
+
+  describe('template', () => {
+    it('should render the applicant subject area notification section', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: true }]),
+      );
+      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
+
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      fixture.detectChanges();
+      await component.loadSettings(RolesEnum.Applicant);
+      fixture.detectChanges();
+
+      const renderedText = fixture.nativeElement.textContent ?? '';
+      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+
+      expect(renderedText).toContain('settings.notifications.applicant.subjectAreas.title');
+      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('false');
+      expect(animatedContainer?.className).toContain('max-h-screen');
+    });
+
+    it('should keep the subject area selector collapsed when the notification toggle is disabled', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
+      );
+      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
+
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      fixture.detectChanges();
+      await component.loadSettings(RolesEnum.Applicant);
+      fixture.detectChanges();
+
+      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+
+      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('true');
+      expect(animatedContainer?.className).toContain('max-h-0');
+    });
+
+    it('should not render the subject area section for non-applicant roles', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSettingDTO[]>([]));
+
+      fixture.componentRef.setInput('currentRole', RolesEnum.Professor);
+      fixture.detectChanges();
+      await component.loadSettings(RolesEnum.Professor);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent ?? '').not.toContain('settings.notifications.applicant.subjectAreas.title');
     });
   });
 
