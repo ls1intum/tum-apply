@@ -797,6 +797,10 @@ export class JobCreationFormComponent {
           } else {
             this.jobDescriptionDE.set(finalContent);
           }
+
+          // Immediately save + analyze + translate (skip 5s autosave delay)
+          this.syncCurrentEditorIntoLanguageSignals();
+          void this.postGenerationSaveAndProcess(language, finalContent);
         } else {
           // Extraction failed - show error and restore original content
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
@@ -815,6 +819,42 @@ export class JobCreationFormComponent {
     } finally {
       this.isAutoScrolling = false;
       this.isGeneratingDraft.set(false);
+    }
+  }
+
+  /**
+   * Immediately saves the generated content and fires analysis + translation in parallel.
+   * Called directly after AI draft generation to skip the 5s autosave delay.
+   */
+  private async postGenerationSaveAndProcess(sourceLang: Language, sourceText: string): Promise<void> {
+    const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
+    this.savingState.set('SAVING');
+
+    try {
+      let saved: JobFormDTO;
+      if (this.jobId()) {
+        saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), currentData));
+      } else {
+        saved = await firstValueFrom(this.jobApi.createJob(currentData));
+        this.jobId.set(saved.jobId ?? '');
+      }
+
+      this.lastSavedData.set(saved);
+      this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
+      this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
+      if (saved.genderBiasScore !== undefined) {
+        this.aiScore.set(saved.genderBiasScore);
+      }
+      this.savingState.set('SAVED');
+
+      if (this.aiToggleSignal()) {
+        // Fire analysis and translation in parallel — no waiting between them
+        void this.analyzeAndUpdateScore(sourceLang, saved);
+        void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
+      }
+    } catch {
+      this.savingState.set('FAILED');
+      this.toastService.showErrorKey('toast.saveFailed');
     }
   }
 
@@ -1408,7 +1448,7 @@ export class JobCreationFormComponent {
             this.jobDescriptionEditor()?.forceUpdate(finalContent);
           }
 
-          // Persist the translated content and update score
+          // Persist the translated content and run analysis on translated text
           const jobId = this.jobId();
           if (jobId) {
             try {
@@ -1418,6 +1458,8 @@ export class JobCreationFormComponent {
               if (saved.genderBiasScore !== undefined) {
                 this.aiScore.set(saved.genderBiasScore);
               }
+              // Run compliance analysis on the translated text for accurate scoring
+              void this.analyzeAndUpdateScore(targetLang, saved);
             } catch {
               // Silent save failure - will be caught by next autosave
             }

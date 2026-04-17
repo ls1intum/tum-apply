@@ -129,7 +129,7 @@
               <div class="flex items-center gap-3 mt-3 mb-3">
                 <jhi-segmented-toggle
                   [value]="segmentValueForLang(currentDescriptionLanguage())"
-                  [disabled]="isGeneratingDraft() || savingState() === 'SAVING'"
+                  [disabled]="isGeneratingDraft()"
                   [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
                   [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
                   [translateLabels]="true"
