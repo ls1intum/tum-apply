@@ -845,9 +845,6 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      if (saved.genderBiasScore !== undefined) {
-        this.aiScore.set(saved.genderBiasScore);
-      }
       this.savingState.set('SAVED');
 
       if (this.aiToggleSignal()) {
@@ -1368,9 +1365,6 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      if (saved.genderBiasScore !== undefined) {
-        this.aiScore.set(saved.genderBiasScore);
-      }
 
       this.savingState.set('SAVED');
 
@@ -1460,9 +1454,8 @@ export class JobCreationFormComponent {
               const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
-              if (saved.genderBiasScore !== undefined) {
-                this.aiScore.set(saved.genderBiasScore);
-              }
+              // Don't overwrite aiScore from save response — let analyzeAndUpdateScore
+              // be the single authoritative source for score updates
               // Run compliance analysis on the translated text for accurate scoring
               void this.analyzeAndUpdateScore(targetLang);
             } catch {
