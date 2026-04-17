@@ -350,7 +350,6 @@
     "aiExtraction": {
       "helperCv": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
       "helperCertificates": "Spare Zeit und lass unsere KI deine Studieninformationen automatisch aus deinen Zeugnissen ausfüllen.",
-      "consent": "Verarbeitet durch Azure OpenAI",
       "checkInfo": "Bitte überprüfe die extrahierten Informationen auf Vollständigkeit und Richtigkeit.",
       "button": "KI-Extraktion",
       "loading": "Extrahiert...",
