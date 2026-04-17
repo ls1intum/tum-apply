@@ -252,6 +252,9 @@ export class JobCreationFormComponent {
   /** Whether compliance analysis is currently running */
   readonly isAnalyzing = signal(false);
 
+  /** Whether score-affecting processing is active (translation, analysis, or generation) */
+  readonly isScoreProcessing = computed(() => this.isGeneratingDraft() || this.isTranslating() || this.isAnalyzing());
+
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
   // ═══════════════════════════════════════════════════════════════════════════
