@@ -1,6 +1,5 @@
 package de.tum.cit.aet.ai.web;
 
-import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
@@ -9,7 +8,6 @@ import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.util.List;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -68,33 +66,6 @@ public class AiResource {
     ) {
         log.info("PUT /api/ai/translateJobDescriptionStream - Streaming translation request received (toLang={})", toLang);
         return aiService.translateTextStream(request.text(), toLang);
-    }
-
-    /**
-     * Translate text between German and English.
-     * Automatically detects the source language and translates to the other language.
-     * Preserves the original text structure and formatting.
-     * Triggers a secondary gender-bias analysis for the translated version to ensure
-     * that the inclusivity score remains consistent and valid in both language contexts.
-     *
-     * @param jobId  the ID of the job for which the description is being translated
-     * @param toLang the target language for translation ("de" or "en")
-     * @param title the title of job
-     * @param request A DTO containing the text to translate and original analysis
-     * @return a ResponseEntity containing the translated text with language info
-     */
-    @ProfessorOrEmployeeOrAdmin
-    @PutMapping(value = "translateJobDescriptionForJob", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AIJobDescriptionTranslationDTO> translateJobDescriptionForJob(
-        @RequestParam("jobId") UUID jobId,
-        @RequestParam("toLang") String toLang,
-        @RequestParam("title") String title,
-        @RequestBody TranslateComplianceDTO request
-    ) {
-        log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
-        return ResponseEntity.ok(
-            aiService.translateAndPersistJobDescription(jobId, toLang, title, request.text(), request.originalAnalysis())
-        );
     }
 
     /**
