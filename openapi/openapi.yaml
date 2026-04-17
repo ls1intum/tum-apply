@@ -170,6 +170,28 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
+  /api/ai/translateJobDescriptionStream:
+    put:
+      tags: [ai-resource]
+      operationId: translateJobDescriptionStream
+      parameters:
+      - name: toLang
+        in: query
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TranslateComplianceDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                items: {type: string}
   /api/applicants/profile:
     get:
       tags: [applicant-resource]

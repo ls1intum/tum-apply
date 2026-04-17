@@ -101,4 +101,20 @@ export class AiResourceApi {
         return this.http.put<AIJobDescriptionTranslationDTO>(url, translateComplianceDTO);
     }
 
+    /**
+     * 
+     * 
+     * @param toLang 
+     * @param translateComplianceDTO 
+     */
+    translateJobDescriptionStream(toLang: string, translateComplianceDTO: TranslateComplianceDTO): Observable<Array<string>> {
+        const queryParams = new URLSearchParams();
+        if (toLang !== undefined && toLang !== null) {
+            queryParams.set('toLang', String(toLang));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/ai/translateJobDescriptionStream${queryString ? `?${queryString}` : ''}`;
+        return this.http.put<Array<string>>(url, translateComplianceDTO);
+    }
+
 }
