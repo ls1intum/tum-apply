@@ -1,9 +1,9 @@
-<div class="w-full">
+<div class="flex flex-col w-full gap-3">
   <!-- Top row: uploads for bachelor and master side-by-side -->
   <div class="w-full grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
     <div class="w-full">
       @if (applicationId(); as currentApplicationId) {
-        <div class="mb-6 w-full">
+        <div class="w-full">
           <div>
             <span>{{ bachelorCertificateLabelKey() | translate }}</span>
             @if (required()) {
@@ -29,7 +29,7 @@
 
     <div class="w-full">
       @if (applicationId(); as currentApplicationId) {
-        <div class="mb-6 w-full">
+        <div class="w-full">
           <div>
             <span>{{ masterCertificateLabelKey() | translate }}</span>
             @if (required()) {
@@ -55,7 +55,7 @@
   </div>
 
   <!-- AI extraction box (between uploads and string inputs) -->
-  <div class="mb-4 w-full">
+  <div class="w-full">
     <jhi-ai-extraction-box
       [applicationId]="applicationId()"
       [documentIds]="combinedDocumentIds()"
