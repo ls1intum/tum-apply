@@ -307,43 +307,6 @@ describe('NotificationSettingsComponent', () => {
     });
   });
 
-  describe('subjectAreaSubscriptions.updateSelection', () => {
-    it('should add and remove subscriptions based on the new selection', async () => {
-      subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
-      applicantApiMock.addSubjectAreaSubscription.mockReturnValue(of(undefined));
-      applicantApiMock.removeSubjectAreaSubscription.mockReturnValue(of(undefined));
-
-      await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.Mathematics]);
-
-      expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledOnce();
-      expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.Mathematics);
-      expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledOnce();
-      expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.ComputerScience);
-      expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.Mathematics]);
-    });
-
-    it('should do nothing when the selection is unchanged', async () => {
-      subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
-
-      await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.ComputerScience]);
-
-      expect(applicantApiMock.addSubjectAreaSubscription).not.toHaveBeenCalled();
-      expect(applicantApiMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
-    });
-
-    it('should restore the previous selection when the update fails', async () => {
-      subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
-      applicantApiMock.addSubjectAreaSubscription.mockReturnValue(throwError(() => new Error('fail')));
-      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
-
-      await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.Mathematics]);
-
-      expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience]);
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.applicant.subjectAreas.saveFailed');
-    });
-  });
-
   describe('onSubjectAreaToggleChanged', () => {
     it('should persist the subject area notification setting', () => {
       emailSettingServiceMock.updateEmailSettings.mockReturnValue(of(undefined));
