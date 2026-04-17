@@ -852,7 +852,7 @@ export class JobCreationFormComponent {
 
       if (this.aiToggleSignal()) {
         // Fire analysis and translation in parallel — no waiting between them
-        void this.analyzeAndUpdateScore(sourceLang, saved);
+        void this.analyzeAndUpdateScore(sourceLang);
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
     } catch {
@@ -1375,7 +1375,7 @@ export class JobCreationFormComponent {
       this.savingState.set('SAVED');
 
       if (this.aiToggleSignal()) {
-        void this.analyzeAndUpdateScore(currentLang, saved);
+        void this.analyzeAndUpdateScore(currentLang);
         // fire-and-forget translation (don't block autosave UX)
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
@@ -1464,7 +1464,7 @@ export class JobCreationFormComponent {
                 this.aiScore.set(saved.genderBiasScore);
               }
               // Run compliance analysis on the translated text for accurate scoring
-              void this.analyzeAndUpdateScore(targetLang, saved);
+              void this.analyzeAndUpdateScore(targetLang);
             } catch {
               // Silent save failure - will be caught by next autosave
             }
@@ -1487,13 +1487,17 @@ export class JobCreationFormComponent {
     }
   }
 
-  private async analyzeAndUpdateScore(lang: string, jobForm: JobFormDTO): Promise<void> {
+  private async analyzeAndUpdateScore(lang: string): Promise<void> {
     const jobId = this.jobId();
     if (!jobId) return;
 
+    // Build a fresh DTO from local signals (not from save response which may
+    // have fields stripped by @JsonInclude(NON_EMPTY) on the backend)
+    const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
+
     this.isAnalyzing.set(true);
     try {
-      const complianceIssues = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
 
       // The analysis endpoint persists the score on the backend.
       // Fetch the updated job to retrieve it. Retry once if the score
