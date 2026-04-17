@@ -1309,14 +1309,14 @@ export class JobCreationFormComponent {
       }
 
       // Read generation/translation state without tracking — changes to these
-      // should NOT re-trigger the autosave effect (only form value changes should)
+      // should NOT re-trigger the autosave effect (only form value changes should).
+      // Skip autosave while generating or while viewing the translation target
+      // (editor shows AI-streamed content in both cases, not user content).
       if (untracked(() => this.isGeneratingDraft())) {
         return;
       }
-
-      // If user edits while viewing the translation target, cancel translation immediately
       if (untracked(() => this.isTranslating() && this.translationTargetLang() === this.currentDescriptionLanguage())) {
-        this.cancelTranslation();
+        return;
       }
 
       this.jobDescriptionSignal.set(description);
