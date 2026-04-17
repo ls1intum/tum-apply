@@ -744,73 +744,64 @@ export class JobCreationFormComponent {
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
 
+    // 1) Enter generation mode and show placeholder
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
     this.isAutoScrolling = true;
-
-    // Show "Generating" message in the editor while AI is working
     this.jobDescriptionEditor()?.forceUpdate(
       `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
     );
 
     try {
-      // Ensure background signals reflect the current editor before sending
+      // 2) Sync current editor content and build the AI prompt request
       this.syncCurrentEditorIntoLanguageSignals();
-
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
         subjectArea: this.basicInfoForm.get('subjectArea')?.value?.value as JobFormDTOSubjectAreaEnum,
         supervisingProfessor: this.userId(),
         location: this.basicInfoForm.get('location')?.value?.value as JobFormDTOLocationEnum,
-
         jobDescriptionEN: this.jobDescriptionEN() || '',
         jobDescriptionDE: this.jobDescriptionDE() || '',
-
         state: JobFormDTOStateEnum.Draft,
       };
       this.autoScrollStreaming();
 
+      // 3) Stream the AI response, updating the editor with each chunk
       let lastRendered = '';
-      // Use the AiStreamingService with live updates during streaming
       const accumulatedContent = await this.aiStreamingService.generateJobApplicationDraftStream(language, request, content => {
-        // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
         if (!extractedContent?.startsWith('<')) return;
-
         const safeHtml = extractCompleteHtmlTags(extractedContent);
-        // Only update if we have new content
         if (safeHtml && safeHtml !== lastRendered) {
           lastRendered = safeHtml;
           this.jobDescriptionEditor()?.forceUpdate(safeHtml);
         }
       });
       this.isAutoScrolling = false;
-      // Final update after streaming completes - parse the complete JSON
+
+      // 4) Finalize: parse the complete response and update form + signals
       if (accumulatedContent) {
-        // Extract final content from complete JSON
         const finalContent = this.extractJobDescriptionFromStream(accumulatedContent);
 
         if (finalContent && finalContent.length > 0) {
-          // Force update with the final, correctly parsed content
           this.basicInfoForm.get('jobDescription')?.setValue(finalContent);
           this.basicInfoForm.get('jobDescription')?.markAsDirty();
           this.jobDescriptionSignal.set(finalContent);
           this.jobDescriptionEditor()?.forceUpdate(finalContent);
           this.basicInfoValid.set(this.basicInfoForm.valid);
 
-          // Persist to correct language bucket
+          // 5) Persist to the correct language bucket
           if (language === 'en') {
             this.jobDescriptionEN.set(finalContent);
           } else {
             this.jobDescriptionDE.set(finalContent);
           }
 
-          // Immediately save + analyze + translate (skip 5s autosave delay)
+          // 6) Immediately save + analyze + translate (skip autosave delay)
           this.syncCurrentEditorIntoLanguageSignals();
           void this.postGenerationSaveAndProcess(language, finalContent);
         } else {
-          // Extraction failed - show error and restore original content
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
           this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
         }
@@ -818,7 +809,6 @@ export class JobCreationFormComponent {
     } catch (error) {
       this.jobDescriptionEditor()?.forceUpdate(originalContent);
       this.isAutoScrolling = false;
-      // Show error toast with appropriate message
       if (error instanceof Error && error.message.includes('HTTP error')) {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
       } else {
@@ -839,6 +829,7 @@ export class JobCreationFormComponent {
     this.savingState.set('SAVING');
 
     try {
+      // 1) Persist the generated content to the server
       let saved: JobFormDTO;
       if (this.jobId()) {
         saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), currentData));
@@ -847,13 +838,14 @@ export class JobCreationFormComponent {
         this.jobId.set(saved.jobId ?? '');
       }
 
+      // 2) Sync local state with server response
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
       this.savingState.set('SAVED');
 
+      // 3) Fire compliance analysis and translation in parallel
       if (this.aiToggleSignal()) {
-        // Fire analysis and translation in parallel — no waiting between them
         void this.analyzeAndUpdateScore(sourceLang);
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
@@ -1114,6 +1106,7 @@ export class JobCreationFormComponent {
    */
   private async init(): Promise<void> {
     try {
+      // 1) Validate user authentication
       const userId = this.accountService.loadedUser()?.id ?? '';
       if (!userId) {
         this.router.navigate(['/login']);
@@ -1121,19 +1114,21 @@ export class JobCreationFormComponent {
       }
       this.userId.set(userId);
 
+      // 2) Determine mode (create/edit) from URL segments
       const segments = await firstValueFrom(this.route.url);
       const mode = segments[1]?.path as JobFormMode;
       const loadImagesPromise = this.loadImages();
 
       if (mode === 'create') {
+        // 3a) Create mode: load images + professors in parallel, then populate empty form
         this.mode.set('create');
         await Promise.all([loadImagesPromise, this.loadSupervisingProfessors()]);
         this.populateForm();
         this.setDefaultSupervisingProfessor();
       } else {
+        // 3b) Edit mode: load job data + images + professors in parallel, then populate form
         this.mode.set('edit');
         const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
-
         if (!jobId) {
           this.router.navigate(['/my-positions']);
           return;
@@ -1149,7 +1144,7 @@ export class JobCreationFormComponent {
         this.setDefaultSupervisingProfessor(job.supervisingProfessor);
       }
 
-      // prevent autosave from firing immediately after initialization
+      // 4) Prevent autosave from firing immediately after initialization
       this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
@@ -1302,21 +1297,21 @@ export class JobCreationFormComponent {
    */
   private setupAutoSave(): void {
     effect(() => {
+      // 1) Track form value signals — these are the ONLY triggers for the effect
       const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
-
       this.basicInfoFormValueSignal();
       this.positionDetailsFormValueSignal();
       this.imageFormValueSignal();
 
+      // 2) Skip during initial form population
       if (!this.autoSaveInitialized) {
         this.autoSaveInitialized = true;
         return;
       }
 
-      // Read generation/translation state without tracking — changes to these
-      // should NOT re-trigger the autosave effect (only form value changes should).
-      // Skip autosave while generating or while viewing the translation target
-      // (editor shows AI-streamed content in both cases, not user content).
+      // 3) Skip while generating or while viewing the translation target
+      //    (editor shows AI-streamed content, not user content).
+      //    Read via untracked() so these signals don't become effect dependencies.
       if (untracked(() => this.isGeneratingDraft())) {
         return;
       }
@@ -1324,12 +1319,13 @@ export class JobCreationFormComponent {
         return;
       }
 
+      // 4) Update the description signal and schedule the debounced save
       this.jobDescriptionSignal.set(description);
-
       this.clearAutoSaveTimer();
       this.savingState.set('SAVING');
 
       this.autoSaveTimer = window.setTimeout(() => {
+        // 5) Sync editor content to language signals and persist
         this.syncCurrentEditorIntoLanguageSignals();
         void this.performAutoSave();
       }, 2000);
@@ -1352,13 +1348,14 @@ export class JobCreationFormComponent {
    * Triggers translation after successful save if content changed.
    */
   private async performAutoSave(): Promise<void> {
+    // 1) Capture current form state before any async work
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
     const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
 
     try {
+      // 2) Create or update the job on the server
       let saved: JobFormDTO;
-
       if (this.jobId()) {
         saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), currentData));
       } else {
@@ -1366,16 +1363,15 @@ export class JobCreationFormComponent {
         this.jobId.set(saved.jobId ?? '');
       }
 
-      // refresh local truth from server
+      // 3) Sync local state with server response
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-
       this.savingState.set('SAVED');
 
+      // 4) Fire compliance analysis and translation in parallel (fire-and-forget)
       if (this.aiToggleSignal()) {
         void this.analyzeAndUpdateScore(currentLang);
-        // fire-and-forget translation (don't block autosave UX)
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
     } catch {
@@ -1384,31 +1380,38 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Translates the job description to the other language via SSE streaming.
+   * Supports cancellation (new edits cancel the previous translation) and
+   * live editor updates when the user is viewing the target language tab.
+   *
+   * @param currentLang - The language the user wrote in ('en' or 'de')
+   * @param currentText - The source text to translate
+   */
   private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
     const text = currentText.trim();
     if (!text) return;
 
+    // 1) Skip if the text hasn't changed since the last translation
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
 
-    // Cancel any active translation before starting a new one
+    // 2) Cancel any active translation and set up fresh state
     this.cancelTranslation();
-
     const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
-
-    // Set up cancellation and state
     const abortController = new AbortController();
     this.translationAbortController = abortController;
     this.isTranslating.set(true);
     this.translationTargetLang.set(targetLang);
 
-    // If user is already viewing the target language, show placeholder
+    // 3) If user is already viewing the target language, show placeholder
     if (this.currentDescriptionLanguage() === targetLang) {
       const placeholder = `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.translatingPlaceholder') as string}</em></p>`;
       this.jobDescriptionEditor()?.forceUpdate(placeholder);
     }
 
     try {
+      // 4) Stream the translation, updating the editor in real-time if user is on target tab
       let lastRendered = '';
       const accumulatedContent = await this.aiStreamingService.translateJobDescriptionStream(
         targetLang,
@@ -1416,11 +1419,9 @@ export class JobCreationFormComponent {
         content => {
           const extracted = this.extractTranslatedTextFromStream(content);
           if (!extracted?.startsWith('<')) return;
-
           const safeHtml = extractCompleteHtmlTags(extracted);
           if (safeHtml && safeHtml !== lastRendered) {
             lastRendered = safeHtml;
-            // If user is viewing the target language, update editor in real-time
             if (this.currentDescriptionLanguage() === targetLang) {
               this.jobDescriptionEditor()?.forceUpdate(safeHtml);
             }
@@ -1429,12 +1430,11 @@ export class JobCreationFormComponent {
         abortController.signal,
       );
 
-      // Stream completed - extract final content
       if (accumulatedContent) {
         const finalContent = this.extractTranslatedTextFromStream(accumulatedContent);
 
         if (finalContent && finalContent.length > 0) {
-          // Update the target language signal
+          // 5) Update the target language signal and translation baselines
           if (targetLang === 'en') {
             this.jobDescriptionEN.set(finalContent);
             this.lastTranslatedEN.set(finalContent);
@@ -1445,38 +1445,34 @@ export class JobCreationFormComponent {
             this.lastTranslatedEN.set(text);
           }
 
-          // If user is viewing the target language, finalize the editor
+          // 6) If user is viewing the target language, finalize the editor
           if (this.currentDescriptionLanguage() === targetLang) {
             this.basicInfoForm.get('jobDescription')?.setValue(finalContent, { emitEvent: false });
             this.jobDescriptionSignal.set(finalContent);
             this.jobDescriptionEditor()?.forceUpdate(finalContent);
           }
 
-          // Persist the translated content and run analysis on translated text
+          // 7) Persist the translated content and run compliance analysis
           const jobId = this.jobId();
           if (jobId) {
             try {
               const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
-              // Don't overwrite aiScore from save response — let analyzeAndUpdateScore
-              // be the single authoritative source for score updates
-              // Run compliance analysis on the translated text for accurate scoring
               void this.analyzeAndUpdateScore(targetLang);
             } catch {
-              // Silent save failure - will be caught by next autosave
+              // Silent save failure — will be caught by next autosave
             }
           }
         }
       }
     } catch (e) {
-      // If aborted, silently ignore
       if (e instanceof DOMException && e.name === 'AbortError') {
-        return;
+        return; // Cancelled — silently ignore
       }
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
-      // Only clear state if this is still the active translation (not replaced by a new one)
+      // 8) Clear translation state only if this is still the active run
       if (this.translationAbortController === abortController) {
         this.isTranslating.set(false);
         this.translationTargetLang.set(null);
@@ -1485,28 +1481,34 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Runs compliance analysis on the job description for the given language
+   * and updates the inclusivity score in the sidebar.
+   *
+   * @param lang - The language to analyze ('en' or 'de')
+   */
   private async analyzeAndUpdateScore(lang: string): Promise<void> {
     const jobId = this.jobId();
     if (!jobId) return;
 
-    // Build a fresh DTO from local signals (not from save response which may
-    // have fields stripped by @JsonInclude(NON_EMPTY) on the backend)
+    // 1) Build a fresh DTO from local signals (not from save response which may
+    //    have fields stripped by @JsonInclude(NON_EMPTY) on the backend)
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
 
     this.isAnalyzing.set(true);
     try {
+      // 2) Send the description to the analysis endpoint (persists score on the backend)
       await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
 
-      // The analysis endpoint persists the score on the backend.
-      // Fetch the updated job to retrieve it. Retry once if the score
-      // is still missing (DB transaction may not have committed yet).
+      // 3) Fetch the updated job to retrieve the persisted score.
+      //    Retry once with a short delay if the score is still missing
+      //    (DB transaction may not have committed yet).
       for (let attempt = 0; attempt < 2; attempt++) {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
         if (updatedJob.genderBiasScore !== undefined && updatedJob.genderBiasScore !== null) {
           this.aiScore.set(updatedJob.genderBiasScore);
           return;
         }
-        // Short wait before retry to allow the DB transaction to settle
         if (attempt === 0) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
