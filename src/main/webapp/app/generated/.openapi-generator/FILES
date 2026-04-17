@@ -1,5 +1,3 @@
-api/actuator-api.ts
-api/actuator-resources.ts
 api/admin-dependency-resource-api.ts
 api/admin-dependency-resource-resources.ts
 api/admin-export-resource-api.ts
@@ -51,7 +49,6 @@ model/accept-dto.ts
 model/add-interviewees-dto.ts
 model/add-members-to-research-group-dto.ts
 model/admin-export-task-dto.ts
-model/ai-job-description-translation-dto.ts
 model/applicant-dto.ts
 model/applicant-for-application-detail-dto.ts
 model/application-detail-dto.ts
@@ -108,7 +105,6 @@ model/job-filters-dto.ts
 model/job-form-dto.ts
 model/job-preview-request.ts
 model/keycloak-user-dto.ts
-model/link.ts
 model/login-request-dto.ts
 model/otp-complete-dto.ts
 model/page-application-overview-dto.ts
