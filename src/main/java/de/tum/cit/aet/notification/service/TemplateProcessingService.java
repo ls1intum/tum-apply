@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TemplateProcessingService {
 
+    private static final String DOCUMENTATION_URL = "https://ls1intum.github.io/tum-apply/";
     private final Configuration freemarkerConfig;
     private static final String BASE_RAW_TEMPLATE = "base/raw.ftl";
 
@@ -321,6 +322,8 @@ public class TemplateProcessingService {
     private void addUserData(Map<String, Object> dataModel, User user) {
         dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), user.getFirstName());
         dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), user.getLastName());
+        dataModel.put(TemplateVariable.LOGIN_LINK.getValue(), url);
+        dataModel.put(TemplateVariable.APPLICATIONS_LINK.getValue(), url + "/application/overview");
     }
 
     /**
@@ -332,5 +335,6 @@ public class TemplateProcessingService {
     private void addMetaData(Language language, Map<String, Object> dataModel) {
         dataModel.put("language", language.getCode());
         dataModel.put("url", url);
+        dataModel.put(TemplateVariable.DOCUMENTATION_LINK.getValue(), DOCUMENTATION_URL);
     }
 }
