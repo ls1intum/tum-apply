@@ -48,6 +48,47 @@ describe('SubjectAreaSubscriptionsStore', () => {
     expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.applicant.subjectAreas.loadFailed');
   });
 
+  it('should call add and remove subscription endpoints for the selection diff', async () => {
+    store.selected.set([SubjectAreaEnum.ComputerScience]);
+    applicantApiMock.addSubjectAreaSubscription.mockReturnValue(of(undefined));
+    applicantApiMock.removeSubjectAreaSubscription.mockReturnValue(of(undefined));
+
+    await store.updateSelection([SubjectAreaEnum.Mathematics]);
+
+    expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledOnce();
+    expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.Mathematics);
+    expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledOnce();
+    expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.ComputerScience);
+    expect(store.selected()).toEqual([SubjectAreaEnum.Mathematics]);
+    expect(store.saving()).toBe(false);
+  });
+
+  it('should not call any subscription endpoints when the selection does not change', async () => {
+    store.selected.set([SubjectAreaEnum.ComputerScience]);
+
+    await store.updateSelection([SubjectAreaEnum.ComputerScience]);
+
+    expect(applicantApiMock.addSubjectAreaSubscription).not.toHaveBeenCalled();
+    expect(applicantApiMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
+    expect(store.saving()).toBe(false);
+  });
+
+  it('should restore the previous selection and reload when updating subscriptions fails', async () => {
+    store.selected.set([SubjectAreaEnum.ComputerScience]);
+    applicantApiMock.addSubjectAreaSubscription.mockReturnValue(throwError(() => new Error('save failed')));
+    applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
+    const loadSpy = vi.spyOn(store, 'load');
+
+    await store.updateSelection([SubjectAreaEnum.Mathematics]);
+
+    expect(store.selected()).toEqual([SubjectAreaEnum.ComputerScience]);
+    expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
+    expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.applicant.subjectAreas.saveFailed');
+    expect(loadSpy).toHaveBeenCalledOnce();
+    expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
+    expect(store.saving()).toBe(false);
+  });
+
   it('should remove a subject area by delegating to updateSelection', async () => {
     store.selected.set([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
     applicantApiMock.removeSubjectAreaSubscription.mockReturnValue(of(undefined));
