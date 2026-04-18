@@ -194,7 +194,7 @@ export class JobCreationFormComponent {
       : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
   );
 
-  /** Computed: direction label shown during translation (e.g. "EN → DE") */
+  /** Computed: direction labels shown during translation (e.g. "EN → DE") */
   translationDirectionLabels = computed(() => {
     const target = this.translationTargetLang();
     if (!target) return null;
