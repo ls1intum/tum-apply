@@ -161,10 +161,6 @@
         "master": "Master Studium",
         "additionalDocuments": "Zusätzliche Unterlagen"
       },
-      "labels": {
-        "bachelorCertificate": "Bachelor-Zeugnis",
-        "masterCertificate": "Master-Zeugnis"
-      },
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
         "detail": "Fehler beim Laden der Dokumente. Bitte versuche es erneut."
