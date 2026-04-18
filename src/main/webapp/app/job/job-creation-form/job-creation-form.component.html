@@ -142,7 +142,7 @@
 
                 <!-- Translation indicator with direction -->
                 @if (isTranslating()) {
-                  <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
+                  <div class="flex gap-2 px-3 h-8 border border-border-default rounded-lg">
                     <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
                     @if (translationDirectionLabels(); as translationDirection) {
                       <span class="flex items-center gap-1 text-sm font-semibold text-text-primary whitespace-nowrap">
