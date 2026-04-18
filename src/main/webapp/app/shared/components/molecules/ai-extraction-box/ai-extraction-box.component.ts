@@ -16,8 +16,6 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import TranslateDirective from '../../../language/translate.directive';
 
-// Holds in-flight extraction observables across component re-creation (e.g. page navigation).
-// Keyed by `${applicationId}_${isCv}` so CV and certificate extractions don't collide.
 const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO>>();
 
 @Component({

@@ -227,14 +227,14 @@ public class AiService {
         boolean saveData
     ) {
         currentUserService.markAiConsentForCurrentUser();
-        // 1) Download the document
+        // 1) Download the documents
         List<Resource> docs = new ArrayList<>();
         for (String docId : docIds) {
             docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
         }
         // 2) Extract data from the PDFs via AI
         ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
-        // 3) Persist the extracted data into the application
+        // 3) if need, persist the extracted data into the application
         if (extracted != null && saveData) {
             applicationService.applyExtractedPdfData(applicationId, extracted);
         }
@@ -269,7 +269,7 @@ public class AiService {
         }
         // 2) Extract data from the PDFs via AI
         ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
-        // 3) Persist the extracted data into the application if requested
+        // 3) If needed, persist the extracted data into the application if requested
         if (extracted != null && saveData && applicationId != null && !applicationId.isBlank()) {
             applicationService.applyExtractedPdfData(applicationId, extracted);
         }

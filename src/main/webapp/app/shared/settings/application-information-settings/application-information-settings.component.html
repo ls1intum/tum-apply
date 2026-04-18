@@ -9,21 +9,18 @@
     </p-divider>
     <div class="w-full mb-6">
       <label>
-        <span>{{ 'entity.applicationPage1.label.curriculumVitae' | translate }}</span>
+        <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
       </label>
-      <div class="flex flex-col gap-4">
-        <div class="min-w-0 flex-1">
-          <jhi-upload-button
-            documentType="CV"
-            [applicationId]="applicationId"
-            [(documentIds)]="cvDocuments"
-            [allowMultiple]="false"
-            [compact]="true"
-            [deferUpload]="true"
-            (queuedFilesChange)="onCvQueuedFilesChange($event)"
-          />
-        </div>
-
+      <div class="flex flex-col gap-3">
+        <jhi-upload-button
+          documentType="CV"
+          [applicationId]="applicationId"
+          [(documentIds)]="cvDocuments"
+          [allowMultiple]="false"
+          [compact]="true"
+          [deferUpload]="true"
+          (queuedFilesChange)="onCvQueuedFilesChange($event)"
+        />
         <jhi-ai-extraction-box
           [applicationId]="applicationId"
           [documentIds]="cvDocuments() ?? []"

@@ -3,7 +3,7 @@ package de.tum.cit.aet.ai.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO for AI-extracted applicant data from a PDF document.
+ * DTO for AI-extracted applicant data from educational certificates.
  * All fields are nullable — null means the field was not found in the PDF.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)

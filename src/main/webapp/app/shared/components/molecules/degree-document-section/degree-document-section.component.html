@@ -1,91 +1,76 @@
 <div class="flex flex-col w-full gap-3">
   <!-- Top row: uploads for bachelor and master side-by-side -->
-  <div class="w-full grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
-    <div class="w-full">
-      @if (applicationId(); as currentApplicationId) {
-        <div class="w-full">
-          <div>
-            <span>{{ bachelorCertificateLabelKey | translate }}</span>
-            @if (required()) {
-              <span class="required"> *</span>
-            }
-            <fa-icon
-              class="icon"
-              [icon]="['fas', 'circle-info']"
-              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-              tooltipPosition="top"
-            />
-          </div>
-          <jhi-upload-button
-            [documentType]="DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript"
-            [applicationId]="currentApplicationId"
-            [(documentIds)]="bachelorDocumentIds"
-            [deferUpload]="deferUpload()"
-            (queuedFilesChange)="bachelorQueuedFilesChange.emit($event)"
+  <div class="w-full grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6">
+    @if (applicationId(); as currentApplicationId) {
+      <div>
+        <div>
+          <span>{{ bachelorCertificateLabelKey | translate }}</span>
+          @if (required()) {
+            <span class="required"> *</span>
+          }
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
           />
         </div>
-      }
-    </div>
+        <jhi-upload-button
+          [documentType]="DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript"
+          [applicationId]="currentApplicationId"
+          [(documentIds)]="bachelorDocumentIds"
+          [deferUpload]="deferUpload()"
+          (queuedFilesChange)="bachelorQueuedFilesChange.emit($event)"
+        />
+      </div>
 
-    <div class="w-full">
-      @if (applicationId(); as currentApplicationId) {
-        <div class="w-full">
-          <div>
-            <span>{{ masterCertificateLabelKey | translate }}</span>
-            @if (required()) {
-              <span class="required"> *</span>
-            }
-            <fa-icon
-              class="icon"
-              [icon]="['fas', 'circle-info']"
-              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-              tooltipPosition="top"
-            />
-          </div>
-          <jhi-upload-button
-            [documentType]="DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript"
-            [applicationId]="currentApplicationId"
-            [(documentIds)]="masterDocumentIds"
-            [deferUpload]="deferUpload()"
-            (queuedFilesChange)="masterQueuedFilesChange.emit($event)"
+      <div>
+        <div>
+          <span>{{ masterCertificateLabelKey | translate }}</span>
+          @if (required()) {
+            <span class="required"> *</span>
+          }
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
           />
         </div>
-      }
-    </div>
+        <jhi-upload-button
+          [documentType]="DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript"
+          [applicationId]="currentApplicationId"
+          [(documentIds)]="masterDocumentIds"
+          [deferUpload]="deferUpload()"
+          (queuedFilesChange)="masterQueuedFilesChange.emit($event)"
+        />
+      </div>
+    }
   </div>
 
   <!-- AI extraction box (between uploads and string inputs) -->
-  <div class="w-full">
-    <jhi-ai-extraction-box
-      [applicationId]="applicationId()"
-      [documentIds]="combinedDocumentIds()"
-      [queuedFiles]="combinedQueuedFiles()"
-      [isCv]="false"
-      [saveData]="saveData()"
-      [helperTextKey]="'entity.aiExtraction.helperCertificates'"
-      (extracted)="extracted.emit($event)"
-    />
-  </div>
+  <jhi-ai-extraction-box
+    [applicationId]="applicationId()"
+    [documentIds]="combinedDocumentIds()"
+    [queuedFiles]="combinedQueuedFiles()"
+    [isCv]="false"
+    [saveData]="saveData()"
+    [helperTextKey]="'entity.aiExtraction.helperCertificates'"
+    (extracted)="extracted.emit($event)"
+  />
 
   <!-- Bottom row: string inputs for bachelor and master side-by-side -->
-  <div class="w-full grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
-    <div class="flex flex-col w-full">
-      <jhi-string-input
-        class="mr-4 block w-full"
-        [label]="bachelorDegreeNameLabelKey | translate"
-        [required]="required()"
-        [control]="bachelorDegreeNameControl()"
-      />
+  <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
+    <div class="flex flex-col">
+      <jhi-string-input [label]="bachelorDegreeNameLabelKey | translate" [required]="required()" [control]="bachelorDegreeNameControl()" />
 
       <jhi-string-input
-        class="mr-4 block w-full"
         [label]="bachelorDegreeUniversityLabelKey | translate"
         [required]="required()"
         [control]="bachelorDegreeUniversityControl()"
       />
 
       <jhi-string-input
-        class="mr-4 block w-full"
         [label]="bachelorGradeLabelKey | translate"
         [required]="required()"
         [control]="bachelorGradeControl()"
@@ -98,23 +83,16 @@
       />
     </div>
 
-    <div class="flex flex-col w-full">
-      <jhi-string-input
-        class="mr-4 block w-full"
-        [label]="masterDegreeNameLabelKey | translate"
-        [required]="required()"
-        [control]="masterDegreeNameControl()"
-      />
+    <div class="flex flex-col">
+      <jhi-string-input [label]="masterDegreeNameLabelKey | translate" [required]="required()" [control]="masterDegreeNameControl()" />
 
       <jhi-string-input
-        class="mr-4 block w-full"
         [label]="masterDegreeUniversityLabelKey | translate"
         [required]="required()"
         [control]="masterDegreeUniversityControl()"
       />
 
       <jhi-string-input
-        class="mr-4 block w-full"
         [label]="masterGradeLabelKey | translate"
         [required]="required()"
         [control]="masterGradeControl()"

@@ -1,31 +1,27 @@
 @if (data()) {
   <form [formGroup]="page2Form" class="flex flex-col gap-3">
     <p jhiTranslate="entity.applicationPage2.description"></p>
-    <!-- AI extraction moved into the degree document section component -->
-    <div>
-      <jhi-degree-document-section
-        [applicationId]="applicationIdForDocuments()"
-        [required]="true"
-        [saveData]="true"
-        (extracted)="onAiDataExtracted($event)"
-        [bachelorDocumentIds]="documentIdsBachelorTranscript()"
-        [bachelorDegreeNameControl]="page2Form.controls.bachelorDegreeName"
-        [bachelorDegreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"
-        [bachelorGradeControl]="page2Form.controls.bachelorGrade"
-        [bachelorGradeHelperText]="helperTextBachelorGrade()"
-        [bachelorGradeWarningText]="warningTextBachelorGrade()"
-        (bachelorChangeScale)="onChangeGradingScale('bachelor')"
-        (bachelorDocumentIdsChange)="documentIdsBachelorTranscript.set($event)"
-        [masterDocumentIds]="documentIdsMasterTranscript()"
-        [masterDegreeNameControl]="page2Form.controls.masterDegreeName"
-        [masterDegreeUniversityControl]="page2Form.controls.masterDegreeUniversity"
-        [masterGradeControl]="page2Form.controls.masterGrade"
-        [masterGradeHelperText]="helperTextMasterGrade()"
-        [masterGradeWarningText]="warningTextMasterGrade()"
-        (masterChangeScale)="onChangeGradingScale('master')"
-        (masterDocumentIdsChange)="documentIdsMasterTranscript.set($event)"
-        class="contents lg:block"
-      />
-    </div>
+    <jhi-degree-document-section
+      [applicationId]="applicationIdForDocuments()"
+      [required]="true"
+      [saveData]="true"
+      (extracted)="onAiDataExtracted($event)"
+      [bachelorDocumentIds]="documentIdsBachelorTranscript()"
+      [bachelorDegreeNameControl]="page2Form.controls.bachelorDegreeName"
+      [bachelorDegreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"
+      [bachelorGradeControl]="page2Form.controls.bachelorGrade"
+      [bachelorGradeHelperText]="helperTextBachelorGrade()"
+      [bachelorGradeWarningText]="warningTextBachelorGrade()"
+      (bachelorChangeScale)="onChangeGradingScale('bachelor')"
+      (bachelorDocumentIdsChange)="documentIdsBachelorTranscript.set($event)"
+      [masterDocumentIds]="documentIdsMasterTranscript()"
+      [masterDegreeNameControl]="page2Form.controls.masterDegreeName"
+      [masterDegreeUniversityControl]="page2Form.controls.masterDegreeUniversity"
+      [masterGradeControl]="page2Form.controls.masterGrade"
+      [masterGradeHelperText]="helperTextMasterGrade()"
+      [masterGradeWarningText]="warningTextMasterGrade()"
+      (masterChangeScale)="onChangeGradingScale('master')"
+      (masterDocumentIdsChange)="documentIdsMasterTranscript.set($event)"
+    />
   </form>
 }

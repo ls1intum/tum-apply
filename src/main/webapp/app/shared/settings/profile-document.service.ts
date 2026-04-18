@@ -23,14 +23,11 @@ export class ProfileDocumentService {
       .sort((a, b) => a.id.localeCompare(b.id));
   }
 
-  isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
-    return document.id.startsWith('temp-');
-  }
-
   async commitDocumentTypeChanges(
     initialDocs: DocumentInformationHolderDTO[] | undefined,
     currentDocs: DocumentInformationHolderDTO[] | undefined,
   ): Promise<void> {
+    // Only persisted documents participate in the diff; temporary placeholders are uploaded separately afterwards.
     const initial = this.normalizedDocuments(initialDocs);
     const currentPersistedDocs = this.normalizedDocuments(currentDocs).filter(doc => !this.isTemporaryDocument(doc));
     const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
@@ -39,7 +36,14 @@ export class ProfileDocumentService {
     const renamedDocs = currentPersistedDocs.flatMap(doc => {
       const initialDoc = initial.find(existing => existing.id === doc.id);
       const newName = doc.name?.trim();
-      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name ? [{ id: doc.id, newName }] : [];
+      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name
+        ? [
+            {
+              id: doc.id,
+              newName,
+            },
+          ]
+        : [];
     });
 
     for (const documentId of deletedIds) {
@@ -51,22 +55,33 @@ export class ProfileDocumentService {
     }
   }
 
-  uploadApplicantProfileDocument(
+  async uploadQueuedByType(
+    documentType: DocumentInformationHolderDTODocumentTypeEnum,
+    files: File[],
+    targetSignal: {
+      set: (_value: DocumentInformationHolderDTO[] | undefined) => void;
+    },
+  ): Promise<void> {
+    if (files.length === 0) {
+      return;
+    }
+
+    const uploadResults = await Promise.all(files.map(file => firstValueFrom(this.uploadApplicantProfileDocument(documentType, file))));
+
+    const latestResult: DocumentInformationHolderDTO[] | undefined = uploadResults[uploadResults.length - 1];
+    targetSignal.set(latestResult);
+  }
+
+  private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
+    return document.id.startsWith('temp-');
+  }
+
+  private uploadApplicantProfileDocument(
     documentType: DocumentInformationHolderDTODocumentTypeEnum,
     file: File,
   ): Observable<DocumentInformationHolderDTO[]> {
     const formData = new FormData();
     formData.append('files', file);
     return this.http.post<DocumentInformationHolderDTO[]>(`/api/applicants/profile/documents/${documentType}`, formData);
-  }
-
-  async uploadQueuedByType(
-    documentType: DocumentInformationHolderDTODocumentTypeEnum,
-    files: File[],
-  ): Promise<DocumentInformationHolderDTO[] | undefined> {
-    if (files.length === 0) return undefined;
-
-    const uploadResults = await Promise.all(files.map(file => firstValueFrom(this.uploadApplicantProfileDocument(documentType, file))));
-    return uploadResults[uploadResults.length - 1];
   }
 }

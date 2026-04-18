@@ -4,34 +4,30 @@
     <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!hasChanges() || saving()" (click)="saveAll()" />
   </div>
 
-  <!-- AI extraction is rendered inside the degree document section component now -->
-
-  <div class="flex flex-col gap-3 lg:gap-5">
-    <jhi-degree-document-section
-      [applicationId]="applicationIdForDocuments()"
-      [deferUpload]="true"
-      [saveData]="false"
-      [bachelorQueuedFiles]="queuedBachelorFiles()"
-      [masterQueuedFiles]="queuedMasterFiles()"
-      (extracted)="onAiDataExtracted($event)"
-      [(bachelorDocumentIds)]="bachelorDocuments"
-      [bachelorDegreeNameControl]="form.controls.bachelorDegreeName"
-      [bachelorDegreeUniversityControl]="form.controls.bachelorDegreeUniversity"
-      [bachelorGradeControl]="form.controls.bachelorGrade"
-      [bachelorGradeHelperText]="helperTextBachelorGrade()"
-      [bachelorGradeWarningText]="warningTextBachelorGrade()"
-      (bachelorQueuedFilesChange)="onBachelorQueuedFilesChange($event)"
-      (bachelorChangeScale)="onChangeGradingScale('bachelor')"
-      [(masterDocumentIds)]="masterDocuments"
-      [masterDegreeNameControl]="form.controls.masterDegreeName"
-      [masterDegreeUniversityControl]="form.controls.masterDegreeUniversity"
-      [masterGradeControl]="form.controls.masterGrade"
-      [masterGradeHelperText]="helperTextMasterGrade()"
-      [masterGradeWarningText]="warningTextMasterGrade()"
-      (masterQueuedFilesChange)="onMasterQueuedFilesChange($event)"
-      (masterChangeScale)="onChangeGradingScale('master')"
-    />
-  </div>
+  <jhi-degree-document-section
+    [applicationId]="applicationIdForDocuments()"
+    [deferUpload]="true"
+    [saveData]="false"
+    [bachelorQueuedFiles]="queuedBachelorFiles()"
+    [masterQueuedFiles]="queuedMasterFiles()"
+    (extracted)="onAiDataExtracted($event)"
+    [(bachelorDocumentIds)]="bachelorDocuments"
+    [bachelorDegreeNameControl]="form.controls.bachelorDegreeName"
+    [bachelorDegreeUniversityControl]="form.controls.bachelorDegreeUniversity"
+    [bachelorGradeControl]="form.controls.bachelorGrade"
+    [bachelorGradeHelperText]="helperTextBachelorGrade()"
+    [bachelorGradeWarningText]="warningTextBachelorGrade()"
+    (bachelorQueuedFilesChange)="onBachelorQueuedFilesChange($event)"
+    (bachelorChangeScale)="onChangeGradingScale('bachelor')"
+    [(masterDocumentIds)]="masterDocuments"
+    [masterDegreeNameControl]="form.controls.masterDegreeName"
+    [masterDegreeUniversityControl]="form.controls.masterDegreeUniversity"
+    [masterGradeControl]="form.controls.masterGrade"
+    [masterGradeHelperText]="helperTextMasterGrade()"
+    [masterGradeWarningText]="warningTextMasterGrade()"
+    (masterQueuedFilesChange)="onMasterQueuedFilesChange($event)"
+    (masterChangeScale)="onChangeGradingScale('master')"
+  />
 
   <p-divider layout="horizontal"
     ><span>{{ 'settings.documents.sections.additionalDocuments' | translate }}</span></p-divider

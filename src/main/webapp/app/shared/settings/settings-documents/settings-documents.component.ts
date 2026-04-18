@@ -422,23 +422,23 @@ export class SettingsDocumentsComponent {
   }
 
   private async saveQueuedDocuments(): Promise<void> {
-    const bachelor = await this.profileDocumentService.uploadQueuedByType(
+    await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript,
       this.queuedBachelorFiles(),
+      this.bachelorDocuments,
     );
-    if (bachelor) this.bachelorDocuments.set(bachelor);
 
-    const master = await this.profileDocumentService.uploadQueuedByType(
+    await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript,
       this.queuedMasterFiles(),
+      this.masterDocuments,
     );
-    if (master) this.masterDocuments.set(master);
 
-    const reference = await this.profileDocumentService.uploadQueuedByType(
+    await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.Reference,
       this.queuedReferenceFiles(),
+      this.referenceDocuments,
     );
-    if (reference) this.referenceDocuments.set(reference);
   }
 
   private async saveDeferredDocumentChanges(): Promise<void> {

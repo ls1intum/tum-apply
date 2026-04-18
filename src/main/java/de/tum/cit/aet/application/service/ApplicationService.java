@@ -646,7 +646,7 @@ public class ApplicationService {
     }
 
     /**
-     * Applies AI-extracted CV data to an application, only updating fields that
+     * Applies AI-extracted PDF data to an application, only updating fields that
      * are currently null or blank. This ensures existing data is never overwritten.
      *
      * @param applicationId the ID of the application to update

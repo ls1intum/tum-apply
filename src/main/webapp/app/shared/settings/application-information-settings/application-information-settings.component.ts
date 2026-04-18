@@ -93,6 +93,14 @@ export class ApplicationInformationSettingsComponent {
     postcode: '',
   });
 
+  // Document tracking for CV
+  cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+  queuedCvFiles = signal<File[]>([]);
+
+  // Placeholder ID to render the same upload UI structure as application page 1.
+  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+
   isValid = signal<boolean>(false);
   loadedProfile = signal<ApplicantDTO | undefined>(undefined);
   initialDataSnapshot = signal<ApplicationInformationSnapshot | undefined>(undefined);
@@ -175,14 +183,6 @@ export class ApplicationInformationSettingsComponent {
       linkedIn: [currentData.linkedIn],
     });
   });
-
-  // Document (CV) handling
-  cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  queuedCvFiles = signal<File[]>([]);
-
-  // Placeholder ID to render the same upload UI structure as application page 2.
-  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
 
   formEffect = effect(onCleanup => {
     const form = this.applicationInfoForm();
@@ -349,14 +349,12 @@ export class ApplicationInformationSettingsComponent {
   }
 
   private async saveDeferredCvChanges(): Promise<void> {
-    // Commit persisted doc changes (delete/rename) for CV
     await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
-    // Upload queued CV files
-    const latest = await this.profileDocumentService.uploadQueuedByType(
+    await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.Cv,
       this.queuedCvFiles(),
+      this.cvDocuments,
     );
-    if (latest) this.cvDocuments.set(latest);
   }
 
   private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {
