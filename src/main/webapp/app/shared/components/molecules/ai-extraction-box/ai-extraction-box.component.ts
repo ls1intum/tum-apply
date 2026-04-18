@@ -100,17 +100,9 @@ export class AiExtractionBoxComponent {
 
     let extraction$ = activeExtractions.get(key);
     if (!extraction$) {
-      if (queued.length > 0) {
-        // Use file upload endpoint for queued (deferred) files
-        extraction$ = this.aiApi
-          .extractPdfDataFromFiles(queued, appId, this.isCv(), this.saveData())
-          .pipe(shareReplay({ bufferSize: 1, refCount: false }));
-      } else {
-        // Use document ID endpoint for persisted documents
-        extraction$ = this.aiApi
-          .extractPdfData(appId, persistedDocIds, this.isCv(), this.saveData())
-          .pipe(shareReplay({ bufferSize: 1, refCount: false }));
-      }
+      extraction$ = this.aiApi
+        .extractPdfData(appId, persistedDocIds, this.isCv(), this.saveData(), queued)
+        .pipe(shareReplay({ bufferSize: 1, refCount: false }));
       activeExtractions.set(key, extraction$);
     }
 

@@ -256,6 +256,7 @@ export class ApplicationInformationSettingsComponent {
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
       this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
       this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
+      this.queuedCvFiles.set([]);
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -313,19 +314,13 @@ export class ApplicationInformationSettingsComponent {
         masterUniversity: undefined,
       };
 
-      const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
+      await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
       await this.saveDeferredCvChanges();
-      this.loadedProfile.set(updatedProfile);
+      await this.loadApplicationInformation();
       this.toastService.showSuccessKey('settings.applicationInformation.saved');
-      this.initialDataSnapshot.set(this.toSnapshot(this.data()));
-      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
     }
-  }
-
-  async onCancel(): Promise<void> {
-    await this.loadApplicationInformation();
   }
 
   onCvQueuedFilesChange(files: File[]): void {

@@ -48,8 +48,9 @@ export class AiResourceApi {
      * @param docIds 
      * @param isCv 
      * @param saveData 
+     * @param files 
      */
-    extractPdfData(applicationId: string, docIds: Array<string>, isCv?: boolean, saveData?: boolean): Observable<ExtractedApplicationDataDTO> {
+    extractPdfData(applicationId?: string, docIds?: Array<string>, isCv?: boolean, saveData?: boolean, files?: Array<Blob>): Observable<ExtractedApplicationDataDTO> {
         const queryParams = new URLSearchParams();
         if (applicationId !== undefined && applicationId !== null) {
             queryParams.set('applicationId', String(applicationId));
@@ -65,35 +66,11 @@ export class AiResourceApi {
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/extractPdfData${queryString ? `?${queryString}` : ''}`;
-        return this.http.put<ExtractedApplicationDataDTO>(url, null);
-    }
-
-    /**
-     * 
-     * 
-     * @param files 
-     * @param applicationId 
-     * @param isCv 
-     * @param saveData 
-     */
-    extractPdfDataFromFiles(files: Array<Blob>, applicationId?: string, isCv?: boolean, saveData?: boolean): Observable<ExtractedApplicationDataDTO> {
-        const queryParams = new URLSearchParams();
-        if (applicationId !== undefined && applicationId !== null) {
-            queryParams.set('applicationId', String(applicationId));
-        }
-        if (isCv !== undefined && isCv !== null) {
-            queryParams.set('isCv', String(isCv));
-        }
-        if (saveData !== undefined && saveData !== null) {
-            queryParams.set('saveData', String(saveData));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/ai/extractPdfDataFromFiles${queryString ? `?${queryString}` : ''}`;
         const formData = new FormData();
         if (files !== undefined && files !== null) {
             files.forEach(item => formData.append('files', item));
         }
-        return this.http.post<ExtractedApplicationDataDTO>(url, formData);
+        return this.http.put<ExtractedApplicationDataDTO>(url, formData);
     }
 
     /**

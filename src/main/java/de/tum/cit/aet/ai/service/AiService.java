@@ -7,6 +7,7 @@ import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -208,71 +209,57 @@ public class AiService {
     }
 
     /**
-     * Extracts applicant data from PDF documents and persists the extracted data
-     * in the application entity.
-     * 1) Download the documents
-     * 2) Extract data from the PDFs via AI
-     * 3) Persist the extracted data into the application if saveData is true
-     *
-     * @param applicationId the ID of the application to update with extracted data
-     * @param docIds         the IDs of the documents to extract data from
-     * @param isCv           whether the document is a CV (true) or a certificate (false), which will affect the extraction prompt
-     * @param saveData      whether to persist the extracted data into the application entity
-     * @return the extracted data as a structured DTO
-     */
-    public ExtractedApplicationDataDTO extractAndPersistPdfDataFromUUID(
-        String applicationId,
-        List<String> docIds,
-        boolean isCv,
-        boolean saveData
-    ) {
-        currentUserService.markAiConsentForCurrentUser();
-        // 1) Download the documents
-        List<Resource> docs = new ArrayList<>();
-        for (String docId : docIds) {
-            docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
-        }
-        // 2) Extract data from the PDFs via AI
-        ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
-        // 3) if need, persist the extracted data into the application
-        if (extracted != null && saveData) {
-            applicationService.applyExtractedPdfData(applicationId, extracted);
-        }
-        return extracted;
-    }
-
-    /**
-     * Extracts applicant data from uploaded PDF files (multipart) without requiring
-     * persisted document IDs. Files are processed in-memory only.
+     * Extracts applicant data from a combination of persisted document UUIDs and uploaded multipart files.
+     * Both inputs are optional but at least one must contain documents.
      *
      * @param applicationId the ID of the application to update (only used if saveData is true)
-     * @param files         the uploaded PDF files
+     * @param docIds        list of document UUID strings referencing persisted documents
+     * @param files         uploaded multipart PDF files
      * @param isCv          whether the documents are CVs or certificates
-     * @param saveData      whether to persist the extracted data into the application
+     * @param saveData      whether to persist extracted data into the application
      * @return the extracted data as a structured DTO
      */
-    public ExtractedApplicationDataDTO extractPdfDataFromFiles(
+    public ExtractedApplicationDataDTO extractAndPersistPdfData(
         String applicationId,
+        List<String> docIds,
         List<MultipartFile> files,
         boolean isCv,
         boolean saveData
     ) {
         currentUserService.markAiConsentForCurrentUser();
-        // 1) Convert multipart files to Resource objects
+
         List<Resource> docs = new ArrayList<>();
-        for (MultipartFile file : files) {
-            try {
-                docs.add(new ByteArrayResource(file.getBytes()));
-            } catch (IOException e) {
-                throw new PDFExtractionException("Failed to read uploaded file", e);
+
+        // 1) Download documents from UUIDs if provided
+        if (docIds != null) {
+            for (String docId : docIds) {
+                docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
             }
         }
-        // 2) Extract data from the PDFs via AI
+
+        // 2) Convert multipart files to Resource objects and add to the list if provided
+        if (files != null) {
+            for (MultipartFile file : files) {
+                try {
+                    docs.add(new ByteArrayResource(file.getBytes()));
+                } catch (IOException e) {
+                    throw new PDFExtractionException("Failed to read uploaded file", e);
+                }
+            }
+        }
+
+        if (docs.isEmpty()) {
+            throw new BadRequestException("No documents provided for extraction");
+        }
+
+        // 3) Extract data from the PDFs via AI
         ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
-        // 3) If needed, persist the extracted data into the application if requested
+
+        // 4) Persist the extracted data into the application if requested
         if (extracted != null && saveData && applicationId != null && !applicationId.isBlank()) {
             applicationService.applyExtractedPdfData(applicationId, extracted);
         }
+
         return extracted;
     }
 

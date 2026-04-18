@@ -406,15 +406,4 @@ describe('ApplicationInformationSettingsComponent', () => {
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
     });
   });
-
-  describe('cancel behavior', () => {
-    it('should reload application information on cancel', async () => {
-      const component = await createComponent();
-      const loadApplicationInformationSpy = vi.spyOn(component, 'loadApplicationInformation').mockResolvedValue();
-
-      await component.onCancel();
-
-      expect(loadApplicationInformationSpy).toHaveBeenCalledOnce();
-    });
-  });
 });
