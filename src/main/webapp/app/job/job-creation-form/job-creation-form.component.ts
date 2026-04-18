@@ -195,10 +195,13 @@ export class JobCreationFormComponent {
   );
 
   /** Computed: direction label shown during translation (e.g. "EN → DE") */
-  translationDirectionLabel = computed(() => {
+  translationDirectionLabels = computed(() => {
     const target = this.translationTargetLang();
-    if (!target) return '';
-    return target === 'de' ? 'EN → DE' : 'DE → EN';
+    if (!target) return null;
+    return {
+      source: target === 'de' ? 'EN' : 'DE',
+      target: target === 'de' ? 'DE' : 'EN',
+    };
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
