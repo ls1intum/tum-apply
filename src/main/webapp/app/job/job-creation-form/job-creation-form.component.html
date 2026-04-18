@@ -222,6 +222,9 @@
               <jhi-datepicker
                 [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
                 (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
+                [maxDate]="applicationDeadlineMaxDate()"
+                [highlightedDate]="applicationDeadlineMaxDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedStartDate'"
                 [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
                 icon="circle-info"
@@ -235,6 +238,9 @@
               <jhi-datepicker
                 [selectedDate]="positionDetailsForm.get('startDate')?.value"
                 (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
+                [minDate]="startDateMinDate()"
+                [highlightedDate]="startDateMinDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedDeadline'"
                 [label]="'jobCreationForm.basicInformationSection.startDate.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
                 icon="circle-info"

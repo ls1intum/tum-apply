@@ -1,17 +1,18 @@
-import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { DatePickerDateMeta } from 'primeng/types/datepicker';
 
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
   imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateModule, TranslateDirective, TooltipModule],
   templateUrl: './datepicker.component.html',
-  styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class DatePickerComponent {
@@ -46,6 +47,16 @@ export class DatePickerComponent {
    * Default date to show in calendar when opening (does not set the value, just the view)
    */
   defaultDate = input<Date | null>(null);
+
+  /**
+   * Optional reference date to highlight inside the calendar.
+   */
+  highlightedDate = input<Date | undefined>(undefined);
+
+  /**
+   * Optional label shown when hovering or focusing the highlighted day.
+   */
+  highlightedDateLabel = input<string | undefined>(undefined);
 
   /**
    * Emits ISO date string ('YYYY-MM-DD') when user selects a date
@@ -89,7 +100,6 @@ export class DatePickerComponent {
   });
 
   private scrollListener?: (event: Event) => void;
-  private elementRef = inject(ElementRef);
   private translateService = inject(TranslateService);
 
   /**
@@ -99,19 +109,7 @@ export class DatePickerComponent {
     // Sync modelDate whenever selectedDate input changes
     try {
       const value = this.selectedDate();
-      let targetDate: Date | undefined = undefined;
-
-      if (value !== undefined && typeof value === 'string' && value.trim() !== '') {
-        const parts = value.split('-');
-        if (parts.length === 3) {
-          const [year, month, day] = parts.map(Number);
-          if (!isNaN(year) && !isNaN(month) && !isNaN(day) && year > 1900 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-            targetDate = new Date(year, month - 1, day);
-          }
-        }
-      }
-
-      this.modelDate.set(targetDate);
+      this.modelDate.set(parseLocalDateString(value));
     } catch {
       this.modelDate.set(undefined);
     }
@@ -183,5 +181,16 @@ export class DatePickerComponent {
       this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
+  }
+
+  isHighlightedDate(date: DatePickerDateMeta): boolean {
+    const highlightedDate = this.highlightedDate();
+    if (!highlightedDate) {
+      return false;
+    }
+
+    return (
+      date.year === highlightedDate.getFullYear() && date.month === highlightedDate.getMonth() && date.day === highlightedDate.getDate()
+    );
   }
 }

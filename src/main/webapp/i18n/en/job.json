@@ -148,6 +148,8 @@
       "header": "AI-Assistant"
     },
     "positionDetailsSection": {
+      "selectedDeadline": "Selected Deadline",
+      "selectedStartDate": "Selected Start Date",
       "jobDescription": {
         "label": "Job Description",
         "aiLabel": "AI writes, improves and translates for you.",

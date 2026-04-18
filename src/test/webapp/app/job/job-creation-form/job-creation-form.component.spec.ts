@@ -85,6 +85,13 @@ function mockAllPanelTemplates(component: JobCreationFormComponent) {
   Object.defineProperty(component, 'savingStatePanel', { get: () => signal(mockTemplate).asReadonly() });
 }
 
+function expectDateParts(date: Date | undefined, year: number, month: number, day: number) {
+  expect(date).toBeDefined();
+  expect(date?.getFullYear()).toBe(year);
+  expect((date?.getMonth() ?? -1) + 1).toBe(month);
+  expect(date?.getDate()).toBe(day);
+}
+
 // Type helpers to avoid verbose casting
 type ComponentPrivate = {
   performAutoSave: () => Promise<void>;
@@ -724,6 +731,55 @@ describe('JobCreationFormComponent', () => {
 
       expect(component.basicInfoForm.valid).toBe(true);
       expect(component.basicInfoValid()).toBe(true);
+    });
+
+    it('should validate the date order for position details', () => {
+      const cases = [
+        {
+          applicationDeadline: '2025-03-10',
+          startDate: '2025-03-09',
+          valid: false,
+          hasInvalidDateOrder: true,
+          positionDetailsValid: false,
+        },
+        {
+          applicationDeadline: '2025-03-10',
+          startDate: '2025-03-10',
+          valid: true,
+          hasInvalidDateOrder: false,
+          positionDetailsValid: true,
+        },
+      ];
+
+      for (const testCase of cases) {
+        component.positionDetailsForm.patchValue({
+          applicationDeadline: testCase.applicationDeadline,
+          startDate: testCase.startDate,
+        });
+        component.positionDetailsForm.updateValueAndValidity();
+        fixture.detectChanges();
+
+        expect(component.positionDetailsForm.valid).toBe(testCase.valid);
+        expect(component.positionDetailsForm.hasError('invalidDateOrder')).toBe(testCase.hasInvalidDateOrder);
+        expect(component.hasInvalidDateOrder()).toBe(testCase.hasInvalidDateOrder);
+        expect(component.positionDetailsValid()).toBe(testCase.positionDetailsValid);
+      }
+    });
+
+    it('should derive both datepicker bounds from the opposite selected date', () => {
+      component.positionDetailsForm.patchValue({
+        applicationDeadline: '2025-04-15',
+        startDate: '',
+      });
+      fixture.detectChanges();
+      expectDateParts(component.startDateMinDate(), 2025, 4, 15);
+
+      component.positionDetailsForm.patchValue({
+        applicationDeadline: '',
+        startDate: '2025-05-20',
+      });
+      fixture.detectChanges();
+      expectDateParts(component.applicationDeadlineMaxDate(), 2025, 5, 20);
     });
   });
 
