@@ -117,7 +117,7 @@
       },
       "applicationDeadline": {
         "label": "Application Deadline",
-        "placeholder": "Choose an Application Deadline...",
+        "placeholder": "Select an Application Deadline...",
         "toolTipText": "After this date, applying is no longer possible."
       },
       "workload": {
