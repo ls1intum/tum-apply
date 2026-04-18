@@ -145,7 +145,11 @@
       }
     },
     "aiSidebar": {
-      "header": "AI-Assistant"
+      "header": "AI-Assistant",
+      "complianceHeader": "Compliance Checker",
+      "critical": "Fix critical AGG mistakes",
+      "transparency": "Improve transparency and clarity",
+      "filterByCategory": "Filter by category"
     },
     "positionDetailsSection": {
       "jobDescription": {

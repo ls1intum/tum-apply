@@ -51,6 +51,7 @@ import {
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
+import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -102,6 +103,7 @@ type JobFormMode = 'create' | 'edit';
     ImageUploadButtonComponent,
     CheckboxComponent,
     AiAssistantCardComponent,
+    CompliancePopoverComponent,
   ],
   providers: [JobResourceApi],
 })
@@ -113,6 +115,10 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
+  /** Width of the compliance popover, used to clamp its position within the viewport.
+   * matches the width w-72 set in ai-compliance-popover.component.html.
+   */
+  private readonly POPOVER_WIDTH = 288;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // MODE & META SIGNALS
@@ -243,7 +249,7 @@ export class JobCreationFormComponent {
   private researchGroupApi = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AI SIGNALS
+  // AI COMPLIANCE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Score shown in the AI sidebar (undefined = not yet calculated) */
@@ -257,6 +263,18 @@ export class JobCreationFormComponent {
 
   /** List of detected compliance issues to update the UI and editor highlights */
   readonly complianceIssues = signal<ComplianceIssue[]>([]);
+
+  /** The compliance issue currently shown in the popover (undefined = none is hovered). */
+  readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
+
+  /** Horizontal screen position of popover. */
+  readonly popoverX = signal<number>(0);
+
+  /** Vertical screen position of popover. */
+  readonly popoverY = signal<number>(0);
+
+  /** When set, only issues of this category are highlighted in the editor. (undefined = all categories shown) */
+  readonly activeComplianceFilter = signal<string | undefined>(undefined);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -756,8 +774,11 @@ export class JobCreationFormComponent {
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
     const highlights: { text: string; color: string }[] = [];
+    const activeFilter = this.activeComplianceFilter();
 
-    const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
+    const filtered = (compliance ?? [])
+      .filter(issue => !issue.language || issue.language === lang)
+      .filter(issue => !activeFilter || issue.category === activeFilter);
 
     for (const issues of filtered) {
       if (!issues.text) continue;
@@ -767,6 +788,52 @@ export class JobCreationFormComponent {
     }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
+
+  /**
+   * Shows or hides the compliance popover based on which highlighted span is hovered.
+   *
+   * @param event - hovered span's text and screen position, or undefined when the mouse leaves.
+   */
+  onHighlightHovered(event: { text: string; x: number; y: number } | undefined): void {
+    if (!event) {
+      this.activePopoverIssue.set(undefined);
+      return;
+    }
+    const lang = this.currentDescriptionLanguage();
+    // Find the issue whose text exactly matches the hovered span
+    const match = this.complianceIssues().find(
+      issue => issue.language === lang && issue.text?.trim().toLowerCase() === event.text.trim().toLowerCase(),
+    );
+    this.activePopoverIssue.set(match);
+    // Clamp X so the popover never overflows the right edge of the viewport
+    this.popoverX.set(Math.min(event.x, window.innerWidth - this.POPOVER_WIDTH));
+    this.popoverY.set(event.y);
+  }
+  /**
+   * Updates the active category filter and applies editor highlights accordingly.
+   * Passing undefined clears the filter and restores all highlights.
+   *
+   * @param category - compliance category to filter by.
+   */
+  onComplianceFilterChange(category: string | undefined): void {
+    this.activeComplianceFilter.set(category);
+    const lang = this.currentDescriptionLanguage();
+    const issues = category ? this.complianceIssues().filter(i => i.category === category) : this.complianceIssues();
+    this.applyHighlights(issues, lang);
+  }
+  /**
+   * Computed: Checks whether the current job title contains a CRITICAL_AGG compliance violation.
+   *
+   * @return the issue's explanation string to display as an inline error beneath the title input
+   */
+  readonly titleComplianceError = computed(() => {
+    const title = this.basicInfoForm.get('title')?.value?.trim().toLowerCase() ?? '';
+    const issue = this.complianceIssues()
+      .filter(i => i.category === ComplianceIssueCategoryEnum.CriticalAgg && !!i.text)
+      // find first issue whose snippet appears anywhere in the title
+      .find(i => title.includes(i.text!.trim().toLowerCase()));
+    return issue?.explanation;
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION METHODS
@@ -1547,6 +1614,7 @@ export class JobCreationFormComponent {
 
     // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
+    const userLang = this.translate.currentLang;
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
     if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) {
       this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
@@ -1556,7 +1624,7 @@ export class JobCreationFormComponent {
     this.isAnalyzing.set(true);
     try {
       // 2) Send the description to the analysis endpoint (persists score on the backend)
-      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm, userLang));
       this.lastAnalyzedText = descriptionText;
       // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
       const otherLang = lang === 'en' ? 'de' : 'en';
@@ -1587,7 +1655,6 @@ export class JobCreationFormComponent {
       if (currentLang === lang) {
         this.applyHighlights(incomingLang, lang);
       }
-      this.applyHighlights(compliance, lang);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
     } finally {

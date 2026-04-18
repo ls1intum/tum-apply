@@ -8,6 +8,7 @@ import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-s
 import { AiScoreRingComponent } from 'app/shared/components/atoms/ai-score-ring/ai-score-ring.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { TooltipModule } from 'primeng/tooltip';
+import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 
 @Component({
   selector: 'jhi-ai-assistant-card',
@@ -26,18 +27,43 @@ import { TooltipModule } from 'primeng/tooltip';
   templateUrl: './ai-assistant-card.component.html',
 })
 export class AiAssistantCardComponent {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INPUTS
+  // ═══════════════════════════════════════════════════════════════════════════
   score = input<number | undefined>(undefined);
   isGenerating = input<boolean>(false);
   isAnalyzing = input<boolean>(false);
   isRewriteMode = input<boolean>(false);
   buttonIcon = input<string>('custom-sparkle');
-  generate = output();
+  complianceIssues = input<ComplianceIssue[]>([]);
+  currentLang = input<string>('en');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONSTANTS
+  // ═══════════════════════════════════════════════════════════════════════════
 
   readonly WARNING_THRESHOLD = 50;
   readonly DANGER_THRESHOLD = 29;
   readonly EXCELLENCE_THRESHOLD = 90;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // OUTPUTS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  generate = output();
+  filterComplianceCat = output<string | undefined>();
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  readonly activeFilter = signal<string | undefined>(undefined);
   readonly displayedScore = signal<number | undefined>(undefined);
   readonly scoreDialogVisible = signal(false);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPUTED
+  // ═══════════════════════════════════════════════════════════════════════════
 
   /** Whether the score ring should appear greyed out (generating or analyzing) */
   readonly isScoreLoading = computed(() => this.isGenerating() || this.isAnalyzing());
@@ -81,6 +107,31 @@ export class AiAssistantCardComponent {
     return 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreFeedback.good';
   });
 
+  /** Compliance issues filtered to the language currently active in the editor. */
+  readonly issueCountForLang = computed(() => this.complianceIssues().filter(i => i.language === this.currentLang()));
+
+  /** Number of CRITICAL_AGG issues for the current language. */
+  readonly criticalCount = computed(
+    () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.CriticalAgg).length,
+  );
+
+  /** Number of TRANSPARENCY issues for the current language. */
+  readonly transparencyCount = computed(
+    () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.Transparency).length,
+  );
+
+  /** Issues filtered by the active category pill. */
+  readonly filteredIssues = computed(() => {
+    const filter = this.activeFilter();
+    return filter ? this.issueCountForLang().filter(i => i.category === filter) : this.issueCountForLang();
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EFFECTS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  protected readonly ComplianceIssueCategoryEnum = ComplianceIssueCategoryEnum;
+
   private readonly displayedScoreEffect = effect(() => {
     const loading = this.isScoreLoading();
     const score = this.boundedScore();
@@ -88,9 +139,19 @@ export class AiAssistantCardComponent {
     if (loading) {
       return;
     }
-
     this.displayedScore.set(score);
   });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Selects the given category as the active filter, or clears it if already selected. */
+  selectCategoryFilter(category: string): void {
+    const next = this.activeFilter() === category ? undefined : category;
+    this.activeFilter.set(next);
+    this.filterComplianceCat.emit(next);
+  }
 
   onGenerate(): void {
     this.generate.emit();

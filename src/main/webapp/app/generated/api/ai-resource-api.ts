@@ -30,11 +30,15 @@ export class AiResourceApi {
      * 
      * @param lang 
      * @param jobFormDTO 
+     * @param userLanguage 
      */
-    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO): Observable<Array<ComplianceIssue>> {
+    analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO, userLanguage?: string): Observable<Array<ComplianceIssue>> {
         const queryParams = new URLSearchParams();
         if (lang !== undefined && lang !== null) {
             queryParams.set('lang', String(lang));
+        }
+        if (userLanguage !== undefined && userLanguage !== null) {
+            queryParams.set('userLanguage', String(userLanguage));
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/analyze-job-description${queryString ? `?${queryString}` : ''}`;

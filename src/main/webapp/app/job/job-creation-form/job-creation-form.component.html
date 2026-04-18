@@ -57,6 +57,7 @@
                       [required]="true"
                       [model]="basicInfoForm.get('title')?.value"
                       [control]="basicInfoForm.get('title') ?? undefined"
+                      [complianceError]="titleComplianceError() ?? undefined"
                     />
                   </div>
                 </div>
@@ -179,7 +180,9 @@
                   [shouldTranslate]="true"
                   [showGenderDecoderButton]="true"
                   height="20rem"
+                  (highlightHovered)="onHighlightHovered($event)"
                 />
+                <jhi-compliance-popover [issue]="activePopoverIssue()" [x]="popoverX()" [y]="popoverY()" />
               </div>
             </div>
           </div>
@@ -204,7 +207,10 @@
             [isGenerating]="isGeneratingDraft()"
             [isAnalyzing]="isScoreProcessing()"
             [isRewriteMode]="rewriteButtonSignal()"
+            [currentLang]="currentDescriptionLanguage()"
+            [complianceIssues]="complianceIssues()"
             (generate)="generateJobApplicationDraft()"
+            (filterComplianceCat)="onComplianceFilterChange($event)"
           />
         </aside>
       }

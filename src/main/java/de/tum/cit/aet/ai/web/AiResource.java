@@ -89,6 +89,7 @@ public class AiResource {
      *
      * @param jobForm the job form data used as the basis for the analysis
      * @param descriptionLanguage the language of the job description, `de` or `en`
+     * @param userLanguage        the language in which issue explanations should be returned
      * @return a ResponseEntity containing detected compliance findings
      */
 
@@ -96,9 +97,10 @@ public class AiResource {
     @PostMapping(value = "analyze-job-description", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ComplianceIssue>> analyzeJobDescriptionForCompliance(
         @RequestBody JobFormDTO jobForm,
-        @RequestParam("lang") String descriptionLanguage
+        @RequestParam("lang") String descriptionLanguage,
+        @RequestParam(defaultValue = "en") String userLanguage
     ) {
         log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})", descriptionLanguage);
-        return ResponseEntity.ok(aiService.analyzeCurrentJobDescription(jobForm, descriptionLanguage));
+        return ResponseEntity.ok(aiService.analyzeCurrentJobDescription(jobForm, descriptionLanguage, userLanguage));
     }
 }

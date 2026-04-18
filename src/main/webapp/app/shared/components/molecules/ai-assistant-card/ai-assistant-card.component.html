@@ -24,6 +24,83 @@
 
     <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />
 
+    <!-- Compliance Checker -->
+    <h3
+      class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
+      jhiTranslate="jobCreationForm.aiSidebar.complianceHeader"
+    ></h3>
+
+    <div class="flex flex-col gap-1">
+      <p class="m-0 mb-1 text-xs text-text-tertiary" jhiTranslate="jobCreationForm.aiSidebar.filterByCategory"></p>
+
+      <!-- Filter pills -->
+      <div class="flex flex-col gap-2">
+        <!-- Critical AGG -->
+        <button
+          class="flex items-center gap-2 rounded-lg px-3 py-3 text-xs font-medium border border-border-default transition-colors text-left"
+          [class.bg-background-surface]="activeFilter() === ComplianceIssueCategoryEnum.CriticalAgg"
+          [class.hover:bg-background-surface]="criticalCount() > 0 && activeFilter() !== ComplianceIssueCategoryEnum.CriticalAgg"
+          [class.opacity-40]="criticalCount() === 0 && !isAnalyzing()"
+          [class.cursor-default]="criticalCount() === 0 && !isAnalyzing()"
+          [class.cursor-pointer]="criticalCount() > 0"
+          (click)="criticalCount() > 0 && selectCategoryFilter(ComplianceIssueCategoryEnum.CriticalAgg)"
+        >
+          <!-- Dot  -->
+          <span class="w-2 h-2 rounded-full shrink-0 bg-negative-default"></span>
+
+          <span
+            [class.text-text-tertiary]="criticalCount() === 0 && !isAnalyzing()"
+            [class.text-text-secondary]="criticalCount() > 0 || isAnalyzing()"
+          >
+            <span jhiTranslate="jobCreationForm.aiSidebar.critical"></span>
+          </span>
+
+          <!-- spinner → count → checkmark -->
+          <span class="ml-auto flex items-center">
+            @if (isAnalyzing()) {
+              <jhi-progress-spinner class="w-3 h-3" strokeWidth="4" />
+            } @else if (criticalCount() > 0) {
+              <span class="text-text-tertiary">{{ criticalCount() }}</span>
+            } @else {
+              <fa-icon [icon]="['fas', 'check']" class="ml-auto text-positive-default opacity-60 text-[10px]" />
+            }
+          </span>
+        </button>
+
+        <!-- Transparency -->
+        <button
+          class="flex items-center gap-2 rounded-lg px-3 py-3 text-xs font-medium border border-border-default transition-colors text-left"
+          [class.bg-background-surface]="activeFilter() === ComplianceIssueCategoryEnum.Transparency"
+          [class.hover:bg-background-surface]="criticalCount() > 0 && activeFilter() !== ComplianceIssueCategoryEnum.Transparency"
+          [class.opacity-40]="transparencyCount() === 0 && !isAnalyzing()"
+          [class.cursor-default]="transparencyCount() === 0 && !isAnalyzing()"
+          [class.cursor-pointer]="criticalCount() > 0"
+          (click)="transparencyCount() > 0 && selectCategoryFilter(ComplianceIssueCategoryEnum.Transparency)"
+        >
+          <span class="w-2 h-2 rounded-full shrink-0 bg-warning-default"></span>
+
+          <span
+            [class.text-text-tertiary]="transparencyCount() === 0 && !isAnalyzing()"
+            [class.text-text-secondary]="transparencyCount() > 0 || isAnalyzing()"
+          >
+            <span jhiTranslate="jobCreationForm.aiSidebar.transparency"></span>
+          </span>
+
+          <span class="ml-auto flex items-center">
+            @if (isAnalyzing()) {
+              <jhi-progress-spinner class="w-3 h-3" strokeWidth="4" />
+            } @else if (transparencyCount() > 0) {
+              <span class="text-text-tertiary">{{ transparencyCount() }}</span>
+            } @else {
+              <fa-icon [icon]="['fas', 'check']" class="ml-auto text-positive-default opacity-60 text-[10px]" />
+            }
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />
+
     <div class="flex items-start justify-center gap-2 lg:justify-start">
       <h3
         class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
