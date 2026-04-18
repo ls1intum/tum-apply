@@ -1,24 +1,31 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
+import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
+import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
+import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -63,6 +70,8 @@ interface ApplicationInformationSnapshot {
     TranslateModule,
     TranslateDirective,
     ButtonComponent,
+    UploadButtonComponent,
+    AiExtractionBoxComponent,
   ],
   templateUrl: './application-information-settings.component.html',
   standalone: true,
@@ -92,7 +101,12 @@ export class ApplicationInformationSettingsComponent {
     if (initial === undefined) {
       return false;
     }
-    return !deepEqual(this.toSnapshot(this.data()), initial);
+    const personalChanged = !deepEqual(this.toSnapshot(this.data()), initial);
+    const cvChanged = !deepEqual(
+      this.profileDocumentService.normalizedDocuments(this.cvDocuments()),
+      this.profileDocumentService.normalizedDocuments(this.initialCvDocuments()),
+    );
+    return personalChanged || cvChanged;
   });
 
   readonly disabledEmail = true;
@@ -110,6 +124,8 @@ export class ApplicationInformationSettingsComponent {
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
+  http = inject(HttpClient);
+  profileDocumentService = inject(ProfileDocumentService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -160,6 +176,14 @@ export class ApplicationInformationSettingsComponent {
     });
   });
 
+  // Document (CV) handling
+  cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
+  queuedCvFiles = signal<File[]>([]);
+
+  // Placeholder ID to render the same upload UI structure as application page 2.
+  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+
   formEffect = effect(onCleanup => {
     const form = this.applicationInfoForm();
     const data = this.data();
@@ -205,6 +229,7 @@ export class ApplicationInformationSettingsComponent {
     try {
       // Load current applicant profile directly from database (like createApplication does)
       const profile = await firstValueFrom(this.applicantApi.getApplicantProfile());
+      const profileDocumentIds = await firstValueFrom(this.applicantApi.getApplicantProfileDocumentIds());
 
       // Map ApplicantDTO to ApplicationInformationData
       const applicationInformation: ApplicationInformationData = {
@@ -229,6 +254,8 @@ export class ApplicationInformationSettingsComponent {
       this.loadedProfile.set(profile);
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
+      this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
+      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -287,9 +314,11 @@ export class ApplicationInformationSettingsComponent {
       };
 
       const updatedProfile = await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
+      await this.saveDeferredCvChanges();
       this.loadedProfile.set(updatedProfile);
       this.toastService.showSuccessKey('settings.applicationInformation.saved');
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));
+      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
     }
@@ -297,6 +326,37 @@ export class ApplicationInformationSettingsComponent {
 
   async onCancel(): Promise<void> {
     await this.loadApplicationInformation();
+  }
+
+  onCvQueuedFilesChange(files: File[]): void {
+    this.queuedCvFiles.set(files);
+  }
+
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.applicationInfoForm();
+    const patch: Record<string, string> = {};
+
+    setIfEmpty(form, patch, 'firstName', extractedData.firstName);
+    setIfEmpty(form, patch, 'lastName', extractedData.lastName);
+    setIfEmpty(form, patch, 'phoneNumber', extractedData.phoneNumber);
+    setIfEmpty(form, patch, 'website', extractedData.website);
+    setIfEmpty(form, patch, 'linkedIn', extractedData.linkedinUrl);
+    setIfEmpty(form, patch, 'street', extractedData.street);
+    setIfEmpty(form, patch, 'city', extractedData.city);
+    setIfEmpty(form, patch, 'postcode', extractedData.postalCode);
+
+    form.patchValue(patch);
+  }
+
+  private async saveDeferredCvChanges(): Promise<void> {
+    // Commit persisted doc changes (delete/rename) for CV
+    await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
+    // Upload queued CV files
+    const latest = await this.profileDocumentService.uploadQueuedByType(
+      DocumentInformationHolderDTODocumentTypeEnum.Cv,
+      this.queuedCvFiles(),
+    );
+    if (latest) this.cvDocuments.set(latest);
   }
 
   private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {

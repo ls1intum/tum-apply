@@ -541,7 +541,7 @@ public class ApplicationService {
     /**
      * Retrieves the ApplicationDetailDTO fitting to the application id
      *
-     * @param applicationId
+     * @param applicationId the UUID of the application
      * @return ApplicationDetailDTO for application id
      */
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
@@ -645,7 +645,7 @@ public class ApplicationService {
     }
 
     /**
-     * Applies AI-extracted PDF data to an application, only updating fields that
+     * Applies AI-extracted CV data to an application, only updating fields that
      * are currently null or blank. This ensures existing data is never overwritten.
      *
      * @param applicationId the ID of the application to update
@@ -665,18 +665,25 @@ public class ApplicationService {
         setIfEmpty(
             application::getApplicantBachelorDegreeName,
             application::setApplicantBachelorDegreeName,
-            extracted.bachelorDegreeName()
+            extracted.education().bachelorDegreeName()
         );
         setIfEmpty(
             application::getApplicantBachelorUniversity,
             application::setApplicantBachelorUniversity,
-            extracted.bachelorUniversity()
+            extracted.education().bachelorUniversity()
         );
-        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.bachelorGrade());
-        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
-        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
-        setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
-
+        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.education().bachelorGrade());
+        setIfEmpty(
+            application::getApplicantMasterDegreeName,
+            application::setApplicantMasterDegreeName,
+            extracted.education().masterDegreeName()
+        );
+        setIfEmpty(
+            application::getApplicantMasterUniversity,
+            application::setApplicantMasterUniversity,
+            extracted.education().masterUniversity()
+        );
+        setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.education().masterGrade());
         applicationRepository.save(application);
     }
 

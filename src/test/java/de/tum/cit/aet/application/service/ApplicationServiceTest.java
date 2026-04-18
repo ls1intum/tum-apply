@@ -336,11 +336,6 @@ class ApplicationServiceTest {
                 null,
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 null
             );
             applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
@@ -362,11 +357,6 @@ class ApplicationServiceTest {
                 null,
                 null,
                 "New Street",
-                null,
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 null

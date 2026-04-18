@@ -1,0 +1,43 @@
+@if (aiFeaturesEnabled()) {
+  <div
+    class="flex flex-col md:flex-row md:items-center mb-5 justify-between gap-2 md:gap-6 p-4 bg-background-surface rounded-sm border border-border-default"
+  >
+    <div class="leading-relaxed">
+      <p class="text-xs text-text-secondary">{{ helperTextKey() | translate }}</p>
+      <p class="text-xs text-text-secondary" jhiTranslate="entity.aiExtraction.checkInfo"></p>
+    </div>
+
+    <div class="flex-shrink-0 inline-flex items-center gap-2">
+      <jhi-button
+        label="?"
+        variant="outlined"
+        severity="primary"
+        styleClass="!relative !flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
+        (click)="aiConsentVisible.set(true)"
+      />
+      @if (isExtractingAi()) {
+        <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border-default">
+          <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+          <span class="whitespace-nowrap text-sm text-text-secondary">{{ 'entity.aiExtraction.loading' | translate }}</span>
+        </div>
+      } @else {
+        <jhi-button
+          [label]="'entity.aiExtraction.button'"
+          [shouldTranslate]="true"
+          severity="primary"
+          icon="custom-sparkle"
+          styleClass="!justify-center !whitespace-nowrap"
+          (click)="extractAiData()"
+          [disabled]="disabled()"
+        />
+      }
+    </div>
+  </div>
+
+  <jhi-ai-consent-modal
+    [visible]="aiConsentVisible()"
+    [currentRole]="UserShortDTORolesEnum.Applicant"
+    [settings]="false"
+    (visibleChange)="aiConsentVisible.set($event)"
+  />
+}

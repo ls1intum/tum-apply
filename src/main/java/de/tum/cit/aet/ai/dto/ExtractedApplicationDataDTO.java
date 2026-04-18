@@ -16,10 +16,9 @@ public record ExtractedApplicationDataDTO(
     String street,
     String city,
     String postalCode,
-    String bachelorDegreeName,
-    String bachelorUniversity,
-    String bachelorGrade,
-    String masterDegreeName,
-    String masterUniversity,
-    String masterGrade
-) {}
+    ExtractedCertificateDataDTO education
+) {
+    public static ExtractedApplicationDataDTO onlyEducationDTO(ExtractedCertificateDataDTO certificateDataDTO) {
+        return new ExtractedApplicationDataDTO(null, null, null, null, null, null, null, null, certificateDataDTO);
+    }
+}

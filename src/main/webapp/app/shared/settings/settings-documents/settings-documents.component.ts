@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -12,7 +11,7 @@ import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { AccountService } from 'app/core/auth/account.service';
-import { Observable, debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
+import { debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -26,9 +25,13 @@ import {
 } from 'app/shared/util/grading-scale.utils';
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
+import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
 
 import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import TranslateDirective from '../../language/translate.directive';
 
 interface NormalizedSettingsDocumentsFormValue {
   bachelorDegreeName: string;
@@ -56,6 +59,7 @@ interface NormalizedSettingsDocumentsFormValue {
     TooltipModule,
     FontAwesomeModule,
     UploadButtonComponent,
+    TranslateDirective,
   ],
   templateUrl: './settings-documents.component.html',
 })
@@ -78,7 +82,6 @@ export class SettingsDocumentsComponent {
   // Document tracking for upload components
   bachelorDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   masterDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   referenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   // Placeholder ID to render the same upload UI structure as application page 2.
@@ -94,22 +97,28 @@ export class SettingsDocumentsComponent {
   initialFormValue = signal(this.form.getRawValue());
   initialBachelorDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   initialMasterDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   initialReferenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   queuedBachelorFiles = signal<File[]>([]);
   queuedMasterFiles = signal<File[]>([]);
-  queuedCvFiles = signal<File[]>([]);
   queuedReferenceFiles = signal<File[]>([]);
 
   hasFormChanges = computed(() => this.hasLoaded() && !deepEqual(this.normalizedFormValue(), this.initialFormValue()));
   hasDocumentChanges = computed(() => {
     if (!this.hasLoaded()) return false;
     return (
-      !deepEqual(this.normalizedDocuments(this.bachelorDocuments()), this.normalizedDocuments(this.initialBachelorDocuments())) ||
-      !deepEqual(this.normalizedDocuments(this.masterDocuments()), this.normalizedDocuments(this.initialMasterDocuments())) ||
-      !deepEqual(this.normalizedDocuments(this.cvDocuments()), this.normalizedDocuments(this.initialCvDocuments())) ||
-      !deepEqual(this.normalizedDocuments(this.referenceDocuments()), this.normalizedDocuments(this.initialReferenceDocuments()))
+      !deepEqual(
+        this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()),
+        this.profileDocumentService.normalizedDocuments(this.initialBachelorDocuments()),
+      ) ||
+      !deepEqual(
+        this.profileDocumentService.normalizedDocuments(this.masterDocuments()),
+        this.profileDocumentService.normalizedDocuments(this.initialMasterDocuments()),
+      ) ||
+      !deepEqual(
+        this.profileDocumentService.normalizedDocuments(this.referenceDocuments()),
+        this.profileDocumentService.normalizedDocuments(this.initialReferenceDocuments()),
+      )
     );
   });
   hasChanges = computed(() => this.hasFormChanges() || this.hasDocumentChanges());
@@ -137,7 +146,7 @@ export class SettingsDocumentsComponent {
   });
 
   private applicantApi = inject(ApplicantResourceApi);
-  private http = inject(HttpClient);
+  private profileDocumentService = inject(ProfileDocumentService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
@@ -277,12 +286,25 @@ export class SettingsDocumentsComponent {
     this.queuedMasterFiles.set(files);
   }
 
-  onCvQueuedFilesChange(files: File[]): void {
-    this.queuedCvFiles.set(files);
-  }
-
   onReferenceQueuedFilesChange(files: File[]): void {
     this.queuedReferenceFiles.set(files);
+  }
+
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.form;
+    const patch: Record<string, string> = {};
+
+    const edu = extractedData.education;
+    if (edu) {
+      setIfEmpty(form, patch, 'bachelorDegreeName', edu.bachelorDegreeName);
+      setIfEmpty(form, patch, 'bachelorDegreeUniversity', edu.bachelorUniversity);
+      setIfEmpty(form, patch, 'bachelorGrade', edu.bachelorGrade);
+      setIfEmpty(form, patch, 'masterDegreeName', edu.masterDegreeName);
+      setIfEmpty(form, patch, 'masterDegreeUniversity', edu.masterUniversity);
+      setIfEmpty(form, patch, 'masterGrade', edu.masterGrade);
+    }
+
+    form.patchValue(patch);
   }
 
   // Loads the persisted profile + document state and resets the change-tracking baseline to that backend snapshot.
@@ -381,117 +403,48 @@ export class SettingsDocumentsComponent {
     };
   }
 
-  // Sorts by stable backend id so document comparisons stay insensitive to UI ordering.
-  private normalizedDocuments(docs: DocumentInformationHolderDTO[] | undefined): DocumentInformationHolderDTO[] {
-    return Array.from(docs ?? [])
-      .map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        size: doc.size,
-      }))
-      .sort((a, b) => a.id.localeCompare(b.id));
-  }
-
   // Persists the current form/document state as the new clean baseline after a successful load or save.
   private storeInitialStateSnapshot(): void {
     this.initialFormValue.set(this.normalizedFormValue());
-    this.initialBachelorDocuments.set(this.normalizedDocuments(this.bachelorDocuments()));
-    this.initialMasterDocuments.set(this.normalizedDocuments(this.masterDocuments()));
-    this.initialCvDocuments.set(this.normalizedDocuments(this.cvDocuments()));
-    this.initialReferenceDocuments.set(this.normalizedDocuments(this.referenceDocuments()));
+    this.initialBachelorDocuments.set(this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()));
+    this.initialMasterDocuments.set(this.profileDocumentService.normalizedDocuments(this.masterDocuments()));
+    this.initialReferenceDocuments.set(this.profileDocumentService.normalizedDocuments(this.referenceDocuments()));
 
     this.queuedBachelorFiles.set([]);
     this.queuedMasterFiles.set([]);
-    this.queuedCvFiles.set([]);
     this.queuedReferenceFiles.set([]);
   }
 
   private applyProfileDocumentIds(documentIds: ApplicationDocumentIdsDTO): void {
     this.bachelorDocuments.set(documentIds.bachelorDocumentDictionaryIds ?? []);
     this.masterDocuments.set(documentIds.masterDocumentDictionaryIds ?? []);
-    this.cvDocuments.set(documentIds.cvDocumentDictionaryId != null ? [documentIds.cvDocumentDictionaryId] : []);
     this.referenceDocuments.set(documentIds.referenceDocumentDictionaryIds ?? []);
   }
 
   private async saveQueuedDocuments(): Promise<void> {
-    await this.uploadQueuedByType(
+    const bachelor = await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript,
       this.queuedBachelorFiles(),
-      this.bachelorDocuments,
     );
-    await this.uploadQueuedByType(
+    if (bachelor) this.bachelorDocuments.set(bachelor);
+
+    const master = await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript,
       this.queuedMasterFiles(),
-      this.masterDocuments,
     );
-    await this.uploadQueuedByType(DocumentInformationHolderDTODocumentTypeEnum.Cv, this.queuedCvFiles(), this.cvDocuments);
-    await this.uploadQueuedByType(
+    if (master) this.masterDocuments.set(master);
+
+    const reference = await this.profileDocumentService.uploadQueuedByType(
       DocumentInformationHolderDTODocumentTypeEnum.Reference,
       this.queuedReferenceFiles(),
-      this.referenceDocuments,
     );
+    if (reference) this.referenceDocuments.set(reference);
   }
 
   private async saveDeferredDocumentChanges(): Promise<void> {
-    await this.commitDocumentTypeChanges(this.initialBachelorDocuments(), this.bachelorDocuments());
-    await this.commitDocumentTypeChanges(this.initialMasterDocuments(), this.masterDocuments());
-    await this.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
-    await this.commitDocumentTypeChanges(this.initialReferenceDocuments(), this.referenceDocuments());
+    await this.profileDocumentService.commitDocumentTypeChanges(this.initialBachelorDocuments(), this.bachelorDocuments());
+    await this.profileDocumentService.commitDocumentTypeChanges(this.initialMasterDocuments(), this.masterDocuments());
+    await this.profileDocumentService.commitDocumentTypeChanges(this.initialReferenceDocuments(), this.referenceDocuments());
     await this.saveQueuedDocuments();
-  }
-
-  private async commitDocumentTypeChanges(
-    initialDocs: DocumentInformationHolderDTO[] | undefined,
-    currentDocs: DocumentInformationHolderDTO[] | undefined,
-  ): Promise<void> {
-    // Only persisted documents participate in the diff; temporary placeholders are uploaded separately afterwards.
-    const initial = this.normalizedDocuments(initialDocs);
-    const currentPersistedDocs = this.normalizedDocuments(currentDocs).filter(doc => !this.isTemporaryDocument(doc));
-    const currentById = new Map(currentPersistedDocs.map(doc => [doc.id, doc]));
-
-    const deletedIds = initial.filter(doc => !currentById.has(doc.id)).map(doc => doc.id);
-    const renamedDocs = currentPersistedDocs.flatMap(doc => {
-      const initialDoc = initial.find(existing => existing.id === doc.id);
-      const newName = doc.name?.trim();
-      return initialDoc !== undefined && newName != null && newName !== '' && initialDoc.name !== doc.name ? [{ id: doc.id, newName }] : [];
-    });
-
-    for (const documentId of deletedIds) {
-      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
-    }
-
-    for (const document of renamedDocs) {
-      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(document.id, document.newName));
-    }
-  }
-
-  private async uploadQueuedByType(
-    documentType: DocumentInformationHolderDTODocumentTypeEnum,
-    files: File[],
-    targetSignal: {
-      set: (_value: DocumentInformationHolderDTO[] | undefined) => void;
-    },
-  ): Promise<void> {
-    if (files.length === 0) {
-      return;
-    }
-
-    const uploadResults = await Promise.all(files.map(file => firstValueFrom(this.uploadApplicantProfileDocument(documentType, file))));
-
-    const latestResult: DocumentInformationHolderDTO[] | undefined = uploadResults[uploadResults.length - 1];
-    targetSignal.set(latestResult);
-  }
-
-  private isTemporaryDocument(document: DocumentInformationHolderDTO): boolean {
-    return document.id.startsWith('temp-');
-  }
-
-  private uploadApplicantProfileDocument(
-    documentType: DocumentInformationHolderDTODocumentTypeEnum,
-    file: File,
-  ): Observable<DocumentInformationHolderDTO[]> {
-    const formData = new FormData();
-    formData.append('files', file);
-    return this.http.post<DocumentInformationHolderDTO[]>(`/api/applicants/profile/documents/${documentType}`, formData);
   }
 }

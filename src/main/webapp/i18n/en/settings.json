@@ -161,10 +161,6 @@
         "master": "Master Studies",
         "additionalDocuments": "Additional Documents"
       },
-      "labels": {
-        "bachelorCertificate": "Bachelor Certificate",
-        "masterCertificate": "Master Certificate"
-      },
       "loadFailed": {
         "summary": "Load failed",
         "detail": "Failed to load documents. Please try again."

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -66,21 +67,61 @@ public class AiResource {
     }
 
     /**
-     * Extracts applicant data from a PDF file using AI and persists the extracted
+     * Extracts applicant data from PDF files using AI and persists the extracted
      * values into the application entity.
      *
      * @param applicationId the ID of the application to update
-     * @param docId         the ID of the document dictionary entry for the PDF
+     * @param docIds        the IDs of the document dictionary entries for the PDFs
      * @return a ResponseEntity containing the extracted data
      */
     @ApplicantOrAdmin
     @PutMapping(value = "extractPdfData", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
         @RequestParam("applicationId") String applicationId,
-        @RequestParam("docId") String docId
+        @RequestParam("docIds") List<String> docIds,
+        @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
+        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
     ) {
-        log.info("PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
-        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docId));
+        log.info(
+            "PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docIds={}, isCV={}, saveData={}",
+            applicationId,
+            docIds,
+            isCv,
+            saveData
+        );
+        return ResponseEntity.ok(aiService.extractAndPersistPdfDataFromUUID(applicationId, docIds, isCv, saveData));
+    }
+
+    /**
+     * Extracts applicant data from uploaded PDF files using AI without requiring
+     * persisted document IDs. Files are processed in-memory only.
+     *
+     * @param applicationId the ID of the application to update (if saveData is true)
+     * @param files         the PDF files to extract data from
+     * @param isCv          whether the documents are CVs or certificates
+     * @param saveData      whether to persist the extracted data into the application
+     * @return a ResponseEntity containing the extracted data
+     */
+    @ApplicantOrAdmin
+    @PostMapping(
+        value = "extractPdfDataFromFiles",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ExtractedApplicationDataDTO> extractPdfDataFromFiles(
+        @RequestParam(value = "applicationId", required = false) String applicationId,
+        @RequestPart("files") List<MultipartFile> files,
+        @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
+        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
+    ) {
+        log.info(
+            "POST /api/ai/extractPdfDataFromFiles - File upload extraction request received (applicationId={}, fileCount={}, isCV={}, saveData={})",
+            applicationId,
+            files.size(),
+            isCv,
+            saveData
+        );
+        return ResponseEntity.ok(aiService.extractPdfDataFromFiles(applicationId, files, isCv, saveData));
     }
 
     /**

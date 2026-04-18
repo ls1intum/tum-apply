@@ -4,6 +4,7 @@ import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.InternalServerException;
@@ -34,6 +35,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 @Service
@@ -46,8 +48,11 @@ public class AiService {
     @Value("classpath:prompts/TranslateText.st")
     private Resource translationResource;
 
-    @Value("classpath:prompts/ExtractPdfData.st")
-    private Resource pdfExtractionResource;
+    @Value("classpath:prompts/ExtractCvData.st")
+    private Resource cVExtractionResource;
+
+    @Value("classpath:prompts/ExtractCertificateData.st")
+    private Resource certificateExtractionResource;
 
     @Value("classpath:prompts/AnalyzeComplianceText.st")
     private Resource complianceResource;
@@ -150,63 +155,122 @@ public class AiService {
     }
 
     /**
-     * Extracts applicant data from the provided PDF file by converting it to images
+     * Extracts applicant data from the provided PDF files by converting them to images
      * first, since the Azure OpenAI endpoint only accepts image inputs.
-     * 1) Load the PDF and render each page as a PNG image
+     * 1) Load the PDFs and render each page as a PNG image
      * 2) Send the images to the LLM with the extraction prompt
      *
-     * @param pdfFile the PDF file resource to be analyzed
+     * @param pdfFiles the PDF file resources to be analyzed
      * @return the extracted data as a structured DTO
      */
-    private ExtractedApplicationDataDTO extractPdfData(Resource pdfFile) {
-        try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
-            // 1) Render each PDF page as a PNG image
-            PDFRenderer pdfRenderer = new PDFRenderer(document);
-            int pageCount = document.getNumberOfPages();
+    private ExtractedApplicationDataDTO extractPdfData(List<Resource> pdfFiles, boolean isCv) {
+        List<ByteArrayResource> pageImages = new ArrayList<>();
 
-            List<ByteArrayResource> pageImages = new ArrayList<>(pageCount);
-            for (int i = 0; i < pageCount; i++) {
-                BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                ImageIO.write(image, "png", byteArrayOutputStream);
-                pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
+        Resource prompt = isCv ? cVExtractionResource : certificateExtractionResource;
+        Class<?> targetClass = isCv ? ExtractedApplicationDataDTO.class : ExtractedCertificateDataDTO.class;
+
+        try {
+            for (Resource pdfFile : pdfFiles) {
+                try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
+                    // 1) Render each PDF page as a PNG image
+                    PDFRenderer pdfRenderer = new PDFRenderer(document);
+                    int pageCount = document.getNumberOfPages();
+
+                    for (int i = 0; i < pageCount; i++) {
+                        BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        ImageIO.write(image, "png", byteArrayOutputStream);
+                        pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
+                    }
+                }
             }
 
             // 2) Send the images to the LLM with the extraction prompt
-            return chatClient
+            Object result = chatClient
                 .prompt()
                 .user(u -> {
-                    u.text(pdfExtractionResource);
+                    u.text(prompt);
                     for (ByteArrayResource pageImage : pageImages) {
                         u.media(MediaType.IMAGE_PNG, pageImage);
                     }
                 })
                 .call()
-                .entity(ExtractedApplicationDataDTO.class);
+                .entity(targetClass);
+
+            if (isCv) {
+                return (ExtractedApplicationDataDTO) result;
+            } else {
+                return ExtractedApplicationDataDTO.onlyEducationDTO((ExtractedCertificateDataDTO) result);
+            }
         } catch (IOException e) {
             throw new PDFExtractionException("PDF conversion failed", e);
         }
     }
 
     /**
-     * Extracts applicant data from a PDF document and persists the extracted data
+     * Extracts applicant data from PDF documents and persists the extracted data
      * in the application entity.
-     * 1) Download the document
-     * 2) Extract data from the PDF via AI
-     * 3) Persist the extracted data into the application
+     * 1) Download the documents
+     * 2) Extract data from the PDFs via AI
+     * 3) Persist the extracted data into the application if saveData is true
      *
      * @param applicationId the ID of the application to update with extracted data
-     * @param docId         the ID of the document to extract data from
+     * @param docIds         the IDs of the documents to extract data from
+     * @param isCv           whether the document is a CV (true) or a certificate (false), which will affect the extraction prompt
+     * @param saveData      whether to persist the extracted data into the application entity
      * @return the extracted data as a structured DTO
      */
-    public ExtractedApplicationDataDTO extractAndPersistPdfData(String applicationId, String docId) {
+    public ExtractedApplicationDataDTO extractAndPersistPdfDataFromUUID(
+        String applicationId,
+        List<String> docIds,
+        boolean isCv,
+        boolean saveData
+    ) {
         currentUserService.markAiConsentForCurrentUser();
         // 1) Download the document
-        Resource doc = documentDictionaryService.downloadDocument(UUID.fromString(docId));
-        // 2) Extract data from the PDF via AI
-        ExtractedApplicationDataDTO extracted = extractPdfData(doc);
+        List<Resource> docs = new ArrayList<>();
+        for (String docId : docIds) {
+            docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
+        }
+        // 2) Extract data from the PDFs via AI
+        ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
         // 3) Persist the extracted data into the application
-        if (extracted != null) {
+        if (extracted != null && saveData) {
+            applicationService.applyExtractedPdfData(applicationId, extracted);
+        }
+        return extracted;
+    }
+
+    /**
+     * Extracts applicant data from uploaded PDF files (multipart) without requiring
+     * persisted document IDs. Files are processed in-memory only.
+     *
+     * @param applicationId the ID of the application to update (only used if saveData is true)
+     * @param files         the uploaded PDF files
+     * @param isCv          whether the documents are CVs or certificates
+     * @param saveData      whether to persist the extracted data into the application
+     * @return the extracted data as a structured DTO
+     */
+    public ExtractedApplicationDataDTO extractPdfDataFromFiles(
+        String applicationId,
+        List<MultipartFile> files,
+        boolean isCv,
+        boolean saveData
+    ) {
+        currentUserService.markAiConsentForCurrentUser();
+        // 1) Convert multipart files to Resource objects
+        List<Resource> docs = new ArrayList<>();
+        for (MultipartFile file : files) {
+            try {
+                docs.add(new ByteArrayResource(file.getBytes()));
+            } catch (IOException e) {
+                throw new PDFExtractionException("Failed to read uploaded file", e);
+            }
+        }
+        // 2) Extract data from the PDFs via AI
+        ExtractedApplicationDataDTO extracted = extractPdfData(docs, isCv);
+        // 3) Persist the extracted data into the application if requested
+        if (extracted != null && saveData && applicationId != null && !applicationId.isBlank()) {
             applicationService.applyExtractedPdfData(applicationId, extracted);
         }
         return extracted;
