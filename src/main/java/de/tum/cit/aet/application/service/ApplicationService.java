@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.service;
 import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
 
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -662,28 +663,23 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantStreet, application::setApplicantStreet, extracted.street());
         setIfEmpty(application::getApplicantCity, application::setApplicantCity, extracted.city());
         setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());
-        setIfEmpty(
-            application::getApplicantBachelorDegreeName,
-            application::setApplicantBachelorDegreeName,
-            extracted.education().bachelorDegreeName()
-        );
-        setIfEmpty(
-            application::getApplicantBachelorUniversity,
-            application::setApplicantBachelorUniversity,
-            extracted.education().bachelorUniversity()
-        );
-        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.education().bachelorGrade());
-        setIfEmpty(
-            application::getApplicantMasterDegreeName,
-            application::setApplicantMasterDegreeName,
-            extracted.education().masterDegreeName()
-        );
-        setIfEmpty(
-            application::getApplicantMasterUniversity,
-            application::setApplicantMasterUniversity,
-            extracted.education().masterUniversity()
-        );
-        setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.education().masterGrade());
+        ExtractedCertificateDataDTO education = extracted.education();
+        if (education != null) {
+            setIfEmpty(
+                application::getApplicantBachelorDegreeName,
+                application::setApplicantBachelorDegreeName,
+                education.bachelorDegreeName()
+            );
+            setIfEmpty(
+                application::getApplicantBachelorUniversity,
+                application::setApplicantBachelorUniversity,
+                education.bachelorUniversity()
+            );
+            setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, education.bachelorGrade());
+            setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, education.masterDegreeName());
+            setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, education.masterUniversity());
+            setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, education.masterGrade());
+        }
         applicationRepository.save(application);
     }
 
