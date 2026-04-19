@@ -172,18 +172,22 @@ export default class ApplicationCreationPage1Component {
     effect(onCleanup => {
       const form = this.page1Form();
       const data = this.data();
-      const valueSubscription = form.valueChanges.subscribe(value => {
-        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-        const selectFields = {
+      const valueSubscription = form.valueChanges.subscribe(() => {
+        const rawValue = form.getRawValue();
+        this.data.set({
+          firstName: rawValue.firstName ?? '',
+          lastName: rawValue.lastName ?? '',
+          email: rawValue.email ?? '',
+          phoneNumber: rawValue.phoneNumber ?? '',
+          website: rawValue.website ?? '',
+          linkedIn: rawValue.linkedIn ?? '',
+          street: rawValue.street ?? '',
+          city: rawValue.city ?? '',
+          postcode: rawValue.postcode ?? '',
           gender: data.gender,
           nationality: data.nationality,
           country: data.country,
           dateOfBirth: data.dateOfBirth,
-        };
-        this.data.set({
-          ...this.data(),
-          ...selectFields,
-          ...normalizedValue,
         });
         this.changed.emit(true);
         this.valid.emit(form.valid && this.cvValid());

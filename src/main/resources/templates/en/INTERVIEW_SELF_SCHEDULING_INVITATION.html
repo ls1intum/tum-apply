@@ -5,9 +5,9 @@
 
 <p>After reviewing your application documents, we would like to invite you to an interview.</p>
 
-<p>Please use the following link to choose a time slot for your interview:</p>
+<p>Please choose a time slot for your interview:</p>
 
-<p><a href="${(BOOKING_LINK!'')?no_esc}">${BOOKING_LINK!}</a></p>
+<@ui.ctaButton href=(BOOKING_LINK!'') label="Choose Time Slot" />
 
 <p>We look forward to speaking with you.</p>
 

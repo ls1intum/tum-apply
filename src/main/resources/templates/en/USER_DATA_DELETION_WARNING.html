@@ -2,6 +2,8 @@
 
 <p>We would like to remind you that your data in our system will be automatically deleted in 4 weeks in accordance with our privacy policy.</p>
 
-<p>To prevent the deletion of your data, please log in to your TUMApply account: <a href="${LOGIN_URL!}">${LOGIN_URL!}</a></p>
+<p>To prevent the deletion of your data, please log in to your TUMApply account:</p>
 
-<p>Best regards,<br /><br />TUMApply Team<br />Technical University of Munich</p>
+<@ui.ctaButton href=(LOGIN_LINK!(url!'')) label="Log in to TUMApply" />
+
+<p>Best regards,<br />Your TUMApply Team</p>
