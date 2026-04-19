@@ -336,6 +336,10 @@ class ApplicationServiceTest {
                 null,
                 null,
                 null,
+                null,
+                null,
+                null,
+                null,
                 null
             );
             applicationService.applyExtractedPdfData(TEST_APPLICATION_ID.toString(), extracted);
@@ -353,6 +357,10 @@ class ApplicationServiceTest {
             ExtractedApplicationDataDTO extracted = new ExtractedApplicationDataDTO(
                 "Overwrite",
                 "New",
+                null,
+                null,
+                null,
+                null,
                 null,
                 null,
                 null,

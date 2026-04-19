@@ -31,6 +31,7 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
@@ -660,6 +661,12 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantPhoneNumber, application::setApplicantPhoneNumber, extracted.phoneNumber());
         setIfEmpty(application::getApplicantWebsite, application::setApplicantWebsite, extracted.website());
         setIfEmpty(application::getApplicantLinkedinUrl, application::setApplicantLinkedinUrl, extracted.linkedinUrl());
+        setIfEmpty(application::getApplicantGender, application::setApplicantGender, extracted.gender());
+        setIfEmpty(application::getApplicantNationality, application::setApplicantNationality, extracted.nationality());
+        setIfEmpty(application::getApplicantCountry, application::setApplicantCountry, extracted.country());
+        if (application.getApplicantBirthday() == null && extracted.dateOfBirth() != null && !extracted.dateOfBirth().isBlank()) {
+            application.setApplicantBirthday(LocalDate.parse(extracted.dateOfBirth()));
+        }
         setIfEmpty(application::getApplicantStreet, application::setApplicantStreet, extracted.street());
         setIfEmpty(application::getApplicantCity, application::setApplicantCity, extracted.city());
         setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());

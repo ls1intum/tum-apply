@@ -3014,10 +3014,14 @@ components:
       type: object
       properties:
         city: {type: string}
+        country: {type: string}
+        dateOfBirth: {type: string}
         education: {$ref: '#/components/schemas/ExtractedCertificateDataDTO'}
         firstName: {type: string}
+        gender: {type: string}
         lastName: {type: string}
         linkedinUrl: {type: string}
+        nationality: {type: string}
         phoneNumber: {type: string}
         postalCode: {type: string}
         street: {type: string}

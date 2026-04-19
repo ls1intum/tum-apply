@@ -250,6 +250,22 @@ export default class ApplicationCreationPage1Component {
 
     form.patchValue(patch);
 
+    if (!this.data().gender && extractedData.gender) {
+      const match = selectGender.find(g => g.value === extractedData.gender);
+      if (match) this.updateSelect('gender', match);
+    }
+    if (!this.data().nationality && extractedData.nationality) {
+      const match = selectNationality.find(n => n.value === extractedData.nationality);
+      if (match) this.updateSelect('nationality', match);
+    }
+    if (!this.data().country && extractedData.country) {
+      const match = selectCountries.find(c => c.value === extractedData.country);
+      if (match) this.updateSelect('country', match);
+    }
+    if (!this.data().dateOfBirth && extractedData.dateOfBirth) {
+      this.setDateOfBirth(extractedData.dateOfBirth);
+    }
+
     this.educationDataExtracted.emit(extractedData.education);
   }
 }

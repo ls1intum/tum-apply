@@ -12,10 +12,14 @@ import type { ExtractedCertificateDataDTO } from './extracted-certificate-data-d
 
 export interface ExtractedApplicationDataDTO {
     readonly city?: string;
+    readonly country?: string;
+    readonly dateOfBirth?: string;
     readonly education?: ExtractedCertificateDataDTO;
     readonly firstName?: string;
+    readonly gender?: string;
     readonly lastName?: string;
     readonly linkedinUrl?: string;
+    readonly nationality?: string;
     readonly phoneNumber?: string;
     readonly postalCode?: string;
     readonly street?: string;

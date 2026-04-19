@@ -13,12 +13,16 @@ public record ExtractedApplicationDataDTO(
     String phoneNumber,
     String website,
     String linkedinUrl,
+    String gender,
+    String nationality,
+    String country,
+    String dateOfBirth,
     String street,
     String city,
     String postalCode,
     ExtractedCertificateDataDTO education
 ) {
     public static ExtractedApplicationDataDTO onlyEducationDTO(ExtractedCertificateDataDTO certificateDataDTO) {
-        return new ExtractedApplicationDataDTO(null, null, null, null, null, null, null, null, certificateDataDTO);
+        return new ExtractedApplicationDataDTO(null, null, null, null, null, null, null, null, null, null, null, null, certificateDataDTO);
     }
 }
