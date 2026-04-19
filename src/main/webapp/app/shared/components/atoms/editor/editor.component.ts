@@ -19,6 +19,7 @@ import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Quill.import() returns unknown; no public type for inline blots
 const Inline = Quill.import('blots/inline') as any;
 
 /**

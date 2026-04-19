@@ -1565,13 +1565,7 @@ export class JobCreationFormComponent {
       const otherLang = lang === 'en' ? 'de' : 'en';
       const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);
 
-      const incomingLang = compliance.map(issue => {
-        const copy = structuredClone(issue);
-        (copy as { language?: string }).language = lang;
-        return copy;
-      });
-
-      this.complianceIssues.set(existingLang.concat(incomingLang));
+      this.complianceIssues.set(existingLang.concat(compliance));
 
       // 3) Fetch the updated job to retrieve the persisted score.
       //    Retry once with a short delay if the score is still missing
@@ -1588,7 +1582,7 @@ export class JobCreationFormComponent {
       }
       const currentLang = this.currentDescriptionLanguage();
       if (currentLang === lang) {
-        this.applyHighlights(incomingLang, lang);
+        this.applyHighlights(compliance, lang);
       }
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
