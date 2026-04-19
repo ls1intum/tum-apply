@@ -19,10 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -273,13 +270,14 @@ public class AiService {
      *
      * @param jobFormDTO The data transfer object containing the current state of the job posting.
      * @param lang The language identifier (de/en) currently active in the editor.
+     * @param userLang controls the language of explanation texts in the returned issues.
      * @return A list of compliance issues containing the combined legal and linguistic findings.
      */
-    public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang) {
+    public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang, String userLang) {
         String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         String input = raw != null ? Jsoup.parse(raw).text() : "";
         GenderBiasAnalysisResponse genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
-        return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, genderAnalysis, null);
+        return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, userLang, genderAnalysis, null);
     }
 
     /**
@@ -296,6 +294,7 @@ public class AiService {
      * @param jobId Unique identifier for the job.
      * @param text Extracted raw text of the job description.
      * @param lang the analysis language, expected to be `de` or `en`
+     * @param userLang controls the language of explanation texts in the returned issues.
      * @param analysis Result of the primary linguistic gender analysis.
      * @param translatedAnalysis Second analysis of the translated counterpart.
      * @return A list containing all identified compliance issues.
@@ -306,6 +305,7 @@ public class AiService {
         UUID jobId,
         String text,
         String lang,
+        String userLang,
         GenderBiasAnalysisResponse analysis,
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
@@ -317,6 +317,7 @@ public class AiService {
                     u
                         .text(complianceResource)
                         .param("descriptionLanguage", lang)
+                        .param("userLang", userLang)
                         .param("jobDescription", text)
                         .param("title", title != null ? title : "")
                 )

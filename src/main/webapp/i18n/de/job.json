@@ -145,7 +145,11 @@
       }
     },
     "aiSidebar": {
-      "header": "KI-Assistent"
+      "header": "KI-Assistent",
+      "complianceHeader": "Compliance-Prüfer",
+      "critical": "Fixe kritische AGG-Verstöße",
+      "transparency": "Transparenz verbessern",
+      "filterByCategory": "Filter by category"
     },
     "positionDetailsSection": {
       "jobDescription": {

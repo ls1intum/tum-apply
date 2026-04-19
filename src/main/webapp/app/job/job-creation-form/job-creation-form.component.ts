@@ -51,6 +51,7 @@ import {
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
+import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -102,6 +103,7 @@ type JobFormMode = 'create' | 'edit';
     ImageUploadButtonComponent,
     CheckboxComponent,
     AiAssistantCardComponent,
+    CompliancePopoverComponent,
   ],
   providers: [JobResourceApi],
 })
@@ -113,6 +115,10 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
+  /** Width of the compliance popover, used to clamp its position within the viewport.
+   * matches the width w-72 set in ai-compliance-popover.component.html.
+   */
+  private readonly POPOVER_WIDTH = 288;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // MODE & META SIGNALS
@@ -260,6 +266,18 @@ export class JobCreationFormComponent {
 
   /** List of detected compliance issues to update the UI and editor highlights */
   readonly complianceIssues = signal<ComplianceIssue[]>([]);
+
+  /** The compliance issue currently shown in the popover (undefined = none is hovered). */
+  readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
+
+  /** Horizontal screen position of popover. */
+  readonly popoverX = signal<number>(0);
+
+  /** Vertical screen position of popover. */
+  readonly popoverY = signal<number>(0);
+
+  /** When set, only issues of this category are highlighted in the editor. (undefined = all categories shown) */
+  readonly activeComplianceFilter = signal<string | undefined>(undefined);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -1550,6 +1568,7 @@ export class JobCreationFormComponent {
 
     // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
+    const userLang = this.translate.currentLang;
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
     if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) {
       this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
@@ -1559,7 +1578,7 @@ export class JobCreationFormComponent {
     this.isAnalyzing.set(true);
     try {
       // 2) Send the description to the analysis endpoint (persists score on the backend)
-      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm, userLang));
       this.lastAnalyzedText = descriptionText;
       // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
       const otherLang = lang === 'en' ? 'de' : 'en';
