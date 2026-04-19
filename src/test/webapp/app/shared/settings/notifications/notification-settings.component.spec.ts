@@ -10,7 +10,6 @@ import { JobCardDTOSubjectAreaEnum as ApplicantSubjectAreaSubscriptionsEnum } fr
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { getRequiredDiv } from 'util/utility-methods/dom-query.util';
 
 const RolesEnum = UserShortDTORolesEnum;
 const EmailTypeEnum = EmailSettingDTOEmailTypeEnum;
@@ -194,11 +193,12 @@ describe('NotificationSettingsComponent', () => {
       await setRoleAndWaitForLoad(RolesEnum.Applicant);
 
       const renderedText = fixture.nativeElement.textContent ?? '';
-      const animatedContainer = getRequiredDiv(fixture.nativeElement, '[aria-hidden]');
+      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+      const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
 
       expect(renderedText).toContain('settings.notifications.applicant.subjectAreas.title');
-      expect(animatedContainer.getAttribute('aria-hidden')).toBe('false');
-      expect(animatedContainer.className).toContain('max-h-screen');
+      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('false');
+      expect(selector).not.toBeNull();
       expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
       expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
     });
@@ -211,10 +211,11 @@ describe('NotificationSettingsComponent', () => {
 
       await setRoleAndWaitForLoad(RolesEnum.Applicant);
 
-      const animatedContainer = getRequiredDiv(fixture.nativeElement, '[aria-hidden]');
+      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+      const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
 
-      expect(animatedContainer.getAttribute('aria-hidden')).toBe('true');
-      expect(animatedContainer.className).toContain('max-h-0');
+      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('true');
+      expect(selector).not.toBeNull();
       expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
       expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
     });

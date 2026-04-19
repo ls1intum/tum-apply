@@ -13,19 +13,3 @@ export const getRequiredButton = (root: ParentNode, selector: string): HTMLButto
   }
   return element;
 };
-
-export const getRequiredDiv = (root: ParentNode, selector: string): HTMLDivElement => {
-  const element = root.querySelector(selector);
-  if (!(element instanceof HTMLDivElement)) {
-    throw new Error(`Expected div for selector: ${selector}`);
-  }
-  return element;
-};
-
-export const getRequiredParagraph = (root: ParentNode, selector: string): HTMLParagraphElement => {
-  const element = root.querySelector(selector);
-  if (!(element instanceof HTMLParagraphElement)) {
-    throw new Error(`Expected paragraph for selector: ${selector}`);
-  }
-  return element;
-};

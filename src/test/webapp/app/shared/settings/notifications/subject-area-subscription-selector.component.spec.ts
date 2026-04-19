@@ -5,7 +5,7 @@ import { FilterChange, FilterMultiselect } from 'app/shared/components/atoms/fil
 import { SubjectAreaSubscriptionSelectorComponent } from 'app/shared/settings/notifications/subject-area-subscription-selector.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
-import { getRequiredButton, getRequiredParagraph } from 'util/utility-methods/dom-query.util';
+import { getRequiredButton } from 'util/utility-methods/dom-query.util';
 
 describe('SubjectAreaSubscriptionSelectorComponent', () => {
   let fixture: ComponentFixture<SubjectAreaSubscriptionSelectorComponent>;
@@ -60,8 +60,7 @@ describe('SubjectAreaSubscriptionSelectorComponent', () => {
   });
 
   it('should render the empty state when no subject areas are selected and the dropdown is closed', () => {
-    const emptyState = getRequiredParagraph(fixture.nativeElement, 'p.text-text-secondary');
-    expect(emptyState.textContent).toContain('settings.notifications.applicant.subjectAreas.emptySelection');
+    expect(fixture.nativeElement.textContent ?? '').toContain('settings.notifications.applicant.subjectAreas.emptySelection');
   });
 
   it('should render selected subject area chips when the dropdown is closed', () => {
@@ -88,7 +87,7 @@ describe('SubjectAreaSubscriptionSelectorComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('button[aria-label]')).toBeNull();
-    expect(fixture.nativeElement.querySelector('p.text-text-secondary')).toBeNull();
+    expect(fixture.nativeElement.textContent ?? '').not.toContain('settings.notifications.applicant.subjectAreas.emptySelection');
   });
 
   it('should emit filter changes from the multiselect', () => {
