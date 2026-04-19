@@ -55,6 +55,11 @@ export class AiExtractionBoxComponent {
   /** controls consent modal visibility */
   aiConsentVisible = signal<boolean>(false);
 
+  /**
+   * Whether the extract button should be disabled.
+   *
+   * @return true when there are no persisted documents and no queued files to extract from
+   */
   disabled = computed(() => {
     const hasPersistedDocs = this.documentIds().some(d => d.id && !d.id.startsWith('temp-'));
     const hasQueuedFiles = this.queuedFiles().length > 0;
@@ -83,7 +88,11 @@ export class AiExtractionBoxComponent {
   constructor() {
     void this.loadAiConsent();
   }
+  /**
+   * Triggers AI data extraction from the available documents.
+   */
   extractAiData(): void {
+    // 1) Build the extraction key and collect persisted document IDs and queued files
     const key = this.extractionKey();
     const appId = this.applicationId();
 
@@ -98,6 +107,7 @@ export class AiExtractionBoxComponent {
 
     this.isExtractingAi.set(true);
 
+    // 2) If an extraction for this key is already in flight, reuse its observable; otherwise start a new one
     let extraction$ = activeExtractions.get(key);
     if (!extraction$) {
       extraction$ = this.aiApi
@@ -106,15 +116,29 @@ export class AiExtractionBoxComponent {
       activeExtractions.set(key, extraction$);
     }
 
+    // 3) Subscribe to the extraction result and emit it on completion
     this.subscribeToExtraction(extraction$, key);
   }
 
+  /**
+   * Builds a unique cache key for the current extraction context.
+   *
+   * @return a key combining the application ID and document type, or undefined if no application ID is set
+   */
   private extractionKey(): string | undefined {
     const appId = this.applicationId();
     if (!appId) return undefined;
     return `${appId}_${this.isCv()}`;
   }
 
+  /**
+   * Subscribes to an in-flight extraction observable and handles the result.
+   * On success the extracted data is emitted and the cache entry is removed.
+   * On error a toast is shown and the cache entry is cleaned up.
+   *
+   * @param extraction$ - the shared extraction observable to subscribe to
+   * @param key - the cache key used to remove the entry from activeExtractions on completion
+   */
   private subscribeToExtraction(extraction$: Observable<ExtractedApplicationDataDTO>, key: string): void {
     extraction$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: extractedData => {
@@ -130,6 +154,10 @@ export class AiExtractionBoxComponent {
     });
   }
 
+  /**
+   * Loads the user's AI consent setting from the server and updates the aiFeaturesEnabled signal.
+   * Shows an error toast if the request fails.
+   */
   private async loadAiConsent(): Promise<void> {
     try {
       const isEnabled = await firstValueFrom(this.userApi.getAiConsent());
@@ -141,8 +169,13 @@ export class AiExtractionBoxComponent {
 }
 
 /**
- * Helper: set a patch field if the corresponding form control is empty.
+ * Sets a patch field only if the corresponding form control is currently empty.
  * Exported so consumers (pages) can reuse the same logic when applying AI-extracted values.
+ *
+ * @param form - the reactive form group containing the control
+ * @param patch - the patch object to add the value to
+ * @param formKey - the key of the form control to check and patch
+ * @param value - the extracted value to set; ignored if undefined
  */
 export function setIfEmpty(form: FormGroup, patch: Record<string, string>, formKey: string, value: string | undefined): void {
   if (value !== undefined && (form.get(formKey)?.value as string) === '') {
