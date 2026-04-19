@@ -61,21 +61,24 @@ export class CredentialsGroupComponent {
     otp: new FormControl<string>('', [Validators.pattern(/^[A-Z0-9]*$/), Validators.maxLength(this.otpLength)]),
   });
   submitError = signal<boolean>(false);
+  isSubmitting = signal<boolean>(false);
 
   async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       return;
     }
-    const credentials = this.form.value as { email: string; password: string };
-    await this.submitHandler()(credentials.email, credentials.password)
-      .then(success => {
-        this.submitError.set(!success);
-        this.afterSubmit(success);
-      })
-      .catch(() => {
-        this.submitError.set(true);
-        this.form.markAsPristine();
-      });
+    this.isSubmitting.set(true);
+    try {
+      const credentials = this.form.value as { email: string; password: string };
+      const success = await this.submitHandler()(credentials.email, credentials.password);
+      this.submitError.set(!success);
+      this.afterSubmit(success);
+    } catch {
+      this.submitError.set(true);
+      this.form.markAsPristine();
+    } finally {
+      this.isSubmitting.set(false);
+    }
   }
 
   private afterSubmit(success: boolean): void {

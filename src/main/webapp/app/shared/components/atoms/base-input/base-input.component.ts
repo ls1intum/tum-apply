@@ -99,7 +99,13 @@ export abstract class BaseInputDirective<T> {
   }
 
   onBlur(): void {
-    this.isTouched.set(true);
+    // When autofocus is enabled, skip marking as touched while the control is
+    // still pristine. This prevents showing validation errors from the
+    // focus→blur cycle triggered by dialog/modal animations before the user
+    // has actually interacted with the field.
+    if (!(this.autofocus() && this.formControl().pristine)) {
+      this.isTouched.set(true);
+    }
     this.isFocused.set(false);
   }
 

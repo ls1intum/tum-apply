@@ -37,6 +37,7 @@ import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
+import { extractTextFromHtml } from 'app/shared/util/text.util';
 import {
   ImageUploadButtonComponent,
   ImageUploadError,
@@ -324,11 +325,15 @@ export class JobCreationFormComponent {
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
 
-  /** Computed: true when both EN and DE job descriptions have non-empty content */
+  /** Computed: true when both EN and DE job descriptions have non-empty text content.
+   *  Uses jobDescriptionSignal for the active language (updates on every keystroke)
+   *  and the stored signal for the inactive language (synced on tab switch / save).
+   *  Strips HTML tags before checking so that empty editor markup (e.g. `<p></p>`) is treated as empty. */
   bothDescriptionsFilled = computed(() => {
-    const en = this.jobDescriptionEN().trim();
-    const de = this.jobDescriptionDE().trim();
-    return en.length > 0 && de.length > 0;
+    const currentLang = this.currentDescriptionLanguage();
+    const currentText = extractTextFromHtml(this.jobDescriptionSignal());
+    const otherText = extractTextFromHtml(currentLang === 'en' ? this.jobDescriptionDE() : this.jobDescriptionEN());
+    return currentText.length > 0 && otherText.length > 0;
   });
 
   /**
@@ -542,10 +547,15 @@ export class JobCreationFormComponent {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang) return;
 
-    // If a save is pending, flush it first so we don't lose text
+    // If a save is pending, flush it immediately so we don't lose text.
+    // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
+    // language signal, but the languageChangeEffect below sets the form
+    // value with emitEvent:false — so the autosave effect won't re-trigger.
+    // We must call performAutoSave explicitly to persist the content.
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
+      void this.performAutoSave();
     }
 
     this.currentDescriptionLanguage.set(newLang);
