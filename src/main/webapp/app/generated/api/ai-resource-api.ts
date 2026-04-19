@@ -26,11 +26,11 @@ export class AiResourceApi {
     private readonly basePath = '';
 
     /**
-     *
-     *
-     * @param lang
-     * @param jobFormDTO
-     * @param userLanguage
+     * 
+     * 
+     * @param lang 
+     * @param jobFormDTO 
+     * @param userLanguage 
      */
     analyzeJobDescriptionForCompliance(lang: string, jobFormDTO: JobFormDTO, userLanguage?: string): Observable<Array<ComplianceIssue>> {
         const queryParams = new URLSearchParams();
