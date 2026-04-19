@@ -279,6 +279,20 @@ export class JobCreationFormComponent {
   /** When set, only issues of this category are highlighted in the editor. (undefined = all categories shown) */
   readonly activeComplianceFilter = signal<string | undefined>(undefined);
 
+  /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
+  readonly titleComplianceError = computed(() => {
+    const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
+    if (!title) return undefined;
+    const lang = this.currentDescriptionLanguage();
+    const issues = this.complianceIssues().filter((i) => i.language === lang);
+    for (const issue of issues) {
+      if (issue.text && title.includes(issue.text.toLowerCase())) {
+        return issue.explanation;
+      }
+    }
+    return undefined;
+  });
+
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -788,6 +802,37 @@ export class JobCreationFormComponent {
       });
     }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
+  }
+
+  /**
+   * Handles hover events from highlighted spans in the editor.
+   * Finds the matching compliance issue and positions the popover.
+   */
+  onHighlightHovered(event: { text: string; x: number; y: number } | undefined): void {
+    if (!event) {
+      this.activePopoverIssue.set(undefined);
+      return;
+    }
+    const lang = this.currentDescriptionLanguage();
+    const match = this.complianceIssues().find(
+      (i) => i.language === lang && i.text?.toLowerCase() === event.text.toLowerCase(),
+    );
+    this.activePopoverIssue.set(match);
+    this.popoverX.set(Math.min(event.x, window.innerWidth - this.POPOVER_WIDTH));
+    this.popoverY.set(event.y);
+  }
+
+  /**
+   * Handles category filter changes from the AI assistant sidebar.
+   * Filters highlights to show only the selected category, or all if cleared.
+   */
+  onComplianceFilterChange(category: string | undefined): void {
+    this.activeComplianceFilter.set(category);
+    const lang = this.currentDescriptionLanguage();
+    const filtered = category
+      ? this.complianceIssues().filter((i) => i.category === category)
+      : this.complianceIssues();
+    this.applyHighlights(filtered, lang);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

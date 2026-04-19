@@ -370,32 +370,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   }
 
-  /**
-   * Highlights specific text passages in the editor.
-   * @param highlights Array of {text, color} to highlight
-   */
-  public highlightTexts(highlights: { text: string; color: string }[]): void {
-    const editor = this.quillEditorComponent()?.quillEditor;
-    if (!editor) return;
-
-    // Clear all existing highlights first
-    editor.formatText(0, editor.getLength(), 'background', false);
-    editor.formatText(0, editor.getLength(), 'customHighlight', false);
-
-    const fullText = editor.getText().toLowerCase();
-
-    for (const { text, color } of highlights) {
-      const searchText = text.toLowerCase();
-      let startIndex = 0;
-
-      while (startIndex < fullText.length) {
-        const index = fullText.indexOf(searchText, startIndex);
-        if (index === -1) break;
-        editor.formatText(index, text.length, 'customHighlight', color);
-        startIndex = index + text.length;
-      }
-    }
-  }
 
   /**
    * Sends the text and position of a highlighted item
@@ -404,7 +378,8 @@ export class EditorComponent extends BaseInputDirective<string> {
    * @param e - mouse event from the editor. e.target should be the highlighted span.
    */
   onEditorMouseOver(e: Event): void {
-    const target = e.target as HTMLElement;
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
     if (target.classList.contains('compliance-highlight')) {
       const rect = target.getBoundingClientRect();
       this.highlightHovered.emit({
@@ -421,7 +396,8 @@ export class EditorComponent extends BaseInputDirective<string> {
    * @param e - mouse event from the editor. Only handled if e.target has the "compliance-highlight" class.
    */
   onEditorMouseOut(e: Event): void {
-    const target = e.target as HTMLElement;
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
     if (target.classList.contains('compliance-highlight')) {
       this.highlightHovered.emit(undefined);
     }

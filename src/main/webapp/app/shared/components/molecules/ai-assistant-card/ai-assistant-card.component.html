@@ -71,10 +71,10 @@
         <button
           class="flex items-center gap-2 rounded-lg px-3 py-3 text-xs font-medium border border-border-default transition-colors text-left"
           [class.bg-background-surface]="activeFilter() === ComplianceIssueCategoryEnum.Transparency"
-          [class.hover:bg-background-surface]="criticalCount() > 0 && activeFilter() !== ComplianceIssueCategoryEnum.Transparency"
+          [class.hover:bg-background-surface]="transparencyCount() > 0 && activeFilter() !== ComplianceIssueCategoryEnum.Transparency"
           [class.opacity-40]="transparencyCount() === 0 && !isAnalyzing()"
           [class.cursor-default]="transparencyCount() === 0 && !isAnalyzing()"
-          [class.cursor-pointer]="criticalCount() > 0"
+          [class.cursor-pointer]="transparencyCount() > 0"
           (click)="transparencyCount() > 0 && selectCategoryFilter(ComplianceIssueCategoryEnum.Transparency)"
         >
           <span class="w-2 h-2 rounded-full shrink-0 bg-warning-default"></span>

@@ -120,11 +120,11 @@ export class AiAssistantCardComponent {
     () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.Transparency).length,
   );
 
+  protected readonly ComplianceIssueCategoryEnum = ComplianceIssueCategoryEnum;
+
   // ═══════════════════════════════════════════════════════════════════════════
   // EFFECTS
   // ═══════════════════════════════════════════════════════════════════════════
-
-  protected readonly ComplianceIssueCategoryEnum = ComplianceIssueCategoryEnum;
 
   private readonly displayedScoreEffect = effect(() => {
     const loading = this.isScoreLoading();
