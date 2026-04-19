@@ -109,7 +109,7 @@
     "@angular/language-service": "21.2.5",
     "@eslint/js": "9.39.4",
     "@tailwindcss/postcss": "4.2.1",
-    "@types/node": "24.12.0",
+    "@types/node": "24.12.2",
     "@types/quill": "2.0.14",
     "@vitest/coverage-istanbul": "4.1.0",
     "angular-eslint": "21.3.0",
