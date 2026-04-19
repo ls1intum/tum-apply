@@ -348,16 +348,19 @@
         "VALIDATION_BLOCKED": "Start date must be on or after application deadline"
       }
     },
-    "applicationPage1": {
-      "description": "Enter your personal details and contact information.",
-      "aiExtractionHelper": "Save time by letting our AI automatically fill your details from your CV.",
-      "aiExtractionConsent": "By clicking this button, your CV will be sent to an AI service (Azure OpenAI) to extract your details.",
-      "aiExtractionButton": "AI Extraction",
-      "aiExtractionLoading": "Extracting...",
+    "aiExtraction": {
+      "helperCv": "Save time by letting our AI automatically fill your details from your CV.",
+      "helperCertificates": "Save time by letting our AI automatically fill your degree information from your certificates.",
+      "checkInfo": "Please check the extracted information for completeness and accuracy.",
+      "button": "AI Extraction",
+      "loading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
         "detail": "Could not extract the data. Please try again."
-      },
+      }
+    },
+    "applicationPage1": {
+      "description": "Enter your personal details and contact information.",
       "label": {
         "curriculumVitae": "Curriculum Vitae",
         "firstName": "First Name",
@@ -397,7 +400,7 @@
       "label": {
         "gradeUpperLimit": "Highest Achievable Grade",
         "gradeLowerLimit": "Lowest Passing Grade",
-        "bachelorCertificate": "Bachelor Certificate",
+        "bachelorCertificate": "Bachelor's Certificate",
         "bachelorDegreeName": "Bachelor’s Study Program",
         "bachelorDegreeUniversity": "University of your Bachelor’s Degree",
         "bachelorGrade": "Final Bachelor Grade",

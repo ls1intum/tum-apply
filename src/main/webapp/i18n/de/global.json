@@ -348,16 +348,19 @@
         "VALIDATION_BLOCKED": "Das Startdatum muss am oder nach der Bewerbungsfrist liegen"
       }
     },
-    "applicationPage1": {
-      "description": "Gib deine persönlichen Daten und Kontaktdaten ein.",
-      "aiExtractionHelper": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
-      "aiExtractionConsent": "Durch Klicken auf diese Schaltfläche wird dein Lebenslauf an einen KI-Dienst (Azure OpenAI) gesendet, um deine Daten zu extrahieren.",
-      "aiExtractionButton": "KI-Extraktion",
-      "aiExtractionLoading": "Extrahiert...",
+    "aiExtraction": {
+      "helperCv": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
+      "helperCertificates": "Spare Zeit und lass unsere KI deine Studiendaten automatisch aus deinen Zeugnissen ausfüllen.",
+      "checkInfo": "Bitte überprüfe die extrahierten Informationen auf Vollständigkeit und Richtigkeit.",
+      "button": "KI-Extraktion",
+      "loading": "Extrahiert...",
       "aiExtractionFailed": {
         "summary": "Extraktion fehlgeschlagen",
         "detail": "Die Daten konnten nicht extrahiert werden. Bitte versuche es erneut."
-      },
+      }
+    },
+    "applicationPage1": {
+      "description": "Gib deine persönlichen Daten und Kontaktdaten ein.",
       "label": {
         "curriculumVitae": "Lebenslauf",
         "firstName": "Vorname",
