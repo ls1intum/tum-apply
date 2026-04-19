@@ -1,8 +1,6 @@
-import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom, shareReplay } from 'rxjs';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
@@ -21,7 +19,7 @@ const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO
 @Component({
   selector: 'jhi-ai-extraction-box',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ButtonComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
+  imports: [ButtonComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
   templateUrl: './ai-extraction-box.component.html',
 })
 export class AiExtractionBoxComponent {
@@ -178,7 +176,8 @@ export class AiExtractionBoxComponent {
  * @param value - the extracted value to set; ignored if undefined
  */
 export function setIfEmpty(form: FormGroup, patch: Record<string, string>, formKey: string, value: string | undefined): void {
-  if (value !== undefined && (form.get(formKey)?.value as string) === '') {
+  const current: string = form.get(formKey)?.value ?? '';
+  if (value !== undefined && current === '') {
     patch[formKey] = value;
   }
 }

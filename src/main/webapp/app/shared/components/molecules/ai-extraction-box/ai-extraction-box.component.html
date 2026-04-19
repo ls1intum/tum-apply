@@ -3,7 +3,7 @@
     class="flex flex-col md:flex-row md:items-center mb-5 justify-between gap-2 md:gap-6 p-4 bg-background-surface rounded-sm border border-border-default"
   >
     <div class="leading-relaxed">
-      <p class="text-xs text-text-secondary">{{ helperTextKey() | translate }}</p>
+      <p class="text-xs text-text-secondary" [jhiTranslate]="helperTextKey()"></p>
       <p class="text-xs text-text-secondary" jhiTranslate="entity.aiExtraction.checkInfo"></p>
     </div>
 
@@ -18,7 +18,7 @@
       @if (isExtractingAi()) {
         <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border-default">
           <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
-          <span class="whitespace-nowrap text-sm text-text-secondary">{{ 'entity.aiExtraction.loading' | translate }}</span>
+          <span class="whitespace-nowrap text-sm text-text-secondary" jhiTranslate="entity.aiExtraction.loading"></span>
         </div>
       } @else {
         <jhi-button

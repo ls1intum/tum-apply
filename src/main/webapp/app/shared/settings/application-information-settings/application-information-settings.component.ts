@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
@@ -132,7 +131,6 @@ export class ApplicationInformationSettingsComponent {
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
-  http = inject(HttpClient);
   profileDocumentService = inject(ProfileDocumentService);
   toastService = inject(ToastService);
 

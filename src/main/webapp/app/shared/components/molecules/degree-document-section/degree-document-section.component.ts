@@ -1,7 +1,6 @@
-import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl } from '@angular/forms';
 import { Component, computed, input, model, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
@@ -13,19 +12,19 @@ import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-appli
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-degree-document-section',
   standalone: true,
   imports: [
-    DividerModule,
     FontAwesomeModule,
-    ReactiveFormsModule,
     StringInputComponent,
     TooltipModule,
     TranslateModule,
     UploadButtonComponent,
     AiExtractionBoxComponent,
+    TranslateDirective,
   ],
   templateUrl: './degree-document-section.component.html',
 })

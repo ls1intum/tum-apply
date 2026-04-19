@@ -4,7 +4,7 @@
     @if (applicationId(); as currentApplicationId) {
       <div>
         <div>
-          <span>{{ bachelorCertificateLabelKey | translate }}</span>
+          <span [jhiTranslate]="bachelorCertificateLabelKey"></span>
           @if (required()) {
             <span class="required"> *</span>
           }
@@ -26,7 +26,7 @@
 
       <div>
         <div>
-          <span>{{ masterCertificateLabelKey | translate }}</span>
+          <span [jhiTranslate]="masterCertificateLabelKey"></span>
           @if (required()) {
             <span class="required"> *</span>
           }
