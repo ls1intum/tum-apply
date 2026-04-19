@@ -282,6 +282,8 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
+      applicantApiMock.getApplicantProfile.mockReturnValue(of(updatedProfile));
+
       const updatedData: ApplicationInformationData = structuredClone(component.data());
       updatedData.firstName = 'Grace';
       updatedData.email = '';

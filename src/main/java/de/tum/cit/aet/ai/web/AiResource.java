@@ -72,6 +72,7 @@ public class AiResource {
      *
      * @param applicationId the ID of the application to update
      * @param docIds        the IDs of the document dictionary entries for the PDFs
+     * @param files         the raw PDF files to be processed
      * @param isCv          whether the documents are CVs or certificates
      * @param saveData      whether to persist the extracted data into the application
      * @return a ResponseEntity containing the extracted data
