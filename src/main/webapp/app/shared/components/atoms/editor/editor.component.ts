@@ -35,17 +35,30 @@ class HighlightBlot extends Inline {
   static className = 'compliance-highlight';
 
   // Tailwind classes applied to every highlighted text span
-  static utilityClasses = [
+  static criticalClasses = [
     'border-b-2',
     '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--highlight-color)]',
+    '[border-bottom-color:var(--color-compliance-critical-border)]',
     'rounded-[var(--border-radius-xs)]',
     '[box-decoration-break:clone]',
     '[-webkit-box-decoration-break:clone]',
     'transition-colors',
     'duration-150',
     'cursor-pointer',
-    'hover:[background-color:var(--highlight-bg)]',
+    'hover:[background-color:var(--color-compliance-critical-bg)]',
+  ];
+
+  static warningClasses = [
+    'border-b-2',
+    '[border-bottom-style:solid]',
+    '[border-bottom-color:var(--color-compliance-warning-border)]',
+    'rounded-[var(--border-radius-xs)]',
+    '[box-decoration-break:clone]',
+    '[-webkit-box-decoration-break:clone]',
+    'transition-colors',
+    'duration-150',
+    'cursor-pointer',
+    'hover:[background-color:var(--color-compliance-warning-bg)]',
   ];
 
   /**
@@ -54,17 +67,18 @@ class HighlightBlot extends Inline {
    */
   static create(value: { color: string; bg: string }): HTMLElement {
     const node = super.create() as HTMLElement;
-    HighlightBlot.utilityClasses.forEach(cls => node.classList.add(cls));
-    // Sets variables with the specific severity color and its hover background
-    node.style.setProperty('--highlight-color', value.color);
-    node.style.setProperty('--highlight-bg', value.bg);
+    const isCritical = value.color.includes('critical');
+    const classes = isCritical ? HighlightBlot.criticalClasses : HighlightBlot.warningClasses;
+    classes.forEach(cls => node.classList.add(cls));
+    node.dataset['category'] = isCritical ? 'critical' : 'warning';
     return node;
   }
 
   static formats(node: HTMLElement): { color: string; bg: string } {
+    const isCritical = node.dataset['category'] === 'critical';
     return {
-      color: node.style.getPropertyValue('--highlight-color'),
-      bg: node.style.getPropertyValue('--highlight-bg'),
+      color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
+      bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
     };
   }
 }

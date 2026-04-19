@@ -753,21 +753,20 @@ export class JobCreationFormComponent {
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
-    const highlights: { text: string; color: string, bg: string}[] = [];
+    const highlights: { text: string; color: string; bg: string }[] = [];
 
     const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
 
     for (const issues of filtered) {
       if (!issues.text) continue;
-      const color =
-        issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
+      const isCritical = issues.category === ComplianceIssueCategoryEnum.CriticalAgg;
       highlights.push({
         text: issues.text,
-        color: issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
-        bg: issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
+        color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
+        bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
       });
-      this.jobDescriptionEditor()?.highlightTexts(highlights);
     }
+    this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1514,10 +1513,7 @@ export class JobCreationFormComponent {
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
               this.isAnalyzing.set(true);
-              await Promise.all([
-              await this.analyzeAndUpdateScore(currentLang),
-              await this.analyzeAndUpdateScore(targetLang),
-              ]);
+              await Promise.all([this.analyzeAndUpdateScore(currentLang), this.analyzeAndUpdateScore(targetLang)]);
             } catch {
               // Silent save failure — will be caught by next autosave
             }
