@@ -132,7 +132,7 @@ export class JobCreationFormComponent {
   // SAVING STATE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Current auto-save state: 'SAVED', 'SAVING', or 'FAILED' */
+  /** Current auto-save state: 'SAVED', 'SAVING', 'FAILED', or 'VALIDATION_BLOCKED' */
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
@@ -1391,7 +1391,8 @@ export class JobCreationFormComponent {
    */
   private async performAutoSave(): Promise<void> {
     if (this.hasInvalidDateOrder()) {
-      this.savingState.set('FAILED');
+      this.savingState.set(SavingStates.VALIDATION_BLOCKED);
+      this.positionDetailsForm.markAllAsTouched();
       return;
     }
 
@@ -1414,7 +1415,7 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      this.savingState.set('SAVED');
+      this.savingState.set(SavingStates.SAVED);
 
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
@@ -1423,7 +1424,7 @@ export class JobCreationFormComponent {
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
     } catch {
-      this.savingState.set('FAILED');
+      this.savingState.set(SavingStates.FAILED);
       this.toastService.showErrorKey('toast.saveFailed');
     }
   }

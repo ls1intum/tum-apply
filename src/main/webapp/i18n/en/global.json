@@ -344,7 +344,8 @@
       "status": {
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved",
-        "FAILED": "Failed saving changes"
+        "FAILED": "Failed saving changes",
+        "VALIDATION_BLOCKED": "Start date must be on or after application deadline"
       }
     },
     "applicationPage1": {

@@ -8,6 +8,8 @@ import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { DatePickerDateMeta } from 'primeng/types/datepicker';
 
+let nextInputId = 0;
+
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
@@ -19,6 +21,7 @@ export class DatePickerComponent {
   isCalendarOpen = signal(false);
 
   width = input<string>('100%');
+  inputId = input<string | undefined>(undefined);
   label = input<string | undefined>(undefined);
   required = input<boolean>(false);
   disabled = input<boolean>(false);
@@ -69,6 +72,8 @@ export class DatePickerComponent {
    * Must be a writable signal for two-way binding with PrimeNG.
    */
   modelDate = signal<Date | undefined>(undefined);
+
+  resolvedInputId = computed(() => this.inputId() ?? `jhi-datepicker-${nextInputId++}`);
 
   /**
    * Effective minimum date - defaults to today if no minDate provided
