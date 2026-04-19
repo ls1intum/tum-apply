@@ -21,6 +21,7 @@
       <column name="article" type="varchar(255)"/>
       <column name="explanation" type="text"/>
       <column name="action" type="varchar(50)"/>
+      <column name="language" type="varchar(10)"/>
     </createTable>
   </changeSet>
 

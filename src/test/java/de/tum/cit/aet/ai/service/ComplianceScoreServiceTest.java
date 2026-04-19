@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
-import de.tum.cit.aet.ai.dto.ComplianceIssue;
+import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import java.util.List;
@@ -36,7 +36,8 @@ class ComplianceScoreServiceTest {
                 "I don't allow disabled applicants",
                 "§ 1 AGG",
                 "Discriminatory sentence",
-                ComplianceAction.REPLACE
+                ComplianceAction.REPLACE,
+                "en"
             )
         );
 
@@ -54,7 +55,8 @@ class ComplianceScoreServiceTest {
                 "Shared with partner A",
                 "Art. 13 DSGVO",
                 "Missing disclosure",
-                ComplianceAction.ADD
+                ComplianceAction.ADD,
+                "en"
             ),
             new ComplianceIssue(
                 "2",
@@ -62,7 +64,8 @@ class ComplianceScoreServiceTest {
                 "Shared with partner B",
                 "Art. 13 DSGVO",
                 "Missing disclosure",
-                ComplianceAction.ADD
+                ComplianceAction.ADD,
+                "en"
             )
         );
 

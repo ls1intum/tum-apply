@@ -15,11 +15,14 @@ RULES:
   2.
   - Scan for violations of Data Minimization (Art. 5 DSGVO).
   - This includes requests for unnecessary personal data (e.g., photos, ID copies, criminal records, marital status, religion) or explicit sharing of applicant data with third parties without consent.
+  - NOT triggered by: mentions of tools, systems, or partners.
   - Action: Instruct to completely REMOVE the sentence.
 
 2) CATEGORY TRANSPARENCY:
 - Detect missing transparency when applicant data is processed or shared by external parties.
 - This includes mentions of external consultants, partners, systems, or entities involved in recruitment, such as headhunters, assessment centers, ATS providers, or cooperative arrangements with universities or consortia.
+- NOT triggered by: what data is requested from the applicant.
+- Action: Suggest a message that clarifies whether applicant data is shared with external recipients (Art. 13 DSGVO)
 
 INPUT TEXT:
 {jobDescription}

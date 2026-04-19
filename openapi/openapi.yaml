@@ -2825,6 +2825,7 @@ components:
           enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
         explanation: {type: string}
         id: {type: string}
+        language: {type: string}
         text: {type: string}
     ConflictDataDTO:
       type: object
