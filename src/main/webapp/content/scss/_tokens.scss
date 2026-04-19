@@ -91,6 +91,12 @@
   --color-text-on-warn: var(--p-text-on-warn);
   --color-text-on-danger: var(--p-text-on-danger);
 
+  // Quill highlighting Semantic colors
+  --color-compliance-critical-border: var(--color-negative-DEFAULT);
+  --color-compliance-critical-bg: color-mix(in srgb, var(--color-negative-DEFAULT) 18%, transparent);
+  --color-compliance-warning-border: var(--color-warning-DEFAULT);
+  --color-compliance-warning-bg: color-mix(in srgb, var(--color-warning-DEFAULT) 18%, transparent);
+
   // ========================================================
   // Border Radius Tokens
   // ========================================================

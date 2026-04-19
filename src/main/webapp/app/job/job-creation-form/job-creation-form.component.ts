@@ -592,11 +592,9 @@ export class JobCreationFormComponent {
 
     this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
     this.jobDescriptionSignal.set(targetContent);
-    this.jobDescriptionEditor()?.forceUpdate(targetContent);
-
-    setTimeout(() => {
+    this.jobDescriptionEditor()?.forceUpdate(targetContent, () => {
       this.applyHighlights(this.complianceIssues(), newLanguage);
-    }, 50);
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -755,7 +753,7 @@ export class JobCreationFormComponent {
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
-    const highlights: { text: string; color: string }[] = [];
+    const highlights: { text: string; color: string, bg: string}[] = [];
 
     const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
 
@@ -763,9 +761,13 @@ export class JobCreationFormComponent {
       if (!issues.text) continue;
       const color =
         issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-negative-DEFAULT)' : 'var(--color-warning-DEFAULT)';
-      highlights.push({ text: issues.text, color });
+      highlights.push({
+        text: issues.text,
+        color: issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
+        bg: issues.category === ComplianceIssueCategoryEnum.CriticalAgg ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
+      });
+      this.jobDescriptionEditor()?.highlightTexts(highlights);
     }
-    this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1512,8 +1514,10 @@ export class JobCreationFormComponent {
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
               this.isAnalyzing.set(true);
-              await this.analyzeAndUpdateScore(currentLang);
-              await this.analyzeAndUpdateScore(targetLang);
+              await Promise.all([
+              await this.analyzeAndUpdateScore(currentLang),
+              await this.analyzeAndUpdateScore(targetLang),
+              ]);
             } catch {
               // Silent save failure — will be caught by next autosave
             }
@@ -1563,8 +1567,8 @@ export class JobCreationFormComponent {
       const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);
 
       const incomingLang = compliance.map(issue => {
-        const copy: any = structuredClone(issue);
-        copy.language = lang;
+        const copy = structuredClone(issue);
+        (copy as { language?: string }).language = lang;
         return copy;
       });
 
@@ -1587,7 +1591,6 @@ export class JobCreationFormComponent {
       if (currentLang === lang) {
         this.applyHighlights(incomingLang, lang);
       }
-      this.applyHighlights(compliance, lang);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
     } finally {

@@ -1,6 +1,6 @@
 package de.tum.cit.aet.ai.web;
 
-import de.tum.cit.aet.ai.dto.ComplianceIssue;
+import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;

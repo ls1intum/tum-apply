@@ -33,7 +33,7 @@ OUTPUT:
 - No prose.
 - One object per issue.
 - Object fields must be exactly:
-  id, text, category, article, explanation, action, language
+  id, text, category, article, explanation, action
 - category must be exactly CRITICAL_AGG or TRANSPARENCY.
 - action must be exactly REPLACE or ADD or REMOVE.
 - text must be an exact snippet from input text (plain text, no HTML tags).

@@ -52,17 +52,20 @@ class HighlightBlot extends Inline {
    * Factory method called by Quill to create the DOM node.
    * @param value The color variable passed
    */
-  static create(value: string): HTMLElement {
+  static create(value: { color: string; bg: string }): HTMLElement {
     const node = super.create() as HTMLElement;
     HighlightBlot.utilityClasses.forEach(cls => node.classList.add(cls));
     // Sets variables with the specific severity color and its hover background
-    node.style.setProperty('--highlight-color', value);
-    node.style.setProperty('--highlight-bg', `color-mix(in srgb, ${value} 18%, transparent)`);
+    node.style.setProperty('--highlight-color', value.color);
+    node.style.setProperty('--highlight-bg', value.bg);
     return node;
   }
 
-  static formats(node: HTMLElement): string {
-    return node.style.getPropertyValue('--highlight-color');
+  static formats(node: HTMLElement): { color: string; bg: string } {
+    return {
+      color: node.style.getPropertyValue('--highlight-color'),
+      bg: node.style.getPropertyValue('--highlight-bg'),
+    };
   }
 }
 
@@ -293,8 +296,10 @@ export class EditorComponent extends BaseInputDirective<string> {
    * so this method manually converts the HTML and pushes it into the editor.
    *
    * @param newValue The HTML content to display in editor
+   * @param onComplete Optional callback fired after Quill finishes updating the DOM.
+   *                   Used to apply compliance highlights after a language switch.
    */
-  public forceUpdate(newValue: string): void {
+  public forceUpdate(newValue: string, onComplete?: () => void): void {
     this.htmlValue.set(newValue);
 
     const editor = this.quillEditorComponent()?.quillEditor;
@@ -315,13 +320,17 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
 
     this.cdRef.markForCheck();
+
+    if (onComplete) {
+      requestAnimationFrame(() => onComplete());
+    }
   }
 
   /**
    * Highlights specific text passages in the editor.
    * @param highlights Array of {text, color} to highlight
    */
-  public highlightTexts(highlights: { text: string; color: string }[]): void {
+  public highlightTexts(highlights: { text: string; color: string; bg: string }[]): void {
     const editor = this.quillEditorComponent()?.quillEditor;
     if (!editor) return;
 
@@ -331,14 +340,15 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     const fullText = editor.getText().toLowerCase();
 
-    for (const { text, color } of highlights) {
+    for (const { text, color, bg } of highlights) {
       const searchText = text.toLowerCase();
       let startIndex = 0;
 
+      // Find and highlight all occurrences of the snippet in the editor
       while (startIndex < fullText.length) {
         const index = fullText.indexOf(searchText, startIndex);
         if (index === -1) break;
-        editor.formatText(index, text.length, 'customHighlight', color);
+        editor.formatText(index, text.length, 'customHighlight', { color, bg });
         startIndex = index + text.length;
       }
     }

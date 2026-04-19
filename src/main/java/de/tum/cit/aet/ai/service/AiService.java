@@ -2,7 +2,7 @@ package de.tum.cit.aet.ai.service;
 
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
-import de.tum.cit.aet.ai.dto.ComplianceIssue;
+import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
