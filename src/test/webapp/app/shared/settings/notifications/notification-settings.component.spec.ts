@@ -9,6 +9,7 @@ import { provideTranslateMock } from '../../../../util/translate.mock';
 import { JobCardDTOSubjectAreaEnum as ApplicantSubjectAreaSubscriptionsEnum } from 'app/generated/model/job-card-dto';
 import { EmailSettingDTO, EmailSettingDTOEmailTypeEnum } from 'app/generated/model/email-setting-dto';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 const RolesEnum = UserShortDTORolesEnum;
 const EmailTypeEnum = EmailSettingDTOEmailTypeEnum;
@@ -17,6 +18,9 @@ const SubjectAreaEnum = ApplicantSubjectAreaSubscriptionsEnum;
 describe('NotificationSettingsComponent', () => {
   let fixture: ComponentFixture<NotificationSettingsComponent>;
   let component: NotificationSettingsComponent;
+  let subjectAreaSubscriptions: () => NotificationSettingsComponent['subjectAreaSubscriptions'];
+  let getSubmissionGroup: () => NotificationGroup;
+  let setRoleAndWaitForLoad: (role: UserShortDTORolesEnum) => Promise<void>;
 
   const emailSettingServiceMock = {
     getEmailSettings: vi.fn(),
@@ -25,7 +29,37 @@ describe('NotificationSettingsComponent', () => {
 
   const applicantApiMock = createApplicantResourceApiMock();
   const toastServiceMock = createToastServiceMock();
-  const subjectAreaSubscriptions = () => component['subjectAreaSubscriptions'];
+  const createComponent = () => {
+    fixture = TestBed.createComponent(NotificationSettingsComponent);
+    component = fixture.componentInstance;
+
+    const waitForLoaded = async () => {
+      for (let attempts = 0; attempts < 5; attempts += 1) {
+        await fixture.whenStable();
+        fixture.detectChanges();
+        if (component['loaded']()) {
+          return;
+        }
+        await Promise.resolve();
+      }
+      throw new Error('Expected notification settings to finish loading');
+    };
+
+    subjectAreaSubscriptions = () => component['subjectAreaSubscriptions'];
+    getSubmissionGroup = () => {
+      const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
+      const group = groups.find(entry => entry.groupKey.includes('submission'));
+      if (!group) {
+        throw new Error('Expected applicant submission notification group');
+      }
+      return group;
+    };
+    setRoleAndWaitForLoad = async (role: UserShortDTORolesEnum) => {
+      fixture.componentRef.setInput('currentRole', role);
+      fixture.detectChanges();
+      await waitForLoaded();
+    };
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -35,13 +69,13 @@ describe('NotificationSettingsComponent', () => {
       providers: [
         { provide: EmailSettingResourceApi, useValue: emailSettingServiceMock },
         provideApplicantResourceApiMock(applicantApiMock),
+        provideFontAwesomeTesting(),
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(),
       ],
     });
 
-    fixture = TestBed.createComponent(NotificationSettingsComponent);
-    component = fixture.componentInstance;
+    createComponent();
   });
 
   describe('loadSettings', () => {
@@ -72,8 +106,7 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      expect(groups.find(group => group.groupKey.includes('submission'))?.enabled).toBe(false);
+      expect(getSubmissionGroup().enabled).toBe(false);
       expect(component['loaded']()).toBe(true);
     });
 
@@ -99,9 +132,7 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      const submissionGroup = groups.find(group => group.groupKey.includes('submission'));
-      expect(submissionGroup?.enabled).toBe(true);
+      expect(getSubmissionGroup().enabled).toBe(true);
       expect(component['loaded']()).toBe(true);
     });
 
@@ -137,6 +168,66 @@ describe('NotificationSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Applicant);
 
       expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
+    });
+
+    it('should ignore role-specific groups when the role has no configured notification groups', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
+      );
+
+      await component.loadSettings(RolesEnum.Admin);
+
+      expect(component['roleSettings']().has(RolesEnum.Admin)).toBe(false);
+      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
+      expect(component['loaded']()).toBe(true);
+    });
+  });
+
+  describe('template', () => {
+    it('should render the applicant subject area notification section', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: true }]),
+      );
+      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
+
+      await setRoleAndWaitForLoad(RolesEnum.Applicant);
+
+      const renderedText = fixture.nativeElement.textContent ?? '';
+      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+      const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
+
+      expect(renderedText).toContain('settings.notifications.applicant.subjectAreas.title');
+      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('false');
+      expect(selector).not.toBeNull();
+      expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
+    });
+
+    it('should keep the subject area selector collapsed when the notification toggle is disabled', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
+      );
+      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
+
+      await setRoleAndWaitForLoad(RolesEnum.Applicant);
+
+      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
+      const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
+
+      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('true');
+      expect(selector).not.toBeNull();
+      expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
+    });
+
+    it('should not render the subject area section for non-applicant roles', async () => {
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSettingDTO[]>([]));
+
+      await setRoleAndWaitForLoad(RolesEnum.Professor);
+
+      expect(fixture.nativeElement.textContent ?? '').not.toContain('settings.notifications.applicant.subjectAreas.title');
+      expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
+      expect(applicantApiMock.getSubjectAreaSubscriptions).not.toHaveBeenCalled();
     });
   });
 
@@ -177,42 +268,43 @@ describe('NotificationSettingsComponent', () => {
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
     });
-  });
 
-  describe('subjectAreaSubscriptions.updateSelection', () => {
-    it('should add and remove subscriptions based on the new selection', async () => {
-      subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
-      applicantApiMock.addSubjectAreaSubscription.mockReturnValue(of(undefined));
-      applicantApiMock.removeSubjectAreaSubscription.mockReturnValue(of(undefined));
+    it('should reload the email notification groups when the async update fails and a role is set', async () => {
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
+      emailSettingServiceMock.getEmailSettings.mockReturnValue(of([]));
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
 
-      await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.Mathematics]);
+      component.onToggleChanged({
+        groupKey: 'test',
+        descriptionKey: 'desc',
+        emailTypes: [EmailTypeEnum.ApplicationAccepted],
+        enabled: false,
+      });
+      await Promise.resolve();
 
-      expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledOnce();
-      expect(applicantApiMock.addSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.Mathematics);
-      expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledOnce();
-      expect(applicantApiMock.removeSubjectAreaSubscription).toHaveBeenCalledWith(SubjectAreaEnum.ComputerScience);
-      expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.Mathematics]);
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
     });
 
-    it('should do nothing when the selection is unchanged', async () => {
-      subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
+    it('should reload the email notification groups when a synchronous update error occurs and a role is set', () => {
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      emailSettingServiceMock.updateEmailSettings.mockImplementation(() => {
+        throw new Error('boom');
+      });
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
 
-      await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.ComputerScience]);
+      component.onToggleChanged({
+        groupKey: 'test',
+        descriptionKey: 'desc',
+        emailTypes: [EmailTypeEnum.ApplicationAccepted],
+        enabled: false,
+      });
 
-      expect(applicantApiMock.addSubjectAreaSubscription).not.toHaveBeenCalled();
-      expect(applicantApiMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
-    });
-
-    it('should restore the previous selection when the update fails', async () => {
-      subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
-      applicantApiMock.addSubjectAreaSubscription.mockReturnValue(throwError(() => new Error('fail')));
-      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
-
-      await subjectAreaSubscriptions().updateSelection([SubjectAreaEnum.Mathematics]);
-
-      expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience]);
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.applicant.subjectAreas.saveFailed');
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
     });
   });
 
@@ -237,6 +329,30 @@ describe('NotificationSettingsComponent', () => {
 
       expect(applicantApiMock.removeSubjectAreaSubscription).not.toHaveBeenCalled();
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
+    });
+
+    it('should reload the email notification groups when the subject area toggle save fails and a role is set', async () => {
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
+
+      component.onSubjectAreaToggleChanged(false);
+      await Promise.resolve();
+
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
+    });
+
+    it('should not reload the email notification groups when the subject area toggle save fails without a current role', async () => {
+      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
+      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
+
+      component.onSubjectAreaToggleChanged(false);
+      await Promise.resolve();
+
+      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
+      expect(reloadSpy).not.toHaveBeenCalled();
     });
   });
 
