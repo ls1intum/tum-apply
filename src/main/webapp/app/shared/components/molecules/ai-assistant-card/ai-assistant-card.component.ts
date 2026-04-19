@@ -120,12 +120,6 @@ export class AiAssistantCardComponent {
     () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.Transparency).length,
   );
 
-  /** Issues filtered by the active category pill. */
-  readonly filteredIssues = computed(() => {
-    const filter = this.activeFilter();
-    return filter ? this.issueCountForLang().filter(i => i.category === filter) : this.issueCountForLang();
-  });
-
   // ═══════════════════════════════════════════════════════════════════════════
   // EFFECTS
   // ═══════════════════════════════════════════════════════════════════════════

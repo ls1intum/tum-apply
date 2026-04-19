@@ -11,7 +11,6 @@ RULES:
   1.
   - Detect discrimination by protected characteristics under section 1 AGG.
   - Detect exclusion based on disability, age, origin, or gender.
-  - Detect requests for unnecessary personal data or sharing with third parties without consent under Art. 5 DSGVO.
   - JOB TITLE CHECK: Evaluate the "Job Title" provided in the input. If "{title}" is not gender-neutral including "(m/f/d)" or "(m/w/d)", flag it.
 
 2) CATEGORY TRANSPARENCY:

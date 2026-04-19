@@ -351,7 +351,7 @@ export class EditorComponent extends BaseInputDirective<string> {
    *
    * @param e - mouse event from the editor. e.target should be the highlighted span.
    */
-  onEditorMouseOver(e: MouseEvent): void {
+  onEditorMouseOver(e: Event): void {
     const target = e.target as HTMLElement;
     if (target.classList.contains('compliance-highlight')) {
       const rect = target.getBoundingClientRect();
@@ -368,7 +368,7 @@ export class EditorComponent extends BaseInputDirective<string> {
    *
    * @param e - mouse event from the editor. Only handled if e.target has the "compliance-highlight" class.
    */
-  onEditorMouseOut(e: MouseEvent): void {
+  onEditorMouseOut(e: Event): void {
     const target = e.target as HTMLElement;
     if (target.classList.contains('compliance-highlight')) {
       this.highlightHovered.emit(undefined);
