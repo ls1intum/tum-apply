@@ -117,7 +117,7 @@
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",
-        "placeholder": "Wähle ein Fristdatum...",
+        "placeholder": "Wähle eine Bewerbungsfrist...",
         "toolTipText": "Nach diesem Datum sind Bewerbungen nicht mehr möglich."
       },
       "workload": {
@@ -148,6 +148,8 @@
       "header": "KI-Assistent"
     },
     "positionDetailsSection": {
+      "selectedDeadline": "Gewählte Bewerbungsfrist",
+      "selectedStartDate": "Gewähltes Startdatum",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",

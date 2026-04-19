@@ -25,6 +25,7 @@ import { MessageComponent } from 'app/shared/components/atoms/message/message.co
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { INVALID_DATE_ORDER_ERROR, dateOrderValidator } from 'app/shared/validators/date-order-validator';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
@@ -36,6 +37,7 @@ import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
   ImageUploadButtonComponent,
@@ -131,7 +133,7 @@ export class JobCreationFormComponent {
   // SAVING STATE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Current auto-save state: 'SAVED', 'SAVING', or 'FAILED' */
+  /** Current auto-save state: 'SAVED', 'SAVING', 'FAILED', or 'VALIDATION_BLOCKED' */
   savingState = signal<SavingState>(SavingStates.SAVED);
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
@@ -454,6 +456,24 @@ export class JobCreationFormComponent {
   /** Signal that emits the current positionDetailsForm values */
   positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
     initialValue: this.positionDetailsForm.getRawValue(),
+  });
+
+  /** Computed: earliest selectable start date, based on the chosen application deadline */
+  readonly startDateMinDate = computed(() => {
+    const applicationDeadline = this.positionDetailsFormValueSignal().applicationDeadline;
+    return parseLocalDateString(applicationDeadline);
+  });
+
+  /** Computed: latest selectable application deadline, based on the chosen start date */
+  readonly applicationDeadlineMaxDate = computed(() => {
+    const startDate = this.positionDetailsFormValueSignal().startDate;
+    return parseLocalDateString(startDate);
+  });
+
+  /** Computed: true when start date is before the application deadline */
+  readonly hasInvalidDateOrder = computed(() => {
+    this.positionDetailsChanges();
+    return this.positionDetailsForm.hasError(INVALID_DATE_ORDER_ERROR);
   });
 
   /** Signal that emits the current imageForm values */
@@ -1045,15 +1065,20 @@ export class JobCreationFormComponent {
    * All fields are optional: funding type, start date, deadline, workload, duration
    */
   private createPositionDetailsForm(): FormGroup {
-    return this.fb.group({
-      // Position Details Form: Currently required for publishing a job
-      fundingType: [undefined],
-      startDate: [''],
-      applicationDeadline: [''],
-      workload: [undefined],
-      contractDuration: [undefined],
-      suitableForDisabled: [true],
-    });
+    return this.fb.group(
+      {
+        // Position Details Form: Currently required for publishing a job
+        fundingType: [undefined],
+        startDate: [''],
+        applicationDeadline: [''],
+        workload: [undefined],
+        contractDuration: [undefined],
+        suitableForDisabled: [true],
+      },
+      {
+        validators: [dateOrderValidator('applicationDeadline', 'startDate')],
+      },
+    );
   }
 
   /**
@@ -1401,6 +1426,12 @@ export class JobCreationFormComponent {
    * Triggers translation after successful save if content changed.
    */
   private async performAutoSave(): Promise<void> {
+    if (this.hasInvalidDateOrder()) {
+      this.savingState.set(SavingStates.VALIDATION_BLOCKED);
+      this.positionDetailsForm.markAllAsTouched();
+      return;
+    }
+
     // 1) Capture current form state before any async work
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
@@ -1420,7 +1451,7 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      this.savingState.set('SAVED');
+      this.savingState.set(SavingStates.SAVED);
 
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
@@ -1429,7 +1460,7 @@ export class JobCreationFormComponent {
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
     } catch {
-      this.savingState.set('FAILED');
+      this.savingState.set(SavingStates.FAILED);
       this.toastService.showErrorKey('toast.saveFailed');
     }
   }

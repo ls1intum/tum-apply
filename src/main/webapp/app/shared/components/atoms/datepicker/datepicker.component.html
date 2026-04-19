@@ -1,5 +1,5 @@
-<div [class.active]="isCalendarOpen()" class="label-top datepicker-container">
-  <label class="custom-label">
+<div class="relative flex flex-col">
+  <label class="mb-1 mr-4">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -13,12 +13,12 @@
     @if (icon(); as icon) {
       @if (icon === 'circle-info' && tooltipText()) {
         @if (shouldTranslate()) {
-          <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
+          <fa-icon class="text-primary-default" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
         } @else {
-          <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
+          <fa-icon class="text-primary-default" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
         }
       } @else {
-        <fa-icon class="icon" [icon]="['fas', icon]" />
+        <fa-icon [icon]="['fas', icon]" />
       }
     }
   </label>
@@ -34,15 +34,32 @@
     [defaultDate]="defaultDate()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
-    class="custom-datepicker"
+    class="{{ datepickerClass }}"
     [dateFormat]="dateFormat()"
     iconDisplay="button"
-    inputId="startDate"
+    [inputId]="resolvedInputId()"
     showIcon="true"
-    [inputStyleClass]="'w-full'"
+    [inputStyleClass]="inputStyleClass"
   >
+    <ng-template pTemplate="date" let-date>
+      <span
+        class="inline-flex size-full items-center justify-center"
+        [class.datepicker-reference-day]="isHighlightedDate(date)"
+        [pTooltip]="
+          isHighlightedDate(date) && highlightedDateLabel()
+            ? shouldTranslate()
+              ? (highlightedDateLabel() ?? '' | translate)
+              : (highlightedDateLabel() ?? '')
+            : undefined
+        "
+        tooltipPosition="top"
+        [tooltipDisabled]="!isHighlightedDate(date) || !highlightedDateLabel()"
+      >
+        {{ date.day }}
+      </span>
+    </ng-template>
     <ng-template pTemplate="triggericon">
-      <fa-icon [icon]="['fas', 'calendar']" class="text-text-on-primary" />
+      <fa-icon [icon]="['fas', 'calendar']" />
     </ng-template>
   </p-datepicker>
   @if (errorEnabled()) {

@@ -74,3 +74,38 @@ export function toLocalDateString(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+/**
+ * Parses a local date string in the format "YYYY-MM-DD" into a Date object.
+ * Uses local time instead of UTC to avoid timezone shifts for date-only values.
+ *
+ * @param value The date string to parse
+ * @returns The parsed local Date, or undefined if the input is invalid
+ */
+export function parseLocalDateString(value: string | undefined): Date | undefined {
+  if (!value || value.trim() === '') {
+    return undefined;
+  }
+
+  const parts = value.split('-');
+  if (parts.length !== 3) {
+    return undefined;
+  }
+
+  const [year, month, day] = parts.map(Number);
+  if (!year || !month || !day) {
+    return undefined;
+  }
+
+  if (year <= 1900 || month < 1 || month > 12 || day < 1 || day > 31) {
+    return undefined;
+  }
+
+  const parsedDate = new Date(year, month - 1, day);
+  if (parsedDate.getFullYear() !== year || parsedDate.getMonth() !== month - 1 || parsedDate.getDate() !== day) {
+    return undefined;
+  }
+
+  parsedDate.setHours(0, 0, 0, 0);
+  return parsedDate;
+}

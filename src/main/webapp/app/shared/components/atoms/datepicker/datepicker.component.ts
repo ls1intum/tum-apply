@@ -1,23 +1,80 @@
-import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { DatePickerDateMeta } from 'primeng/types/datepicker';
+
+let nextInputId = 0;
+
+const DATEPICKER_LAYOUT_CLASSES = ['flex-1'];
+
+const DATEPICKER_ACTION_CLASSES = [
+  '[&_.p-datepicker-dropdown]:border-none',
+  '[&_.p-datepicker-dropdown]:bg-primary-default',
+  '[&_.p-datepicker-dropdown]:text-text-on-primary',
+  '[&_.p-datepicker-dropdown]:shadow-none',
+  '[&_.p-datepicker-dropdown]:outline-none',
+  '[&_.p-datepicker-dropdown]:relative',
+  '[&_.p-datepicker-dropdown]:z-[1]',
+  '[&_.p-datepicker-dropdown:disabled]:bg-text-disabled',
+  '[&_.p-datepicker-clear-button]:border-[0.1rem]',
+  '[&_.p-datepicker-clear-button]:border-primary-default',
+  '[&_.p-datepicker-clear-button]:bg-transparent',
+  '[&_.p-datepicker-clear-button]:text-primary-default',
+  '[&_.p-datepicker-clear-button:hover]:border-primary-default',
+  '[&_.p-datepicker-clear-button:hover]:bg-primary-default',
+  '[&_.p-datepicker-clear-button:hover]:text-text-on-primary',
+];
+
+const DATEPICKER_CALENDAR_CLASSES = [
+  '[&_.p-ripple.p-datepicker-select-month]:text-primary-default',
+  '[&_.p-ripple.p-datepicker-select-month:hover]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-ripple.p-datepicker-select-year]:text-primary-default',
+  '[&_.p-ripple.p-datepicker-select-year:hover]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:text-text-primary',
+  '[&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:bg-primary-default',
+  '[&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:text-text-on-primary',
+  '[&_.p-datepicker-month:not(.p-disabled):not(.p-datepicker-month-selected):hover]:bg-primary-default',
+  '[&_.p-datepicker-month:not(.p-disabled):not(.p-datepicker-month-selected):hover]:text-text-on-primary',
+  '[&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:bg-primary-default',
+  '[&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:text-text-on-primary',
+];
+
+const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES = [
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!bg-transparent',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!text-[inherit]',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!shadow-[inset_0_0_0_2px_var(--p-primary-color)]',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:font-semibold',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!bg-transparent',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!text-[inherit]',
+];
 
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
   imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateModule, TranslateDirective, TooltipModule],
   templateUrl: './datepicker.component.html',
-  styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class DatePickerComponent {
+  readonly datepickerClass = DATEPICKER_LAYOUT_CLASSES.concat(
+    DATEPICKER_ACTION_CLASSES,
+    DATEPICKER_CALENDAR_CLASSES,
+    DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES,
+  ).join(' ');
+
+  readonly inputStyleClass =
+    'w-full border-[0.1rem] border-border-default bg-transparent focus:border-[0.1rem] focus:border-primary-default focus:shadow-none disabled:bg-background-disabled disabled:text-text-disabled disabled:placeholder:text-text-disabled';
+
   isCalendarOpen = signal(false);
 
   width = input<string>('100%');
+  inputId = input<string | undefined>(undefined);
   label = input<string | undefined>(undefined);
   required = input<boolean>(false);
   disabled = input<boolean>(false);
@@ -48,6 +105,16 @@ export class DatePickerComponent {
   defaultDate = input<Date | null>(null);
 
   /**
+   * Optional reference date to highlight inside the calendar.
+   */
+  highlightedDate = input<Date | undefined>(undefined);
+
+  /**
+   * Optional label shown when hovering or focusing the highlighted day.
+   */
+  highlightedDateLabel = input<string | undefined>(undefined);
+
+  /**
    * Emits ISO date string ('YYYY-MM-DD') when user selects a date
    */
   selectedDateChange = output<string | undefined>();
@@ -58,6 +125,8 @@ export class DatePickerComponent {
    * Must be a writable signal for two-way binding with PrimeNG.
    */
   modelDate = signal<Date | undefined>(undefined);
+
+  resolvedInputId = computed(() => this.inputId() ?? `jhi-datepicker-${nextInputId++}`);
 
   /**
    * Effective minimum date - defaults to today if no minDate provided
@@ -89,7 +158,6 @@ export class DatePickerComponent {
   });
 
   private scrollListener?: (event: Event) => void;
-  private elementRef = inject(ElementRef);
   private translateService = inject(TranslateService);
 
   /**
@@ -99,19 +167,7 @@ export class DatePickerComponent {
     // Sync modelDate whenever selectedDate input changes
     try {
       const value = this.selectedDate();
-      let targetDate: Date | undefined = undefined;
-
-      if (value !== undefined && typeof value === 'string' && value.trim() !== '') {
-        const parts = value.split('-');
-        if (parts.length === 3) {
-          const [year, month, day] = parts.map(Number);
-          if (!isNaN(year) && !isNaN(month) && !isNaN(day) && year > 1900 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-            targetDate = new Date(year, month - 1, day);
-          }
-        }
-      }
-
-      this.modelDate.set(targetDate);
+      this.modelDate.set(parseLocalDateString(value));
     } catch {
       this.modelDate.set(undefined);
     }
@@ -183,5 +239,16 @@ export class DatePickerComponent {
       this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
+  }
+
+  isHighlightedDate(date: DatePickerDateMeta): boolean {
+    const highlightedDate = this.highlightedDate();
+    if (!highlightedDate) {
+      return false;
+    }
+
+    return (
+      date.year === highlightedDate.getFullYear() && date.month === highlightedDate.getMonth() && date.day === highlightedDate.getDate()
+    );
   }
 }
