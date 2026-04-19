@@ -50,6 +50,7 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -245,7 +246,7 @@ export class JobCreationFormComponent {
   private researchGroupApi = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AI SCORE SIGNALS
+  // AI SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Score shown in the AI sidebar (undefined = not yet calculated) */
@@ -256,6 +257,9 @@ export class JobCreationFormComponent {
 
   /** Whether score-affecting processing is active (translation, analysis, or generation) */
   readonly isScoreProcessing = computed(() => this.isGeneratingDraft() || this.isTranslating() || this.isAnalyzing());
+
+  /** List of detected compliance issues to update the UI and editor highlights */
+  readonly complianceIssues = signal<ComplianceIssue[]>([]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -591,7 +595,9 @@ export class JobCreationFormComponent {
 
     this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
     this.jobDescriptionSignal.set(targetContent);
-    this.jobDescriptionEditor()?.forceUpdate(targetContent);
+    this.jobDescriptionEditor()?.forceUpdate(targetContent, () => {
+      this.applyHighlights(this.complianceIssues(), newLanguage);
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -737,6 +743,33 @@ export class JobCreationFormComponent {
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI COMPLIANCE METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Applies highlights to the editor based on compliance issues.
+   * Issues are filtered by language, and colors are assigned based on category.
+   * @param compliance List of issues to process
+   * @param lang The current language of the editor content
+   */
+  private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
+    const highlights: { text: string; color: string; bg: string }[] = [];
+
+    const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
+
+    for (const issues of filtered) {
+      if (!issues.text) continue;
+      const isCritical = issues.category === ComplianceIssueCategoryEnum.CriticalAgg;
+      highlights.push({
+        text: issues.text,
+        color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
+        bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
+      });
+    }
+    this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1099,6 +1132,9 @@ export class JobCreationFormComponent {
 
     if (saved.genderBiasScore !== undefined) {
       this.aiScore.set(saved.genderBiasScore);
+    }
+    if (saved.complianceIssues) {
+      this.complianceIssues.set(saved.complianceIssues);
     }
 
     // keep editor in sync with selected language (without triggering autosave loop)
@@ -1480,7 +1516,7 @@ export class JobCreationFormComponent {
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
               this.isAnalyzing.set(true);
-              void this.analyzeAndUpdateScore(targetLang);
+              await Promise.all([this.analyzeAndUpdateScore(currentLang), this.analyzeAndUpdateScore(targetLang)]);
             } catch {
               // Silent save failure — will be caught by next autosave
             }
@@ -1523,8 +1559,13 @@ export class JobCreationFormComponent {
     this.isAnalyzing.set(true);
     try {
       // 2) Send the description to the analysis endpoint (persists score on the backend)
-      await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
+      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
       this.lastAnalyzedText = descriptionText;
+      // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
+      const otherLang = lang === 'en' ? 'de' : 'en';
+      const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);
+
+      this.complianceIssues.set(existingLang.concat(compliance));
 
       // 3) Fetch the updated job to retrieve the persisted score.
       //    Retry once with a short delay if the score is still missing
@@ -1533,11 +1574,15 @@ export class JobCreationFormComponent {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
         if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
-          return;
+          break;
         }
         if (attempt === 0) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
+      }
+      const currentLang = this.currentDescriptionLanguage();
+      if (currentLang === lang) {
+        this.applyHighlights(compliance, lang);
       }
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');

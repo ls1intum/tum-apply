@@ -15,6 +15,7 @@ export interface ComplianceIssue {
     readonly category?: ComplianceIssueCategoryEnum;
     readonly explanation?: string;
     readonly id?: string;
+    readonly language?: string;
     readonly text?: string;
 }
 
