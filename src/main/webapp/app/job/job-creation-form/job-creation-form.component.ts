@@ -178,8 +178,8 @@ export class JobCreationFormComponent {
   /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
 
-  /** Last analyzed description text (used to avoid redundant compliance analysis) */
-  private lastAnalyzedText = '';
+  /** Last analyzed description text per language (used to avoid redundant compliance analysis) */
+  private lastAnalyzedText: Record<string, string> = {};
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION SIGNALS
@@ -283,9 +283,7 @@ export class JobCreationFormComponent {
   readonly titleComplianceError = computed(() => {
     const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
     if (!title) return undefined;
-    const lang = this.currentDescriptionLanguage();
-    const issues = this.complianceIssues().filter((i) => i.language === lang);
-    for (const issue of issues) {
+    for (const issue of this.complianceIssues()) {
       if (issue.text && title.includes(issue.text.toLowerCase())) {
         return issue.explanation;
       }
@@ -1205,7 +1203,9 @@ export class JobCreationFormComponent {
     const content = lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
     this.basicInfoForm.get('jobDescription')?.setValue(content, { emitEvent: false });
     this.jobDescriptionSignal.set(content);
-    this.jobDescriptionEditor()?.forceUpdate(content);
+    this.jobDescriptionEditor()?.forceUpdate(content, () => {
+      this.applyHighlights(this.complianceIssues(), lang);
+    });
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1292,10 +1292,14 @@ export class JobCreationFormComponent {
     this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
     this.lastTranslatedDE.set(de);
-    this.lastAnalyzedText = en;
+    this.lastAnalyzedText['en'] = en;
+    this.lastAnalyzedText['de'] = de;
 
     if (job?.genderBiasScore !== undefined) {
       this.aiScore.set(job.genderBiasScore);
+    }
+    if (job?.complianceIssues) {
+      this.complianceIssues.set(job.complianceIssues);
     }
 
     this.basicInfoForm.patchValue({
@@ -1308,7 +1312,9 @@ export class JobCreationFormComponent {
     });
 
     this.jobDescriptionSignal.set(en);
-    this.jobDescriptionEditor()?.forceUpdate(en);
+    this.jobDescriptionEditor()?.forceUpdate(en, () => {
+      this.applyHighlights(this.complianceIssues(), 'en');
+    });
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
@@ -1615,7 +1621,7 @@ export class JobCreationFormComponent {
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
     const userLang = this.translate.currentLang;
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
-    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) {
+    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText[lang]) {
       this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
       return;
     }
@@ -1624,7 +1630,7 @@ export class JobCreationFormComponent {
     try {
       // 2) Send the description to the analysis endpoint (persists score on the backend)
       const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm, userLang));
-      this.lastAnalyzedText = descriptionText;
+      this.lastAnalyzedText[lang] = descriptionText;
       // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
       const otherLang = lang === 'en' ? 'de' : 'en';
       const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);

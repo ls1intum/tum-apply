@@ -9,6 +9,7 @@ import { AiScoreRingComponent } from 'app/shared/components/atoms/ai-score-ring/
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
+import { StatusPillComponent } from 'app/shared/components/atoms/status-pill/status-pill.component';
 
 @Component({
   selector: 'jhi-ai-assistant-card',
@@ -23,6 +24,7 @@ import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/mode
     ButtonComponent,
     ProgressSpinnerComponent,
     AiScoreRingComponent,
+    StatusPillComponent,
   ],
   templateUrl: './ai-assistant-card.component.html',
 })
