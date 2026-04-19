@@ -313,6 +313,25 @@ describe('JobCreationFormComponent', () => {
       expect(mockJobApi.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
+    it('should not persist and should enter validation-blocked state when date order is invalid', async () => {
+      mockJobApi.createJob.mockClear();
+      mockJobApi.updateJob.mockClear();
+
+      component.positionDetailsForm.patchValue({
+        applicationDeadline: '2025-03-10',
+        startDate: '2025-03-09',
+      });
+      component.positionDetailsForm.updateValueAndValidity();
+
+      await getPrivate(component).performAutoSave();
+
+      expect(mockJobApi.createJob).not.toHaveBeenCalled();
+      expect(mockJobApi.updateJob).not.toHaveBeenCalled();
+      expect(component.savingState()).toBe('VALIDATION_BLOCKED');
+      expect(component.positionDetailsForm.get('applicationDeadline')?.touched).toBe(true);
+      expect(component.positionDetailsForm.get('startDate')?.touched).toBe(true);
+    });
+
     it('should clear autoSaveTimer if set', () => {
       const spy = vi.spyOn(global, 'clearTimeout');
       const priv = getPrivate(component);
