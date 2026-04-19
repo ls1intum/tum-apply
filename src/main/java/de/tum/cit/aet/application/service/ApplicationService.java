@@ -3,6 +3,7 @@ package de.tum.cit.aet.application.service;
 import static de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO.getFromEntity;
 
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.*;
@@ -30,6 +31,7 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
@@ -541,7 +543,7 @@ public class ApplicationService {
     /**
      * Retrieves the ApplicationDetailDTO fitting to the application id
      *
-     * @param applicationId
+     * @param applicationId the UUID of the application
      * @return ApplicationDetailDTO for application id
      */
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
@@ -659,24 +661,32 @@ public class ApplicationService {
         setIfEmpty(application::getApplicantPhoneNumber, application::setApplicantPhoneNumber, extracted.phoneNumber());
         setIfEmpty(application::getApplicantWebsite, application::setApplicantWebsite, extracted.website());
         setIfEmpty(application::getApplicantLinkedinUrl, application::setApplicantLinkedinUrl, extracted.linkedinUrl());
+        setIfEmpty(application::getApplicantGender, application::setApplicantGender, extracted.gender());
+        setIfEmpty(application::getApplicantNationality, application::setApplicantNationality, extracted.nationality());
+        setIfEmpty(application::getApplicantCountry, application::setApplicantCountry, extracted.country());
+        if (application.getApplicantBirthday() == null && extracted.dateOfBirth() != null && !extracted.dateOfBirth().isBlank()) {
+            application.setApplicantBirthday(LocalDate.parse(extracted.dateOfBirth()));
+        }
         setIfEmpty(application::getApplicantStreet, application::setApplicantStreet, extracted.street());
         setIfEmpty(application::getApplicantCity, application::setApplicantCity, extracted.city());
         setIfEmpty(application::getApplicantPostalCode, application::setApplicantPostalCode, extracted.postalCode());
-        setIfEmpty(
-            application::getApplicantBachelorDegreeName,
-            application::setApplicantBachelorDegreeName,
-            extracted.bachelorDegreeName()
-        );
-        setIfEmpty(
-            application::getApplicantBachelorUniversity,
-            application::setApplicantBachelorUniversity,
-            extracted.bachelorUniversity()
-        );
-        setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, extracted.bachelorGrade());
-        setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, extracted.masterDegreeName());
-        setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, extracted.masterUniversity());
-        setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, extracted.masterGrade());
-
+        ExtractedCertificateDataDTO education = extracted.education();
+        if (education != null) {
+            setIfEmpty(
+                application::getApplicantBachelorDegreeName,
+                application::setApplicantBachelorDegreeName,
+                education.bachelorDegreeName()
+            );
+            setIfEmpty(
+                application::getApplicantBachelorUniversity,
+                application::setApplicantBachelorUniversity,
+                education.bachelorUniversity()
+            );
+            setIfEmpty(application::getApplicantBachelorGrade, application::setApplicantBachelorGrade, education.bachelorGrade());
+            setIfEmpty(application::getApplicantMasterDegreeName, application::setApplicantMasterDegreeName, education.masterDegreeName());
+            setIfEmpty(application::getApplicantMasterUniversity, application::setApplicantMasterUniversity, education.masterUniversity());
+            setIfEmpty(application::getApplicantMasterGrade, application::setApplicantMasterGrade, education.masterGrade());
+        }
         applicationRepository.save(application);
     }
 

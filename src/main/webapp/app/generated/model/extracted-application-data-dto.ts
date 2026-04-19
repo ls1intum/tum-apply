@@ -8,18 +8,18 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { ExtractedCertificateDataDTO } from './extracted-certificate-data-dto';
 
 export interface ExtractedApplicationDataDTO {
-    readonly bachelorDegreeName?: string;
-    readonly bachelorGrade?: string;
-    readonly bachelorUniversity?: string;
     readonly city?: string;
+    readonly country?: string;
+    readonly dateOfBirth?: string;
+    readonly education?: ExtractedCertificateDataDTO;
     readonly firstName?: string;
+    readonly gender?: string;
     readonly lastName?: string;
     readonly linkedinUrl?: string;
-    readonly masterDegreeName?: string;
-    readonly masterGrade?: string;
-    readonly masterUniversity?: string;
+    readonly nationality?: string;
     readonly phoneNumber?: string;
     readonly postalCode?: string;
     readonly street?: string;

@@ -1,34 +1,27 @@
 @if (data()) {
-  <form [formGroup]="page2Form">
+  <form [formGroup]="page2Form" class="flex flex-col gap-3">
     <p jhiTranslate="entity.applicationPage2.description"></p>
     <jhi-degree-document-section
-      degreeType="bachelor"
-      sectionTitleKey="entity.applicationPage2.section.bachelor"
       [applicationId]="applicationIdForDocuments()"
-      [documentIds]="documentIdsBachelorTranscript()"
       [required]="true"
-      [degreeNameControl]="page2Form.controls.bachelorDegreeName"
-      [degreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"
-      [gradeControl]="page2Form.controls.bachelorGrade"
-      [gradeHelperText]="helperTextBachelorGrade()"
-      [gradeWarningText]="warningTextBachelorGrade()"
-      (changeScale)="onChangeGradingScale('bachelor')"
-      (documentIdsChange)="documentIdsBachelorTranscript.set($event)"
-    />
-
-    <jhi-degree-document-section
-      degreeType="master"
-      sectionTitleKey="entity.applicationPage2.section.master"
-      [applicationId]="applicationIdForDocuments()"
-      [documentIds]="documentIdsMasterTranscript()"
-      [required]="true"
-      [degreeNameControl]="page2Form.controls.masterDegreeName"
-      [degreeUniversityControl]="page2Form.controls.masterDegreeUniversity"
-      [gradeControl]="page2Form.controls.masterGrade"
-      [gradeHelperText]="helperTextMasterGrade()"
-      [gradeWarningText]="warningTextMasterGrade()"
-      (changeScale)="onChangeGradingScale('master')"
-      (documentIdsChange)="documentIdsMasterTranscript.set($event)"
+      [saveData]="true"
+      (extracted)="onAiDataExtracted($event)"
+      [bachelorDocumentIds]="documentIdsBachelorTranscript()"
+      [bachelorDegreeNameControl]="page2Form.controls.bachelorDegreeName"
+      [bachelorDegreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"
+      [bachelorGradeControl]="page2Form.controls.bachelorGrade"
+      [bachelorGradeHelperText]="helperTextBachelorGrade()"
+      [bachelorGradeWarningText]="warningTextBachelorGrade()"
+      (bachelorChangeScale)="onChangeGradingScale('bachelor')"
+      (bachelorDocumentIdsChange)="documentIdsBachelorTranscript.set($event)"
+      [masterDocumentIds]="documentIdsMasterTranscript()"
+      [masterDegreeNameControl]="page2Form.controls.masterDegreeName"
+      [masterDegreeUniversityControl]="page2Form.controls.masterDegreeUniversity"
+      [masterGradeControl]="page2Form.controls.masterGrade"
+      [masterGradeHelperText]="helperTextMasterGrade()"
+      [masterGradeWarningText]="warningTextMasterGrade()"
+      (masterChangeScale)="onChangeGradingScale('master')"
+      (masterDocumentIdsChange)="documentIdsMasterTranscript.set($event)"
     />
   </form>
 }
