@@ -282,6 +282,7 @@ export class JobCreationFormComponent {
 
   /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
   readonly titleComplianceError = computed(() => {
+    this.basicInfoFormValueSignal();
     const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
     if (!title) return undefined;
     for (const issue of this.complianceIssues()) {
