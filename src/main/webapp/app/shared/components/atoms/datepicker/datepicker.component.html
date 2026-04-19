@@ -1,5 +1,5 @@
 <div class="relative flex flex-col">
-  <label class="mb-1 mr-4" [for]="resolvedInputId()">
+  <label class="mb-1 mr-4">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -34,12 +34,12 @@
     [defaultDate]="defaultDate()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
-    class="flex-1 [&_.p-datepicker-dropdown]:border-[0.1rem] [&_.p-datepicker-dropdown]:bg-primary-default [&_.p-datepicker-dropdown:disabled]:bg-text-disabled [&_.p-datepicker-clear-button]:border-[0.1rem] [&_.p-datepicker-clear-button]:border-primary-default [&_.p-datepicker-clear-button]:bg-transparent [&_.p-datepicker-clear-button]:text-primary-default [&_.p-datepicker-clear-button:hover]:border-primary-default [&_.p-datepicker-clear-button:hover]:bg-primary-default [&_.p-datepicker-clear-button:hover]:text-text-on-primary [&_.p-ripple.p-datepicker-select-month]:text-primary-default [&_.p-ripple.p-datepicker-select-month:hover]:bg-[var(--p-primary-hover-color-outlined)] [&_.p-ripple.p-datepicker-select-year]:text-primary-default [&_.p-ripple.p-datepicker-select-year:hover]:bg-[var(--p-primary-hover-color-outlined)] [&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:bg-[var(--p-primary-hover-color-outlined)] [&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:text-text-primary [&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:bg-primary-default [&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:text-text-on-primary [&_.p-datepicker-month:not(.p-disabled):not(.p-datepicker-month-selected):hover]:bg-primary-default [&_.p-datepicker-month:not(.p-disabled):not(.p-datepicker-month-selected):hover]:text-text-on-primary [&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:bg-primary-default [&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:text-text-on-primary [&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!bg-transparent [&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!text-[inherit] [&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!shadow-[inset_0_0_0_2px_var(--p-primary-color)] [&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:font-semibold [&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!bg-transparent [&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!text-[inherit]"
+    class="{{ datepickerClass }}"
     [dateFormat]="dateFormat()"
     iconDisplay="button"
     [inputId]="resolvedInputId()"
     showIcon="true"
-    [inputStyleClass]="'w-full border-[0.1rem] border-border-default focus:border-[0.1rem] focus:border-primary-default focus:shadow-none disabled:bg-background-disabled disabled:text-text-disabled disabled:placeholder:text-text-disabled'"
+    [inputStyleClass]="inputStyleClass"
   >
     <ng-template pTemplate="date" let-date>
       <span
@@ -59,7 +59,7 @@
       </span>
     </ng-template>
     <ng-template pTemplate="triggericon">
-      <fa-icon [icon]="['fas', 'calendar']" class="text-text-on-primary" />
+      <fa-icon [icon]="['fas', 'calendar']" />
     </ng-template>
   </p-datepicker>
   @if (errorEnabled()) {

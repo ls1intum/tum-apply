@@ -10,6 +10,50 @@ import { DatePickerDateMeta } from 'primeng/types/datepicker';
 
 let nextInputId = 0;
 
+const DATEPICKER_LAYOUT_CLASSES = ['flex-1'];
+
+const DATEPICKER_ACTION_CLASSES = [
+  '[&_.p-datepicker-dropdown]:border-none',
+  '[&_.p-datepicker-dropdown]:bg-primary-default',
+  '[&_.p-datepicker-dropdown]:text-text-on-primary',
+  '[&_.p-datepicker-dropdown]:shadow-none',
+  '[&_.p-datepicker-dropdown]:outline-none',
+  '[&_.p-datepicker-dropdown]:relative',
+  '[&_.p-datepicker-dropdown]:z-[1]',
+  '[&_.p-datepicker-dropdown:disabled]:bg-text-disabled',
+  '[&_.p-datepicker-clear-button]:border-[0.1rem]',
+  '[&_.p-datepicker-clear-button]:border-primary-default',
+  '[&_.p-datepicker-clear-button]:bg-transparent',
+  '[&_.p-datepicker-clear-button]:text-primary-default',
+  '[&_.p-datepicker-clear-button:hover]:border-primary-default',
+  '[&_.p-datepicker-clear-button:hover]:bg-primary-default',
+  '[&_.p-datepicker-clear-button:hover]:text-text-on-primary',
+];
+
+const DATEPICKER_CALENDAR_CLASSES = [
+  '[&_.p-ripple.p-datepicker-select-month]:text-primary-default',
+  '[&_.p-ripple.p-datepicker-select-month:hover]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-ripple.p-datepicker-select-year]:text-primary-default',
+  '[&_.p-ripple.p-datepicker-select-year:hover]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:text-text-primary',
+  '[&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:bg-primary-default',
+  '[&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:text-text-on-primary',
+  '[&_.p-datepicker-month:not(.p-disabled):not(.p-datepicker-month-selected):hover]:bg-primary-default',
+  '[&_.p-datepicker-month:not(.p-disabled):not(.p-datepicker-month-selected):hover]:text-text-on-primary',
+  '[&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:bg-primary-default',
+  '[&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:text-text-on-primary',
+];
+
+const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES = [
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!bg-transparent',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!text-[inherit]',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!shadow-[inset_0_0_0_2px_var(--p-primary-color)]',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:font-semibold',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!bg-transparent',
+  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!text-[inherit]',
+];
+
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
@@ -18,6 +62,15 @@ let nextInputId = 0;
   encapsulation: ViewEncapsulation.None,
 })
 export class DatePickerComponent {
+  readonly datepickerClass = DATEPICKER_LAYOUT_CLASSES.concat(
+    DATEPICKER_ACTION_CLASSES,
+    DATEPICKER_CALENDAR_CLASSES,
+    DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES,
+  ).join(' ');
+
+  readonly inputStyleClass =
+    'w-full border-[0.1rem] border-border-default bg-transparent focus:border-[0.1rem] focus:border-primary-default focus:shadow-none disabled:bg-background-disabled disabled:text-text-disabled disabled:placeholder:text-text-disabled';
+
   isCalendarOpen = signal(false);
 
   width = input<string>('100%');
