@@ -822,9 +822,7 @@ export class JobCreationFormComponent {
       return;
     }
     const lang = this.currentDescriptionLanguage();
-    const match = this.complianceIssues().find(
-      (i) => i.language === lang && i.text?.toLowerCase() === event.text.toLowerCase(),
-    );
+    const match = this.complianceIssues().find(i => i.language === lang && i.text?.toLowerCase() === event.text.toLowerCase());
     this.activePopoverIssue.set(match);
     this.popoverX.set(Math.min(event.x, window.innerWidth - this.POPOVER_WIDTH));
     this.popoverY.set(event.y);
@@ -837,9 +835,7 @@ export class JobCreationFormComponent {
   onComplianceFilterChange(category: string | undefined): void {
     this.activeComplianceFilter.set(category);
     const lang = this.currentDescriptionLanguage();
-    const filtered = category
-      ? this.complianceIssues().filter((i) => i.category === category)
-      : this.complianceIssues();
+    const filtered = category ? this.complianceIssues().filter(i => i.category === category) : this.complianceIssues();
     this.applyHighlights(filtered, lang);
   }
 

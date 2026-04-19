@@ -370,7 +370,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   }
 
-
   /**
    * Sends the text and position of a highlighted item
    * when the mouse hovers over it, so a popover can be shown.
