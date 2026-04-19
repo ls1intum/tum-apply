@@ -6,7 +6,7 @@
       "general": "General",
       "notifications": "Notifications",
       "applicationInformation": "Application Information",
-      "documents": "Documents"
+      "documents": "Qualifications"
     },
     "applicationInformation": {
       "description": "Update your application information here. Your saved data will be used to prefill future application forms.",
@@ -160,10 +160,6 @@
         "bachelor": "Bachelor Studies",
         "master": "Master Studies",
         "additionalDocuments": "Additional Documents"
-      },
-      "labels": {
-        "bachelorCertificate": "Bachelor Certificate",
-        "masterCertificate": "Master Certificate"
       },
       "loadFailed": {
         "summary": "Load failed",

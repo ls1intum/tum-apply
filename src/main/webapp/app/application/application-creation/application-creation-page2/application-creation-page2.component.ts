@@ -14,10 +14,11 @@ import {
   hasGradeLimits,
   resolveGradingScaleLimits,
 } from 'app/shared/util/grading-scale.utils';
-
-import { ApplicationForApplicantDTO } from '../../../generated/model/application-for-applicant-dto';
-import { DocumentInformationHolderDTO } from '../../../generated/model/document-information-holder-dto';
-import { DegreeDocumentSectionComponent } from '../../../shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-applicant-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
+import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -275,6 +276,24 @@ export default class ApplicationCreationPage2Component {
         }
       }
     });
+  }
+
+  onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
+    const form = this.page2Form;
+    const patch: Record<string, string> = {};
+
+    const edu = extractedData.education;
+    if (edu) {
+      setIfEmpty(form, patch, 'bachelorDegreeName', edu.bachelorDegreeName);
+      setIfEmpty(form, patch, 'bachelorDegreeUniversity', edu.bachelorUniversity);
+      setIfEmpty(form, patch, 'bachelorGrade', edu.bachelorGrade);
+
+      setIfEmpty(form, patch, 'masterDegreeName', edu.masterDegreeName);
+      setIfEmpty(form, patch, 'masterDegreeUniversity', edu.masterUniversity);
+      setIfEmpty(form, patch, 'masterGrade', edu.masterGrade);
+    }
+
+    form.patchValue(patch);
   }
 
   private updateBachelorGradeLimits(grade: string): void {
