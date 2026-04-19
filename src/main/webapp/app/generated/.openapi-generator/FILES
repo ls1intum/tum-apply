@@ -88,6 +88,7 @@ model/email-template-translation-dto.ts
 model/employee-research-group-request-dto.ts
 model/existing-slot-dto.ts
 model/extracted-application-data-dto.ts
+model/extracted-certificate-data-dto.ts
 model/gender-bias-analysis-request.ts
 model/gender-bias-analysis-response.ts
 model/image-dto.ts

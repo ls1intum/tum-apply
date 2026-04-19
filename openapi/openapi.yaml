@@ -108,12 +108,31 @@ paths:
       parameters:
       - name: applicationId
         in: query
-        required: true
+        required: false
         schema: {type: string}
-      - name: docId
+      - name: docIds
         in: query
-        required: true
-        schema: {type: string}
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: isCv
+        in: query
+        required: false
+        schema: {type: boolean, default: true}
+      - name: saveData
+        in: query
+        required: false
+        schema: {type: boolean, default: false}
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items: {type: string, format: binary}
       responses:
         '200':
           description: OK
@@ -2995,20 +3014,28 @@ components:
     ExtractedApplicationDataDTO:
       type: object
       properties:
-        bachelorDegreeName: {type: string}
-        bachelorGrade: {type: string}
-        bachelorUniversity: {type: string}
         city: {type: string}
+        country: {type: string}
+        dateOfBirth: {type: string}
+        education: {$ref: '#/components/schemas/ExtractedCertificateDataDTO'}
         firstName: {type: string}
+        gender: {type: string}
         lastName: {type: string}
         linkedinUrl: {type: string}
-        masterDegreeName: {type: string}
-        masterGrade: {type: string}
-        masterUniversity: {type: string}
+        nationality: {type: string}
         phoneNumber: {type: string}
         postalCode: {type: string}
         street: {type: string}
         website: {type: string}
+    ExtractedCertificateDataDTO:
+      type: object
+      properties:
+        bachelorDegreeName: {type: string}
+        bachelorGrade: {type: string}
+        bachelorUniversity: {type: string}
+        masterDegreeName: {type: string}
+        masterGrade: {type: string}
+        masterUniversity: {type: string}
     GenderBiasAnalysisRequest:
       type: object
       properties:

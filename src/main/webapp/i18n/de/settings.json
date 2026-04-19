@@ -6,7 +6,7 @@
       "general": "Allgemein",
       "notifications": "Benachrichtigungen",
       "applicationInformation": "Bewerbungsinformationen",
-      "documents": "Dokumente"
+      "documents": "Qualifikationen"
     },
     "applicationInformation": {
       "description": "Aktualisiere hier deine Bewerbungsinformationen. Deine gespeicherten Daten werden für das automatische Ausfüllen zukünftiger Bewerbungen verwendet.",
@@ -160,10 +160,6 @@
         "bachelor": "Bachelor Studium",
         "master": "Master Studium",
         "additionalDocuments": "Zusätzliche Unterlagen"
-      },
-      "labels": {
-        "bachelorCertificate": "Bachelor-Zeugnis",
-        "masterCertificate": "Master-Zeugnis"
       },
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
