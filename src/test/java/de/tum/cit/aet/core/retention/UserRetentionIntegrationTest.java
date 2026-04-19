@@ -424,6 +424,7 @@ class UserRetentionIntegrationTest {
         assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.USER_DATA_DELETION_WARNING);
         assertThat(sentEmail.getLanguage()).isEqualTo(Language.fromCode(userToWarn.getSelectedLanguage()));
         assertThat(sentEmail.getTo()).extracting(User::getUserId).containsExactly(userToWarn.getUserId());
+        assertThat(sentEmail.getContent()).isEqualTo(userToWarn);
     }
 
     private void ensureDeletedUserExists() {

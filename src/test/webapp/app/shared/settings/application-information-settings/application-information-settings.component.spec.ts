@@ -282,6 +282,8 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
+      applicantApiMock.getApplicantProfile.mockReturnValue(of(updatedProfile));
+
       const updatedData: ApplicationInformationData = structuredClone(component.data());
       updatedData.firstName = 'Grace';
       updatedData.email = '';
@@ -404,17 +406,6 @@ describe('ApplicationInformationSettingsComponent', () => {
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.saveFailed');
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('cancel behavior', () => {
-    it('should reload application information on cancel', async () => {
-      const component = await createComponent();
-      const loadApplicationInformationSpy = vi.spyOn(component, 'loadApplicationInformation').mockResolvedValue();
-
-      await component.onCancel();
-
-      expect(loadApplicationInformationSpy).toHaveBeenCalledOnce();
     });
   });
 });

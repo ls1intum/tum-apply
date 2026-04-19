@@ -2,6 +2,8 @@
 
 <p>Wir möchten dich daran erinnern, dass deine Daten in unserem System gemäß unserer Datenschutzrichtlinie in 4 Wochen automatisch gelöscht werden.</p>
 
-<p>Um die Löschung deiner Daten zu verhindern, logge dich bitte in dein TUMApply-Konto ein: <a href="${LOGIN_URL!}">${LOGIN_URL!}</a></p>
+<p>Logge dich bitte in dein TUMApply-Konto ein, um die Löschung deiner Daten zu verhindern:</p>
 
-<p>Mit freundlichen Grüßen<br /><br />TUMApply Team<br />Technische Universität München</p>
+<@ui.ctaButton href=(LOGIN_LINK!(url!'')) label="Bei TUMApply anmelden" />
+
+<p>Mit freundlichen Grüßen<br />Dein TUMApply Team</p>
