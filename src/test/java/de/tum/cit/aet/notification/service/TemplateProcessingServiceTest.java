@@ -46,6 +46,7 @@ class TemplateProcessingServiceTest {
     @BeforeEach
     void setUp() {
         freemarkerConfig = spy(new Configuration(Configuration.VERSION_2_3_32));
+        freemarkerConfig.setClassLoaderForTemplateLoading(getClass().getClassLoader(), "/templates");
         service = new TemplateProcessingService(freemarkerConfig);
         // Hardening is applied in the constructor, no separate call needed
         ReflectionTestUtils.setField(service, "url", BASE_URL);
@@ -132,6 +133,43 @@ class TemplateProcessingServiceTest {
             String result = service.renderTemplate(translation, group);
 
             assertThat(result).contains("RG");
+        }
+
+        @Test
+        void withUserInjectsCodeBackedLinks() throws Exception {
+            EmailTemplateTranslation translation = translation(
+                "${LOGIN_LINK} ${APPLICATIONS_LINK} ${DOCUMENTATION_LINK}",
+                Language.ENGLISH,
+                "user"
+            );
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            User user = mock(User.class);
+            when(user.getFirstName()).thenReturn("Alice");
+            when(user.getLastName()).thenReturn("Smith");
+
+            String result = service.renderTemplate(translation, user);
+
+            assertThat(result).contains(BASE_URL, BASE_URL + "/application/overview", "https://ls1intum.github.io/tum-apply/");
+        }
+
+        @Test
+        void withCtaMacroRendersSharedButtonMarkup() throws Exception {
+            EmailTemplateTranslation translation = translation(
+                "<@ui.ctaButton href=(APPLICATION_LINK!'') label=\"View Application\" />",
+                Language.ENGLISH,
+                "cta"
+            );
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            String result = service.renderTemplate(translation, mockApplication());
+
+            assertThat(result)
+                .contains("View Application")
+                .contains("background-color: #3070b3")
+                .contains("href=\"http://localhost/evaluation/application");
         }
 
         @Test

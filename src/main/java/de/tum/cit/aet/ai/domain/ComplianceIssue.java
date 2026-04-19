@@ -1,4 +1,4 @@
-package de.tum.cit.aet.ai.dto;
+package de.tum.cit.aet.ai.domain;
 
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;

@@ -1,6 +1,6 @@
 package de.tum.cit.aet.ai.web;
 
-import de.tum.cit.aet.ai.dto.ComplianceIssue;
+import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiService;
@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 /**
@@ -66,21 +67,35 @@ public class AiResource {
     }
 
     /**
-     * Extracts applicant data from a PDF file using AI and persists the extracted
+     * Extracts applicant data from PDF files using AI and persists the extracted
      * values into the application entity.
      *
      * @param applicationId the ID of the application to update
-     * @param docId         the ID of the document dictionary entry for the PDF
+     * @param docIds        the IDs of the document dictionary entries for the PDFs
+     * @param files         the raw PDF files to be processed
+     * @param isCv          whether the documents are CVs or certificates
+     * @param saveData      whether to persist the extracted data into the application
      * @return a ResponseEntity containing the extracted data
      */
     @ApplicantOrAdmin
-    @PutMapping(value = "extractPdfData", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "extractPdfData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExtractedApplicationDataDTO> extractPdfData(
-        @RequestParam("applicationId") String applicationId,
-        @RequestParam("docId") String docId
+        @RequestParam(value = "applicationId", required = false) String applicationId,
+        @RequestParam(value = "docIds", required = false) List<String> docIds,
+        @RequestPart(value = "files", required = false) List<MultipartFile> files,
+        @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
+        @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
     ) {
-        log.info("PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docId={}", applicationId, docId);
-        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docId));
+        int fileCount = files == null ? 0 : files.size();
+        log.info(
+            "PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docIds={}, fileCount={}, isCV={}, saveData={})",
+            applicationId,
+            docIds,
+            fileCount,
+            isCv,
+            saveData
+        );
+        return ResponseEntity.ok(aiService.extractAndPersistPdfData(applicationId, docIds, files, isCv, saveData));
     }
 
     /**

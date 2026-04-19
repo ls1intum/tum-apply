@@ -272,16 +272,16 @@ describe('Profile save isolation', () => {
 
   it('renames persisted applicant documents when settings documents are saved', async () => {
     const documentsComponent = await createDocumentsComponent();
-    const cvDocuments = documentsComponent.cvDocuments();
-    expect(cvDocuments).toBeDefined();
-    if (!cvDocuments || cvDocuments.length === 0) {
-      throw new Error('Expected initial CV document');
+    const bachelorDocuments = documentsComponent.bachelorDocuments();
+    expect(bachelorDocuments).toBeDefined();
+    if (!bachelorDocuments || bachelorDocuments.length === 0) {
+      throw new Error('Expected initial Bachelor document');
     }
 
-    (cvDocuments[0] as Mutable<(typeof cvDocuments)[0]>).name = 'cv-renamed.pdf';
+    (bachelorDocuments[0] as Mutable<(typeof bachelorDocuments)[0]>).name = 'bachelor-renamed.pdf';
 
     await documentsComponent.saveAll();
 
-    expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('cv-doc-1', 'cv-renamed.pdf');
+    expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1', 'bachelor-renamed.pdf');
   });
 });

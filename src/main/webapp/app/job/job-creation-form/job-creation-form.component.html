@@ -131,7 +131,7 @@
                 jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.languageNote"
               ></p>
 
-              <div class="flex items-center gap-3 mt-3 mb-3">
+              <div class="flex flex-wrap items-center gap-3 mt-3 mb-3">
                 <jhi-segmented-toggle
                   [value]="segmentValueForCurrentLang()"
                   [disabled]="isGeneratingDraft()"
@@ -143,12 +143,16 @@
 
                 <!-- Translation indicator with direction -->
                 @if (isTranslating()) {
-                  <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
+                  <div class="flex gap-2 px-3 h-8 border border-border-default rounded-lg">
                     <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
-                    <span class="text-sm font-semibold text-text-primary whitespace-nowrap">
-                      {{ 'jobCreationForm.positionDetailsSection.jobDescription.translating' | translate }}
-                      {{ translationDirectionLabel() }}
-                    </span>
+                    @if (translationDirectionLabels(); as translationDirection) {
+                      <span class="flex items-center gap-1 text-sm font-semibold text-text-primary whitespace-nowrap">
+                        <span jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"></span>
+                        <span class="ml-0.5">{{ translationDirection.source }}</span>
+                        <fa-icon [icon]="['fas', 'arrow-right']" class="text-xs" />
+                        <span>{{ translationDirection.target }}</span>
+                      </span>
+                    }
                   </div>
                 }
               </div>

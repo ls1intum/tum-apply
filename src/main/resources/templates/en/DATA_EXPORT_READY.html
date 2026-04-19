@@ -1,11 +1,9 @@
 <p>Dear ${USER_FIRST_NAME!} ${USER_LAST_NAME!},</p>
 
-<p>Your data export is ready. You can download it using the link below:</p>
+<p>Your data export is ready. You can download it here:</p>
 
-<p>
-  <a href="${(DOWNLOAD_LINK!'')?no_esc}" style="display:inline-block;padding:10px 18px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Download data export</a>
-</p>
+<@ui.ctaButton href=(DOWNLOAD_LINK!'') label="Download Data" />
 
 <p>The link expires after ${EXPORT_EXPIRES_DAYS!} days.</p>
 
-<p>Best regards,<br /><br />TUMApply Team<br />Technical University of Munich</p>
+<p>Best regards,<br />Your TUMApply Team</p>

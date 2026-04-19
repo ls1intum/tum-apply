@@ -152,6 +152,7 @@ public class UserRetentionService {
                 .to(user)
                 .language(Language.fromCode(user.getSelectedLanguage()))
                 .emailType(EmailType.USER_DATA_DELETION_WARNING)
+                .content(user)
                 .build();
 
             sender.sendAsync(email);
