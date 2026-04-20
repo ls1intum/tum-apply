@@ -960,9 +960,10 @@ export class JobCreationFormComponent {
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
       this.savingState.set('SAVED');
 
-      // 3) Start translation only — analysis runs once at the end of translation,
-      //    after both languages are available, for the most accurate score.
+      // 3) Analyze source language first so the user sees highlights + score immediately.
       if (this.aiToggleSignal()) {
+        await this.analyzeAndUpdateScore(sourceLang);
+        // Translation and target-language analysis run in the background (fire-and-forget).
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
     } catch {
@@ -1502,7 +1503,12 @@ export class JobCreationFormComponent {
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal()) {
-        void this.translateAndStoreOtherLanguage(currentLang, description);
+        // highlighting before translation
+        void (async () => {
+          await this.analyzeAndUpdateScore(currentLang);
+          // fire and forget
+          await this.translateAndStoreOtherLanguage(currentLang, description);
+        })();
       }
     } catch {
       this.savingState.set('FAILED');
@@ -1582,7 +1588,7 @@ export class JobCreationFormComponent {
             this.jobDescriptionEditor()?.forceUpdate(finalContent);
           }
 
-          // 7) Persist the translated content and run compliance analysis.
+          // 7) Persist the translated content and run target compliance analysis.
           //    Set isAnalyzing BEFORE the finally block clears isTranslating,
           //    so isScoreLoading never drops to false between the two states.
           const jobId = this.jobId();
@@ -1592,7 +1598,7 @@ export class JobCreationFormComponent {
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
               this.isAnalyzing.set(true);
-              await Promise.all([this.analyzeAndUpdateScore(currentLang), this.analyzeAndUpdateScore(targetLang)]);
+              await this.analyzeAndUpdateScore(targetLang);
             } catch {
               // Silent save failure — will be caught by next autosave
             }
