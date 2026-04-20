@@ -39,6 +39,7 @@ import { ImageDTO } from 'app/generated/model/image-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
+import { extractTextFromHtml } from 'app/shared/util/text.util';
 import {
   ImageUploadButtonComponent,
   ImageUploadError,
@@ -53,6 +54,7 @@ import {
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
+import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -104,6 +106,7 @@ type JobFormMode = 'create' | 'edit';
     ImageUploadButtonComponent,
     CheckboxComponent,
     AiAssistantCardComponent,
+    CompliancePopoverComponent,
   ],
   providers: [JobResourceApi],
 })
@@ -115,6 +118,10 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
+  /** Width of the compliance popover, used to clamp its position within the viewport.
+   * matches the width w-72 set in ai-compliance-popover.component.html.
+   */
+  private readonly POPOVER_WIDTH = 288;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // MODE & META SIGNALS
@@ -174,8 +181,8 @@ export class JobCreationFormComponent {
   /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
 
-  /** Last analyzed description text (used to avoid redundant compliance analysis) */
-  private lastAnalyzedText = '';
+  /** Last analyzed description text per language (used to avoid redundant compliance analysis) */
+  private lastAnalyzedText: Record<string, string> = {};
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION SIGNALS
@@ -263,6 +270,30 @@ export class JobCreationFormComponent {
   /** List of detected compliance issues to update the UI and editor highlights */
   readonly complianceIssues = signal<ComplianceIssue[]>([]);
 
+  /** The compliance issue currently shown in the popover (undefined = none is hovered). */
+  readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
+
+  /** Horizontal screen position of popover. */
+  readonly popoverX = signal<number>(0);
+
+  /** Vertical screen position of popover. */
+  readonly popoverY = signal<number>(0);
+
+  /** When set, only issues of this category are highlighted in the editor. (undefined = all categories shown) */
+  readonly activeComplianceFilter = signal<string | undefined>(undefined);
+
+  /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
+  readonly titleComplianceError = computed(() => {
+    const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
+    if (!title) return undefined;
+    for (const issue of this.complianceIssues()) {
+      if (issue.text && title.includes(issue.text.toLowerCase())) {
+        return issue.explanation;
+      }
+    }
+    return undefined;
+  });
+
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -330,11 +361,38 @@ export class JobCreationFormComponent {
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
 
-  /** Computed: true when both EN and DE job descriptions have non-empty content */
+  /** Computed: true when both EN and DE job descriptions have non-empty text content
+   * and neither matches the default template text.
+   * Uses jobDescriptionSignal for the active language (updates on every keystroke)
+   * and the stored signal for the inactive language (synced on tab switch / save).
+   * Strips HTML tags before checking so that empty editor markup (e.g. `<p></p>`) is treated as empty. */
   bothDescriptionsFilled = computed(() => {
-    const en = this.jobDescriptionEN().trim();
-    const de = this.jobDescriptionDE().trim();
-    return en.length > 0 && de.length > 0;
+    const currentLang = this.currentDescriptionLanguage();
+    const currentHtml = this.jobDescriptionSignal() || '';
+
+    // 1) Resolve current HTML for both languages
+    const enHtml = currentLang === 'en' ? currentHtml : this.jobDescriptionEN();
+    const deHtml = currentLang === 'de' ? currentHtml : this.jobDescriptionDE();
+
+    // Helper to completely strip ALL whitespace, newlines, and non-breaking spaces for a strict comparison
+    const stripAllWhitespace = (str: string) => (str || '').replace(/[\s\u00A0\n\r]+/g, '');
+
+    // 2) Extract plain text from the user's input
+    const enText = stripAllWhitespace(extractTextFromHtml(enHtml));
+    const deText = stripAllWhitespace(extractTextFromHtml(deHtml));
+
+    // 3) Fetch default templates and extract their plain text
+    const templateEnHtml = this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') as string;
+    const templateDeHtml = this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') as string;
+
+    const templateEnText = stripAllWhitespace(extractTextFromHtml(templateEnHtml));
+    const templateDeText = stripAllWhitespace(extractTextFromHtml(templateDeHtml));
+
+    // 4) Validate that text exists and does not exactly match the template
+    const isEnValid = enText.length > 0 && enText !== templateEnText;
+    const isDeValid = deText.length > 0 && deText !== templateDeText;
+
+    return isEnValid && isDeValid;
   });
 
   /**
@@ -566,10 +624,15 @@ export class JobCreationFormComponent {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang) return;
 
-    // If a save is pending, flush it first so we don't lose text
+    // If a save is pending, flush it immediately so we don't lose text.
+    // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
+    // language signal, but the languageChangeEffect below sets the form
+    // value with emitEvent:false — so the autosave effect won't re-trigger.
+    // We must call performAutoSave explicitly to persist the content.
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
+      void this.performAutoSave();
     }
 
     this.currentDescriptionLanguage.set(newLang);
@@ -790,6 +853,33 @@ export class JobCreationFormComponent {
       });
     }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
+  }
+
+  /**
+   * Handles hover events from highlighted spans in the editor.
+   * Finds the matching compliance issue and positions the popover.
+   */
+  onHighlightHovered(event: { text: string; x: number; y: number } | undefined): void {
+    if (!event) {
+      this.activePopoverIssue.set(undefined);
+      return;
+    }
+    const lang = this.currentDescriptionLanguage();
+    const match = this.complianceIssues().find(i => i.language === lang && i.text?.toLowerCase() === event.text.toLowerCase());
+    this.activePopoverIssue.set(match);
+    this.popoverX.set(Math.min(event.x, window.innerWidth - this.POPOVER_WIDTH));
+    this.popoverY.set(event.y);
+  }
+
+  /**
+   * Handles category filter changes from the AI assistant sidebar.
+   * Filters highlights to show only the selected category, or all if cleared.
+   */
+  onComplianceFilterChange(category: string | undefined): void {
+    this.activeComplianceFilter.set(category);
+    const lang = this.currentDescriptionLanguage();
+    const filtered = category ? this.complianceIssues().filter(i => i.category === category) : this.complianceIssues();
+    this.applyHighlights(filtered, lang);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1167,7 +1257,9 @@ export class JobCreationFormComponent {
     const content = lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
     this.basicInfoForm.get('jobDescription')?.setValue(content, { emitEvent: false });
     this.jobDescriptionSignal.set(content);
-    this.jobDescriptionEditor()?.forceUpdate(content);
+    this.jobDescriptionEditor()?.forceUpdate(content, () => {
+      this.applyHighlights(this.complianceIssues(), lang);
+    });
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1254,10 +1346,14 @@ export class JobCreationFormComponent {
     this.lastTranslatedEN.set(en);
     this.jobDescriptionDE.set(de);
     this.lastTranslatedDE.set(de);
-    this.lastAnalyzedText = en;
+    this.lastAnalyzedText['en'] = en;
+    this.lastAnalyzedText['de'] = de;
 
     if (job?.genderBiasScore !== undefined) {
       this.aiScore.set(job.genderBiasScore);
+    }
+    if (job?.complianceIssues) {
+      this.complianceIssues.set(job.complianceIssues);
     }
 
     this.basicInfoForm.patchValue({
@@ -1270,7 +1366,9 @@ export class JobCreationFormComponent {
     });
 
     this.jobDescriptionSignal.set(en);
-    this.jobDescriptionEditor()?.forceUpdate(en);
+    this.jobDescriptionEditor()?.forceUpdate(en, () => {
+      this.applyHighlights(this.complianceIssues(), 'en');
+    });
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
@@ -1581,8 +1679,9 @@ export class JobCreationFormComponent {
 
     // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
+    const userLang = this.translate.currentLang;
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
-    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText) {
+    if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText[lang]) {
       this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
       return;
     }
@@ -1590,8 +1689,8 @@ export class JobCreationFormComponent {
     this.isAnalyzing.set(true);
     try {
       // 2) Send the description to the analysis endpoint (persists score on the backend)
-      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm));
-      this.lastAnalyzedText = descriptionText;
+      const compliance = await firstValueFrom(this.aiApi.analyzeJobDescriptionForCompliance(lang, jobForm, userLang));
+      this.lastAnalyzedText[lang] = descriptionText;
       // Keep issues from other languages, but replace all issues for the current language with the latest analysis.
       const otherLang = lang === 'en' ? 'de' : 'en';
       const existingLang = this.complianceIssues().filter(issue => issue.language === otherLang);

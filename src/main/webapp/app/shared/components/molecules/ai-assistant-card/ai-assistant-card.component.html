@@ -24,6 +24,37 @@
 
     <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />
 
+    <!-- Compliance Checker -->
+    <h3
+      class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
+      jhiTranslate="jobCreationForm.aiSidebar.complianceHeader"
+    ></h3>
+
+    <div class="flex flex-col gap-1">
+      <p class="m-0 mb-1 text-xs text-text-tertiary" jhiTranslate="jobCreationForm.aiSidebar.filterByCategory"></p>
+
+      <div class="flex flex-col gap-2">
+        <jhi-status-pill
+          labelKey="jobCreationForm.aiSidebar.critical"
+          dotColor="bg-negative-default"
+          [count]="criticalCount()"
+          [isActive]="activeFilter() === ComplianceIssueCategoryEnum.CriticalAgg"
+          [loading]="isAnalyzing()"
+          (selected)="selectCategoryFilter(ComplianceIssueCategoryEnum.CriticalAgg)"
+        />
+        <jhi-status-pill
+          labelKey="jobCreationForm.aiSidebar.transparency"
+          dotColor="bg-warning-default"
+          [count]="transparencyCount()"
+          [isActive]="activeFilter() === ComplianceIssueCategoryEnum.Transparency"
+          [loading]="isAnalyzing()"
+          (selected)="selectCategoryFilter(ComplianceIssueCategoryEnum.Transparency)"
+        />
+      </div>
+    </div>
+
+    <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />
+
     <div class="flex items-start justify-center gap-2 lg:justify-start">
       <h3
         class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"

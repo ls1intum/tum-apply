@@ -115,6 +115,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   genderDecoderClick = output<string>();
   openAnalysisDialog = output<GenderBiasAnalysisResponse>();
   quillEditorComponent = viewChild(QuillEditorComponent);
+  highlightHovered = output<{ text: string; x: number; y: number } | undefined>();
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
@@ -366,6 +367,38 @@ export class EditorComponent extends BaseInputDirective<string> {
         editor.formatText(index, text.length, 'customHighlight', { color, bg });
         startIndex = index + text.length;
       }
+    }
+  }
+
+  /**
+   * Sends the text and position of a highlighted item
+   * when the mouse hovers over it, so a popover can be shown.
+   *
+   * @param e - mouse event from the editor. e.target should be the highlighted span.
+   */
+  onEditorMouseOver(e: Event): void {
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.classList.contains('compliance-highlight')) {
+      const rect = target.getBoundingClientRect();
+      this.highlightHovered.emit({
+        text: target.innerText,
+        x: rect.left,
+        y: rect.bottom + 1,
+      });
+    }
+  }
+
+  /**
+   * Clears the active popover when cursor leaves a highlighted span.
+   *
+   * @param e - mouse event from the editor. Only handled if e.target has the "compliance-highlight" class.
+   */
+  onEditorMouseOut(e: Event): void {
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.classList.contains('compliance-highlight')) {
+      this.highlightHovered.emit(undefined);
     }
   }
 

@@ -30,6 +30,10 @@
       contenteditable="false"
       (focusin)="onFocus()"
       (focusout)="onBlur()"
+      (mouseover)="onEditorMouseOver($event)"
+      (mouseout)="onEditorMouseOut($event)"
+      (focus)="onEditorMouseOver($event)"
+      (blur)="onEditorMouseOut($event)"
       #editorElem
       [style.height]="height()"
     >

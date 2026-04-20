@@ -22,6 +22,7 @@ export abstract class BaseInputDirective<T> {
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
+  complianceError = input<string | undefined>(undefined);
   warningText = input<string | undefined>(undefined);
   helperTextLeft = input<string | undefined>(undefined);
   helperTextRight = input<string | undefined>(undefined);
@@ -40,6 +41,7 @@ export abstract class BaseInputDirective<T> {
 
   inputState = computed(() => {
     this.formValidityVersion();
+    if (this.complianceError()) return 'invalid';
     if (!this.isTouched()) return 'untouched';
     if (this.formControl().invalid) return 'invalid';
     return 'valid';
@@ -50,6 +52,9 @@ export abstract class BaseInputDirective<T> {
     this.formValidityVersion();
     this.langChange();
 
+    // compliance error in job creation form title
+    const compliance = this.complianceError();
+    if (compliance) return compliance;
     const ctrl = this.formControl();
     const errors = ctrl.errors;
     if (!errors) return null;
@@ -99,7 +104,13 @@ export abstract class BaseInputDirective<T> {
   }
 
   onBlur(): void {
-    this.isTouched.set(true);
+    // When autofocus is enabled, skip marking as touched while the control is
+    // still pristine. This prevents showing validation errors from the
+    // focus→blur cycle triggered by dialog/modal animations before the user
+    // has actually interacted with the field.
+    if (!(this.autofocus() && this.formControl().pristine)) {
+      this.isTouched.set(true);
+    }
     this.isFocused.set(false);
   }
 

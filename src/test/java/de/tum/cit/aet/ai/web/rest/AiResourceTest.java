@@ -98,7 +98,7 @@ class AiResourceTest extends AbstractResourceTest {
             )
         );
 
-        given(aiService.analyzeCurrentJobDescription(any(JobFormDTO.class), anyString())).willReturn(expectedIssues);
+        given(aiService.analyzeCurrentJobDescription(any(JobFormDTO.class), anyString(), anyString())).willReturn(expectedIssues);
 
         List<ComplianceIssue> response = api
             .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
