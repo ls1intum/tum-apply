@@ -179,6 +179,9 @@ export class JobCreationFormComponent {
   /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
 
+  /** Tracks the currently in-flight translation request to deduplicate identical calls. */
+  private activeTranslationRequest: { sourceLang: Language; sourceText: string; targetLang: Language } | undefined;
+
   /** Last analyzed description text per language (used to avoid redundant compliance analysis) */
   private lastAnalyzedText: Record<string, string> = {};
 
@@ -564,6 +567,7 @@ export class JobCreationFormComponent {
       this.translationAbortController.abort();
       this.translationAbortController = undefined;
     }
+    this.activeTranslationRequest = undefined;
     this.isTranslating.set(false);
     this.translationTargetLang.set(undefined);
   }
@@ -853,6 +857,7 @@ export class JobCreationFormComponent {
   async generateJobApplicationDraft(): Promise<void> {
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
+    this.clearAutoSaveTimer();
 
     // 1) Enter generation mode and show placeholder
     this.isGeneratingDraft.set(true);
@@ -1268,6 +1273,7 @@ export class JobCreationFormComponent {
       }
 
       // 4) Prevent autosave from firing immediately after initialization
+      this.clearAutoSaveTimer();
       this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
@@ -1455,6 +1461,7 @@ export class JobCreationFormComponent {
       this.savingState.set('SAVING');
 
       this.autoSaveTimer = window.setTimeout(() => {
+        this.autoSaveTimer = undefined;
         // 5) Sync editor content to language signals and persist
         this.syncCurrentEditorIntoLanguageSignals();
         void this.performAutoSave();
@@ -1528,14 +1535,21 @@ export class JobCreationFormComponent {
     const text = currentText.trim();
     if (!text) return;
 
+    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
+    // If an identical translation is already in flight, skips the call to avoid a redundant LLM request.
+    const active = this.activeTranslationRequest;
+    if (active && active.sourceLang === currentLang && active.sourceText === text && active.targetLang === targetLang) {
+      return;
+    }
+
     // 1) Skip if the text hasn't changed since the last translation
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
 
     // 2) Cancel any active translation and set up fresh state
     this.cancelTranslation();
-    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
     const abortController = new AbortController();
+    this.activeTranslationRequest = { sourceLang: currentLang, sourceText: text, targetLang };
     this.translationAbortController = abortController;
     this.isTranslating.set(true);
     this.translationTargetLang.set(targetLang);
@@ -1616,6 +1630,15 @@ export class JobCreationFormComponent {
         this.isTranslating.set(false);
         this.translationTargetLang.set(undefined);
         this.translationAbortController = undefined;
+      }
+      // Clear only if this is still the same request.
+      // If a newer one exists, keep it to avoid breaking duplicate checks.
+      if (
+        this.activeTranslationRequest?.sourceLang === currentLang &&
+        this.activeTranslationRequest.sourceText === text &&
+        this.activeTranslationRequest.targetLang === targetLang
+      ) {
+        this.activeTranslationRequest = undefined;
       }
     }
   }
