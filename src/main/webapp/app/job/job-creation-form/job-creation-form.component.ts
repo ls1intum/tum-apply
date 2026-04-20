@@ -363,15 +363,38 @@ export class JobCreationFormComponent {
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
 
-  /** Computed: true when both EN and DE job descriptions have non-empty text content.
-   *  Uses jobDescriptionSignal for the active language (updates on every keystroke)
-   *  and the stored signal for the inactive language (synced on tab switch / save).
-   *  Strips HTML tags before checking so that empty editor markup (e.g. `<p></p>`) is treated as empty. */
+  /** Computed: true when both EN and DE job descriptions have non-empty text content
+   * and neither matches the default template text.
+   * Uses jobDescriptionSignal for the active language (updates on every keystroke)
+   * and the stored signal for the inactive language (synced on tab switch / save).
+   * Strips HTML tags before checking so that empty editor markup (e.g. `<p></p>`) is treated as empty. */
   bothDescriptionsFilled = computed(() => {
     const currentLang = this.currentDescriptionLanguage();
-    const currentText = extractTextFromHtml(this.jobDescriptionSignal());
-    const otherText = extractTextFromHtml(currentLang === 'en' ? this.jobDescriptionDE() : this.jobDescriptionEN());
-    return currentText.length > 0 && otherText.length > 0;
+    const currentHtml = this.jobDescriptionSignal() || '';
+
+    // 1) Resolve current HTML for both languages
+    const enHtml = currentLang === 'en' ? currentHtml : this.jobDescriptionEN();
+    const deHtml = currentLang === 'de' ? currentHtml : this.jobDescriptionDE();
+
+    // Helper to completely strip ALL whitespace, newlines, and non-breaking spaces for a strict comparison
+    const stripAllWhitespace = (str: string) => (str || '').replace(/[\s\u00A0\n\r]+/g, '');
+
+    // 2) Extract plain text from the user's input
+    const enText = stripAllWhitespace(extractTextFromHtml(enHtml));
+    const deText = stripAllWhitespace(extractTextFromHtml(deHtml));
+
+    // 3) Fetch default templates and extract their plain text
+    const templateEnHtml = this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN') as string;
+    const templateDeHtml = this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE') as string;
+
+    const templateEnText = stripAllWhitespace(extractTextFromHtml(templateEnHtml));
+    const templateDeText = stripAllWhitespace(extractTextFromHtml(templateDeHtml));
+
+    // 4) Validate that text exists and does not exactly match the template
+    const isEnValid = enText.length > 0 && enText !== templateEnText;
+    const isDeValid = deText.length > 0 && deText !== templateDeText;
+
+    return isEnValid && isDeValid;
   });
 
   /**
