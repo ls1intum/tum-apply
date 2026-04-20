@@ -30,6 +30,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.jsoup.Jsoup;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
@@ -187,7 +189,7 @@ public class AiService {
             }
 
             // 2) Send the images to the LLM with the extraction prompt
-            Object result = chatClient
+            var response = chatClient
                 .prompt()
                 .user(u -> {
                     u.text(prompt);
@@ -195,8 +197,20 @@ public class AiService {
                         u.media(MediaType.IMAGE_PNG, pageImage);
                     }
                 })
-                .call()
-                .entity(targetClass);
+                .call();
+
+            ChatResponse chatResponse = response.chatResponse();
+            if (chatResponse != null) {
+                Usage usage = chatResponse.getMetadata().getUsage();
+                log.info(
+                    "AI PDF Extraction Cost Metrics - Prompt Tokens: {}, Generation Tokens: {}, Total Tokens: {}",
+                    usage.getPromptTokens(),
+                    usage.getCompletionTokens(),
+                    usage.getTotalTokens()
+                );
+            }
+
+            Object result = response.entity(targetClass);
 
             if (isCv) {
                 return (ExtractedApplicationDataDTO) result;
