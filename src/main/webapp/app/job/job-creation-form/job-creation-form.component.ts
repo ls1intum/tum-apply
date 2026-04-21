@@ -373,7 +373,7 @@ export class JobCreationFormComponent {
     const deHtml = currentLang === 'de' ? currentHtml : this.jobDescriptionDE();
 
     // Helper to completely strip ALL whitespace, newlines, and non-breaking spaces for a strict comparison
-    const stripAllWhitespace = (str: string) => (str || '').replace(/[\s\u00A0\n\r]+/g, '');
+    const stripAllWhitespace = (str: string): string => (str || '').replace(/[\s\u00A0\n\r]+/g, '');
 
     // 2) Extract plain text from the user's input
     const enText = stripAllWhitespace(extractTextFromHtml(enHtml));
