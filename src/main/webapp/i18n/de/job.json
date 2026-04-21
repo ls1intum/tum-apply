@@ -178,11 +178,11 @@
           },
           "section2": {
             "title": "Rechtliche Compliance",
-            "body": "Das Tool prüft die Stellenschreibung auf Verstöße gegen rechtliche Risiken und EU-Richtlinien. Kritische Fehler werden stark gewichtet, da diese ein Haftungsrisiko für dich und die Universität darstellen"
+            "body": "Das Tool scannt nach rechtlichen Risiken und EU-Verstößen. Kritische Fehler werden stark gewichtet, da sie ein Haftungsrisiko für dich und die Universität darstellen."
           },
           "section3": {
             "title": "Gewichteter Qualitäts-Score",
-            "body": "Das Gesamtergebnis spiegelt die Publikationsreife wider. Während sprachliche Nuancen sanft einfließen, führen rechtliche Verstöße zu deutlichen Punktabzügen, um eine rechtssichere Veröffentlichung zu garantieren."
+            "body": "Der Score zeigt die Publikationsreife. Während Sprachnuancen sanft einfließen, führen Rechtsverstöße zu hohen Abzügen, um eine rechtssichere Veröffentlichung zu garantieren."
           }
         },
         "aiToggleOff": "KI Deaktiviert",

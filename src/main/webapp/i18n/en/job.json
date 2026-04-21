@@ -178,11 +178,11 @@
           },
           "section2": {
             "title": "Legal Compliance",
-            "body": "he tool checks the job advertisement for legal risks and violations of EU directives. Critical errors are heavily weighted, as they represent a liability risk for both you and the university."
+            "body": "The tool scans for legal risks and violations of EU directives. Critical errors are heavily weighted due to potential liability for you and the university."
           },
           "section3": {
             "title": "Weighted Quality Score",
-            "body": "The overall result reflects the readiness for publication. While linguistic nuances have a gradual impact, legal violations lead to significant point deductions to guarantee a legally compliant publication.."
+            "body": "This score reflects publication readiness. While tone has a gradual impact, legal violations cause significant deductions to ensure a legally compliant job posting."
           }
         },
         "aiToggleOff": "AI Disabled",
