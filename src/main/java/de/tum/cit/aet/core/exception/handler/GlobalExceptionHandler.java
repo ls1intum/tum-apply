@@ -72,7 +72,11 @@ public class GlobalExceptionHandler {
             HttpMediaTypeNotSupportedException.class,
             new ExceptionMetadata(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorCode.INVALID_PARAMETER)
         ),
-        Map.entry(HttpMessageNotReadableException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PARAMETER))
+        Map.entry(HttpMessageNotReadableException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PARAMETER)),
+        Map.entry(
+            AiServiceUnavailableException.class,
+            new ExceptionMetadata(HttpStatus.SERVICE_UNAVAILABLE, ErrorCode.AI_SERVICE_UNAVAILABLE)
+        )
     );
 
     /**

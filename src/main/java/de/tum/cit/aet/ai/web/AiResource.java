@@ -3,7 +3,9 @@ package de.tum.cit.aet.ai.web;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
+import de.tum.cit.aet.ai.service.AiFeatureToggleService;
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.core.exception.AiServiceUnavailableException;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -27,9 +29,17 @@ import reactor.core.publisher.Flux;
 public class AiResource {
 
     private final AiService aiService;
+    private final AiFeatureToggleService aiFeatureToggleService;
 
-    public AiResource(AiService aiService) {
+    public AiResource(AiService aiService, AiFeatureToggleService aiFeatureToggleService) {
         this.aiService = aiService;
+        this.aiFeatureToggleService = aiFeatureToggleService;
+    }
+
+    private void ensureAiAvailable() {
+        if (!aiFeatureToggleService.isAiAvailable()) {
+            throw new AiServiceUnavailableException("AI features are currently disabled");
+        }
     }
 
     /**
@@ -47,6 +57,7 @@ public class AiResource {
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {
+        ensureAiAvailable();
         log.info("PUT /api/ai/generateJobApplicationDraftStream - Streaming request received (lang={})", descriptionLanguage);
         return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage);
     }
@@ -62,6 +73,7 @@ public class AiResource {
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "translateJobDescriptionStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> translateJobDescriptionStream(@RequestParam("toLang") String toLang, @RequestBody TranslateComplianceDTO request) {
+        ensureAiAvailable();
         log.info("PUT /api/ai/translateJobDescriptionStream - Streaming translation request received (toLang={})", toLang);
         return aiService.translateTextStream(request.text(), toLang);
     }
@@ -86,6 +98,7 @@ public class AiResource {
         @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
         @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
     ) {
+        ensureAiAvailable();
         int fileCount = files == null ? 0 : files.size();
         log.info(
             "PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docIds={}, fileCount={}, isCV={}, saveData={})",
@@ -115,6 +128,7 @@ public class AiResource {
         @RequestParam("lang") String descriptionLanguage,
         @RequestParam(defaultValue = "en") String userLanguage
     ) {
+        ensureAiAvailable();
         log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})", descriptionLanguage);
         return ResponseEntity.ok(aiService.analyzeCurrentJobDescription(jobForm, descriptionLanguage, userLanguage));
     }

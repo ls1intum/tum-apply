@@ -28,6 +28,7 @@ import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/share
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
+import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
@@ -250,11 +251,15 @@ export class JobCreationFormComponent {
   private aiApi = inject(AiResourceApi);
   private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
+  private aiFeatureStatusService = inject(AiFeatureStatusService);
   private researchGroupApi = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Whether AI features are available system-wide (kill switch / circuit breaker). */
+  readonly aiSystemEnabled = this.aiFeatureStatusService.aiSystemEnabled;
 
   /** Score shown in the AI sidebar (undefined = not yet calculated) */
   readonly aiScore = signal<number | undefined>(undefined);
@@ -873,6 +878,10 @@ export class JobCreationFormComponent {
    * After generation completes, the final content is force-updated to ensure correctness.
    */
   async generateJobApplicationDraft(): Promise<void> {
+    if (!this.aiSystemEnabled()) {
+      this.toastService.showErrorKey('ai.featureToggle.systemDisabled');
+      return;
+    }
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
 
@@ -984,7 +993,7 @@ export class JobCreationFormComponent {
 
       // 3) Start translation only — analysis runs once at the end of translation,
       //    after both languages are available, for the most accurate score.
-      if (this.aiToggleSignal()) {
+      if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
     } catch {
@@ -1523,7 +1532,7 @@ export class JobCreationFormComponent {
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
-      if (this.aiToggleSignal()) {
+      if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
     } catch {

@@ -8,6 +8,7 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
+import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -53,12 +54,16 @@ export class AiExtractionBoxComponent {
   /** controls consent modal visibility */
   aiConsentVisible = signal<boolean>(false);
 
+  /** Whether AI features are available system-wide (kill switch / circuit breaker). */
+  aiSystemEnabled = inject(AiFeatureStatusService).aiSystemEnabled;
+
   /**
    * Whether the extract button should be disabled.
    *
-   * @return true when there are no persisted documents and no queued files to extract from
+   * @return true when AI is disabled system-wide or there are no documents to extract from
    */
   disabled = computed(() => {
+    if (!this.aiSystemEnabled()) return true;
     const hasPersistedDocs = this.documentIds().some(d => d.id && !d.id.startsWith('temp-'));
     const hasQueuedFiles = this.queuedFiles().length > 0;
     return !hasPersistedDocs && !hasQueuedFiles;

@@ -72,6 +72,8 @@ public class AiService {
 
     private final ComplianceScoreService complianceScoreService;
 
+    private final AiFeatureToggleService aiFeatureToggleService;
+
     public AiService(
         ChatClient.Builder chatClientBuilder,
         JobService jobService,
@@ -79,7 +81,8 @@ public class AiService {
         DocumentDictionaryService documentDictionaryService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceScoreService complianceScoreService
+        ComplianceScoreService complianceScoreService,
+        AiFeatureToggleService aiFeatureToggleService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
@@ -88,6 +91,7 @@ public class AiService {
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
         this.complianceScoreService = complianceScoreService;
+        this.aiFeatureToggleService = aiFeatureToggleService;
     }
 
     /**
@@ -125,6 +129,8 @@ public class AiService {
             )
             .stream()
             .content()
+            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
+            .doOnError(e -> aiFeatureToggleService.recordFailure())
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -152,6 +158,8 @@ public class AiService {
             )
             .stream()
             .content()
+            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
+            .doOnError(e -> aiFeatureToggleService.recordFailure())
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -187,16 +195,23 @@ public class AiService {
             }
 
             // 2) Send the images to the LLM with the extraction prompt
-            Object result = chatClient
-                .prompt()
-                .user(u -> {
-                    u.text(prompt);
-                    for (ByteArrayResource pageImage : pageImages) {
-                        u.media(MediaType.IMAGE_PNG, pageImage);
-                    }
-                })
-                .call()
-                .entity(targetClass);
+            Object result;
+            try {
+                result = chatClient
+                    .prompt()
+                    .user(u -> {
+                        u.text(prompt);
+                        for (ByteArrayResource pageImage : pageImages) {
+                            u.media(MediaType.IMAGE_PNG, pageImage);
+                        }
+                    })
+                    .call()
+                    .entity(targetClass);
+                aiFeatureToggleService.recordSuccess();
+            } catch (Exception e) {
+                aiFeatureToggleService.recordFailure();
+                throw e;
+            }
 
             if (isCv) {
                 return (ExtractedApplicationDataDTO) result;
@@ -327,7 +342,9 @@ public class AiService {
                 .call()
                 .entity(new ParameterizedTypeReference<>() {});
             complianceIssues.forEach(issue -> issue.setLanguage(lang));
+            aiFeatureToggleService.recordSuccess();
         } catch (Exception e) {
+            aiFeatureToggleService.recordFailure();
             throw new InternalServerException("Compliance analysis parsing failed", e);
         }
 
