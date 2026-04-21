@@ -167,7 +167,7 @@
         "aiHelperText": "Specify the most important information and let TUMApply AI write it for you.",
         "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
-        "aiScoreTitle": "Inclusivity Score",
+        "aiScoreTitle": "Quality Score",
         "aiScoreDialog": {
           "title": "How the Inclusivity Score is calculated",
           "summary": "Calculation factors",
