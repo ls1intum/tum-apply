@@ -169,20 +169,20 @@
         "aiFillerText": "Generating...",
         "aiScoreTitle": "Quality Score",
         "aiScoreDialog": {
-          "title": "How the Inclusivity Score is calculated",
+          "title": "How the Quality Score is calculated",
           "summary": "Calculation factors",
-          "explanation": "The score combines wording analysis, tone evaluation, and balanced weighting.",
+          "explanation": "The score combines word choice, tone, legal compliance, and balanced weighting.",
           "section1": {
-            "title": "Word Choice",
+            "title": "Inclusion and Word Choice",
             "body": "The system analyzes your text for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
           },
           "section2": {
-            "title": "Overall Impression",
-            "body": "A neutral tone yields the best result, while biased language leads to deductions."
+            "title": "Legal Compliance",
+            "body": "he tool checks the job advertisement for legal risks and violations of EU directives. Critical errors are heavily weighted, as they represent a liability risk for both you and the university."
           },
           "section3": {
-            "title": "Balanced Rating",
-            "body": "The score is weighted to ensure that individual, poorly chosen words do not disproportionately affect your final result."
+            "title": "Weighted Quality Score",
+            "body": "The overall result reflects the readiness for publication. While linguistic nuances have a gradual impact, legal violations lead to significant point deductions to guarantee a legally compliant publication.."
           }
         },
         "aiToggleOff": "AI Disabled",

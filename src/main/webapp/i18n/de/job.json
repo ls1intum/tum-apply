@@ -169,20 +169,20 @@
         "aiFillerText": "Generiert...",
         "aiScoreTitle": "Qualitäts-Score",
         "aiScoreDialog": {
-          "title": "Berechnung des Inklusivitäts-Scores",
+          "title": "Berechnung des Qualitäts-Scores",
           "summary": "Berechnungsfaktoren",
-          "explanation": "Der Score kombiniert Wortwahl, Tonalität und eine ausbalancierte Gewichtung.",
+          "explanation": "Der Score kombiniert Wortwahl, Tonalität, Rechtssicherheit und eine ausbalancierte Gewichtung.",
           "section1": {
-            "title": "Wortwahl",
+            "title": "Inklusion und Wortwahl",
             "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
           },
           "section2": {
-            "title": "Gesamteindruck",
-            "body": "Neutrale Formulierungen erzielen das beste Ergebnis, während einseitige Sprache zu Punktabzügen führt."
+            "title": "Rechtliche Compliance",
+            "body": "Das Tool prüft die Stellenschreibung auf Verstöße gegen rechtliche Risiken und EU-Richtlinien. Kritische Fehler werden stark gewichtet, da diese ein Haftungsrisiko für dich und die Universität darstellen"
           },
           "section3": {
-            "title": "Faire Gewichtung",
-            "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
+            "title": "Gewichteter Qualitäts-Score",
+            "body": "Das Gesamtergebnis spiegelt die Publikationsreife wider. Während sprachliche Nuancen sanft einfließen, führen rechtliche Verstöße zu deutlichen Punktabzügen, um eine rechtssichere Veröffentlichung zu garantieren."
           }
         },
         "aiToggleOff": "KI Deaktiviert",
