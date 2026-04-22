@@ -21,8 +21,6 @@ export interface AiFeatureStatus {
   providedIn: 'root',
 })
 export class AiFeatureStatusService {
-  private http = inject(HttpClient);
-
   /** Whether AI is available system-wide (manual toggle ON and circuit breaker closed). */
   readonly aiSystemEnabled = signal<boolean>(true);
 
@@ -34,6 +32,8 @@ export class AiFeatureStatusService {
 
   /** Whether the initial status check has completed. */
   readonly loaded = signal<boolean>(false);
+
+  private http = inject(HttpClient);
 
   constructor() {
     void this.refresh();

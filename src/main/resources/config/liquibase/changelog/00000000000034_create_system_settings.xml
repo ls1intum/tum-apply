@@ -5,8 +5,13 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="00000000000034-1" author="system">
+  <changeSet id="034a_create_system_settings_table" author="aniruddh">
     <comment>Create system_settings table for system-wide configuration (AI feature toggle etc.)</comment>
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="system_settings"/>
+      </not>
+    </preConditions>
     <createTable tableName="system_settings">
       <column name="setting_key" type="varchar(255)">
         <constraints primaryKey="true" nullable="false"/>
@@ -15,8 +20,11 @@
     </createTable>
   </changeSet>
 
-  <changeSet id="00000000000034-2" author="system">
+  <changeSet id="034b_insert_default_ai_enabled_setting" author="aniruddh">
     <comment>Insert default AI enabled setting</comment>
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">SELECT COUNT(*) FROM system_settings WHERE setting_key = 'ai.enabled'</sqlCheck>
+    </preConditions>
     <insert tableName="system_settings">
       <column name="setting_key" value="ai.enabled"/>
       <column name="setting_value" value="true"/>

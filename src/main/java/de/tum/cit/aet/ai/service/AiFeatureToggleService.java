@@ -54,11 +54,18 @@ public class AiFeatureToggleService {
     /**
      * Returns {@code true} when AI features are available system-wide.
      * This requires both the manual toggle to be ON and the circuit breaker to be CLOSED.
+     *
+     * @return {@code true} if AI features are currently available
      */
     public boolean isAiAvailable() {
         return manuallyEnabled.get() && !isCircuitBreakerOpen();
     }
 
+    /**
+     * Returns {@code true} when AI features are manually enabled by an admin.
+     *
+     * @return {@code true} if the manual toggle is ON
+     */
     public boolean isManuallyEnabled() {
         return manuallyEnabled.get();
     }
@@ -67,6 +74,8 @@ public class AiFeatureToggleService {
      * Returns {@code true} when the circuit breaker is open (too many consecutive LLM failures).
      * After the cooldown period the circuit enters half-open state (returns {@code false})
      * to allow a probe request.
+     *
+     * @return {@code true} if the circuit breaker is currently open
      */
     public boolean isCircuitBreakerOpen() {
         long openedAt = circuitOpenedAt.get();
@@ -81,6 +90,8 @@ public class AiFeatureToggleService {
 
     /**
      * Manually enable or disable AI features system-wide. Persisted to the database.
+     *
+     * @param enabled whether AI features should be enabled
      */
     public void setEnabled(boolean enabled) {
         manuallyEnabled.set(enabled);
@@ -120,6 +131,8 @@ public class AiFeatureToggleService {
 
     /**
      * Returns a snapshot of the current AI feature status.
+     *
+     * @return the current AI feature status including manual toggle and circuit breaker state
      */
     public AiFeatureStatusDTO getStatus() {
         return new AiFeatureStatusDTO(isAiAvailable(), !manuallyEnabled.get(), isCircuitBreakerOpen());

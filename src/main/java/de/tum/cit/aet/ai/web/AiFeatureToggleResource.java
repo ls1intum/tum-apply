@@ -28,6 +28,8 @@ public class AiFeatureToggleResource {
     /**
      * Returns the current system-wide AI feature status.
      * Available to any authenticated user so the frontend can adapt the UI.
+     *
+     * @return the current AI feature status
      */
     @Authenticated
     @GetMapping("/status")
@@ -39,6 +41,7 @@ public class AiFeatureToggleResource {
      * Manually enable or disable AI features system-wide. Admin only.
      *
      * @param enabled whether AI features should be enabled
+     * @return the updated AI feature status
      */
     @Admin
     @PutMapping("/toggle")
@@ -51,6 +54,8 @@ public class AiFeatureToggleResource {
     /**
      * Manually reset the circuit breaker. Admin only.
      * Use this after fixing the underlying issue (e.g. rotating an expired API key).
+     *
+     * @return the updated AI feature status after resetting the circuit breaker
      */
     @Admin
     @PostMapping("/reset-circuit-breaker")
