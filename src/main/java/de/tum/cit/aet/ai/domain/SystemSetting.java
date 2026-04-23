@@ -15,7 +15,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "system_settings")
 @NoArgsConstructor
-@NoUserDataExportRequired
+@NoUserDataExportRequired(reason = "System configuration settings are not part of user-personal export scope")
 public class SystemSetting {
 
     @Id
