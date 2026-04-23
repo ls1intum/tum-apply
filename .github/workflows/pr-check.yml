@@ -63,8 +63,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: validate-gradle-wrapper
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -82,8 +80,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
-          dependency-graph: ${{ github.event_name == 'pull_request' && 'generate-and-upload' || 'generate-submit-and-upload' }}
-          dependency-graph-continue-on-failure: true
 
       # --- Code Style Checks ---
       - name: ✅ Java Code Style (Spotless)
@@ -340,13 +336,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    permissions:
-      contents: write
     env:
       TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -354,13 +353,6 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          gradle-version: ${{ env.GRADLE_VERSION }}
-          dependency-graph: ${{ github.event_name == 'pull_request' && 'generate-and-upload' || 'generate-submit-and-upload' }}
-          dependency-graph-continue-on-failure: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
