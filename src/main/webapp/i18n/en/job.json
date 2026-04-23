@@ -182,7 +182,7 @@
           },
           "section3": {
             "title": "Weighted Quality Score",
-            "body": "This score reflects the quality of the description. While tone has a gradual impact, legal violations cause significant deductions to ensure a legally compliant job posting."
+            "body": "Your final score is a weighted average of the factors above. It serves as a single metric to determine if your job description meets university recruitment standards."
           }
         },
         "aiToggleOff": "AI Disabled",
