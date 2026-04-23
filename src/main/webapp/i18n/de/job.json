@@ -174,7 +174,7 @@
           "explanation": "Der Score kombiniert Wortwahl, Tonalität, Rechtssicherheit und eine ausbalancierte Gewichtung.",
           "section1": {
             "title": "Inklusion und Wortwahl",
-            "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
+            "body": "Die Stellenbeschreibung wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
           },
           "section2": {
             "title": "Rechtliche Compliance",
@@ -182,7 +182,7 @@
           },
           "section3": {
             "title": "Gewichteter Qualitäts-Score",
-            "body": "Der Score zeigt die Publikationsreife. Während Sprachnuancen sanft einfließen, führen Rechtsverstöße zu hohen Abzügen, um eine rechtssichere Veröffentlichung zu garantieren."
+            "body": "Der Score bewertet die Qualität der Beschreibung. Während Sprachnuancen sanft einfließen, führen Rechtsverstöße zu hohen Abzügen, um eine rechtssichere Veröffentlichung zu garantieren."
           }
         },
         "aiToggleOff": "KI Deaktiviert",

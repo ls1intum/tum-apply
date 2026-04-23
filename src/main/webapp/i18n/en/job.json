@@ -174,7 +174,7 @@
           "explanation": "The score combines word choice, tone, legal compliance, and balanced weighting.",
           "section1": {
             "title": "Inclusion and Word Choice",
-            "body": "The system analyzes your text for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
+            "body": "The system analyzes your job description for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
           },
           "section2": {
             "title": "Legal Compliance",
@@ -182,7 +182,7 @@
           },
           "section3": {
             "title": "Weighted Quality Score",
-            "body": "This score reflects publication readiness. While tone has a gradual impact, legal violations cause significant deductions to ensure a legally compliant job posting."
+            "body": "This score reflects the quality of the description. While tone has a gradual impact, legal violations cause significant deductions to ensure a legally compliant job posting."
           }
         },
         "aiToggleOff": "AI Disabled",
