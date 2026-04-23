@@ -45,9 +45,7 @@ public class AiFeatureToggleService {
 
     @PostConstruct
     void init() {
-        systemSettingRepository
-            .findById(SETTING_KEY)
-            .ifPresent(setting -> manuallyEnabled.set(Boolean.parseBoolean(setting.getValue())));
+        systemSettingRepository.findById(SETTING_KEY).ifPresent(setting -> manuallyEnabled.set(Boolean.parseBoolean(setting.getValue())));
         log.info("AI feature toggle initialized: manuallyEnabled={}", manuallyEnabled.get());
     }
 
