@@ -1,5 +1,6 @@
 package de.tum.cit.aet.ai.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "system_settings")
 @NoArgsConstructor
+@NoUserDataExportRequired
 public class SystemSetting {
 
     @Id
