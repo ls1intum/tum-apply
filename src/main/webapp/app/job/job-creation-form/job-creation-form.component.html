@@ -15,7 +15,7 @@
   <div class="page-container">
     <div class="page-header flex items-center justify-between">
       <h1 jhiTranslate="{{ pageTitle() }}"></h1>
-      <div class="flex items-center gap-2">
+      <div class="hidden lg:flex items-center gap-2">
         <jhi-segmented-toggle
           class="[&_button]:!min-w-[7rem] [&_button]:!whitespace-nowrap"
           [value]="aiToggleSignal() ? 'right' : 'left'"
@@ -164,9 +164,24 @@
               <!-- Editor -->
               <div>
                 @if (aiToggleSignal()) {
-                  <div class="flex items-center mt-5 -mb-5 justify-end gap-1 text-sm">
+                  <div class="hidden lg:flex items-center mt-5 -mb-5 justify-end gap-1 text-sm">
                     <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
                     <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
+                  </div>
+                  <!-- Mobile view-->
+                  <div class="flex lg:hidden mb-3">
+                    <jhi-button
+                      [label]="
+                        rewriteButtonSignal()
+                          ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
+                          : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
+                      "
+                      [shouldTranslate]="true"
+                      severity="primary"
+                      icon="custom-sparkle"
+                      [disabled]="isGeneratingDraft()"
+                      (click)="generateJobApplicationDraft()"
+                    />
                   </div>
                 }
                 <jhi-editor
@@ -194,10 +209,10 @@
       </div>
 
       @if (aiToggleSignal()) {
-        <!--AI Assistant sidebar-->
+        <!--Desktop: AI Assistant sidebar-->
         <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
         <aside
-          class="flex flex-col mx-auto mt-4 w-full max-w-[52rem] overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
+          class="hidden lg:flex lg:flex-col mx-auto mt-4 w-full max-w-[52rem] overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >
           <div class="flex items-center">
             <div class="flex flex-1 items-center justify-start min-h-16 gap-3 px-5 py-3 text-text-primary">
@@ -213,10 +228,45 @@
             [isRewriteMode]="rewriteButtonSignal()"
             [currentLang]="currentDescriptionLanguage()"
             [complianceIssues]="complianceIssues()"
+            [inclusivePercentage]="genderWordPercentages().inclusivePercentage"
+            [nonInclusivePercentage]="genderWordPercentages().nonInclusivePercentage"
             (generate)="generateJobApplicationDraft()"
             (filterComplianceCat)="onComplianceFilterChange($event)"
           />
         </aside>
+
+        <!-- Mobile: Floating AI button for bottom sheet -->
+        <jhi-button
+          class="lg:hidden fixed right-4 bottom-34 z-40"
+          severity="primary"
+          icon="custom-sparkle"
+          [label]="'jobCreationForm.aiSidebar.header'"
+          styleClass="!rounded-full !px-4 !py-3 !shadow-lg"
+          (click)="mobileSheetOpen.set(true)"
+          [shouldTranslate]="true"
+        />
+
+        <!-- Mobile bottom sheet -->
+        <p-drawer
+          [visible]="mobileSheetOpen()"
+          (visibleChange)="mobileSheetOpen.set($event)"
+          position="bottom"
+          styleClass="lg:!hidden !h-[45vh] !rounded-t-2xl"
+          [showCloseIcon]="true"
+        >
+          <jhi-ai-assistant-card
+            [score]="aiScore()"
+            [isGenerating]="isGeneratingDraft()"
+            [isAnalyzing]="isScoreProcessing()"
+            [isRewriteMode]="rewriteButtonSignal()"
+            [currentLang]="currentDescriptionLanguage()"
+            [complianceIssues]="complianceIssues()"
+            [inclusivePercentage]="genderWordPercentages().inclusivePercentage"
+            [nonInclusivePercentage]="genderWordPercentages().nonInclusivePercentage"
+            [hideGenerateButton]="true"
+            (filterComplianceCat)="onComplianceFilterChange($event)"
+          />
+        </p-drawer>
       }
     </div>
   </ng-template>

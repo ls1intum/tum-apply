@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DrawerModule } from 'primeng/drawer';
 import { TranslateDirective } from 'app/shared/language';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -105,6 +106,7 @@ type JobFormMode = 'create' | 'edit';
     CheckboxComponent,
     AiAssistantCardComponent,
     CompliancePopoverComponent,
+    DrawerModule,
   ],
   providers: [JobResourceApi],
 })
@@ -253,7 +255,7 @@ export class JobCreationFormComponent {
   private researchGroupApi = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AI SIGNALS
+  // AI SIDEBAR SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Score shown in the AI sidebar (undefined = not yet calculated) */
@@ -290,6 +292,21 @@ export class JobCreationFormComponent {
       }
     }
     return undefined;
+  });
+
+  /** Percentage split of gender-coded words from the existing gender-decoder analysis. */
+  readonly genderWordPercentages = computed(() => {
+    const analysis = this.jobDescriptionEditor()?.analysisResult();
+    const words = analysis?.biasedWords ?? [];
+
+    const inclusiveCount = words.filter(word => word.type === 'inclusive').length;
+    const nonInclusiveCount = words.filter(word => word.type === 'non-inclusive').length;
+    const total = inclusiveCount + nonInclusiveCount;
+
+    return {
+      inclusivePercentage: total > 0 ? Math.round((inclusiveCount / total) * 100) : 100,
+      nonInclusivePercentage: total > 0 ? Math.round((nonInclusiveCount / total) * 100) : 0,
+    };
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -332,6 +349,9 @@ export class JobCreationFormComponent {
 
   /** Reference to the job description rich-text editor */
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
+
+  /** Signal controlling mobile bottom sheet visibility for AI assistant */
+  mobileSheetOpen = signal(false);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM VALIDITY SIGNALS

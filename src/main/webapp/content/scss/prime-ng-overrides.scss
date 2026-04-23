@@ -198,3 +198,20 @@ p-step[data-p-active='true'] .p-step-title {
 .p-progress-spinner-circle {
   stroke: var(--p-primary-color) !important;
 }
+
+/* -------------------------------
+   Mobile bottom sheet for AI analysis
+---------------------------------- */
+.p-drawer.p-drawer-bottom {
+  padding: 0 !important;
+  margin: 0 !important;
+
+  .p-drawer-content {
+    padding: 0 !important;
+  }
+
+  .p-drawer-header {
+    justify-content: flex-end !important;
+    padding: 0.5rem !important;
+  }
+}
