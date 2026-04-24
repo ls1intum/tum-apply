@@ -19,7 +19,7 @@ STRICT ANALYSIS RULES:
   - Detect requests for unnecessary personal data or sharing with third parties without consent under Art. 5 DSGVO.
   - JOB TITLE CHECK: If title "{title}" is not gender-neutral with "(m/f/d)" or "(m/w/d)", flag it.
 ----------------------
-4. DSGVO MINIMIZATION:
+4. CATEGORY DSGVO MINIMIZATION:
   - Scan for violations of Data Minimization (Art. 5 DSGVO).
   - Detect for keyword that specifically ask for DATA (e.g., photos, ID copies, criminal records, marital status, religion)
 ----------------------
