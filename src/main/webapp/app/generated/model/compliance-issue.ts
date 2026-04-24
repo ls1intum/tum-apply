@@ -29,14 +29,14 @@ export const ComplianceIssueActionEnum = {
 
 export const ComplianceIssueActionEnumValues = ['REPLACE', 'ADD', 'REMOVE'] as const;
 
-export type ComplianceIssueCategoryEnum = 'CRITICAL_AGG' | 'TRANSPARENCY' | 'GENDER_INCLUSIVE' | 'GENDER_EXCLUSIVE';
+export type ComplianceIssueCategoryEnum = 'CRITICAL_AGG' | 'TRANSPARENCY' | 'DSGVO_MIN' | 'PUBLIC_SELECTOR';
 
 export const ComplianceIssueCategoryEnum = {
     CriticalAgg: 'CRITICAL_AGG' as const,
     Transparency: 'TRANSPARENCY' as const,
-    GenderInclusive: 'GENDER_INCLUSIVE' as const,
-    GenderExclusive: 'GENDER_EXCLUSIVE' as const,
+    DsgvoMin: 'DSGVO_MIN' as const,
+    PublicSelector: 'PUBLIC_SELECTOR' as const,
 } as const;
 
-export const ComplianceIssueCategoryEnumValues = ['CRITICAL_AGG', 'TRANSPARENCY', 'GENDER_INCLUSIVE', 'GENDER_EXCLUSIVE'] as const;
+export const ComplianceIssueCategoryEnumValues = ['CRITICAL_AGG', 'TRANSPARENCY', 'DSGVO_MIN', 'PUBLIC_SELECTOR'] as const;
 

@@ -149,6 +149,8 @@
       "complianceHeader": "Compliance-Prüfer",
       "critical": "Fixe kritische AGG-Verstöße",
       "transparency": "Transparenz verbessern",
+      "dsgvo": "Fixe DSGVO-Verstöße",
+      "publicSector": "Gleichstellungspflicht öffentlicher Stellen",
       "filterByCategory": "Nach Kategorie filtern"
     },
     "positionDetailsSection": {
