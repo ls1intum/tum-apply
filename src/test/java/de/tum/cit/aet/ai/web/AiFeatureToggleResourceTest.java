@@ -74,7 +74,8 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
         @Test
         void shouldEnableAiWhenAdmin() {
             // First disable
-            api.with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            api
+                .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
             // Then enable
@@ -89,7 +90,8 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldPersistToggleStateToDatabase() {
-            api.with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            api
+                .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
             var setting = systemSettingRepository.findById("ai.enabled");
@@ -99,7 +101,8 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReturn403WhenNonAdmin() {
-            api.with(JwtPostProcessors.jwtUser(regularUserId, "ROLE_APPLICANT"))
+            api
+                .with(JwtPostProcessors.jwtUser(regularUserId, "ROLE_APPLICANT"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, Void.class, 403);
         }
 
@@ -124,7 +127,8 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReturn403WhenNonAdmin() {
-            api.with(JwtPostProcessors.jwtUser(regularUserId, "ROLE_APPLICANT"))
+            api
+                .with(JwtPostProcessors.jwtUser(regularUserId, "ROLE_APPLICANT"))
                 .postAndRead(BASE_URL + "/reset-circuit-breaker", null, Void.class, 403);
         }
 
@@ -139,7 +143,8 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReflectDisabledStateInStatus() {
-            api.with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            api
+                .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
             var status = api

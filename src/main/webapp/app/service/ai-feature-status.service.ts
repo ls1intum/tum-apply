@@ -1,6 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-
 import { AiFeatureToggleResourceApi } from 'app/generated/api/ai-feature-toggle-resource-api';
 
 /**

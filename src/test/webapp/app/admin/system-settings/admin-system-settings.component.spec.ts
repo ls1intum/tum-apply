@@ -9,198 +9,198 @@ import { provideTranslateMock, createTranslateServiceMock } from 'util/translate
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 
 describe('AdminSystemSettingsComponent', () => {
-    let component: AdminSystemSettingsComponent;
-    let fixture: ComponentFixture<AdminSystemSettingsComponent>;
-    let mockApi: {
-        getAiStatus: ReturnType<typeof vi.fn>;
-        toggleAi: ReturnType<typeof vi.fn>;
-        resetCircuitBreaker: ReturnType<typeof vi.fn>;
+  let component: AdminSystemSettingsComponent;
+  let fixture: ComponentFixture<AdminSystemSettingsComponent>;
+  let mockApi: {
+    getAiStatus: ReturnType<typeof vi.fn>;
+    toggleAi: ReturnType<typeof vi.fn>;
+    resetCircuitBreaker: ReturnType<typeof vi.fn>;
+  };
+  let mockToastService: ToastServiceMock;
+
+  const enabledStatus: AiFeatureStatusDTO = {
+    aiEnabled: true,
+    manuallyDisabled: false,
+    circuitBreakerOpen: false,
+  };
+
+  const disabledStatus: AiFeatureStatusDTO = {
+    aiEnabled: false,
+    manuallyDisabled: true,
+    circuitBreakerOpen: false,
+  };
+
+  const circuitBreakerOpenStatus: AiFeatureStatusDTO = {
+    aiEnabled: false,
+    manuallyDisabled: false,
+    circuitBreakerOpen: true,
+  };
+
+  beforeEach(async () => {
+    mockApi = {
+      getAiStatus: vi.fn(),
+      toggleAi: vi.fn(),
+      resetCircuitBreaker: vi.fn(),
     };
-    let mockToastService: ToastServiceMock;
 
-    const enabledStatus: AiFeatureStatusDTO = {
-        aiEnabled: true,
-        manuallyDisabled: false,
-        circuitBreakerOpen: false,
-    };
+    mockToastService = createToastServiceMock();
 
-    const disabledStatus: AiFeatureStatusDTO = {
-        aiEnabled: false,
-        manuallyDisabled: true,
-        circuitBreakerOpen: false,
-    };
+    mockApi.getAiStatus.mockReturnValue(of(enabledStatus));
 
-    const circuitBreakerOpenStatus: AiFeatureStatusDTO = {
-        aiEnabled: false,
-        manuallyDisabled: false,
-        circuitBreakerOpen: true,
-    };
+    await TestBed.configureTestingModule({
+      imports: [AdminSystemSettingsComponent],
+      providers: [
+        { provide: AiFeatureToggleResourceApi, useValue: mockApi },
+        provideTranslateMock(createTranslateServiceMock()),
+        provideToastServiceMock(mockToastService),
+      ],
+    }).compileComponents();
 
-    beforeEach(async () => {
-        mockApi = {
-            getAiStatus: vi.fn(),
-            toggleAi: vi.fn(),
-            resetCircuitBreaker: vi.fn(),
-        };
+    fixture = TestBed.createComponent(AdminSystemSettingsComponent);
+    component = fixture.componentInstance;
+  });
 
-        mockToastService = createToastServiceMock();
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-        mockApi.getAiStatus.mockReturnValue(of(enabledStatus));
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
+  });
 
-        await TestBed.configureTestingModule({
-            imports: [AdminSystemSettingsComponent],
-            providers: [
-                { provide: AiFeatureToggleResourceApi, useValue: mockApi },
-                provideTranslateMock(createTranslateServiceMock()),
-                provideToastServiceMock(mockToastService),
-            ],
-        }).compileComponents();
+  describe('Loading Status', () => {
+    it('should fetch AI status on construction', async () => {
+      await Promise.resolve();
 
-        fixture = TestBed.createComponent(AdminSystemSettingsComponent);
-        component = fixture.componentInstance;
+      expect(mockApi.getAiStatus).toHaveBeenCalledOnce();
+      expect(component.aiStatus()).toEqual(enabledStatus);
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
+    it('should set isLoading to false after successful load', async () => {
+      await Promise.resolve();
+
+      expect(component.isLoading()).toBe(false);
     });
 
-    it('should create the component', () => {
-        expect(component).toBeTruthy();
+    it('should show error toast when loading fails', async () => {
+      mockApi.getAiStatus.mockReturnValue(throwError(() => new Error('Network error')));
+
+      await component.loadStatus();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.loadError');
+      expect(component.isLoading()).toBe(false);
+    });
+  });
+
+  describe('Computed Signals', () => {
+    it('should derive aiEnabled from status', async () => {
+      await Promise.resolve();
+
+      expect(component.aiEnabled()).toBe(true);
     });
 
-    describe('Loading Status', () => {
-        it('should fetch AI status on construction', async () => {
-            await Promise.resolve();
+    it('should derive manuallyDisabled from status', async () => {
+      mockApi.getAiStatus.mockReturnValue(of(disabledStatus));
+      await component.loadStatus();
 
-            expect(mockApi.getAiStatus).toHaveBeenCalledOnce();
-            expect(component.aiStatus()).toEqual(enabledStatus);
-        });
-
-        it('should set isLoading to false after successful load', async () => {
-            await Promise.resolve();
-
-            expect(component.isLoading()).toBe(false);
-        });
-
-        it('should show error toast when loading fails', async () => {
-            mockApi.getAiStatus.mockReturnValue(throwError(() => new Error('Network error')));
-
-            await component.loadStatus();
-
-            expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.loadError');
-            expect(component.isLoading()).toBe(false);
-        });
+      expect(component.manuallyDisabled()).toBe(true);
     });
 
-    describe('Computed Signals', () => {
-        it('should derive aiEnabled from status', async () => {
-            await Promise.resolve();
+    it('should derive circuitBreakerOpen from status', async () => {
+      mockApi.getAiStatus.mockReturnValue(of(circuitBreakerOpenStatus));
+      await component.loadStatus();
 
-            expect(component.aiEnabled()).toBe(true);
-        });
-
-        it('should derive manuallyDisabled from status', async () => {
-            mockApi.getAiStatus.mockReturnValue(of(disabledStatus));
-            await component.loadStatus();
-
-            expect(component.manuallyDisabled()).toBe(true);
-        });
-
-        it('should derive circuitBreakerOpen from status', async () => {
-            mockApi.getAiStatus.mockReturnValue(of(circuitBreakerOpenStatus));
-            await component.loadStatus();
-
-            expect(component.circuitBreakerOpen()).toBe(true);
-        });
-
-        it('should default to safe values when status is undefined', () => {
-            component.aiStatus.set(undefined);
-
-            expect(component.aiEnabled()).toBe(true);
-            expect(component.manuallyDisabled()).toBe(false);
-            expect(component.circuitBreakerOpen()).toBe(false);
-        });
+      expect(component.circuitBreakerOpen()).toBe(true);
     });
 
-    describe('Toggle AI', () => {
-        it('should disable AI and show success toast', async () => {
-            mockApi.toggleAi.mockReturnValue(of(disabledStatus));
+    it('should default to safe values when status is undefined', () => {
+      component.aiStatus.set(undefined);
 
-            await component.onAiToggleChanged(false);
+      expect(component.aiEnabled()).toBe(true);
+      expect(component.manuallyDisabled()).toBe(false);
+      expect(component.circuitBreakerOpen()).toBe(false);
+    });
+  });
 
-            expect(mockApi.toggleAi).toHaveBeenCalledWith(false);
-            expect(component.aiStatus()).toEqual(disabledStatus);
-            expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.ai.toast.disabled');
-        });
+  describe('Toggle AI', () => {
+    it('should disable AI and show success toast', async () => {
+      mockApi.toggleAi.mockReturnValue(of(disabledStatus));
 
-        it('should enable AI and show success toast', async () => {
-            mockApi.toggleAi.mockReturnValue(of(enabledStatus));
+      await component.onAiToggleChanged(false);
 
-            await component.onAiToggleChanged(true);
-
-            expect(mockApi.toggleAi).toHaveBeenCalledWith(true);
-            expect(component.aiStatus()).toEqual(enabledStatus);
-            expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.ai.toast.enabled');
-        });
-
-        it('should show error toast when toggle fails', async () => {
-            mockApi.toggleAi.mockReturnValue(throwError(() => new Error('API error')));
-
-            await component.onAiToggleChanged(false);
-
-            expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.toggleError');
-        });
-
-        it('should set isUpdating to false after toggle completes', async () => {
-            mockApi.toggleAi.mockReturnValue(of(disabledStatus));
-
-            await component.onAiToggleChanged(false);
-
-            expect(component.isUpdating()).toBe(false);
-        });
-
-        it('should set isUpdating to false after toggle fails', async () => {
-            mockApi.toggleAi.mockReturnValue(throwError(() => new Error('API error')));
-
-            await component.onAiToggleChanged(false);
-
-            expect(component.isUpdating()).toBe(false);
-        });
+      expect(mockApi.toggleAi).toHaveBeenCalledWith(false);
+      expect(component.aiStatus()).toEqual(disabledStatus);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.ai.toast.disabled');
     });
 
-    describe('Reset Circuit Breaker', () => {
-        it('should reset circuit breaker and show success toast', async () => {
-            mockApi.resetCircuitBreaker.mockReturnValue(of(enabledStatus));
+    it('should enable AI and show success toast', async () => {
+      mockApi.toggleAi.mockReturnValue(of(enabledStatus));
 
-            await component.resetCircuitBreaker();
+      await component.onAiToggleChanged(true);
 
-            expect(mockApi.resetCircuitBreaker).toHaveBeenCalledOnce();
-            expect(component.aiStatus()).toEqual(enabledStatus);
-            expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.ai.toast.circuitBreakerReset');
-        });
-
-        it('should show error toast when reset fails', async () => {
-            mockApi.resetCircuitBreaker.mockReturnValue(throwError(() => new Error('API error')));
-
-            await component.resetCircuitBreaker();
-
-            expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.resetError');
-        });
-
-        it('should set isUpdating to false after reset completes', async () => {
-            mockApi.resetCircuitBreaker.mockReturnValue(of(enabledStatus));
-
-            await component.resetCircuitBreaker();
-
-            expect(component.isUpdating()).toBe(false);
-        });
-
-        it('should set isUpdating to false after reset fails', async () => {
-            mockApi.resetCircuitBreaker.mockReturnValue(throwError(() => new Error('API error')));
-
-            await component.resetCircuitBreaker();
-
-            expect(component.isUpdating()).toBe(false);
-        });
+      expect(mockApi.toggleAi).toHaveBeenCalledWith(true);
+      expect(component.aiStatus()).toEqual(enabledStatus);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.ai.toast.enabled');
     });
+
+    it('should show error toast when toggle fails', async () => {
+      mockApi.toggleAi.mockReturnValue(throwError(() => new Error('API error')));
+
+      await component.onAiToggleChanged(false);
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.toggleError');
+    });
+
+    it('should set isUpdating to false after toggle completes', async () => {
+      mockApi.toggleAi.mockReturnValue(of(disabledStatus));
+
+      await component.onAiToggleChanged(false);
+
+      expect(component.isUpdating()).toBe(false);
+    });
+
+    it('should set isUpdating to false after toggle fails', async () => {
+      mockApi.toggleAi.mockReturnValue(throwError(() => new Error('API error')));
+
+      await component.onAiToggleChanged(false);
+
+      expect(component.isUpdating()).toBe(false);
+    });
+  });
+
+  describe('Reset Circuit Breaker', () => {
+    it('should reset circuit breaker and show success toast', async () => {
+      mockApi.resetCircuitBreaker.mockReturnValue(of(enabledStatus));
+
+      await component.resetCircuitBreaker();
+
+      expect(mockApi.resetCircuitBreaker).toHaveBeenCalledOnce();
+      expect(component.aiStatus()).toEqual(enabledStatus);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.ai.toast.circuitBreakerReset');
+    });
+
+    it('should show error toast when reset fails', async () => {
+      mockApi.resetCircuitBreaker.mockReturnValue(throwError(() => new Error('API error')));
+
+      await component.resetCircuitBreaker();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.resetError');
+    });
+
+    it('should set isUpdating to false after reset completes', async () => {
+      mockApi.resetCircuitBreaker.mockReturnValue(of(enabledStatus));
+
+      await component.resetCircuitBreaker();
+
+      expect(component.isUpdating()).toBe(false);
+    });
+
+    it('should set isUpdating to false after reset fails', async () => {
+      mockApi.resetCircuitBreaker.mockReturnValue(throwError(() => new Error('API error')));
+
+      await component.resetCircuitBreaker();
+
+      expect(component.isUpdating()).toBe(false);
+    });
+  });
 });
