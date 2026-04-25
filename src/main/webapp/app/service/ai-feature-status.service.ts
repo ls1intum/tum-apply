@@ -1,12 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-export interface AiFeatureStatus {
-  aiEnabled: boolean;
-  manuallyDisabled: boolean;
-  circuitBreakerOpen: boolean;
-}
+import { AiFeatureToggleResourceApi } from 'app/generated/api/ai-feature-toggle-resource-api';
 
 /**
  * Service that tracks the system-wide AI feature availability.
@@ -33,7 +28,7 @@ export class AiFeatureStatusService {
   /** Whether the initial status check has completed. */
   readonly loaded = signal<boolean>(false);
 
-  private http = inject(HttpClient);
+  private aiFeatureToggleApi = inject(AiFeatureToggleResourceApi);
 
   constructor() {
     void this.refresh();
@@ -45,10 +40,10 @@ export class AiFeatureStatusService {
    */
   async refresh(): Promise<void> {
     try {
-      const status = await firstValueFrom(this.http.get<AiFeatureStatus>('/api/ai/feature-toggle/status'));
-      this.aiSystemEnabled.set(status.aiEnabled);
-      this.manuallyDisabled.set(status.manuallyDisabled);
-      this.circuitBreakerOpen.set(status.circuitBreakerOpen);
+      const status = await firstValueFrom(this.aiFeatureToggleApi.getAiStatus());
+      this.aiSystemEnabled.set(status.aiEnabled ?? false);
+      this.manuallyDisabled.set(status.manuallyDisabled ?? false);
+      this.circuitBreakerOpen.set(status.circuitBreakerOpen ?? false);
     } catch {
       // If we can't reach the endpoint, assume AI is unavailable
       this.aiSystemEnabled.set(false);

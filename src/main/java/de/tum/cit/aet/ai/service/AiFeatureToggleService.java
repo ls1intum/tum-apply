@@ -7,7 +7,6 @@ import jakarta.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
  * AI is available only when both conditions are met: manually enabled AND circuit closed.
  */
 @Service
-@Slf4j
 public class AiFeatureToggleService {
 
     private static final String SETTING_KEY = "ai.enabled";
@@ -50,9 +48,8 @@ public class AiFeatureToggleService {
                 .findById(SETTING_KEY)
                 .ifPresent(setting -> manuallyEnabled.set(Boolean.parseBoolean(setting.getValue())));
         } catch (Exception e) {
-            log.warn("Could not load AI feature toggle from database, defaulting to enabled: {}", e.getMessage());
+            // Table may not exist during API docs generation (no-liquibase profile); default to enabled
         }
-        log.info("AI feature toggle initialized: manuallyEnabled={}", manuallyEnabled.get());
     }
 
     /**
@@ -100,16 +97,12 @@ public class AiFeatureToggleService {
     public void setEnabled(boolean enabled) {
         manuallyEnabled.set(enabled);
         systemSettingRepository.save(new SystemSetting(SETTING_KEY, String.valueOf(enabled)));
-        log.info("AI features manually {}", enabled ? "enabled" : "disabled");
     }
 
     /**
      * Record a successful LLM call. Resets the circuit breaker.
      */
     public void recordSuccess() {
-        if (consecutiveFailures.get() > 0 || circuitOpenedAt.get() > 0) {
-            log.info("AI circuit breaker reset after successful call (was at {} consecutive failures)", consecutiveFailures.get());
-        }
         consecutiveFailures.set(0);
         circuitOpenedAt.set(0);
     }
@@ -119,8 +112,8 @@ public class AiFeatureToggleService {
      */
     public void recordFailure() {
         int failures = consecutiveFailures.incrementAndGet();
-        if (failures >= FAILURE_THRESHOLD && circuitOpenedAt.compareAndSet(0, System.currentTimeMillis())) {
-            log.warn("AI circuit breaker OPENED after {} consecutive failures", failures);
+        if (failures >= FAILURE_THRESHOLD) {
+            circuitOpenedAt.compareAndSet(0, System.currentTimeMillis());
         }
     }
 
@@ -130,7 +123,6 @@ public class AiFeatureToggleService {
     public void resetCircuitBreaker() {
         consecutiveFailures.set(0);
         circuitOpenedAt.set(0);
-        log.info("AI circuit breaker manually reset by admin");
     }
 
     /**
