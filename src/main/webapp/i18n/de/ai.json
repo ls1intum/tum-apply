@@ -1,0 +1,10 @@
+{
+  "ai": {
+    "featureToggle": {
+      "systemDisabled": {
+        "summary": "KI nicht verfügbar",
+        "detail": "KI-Funktionen wurden vom Systemadministrator deaktiviert."
+      }
+    }
+  }
+}

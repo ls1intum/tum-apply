@@ -1,0 +1,10 @@
+{
+  "ai": {
+    "featureToggle": {
+      "systemDisabled": {
+        "summary": "AI Unavailable",
+        "detail": "AI features are currently disabled by the system administrator."
+      }
+    }
+  }
+}

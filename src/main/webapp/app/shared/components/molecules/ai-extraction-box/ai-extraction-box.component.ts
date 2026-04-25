@@ -60,10 +60,9 @@ export class AiExtractionBoxComponent {
   /**
    * Whether the extract button should be disabled.
    *
-   * @return true when AI is disabled system-wide or there are no documents to extract from
+   * @return true when there are no documents to extract from
    */
   disabled = computed(() => {
-    if (!this.aiSystemEnabled()) return true;
     const hasPersistedDocs = this.documentIds().some(d => d.id && !d.id.startsWith('temp-'));
     const hasQueuedFiles = this.queuedFiles().length > 0;
     return !hasPersistedDocs && !hasQueuedFiles;
@@ -95,6 +94,11 @@ export class AiExtractionBoxComponent {
    * Triggers AI data extraction from the available documents.
    */
   extractAiData(): void {
+    if (!this.aiSystemEnabled()) {
+      this.toastService.showErrorKey('ai.featureToggle.systemDisabled');
+      return;
+    }
+
     // 1) Build the extraction key and collect persisted document IDs and queued files
     const key = this.extractionKey();
     const appId = this.applicationId();
