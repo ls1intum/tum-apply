@@ -175,9 +175,10 @@ public class AiService {
                 try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
                     // 1) Render each PDF page as a PNG image
                     PDFRenderer pdfRenderer = new PDFRenderer(document);
-                    int pageCount = document.getNumberOfPages();
+                    // Limit to first 4 pages to control costs and processing time
+                    int pageLimit = Math.min(document.getNumberOfPages(), 4);
 
-                    for (int i = 0; i < pageCount; i++) {
+                    for (int i = 0; i < pageLimit; i++) {
                         BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         ImageIO.write(image, "png", byteArrayOutputStream);
