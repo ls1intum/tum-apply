@@ -22,6 +22,8 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Quill.import() returns unknown; no public type for inline blots
 const Inline = Quill.import('blots/inline') as any;
 
+type ComplianceCategory = 'critical' |'transparency' | 'dsgvo'| 'public-sector';
+
 /**
  * Custom Quill Blot for highlighting text with Tailwind utility classes.
  * This teaches Quill how to render our custom compliance highlights safely
@@ -49,18 +51,63 @@ class HighlightBlot extends Inline {
     'hover:[background-color:var(--color-compliance-critical-bg)]',
   ];
 
-  static warningClasses = [
+  static transparencyClasses = [
     'border-b-2',
     '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-warning-border)]',
+    '[border-bottom-color:var(--color-compliance-transparency-border)]',
     'rounded-[var(--border-radius-xs)]',
     '[box-decoration-break:clone]',
     '[-webkit-box-decoration-break:clone]',
     'transition-colors',
     'duration-150',
     'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-warning-bg)]',
+    'hover:[background-color:var(--color-compliance-transparency-bg)]',
   ];
+
+  static dsgvoClasses = [
+    'border-b-2',
+    '[border-bottom-style:solid]',
+    '[border-bottom-color:var(--color-compliance-dsgvo-border)]',
+    'rounded-[var(--border-radius-xs)]',
+    '[box-decoration-break:clone]',
+    '[-webkit-box-decoration-break:clone]',
+    'transition-colors',
+    'duration-150',
+    'cursor-pointer',
+    'hover:[background-color:var(--color-compliance-dsgvo-bg)]',
+  ];
+
+  static publicSectorClasses = [
+    'border-b-2',
+    '[border-bottom-style:solid]',
+    '[border-bottom-color:var(--color-compliance-public-sector-border)]',
+    'rounded-[var(--border-radius-xs)]',
+    '[box-decoration-break:clone]',
+    '[-webkit-box-decoration-break:clone]',
+    'transition-colors',
+    'duration-150',
+    'cursor-pointer',
+    'hover:[background-color:var(--color-compliance-public-sector-bg)]',
+  ];
+
+  /** Detects the category from the CSS variable name passed in the format value. */
+  private static findColorForCategory(color: string): ComplianceCategory {
+    if(color.includes('critical')) return 'critical';
+    if(color.includes('transparency')) return 'transparency';
+    if(color.includes('dsgvo')) return 'dsgvo';
+    if(color.includes('public-sector')) return 'public-sector';
+    return 'critical';
+  }
+
+  /** Returns the Tailwind classes for a given category. */
+  public static getColorForCategory(category: ComplianceCategory):string[] {
+    switch(category) {
+      case 'critical': return HighlightBlot.criticalClasses;
+      case 'transparency': return HighlightBlot.transparencyClasses;
+      case 'dsgvo': return HighlightBlot.dsgvoClasses;
+      case 'public-sector': return HighlightBlot.publicSectorClasses;
+    }
+  }
 
   /**
    * Factory method called by Quill to create the DOM node.
@@ -68,19 +115,21 @@ class HighlightBlot extends Inline {
    */
   static create(value: { color: string; bg: string }): HTMLElement {
     const node = super.create() as HTMLElement;
-    const isCritical = value.color.includes('critical');
-    const classes = isCritical ? HighlightBlot.criticalClasses : HighlightBlot.warningClasses;
-    classes.forEach(cls => node.classList.add(cls));
-    node.dataset['category'] = isCritical ? 'critical' : 'warning';
+    const category = HighlightBlot.findColorForCategory(value.color) as ComplianceCategory;
+    const classes = HighlightBlot.getColorForCategory(category);
+    classes.forEach((cls: string) => node.classList.add(cls));
+    node.dataset['category'] = category;
     return node;
   }
 
   static formats(node: HTMLElement): { color: string; bg: string } {
-    const isCritical = node.dataset['category'] === 'critical';
-    return {
-      color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
-      bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
-    };
+    const category = (node.dataset['category'] ?? 'critical') as ComplianceCategory;
+    switch(category) {
+      case 'critical': return {color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)'};
+      case 'transparency':  return {color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)'};
+      case 'dsgvo':  return {color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)'};
+      case 'public-sector':  return {color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)'};
+    }
   }
 }
 

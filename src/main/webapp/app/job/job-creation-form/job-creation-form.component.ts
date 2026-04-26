@@ -825,11 +825,18 @@ export class JobCreationFormComponent {
 
     for (const issues of filtered) {
       if (!issues.text) continue;
-      const isCritical = issues.category === ComplianceIssueCategoryEnum.CriticalAgg;
+      let cat : {color: string; bg: string };
+      switch(issues.category) {
+        case ComplianceIssueCategoryEnum.CriticalAgg: cat = {color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)'}; break;
+        case ComplianceIssueCategoryEnum.Transparency: cat = {color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)'}; break;
+        case  ComplianceIssueCategoryEnum.DsgvoMin: cat = {color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)'}; break;
+        case ComplianceIssueCategoryEnum.PublicSelector:  cat = {color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)'}; break;
+        default: cat = {color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)'}; break;
+      }
       highlights.push({
         text: issues.text,
-        color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
-        bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
+        color: cat.color,
+        bg: cat.bg,
       });
     }
     this.jobDescriptionEditor()?.highlightTexts(highlights);
