@@ -46,7 +46,7 @@ OUTPUT:
   - One object per issue
   - Object fields must be exactly:
     id, text, category, article, explanation, action
-  - category must be exactly CRITICAL_AGG, TRANSPARENCY, DSGVO_MINIMIZATION und PUBLIC_SECTOR_EQUALITY
+  - category must be exactly CRITICAL_AGG, TRANSPARENCY, DSGVO_MINIMIZATION or PUBLIC_SECTOR_EQUALITY
   - action must be exactly REPLACE or ADD or REMOVE.
   - text: MAXIMUM 2-4 WORDS. Extract exact snippet from input text that uniquely identifies the violation (plain text, no HTML tags).
   - explanation must be a single SHORT sentence stating the legal violation directly. Sound like a formal legal notice.
