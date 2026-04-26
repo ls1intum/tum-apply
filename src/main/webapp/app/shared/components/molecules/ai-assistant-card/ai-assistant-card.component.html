@@ -116,8 +116,13 @@
         {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.summary' | translate }}
       </p>
     </div>
-
-    <div class="grid grid-rows-3 divide-y divide-border-default rounded-md border border-border-default">
+    <div class="mb-4">
+      <jhi-info-box
+        class="leading-relaxed block mb-6"
+        [message]="'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section3.body' | translate"
+      />
+    </div>
+    <div class="grid grid-rows-2 divide-y divide-border-default rounded-md border border-border-default">
       <div class="grid h-full gap-2 p-4">
         <p class="m-0 font-semibold leading-6">
           {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section1.title' | translate }}
@@ -133,15 +138,6 @@
         </p>
         <p class="m-0 leading-6 text-text-secondary">
           {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section2.body' | translate }}
-        </p>
-      </div>
-
-      <div class="grid h-full gap-2 p-4">
-        <p class="m-0 font-semibold leading-6">
-          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section3.title' | translate }}
-        </p>
-        <p class="m-0 leading-6 text-text-secondary">
-          {{ 'jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.section3.body' | translate }}
         </p>
       </div>
     </div>

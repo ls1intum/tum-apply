@@ -181,8 +181,7 @@
             "body": "Das Tool scannt nach rechtlichen Risiken und EU-Verstößen. Kritische Fehler werden stark gewichtet, da sie ein Haftungsrisiko für dich und die Universität darstellen."
           },
           "section3": {
-            "title": "Gewichteter Qualitäts-Score",
-            "body": "Dein Gesamtscore ist ein gewichteter Durchschnitt der oben genannten Faktoren. Er dient als zentraler Maßstab, um festzustellen, ob deine Stellenausschreibung den Rekrutierungsstandards der Universität entspricht."
+            "body": "Dein Qualitäts-Score ist ein gewichteter Durchschnitt der unten aufgeführten Faktoren. Er dient als zentraler Maßstab, um festzustellen, ob deine Stellenausschreibung den Rekrutierungsstandards der Universität entspricht."
           }
         },
         "aiToggleOff": "KI Deaktiviert",
