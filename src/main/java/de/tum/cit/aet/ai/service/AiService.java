@@ -43,6 +43,10 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class AiService {
 
+    // Document & page limit for AI extraction
+    private static final int MAX_DOCS = 4;
+    private static final int MAX_PAGES_PER_DOC = 5;
+
     @Value("classpath:prompts/JobDescriptionGeneration.st")
     private Resource jobGenerationResource;
 
@@ -171,15 +175,16 @@ public class AiService {
         Class<?> targetClass = isCv ? ExtractedApplicationDataDTO.class : ExtractedCertificateDataDTO.class;
 
         try {
-            for (Resource pdfFile : pdfFiles) {
+            int docsToProcess = Math.min(pdfFiles.size(), MAX_DOCS);
+            for (int i = 0; i < docsToProcess; i++) {
+                Resource pdfFile = pdfFiles.get(i);
                 try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
                     // 1) Render each PDF page as a PNG image
                     PDFRenderer pdfRenderer = new PDFRenderer(document);
-                    // Limit to first 4 pages to control costs and processing time
-                    int pageLimit = Math.min(document.getNumberOfPages(), 4);
+                    int pagesToProcess = Math.min(document.getNumberOfPages(), MAX_PAGES_PER_DOC);
 
-                    for (int i = 0; i < pageLimit; i++) {
-                        BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+                    for (int j = 0; j < pagesToProcess; j++) {
+                        BufferedImage image = pdfRenderer.renderImageWithDPI(j, 300);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         ImageIO.write(image, "png", byteArrayOutputStream);
                         pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
