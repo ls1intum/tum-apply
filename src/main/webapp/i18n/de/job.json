@@ -210,7 +210,7 @@
         },
         "mobileView": {
           "genderScaleHeader": "Wortschatz",
-          "genderScale1": "Gender-exklusive Wörter",
+          "genderScale1": "Nicht-Gender-inklusive Wörter",
           "genderScale2": "Gender-inklusive Wörter"
         }
       }

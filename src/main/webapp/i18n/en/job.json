@@ -210,7 +210,7 @@
         },
         "mobileView": {
           "genderScaleHeader": "Vocabulary",
-          "genderScale1": "Gender-exclusive words",
+          "genderScale1": "Non-Gender-inclusive words",
           "genderScale2": "Gender-inclusive words"
         }
       }
