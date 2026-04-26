@@ -44,7 +44,7 @@ import reactor.core.publisher.Flux;
 public class AiService {
 
     // Document & page limit for AI extraction
-    private static final int MAX_DOCS = 4;
+    private static final int MAX_DOCS = 5;
     private static final int MAX_PAGES_PER_DOC = 5;
 
     @Value("classpath:prompts/JobDescriptionGeneration.st")
