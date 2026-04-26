@@ -203,6 +203,16 @@
                 />
                 <jhi-compliance-popover [issue]="activePopoverIssue()" [x]="popoverX()" [y]="popoverY()" />
               </div>
+              <!-- Mobile: Floating AI button for bottom sheet -->
+              <jhi-button
+                class="flex lg:hidden mb-3 mt-3"
+                severity="primary"
+                icon="custom-sparkle"
+                [label]="'jobCreationForm.aiSidebar.header'"
+                styleClass="!rounded-full !px-3 !py-2 !shadow-lg"
+                (click)="mobileSheetOpen.set(true)"
+                [shouldTranslate]="true"
+              />
             </div>
           </div>
         </form>
@@ -234,17 +244,6 @@
             (filterComplianceCat)="onComplianceFilterChange($event)"
           />
         </aside>
-
-        <!-- Mobile: Floating AI button for bottom sheet -->
-        <jhi-button
-          class="lg:hidden fixed right-4 bottom-34 z-40"
-          severity="primary"
-          icon="custom-sparkle"
-          [label]="'jobCreationForm.aiSidebar.header'"
-          styleClass="!rounded-full !px-4 !py-3 !shadow-lg"
-          (click)="mobileSheetOpen.set(true)"
-          [shouldTranslate]="true"
-        />
 
         <!-- Mobile bottom sheet -->
         <p-drawer
