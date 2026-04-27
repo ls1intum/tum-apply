@@ -321,8 +321,7 @@
     "hoursPerWeek": "{{workload}} h/Woche",
     "notificationsCta": {
       "textPrefix": "Keine passende Stelle dabei? Erhalte",
-      "link": "Benachrichtigungen",
-      "textSuffix": "."
+      "link": "Benachrichtigungen"
     },
     "errors": {
       "loadFilter": {
