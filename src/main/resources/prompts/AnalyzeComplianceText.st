@@ -28,14 +28,10 @@ STRICT ANALYSIS RULES:
   - NOT triggered by: When explicit DATA is requested from the applicant.
   - action: Suggest a message that clarifies whether applicant data is shared with external recipients (Art. 13 DSGVO)
 ----------------------
-6. CATEGORY PUBLIC_SECTOR_EQUALITY: (SGB IX, BayGlG, WissZeitVG)
-  - Institutional Mandates: Public universities MUST include clauses for disability preference and female promotion.
+6. CATEGORY PUBLIC_SECTOR_EQUALITY: (WissZeitVG)
   - PhD Specific: For PhD/Academic positions, the text should imply that the position serves the purpose of "scientific qualification" or "promotion" (Wissenschaftliche Qualifizierung/Promotion).
-  - Semantic Existence Check: You must verify if the FOLLOWING THREE CONCEPTS are present in the text (not just keywords, but the intent):
-      1. Disability Notice: Statement that severely disabled applicants are given preference in the event of equal suitability (SGB IX).
-      2. Equality Notice: Statement that the university aims to increase the proportion of women and explicitly encourages women to apply (BayGlG).
-      3. Qualification Purpose: Mention that the contract is for obtaining a PhD/further qualification.
-  - If these statements are missing, it is a violation.
+  - Semantic Existence Check: You must verify if  a qualification purpose is present in the text (not just keywords, but the intent)
+  - If this statement is missing, it is a violation.
 ----------------------
 INPUT TEXT:
 {title}
