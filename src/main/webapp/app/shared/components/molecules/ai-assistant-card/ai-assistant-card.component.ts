@@ -39,6 +39,9 @@ export class AiAssistantCardComponent {
   buttonIcon = input<string>('custom-sparkle');
   complianceIssues = input<ComplianceIssue[]>([]);
   currentLang = input<string>('en');
+  hideGenerateButton = input<boolean>(false);
+  inclusivePercentage = input<number | undefined>(undefined);
+  nonInclusivePercentage = input<number | undefined>(undefined);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CONSTANTS
@@ -77,6 +80,12 @@ export class AiAssistantCardComponent {
     }
     return Math.max(0, Math.min(100, Math.round(value)));
   });
+
+  /** Mobile view genderInclusive percentage for scale */
+  readonly inclusivePercentageDisplay = computed(() => this.toPercentage(this.inclusivePercentage(), 100));
+
+  /** Mobile view genderExclusive percentage for scale */
+  readonly nonInclusivePercentageDisplay = computed(() => this.toPercentage(this.nonInclusivePercentage(), 0));
 
   readonly scoreFeedback = computed(() => {
     const score = this.displayedScore();
@@ -159,5 +168,12 @@ export class AiAssistantCardComponent {
 
   onScoreDialogVisibleChange(isVisible: boolean): void {
     this.scoreDialogVisible.set(isVisible);
+  }
+
+  private toPercentage(value: number | undefined, fallback: number): number {
+    if (value === undefined || !Number.isFinite(value)) {
+      return fallback;
+    }
+    return Math.max(0, Math.min(100, Math.round(value)));
   }
 }

@@ -1,3 +1,5 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+
 .sidebar,
 .sidebar-collapsed {
   display: flex;
@@ -7,8 +9,12 @@
   position: sticky;
   flex: 1 1 auto;
   padding-block: 1rem;
-  padding-inline: 1rem;
+  padding-inline: 0.25rem;
   width: var(--sidebar-width);
+
+  @media (min-width: bp.$lg) {
+    padding-inline: 1rem;
+  }
 
   .settings-content,
   .sidebar-content {

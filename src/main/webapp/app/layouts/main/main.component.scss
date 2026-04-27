@@ -1,3 +1,4 @@
+@use '../../../content/scss/breakpoints' as bp;
 .whole-page {
   display: flex;
   flex-direction: column;
@@ -12,9 +13,13 @@
 
 .main-page {
   --sidebar-expanded: 15rem;
-  --sidebar-collapsed: 5rem;
+  --sidebar-collapsed: 3rem;
   --sidebar-width: var(--sidebar-expanded);
   --sidebar-edge: var(--sidebar-width);
+
+  @media (min-width: bp.$lg) {
+    --sidebar-collapsed: 5rem;
+  }
 
   display: flex;
   flex: 1 1 auto;
