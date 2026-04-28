@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.InterviewProcessClosedException;
+import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -381,7 +382,8 @@ public class InterviewService {
      * @throws EntityNotFoundException if the slot is not found
      * @throws AccessDeniedException   if the user is not authorized to delete this
      *                                 slot
-     * @throws BadRequestException     if the slot is booked or has already started
+     * @throws OperationNotAllowedException if the slot has already started
+     * @throws BadRequestException          if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
@@ -399,7 +401,7 @@ public class InterviewService {
 
         // 4. Cannot delete slots that have already started
         if (slot.getStartDateTime() != null && slot.getStartDateTime().isBefore(Instant.now())) {
-            throw new BadRequestException("Cannot delete a slot that already started.");
+            throw new OperationNotAllowedException("Cannot delete a slot that already started.");
         }
 
         // 5. Cannot delete booked slots
