@@ -312,65 +312,6 @@ describe('ApplicationPage1Component', () => {
     });
   });
 
-  describe('Auth gate for CV upload', () => {
-    it('does not render placeholder buttons when applicationIdForDocuments is set', () => {
-      fixture.componentRef.setInput('applicationIdForDocuments', 'app-1');
-      fixture.detectChanges();
-
-      const placeholder = fixture.nativeElement.querySelector('[data-testid="cv-upload-auth-trigger"]');
-      expect(placeholder).toBeNull();
-    });
-
-    it('renders placeholder buttons when applicationIdForDocuments is empty', () => {
-      fixture.componentRef.setInput('applicationIdForDocuments', undefined);
-      fixture.detectChanges();
-
-      const placeholder = fixture.nativeElement.querySelector('[data-testid="cv-upload-auth-trigger"]');
-      expect(placeholder).not.toBeNull();
-    });
-
-    it('invokes requestAuth when placeholder upload is clicked', async () => {
-      const trigger = vi.fn().mockResolvedValue(undefined);
-      fixture.componentRef.setInput('applicationIdForDocuments', undefined);
-      fixture.componentRef.setInput('requestAuth', trigger);
-      fixture.detectChanges();
-
-      await comp.requestAuthAndUpload();
-
-      expect(trigger).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not invoke requestAuth concurrently while one call is in flight', async () => {
-      let resolveTrigger!: () => void;
-      const trigger = vi.fn().mockImplementation(
-        () =>
-          new Promise<void>(resolve => {
-            resolveTrigger = resolve;
-          }),
-      );
-      fixture.componentRef.setInput('applicationIdForDocuments', undefined);
-      fixture.componentRef.setInput('requestAuth', trigger);
-      fixture.detectChanges();
-
-      const first = comp.requestAuthAndUpload();
-      const second = comp.requestAuthAndUpload();
-
-      expect(trigger).toHaveBeenCalledTimes(1);
-
-      resolveTrigger();
-      await Promise.all([first, second]);
-    });
-
-    it('no-ops when requestAuth callback is not provided', async () => {
-      fixture.componentRef.setInput('applicationIdForDocuments', undefined);
-      fixture.componentRef.setInput('requestAuth', undefined);
-      fixture.detectChanges();
-
-      await expect(comp.requestAuthAndUpload()).resolves.toBeUndefined();
-      expect(comp.authInFlight()).toBe(false);
-    });
-  });
-
   describe('Document Input Handling', () => {
     it('should return array with doc if documentIdsCv is defined', () => {
       const doc = { id: '1', size: 1 };

@@ -832,43 +832,43 @@ describe('ApplicationForm', () => {
   });
 
   describe('openOtpAndWaitForLogin', () => {
-    it('should show error and return when email is empty', async () => {
-      await comp['openOtpAndWaitForLogin']('', 'John', 'Doe');
+    it('should show error and throw when email is empty', async () => {
+      await expect(comp['openOtpAndWaitForLogin']('', 'John', 'Doe')).rejects.toThrow();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidEmail');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and return when email is whitespace only', async () => {
-      await comp['openOtpAndWaitForLogin']('   ', 'John', 'Doe');
+    it('should show error and throw when email is whitespace only', async () => {
+      await expect(comp['openOtpAndWaitForLogin']('   ', 'John', 'Doe')).rejects.toThrow();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidEmail');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and return when firstName is empty', async () => {
-      await comp['openOtpAndWaitForLogin']('test@example.com', '', 'Doe');
+    it('should show error and throw when firstName is empty', async () => {
+      await expect(comp['openOtpAndWaitForLogin']('test@example.com', '', 'Doe')).rejects.toThrow();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidFirstName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and return when firstName is whitespace only', async () => {
-      await comp['openOtpAndWaitForLogin']('test@example.com', '   ', 'Doe');
+    it('should show error and throw when firstName is whitespace only', async () => {
+      await expect(comp['openOtpAndWaitForLogin']('test@example.com', '   ', 'Doe')).rejects.toThrow();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidFirstName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and return when lastName is empty', async () => {
-      await comp['openOtpAndWaitForLogin']('test@example.com', 'John', '');
+    it('should show error and throw when lastName is empty', async () => {
+      await expect(comp['openOtpAndWaitForLogin']('test@example.com', 'John', '')).rejects.toThrow();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidLastName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and return when lastName is whitespace only', async () => {
-      await comp['openOtpAndWaitForLogin']('test@example.com', 'John', '   ');
+    it('should show error and throw when lastName is whitespace only', async () => {
+      await expect(comp['openOtpAndWaitForLogin']('test@example.com', 'John', '   ')).rejects.toThrow();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidLastName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
@@ -1084,7 +1084,7 @@ describe('ApplicationForm', () => {
       expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
     });
 
-    it('should show error toast when openOtpAndWaitForLogin fails', async () => {
+    it('should swallow openOtpAndWaitForLogin failure without re-toasting (inner method already toasted)', async () => {
       comp.applicantId.set('');
       comp.personalInfoData.set(
         createValidPersonalInfoData({
@@ -1101,7 +1101,7 @@ describe('ApplicationForm', () => {
       // Wait for async operations
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.otpVerificationFailed');
+      expect(toast.showErrorKey).not.toHaveBeenCalledWith('entity.toast.applyFlow.otpVerificationFailed');
     });
 
     it('should set applicantId to empty string when loadedUser().id is undefined (nullish coalescing operator)', async () => {

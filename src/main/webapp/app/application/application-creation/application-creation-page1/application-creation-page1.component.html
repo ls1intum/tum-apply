@@ -15,48 +15,24 @@
       />
     </label>
     <div class="flex flex-col gap-3">
-      @if (applicationIdForDocuments(); as applicationId) {
-        <jhi-upload-button
-          documentType="CV"
-          [applicationId]="applicationId"
-          [documentIds]="computedDocumentIdsCvSet()"
-          (documentIdsChange)="cvDocsSetValidity($event)"
-          [allowMultiple]="false"
-          [compact]="true"
-        />
-        <jhi-ai-extraction-box
-          [applicationId]="applicationId"
-          [documentIds]="currentCvDocs() ?? []"
-          [isCv]="true"
-          [saveData]="true"
-          [helperTextKey]="'entity.aiExtraction.helperCv'"
-          (extracted)="onAiDataExtracted($event)"
-        />
-      } @else {
-        <div data-testid="cv-upload-auth-trigger">
-          <jhi-button
-            variant="outlined"
-            severity="primary"
-            icon="upload"
-            [label]="'entity.applicationPage1.label.curriculumVitae'"
-            [shouldTranslate]="true"
-            [disabled]="authInFlight()"
-            [loading]="authInFlight()"
-            (click)="requestAuthAndUpload()"
-          />
-        </div>
-        <div data-testid="ai-extract-auth-trigger">
-          <jhi-button
-            severity="primary"
-            icon="custom-sparkle"
-            [label]="'entity.aiExtraction.button'"
-            [shouldTranslate]="true"
-            [disabled]="authInFlight()"
-            [loading]="authInFlight()"
-            (click)="requestAuthAndUpload()"
-          />
-        </div>
-      }
+      <jhi-upload-button
+        documentType="CV"
+        [applicationId]="applicationIdForDocuments()"
+        [documentIds]="computedDocumentIdsCvSet()"
+        (documentIdsChange)="cvDocsSetValidity($event)"
+        [allowMultiple]="false"
+        [compact]="true"
+        [requestAuth]="requestAuth()"
+      />
+      <jhi-ai-extraction-box
+        [applicationId]="applicationIdForDocuments()"
+        [documentIds]="currentCvDocs() ?? []"
+        [isCv]="true"
+        [saveData]="true"
+        [helperTextKey]="'entity.aiExtraction.helperCv'"
+        (extracted)="onAiDataExtracted($event)"
+        [requestAuth]="requestAuth()"
+      />
     </div>
   </div>
 

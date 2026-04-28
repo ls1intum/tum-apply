@@ -602,7 +602,8 @@ export default class ApplicationCreationFormComponent {
         await this.requestAuthAndApplication();
         this.progressStepper()?.goToStep(2);
       } catch {
-        this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
+        // Inner methods (openOtpAndWaitForLogin, migrateDraftIfNeeded) already
+        // surface a specific toast for the failure cause; just don't advance.
       }
     })();
   }
@@ -612,21 +613,23 @@ export default class ApplicationCreationFormComponent {
   readonly requestAuthCallback = (): Promise<void> => this.requestAuthAndApplication();
 
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
+  // Throws when required fields are missing so callers don't proceed with downstream work
+  // (e.g. attempting to create an application against an unauthenticated session).
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {
       this.toastService.showErrorKey(`${applyflow}.invalidEmail`);
-      return;
+      throw new Error('invalidEmail');
     }
     const normalizedFirstName = firstName.trim();
     if (!normalizedFirstName) {
       this.toastService.showErrorKey(`${applyflow}.invalidFirstName`);
-      return;
+      throw new Error('invalidFirstName');
     }
     const normalizedLastName = lastName.trim();
     if (!normalizedLastName) {
       this.toastService.showErrorKey(`${applyflow}.invalidLastName`);
-      return;
+      throw new Error('invalidLastName');
     }
 
     this.authOrchestrator.email.set(normalizedEmail);
