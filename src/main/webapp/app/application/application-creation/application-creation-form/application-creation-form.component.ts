@@ -608,6 +608,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   // Bound to <jhi-application-creation-page1 [requestAuth]>. Arrow-function so `this` is preserved.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly requestAuthCallback = (): Promise<void> => this.requestAuthAndApplication();
 
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
