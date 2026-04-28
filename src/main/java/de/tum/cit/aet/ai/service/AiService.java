@@ -5,6 +5,8 @@ import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
+import de.tum.cit.aet.ai.util.CountryCodeNormalizer;
+import de.tum.cit.aet.ai.util.DateNormalizer;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.BadRequestException;
@@ -205,13 +207,40 @@ public class AiService {
                 .entity(targetClass);
 
             if (isCv) {
-                return (ExtractedApplicationDataDTO) result;
+                return normalizeStructuredFields((ExtractedApplicationDataDTO) result);
             } else {
                 return ExtractedApplicationDataDTO.onlyEducationDTO((ExtractedCertificateDataDTO) result);
             }
         } catch (IOException e) {
             throw new PDFExtractionException("PDF conversion failed", e);
         }
+    }
+
+    /**
+     * Returns a copy of the given DTO with country, nationality, and dateOfBirth
+     * normalized to canonical formats (ISO alpha-2 lowercase / ISO YYYY-MM-DD).
+     * Unrecognized values become {@code null} so the frontend dropdown / date
+     * picker stays empty rather than displaying garbage.
+     */
+    private ExtractedApplicationDataDTO normalizeStructuredFields(ExtractedApplicationDataDTO extracted) {
+        if (extracted == null) {
+            return null;
+        }
+        return new ExtractedApplicationDataDTO(
+            extracted.firstName(),
+            extracted.lastName(),
+            extracted.phoneNumber(),
+            extracted.website(),
+            extracted.linkedinUrl(),
+            extracted.gender(),
+            CountryCodeNormalizer.normalize(extracted.nationality()),
+            CountryCodeNormalizer.normalize(extracted.country()),
+            DateNormalizer.normalize(extracted.dateOfBirth()),
+            extracted.street(),
+            extracted.city(),
+            extracted.postalCode(),
+            extracted.education()
+        );
     }
 
     /**
