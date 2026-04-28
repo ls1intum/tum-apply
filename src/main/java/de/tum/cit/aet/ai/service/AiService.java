@@ -13,6 +13,8 @@ import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
+import de.tum.cit.aet.core.util.CountryCodeNormalizer;
+import de.tum.cit.aet.core.util.DateNormalizer;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.awt.image.BufferedImage;
@@ -42,6 +44,10 @@ import reactor.core.publisher.Flux;
 @Service
 @Slf4j
 public class AiService {
+
+    // Document & page limit for AI extraction
+    private static final int MAX_DOCS = 5;
+    private static final int MAX_PAGES_PER_DOC = 5;
 
     @Value("classpath:prompts/JobDescriptionGeneration.st")
     private Resource jobGenerationResource;
@@ -171,14 +177,16 @@ public class AiService {
         Class<?> targetClass = isCv ? ExtractedApplicationDataDTO.class : ExtractedCertificateDataDTO.class;
 
         try {
-            for (Resource pdfFile : pdfFiles) {
+            int docsToProcess = Math.min(pdfFiles.size(), MAX_DOCS);
+            for (int i = 0; i < docsToProcess; i++) {
+                Resource pdfFile = pdfFiles.get(i);
                 try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
                     // 1) Render each PDF page as a PNG image
                     PDFRenderer pdfRenderer = new PDFRenderer(document);
-                    int pageCount = document.getNumberOfPages();
+                    int pagesToProcess = Math.min(document.getNumberOfPages(), MAX_PAGES_PER_DOC);
 
-                    for (int i = 0; i < pageCount; i++) {
-                        BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+                    for (int j = 0; j < pagesToProcess; j++) {
+                        BufferedImage image = pdfRenderer.renderImageWithDPI(j, 300);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         ImageIO.write(image, "png", byteArrayOutputStream);
                         pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
@@ -199,13 +207,40 @@ public class AiService {
                 .entity(targetClass);
 
             if (isCv) {
-                return (ExtractedApplicationDataDTO) result;
+                return normalizeStructuredFields((ExtractedApplicationDataDTO) result);
             } else {
                 return ExtractedApplicationDataDTO.onlyEducationDTO((ExtractedCertificateDataDTO) result);
             }
         } catch (IOException e) {
             throw new PDFExtractionException("PDF conversion failed", e);
         }
+    }
+
+    /**
+     * Returns a copy of the given DTO with country, nationality, and dateOfBirth
+     * normalized to canonical formats (ISO alpha-2 lowercase / ISO YYYY-MM-DD).
+     * Unrecognized values become {@code null} so the frontend dropdown / date
+     * picker stays empty rather than displaying garbage.
+     */
+    private ExtractedApplicationDataDTO normalizeStructuredFields(ExtractedApplicationDataDTO extracted) {
+        if (extracted == null) {
+            return null;
+        }
+        return new ExtractedApplicationDataDTO(
+            extracted.firstName(),
+            extracted.lastName(),
+            extracted.phoneNumber(),
+            extracted.website(),
+            extracted.linkedinUrl(),
+            extracted.gender(),
+            CountryCodeNormalizer.normalize(extracted.nationality()),
+            CountryCodeNormalizer.normalize(extracted.country()),
+            DateNormalizer.normalize(extracted.dateOfBirth()),
+            extracted.street(),
+            extracted.city(),
+            extracted.postalCode(),
+            extracted.education()
+        );
     }
 
     /**
