@@ -2,7 +2,7 @@ import {
   JobFormDTOFundingTypeEnum,
   JobFormDTOLocationEnum,
   JobFormDTOSubjectAreaEnum,
-  JobFormDTOTvlGradeEnum
+  JobFormDTOTvlGradeEnum,
 } from 'app/generated/model/job-form-dto';
 const BASIC_INFO_I18N = 'jobCreationForm.basicInformationSection';
 
@@ -74,12 +74,12 @@ export const fundingTypes = [
   { value: JobFormDTOFundingTypeEnum.PartiallyFunded, name: `${BASIC_INFO_I18N}.fundingTypes.PartiallyFunded` },
 ];
 export const tvlGrades = [
-  {value: JobFormDTOTvlGradeEnum.E10, name: `${BASIC_INFO_I18N}.tvlGrades.E10`},
-  {value: JobFormDTOTvlGradeEnum.E11, name: `${BASIC_INFO_I18N}.tvlGrades.E11`},
-  {value: JobFormDTOTvlGradeEnum.E12, name: `${BASIC_INFO_I18N}.tvlGrades.E12`},
-  {value: JobFormDTOTvlGradeEnum.E13, name: `${BASIC_INFO_I18N}.tvlGrades.E13`},
-  {value: JobFormDTOTvlGradeEnum.E14, name: `${BASIC_INFO_I18N}.tvlGrades.E14`},
-  {value: JobFormDTOTvlGradeEnum.E15, name: `${BASIC_INFO_I18N}.tvlGrades.E15`},
+  { value: JobFormDTOTvlGradeEnum.E10, name: `${BASIC_INFO_I18N}.tvlGrades.E10` },
+  { value: JobFormDTOTvlGradeEnum.E11, name: `${BASIC_INFO_I18N}.tvlGrades.E11` },
+  { value: JobFormDTOTvlGradeEnum.E12, name: `${BASIC_INFO_I18N}.tvlGrades.E12` },
+  { value: JobFormDTOTvlGradeEnum.E13, name: `${BASIC_INFO_I18N}.tvlGrades.E13` },
+  { value: JobFormDTOTvlGradeEnum.E14, name: `${BASIC_INFO_I18N}.tvlGrades.E14` },
+  { value: JobFormDTOTvlGradeEnum.E15, name: `${BASIC_INFO_I18N}.tvlGrades.E15` },
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
@@ -87,6 +87,7 @@ export const locationValueToNameMap = new Map(locations.map(option => [option.va
 export const subjectAreaNameToValueMap = new Map(subjectAreas.map(option => [option.name, option.value]));
 export const subjectAreaValueToNameMap = new Map(subjectAreas.map(option => [option.value as string, option.name]));
 export const fundingTypeValueToNameMap = new Map(fundingTypes.map(option => [option.value as string, option.name]));
+export const tvlGradesValueToNameMap = new Map(tvlGrades.map(option => [option.value as string, option.name]));
 
 export function mapLocationNames(translationKeys: string[]): JobFormDTOLocationEnum[] {
   return translationKeys
@@ -119,6 +120,10 @@ export function getLocationTranslationKey(location: string | undefined): string 
 
 export function getFundingTypeTranslationKey(fundingType: string | undefined): string {
   return getTranslationKey(fundingType, fundingTypeValueToNameMap);
+}
+
+export function getTvlGradesTranslationKey(tvlGrade: string | undefined): string {
+  return getTranslationKey(tvlGrade, tvlGradesValueToNameMap);
 }
 
 export function getSubjectAreaTranslationKey(subjectArea: string | undefined): string {

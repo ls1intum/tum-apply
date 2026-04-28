@@ -10,5 +10,5 @@ public enum TvlGrade {
     E12,
     E13,
     E14,
-    E15;
+    E15,
 }
