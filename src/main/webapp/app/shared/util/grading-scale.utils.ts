@@ -210,9 +210,7 @@ export function detectFractionGrade(grade: string): GradingScaleLimitsResult {
   // Match the canonical row only: maxValue equals Y AND upperLimit equals Y
   // (skips e.g. the German row at maxValue=4 whose upperLimit='1.0', and the
   // 40–50 fallback row whose upperLimit='100' but maxValue=50).
-  const scaleRow = NUMERIC_GRADING_SCALES.find(
-    scale => scale.maxValue === upperValue && parseFloat(scale.upperLimit) === upperValue,
-  );
+  const scaleRow = NUMERIC_GRADING_SCALES.find(scale => scale.maxValue === upperValue && parseFloat(scale.upperLimit) === upperValue);
   if (scaleRow) {
     return { upperLimit: scaleRow.upperLimit, lowerLimit: scaleRow.lowerLimit };
   }
