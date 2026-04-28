@@ -973,6 +973,46 @@ describe('JobCreationFormComponent', () => {
 
         expect(component.rewriteButtonSignal()).toBe(true);
       });
+
+      it('should cancel any in-flight translation before starting generation', async () => {
+        component.jobId.set('job123');
+        fillValidJobForm(component);
+
+        const mockEditor = { forceUpdate: vi.fn() };
+        Object.defineProperty(component, 'jobDescriptionEditor', {
+          value: () => mockEditor,
+          configurable: true,
+        });
+
+        component.isTranslating.set(true);
+        const cancelSpy = vi.spyOn(component as unknown as { cancelTranslation: () => void }, 'cancelTranslation');
+
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
+
+        await component.generateJobApplicationDraft();
+
+        expect(cancelSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not invoke cancelTranslation when no translation is in flight', async () => {
+        component.jobId.set('job123');
+        fillValidJobForm(component);
+
+        const mockEditor = { forceUpdate: vi.fn() };
+        Object.defineProperty(component, 'jobDescriptionEditor', {
+          value: () => mockEditor,
+          configurable: true,
+        });
+
+        component.isTranslating.set(false);
+        const cancelSpy = vi.spyOn(component as unknown as { cancelTranslation: () => void }, 'cancelTranslation');
+
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
+
+        await component.generateJobApplicationDraft();
+
+        expect(cancelSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });
