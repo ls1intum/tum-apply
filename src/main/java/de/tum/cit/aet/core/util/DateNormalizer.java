@@ -1,4 +1,4 @@
-package de.tum.cit.aet.ai.util;
+package de.tum.cit.aet.core.util;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
