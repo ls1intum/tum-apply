@@ -153,22 +153,21 @@ export default class ApplicationCreationPage2Component {
       masterGrade: data.masterGrade,
     });
 
-    // If incoming data has a grade but empty limits (AI-extraction-on-Page-1 path),
-    // back-fill the limit controls now. Done before hasInitialLimitsSet flips on so
-    // bachelorGradeEffect's "grade unchanged" short-circuit can't strand us.
+    // Back-fill must run before hasInitialLimitsSet flips on, otherwise
+    // bachelorGradeEffect's "grade unchanged" guard short-circuits forever.
     const gradePatch: Partial<ApplicationCreationPage2Data> = {};
     if (data.bachelorGrade && !data.bachelorGradeUpperLimit && !data.bachelorGradeLowerLimit) {
-      const computed = getDetectedGradeLimitsPatch(data.bachelorGrade);
-      if (computed.upperLimit !== '' && computed.lowerLimit !== '') {
-        gradePatch.bachelorGradeUpperLimit = computed.upperLimit;
-        gradePatch.bachelorGradeLowerLimit = computed.lowerLimit;
+      const detected = getDetectedGradeLimitsPatch(data.bachelorGrade);
+      if (detected.upperLimit !== '' && detected.lowerLimit !== '') {
+        gradePatch.bachelorGradeUpperLimit = detected.upperLimit;
+        gradePatch.bachelorGradeLowerLimit = detected.lowerLimit;
       }
     }
     if (data.masterGrade && !data.masterGradeUpperLimit && !data.masterGradeLowerLimit) {
-      const computed = getDetectedGradeLimitsPatch(data.masterGrade);
-      if (computed.upperLimit !== '' && computed.lowerLimit !== '') {
-        gradePatch.masterGradeUpperLimit = computed.upperLimit;
-        gradePatch.masterGradeLowerLimit = computed.lowerLimit;
+      const detected = getDetectedGradeLimitsPatch(data.masterGrade);
+      if (detected.upperLimit !== '' && detected.lowerLimit !== '') {
+        gradePatch.masterGradeUpperLimit = detected.upperLimit;
+        gradePatch.masterGradeLowerLimit = detected.lowerLimit;
       }
     }
     if (Object.keys(gradePatch).length > 0) {
