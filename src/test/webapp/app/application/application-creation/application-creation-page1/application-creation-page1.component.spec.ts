@@ -18,6 +18,7 @@ import {
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import { provideToastServiceMock } from 'util/toast-service.mock';
+import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -272,6 +273,42 @@ describe('ApplicationPage1Component', () => {
     it('should set cvValid to true when cvDocs is provided', () => {
       comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
       expect(comp.cvValid()).toBe(true);
+    });
+  });
+
+  describe('onAiDataExtracted', () => {
+    it('populates country dropdown when extracted country code matches an option', () => {
+      const extracted: ExtractedApplicationDataDTO = { country: 'de' };
+
+      comp.onAiDataExtracted(extracted);
+
+      expect(comp.data().country?.value).toBe('de');
+    });
+
+    it('leaves country dropdown empty when extracted country code is unknown', () => {
+      const extracted: ExtractedApplicationDataDTO = { country: 'xx' };
+
+      comp.onAiDataExtracted(extracted);
+
+      expect(comp.data().country).toBeUndefined();
+    });
+
+    it('populates dateOfBirth when extracted date is in ISO format', () => {
+      const extracted: ExtractedApplicationDataDTO = { dateOfBirth: '1990-01-01' };
+
+      comp.onAiDataExtracted(extracted);
+
+      expect(comp.data().dateOfBirth).toBe('1990-01-01');
+    });
+
+    it('does not overwrite existing country dropdown selection', () => {
+      const preset = { value: 'fr', name: 'countries.fr' };
+      comp.data.set({ ...comp.data(), country: preset });
+
+      const extracted: ExtractedApplicationDataDTO = { country: 'de' };
+      comp.onAiDataExtracted(extracted);
+
+      expect(comp.data().country).toBe(preset);
     });
   });
 
