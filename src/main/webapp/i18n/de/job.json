@@ -171,6 +171,7 @@
         "aiScoreDialog": {
           "title": "Berechnung des Qualitäts-Scores",
           "summary": "Berechnungsfaktoren",
+          "summaryText": "Dein Qualitäts-Score ist ein gewichteter Durchschnitt der unten aufgeführten Faktoren. Er dient als zentraler Maßstab, um festzustellen, ob deine Stellenausschreibung den Rekrutierungsstandards der Universität entspricht.",
           "explanation": "Der Score kombiniert Wortwahl, Tonalität, Rechtssicherheit und eine ausbalancierte Gewichtung.",
           "section1": {
             "title": "Inklusion und Wortwahl",
@@ -180,9 +181,6 @@
             "title": "Rechtliche Compliance",
             "body": "Das Tool scannt nach rechtlichen Risiken und EU-Verstößen. Kritische Fehler werden stark gewichtet, da sie ein Haftungsrisiko für dich und die Universität darstellen."
           },
-          "section3": {
-            "body": "Dein Qualitäts-Score ist ein gewichteter Durchschnitt der unten aufgeführten Faktoren. Er dient als zentraler Maßstab, um festzustellen, ob deine Stellenausschreibung den Rekrutierungsstandards der Universität entspricht."
-          }
         },
         "aiToggleOff": "KI Deaktiviert",
         "aiToggleOn": "KI Aktiviert",
