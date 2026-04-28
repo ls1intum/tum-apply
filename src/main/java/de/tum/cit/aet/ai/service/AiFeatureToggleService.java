@@ -51,9 +51,7 @@ public class AiFeatureToggleService {
     @PostConstruct
     void init() {
         try {
-            systemSettingRepository
-                .findById(SETTING_KEY)
-                .ifPresent(setting -> manuallyEnabled = Boolean.parseBoolean(setting.getValue()));
+            systemSettingRepository.findById(SETTING_KEY).ifPresent(setting -> manuallyEnabled = Boolean.parseBoolean(setting.getValue()));
         } catch (Exception e) {
             // Table may not exist during API docs generation (no-liquibase profile); default to enabled
         }
