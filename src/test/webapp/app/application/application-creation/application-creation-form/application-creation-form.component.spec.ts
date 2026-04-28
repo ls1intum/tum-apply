@@ -832,43 +832,43 @@ describe('ApplicationForm', () => {
   });
 
   describe('openOtpAndWaitForLogin', () => {
-    it('should show error and throw when email is empty', async () => {
-      await expect(comp['openOtpAndWaitForLogin']('', 'John', 'Doe')).rejects.toThrow();
+    it('should show error and return when email is empty', async () => {
+      await comp['openOtpAndWaitForLogin']('', 'John', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidEmail');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and throw when email is whitespace only', async () => {
-      await expect(comp['openOtpAndWaitForLogin']('   ', 'John', 'Doe')).rejects.toThrow();
+    it('should show error and return when email is whitespace only', async () => {
+      await comp['openOtpAndWaitForLogin']('   ', 'John', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidEmail');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and throw when firstName is empty', async () => {
-      await expect(comp['openOtpAndWaitForLogin']('test@example.com', '', 'Doe')).rejects.toThrow();
+    it('should show error and return when firstName is empty', async () => {
+      await comp['openOtpAndWaitForLogin']('test@example.com', '', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidFirstName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and throw when firstName is whitespace only', async () => {
-      await expect(comp['openOtpAndWaitForLogin']('test@example.com', '   ', 'Doe')).rejects.toThrow();
+    it('should show error and return when firstName is whitespace only', async () => {
+      await comp['openOtpAndWaitForLogin']('test@example.com', '   ', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidFirstName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and throw when lastName is empty', async () => {
-      await expect(comp['openOtpAndWaitForLogin']('test@example.com', 'John', '')).rejects.toThrow();
+    it('should show error and return when lastName is empty', async () => {
+      await comp['openOtpAndWaitForLogin']('test@example.com', 'John', '');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidLastName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
-    it('should show error and throw when lastName is whitespace only', async () => {
-      await expect(comp['openOtpAndWaitForLogin']('test@example.com', 'John', '   ')).rejects.toThrow();
+    it('should show error and return when lastName is whitespace only', async () => {
+      await comp['openOtpAndWaitForLogin']('test@example.com', 'John', '   ');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidLastName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
@@ -1104,7 +1104,7 @@ describe('ApplicationForm', () => {
       expect(toast.showErrorKey).not.toHaveBeenCalledWith('entity.toast.applyFlow.otpVerificationFailed');
     });
 
-    it('should set applicantId to empty string when loadedUser().id is undefined (nullish coalescing operator)', async () => {
+    it('should bail without migrating or stepping when loadedUser().id is undefined (auth failed)', async () => {
       comp.applicantId.set('');
       comp.personalInfoData.set(
         createValidPersonalInfoData({
@@ -1117,7 +1117,7 @@ describe('ApplicationForm', () => {
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
       const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
 
-      // Set up loadedUser to return undefined id (simulating the ?? '' fallback case)
+      // Simulate openOtp returning without populating loadedUser (e.g. validation failed).
       accountService.user.set({ id: undefined as any, email: 'test@example.com', name: 'Jane Smith' });
 
       const progressStepperMock = {
@@ -1127,23 +1127,15 @@ describe('ApplicationForm', () => {
 
       comp['handleNextFromStep1']();
 
-      // Wait for async operations
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      // Should call openOtpAndWaitForLogin
       expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
-
-      // Should set applicantId to empty string when id is undefined (nullish coalescing fallback)
       expect(comp.applicantId()).toBe('');
-
-      // Should still call migrateDraftIfNeeded
-      expect(migrateDraftSpy).toHaveBeenCalled();
-
-      // Should still navigate to step 2
-      expect(progressStepperMock.goToStep).toHaveBeenCalledWith(2);
+      expect(migrateDraftSpy).not.toHaveBeenCalled();
+      expect(progressStepperMock.goToStep).not.toHaveBeenCalled();
     });
 
-    it('should set applicantId to empty string when loadedUser is null (nullish coalescing operator)', async () => {
+    it('should bail without migrating or stepping when loadedUser is null (auth failed)', async () => {
       comp.applicantId.set('');
       comp.personalInfoData.set(
         createValidPersonalInfoData({
@@ -1156,7 +1148,6 @@ describe('ApplicationForm', () => {
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
       const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
 
-      // Set up loadedUser to return null/undefined (simulating the ?? '' fallback case)
       accountService.user.set(undefined);
 
       const progressStepperMock = {
@@ -1166,20 +1157,12 @@ describe('ApplicationForm', () => {
 
       comp['handleNextFromStep1']();
 
-      // Wait for async operations
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      // Should call openOtpAndWaitForLogin
       expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
-
-      // Should set applicantId to empty string when loadedUser is null/undefined (nullish coalescing fallback)
       expect(comp.applicantId()).toBe('');
-
-      // Should still call migrateDraftIfNeeded
-      expect(migrateDraftSpy).toHaveBeenCalled();
-
-      // Should still navigate to step 2
-      expect(progressStepperMock.goToStep).toHaveBeenCalledWith(2);
+      expect(migrateDraftSpy).not.toHaveBeenCalled();
+      expect(progressStepperMock.goToStep).not.toHaveBeenCalled();
     });
 
     it('should set applicantId to user id when loadedUser().id has a value', async () => {

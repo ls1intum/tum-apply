@@ -576,7 +576,8 @@ export default class ApplicationCreationFormComponent {
   }
 
   // Authenticates the current visitor (OTP) and ensures a server-side application exists.
-  // Resolves once `applicationId` is populated. Rejects on validation or OTP failure.
+  // Resolves once `applicationId` is populated, or earlier (no-op) when validation
+  // failed and the user needs to fill in missing fields before retrying.
   async requestAuthAndApplication(): Promise<void> {
     if (this.applicantId()) {
       return;
@@ -587,7 +588,16 @@ export default class ApplicationCreationFormComponent {
     const lastName = this.personalInfoData().lastName;
 
     await this.openOtpAndWaitForLogin(email, firstName, lastName);
-    this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
+
+    // Validation inside openOtpAndWaitForLogin returns early without authenticating.
+    // Bail here too so we don't try to create or migrate an application against
+    // an unauthenticated session (which would fire "Session expired" toasts).
+    const userId = this.accountService.loadedUser()?.id;
+    if (!userId) {
+      return;
+    }
+
+    this.applicantId.set(userId);
     await this.migrateDraftIfNeeded();
   }
 
@@ -600,7 +610,9 @@ export default class ApplicationCreationFormComponent {
     void (async () => {
       try {
         await this.requestAuthAndApplication();
-        this.progressStepper()?.goToStep(2);
+        if (this.applicantId()) {
+          this.progressStepper()?.goToStep(2);
+        }
       } catch {
         // Inner methods (openOtpAndWaitForLogin, migrateDraftIfNeeded) already
         // surface a specific toast for the failure cause; just don't advance.
@@ -613,23 +625,23 @@ export default class ApplicationCreationFormComponent {
   readonly requestAuthCallback = (): Promise<void> => this.requestAuthAndApplication();
 
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
-  // Throws when required fields are missing so callers don't proceed with downstream work
-  // (e.g. attempting to create an application against an unauthenticated session).
+  // Returns early (without authenticating) when required fields are missing — the corresponding
+  // toast is shown for the user, and the caller should detect the still-empty session.
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {
       this.toastService.showErrorKey(`${applyflow}.invalidEmail`);
-      throw new Error('invalidEmail');
+      return;
     }
     const normalizedFirstName = firstName.trim();
     if (!normalizedFirstName) {
       this.toastService.showErrorKey(`${applyflow}.invalidFirstName`);
-      throw new Error('invalidFirstName');
+      return;
     }
     const normalizedLastName = lastName.trim();
     if (!normalizedLastName) {
       this.toastService.showErrorKey(`${applyflow}.invalidLastName`);
-      throw new Error('invalidLastName');
+      return;
     }
 
     this.authOrchestrator.email.set(normalizedEmail);
