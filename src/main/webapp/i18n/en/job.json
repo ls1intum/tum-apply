@@ -180,7 +180,7 @@
           "section2": {
             "title": "Legal Compliance",
             "body": "The tool scans for legal risks and violations of EU directives. Critical errors are heavily weighted due to potential liability for you and the university."
-          },
+          }
         },
         "aiToggleOff": "AI Disabled",
         "aiToggleOn": "AI Enabled",
