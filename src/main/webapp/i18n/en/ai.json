@@ -4,6 +4,10 @@
       "systemDisabled": {
         "summary": "AI Unavailable",
         "detail": "AI features are currently disabled by the system administrator."
+      },
+      "circuitBreakerOpen": {
+        "summary": "AI Temporarily Unavailable",
+        "detail": "AI features are temporarily unavailable due to repeated provider errors. Please try again shortly."
       }
     }
   }

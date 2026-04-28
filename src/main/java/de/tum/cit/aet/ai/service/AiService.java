@@ -363,24 +363,29 @@ public class AiService {
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
-        try {
-            complianceIssues = chatClient
-                .prompt()
-                .user(u ->
-                    u
-                        .text(complianceResource)
-                        .param("descriptionLanguage", lang)
-                        .param("userLang", userLang)
-                        .param("jobDescription", text)
-                        .param("title", title != null ? title : "")
-                )
-                .call()
-                .entity(new ParameterizedTypeReference<>() {});
-            complianceIssues.forEach(issue -> issue.setLanguage(lang));
-            aiFeatureToggleService.recordSuccess();
-        } catch (Exception e) {
-            aiFeatureToggleService.recordFailure();
-            throw new InternalServerException("Compliance analysis parsing failed", e);
+        if (aiFeatureToggleService.isAiAvailable()) {
+            try {
+                complianceIssues = chatClient
+                    .prompt()
+                    .user(u ->
+                        u
+                            .text(complianceResource)
+                            .param("descriptionLanguage", lang)
+                            .param("userLang", userLang)
+                            .param("jobDescription", text)
+                            .param("title", title != null ? title : "")
+                    )
+                    .call()
+                    .entity(new ParameterizedTypeReference<>() {});
+                complianceIssues.forEach(issue -> issue.setLanguage(lang));
+                aiFeatureToggleService.recordSuccess();
+            } catch (Exception e) {
+                aiFeatureToggleService.recordFailure();
+                throw new InternalServerException("Compliance analysis parsing failed", e);
+            }
+        } else {
+            // AI is disabled: skip the LLM-based legal analysis but keep rule-based gender scoring.
+            complianceIssues = List.of();
         }
 
         int genderScore = complianceScoreService.calculateGenderScore(analysis, translatedAnalysis);

@@ -27,7 +27,7 @@ public class AiFeatureToggleResource {
 
     /**
      * Returns the current system-wide AI feature status.
-     * Available to any authenticated user so the frontend can adapt the UI.
+     * Available to any authenticated user so the client can adapt the UI.
      *
      * @return the current AI feature status
      */

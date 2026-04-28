@@ -178,6 +178,11 @@ public class GlobalExceptionHandler {
             log.info("Handled bad request exception - Path: {}", request.getRequestURI());
             return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, bre, request.getRequestURI(), null);
         }
+        if (ex instanceof AiServiceUnavailableException) {
+            // Expected operational state when AI is disabled — log without stack trace to avoid noise.
+            log.info("AI service unavailable - Path: {}", request.getRequestURI());
+            return buildErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, ErrorCode.AI_SERVICE_UNAVAILABLE, ex, request.getRequestURI(), null);
+        }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),
             new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR)

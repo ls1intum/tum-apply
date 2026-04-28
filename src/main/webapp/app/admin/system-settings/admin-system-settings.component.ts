@@ -36,7 +36,7 @@ export class AdminSystemSettingsComponent {
   /** Whether a toggle or reset action is in progress. */
   readonly isUpdating = signal(false);
 
-  /** Current AI feature status from the backend. */
+  /** Current AI feature status from the server. */
   readonly aiStatus = signal<AiFeatureStatusDTO | undefined>(undefined);
 
   /** Whether the AI toggle is currently enabled (derived from status). */
@@ -55,7 +55,7 @@ export class AdminSystemSettingsComponent {
     void this.loadStatus();
   }
 
-  /** Fetches the current AI feature status from the backend. */
+  /** Fetches the current AI feature status from the server. */
   async loadStatus(): Promise<void> {
     this.isLoading.set(true);
     try {

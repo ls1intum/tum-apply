@@ -261,6 +261,9 @@ export class JobCreationFormComponent {
   /** Whether AI features are available system-wide (kill switch / circuit breaker). */
   readonly aiSystemEnabled = this.aiFeatureStatusService.aiSystemEnabled;
 
+  /** Whether AI is currently unavailable because the circuit breaker is open. */
+  readonly aiCircuitBreakerOpen = this.aiFeatureStatusService.circuitBreakerOpen;
+
   /** Score shown in the AI sidebar (undefined = not yet calculated) */
   readonly aiScore = signal<number | undefined>(undefined);
 
@@ -879,7 +882,8 @@ export class JobCreationFormComponent {
    */
   async generateJobApplicationDraft(): Promise<void> {
     if (!this.aiSystemEnabled()) {
-      this.toastService.showErrorKey('ai.featureToggle.systemDisabled');
+      const reasonKey = this.aiCircuitBreakerOpen() ? 'ai.featureToggle.circuitBreakerOpen' : 'ai.featureToggle.systemDisabled';
+      this.toastService.showErrorKey(reasonKey);
       return;
     }
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;

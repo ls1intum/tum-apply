@@ -128,7 +128,9 @@ public class AiResource {
         @RequestParam("lang") String descriptionLanguage,
         @RequestParam(defaultValue = "en") String userLanguage
     ) {
-        ensureAiAvailable();
+        // Intentionally NOT calling ensureAiAvailable(): the rule-based gender bias analysis
+        // and score computation must remain available even when LLM-backed legal analysis is off.
+        // The service skips the LLM call internally when AI is disabled.
         log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})", descriptionLanguage);
         return ResponseEntity.ok(aiService.analyzeCurrentJobDescription(jobForm, descriptionLanguage, userLanguage));
     }

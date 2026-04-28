@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AiFeatureToggleResourceApi } from 'app/generated/api/ai-feature-toggle-resource-api';
@@ -34,7 +35,7 @@ export class AiFeatureStatusService {
   }
 
   /**
-   * Fetches the current AI feature status from the backend.
+   * Fetches the current AI feature status from the server.
    * Components can call this after receiving a 503 to update UI state.
    */
   async refresh(): Promise<void> {
@@ -43,9 +44,13 @@ export class AiFeatureStatusService {
       this.aiSystemEnabled.set(status.aiEnabled ?? false);
       this.manuallyDisabled.set(status.manuallyDisabled ?? false);
       this.circuitBreakerOpen.set(status.circuitBreakerOpen ?? false);
-    } catch {
-      // If we can't reach the endpoint, assume AI is unavailable
-      this.aiSystemEnabled.set(false);
+    } catch (error) {
+      // Only mark AI unavailable on a confirmed 503 from the toggle endpoint.
+      // Transient network/auth/other errors keep the previous state so a
+      // momentary blip during startup does not disable AI in the UI.
+      if (error instanceof HttpErrorResponse && error.status === 503) {
+        this.aiSystemEnabled.set(false);
+      }
     } finally {
       this.loaded.set(true);
     }
