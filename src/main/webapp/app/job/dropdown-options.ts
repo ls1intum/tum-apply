@@ -1,4 +1,9 @@
-import { JobFormDTOFundingTypeEnum, JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
+import {
+  JobFormDTOFundingTypeEnum,
+  JobFormDTOLocationEnum,
+  JobFormDTOSubjectAreaEnum,
+  JobFormDTOTvlGradeEnum
+} from 'app/generated/model/job-form-dto';
 const BASIC_INFO_I18N = 'jobCreationForm.basicInformationSection';
 
 export const locations = [
@@ -67,6 +72,14 @@ export const fundingTypes = [
   { value: JobFormDTOFundingTypeEnum.Scholarship, name: `${BASIC_INFO_I18N}.fundingTypes.Scholarship` },
   { value: JobFormDTOFundingTypeEnum.SelfFunded, name: `${BASIC_INFO_I18N}.fundingTypes.SelfFunded` },
   { value: JobFormDTOFundingTypeEnum.PartiallyFunded, name: `${BASIC_INFO_I18N}.fundingTypes.PartiallyFunded` },
+];
+export const tvlGrades = [
+  {value: JobFormDTOTvlGradeEnum.E10, name: `${BASIC_INFO_I18N}.tvlGrades.E10`},
+  {value: JobFormDTOTvlGradeEnum.E11, name: `${BASIC_INFO_I18N}.tvlGrades.E11`},
+  {value: JobFormDTOTvlGradeEnum.E12, name: `${BASIC_INFO_I18N}.tvlGrades.E12`},
+  {value: JobFormDTOTvlGradeEnum.E13, name: `${BASIC_INFO_I18N}.tvlGrades.E13`},
+  {value: JobFormDTOTvlGradeEnum.E14, name: `${BASIC_INFO_I18N}.tvlGrades.E14`},
+  {value: JobFormDTOTvlGradeEnum.E15, name: `${BASIC_INFO_I18N}.tvlGrades.E15`},
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));

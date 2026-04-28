@@ -31,7 +31,7 @@ import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
-import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import {JobFormDTO, JobFormDTOTvlGradeEnum} from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
@@ -56,6 +56,7 @@ import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-c
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
+import {tvlGrades} from ".././dropdown-options";
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -489,6 +490,14 @@ export class JobCreationFormComponent {
   translatedFundingTypes = computed(() => {
     void this.currentLang();
     return DropdownOptions.fundingTypes
+      .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  /** Computed: Returns localized and sorted TVL grade options */
+  translatedTariffGrades = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.tvlGrades
       .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
@@ -1138,6 +1147,7 @@ export class JobCreationFormComponent {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
       fundingType: [undefined],
+      tvlGrade: [undefined],
       startDate: [''],
       applicationDeadline: [''],
       workload: [undefined],
@@ -1201,6 +1211,7 @@ export class JobCreationFormComponent {
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
+      tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
@@ -1351,6 +1362,7 @@ export class JobCreationFormComponent {
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
+      tvlGrades: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
     });
 
@@ -1866,4 +1878,6 @@ export class JobCreationFormComponent {
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
   }
+
+  protected readonly tvlGrades = tvlGrades;
 }
