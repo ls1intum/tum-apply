@@ -67,7 +67,7 @@
   </div>
 
   <!-- Pagination row with selection count -->
-  <div class="grid grid-cols-3 items-center mt-2 min-h-10">
+  <div class="grid grid-cols-[1fr_auto_1fr] items-center mt-2 min-h-10">
     <span class="text-xs text-text-secondary justify-self-start">
       @if (selectedUserCount() === 1) {
         {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
