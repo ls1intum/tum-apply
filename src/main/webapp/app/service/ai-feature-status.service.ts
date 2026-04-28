@@ -25,9 +25,6 @@ export class AiFeatureStatusService {
   /** Whether the circuit breaker tripped due to consecutive LLM failures. */
   readonly circuitBreakerOpen = signal<boolean>(false);
 
-  /** Whether the initial status check has completed. */
-  readonly loaded = signal<boolean>(false);
-
   private aiFeatureToggleApi = inject(AiFeatureToggleResourceApi);
 
   constructor() {
@@ -51,8 +48,6 @@ export class AiFeatureStatusService {
       if (error instanceof HttpErrorResponse && error.status === 503) {
         this.aiSystemEnabled.set(false);
       }
-    } finally {
-      this.loaded.set(true);
     }
   }
 

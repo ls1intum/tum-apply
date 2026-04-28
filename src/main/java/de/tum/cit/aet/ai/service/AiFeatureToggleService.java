@@ -72,15 +72,6 @@ public class AiFeatureToggleService {
     }
 
     /**
-     * Returns {@code true} when AI features are manually enabled by an admin.
-     *
-     * @return {@code true} if the manual toggle is ON
-     */
-    public boolean isManuallyEnabled() {
-        return manuallyEnabled;
-    }
-
-    /**
      * Returns {@code true} when the circuit breaker is currently rejecting requests.
      * After the cooldown elapses, the first call transitions {@link CircuitState#OPEN}
      * to {@link CircuitState#HALF_OPEN} and returns {@code false} so that caller can probe.
