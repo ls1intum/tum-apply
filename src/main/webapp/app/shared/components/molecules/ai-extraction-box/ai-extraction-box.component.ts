@@ -91,9 +91,16 @@ export class AiExtractionBoxComponent {
     }
   });
 
-  constructor() {
+  // The consent endpoint requires authentication; calling it anonymously fires a 401
+  // which the global interceptor surfaces as "Session expired" and redirects home.
+  // Defer the load until applicationId is set (i.e. the user has authenticated).
+  private consentRequested = false;
+  private loadConsentEffect = effect(() => {
+    if (this.consentRequested) return;
+    if (!this.applicationId()) return;
+    this.consentRequested = true;
     void this.loadAiConsent();
-  }
+  });
   /**
    * Triggers AI data extraction from the available documents.
    */
