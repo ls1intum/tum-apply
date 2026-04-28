@@ -575,8 +575,9 @@ export default class ApplicationCreationFormComponent {
     this.applicationDetailsDataValid.set(isValid);
   }
 
-  // Handles the Next action from Step 1: runs OTP flow, refreshes user, and migrates draft
-  private handleNextFromStep1(): void {
+  // Authenticates the current visitor (OTP) and ensures a server-side application exists.
+  // Resolves once `applicationId` is populated. Rejects on validation or OTP failure.
+  async requestAuthAndApplication(): Promise<void> {
     if (this.applicantId()) {
       return;
     }
@@ -585,17 +586,29 @@ export default class ApplicationCreationFormComponent {
     const firstName = this.personalInfoData().firstName;
     const lastName = this.personalInfoData().lastName;
 
+    await this.openOtpAndWaitForLogin(email, firstName, lastName);
+    this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
+    await this.migrateDraftIfNeeded();
+  }
+
+  // Handles the Next action from Step 1: runs OTP flow, refreshes user, migrates draft, advances stepper.
+  private handleNextFromStep1(): void {
+    if (this.applicantId()) {
+      return;
+    }
+
     void (async () => {
       try {
-        await this.openOtpAndWaitForLogin(email, firstName, lastName);
-        this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-        void this.migrateDraftIfNeeded();
+        await this.requestAuthAndApplication();
         this.progressStepper()?.goToStep(2);
       } catch {
         this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
       }
     })();
   }
+
+  // Bound to <jhi-application-creation-page1 [requestAuth]>. Arrow-function so `this` is preserved.
+  readonly requestAuthCallback = (): Promise<void> => this.requestAuthAndApplication();
 
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {

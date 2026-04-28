@@ -1,21 +1,21 @@
 <form [formGroup]="page1Form()">
   <p jhiTranslate="entity.applicationPage1.description"></p>
-  @if (applicationIdForDocuments(); as applicationId) {
-    <p-divider layout="horizontal">
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
+  </p-divider>
+  <div class="w-full mb-6">
+    <label>
       <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
-    </p-divider>
-    <div class="w-full mb-6">
-      <label>
-        <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
-        <span class="required"> *</span>
-        <fa-icon
-          class="icon"
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-          tooltipPosition="top"
-        />
-      </label>
-      <div class="flex flex-col gap-3">
+      <span class="required"> *</span>
+      <fa-icon
+        class="icon"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+        tooltipPosition="top"
+      />
+    </label>
+    <div class="flex flex-col gap-3">
+      @if (applicationIdForDocuments(); as applicationId) {
         <jhi-upload-button
           documentType="CV"
           [applicationId]="applicationId"
@@ -32,9 +32,33 @@
           [helperTextKey]="'entity.aiExtraction.helperCv'"
           (extracted)="onAiDataExtracted($event)"
         />
-      </div>
+      } @else {
+        <div data-testid="cv-upload-auth-trigger">
+          <jhi-button
+            variant="outlined"
+            severity="primary"
+            icon="upload"
+            [label]="'entity.applicationPage1.label.curriculumVitae'"
+            [shouldTranslate]="true"
+            [disabled]="authInFlight()"
+            [loading]="authInFlight()"
+            (click)="requestAuthAndUpload()"
+          />
+        </div>
+        <div data-testid="ai-extract-auth-trigger">
+          <jhi-button
+            severity="primary"
+            icon="custom-sparkle"
+            [label]="'entity.aiExtraction.button'"
+            [shouldTranslate]="true"
+            [disabled]="authInFlight()"
+            [loading]="authInFlight()"
+            (click)="requestAuthAndUpload()"
+          />
+        </div>
+      }
     </div>
-  }
+  </div>
 
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="flex flex-col">

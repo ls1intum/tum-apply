@@ -20,6 +20,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/application-for-
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -76,6 +77,7 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     FontAwesomeModule,
     TooltipModule,
     AiExtractionBoxComponent,
+    ButtonComponent,
   ],
   templateUrl: './application-creation-page1.component.html',
   standalone: true,
@@ -85,6 +87,16 @@ export default class ApplicationCreationPage1Component {
 
   applicationIdForDocuments = input<string | undefined>();
   documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
+
+  /**
+   * Callback that authenticates the visitor and creates the application.
+   * Invoked when an unauthenticated user clicks the placeholder Upload / AI Extract buttons.
+   * Page 1 itself never opens dialogs — it delegates to the parent form.
+   */
+  requestAuth = input<() => Promise<void>>();
+
+  /** Spinner / disabled state while requestAuth is in flight, used to suppress double-clicks. */
+  authInFlight = signal<boolean>(false);
 
   valid = output<boolean>();
   changed = output<boolean>();
@@ -267,5 +279,22 @@ export default class ApplicationCreationPage1Component {
     }
 
     this.educationDataExtracted.emit(extractedData.education);
+  }
+
+  /**
+   * Invoked from the placeholder Upload / AI Extract buttons when no applicationId exists.
+   * Runs the parent's auth callback, guarding against double-clicks via {@link authInFlight}.
+   */
+  async requestAuthAndUpload(): Promise<void> {
+    const trigger = this.requestAuth();
+    if (!trigger || this.authInFlight()) {
+      return;
+    }
+    this.authInFlight.set(true);
+    try {
+      await trigger();
+    } finally {
+      this.authInFlight.set(false);
+    }
   }
 }
