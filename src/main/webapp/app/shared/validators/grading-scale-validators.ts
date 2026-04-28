@@ -27,7 +27,7 @@ export function gradingScaleTypeValidator(getCurrentGrade: () => string): Valida
 }
 
 function validateGradeTypesMatch(gradeType: GradeType, limitType: GradeType): ValidationErrors | null {
-  if (gradeType === 'numeric') {
+  if (gradeType === 'numeric' || gradeType === 'numericFraction') {
     return limitType === 'numeric' ? null : { invalidLimitType: true };
   }
 
@@ -103,7 +103,7 @@ function checkGradeInRange(type: GradeType, grade: string, upper: string, lower:
   if (type === 'letter') {
     return true;
   }
-  if (type === 'numeric' || type === 'percentage') {
+  if (type === 'numeric' || type === 'numericFraction' || type === 'percentage') {
     return isNumericInRange(grade, upper, lower);
   }
   return false;
