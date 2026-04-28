@@ -12,7 +12,7 @@
         [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
         (searchOutput)="onSearch($event)"
       >
-        <span records-extra class="text-sm text-text-secondary">
+        <span records-extra class="text-xs text-text-secondary">
           @if (selectedUserCount() === 1) {
             {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
           } @else if (selectedUserCount() > 1) {
