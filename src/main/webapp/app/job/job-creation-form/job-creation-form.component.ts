@@ -1572,7 +1572,7 @@ export class JobCreationFormComponent {
     const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
     // If an identical translation is already in flight, skips the call to avoid a redundant LLM request.
     const active = this.activeTranslationRequest;
-    if (active && active.sourceLang === currentLang && active.sourceText === text && active.targetLang === targetLang) {
+    if (active?.sourceLang === currentLang && active.sourceText === text && active.targetLang === targetLang) {
       return;
     }
 
@@ -1668,7 +1668,7 @@ export class JobCreationFormComponent {
       // Clear only if this is still the same request.
       // If a newer one exists, keep it to avoid breaking duplicate checks.
       if (
-        this.activeTranslationRequest?.sourceLang === currentLang &&
+        this.activeTranslationRequest.sourceLang === currentLang &&
         this.activeTranslationRequest.sourceText === text &&
         this.activeTranslationRequest.targetLang === targetLang
       ) {
