@@ -199,6 +199,7 @@ public class PDFExportService {
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
                 formatContractDuration(job.contractDuration(), labels.get("years")),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
+                job.tvlGrade() != null ? job.tvlGrade().name() : "-",
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
             )
@@ -264,6 +265,7 @@ public class PDFExportService {
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
                 jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
+                jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )
@@ -391,6 +393,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("workload"), getValue(data.workload()))
             .addOverviewItem(labels.get("duration"), getValue(data.duration()))
             .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
+            .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrades()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }

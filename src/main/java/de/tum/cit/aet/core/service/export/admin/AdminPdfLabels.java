@@ -33,6 +33,7 @@ final class AdminPdfLabels {
             Map.entry("duration", "Contract duration:"),
             Map.entry("years", "years"),
             Map.entry("fundingType", "Funding type:"),
+            Map.entry("tvlGrade", "Pay grade:"),
             Map.entry("startDate", "Start date:"),
             Map.entry("endDate", "Application deadline:"),
             Map.entry("jobDetails", "Job Details"),

@@ -11,6 +11,7 @@ public record JobOverviewData(
     String workload,
     String duration,
     String fundingType,
+    String tvlGrades,
     String startDate,
     String endDate
 ) {}
