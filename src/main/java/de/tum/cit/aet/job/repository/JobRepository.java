@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -307,4 +308,17 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      */
     @Query("SELECT DISTINCT j.image.imageId FROM Job j WHERE j.image.imageId IN :imageIds")
     Set<UUID> findInUseImageIds(@Param("imageIds") List<UUID> imageIds);
+
+    /**
+     * Finds a job by id, eagerly fetching compliance issues
+     *
+     * @param jobId the job id
+     * @return the job with relations loaded, or empty if not found
+     */
+    @EntityGraph(attributePaths = {"complianceIssues", "supervisingProfessor", "researchGroup", "image"})
+    @Query("SELECT j FROM Job j WHERE j.jobId = :jobId")
+    Optional<Job> findByIdWithCompliance(@Param("jobId") UUID jobId);
+
+
+
 }

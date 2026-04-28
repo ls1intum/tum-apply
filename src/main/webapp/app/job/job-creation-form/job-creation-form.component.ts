@@ -858,14 +858,28 @@ export class JobCreationFormComponent {
 
   /**
    * Handles category filter changes from the AI assistant sidebar.
-   * Filters highlights to show only the selected category, or all if cleared.
+   * Updates filter signal to show only the selected category
    */
   onComplianceFilterChange(category: string | undefined): void {
     this.activeComplianceFilter.set(category);
-    const lang = this.currentDescriptionLanguage();
-    const filtered = category ? this.complianceIssues().filter(i => i.category === category) : this.complianceIssues();
-    this.applyHighlights(filtered, lang);
   }
+
+  /**
+   * Handles highlights after reload, page switches, language switches or new analysis.
+   * Skips while AI is actively generating new draft or translating.
+   */
+  highlightsEffect = effect(() => {
+    const editor = this.jobDescriptionEditor();
+    const lang = this.currentDescriptionLanguage();
+    const issues = this.complianceIssues();
+    const filter = this.activeComplianceFilter();
+    if (!editor) return;
+    if (untracked(() => this.isGeneratingDraft() || (this.isTranslating() && this.translationTargetLang() === lang))) return;
+    const filtered = filter ? issues.filter(i => i.category === filter) : issues;
+
+    const content = untracked(() => (lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE()));
+    editor.forceUpdate(content, () => this.applyHighlights(filtered, lang));
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION METHODS
@@ -1244,6 +1258,8 @@ export class JobCreationFormComponent {
     });
   }
 
+
+
   // ═══════════════════════════════════════════════════════════════════════════
   // INITIALIZATION METHODS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1349,9 +1365,6 @@ export class JobCreationFormComponent {
     });
 
     this.jobDescriptionSignal.set(en);
-    this.jobDescriptionEditor()?.forceUpdate(en, () => {
-      this.applyHighlights(this.complianceIssues(), 'en');
-    });
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',

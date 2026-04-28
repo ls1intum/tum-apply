@@ -319,7 +319,13 @@ export class EditorComponent extends BaseInputDirective<string> {
     this.htmlValue.set(newValue);
 
     const editor = this.quillEditorComponent()?.quillEditor;
-    if (!editor) return;
+    if (!editor) {
+      // Quill isn't initialized, retry on next frame onComplete callback fires
+      if (onComplete) {
+        requestAnimationFrame(() => this.forceUpdate(newValue, onComplete));
+      }
+      return;
+    }
 
     // Preserve cursor/selection if editor currently focused
     const hadFocus = editor.hasFocus();

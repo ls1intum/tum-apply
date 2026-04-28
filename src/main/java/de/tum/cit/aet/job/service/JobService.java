@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -441,7 +442,7 @@ public class JobService {
      * @return the job entity if the user can manage it
      */
     private Job assertCanManageJob(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
@@ -477,9 +478,19 @@ public class JobService {
             return;
         }
 
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        String incomingLang = complianceAnalysis.isEmpty() ? null : complianceAnalysis.get(0).getLanguage();
+
+        // Keep issues from the other language, add new ones for target language
+        List<ComplianceIssue> issuesToSave = new ArrayList<>();
+        for (ComplianceIssue existingLang : job.getComplianceIssues()) {
+            if (!Objects.equals(existingLang.getLanguage(), incomingLang)) {
+                issuesToSave.add(existingLang);
+            }
+        }
+        issuesToSave.addAll(complianceAnalysis);
         job.setGenderBiasScore(score);
-        job.setComplianceIssues(complianceAnalysis);
+        job.setComplianceIssues(issuesToSave);
         jobRepository.save(job);
     }
 }
