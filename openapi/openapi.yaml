@@ -2826,7 +2826,7 @@ components:
         article: {type: string}
         category:
           type: string
-          enum: [CRITICAL_AGG, TRANSPARENCY, DSGVO_MIN, PUBLIC_SELECTOR]
+          enum: [CRITICAL_AGG, TRANSPARENCY, DSGVO_MINIMIZATION, PUBLIC_SECTOR]
         explanation: {type: string}
         id: {type: string}
         language: {type: string}

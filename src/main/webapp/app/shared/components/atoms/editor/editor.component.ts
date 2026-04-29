@@ -22,7 +22,7 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Quill.import() returns unknown; no public type for inline blots
 const Inline = Quill.import('blots/inline') as any;
 
-type ComplianceCategory = 'critical' |'transparency' | 'dsgvo'| 'public-sector';
+type HighlightCategory = 'critical' | 'transparency' | 'dsgvo' | 'public-sector';
 
 /**
  * Custom Quill Blot for highlighting text with Tailwind utility classes.
@@ -90,22 +90,17 @@ class HighlightBlot extends Inline {
     'hover:[background-color:var(--color-compliance-public-sector-bg)]',
   ];
 
-  /** Detects the category from the CSS variable name passed in the format value. */
-  private static findColorForCategory(color: string): ComplianceCategory {
-    if(color.includes('critical')) return 'critical';
-    if(color.includes('transparency')) return 'transparency';
-    if(color.includes('dsgvo')) return 'dsgvo';
-    if(color.includes('public-sector')) return 'public-sector';
-    return 'critical';
-  }
-
   /** Returns the Tailwind classes for a given category. */
-  public static getColorForCategory(category: ComplianceCategory):string[] {
-    switch(category) {
-      case 'critical': return HighlightBlot.criticalClasses;
-      case 'transparency': return HighlightBlot.transparencyClasses;
-      case 'dsgvo': return HighlightBlot.dsgvoClasses;
-      case 'public-sector': return HighlightBlot.publicSectorClasses;
+  public static getColorForCategory(category: HighlightCategory): string[] {
+    switch (category) {
+      case 'critical':
+        return HighlightBlot.criticalClasses;
+      case 'transparency':
+        return HighlightBlot.transparencyClasses;
+      case 'dsgvo':
+        return HighlightBlot.dsgvoClasses;
+      case 'public-sector':
+        return HighlightBlot.publicSectorClasses;
     }
   }
 
@@ -115,7 +110,7 @@ class HighlightBlot extends Inline {
    */
   static create(value: { color: string; bg: string }): HTMLElement {
     const node = super.create() as HTMLElement;
-    const category = HighlightBlot.findColorForCategory(value.color) as ComplianceCategory;
+    const category = HighlightBlot.findColorForCategory(value.color);
     const classes = HighlightBlot.getColorForCategory(category);
     classes.forEach((cls: string) => node.classList.add(cls));
     node.dataset['category'] = category;
@@ -123,13 +118,27 @@ class HighlightBlot extends Inline {
   }
 
   static formats(node: HTMLElement): { color: string; bg: string } {
-    const category = (node.dataset['category'] ?? 'critical') as ComplianceCategory;
-    switch(category) {
-      case 'critical': return {color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)'};
-      case 'transparency':  return {color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)'};
-      case 'dsgvo':  return {color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)'};
-      case 'public-sector':  return {color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)'};
+    const data = node.dataset['category'];
+    const category: HighlightCategory = data === 'critical' || data === 'transparency' || data === 'dsgvo' ? data : 'public-sector';
+    switch (category) {
+      case 'critical':
+        return { color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)' };
+      case 'transparency':
+        return { color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)' };
+      case 'dsgvo':
+        return { color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)' };
+      case 'public-sector':
+        return { color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)' };
     }
+  }
+
+  /** Detects the category from the CSS variable name passed in the format value. */
+  private static findColorForCategory(color: string): HighlightCategory {
+    if (color.includes('critical')) return 'critical';
+    if (color.includes('transparency')) return 'transparency';
+    if (color.includes('dsgvo')) return 'dsgvo';
+    if (color.includes('public-sector')) return 'public-sector';
+    return 'critical';
   }
 }
 
