@@ -10,6 +10,7 @@ import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.compo
 import { TooltipModule } from 'primeng/tooltip';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 import { StatusPillComponent } from 'app/shared/components/atoms/status-pill/status-pill.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 @Component({
   selector: 'jhi-ai-assistant-card',
@@ -25,6 +26,7 @@ import { StatusPillComponent } from 'app/shared/components/atoms/status-pill/sta
     ProgressSpinnerComponent,
     AiScoreRingComponent,
     StatusPillComponent,
+    InfoBoxComponent,
   ],
   templateUrl: './ai-assistant-card.component.html',
 })

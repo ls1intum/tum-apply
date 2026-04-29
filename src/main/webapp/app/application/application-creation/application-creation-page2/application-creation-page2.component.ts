@@ -153,6 +153,27 @@ export default class ApplicationCreationPage2Component {
       masterGrade: data.masterGrade,
     });
 
+    // Back-fill must run before hasInitialLimitsSet flips on, otherwise
+    // bachelorGradeEffect's "grade unchanged" guard short-circuits forever.
+    const gradePatch: Partial<ApplicationCreationPage2Data> = {};
+    if (data.bachelorGrade && !data.bachelorGradeUpperLimit && !data.bachelorGradeLowerLimit) {
+      const detected = getDetectedGradeLimitsPatch(data.bachelorGrade);
+      if (detected.upperLimit !== '' && detected.lowerLimit !== '') {
+        gradePatch.bachelorGradeUpperLimit = detected.upperLimit;
+        gradePatch.bachelorGradeLowerLimit = detected.lowerLimit;
+      }
+    }
+    if (data.masterGrade && !data.masterGradeUpperLimit && !data.masterGradeLowerLimit) {
+      const detected = getDetectedGradeLimitsPatch(data.masterGrade);
+      if (detected.upperLimit !== '' && detected.lowerLimit !== '') {
+        gradePatch.masterGradeUpperLimit = detected.upperLimit;
+        gradePatch.masterGradeLowerLimit = detected.lowerLimit;
+      }
+    }
+    if (Object.keys(gradePatch).length > 0) {
+      this.page2Form.patchValue(gradePatch);
+    }
+
     this.hasInitialized.set(true);
 
     if (data.bachelorGrade) {

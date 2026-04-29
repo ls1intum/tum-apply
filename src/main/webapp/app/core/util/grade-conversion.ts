@@ -33,8 +33,8 @@ export function convertToGermanGrade(givenUpperLimit: string, givenLowerLimit: s
     upperLimit = parseFloat(stripPercentage(givenUpperLimit).replace(',', '.'));
     lowerLimit = parseFloat(stripPercentage(givenLowerLimit).replace(',', '.'));
     actualGrade = parseFloat(stripPercentage(grade).replace(',', '.'));
-  } else if (gradeType === 'numeric') {
-    // Numeric format (e.g., 1.0, 4.0 or 100, 40)
+  } else if (gradeType === 'numeric' || gradeType === 'numericFraction') {
+    // Numeric format (e.g., 1.0, 4.0 or 100, 40) or fraction "X/Y" — parseFloat picks up X.
     upperLimit = parseFloat(givenUpperLimit.replace(',', '.'));
     lowerLimit = parseFloat(givenLowerLimit.replace(',', '.'));
     actualGrade = parseFloat(grade.replace(',', '.'));
