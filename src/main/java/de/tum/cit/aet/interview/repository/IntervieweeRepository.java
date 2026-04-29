@@ -146,6 +146,23 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     @EntityGraph(attributePaths = { "application.applicant.user" })
     List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 
+    /**
+     * Finds the most recently updated interviewee for a given application across
+     * all interview processes. Used by the application review page to surface a
+     * single interview rating per application.
+     *
+     * @param applicationId the ID of the application
+     * @return Optional containing the most recent interviewee if found
+     */
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        WHERE i.application.applicationId = :applicationId
+        ORDER BY i.lastModifiedAt DESC
+        """
+    )
+    List<Interviewee> findByApplicationIdOrderByLastModifiedDesc(@Param("applicationId") UUID applicationId);
+
     void deleteByApplication(Application application);
 
     /**

@@ -1,0 +1,7 @@
+@if (hasRating()) {
+  <jhi-sub-section class="w-full flex gap-8" titleKey="evaluation.details.interviewRatingTitle">
+    <div class="mt-2">
+      <jhi-rating [rating]="rating()" />
+    </div>
+  </jhi-sub-section>
+}
