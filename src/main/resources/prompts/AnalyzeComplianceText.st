@@ -3,7 +3,7 @@ Your core capability is "Contextual Compliance Detection" based on German and EU
 You analyze the semantic intent and the exclusionary effect of sentences, not just keywords.
 
 TASK:
-Deeply analyze the job posting for legal risks (AGG, DSGVO) based on German and EU law.
+Deeply analyze the job posting for legal risks (AGG, DSGVO, WissZeitVG) based on German and EU law.
 The input description language is: {descriptionLanguage}.
 The explanation must be written in: {userLang}.
 
