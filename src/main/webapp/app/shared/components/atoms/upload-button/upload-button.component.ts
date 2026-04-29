@@ -44,10 +44,18 @@ export class UploadButtonComponent {
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
   documentType = input.required<DocumentType>();
-  applicationId = input.required<string>();
+  applicationId = input<string | undefined>();
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
+
+  /**
+   * Optional callback that authenticates the visitor and yields a real
+   * `applicationId`. Invoked the first time the user picks a file while
+   * `applicationId` is empty. The Promise must resolve only after the parent
+   * has propagated the new `applicationId` into this component's input.
+   */
+  requestAuth = input<() => Promise<void>>();
 
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
@@ -74,6 +82,12 @@ export class UploadButtonComponent {
 
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
+
+    if (!(await this.ensureAuthenticated())) {
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
+    }
 
     // For single-file mode, check if document already exists
     if (!this.allowMultiple() && (this.documentIds()?.length ?? 0) > 0) {
@@ -179,11 +193,12 @@ export class UploadButtonComponent {
     const files: File[] | undefined = this.selectedFiles();
     if (!files || files.length === 0) return;
 
+    const appId = this.applicationId();
+    if (!appId) return;
+
     this.isUploading.set(true);
     try {
-      const uploadedPromises = files.map(file =>
-        firstValueFrom(this.applicationApi.uploadDocuments(this.applicationId(), this.documentType(), file)),
-      );
+      const uploadedPromises = files.map(file => firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file)));
       const uploadResults = await Promise.all(uploadedPromises);
       const allUploadedIds = uploadResults.flat();
       this.documentIds.set(allUploadedIds);
@@ -275,6 +290,28 @@ export class UploadButtonComponent {
     const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
     const size = bytes / Math.pow(k, i);
     return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
+  }
+
+  /**
+   * Ensures an `applicationId` is available before any upload action proceeds.
+   * Returns true when already set, or after a successful `requestAuth()` call.
+   * Returns false when no callback is provided and the id is missing, or when
+   * the callback rejects (user cancelled / validation failed upstream).
+   */
+  private async ensureAuthenticated(): Promise<boolean> {
+    if (this.applicationId()) {
+      return true;
+    }
+    const trigger = this.requestAuth();
+    if (!trigger) {
+      return false;
+    }
+    try {
+      await trigger();
+    } catch {
+      return false;
+    }
+    return Boolean(this.applicationId());
   }
 
   private isDuplicateFilename(filename: string): boolean {
