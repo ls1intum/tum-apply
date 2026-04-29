@@ -102,8 +102,10 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/applications/{applicationId}/rating")
     public ResponseEntity<InterviewRatingDTO> getInterviewRatingForApplication(@PathVariable UUID applicationId) {
-        log.info("GET /api/interviews/applications/{}/rating", applicationId);
-        return ResponseEntity.ok(interviewService.getInterviewRatingForApplication(applicationId));
+        log.info("GET /api/interviews/applications/{}/rating - Fetching interview rating", applicationId);
+        InterviewRatingDTO dto = interviewService.getInterviewRatingForApplication(applicationId);
+        log.info("GET /api/interviews/applications/{}/rating - Returning rating={}", applicationId, dto.rating());
+        return ResponseEntity.ok(dto);
     }
 
     /**

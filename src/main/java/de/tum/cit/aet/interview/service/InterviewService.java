@@ -1196,14 +1196,13 @@ public class InterviewService {
      * @throws AccessDeniedException if the user is not a member of the research
      *                               group of the application's job
      */
-    @Transactional(readOnly = true)
     public InterviewRatingDTO getInterviewRatingForApplication(UUID applicationId) {
         List<Interviewee> interviewees = intervieweeRepository.findByApplicationIdOrderByLastModifiedDesc(applicationId);
         if (interviewees.isEmpty()) {
             return new InterviewRatingDTO(null);
         }
 
-        Interviewee mostRecent = interviewees.get(0);
+        Interviewee mostRecent = interviewees.getFirst();
         verifyResearchGroupAccess(mostRecent.getInterviewProcess().getJob());
 
         return InterviewRatingDTO.of(mostRecent.getRating());

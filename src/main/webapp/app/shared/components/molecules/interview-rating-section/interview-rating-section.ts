@@ -32,7 +32,7 @@ export class InterviewRatingSection {
       const response = await firstValueFrom(this.interviewApi.getInterviewRatingForApplication(applicationId));
       this.rating.set(response.rating ?? undefined);
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to load interview rating' });
+      this.toastService.showErrorKey('evaluation.errors.loadInterviewRating');
     }
   }
 }

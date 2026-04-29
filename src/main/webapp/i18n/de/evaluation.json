@@ -135,6 +135,10 @@
       "noProcessFound": {
         "summary": "Fehler",
         "detail": "Kein Interviewprozess für diesen Job gefunden"
+      },
+      "loadInterviewRating": {
+        "summary": "Fehler",
+        "detail": "Laden der Interview-Bewertung fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   }
