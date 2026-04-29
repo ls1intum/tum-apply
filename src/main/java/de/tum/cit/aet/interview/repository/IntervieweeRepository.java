@@ -157,6 +157,9 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     @Query(
         """
         SELECT i FROM Interviewee i
+        JOIN FETCH i.interviewProcess ip
+        JOIN FETCH ip.job j
+        JOIN FETCH j.researchGroup
         WHERE i.application.applicationId = :applicationId
         ORDER BY i.lastModifiedAt DESC
         """
