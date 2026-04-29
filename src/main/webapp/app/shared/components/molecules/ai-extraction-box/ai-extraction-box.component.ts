@@ -44,6 +44,14 @@ export class AiExtractionBoxComponent {
   /** emitted with extracted data on successful extraction */
   extracted = output<ExtractedApplicationDataDTO>();
 
+  /**
+   * Optional callback that authenticates the visitor and yields a real
+   * `applicationId`. Invoked when the user clicks Extract while no
+   * `applicationId` is set. The Promise must resolve only after the parent
+   * has propagated the new `applicationId` into this component's input.
+   */
+  requestAuth = input<() => Promise<void>>();
+
   /** whether AI features are enabled (loaded from user consent) */
   aiFeaturesEnabled = signal<boolean>(false);
 
@@ -83,13 +91,33 @@ export class AiExtractionBoxComponent {
     }
   });
 
-  constructor() {
+  // The consent endpoint requires authentication; calling it anonymously fires a 401
+  // which the global interceptor surfaces as "Session expired" and redirects home.
+  // Defer the load until applicationId is set (i.e. the user has authenticated).
+  private consentRequested = false;
+  private loadConsentEffect = effect(() => {
+    if (this.consentRequested) return;
+    if (!this.applicationId()) return;
+    this.consentRequested = true;
     void this.loadAiConsent();
-  }
+  });
   /**
    * Triggers AI data extraction from the available documents.
    */
-  extractAiData(): void {
+  async extractAiData(): Promise<void> {
+    // 0) If no applicationId yet, run the auth callback first and bail out on
+    //    failure so we don't attempt extraction without a target application.
+    if (!this.applicationId()) {
+      const trigger = this.requestAuth();
+      if (!trigger) return;
+      try {
+        await trigger();
+      } catch {
+        return;
+      }
+      if (!this.applicationId()) return;
+    }
+
     // 1) Build the extraction key and collect persisted document IDs and queued files
     const key = this.extractionKey();
     const appId = this.applicationId();
