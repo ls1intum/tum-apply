@@ -167,22 +167,19 @@
         "aiHelperText": "Specify the most important information and let TUMApply AI write it for you.",
         "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
-        "aiScoreTitle": "Inclusivity Score",
+        "aiScoreTitle": "Quality Score",
         "aiScoreDialog": {
-          "title": "How the Inclusivity Score is calculated",
+          "title": "How the Quality Score is calculated",
           "summary": "Calculation factors",
-          "explanation": "The score combines wording analysis, tone evaluation, and balanced weighting.",
+          "summaryText": "Your quality score is a weighted average of the factors underneath. It serves as a single metric to determine if your job description meets university recruitment standards.",
+          "explanation": "The score combines word choice, tone, legal compliance, and balanced weighting.",
           "section1": {
-            "title": "Word Choice",
-            "body": "The system analyzes your text for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
+            "title": "Inclusion and Word Choice",
+            "body": "The system analyzes your job description for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
           },
           "section2": {
-            "title": "Overall Impression",
-            "body": "A neutral tone yields the best result, while biased language leads to deductions."
-          },
-          "section3": {
-            "title": "Balanced Rating",
-            "body": "The score is weighted to ensure that individual, poorly chosen words do not disproportionately affect your final result."
+            "title": "Legal Compliance",
+            "body": "The tool scans for legal risks and violations of EU directives. Critical errors are heavily weighted due to potential liability for you and the university."
           }
         },
         "aiToggleOff": "AI Disabled",

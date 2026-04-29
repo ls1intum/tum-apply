@@ -554,4 +554,66 @@ describe('ApplicationPage2Component', () => {
       );
     });
   });
+
+  describe('initializeFormEffect — limit back-fill from AI-extracted grades', () => {
+    it('populates bachelor limits when grade is set but limits are empty (AI path)', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          bachelorDegreeName: 'CS',
+          bachelorDegreeUniversity: 'TUM',
+          bachelorGrade: '1.5',
+          bachelorGradeUpperLimit: '',
+          bachelorGradeLowerLimit: '',
+        },
+      });
+
+      expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('1.0');
+      expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('4.0');
+    });
+
+    it('populates master limits when grade is set but limits are empty', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          masterDegreeName: 'CS',
+          masterDegreeUniversity: 'TUM',
+          masterGrade: '85%',
+          masterGradeUpperLimit: '',
+          masterGradeLowerLimit: '',
+        },
+      });
+
+      expect(componentInstance.page2Form.get('masterGradeUpperLimit')?.value).toBe('100%');
+      expect(componentInstance.page2Form.get('masterGradeLowerLimit')?.value).toBe('50%');
+    });
+
+    it('does not overwrite limits that are already provided', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          bachelorDegreeName: 'CS',
+          bachelorDegreeUniversity: 'TUM',
+          bachelorGrade: '1.5',
+          bachelorGradeUpperLimit: '6.0',
+          bachelorGradeLowerLimit: '4.0',
+        },
+      });
+
+      expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('6.0');
+      expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('4.0');
+    });
+
+    it('leaves limits empty when grade is not detectable', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          bachelorDegreeName: 'CS',
+          bachelorDegreeUniversity: 'TUM',
+          bachelorGrade: '???',
+          bachelorGradeUpperLimit: '',
+          bachelorGradeLowerLimit: '',
+        },
+      });
+
+      expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('');
+      expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('');
+    });
+  });
 });
