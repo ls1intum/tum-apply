@@ -147,10 +147,10 @@
     "aiSidebar": {
       "header": "KI-Assistent",
       "complianceHeader": "Compliance-Prüfer",
-      "critical": "Fixe kritische AGG-Verstöße",
+      "critical": "AGG-Verstöße korrigieren",
       "transparency": "Transparenz verbessern",
-      "dsgvo": "Fixe DSGVO-Verstöße",
-      "publicSector": "Gleichstellungspflicht öffentlicher Stellen",
+      "dsgvo": "Datenschutz anpassen",
+      "publicSector": "Wissenschaftsrecht prüfen",
       "filterByCategory": "Nach Kategorie filtern"
     },
     "positionDetailsSection": {

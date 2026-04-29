@@ -833,10 +833,10 @@ export class JobCreationFormComponent {
         case ComplianceIssueCategoryEnum.Transparency:
           cat = { color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)' };
           break;
-        case ComplianceIssueCategoryEnum.DsgvoMin:
+        case ComplianceIssueCategoryEnum.DsgvoMinimization:
           cat = { color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)' };
           break;
-        case ComplianceIssueCategoryEnum.PublicSelector:
+        case ComplianceIssueCategoryEnum.PublicSector:
           cat = { color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)' };
           break;
         default:

@@ -149,8 +149,8 @@
       "complianceHeader": "Compliance Checker",
       "critical": "Fix critical AGG mistakes",
       "transparency": "Improve transparency and clarity",
-      "dsgvo": "Fix DSGVO mistakes",
-      "publicSector": "Public Sector Equality Duty",
+      "dsgvo": "Fix Data privacy",
+      "publicSector": "Check Academic Law",
       "filterByCategory": "Filter by category"
     },
     "positionDetailsSection": {
