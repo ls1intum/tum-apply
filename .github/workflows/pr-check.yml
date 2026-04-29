@@ -102,7 +102,14 @@ jobs:
 
       - name: Print Failed Tests
         if: failure()
-        run: grep "Test >.* FAILED\$" tests.log || echo "No failed tests."
+        run: |
+          FAILED_TESTS=$(grep "Test >.* FAILED\$" tests.log || true)
+          if [ -n "$FAILED_TESTS" ]; then
+            echo "$FAILED_TESTS"
+            exit 1
+          else
+            echo "No failed tests."
+          fi
 
       # --- Upload Results ---
       - name: Upload JUnit Test Results
