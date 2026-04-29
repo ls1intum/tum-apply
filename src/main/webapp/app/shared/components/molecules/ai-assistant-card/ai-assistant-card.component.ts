@@ -125,7 +125,9 @@ export class AiAssistantCardComponent {
   );
 
   /** Number of TRANSPARENCY issues for the current language. */
-  readonly dsgvoCount = computed(() => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.DsgvoMinimization).length);
+  readonly dsgvoCount = computed(
+    () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.DsgvoMinimization).length,
+  );
 
   /** Number of TRANSPARENCY issues for the current language. */
   readonly publicSectorCount = computed(
