@@ -896,6 +896,13 @@ export class JobCreationFormComponent {
     const language = this.currentDescriptionLanguage();
     this.clearAutoSaveTimer();
 
+    // Abort any in-flight translation. Generation will re-trigger a fresh
+    // translation in postGenerationSaveAndProcess once it completes, so an
+    // active translation against the soon-to-be-replaced text is wasted work.
+    if (this.isTranslating()) {
+      this.cancelTranslation();
+    }
+
     // 1) Enter generation mode and show placeholder
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);

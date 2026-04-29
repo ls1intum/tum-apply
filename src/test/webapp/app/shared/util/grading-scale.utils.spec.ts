@@ -8,6 +8,7 @@ import {
   isNumericInRange,
   detectLetterGrade,
   detectNumericGrade,
+  detectFractionGrade,
   detectGradingScale,
   normalizeLimitsForGrade,
   shouldShowGradeWarning,
@@ -106,6 +107,69 @@ describe('getGradeType', () => {
     it('should return numeric for a integer up to 10 characters', () => {
       expect(getGradeType('1000000000')).toBe('numeric');
     });
+  });
+
+  describe('numericFraction grades', () => {
+    it('should return numericFraction for the Italian convention', () => {
+      expect(getGradeType('105/110')).toBe('numericFraction');
+    });
+
+    it('should return numericFraction for percentage-style fractions', () => {
+      expect(getGradeType('85/100')).toBe('numericFraction');
+    });
+
+    it('should accept fractions with decimals', () => {
+      expect(getGradeType('1.7/4.0')).toBe('numericFraction');
+      expect(getGradeType('2,3/4,0')).toBe('numericFraction');
+    });
+
+    it('should return invalid for fractions with non-numeric parts', () => {
+      expect(getGradeType('A/B')).toBe('invalid');
+      expect(getGradeType('105/')).toBe('invalid');
+      expect(getGradeType('/110')).toBe('invalid');
+    });
+  });
+});
+
+describe('detectFractionGrade', () => {
+  it('should map Italian "X/110" to upper 110, lower 66', () => {
+    expect(detectFractionGrade('105/110')).toEqual({ upperLimit: '110', lowerLimit: '66' });
+  });
+
+  it('should map "X/100" to upper 100, lower 50', () => {
+    expect(detectFractionGrade('85/100')).toEqual({ upperLimit: '100', lowerLimit: '50' });
+  });
+
+  it('should map "X/20" (French) to upper 20, lower 10', () => {
+    expect(detectFractionGrade('15/20')).toEqual({ upperLimit: '20', lowerLimit: '10' });
+  });
+
+  it('should fall back to half the denominator when no scale row matches', () => {
+    expect(detectFractionGrade('1/3')).toEqual({ upperLimit: '3', lowerLimit: '2' });
+  });
+
+  it('should return null for non-fraction input', () => {
+    expect(detectFractionGrade('105')).toBeNull();
+    expect(detectFractionGrade('A')).toBeNull();
+    expect(detectFractionGrade('')).toBeNull();
+  });
+});
+
+describe('detectGradingScale with fraction input', () => {
+  it('should detect "105/110" via detectGradingScale and return Italian limits', () => {
+    expect(detectGradingScale('105/110')).toEqual({ upperLimit: '110', lowerLimit: '66' });
+  });
+});
+
+describe('shouldShowGradeWarning with fraction input', () => {
+  it('should not warn on a valid fraction grade', () => {
+    expect(shouldShowGradeWarning('105/110')).toBe(false);
+    expect(shouldShowGradeWarning('85/100')).toBe(false);
+  });
+
+  it('should still warn on invalid uses of "/"', () => {
+    expect(shouldShowGradeWarning('105//110')).toBe(true);
+    expect(shouldShowGradeWarning('A/B')).toBe(true);
   });
 });
 

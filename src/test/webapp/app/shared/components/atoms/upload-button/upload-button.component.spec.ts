@@ -517,4 +517,57 @@ describe('UploadButtonComponent', () => {
     await component.onUpload();
     expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
   });
+
+  describe('Auth gate via requestAuth', () => {
+    it('invokes requestAuth when applicationId is empty and resumes the upload after the callback resolves', async () => {
+      const fixture = TestBed.createComponent(UploadButtonComponent);
+      const component = fixture.componentInstance;
+      fixture.componentRef.setInput('documentType', 'CV');
+      fixture.componentRef.setInput('applicationId', undefined);
+      const trigger = vi.fn().mockImplementation(async () => {
+        // Simulate the parent populating applicationId after auth completes.
+        fixture.componentRef.setInput('applicationId', 'app-after-auth');
+      });
+      fixture.componentRef.setInput('requestAuth', trigger);
+      fixture.detectChanges();
+
+      component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
+
+      const file = new File([new ArrayBuffer(10)], 'cv.pdf');
+      await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+
+      expect(trigger).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not upload when applicationId is empty and no requestAuth callback is provided', async () => {
+      const fixture = TestBed.createComponent(UploadButtonComponent);
+      const component = fixture.componentInstance;
+      fixture.componentRef.setInput('documentType', 'CV');
+      fixture.componentRef.setInput('applicationId', undefined);
+      fixture.detectChanges();
+
+      component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
+
+      const file = new File([new ArrayBuffer(10)], 'cv.pdf');
+      await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+
+      expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
+    });
+
+    it('does not upload when requestAuth rejects (user cancels OTP)', async () => {
+      const fixture = TestBed.createComponent(UploadButtonComponent);
+      const component = fixture.componentInstance;
+      fixture.componentRef.setInput('documentType', 'CV');
+      fixture.componentRef.setInput('applicationId', undefined);
+      fixture.componentRef.setInput('requestAuth', () => Promise.reject(new Error('cancelled')));
+      fixture.detectChanges();
+
+      component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
+
+      const file = new File([new ArrayBuffer(10)], 'cv.pdf');
+      await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+
+      expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
+    });
+  });
 });
