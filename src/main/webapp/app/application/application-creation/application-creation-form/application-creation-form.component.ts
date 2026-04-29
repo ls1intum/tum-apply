@@ -575,8 +575,10 @@ export default class ApplicationCreationFormComponent {
     this.applicationDetailsDataValid.set(isValid);
   }
 
-  // Handles the Next action from Step 1: runs OTP flow, refreshes user, and migrates draft
-  private handleNextFromStep1(): void {
+  // Authenticates the current visitor (OTP) and ensures a server-side application exists.
+  // Resolves once `applicationId` is populated, or earlier (no-op) when validation
+  // failed and the user needs to fill in missing fields before retrying.
+  async requestAuthAndApplication(): Promise<void> {
     if (this.applicantId()) {
       return;
     }
@@ -585,19 +587,46 @@ export default class ApplicationCreationFormComponent {
     const firstName = this.personalInfoData().firstName;
     const lastName = this.personalInfoData().lastName;
 
+    await this.openOtpAndWaitForLogin(email, firstName, lastName);
+
+    // Validation inside openOtpAndWaitForLogin returns early without authenticating.
+    // Bail here too so we don't try to create or migrate an application against
+    // an unauthenticated session (which would fire "Session expired" toasts).
+    const userId = this.accountService.loadedUser()?.id;
+    if (!userId) {
+      return;
+    }
+
+    this.applicantId.set(userId);
+    await this.migrateDraftIfNeeded();
+  }
+
+  // Handles the Next action from Step 1: runs OTP flow, refreshes user, migrates draft, advances stepper.
+  private handleNextFromStep1(): void {
+    if (this.applicantId()) {
+      return;
+    }
+
     void (async () => {
       try {
-        await this.openOtpAndWaitForLogin(email, firstName, lastName);
-        this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-        void this.migrateDraftIfNeeded();
-        this.progressStepper()?.goToStep(2);
+        await this.requestAuthAndApplication();
+        if (this.applicantId()) {
+          this.progressStepper()?.goToStep(2);
+        }
       } catch {
-        this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
+        // Inner methods (openOtpAndWaitForLogin, migrateDraftIfNeeded) already
+        // surface a specific toast for the failure cause; just don't advance.
       }
     })();
   }
 
+  // Bound to <jhi-application-creation-page1 [requestAuth]>. Arrow-function so `this` is preserved.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly requestAuthCallback = (): Promise<void> => this.requestAuthAndApplication();
+
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
+  // Returns early (without authenticating) when required fields are missing — the corresponding
+  // toast is shown for the user, and the caller should detect the still-empty session.
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {

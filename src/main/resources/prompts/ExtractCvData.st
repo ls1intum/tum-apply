@@ -28,6 +28,11 @@ Return ONLY a valid JSON object with the extracted fields. Use null for any fiel
 Do NOT wrap the JSON in markdown code blocks.
 Do NOT add explanations or commentary.
 
+NORMALIZATION RULES:
+- For country and nationality: always output the lowercase ISO 3166-1 alpha-2 code, never the full name. "USA" → "us", "Germany" → "de", "United Kingdom" → "gb".
+- For dateOfBirth: always output ISO 8601 (YYYY-MM-DD). "Jan 1, 1990" → "1990-01-01", "01.01.1990" → "1990-01-01".
+- If a value cannot be confidently mapped, return null.
+
 Example output:
 {{"firstName": "John", "lastName": "Doe", "phoneNumber": "+49 123 456789", "website": null, "linkedinUrl": "https://linkedin.com/in/johndoe", "gender": "male", "nationality": "de", "country": "de", "dateOfBirth": "1995-06-15", "street": "Musterstraße 42", "city": "Munich", "postalCode": "80333", "education": {{ "bachelorDegreeName": "Computer Science", "bachelorUniversity": "TU Munich", "bachelorGrade": "1.3", "masterDegreeName": null, "masterUniversity": null, "masterGrade": null }} }}
 
