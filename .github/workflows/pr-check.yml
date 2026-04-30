@@ -351,8 +351,8 @@ jobs:
       matrix:
         include:
           - role: 'Professor'
-            username: 'ci-prof-user'
-            password: 'ci-prof-password'
+            username: 'test'
+            password: 'test'
             urls: |
               http://localhost:4200/my-positions
               http://localhost:4200/job/create
@@ -361,8 +361,8 @@ jobs:
               http://localhost:4200/interviews/overview
 
           - role: 'Applicant'
-            username: 'ci-applicant-user'
-            password: 'ci-applicant-password'
+            username: 'test'
+            password: 'test'
             urls: |
               http://localhost:4200/
               http://localhost:4200/job-overview
