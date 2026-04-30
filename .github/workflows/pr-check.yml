@@ -345,6 +345,31 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     env:
       TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - role: 'Professor'
+            username: 'ci-prof-user'
+            password: 'ci-prof-password'
+            urls: |
+              http://localhost:4200/my-positions
+              http://localhost:4200/job/create
+              http://localhost:4200/evaluation/application
+              http://localhost:4200/research-group/info
+              http://localhost:4200/interviews/overview
+
+          - role: 'Applicant'
+            username: 'ci-applicant-user'
+            password: 'ci-applicant-password'
+            urls: |
+              http://localhost:4200/
+              http://localhost:4200/job-overview
+              http://localhost:4200/application/form
+              http://localhost:4200/application/overview
+              http://localhost:4200/settings
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -366,6 +391,27 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
+      # --- Start Keycloak ---
+      - name: Start Keycloak
+        run: |
+          docker compose -f docker/local-setup/services.yml up -d keycloak
+          echo "Waiting for Keycloak to be healthy..."
+          for i in {1..60}; do
+            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+              echo "✅ Keycloak is up"
+              break
+            fi
+            echo "Waiting ($i/60)..."
+            sleep 2
+          done
+
+          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+            echo "❌ Keycloak did not start in time."
+            docker compose -f docker/local-setup/services.yml logs keycloak || true
+            docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
+            exit 1
+          fi
 
       # --- Start Server ---
       - name: Start Spring Boot Server
@@ -417,11 +463,20 @@ jobs:
           exit 1
 
       # --- Run Lighthouse ---
-      # - name: Install Lighthouse CI
-      #   run: npm install -g @lhci/cli@0.11.x
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.11.x
 
-      # - name: ✅ Run Lighthouse Performance & Accessibility Scans
-      #   run: lhci autorun
+      - name: ✅ Run Lighthouse for ${{ matrix.role }}
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: ${{ matrix.urls }}
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_USERNAME: ${{ matrix.username }}
+          TEST_PASSWORD: ${{ matrix.password }}
 
       # --- Cleanup ---
       - name: Cleanup Servers
@@ -436,12 +491,12 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: lighthouse-server-log
+          name: lighthouse-server-log-${{ matrix.role }}
           path: server.log
 
       - name: Upload Client Log
         if: failure() && env.CLIENT_PID
         uses: actions/upload-artifact@v7
         with:
-          name: lighthouse-client-log
+          name: lighthouse-client-log-${{ matrix.role }}
           path: client.log
