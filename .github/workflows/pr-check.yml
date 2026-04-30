@@ -395,7 +395,7 @@ jobs:
       # --- Start Keycloak ---
       - name: Start Keycloak
         run: |
-          docker compose -f docker/local-setup/services.yml up -d keycloak
+          docker compose -f docker/local-setup/services.yml up -d keycloak mysql
           echo "Waiting for Keycloak to be healthy..."
           for i in {1..60}; do
             if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
