@@ -9,7 +9,7 @@
       [shouldTranslate]="true"
     />
   }
-  <h1>{{ 'auth.common.title' | translate }}</h1>
+  <h1 jhiTranslate="auth.common.title"></h1>
 </div>
 <div class="registration-steps">
   <div class="steps">
@@ -56,7 +56,7 @@
   @if (authOrchestrator.registerStep() === 'email') {
     <p class="registration-footer">
       <span jhiTranslate="auth.register.texts.accountPresent.prefix"></span>
-      <button type="button" (click)="authOrchestrator.switchToLogin()">{{ 'auth.register.texts.accountPresent.link' | translate }}</button>
+      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountPresent.link"></a>
     </p>
   }
 </div>

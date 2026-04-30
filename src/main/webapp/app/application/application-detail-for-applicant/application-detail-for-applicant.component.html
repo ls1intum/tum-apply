@@ -31,7 +31,11 @@
         <div class="flex flex-col gap-2">
           <div class="flex items-center gap-2">
             <jhi-back-button />
-            <h1 class="page-header">{{ 'entity.application_detail.applicant.header' | translate: { jobTitle: application.jobTitle } }}</h1>
+            <h1
+              class="page-header"
+              jhiTranslate="entity.application_detail.applicant.header"
+              [translateValues]="{ jobTitle: application.jobTitle }"
+            ></h1>
           </div>
           <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
@@ -74,7 +78,7 @@
       <!-- Position Overview Section -->
       <section class="section-card">
         <div class="section-header">
-          <h2 class="section-title">{{ 'entity.application_detail.position_overview' | translate }}</h2>
+          <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
           <jhi-button
             [label]="'entity.application_detail.view_job_details'"
             [shouldTranslate]="true"
@@ -127,13 +131,13 @@
       <!-- Personal Statements Section -->
       <section>
         @if (!previewDetailData()) {
-          <h2 class="section-title">{{ 'entity.application_detail.personal_statements' | translate }}</h2>
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
         }
 
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'rocket']" class="icon" />
-            <h3 class="section-card-title">{{ 'entity.applicationDetail.motivation' | translate }}</h3>
+            <h3 class="section-card-title" jhiTranslate="entity.applicationDetail.motivation"></h3>
           </div>
           <div class="section-card-body">
             <div class="content" [innerHTML]="application.motivation"></div>
@@ -143,7 +147,7 @@
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'brain']" class="icon" />
-            <h3 class="section-card-title">{{ 'entity.applicationDetail.skills' | translate }}</h3>
+            <h3 class="section-card-title" jhiTranslate="entity.applicationDetail.skills"></h3>
           </div>
           <div class="section-card-body">
             <div class="content" [innerHTML]="application.specialSkills"></div>
@@ -153,7 +157,7 @@
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'flask']" class="icon" />
-            <h3 class="section-card-title">{{ 'entity.applicationDetail.researchExperience' | translate }}</h3>
+            <h3 class="section-card-title" jhiTranslate="entity.applicationDetail.researchExperience"></h3>
           </div>
           <div class="section-card-body">
             <div class="content" [innerHTML]="application.projects"></div>
@@ -164,13 +168,13 @@
       <!-- Personal Information Section -->
       <section>
         @if (!previewDetailData()) {
-          <h2 class="section-title">{{ 'entity.application_detail.personal_information' | translate }}</h2>
+          <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
         }
 
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'circle-user']" class="icon" />
-            <h3 class="section-card-title">{{ 'entity.detail_card.applicant_info' | translate }}</h3>
+            <h3 class="section-card-title" jhiTranslate="entity.detail_card.applicant_info"></h3>
           </div>
           <div class="section-card-body">
             <div class="info-list">
@@ -217,7 +221,7 @@
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'graduation-cap']" class="icon" />
-            <h3 class="section-card-title">{{ 'entity.detail_card.bachelor_info' | translate }}</h3>
+            <h3 class="section-card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
           </div>
           <div class="section-card-body">
             <div class="info-list">
@@ -240,7 +244,7 @@
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'graduation-cap']" class="icon" />
-            <h3 class="section-card-title">{{ 'entity.detail_card.master_info' | translate }}</h3>
+            <h3 class="section-card-title" jhiTranslate="entity.detail_card.master_info"></h3>
           </div>
           <div class="section-card-body">
             <div class="info-list">
@@ -272,7 +276,7 @@
           documentIds.referenceDocumentDictionaryIds
         ) {
           @if (!previewDetailData()) {
-            <h2 class="section-title">{{ 'entity.application_detail.personal_documents' | translate }}</h2>
+            <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
           }
         }
         <!-- Document grid for all document types -->
@@ -281,7 +285,7 @@
             <div class="section-detail-card">
               <div class="section-card-header">
                 <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                <h3 class="section-card-title">{{ 'entity.upload.document_type.CV' | translate }}</h3>
+                <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
               </div>
               <div class="section-card-body">
                 <div class="document-viewer">
@@ -296,7 +300,7 @@
               <div class="section-detail-card">
                 <div class="section-card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                  <h3 class="section-card-title">{{ 'entity.upload.document_type.BACHELOR_TRANSCRIPT' | translate }}</h3>
+                  <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
                   <div class="document-viewer">
@@ -312,7 +316,7 @@
               <div class="section-detail-card">
                 <div class="section-card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                  <h3 class="section-card-title">{{ 'entity.upload.document_type.MASTER_TRANSCRIPT' | translate }}</h3>
+                  <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
                   <div class="document-viewer">
@@ -328,7 +332,7 @@
               <div class="section-detail-card">
                 <div class="section-card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                  <h3 class="section-card-title">{{ 'entity.upload.document_type.REFERENCES' | translate }}</h3>
+                  <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
                 </div>
                 <div class="section-card-body">
                   <div class="document-viewer">

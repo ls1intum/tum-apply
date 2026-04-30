@@ -8,8 +8,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { TranslateDirective } from '../../../language';
 
-let nextSelectId = 0;
-
 export type SelectOption = {
   name: string;
   value: string | number;
@@ -26,7 +24,6 @@ export type size = 'small' | 'large' | undefined;
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectComponent {
-  id = input<string>(`select-${nextSelectId++}`);
   items = input<SelectOption[]>([]);
   selected = input<SelectOption | undefined>(undefined);
   label = input<string>('');

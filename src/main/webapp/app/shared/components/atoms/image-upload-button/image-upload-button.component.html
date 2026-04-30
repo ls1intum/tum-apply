@@ -1,4 +1,4 @@
-<button type="button" [class]="containerClasses()" [attr.aria-label]="'imageUpload.selectImage' | translate" (click)="fileInput.click()">
+<div [class]="containerClasses()" (click)="fileInput.click()">
   <input type="file" [accept]="acceptedImageTypes()" (change)="onImageSelected($event)" #fileInput class="hidden" />
   <div [class]="innerClasses()">
     @if (isUploading()) {
@@ -7,4 +7,4 @@
       <fa-icon [icon]="['fas', 'plus']" size="3x" class="text-primary" />
     }
   </div>
-</button>
+</div>

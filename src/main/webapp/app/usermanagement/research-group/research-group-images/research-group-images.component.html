@@ -36,7 +36,7 @@
   } @else {
     <!-- In Use Section -->
     <div class="mb-8">
-      <h2 class="text-lg font-semibold mb-4">{{ 'researchGroup.imageLibrary.section.inUse' | translate }}</h2>
+      <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.inUse"></h2>
       @if (inUseImages().length === 0) {
         <div class="mb-4">
           <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noInUse' | translate" severity="primary" />
@@ -52,7 +52,7 @@
 
     <!-- Not In Use Section -->
     <div class="mb-8">
-      <h2 class="text-lg font-semibold mb-4">{{ 'researchGroup.imageLibrary.section.notInUse' | translate }}</h2>
+      <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.notInUse"></h2>
       @if (notInUseImages().length === 0 && allImages().length === 0) {
         <div class="mb-4">
           <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noImages' | translate" severity="primary" />
@@ -94,7 +94,7 @@
       <img [src]="image.url" [alt]="image.jobTitle || 'Job banner image'" class="w-full h-full object-cover" />
       <!-- Delete Button (only when showDelete is true) -->
       @if (showDelete) {
-        <div class="absolute top-2 right-2">
+        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
           <jhi-confirm-dialog
             #deleteDialog
             [label]="'button.delete' | translate"
@@ -118,7 +118,7 @@
             icon="trash"
             size="sm"
             [severity]="'danger'"
-            (click)="$event.stopPropagation(); deleteDialog.confirm()"
+            (click)="deleteDialog.confirm()"
             class="opacity-0 group-hover:opacity-100 transition-opacity"
           />
         </div>

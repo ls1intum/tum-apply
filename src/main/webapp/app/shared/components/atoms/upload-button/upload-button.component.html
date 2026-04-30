@@ -89,11 +89,7 @@
       </table>
       <div
         class="flex flex-1 items-center justify-center gap-3 py-3 cursor-pointer"
-        role="button"
-        tabindex="0"
         (click)="fileupload_component.choose()"
-        (keydown.enter)="fileupload_component.choose()"
-        (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
         [class.flex-col]="!compact()"
       >
         <span

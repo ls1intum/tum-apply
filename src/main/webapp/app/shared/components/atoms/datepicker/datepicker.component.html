@@ -1,5 +1,5 @@
 <div [class.active]="isCalendarOpen()" class="label-top datepicker-container">
-  <label class="custom-label" [for]="id()">
+  <label class="custom-label">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -37,7 +37,7 @@
     class="custom-datepicker"
     [dateFormat]="dateFormat()"
     iconDisplay="button"
-    [inputId]="id()"
+    inputId="startDate"
     showIcon="true"
     [inputStyleClass]="'w-full'"
   >

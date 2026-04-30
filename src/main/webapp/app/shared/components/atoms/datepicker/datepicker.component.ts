@@ -6,8 +6,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
-let nextDatepickerId = 0;
-
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
@@ -19,7 +17,6 @@ let nextDatepickerId = 0;
 export class DatePickerComponent {
   isCalendarOpen = signal(false);
 
-  id = input<string>(`datepicker-${nextDatepickerId++}`);
   width = input<string>('100%');
   label = input<string | undefined>(undefined);
   required = input<boolean>(false);

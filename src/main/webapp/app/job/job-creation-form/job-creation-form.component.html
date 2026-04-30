@@ -14,7 +14,7 @@
 @if (!isLoading()) {
   <div class="page-container">
     <div class="page-header flex items-center justify-between">
-      <h1>{{ pageTitle() | translate }}</h1>
+      <h1 jhiTranslate="{{ pageTitle() }}"></h1>
       <div class="flex items-center gap-2">
         <jhi-segmented-toggle
           class="[&_button]:!min-w-[7rem] [&_button]:!whitespace-nowrap"
@@ -320,8 +320,7 @@
 
   <!-- Reusable Image Card Template -->
   <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage" let-isSelected="isSelected">
-    <button
-      type="button"
+    <div
       [class]="'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
       (click)="isNoImage ? clearImageSelection() : selectImage(image)"
     >
@@ -335,7 +334,7 @@
             <span class="text-sm text-text-secondary" jhiTranslate="jobCreationForm.imageSection.noImage"></span>
           </div>
         } @else {
-          <img [src]="image.url" [alt]="'jobCreationForm.imageSection.selectedImage' | translate" class="w-full h-full object-cover" />
+          <img [src]="image.url" class="w-full h-full object-cover" />
         }
         @if (isSelected) {
           <div class="absolute inset-0 flex items-center justify-center bg-background-surface/50">
@@ -344,7 +343,7 @@
         }
       </div>
       @if (showDelete) {
-        <div class="absolute top-2 right-2">
+        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
           <jhi-confirm-dialog
             #deleteDialog
             [label]="'button.delete' | translate"
@@ -356,10 +355,10 @@
             severity="danger"
             [showOpenButton]="false"
           />
-          <jhi-button icon="trash" size="sm" [severity]="'danger'" (click)="$event.stopPropagation(); deleteDialog.confirm()" />
+          <jhi-button icon="trash" size="sm" [severity]="'danger'" (click)="deleteDialog.confirm()" />
         </div>
       }
-    </button>
+    </div>
   </ng-template>
 
   <!-- Step 3: Image Selection/Upload -->
@@ -370,7 +369,7 @@
 
         <!-- Default Image Section -->
         <div class="mb-4">
-          <h3 class="text-lg font-semibold mb-2">{{ 'jobCreationForm.imageSection.defaultImages' | translate }}</h3>
+          <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
           @if (defaultImages().length === 0) {
             <div class="mb-4">
               <jhi-info-box [message]="'jobCreationForm.imageSection.noDefaultImages' | translate" />
@@ -401,7 +400,7 @@
 
         <!-- Research Group Image Section -->
         <div class="mb-8">
-          <h3 class="text-lg font-semibold mb-2">{{ 'jobCreationForm.imageSection.researchGroupImages' | translate }}</h3>
+          <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
           <p class="text-text-secondary mb-4" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
           <!-- Grid of research group images + upload button -->

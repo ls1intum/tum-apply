@@ -37,9 +37,10 @@
   <!-- Personal Information -->
   @if (isProfessorMode()) {
     <div class="flex flex-col gap-4">
-      <h3 class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2">
-        {{ 'onboarding.professorRequest.sections.personalInfo' | translate }}
-      </h3>
+      <h3
+        class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
+        jhiTranslate="onboarding.professorRequest.sections.personalInfo"
+      ></h3>
 
       <div class="form-field">
         <jhi-string-input
@@ -93,9 +94,10 @@
 
   <!-- Research Group Information -->
   <div class="flex flex-col gap-4">
-    <h3 class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2">
-      {{ 'onboarding.professorRequest.sections.researchGroupInfo' | translate }}
-    </h3>
+    <h3
+      class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
+      jhiTranslate="onboarding.professorRequest.sections.researchGroupInfo"
+    ></h3>
 
     @if (isAdminMode()) {
       <div class="flex flex-col gap-3">
@@ -243,9 +245,10 @@
 
   <!-- Optional Information -->
   <div class="flex flex-col gap-4">
-    <h3 class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2">
-      {{ 'onboarding.professorRequest.sections.optionalInfo' | translate }}
-    </h3>
+    <h3
+      class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
+      jhiTranslate="onboarding.professorRequest.sections.optionalInfo"
+    ></h3>
     <p class="text-sm text-gray-500 m-0 italic" jhiTranslate="onboarding.professorRequest.optionalHint"></p>
 
     <div>
@@ -293,7 +296,7 @@
 
     <!-- Address Section -->
     <div class="flex flex-col gap-4">
-      <h4 class="m-0 text-lg font-medium text-text-primary">{{ 'onboarding.professorRequest.sections.address' | translate }}</h4>
+      <h4 class="m-0 text-lg font-medium text-text-primary" jhiTranslate="onboarding.professorRequest.sections.address"></h4>
 
       <div>
         <jhi-string-input

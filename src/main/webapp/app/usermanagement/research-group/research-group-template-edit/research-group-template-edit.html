@@ -3,7 +3,7 @@
     <div class="page-header">
       <div class="flex items-center gap-2">
         <jhi-back-button />
-        <h1>{{ 'researchGroup.emailTemplatesHeader' | translate }}</h1>
+        <h1 jhiTranslate="researchGroup.emailTemplatesHeader"></h1>
       </div>
     </div>
     <div
@@ -47,13 +47,12 @@
 
     <p-tabpanel value="0" class="tab-panel">
       <div>
-        <label class="subject-label" for="english-subject">{{ 'researchGroup.emailTemplates.subject' | translate }}</label>
+        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
 
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
           <jhi-string-input
             class="subject-input"
-            id="english-subject"
             [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
             [model]="english().subject"
             [errorEnabled]="false"
@@ -63,7 +62,7 @@
       </div>
 
       <div>
-        <div class="message-label">{{ 'researchGroup.emailTemplates.message' | translate }}</div>
+        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
@@ -77,12 +76,11 @@
 
     <p-tabpanel value="1" class="tab-panel">
       <div>
-        <label class="subject-label" for="german-subject">{{ 'researchGroup.emailTemplates.subject' | translate }}</label>
+        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
           <jhi-string-input
             class="subject-input"
-            id="german-subject"
             [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
             [model]="german().subject"
             [errorEnabled]="false"
@@ -92,7 +90,7 @@
       </div>
 
       <div>
-        <div class="message-label">{{ 'researchGroup.emailTemplates.message' | translate }}</div>
+        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"

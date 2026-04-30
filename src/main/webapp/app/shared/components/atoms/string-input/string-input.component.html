@@ -59,9 +59,9 @@
         <span class="text-text-disabled flex-1">{{ helperTextLeft() }}</span>
 
         @if (helperTextRight()) {
-          <button type="button" class="text-primary-default underline cursor-pointer flex-shrink-0" (click)="helperTextRightClick.emit()">
-            {{ helperTextRight() }}
-          </button>
+          <span class="text-primary-default underline cursor-pointer flex-shrink-0" (click)="helperTextRightClick.emit()">{{
+            helperTextRight()
+          }}</span>
         }
       </div>
     }
