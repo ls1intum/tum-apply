@@ -24,7 +24,7 @@ export type size = 'small' | 'large' | undefined;
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectComponent {
-  id = input<string | undefined>(undefined, { alias: 'id' });
+  id = input<string | undefined>(undefined);
   items = input<SelectOption[]>([]);
   selected = input<SelectOption | undefined>(undefined);
   label = input<string>('');
