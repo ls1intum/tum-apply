@@ -3,10 +3,12 @@
     "collect": {
       "numberOfRuns": 1,
       "settings": {
-        "onlyCategories": ["accessibility"],
-        "chromeFlags": "--no-sandbox --headless --disable-gpu"
+        "onlyCategories": ["accessibility"]
       },
-      "puppeteerScript": "./lighthouse-auth.js"
+      "puppeteerScript": "./lighthouse-auth.js",
+      "puppeteerLaunchOptions": {
+        "args": ["--no-sandbox", "--headless", "--disable-gpu"]
+      }
     },
     "assert": {
       "assertions": {
