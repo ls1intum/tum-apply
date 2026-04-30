@@ -64,7 +64,15 @@
               </p-divider>
             </div>
             @for (option of selectedOptions(); track option.value; let i = $index) {
-              <div class="option-item selected" (click)="toggleOption(option.value)">
+              <div
+                class="option-item selected"
+                role="option"
+                tabindex="0"
+                [attr.aria-selected]="true"
+                (click)="toggleOption(option.value)"
+                (keydown.enter)="toggleOption(option.value)"
+                (keydown.space)="$event.preventDefault(); toggleOption(option.value)"
+              >
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
                 <span class="option-label">
                   @if (shouldTranslateOptions()) {
@@ -85,7 +93,16 @@
           <!-- List all unselected options -->
           @if (hasUnselectedItems()) {
             @for (option of unselectedOptions(); track option.value; let i = $index) {
-              <div class="option-item" (click)="toggleOption(option.value)" [class.focused]="focusedIndexOptionList() === i">
+              <div
+                class="option-item"
+                role="option"
+                tabindex="0"
+                [attr.aria-selected]="false"
+                (click)="toggleOption(option.value)"
+                (keydown.enter)="toggleOption(option.value)"
+                (keydown.space)="$event.preventDefault(); toggleOption(option.value)"
+                [class.focused]="focusedIndexOptionList() === i"
+              >
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
                 <span class="option-label">
                   @if (shouldTranslateOptions()) {

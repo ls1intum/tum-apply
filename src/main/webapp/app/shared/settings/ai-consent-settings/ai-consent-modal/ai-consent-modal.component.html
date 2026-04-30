@@ -11,12 +11,12 @@
     <p class="text-text-secondary" jhiTranslate="settings.aiFeatures.modal.intro"></p>
 
     <div>
-      <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.processing.header"></h3>
+      <h3 class="font-semibold text-text-primary mb-1">{{ 'settings.aiFeatures.modal.processing.header' | translate }}</h3>
       <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.processing.description"></p>
     </div>
 
     <div>
-      <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.scope.header"></h3>
+      <h3 class="font-semibold text-text-primary mb-1">{{ 'settings.aiFeatures.modal.scope.header' | translate }}</h3>
       @if (currentRole() === RolesEnum.Applicant) {
         <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.scope.applicant"></p>
       } @else {
@@ -25,7 +25,7 @@
     </div>
 
     <div>
-      <h3 class="font-semibold text-text-primary mb-1" jhiTranslate="settings.aiFeatures.modal.consent.header"></h3>
+      <h3 class="font-semibold text-text-primary mb-1">{{ 'settings.aiFeatures.modal.consent.header' | translate }}</h3>
       @if (settings()) {
         <p class="text-text-secondary text-sm" jhiTranslate="settings.aiFeatures.modal.consent.descriptionSettings"></p>
       } @else {

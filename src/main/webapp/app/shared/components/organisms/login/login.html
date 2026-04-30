@@ -1,5 +1,5 @@
 <div class="login-header">
-  <h1 jhiTranslate="auth.common.title"></h1>
+  <h1>{{ 'auth.common.title' | translate }}</h1>
 </div>
 <div class="login-content">
   <div class="login-panel">
@@ -38,6 +38,6 @@
   </div>
   <p class="login-footer">
     <span jhiTranslate="auth.login.texts.accountMissing.prefix"></span>
-    <a (click)="authOrchestrator.switchToRegister()" jhiTranslate="auth.login.texts.accountMissing.link"></a>
+    <button type="button" (click)="authOrchestrator.switchToRegister()">{{ 'auth.login.texts.accountMissing.link' | translate }}</button>
   </p>
 </div>

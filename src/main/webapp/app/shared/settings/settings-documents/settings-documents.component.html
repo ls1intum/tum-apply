@@ -35,7 +35,7 @@
 
   @if (applicationIdForDocuments(); as applicationId) {
     <div class="w-full">
-      <label>
+      <div>
         <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
         <fa-icon
           class="icon"
@@ -43,7 +43,7 @@
           [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
           tooltipPosition="top"
         />
-      </label>
+      </div>
       <jhi-upload-button
         documentType="REFERENCE"
         [applicationId]="applicationId"

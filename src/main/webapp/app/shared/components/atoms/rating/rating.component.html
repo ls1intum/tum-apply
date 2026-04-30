@@ -1,12 +1,16 @@
 <div class="rating">
   @for (item of likertValues; track $index) {
-    <div
+    <button
+      type="button"
       class="section"
       [class.selectable]="selectable()"
       [style.background-color]="getSectionColor($index)"
       pTooltip="{{ getTooltip($index) | translate }}"
       tooltipPosition="top"
+      [attr.aria-label]="getTooltip($index) | translate"
       (click)="onSectionClick($index)"
-    ></div>
+    >
+      <span class="sr-only">{{ getTooltip($index) | translate }}</span>
+    </button>
   }
 </div>

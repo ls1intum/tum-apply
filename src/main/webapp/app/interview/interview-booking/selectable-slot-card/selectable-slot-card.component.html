@@ -5,7 +5,11 @@
   [class.hover:bg-background-surface-alt]="selected()"
   [class.border-border-default]="!selected()"
   [class.hover:bg-background-surface]="!selected()"
+  role="button"
+  tabindex="0"
   (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  (keydown.space)="$event.preventDefault(); onSelect()"
 >
   <!-- Time Range -->
   <div class="text-sm font-semibold text-text">{{ timeRange() }}</div>

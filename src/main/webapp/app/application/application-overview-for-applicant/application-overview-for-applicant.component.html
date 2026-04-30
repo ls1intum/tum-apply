@@ -25,7 +25,7 @@
 
 <div class="page-container">
   <header class="page-header">
-    <h1 jhiTranslate="entity.application_overview.applicant.header" class="h1-text"></h1>
+    <h1 class="h1-text">{{ 'entity.application_overview.applicant.header' | translate }}</h1>
   </header>
 
   @if (total() > 0 || loading()) {
@@ -43,7 +43,7 @@
       <div class="[&_button]:!rounded-full">
         <jhi-button icon="file-lines" severity="contrast" class="pointer-events-none" />
       </div>
-      <h2 jhiTranslate="entity.applicationOverview.emptyState.headline" class="text-xl font-semibold text-text"></h2>
+      <h2 class="text-xl font-semibold text-text">{{ 'entity.applicationOverview.emptyState.headline' | translate }}</h2>
       <p jhiTranslate="entity.applicationOverview.emptyState.description1" class="text-text-primary max-w-3xl"></p>
       <p jhiTranslate="entity.applicationOverview.emptyState.description2" class="text-text-primary max-w-3xl"></p>
       <jhi-button

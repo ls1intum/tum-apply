@@ -1,4 +1,10 @@
-<div (click)="navigate()" [class.active]="isActive()" [class.icon-only]="icon() !== undefined && isCollapsed()" class="sidebar-button">
+<button
+  type="button"
+  (click)="navigate()"
+  [class.active]="isActive()"
+  [class.icon-only]="icon() !== undefined && isCollapsed()"
+  class="sidebar-button"
+>
   @if (icon() !== undefined) {
     <fa-icon [icon]="['fas', icon() ?? '']" class="icon" [class.active]="isActive()" [pTooltip]="label()" showDelay="500" />
   }
@@ -7,4 +13,4 @@
       {{ label() }}
     </div>
   }
-</div>
+</button>

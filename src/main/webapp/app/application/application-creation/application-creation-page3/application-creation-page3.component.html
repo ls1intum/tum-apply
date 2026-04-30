@@ -7,19 +7,13 @@
 
     @if (data(); as data) {
       <div class="w-full lg:w-1/2 lg:pe-3">
-        <label>
-          <span jhiTranslate="entity.applicationPage3.label.desiredStartDate"></span>
-          <fa-icon
-            class="icon"
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'entity.applicationPage3.tooltip.desiredStartDate' | translate"
-            tooltipPosition="top"
-          />
-        </label>
         <jhi-datepicker
           [selectedDate]="data.desiredStartDate"
-          label=""
+          label="entity.applicationPage3.label.desiredStartDate"
+          icon="circle-info"
           [placeholder]="'entity.applicationPage3.placeholder.selectStartDate' | translate"
+          tooltipText="entity.applicationPage3.tooltip.desiredStartDate"
+          [shouldTranslate]="true"
           width="100%"
           (selectedDateChange)="setDesiredStartDate($event)"
           [errorEnabled]="true"
@@ -30,7 +24,7 @@
     @if (applicationIdForDocuments(); as applicationId) {
       <!-- Reference Upload -->
       <div class="w-full mb-6">
-        <label>
+        <div>
           <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
           <fa-icon
             class="icon"
@@ -38,7 +32,7 @@
             [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
             tooltipPosition="top"
           />
-        </label>
+        </div>
         <jhi-upload-button
           documentType="REFERENCE"
           [applicationId]="applicationId"

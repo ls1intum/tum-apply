@@ -1,6 +1,11 @@
 <div class="mb-1">
   <div class="flex items-center gap-4 pb-1">
-    <div class="grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full group" (click)="onAddPictureClick()">
+    <button
+      type="button"
+      class="grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full group"
+      (click)="onAddPictureClick()"
+      [attr.aria-label]="'settings.profilePicture.header' | translate"
+    >
       <div class="col-start-1 row-start-1 h-20 w-20 overflow-hidden">
         <div class="origin-top-left scale-[1.25]">
           <jhi-user-avatar [fullName]="fullName()" [avatarUrl]="currentProfilePictureUrl() ?? undefined" size="xl" />
@@ -13,12 +18,12 @@
       >
         <fa-icon [icon]="['fas', 'pen']" class="text-sm text-transparent transition-colors duration-200 group-hover:text-text-on-primary" />
       </div>
-    </div>
+    </button>
 
     <div class="min-w-0 flex-1">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <h2 class="mb-1 text-lg font-semibold" jhiTranslate="settings.profilePicture.header">Profile Picture</h2>
+          <h2 class="mb-1 text-lg font-semibold">{{ 'settings.profilePicture.header' | translate }}</h2>
           <p class="text-text-secondary" jhiTranslate="settings.profilePicture.description"></p>
         </div>
         <div class="flex items-center gap-1">

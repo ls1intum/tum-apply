@@ -3,7 +3,7 @@
     <div class="page-header">
       <div class="flex items-center gap-2">
         <jhi-back-button />
-        <h1 jhiTranslate="researchGroup.detailView.title"></h1>
+        <h1>{{ 'researchGroup.detailView.title' | translate }}</h1>
       </div>
     </div>
     <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />

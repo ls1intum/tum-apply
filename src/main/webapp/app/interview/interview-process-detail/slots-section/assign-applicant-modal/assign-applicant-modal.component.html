@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-6">
     <!-- Section 1: Selected Slot -->
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-text-primary" jhiTranslate="interview.assign.selectedSlot">Selected Slot</label>
+      <p class="text-sm font-medium text-text-primary">{{ 'interview.assign.selectedSlot' | translate }}</p>
       <div class="bg-background-default border border-border-default rounded p-4 flex flex-col gap-2">
         <!-- Date + Time -->
         <h3 class="text-base font-semibold text-text-primary">{{ slotDate() }} | {{ slotStartTime() }} - {{ slotEndTime() }}</h3>
@@ -22,10 +22,10 @@
 
     <!-- Section 2: Interviewee Selection -->
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-text-primary">
+      <p class="text-sm font-medium text-text-primary">
         <span jhiTranslate="interview.assign.selectApplicant">Select Applicant</span>
         <span class="text-negative-default">*</span>
-      </label>
+      </p>
 
       <!-- List Container / Table -->
       <div class="flex flex-col gap-2 max-h-[40vh] overflow-y-auto pr-1">
@@ -76,7 +76,14 @@
 
   <ng-template #applicantTpl let-person>
     @let displayName = person.user?.name ?? ((person.user?.firstName ?? '') + ' ' + (person.user?.lastName ?? '')).trim();
-    <div class="flex items-center gap-3 cursor-pointer" (click)="selectApplicant(person)">
+    <div
+      class="flex items-center gap-3 cursor-pointer"
+      role="button"
+      tabindex="0"
+      (click)="selectApplicant(person)"
+      (keydown.enter)="selectApplicant(person)"
+      (keydown.space)="$event.preventDefault(); selectApplicant(person)"
+    >
       <jhi-checkbox [model]="isSelected(person)" [errorEnabled]="false" (click)="$event.stopPropagation(); selectApplicant(person)" />
       <jhi-user-avatar [fullName]="displayName" [avatarUrl]="person.user?.avatar" loading="lazy" />
       <span class="font-medium text-text-primary">{{ displayName }}</span>
