@@ -5,7 +5,7 @@
   class="label-top select-wrapper"
 >
   @if (label()) {
-    <span class="custom-label"
+    <label class="custom-label" [for]="inputId()"
       >{{ label() }}
       @if (required()) {
         <span class="required">*</span>
@@ -17,7 +17,7 @@
           <fa-icon class="icon" [icon]="['fas', icon() ?? '']" />
         }
       }
-    </span>
+    </label>
   }
   <p-select
     (ngModelChange)="onSelectionChange($event)"
@@ -33,6 +33,7 @@
     [showClear]="showClear()"
     [appendTo]="appendTo()"
     [dataKey]="dataKey()"
+    [inputId]="inputId()"
     class="custom-select"
     [size]="size()"
   >
