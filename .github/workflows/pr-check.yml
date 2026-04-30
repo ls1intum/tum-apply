@@ -344,31 +344,31 @@ jobs:
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     env:
-      TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
+      TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:8080' }}
 
     strategy:
       fail-fast: false
       matrix:
         include:
           - role: 'Professor'
-            username: 'test'
-            password: 'test'
-            urls: |
-              http://localhost:4200/my-positions
-              http://localhost:4200/job/create
-              http://localhost:4200/evaluation/application
-              http://localhost:4200/research-group/info
-              http://localhost:4200/interviews/overview
+            username: 'professor1'
+            password: 'professor'
+            paths: |
+              /my-positions
+              /job/create
+              /evaluation/application
+              /research-group/info
+              /interviews/overview
 
           - role: 'Applicant'
-            username: 'test'
-            password: 'test'
-            urls: |
-              http://localhost:4200/
-              http://localhost:4200/job-overview
-              http://localhost:4200/application/form
-              http://localhost:4200/application/overview
-              http://localhost:4200/settings
+            username: 'applicant1'
+            password: 'applicant'
+            paths: |
+              /
+              /job-overview
+              /application/form
+              /application/overview
+              /settings
 
     steps:
       - name: Checkout code
@@ -413,6 +413,15 @@ jobs:
             exit 1
           fi
 
+      # --- Build Client for Spring Boot to serve ---
+      - name: Install Client Dependencies
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: npm ci
+
+      - name: Build Client for Production
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: npm run build
+
       # --- Start Server ---
       - name: Start Spring Boot Server
         run: |
@@ -431,36 +440,19 @@ jobs:
             exit 1
           fi
 
-      # --- Build & Start Client (only if not using remote URL) ---
-      - name: Install Client Dependencies
-        if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm ci
-
-      - name: Build Client for Production
-        if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm run build
-
-      - name: Start Client Server
-        if: ${{ !vars.AET_CLIENT_URL }}
+      - name: Build Lighthouse URL List
+        id: lighthouse-urls
+        shell: bash
         run: |
-          npx serve build/resources/main/static -l 4200 --single > client.log 2>&1 &
-          echo "CLIENT_PID=$!" >> $GITHUB_ENV
-          sleep 5
-
-      - name: Wait for Client Ready
-        if: ${{ !vars.AET_CLIENT_URL }}
-        run: |
-          echo "Waiting for client on http://localhost:4200 ..."
-          for i in {1..30}; do
-            if curl -fs http://localhost:4200 > /dev/null; then
-              echo "✅ Client is UP!"
-              exit 0
-            fi
-            echo "Still waiting..."
-            sleep 2
-          done
-          echo "❌ Client did not start in time"
-          exit 1
+          {
+            echo 'urls<<EOF'
+            while IFS= read -r path; do
+              if [ -n "$path" ]; then
+                echo "${TARGET_URL}${path}"
+              fi
+            done <<< '${{ matrix.paths }}'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       # --- Run Lighthouse ---
       - name: Install Lighthouse CI
@@ -469,7 +461,7 @@ jobs:
       - name: ✅ Run Lighthouse for ${{ matrix.role }}
         uses: treosh/lighthouse-ci-action@v12
         with:
-          urls: ${{ matrix.urls }}
+          urls: ${{ steps.lighthouse-urls.outputs.urls }}
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
@@ -484,7 +476,6 @@ jobs:
         run: |
           echo "Stopping servers..."
           kill $SERVER_PID || true
-          kill $CLIENT_PID || true
 
       # --- Upload Logs on Failure ---
       - name: Upload Server Log
@@ -493,10 +484,3 @@ jobs:
         with:
           name: lighthouse-server-log-${{ matrix.role }}
           path: server.log
-
-      - name: Upload Client Log
-        if: failure() && env.CLIENT_PID
-        uses: actions/upload-artifact@v7
-        with:
-          name: lighthouse-client-log-${{ matrix.role }}
-          path: client.log
