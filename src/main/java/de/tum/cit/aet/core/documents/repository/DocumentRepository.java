@@ -1,0 +1,69 @@
+package de.tum.cit.aet.core.documents.repository;
+
+import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
+import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+/**
+ * Repository for the unified Document model (STI base + ApplicantDocument + ApplicationDocument).
+ *
+ * <p>JPA entity name {@code DocumentNew} is used in JPQL because the legacy
+ * {@code de.tum.cit.aet.core.domain.Document} still claims the default entity name {@code Document}
+ * during the migration window.</p>
+ */
+@Repository
+public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID> {
+    @Query("SELECT d FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId")
+    Set<ApplicantDocument> findAllApplicantDocuments(@Param("applicantUserId") UUID applicantUserId);
+
+    @Query("SELECT d FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId AND d.documentType = :documentType")
+    Set<ApplicantDocument> findApplicantDocumentsByType(
+        @Param("applicantUserId") UUID applicantUserId,
+        @Param("documentType") DocumentType documentType
+    );
+
+    @Query("SELECT d FROM ApplicationDocument d WHERE d.application.applicationId = :applicationId")
+    Set<ApplicationDocument> findAllApplicationDocuments(@Param("applicationId") UUID applicationId);
+
+    @Query("SELECT d FROM ApplicationDocument d WHERE d.application.applicationId = :applicationId AND d.documentType = :documentType")
+    Set<ApplicationDocument> findApplicationDocumentsByType(
+        @Param("applicationId") UUID applicationId,
+        @Param("documentType") DocumentType documentType
+    );
+
+    @Query("SELECT d.documentId FROM ApplicationDocument d WHERE d.application.applicationId = :applicationId")
+    List<UUID> findDocumentIdsByApplicationId(@Param("applicationId") UUID applicationId);
+
+    @Query("SELECT d.documentId FROM ApplicationDocument d WHERE d.application.applicationId IN :applicationIds")
+    List<UUID> findDocumentIdsByApplicationIds(@Param("applicationIds") List<UUID> applicationIds);
+
+    @Query("SELECT d.documentId FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId")
+    List<UUID> findDocumentIdsByApplicantId(@Param("applicantUserId") UUID applicantUserId);
+
+    @Query("SELECT COUNT(d) FROM DocumentNew d WHERE d.path = :path AND d.documentId <> :excludeId")
+    long countOtherReferencesByPath(@Param("path") String path, @Param("excludeId") UUID excludeId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM ApplicationDocument d WHERE d.application.applicationId IN :applicationIds")
+    void deleteByApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId")
+    void deleteByApplicantUserId(@Param("applicantUserId") UUID applicantUserId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM ApplicationDocument d WHERE d.application.applicationId = :applicationId")
+    void deleteByApplicationId(@Param("applicationId") UUID applicationId);
+
+    @Query("SELECT d FROM DocumentNew d WHERE d.uploadedBy.userId = :userId")
+    List<Document> findByUploadedByUserId(@Param("userId") UUID userId);
+}
