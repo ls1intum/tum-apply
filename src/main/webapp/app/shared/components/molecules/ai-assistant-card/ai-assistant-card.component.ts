@@ -124,12 +124,12 @@ export class AiAssistantCardComponent {
     () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.Transparency).length,
   );
 
-  /** Number of TRANSPARENCY issues for the current language. */
+  /** Number of DSGVO_MINIMIZATION issues for the current language. */
   readonly dsgvoCount = computed(
     () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.DsgvoMinimization).length,
   );
 
-  /** Number of TRANSPARENCY issues for the current language. */
+  /** Number of PUBLIC_SECTOR issues for the current language. */
   readonly publicSectorCount = computed(
     () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.PublicSector).length,
   );

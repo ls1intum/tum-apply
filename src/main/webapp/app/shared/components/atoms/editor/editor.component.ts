@@ -37,71 +37,53 @@ class HighlightBlot extends Inline {
   // CSS class that allows Quill to identify elements in DOM
   static className = 'compliance-highlight';
 
-  // Tailwind classes applied to every highlighted text span
-  static criticalClasses = [
+  static baseClasses = [
     'border-b-2',
     '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-critical-border)]',
     'rounded-[var(--border-radius-xs)]',
     '[box-decoration-break:clone]',
     '[-webkit-box-decoration-break:clone]',
     'transition-colors',
     'duration-150',
     'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-critical-bg)]',
   ];
 
-  static transparencyClasses = [
-    'border-b-2',
-    '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-transparency-border)]',
-    'rounded-[var(--border-radius-xs)]',
-    '[box-decoration-break:clone]',
-    '[-webkit-box-decoration-break:clone]',
-    'transition-colors',
-    'duration-150',
-    'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-transparency-bg)]',
-  ];
-
-  static dsgvoClasses = [
-    'border-b-2',
-    '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-dsgvo-border)]',
-    'rounded-[var(--border-radius-xs)]',
-    '[box-decoration-break:clone]',
-    '[-webkit-box-decoration-break:clone]',
-    'transition-colors',
-    'duration-150',
-    'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-dsgvo-bg)]',
-  ];
-
-  static publicSectorClasses = [
-    'border-b-2',
-    '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-public-sector-border)]',
-    'rounded-[var(--border-radius-xs)]',
-    '[box-decoration-break:clone]',
-    '[-webkit-box-decoration-break:clone]',
-    'transition-colors',
-    'duration-150',
-    'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-public-sector-bg)]',
-  ];
+  private static readonly categoryStyles = {
+    // Tailwind classes applied to every highlighted text span
+    critical: {
+      classes: [
+        '[border-bottom-color:var(--color-compliance-critical-border)]',
+        'hover:[background-color:var(--color-compliance-critical-bg)]',
+      ],
+      color: 'var(--color-compliance-critical-border)',
+      bg: 'var(--color-compliance-critical-bg)',
+    },
+    transparency: {
+      classes: [
+        '[border-bottom-color:var(--color-compliance-transparency-border)]',
+        'hover:[background-color:var(--color-compliance-transparency-bg)]',
+      ],
+      color: 'var(--color-compliance-transparency-border)',
+      bg: 'var(--color-compliance-transparency-bg)',
+    },
+    dsgvo: {
+      classes: ['[border-bottom-color:var(--color-compliance-dsgvo-border)]', 'hover:[background-color:var(--color-compliance-dsgvo-bg)]'],
+      color: 'var(--color-compliance-dsgvo-border)',
+      bg: 'var(--color-compliance-dsgvo-bg)',
+    },
+    'public-sector': {
+      classes: [
+        '[border-bottom-color:var(--color-compliance-public-sector-border)]',
+        'hover:[background-color:var(--color-compliance-public-sector-bg)]',
+      ],
+      color: 'var(--color-compliance-public-sector-border)',
+      bg: 'var(--color-compliance-public-sector-bg)',
+    },
+  } as const;
 
   /** Returns the Tailwind classes for a given category. */
   public static getColorForCategory(category: HighlightCategory): string[] {
-    switch (category) {
-      case 'critical':
-        return HighlightBlot.criticalClasses;
-      case 'transparency':
-        return HighlightBlot.transparencyClasses;
-      case 'dsgvo':
-        return HighlightBlot.dsgvoClasses;
-      case 'public-sector':
-        return HighlightBlot.publicSectorClasses;
-    }
+    return HighlightBlot.baseClasses.concat(HighlightBlot.categoryStyles[category].classes);
   }
 
   /**
@@ -120,16 +102,8 @@ class HighlightBlot extends Inline {
   static formats(node: HTMLElement): { color: string; bg: string } {
     const data = node.dataset['category'];
     const category: HighlightCategory = data === 'critical' || data === 'transparency' || data === 'dsgvo' ? data : 'public-sector';
-    switch (category) {
-      case 'critical':
-        return { color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)' };
-      case 'transparency':
-        return { color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)' };
-      case 'dsgvo':
-        return { color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)' };
-      case 'public-sector':
-        return { color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)' };
-    }
+    const style = HighlightBlot.categoryStyles[category];
+    return { color: style.color, bg: style.bg };
   }
 
   /** Detects the category from the CSS variable name passed in the format value. */
