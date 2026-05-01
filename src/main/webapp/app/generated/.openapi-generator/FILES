@@ -96,6 +96,7 @@ model/image-dto.ts
 model/internal-comment-dto.ts
 model/internal-comment-update-dto.ts
 model/interview-overview-dto.ts
+model/interview-rating-dto.ts
 model/interview-slot-dto.ts
 model/interviewee-detail-dto.ts
 model/interviewee-dto.ts

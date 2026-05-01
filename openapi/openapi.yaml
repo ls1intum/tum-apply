@@ -1425,6 +1425,21 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/applications/{applicationId}/rating:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewRatingForApplication
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewRatingDTO'}
   /api/interviews/booking/{processId}:
     get:
       tags: [interview-booking-resource]
@@ -3111,6 +3126,10 @@ components:
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobState, jobTitle, processId,
         scheduledCount, totalInterviews, totalSlots, uncontactedCount]
+    InterviewRatingDTO:
+      type: object
+      properties:
+        rating: {type: integer, format: int32}
     InterviewSlotDTO:
       type: object
       properties:
