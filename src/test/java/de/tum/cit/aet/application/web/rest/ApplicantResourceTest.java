@@ -6,9 +6,8 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -41,9 +40,6 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
     @Autowired
     DocumentRepository documentRepository;
-
-    @Autowired
-    DocumentDictionaryRepository documentDictionaryRepository;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -477,7 +473,6 @@ class ApplicantResourceTest extends AbstractResourceTest {
         void getApplicantProfileDocumentIdsReturnsGroupedDocuments() {
             DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -486,7 +481,6 @@ class ApplicantResourceTest extends AbstractResourceTest {
             );
             DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -495,7 +489,6 @@ class ApplicantResourceTest extends AbstractResourceTest {
             );
             DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -528,9 +521,8 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromProfileRemovesIt() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -538,20 +530,19 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 "profile_cv.pdf"
             );
 
-            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
+            assertThat(documentRepository.existsById(doc.getDocumentId())).isTrue();
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
+                .deleteAndRead("/api/applicants/profile/documents/" + doc.getDocumentId(), null, Void.class, 204);
 
-            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
+            assertThat(documentRepository.existsById(doc.getDocumentId())).isFalse();
         }
 
         @Test
         void deleteDocumentFromProfileWithoutAuthReturnsForbidden() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -560,7 +551,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
             );
 
             Void response = api.deleteAndRead(
-                "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId(),
+                "/api/applicants/profile/documents/" + doc.getDocumentId(),
                 null,
                 Void.class,
                 403
@@ -583,9 +574,8 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void renameApplicantProfileDocumentUpdatesName() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -596,13 +586,13 @@ class ApplicantResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
-                    "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
+                    "/api/applicants/profile/documents/" + doc.getDocumentId() + "/name?newName=profile_new_name.pdf",
                     null,
                     Void.class,
                     200
                 );
 
-            DocumentDictionary updated = documentDictionaryRepository.findById(docDict.getDocumentDictionaryId()).orElseThrow();
+            Document updated = documentRepository.findById(doc.getDocumentId()).orElseThrow();
             assertThat(updated.getName()).isEqualTo("profile_new_name.pdf");
         }
 
@@ -622,9 +612,8 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void renameApplicantProfileDocumentWithoutAuthReturnsForbidden() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -633,7 +622,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
             );
 
             Void response = api.putAndRead(
-                "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
+                "/api/applicants/profile/documents/" + doc.getDocumentId() + "/name?newName=profile_new_name.pdf",
                 null,
                 Void.class,
                 403

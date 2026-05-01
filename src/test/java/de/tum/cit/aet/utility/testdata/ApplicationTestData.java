@@ -4,9 +4,8 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -160,9 +159,8 @@ public final class ApplicationTestData {
             null
         );
         Application application = savedRejected(ctx.applicationRepository(), job, applicant);
-        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        Document dictionary = DocumentTestData.savedDictionaryWithMockDocument(
             ctx.documentRepository(),
-            ctx.documentDictionaryRepository(),
             ctx.professor(),
             application,
             null,
@@ -188,11 +186,10 @@ public final class ApplicationTestData {
         UserRepository userRepository,
         JobRepository jobRepository,
         DocumentRepository documentRepository,
-        DocumentDictionaryRepository documentDictionaryRepository,
         EntityManager entityManager,
         User professor,
         ResearchGroup researchGroup
     ) {}
 
-    public record ApplicationWithDocs(Application application, DocumentDictionary dictionary) {}
+    public record ApplicationWithDocs(Application application, Document dictionary) {}
 }

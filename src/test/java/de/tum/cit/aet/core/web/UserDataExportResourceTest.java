@@ -5,13 +5,14 @@ import static org.mockito.Mockito.mock;
 
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.DataExportState;
+import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.core.domain.DataExportRequest;
-import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.core.dto.DataExportStatusDTO;
 import de.tum.cit.aet.core.repository.DataExportRequestRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.service.UserDataExportService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -304,11 +305,16 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     @Test
     void exportIncludesUploadedDocumentsWithPdfExtension() throws Exception {
         User user = savedUser("documents-user@tum.de");
+        ApplicantTestData.attachApplicantRole(user);
+        user = userRepository.saveAndFlush(user);
+        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, user);
 
-        Document document = DocumentTestData.savedDocument(
+        ApplicantDocument document = DocumentTestData.savedApplicantDocument(
             storageRootConfig,
             documentRepository,
             user,
+            applicant,
+            DocumentType.CV,
             "/testdocs/test-doc1.pdf",
             "export-test-doc1.pdf"
         );
