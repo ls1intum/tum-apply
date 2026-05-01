@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 
 export type InfoIconSize = 'sm' | 'md';
@@ -7,7 +8,7 @@ export type InfoIconSize = 'sm' | 'md';
 @Component({
   selector: 'jhi-info-icon',
   standalone: true,
-  imports: [NgTemplateOutlet, TooltipModule],
+  imports: [NgTemplateOutlet, TooltipModule, TranslateModule],
   templateUrl: './info-icon.component.html',
 })
 export class InfoIconComponent {
@@ -17,6 +18,7 @@ export class InfoIconComponent {
   size = input<InfoIconSize>('md');
   clickable = input<boolean>(false);
   disabled = input<boolean>(false);
+  shouldTranslate = input<boolean>(false);
 
   clicked = output();
 

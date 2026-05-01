@@ -88,9 +88,10 @@
                   [clickable]="true"
                   size="sm"
                   [disabled]="!analysisResult()"
-                  [tooltip]="'genderDecoder.openAnaylsis' | translate"
+                  tooltip="genderDecoder.openAnaylsis"
                   tooltipPosition="top"
-                  [ariaLabel]="'genderDecoder.openAnaylsis' | translate"
+                  ariaLabel="genderDecoder.openAnaylsis"
+                  [shouldTranslate]="true"
                   (clicked)="onGenderDecoderClick()"
                 />
               }

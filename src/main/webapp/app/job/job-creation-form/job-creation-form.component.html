@@ -27,7 +27,8 @@
           />
           <jhi-info-icon
             [clickable]="true"
-            [ariaLabel]="'jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.title' | translate"
+            ariaLabel="jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.title"
+            [shouldTranslate]="true"
             (clicked)="openAiInfoDialog()"
           />
         </div>

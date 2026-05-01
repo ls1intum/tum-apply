@@ -9,10 +9,10 @@
         ? 'cursor-not-allowed opacity-50'
         : 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-1')
     "
-    [attr.aria-label]="ariaLabel()"
+    [attr.aria-label]="shouldTranslate() ? (ariaLabel() | translate) : ariaLabel()"
     [attr.aria-disabled]="disabled() ? true : null"
     [disabled]="disabled()"
-    [pTooltip]="tooltip()"
+    [pTooltip]="shouldTranslate() && tooltip() ? (tooltip()! | translate) : tooltip()"
     [tooltipPosition]="tooltipPosition()"
     (click)="onClick($event)"
     (keydown)="onKeydown($event)"
@@ -23,8 +23,8 @@
   <span
     class="inline-flex shrink-0 items-center justify-center leading-none text-text-secondary"
     role="img"
-    [attr.aria-label]="ariaLabel()"
-    [pTooltip]="tooltip()"
+    [attr.aria-label]="shouldTranslate() ? (ariaLabel() | translate) : ariaLabel()"
+    [pTooltip]="shouldTranslate() && tooltip() ? (tooltip()! | translate) : tooltip()"
     [tooltipPosition]="tooltipPosition()"
   >
     <ng-container [ngTemplateOutlet]="infoSvg" />
