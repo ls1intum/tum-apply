@@ -145,7 +145,8 @@
       },
       "tvlGrade": {
         "label": "TV-L Grade",
-        "placeholder": "Select a Pay Grade..."
+        "placeholder": "Select a Pay Grade...",
+        "toolTipText": "To support pay transparency (in line with EU directives), specifying the TV-L pay grade is recommended (for doctoral positions, usually E13)."
       }
     },
     "aiSidebar": {

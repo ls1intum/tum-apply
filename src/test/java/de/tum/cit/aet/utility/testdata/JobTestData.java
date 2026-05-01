@@ -1,9 +1,6 @@
 package de.tum.cit.aet.utility.testdata;
 
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -71,6 +68,7 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
+        TvlGrade tvlGrade,
         String jobDescriptionEN,
         String jobDescriptionDE,
         JobState state
@@ -83,6 +81,7 @@ public final class JobTestData {
         if (workload != null) j.setWorkload(workload);
         if (contractDuration != null) j.setContractDuration(contractDuration);
         if (fundingType != null) j.setFundingType(fundingType);
+        if (tvlGrade != null) j.setTvlGrade(tvlGrade);
         if (jobDescriptionEN != null) j.setJobDescriptionEN(jobDescriptionEN);
         if (jobDescriptionDE != null) j.setJobDescriptionDE(jobDescriptionDE);
         return j;
@@ -111,6 +110,7 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
+        TvlGrade tvlGrade,
         String jobDescriptionEN,
         String jobDescriptionDE,
         JobState state
@@ -128,6 +128,7 @@ public final class JobTestData {
                 workload,
                 contractDuration,
                 fundingType,
+                tvlGrade,
                 jobDescriptionEN,
                 jobDescriptionDE,
                 state

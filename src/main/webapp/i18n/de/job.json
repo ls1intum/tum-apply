@@ -145,7 +145,8 @@
       },
       "tvlGrade": {
         "label": "TV-L Gruppe",
-        "placeholder": "Wähle eine Entgeltgruppe..."
+        "placeholder": "Wähle eine Entgeltgruppe...",
+        "toolTipText": "Im Sinne der Gehaltstransparenz (vgl. EU-Richtlinie) wird empfohlen, die TV-L Entgeltgruppe anzugeben (für Doktorandenstellen i.d.R. E13)."
       }
     },
     "aiSidebar": {

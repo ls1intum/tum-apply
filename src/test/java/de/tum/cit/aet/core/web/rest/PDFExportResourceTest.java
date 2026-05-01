@@ -8,10 +8,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationPDFRequest;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.dto.JobPreviewRequest;
@@ -155,6 +152,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("duration", "Duration");
         labels.put("years", " years");
         labels.put("fundingType", "Funding Type");
+        labels.put("tvlGrade", "Pay Grade");
         labels.put("startDate", "Start Date");
         labels.put("endDate", "End Date");
         labels.put("jobDescription", "Job Description");
@@ -364,6 +362,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 20,
                 3,
                 FundingType.FULLY_FUNDED,
+                TvlGrade.E13,
                 enDescription,
                 deDescription,
                 JobState.PUBLISHED
@@ -487,7 +486,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null,
                 3,
                 FundingType.FULLY_FUNDED,
-                null,
+                TvlGrade.E15,
                 "Description",
                 "Beschreibung",
                 JobState.DRAFT,
