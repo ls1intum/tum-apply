@@ -60,7 +60,7 @@ export class SlotCardComponent {
         command: () => this.onCancelInterview(),
         severity: 'danger',
       });
-    } else if (!this.isPast()) {
+    } else {
       items.push({
         label: 'button.delete',
         icon: 'trash',
