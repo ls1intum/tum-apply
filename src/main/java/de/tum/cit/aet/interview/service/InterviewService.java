@@ -1188,24 +1188,25 @@ public class InterviewService {
 
     /**
      * Returns the interview rating recorded for the given application, if any.
-     * Picks the most recently updated interviewee when an application is linked
-     * to several interview processes (rare but possible).
+     * Picks the most recently updated rated interviewee when an application is
+     * linked to several interview processes (rare but possible).
      *
      * @param applicationId the ID of the application
      * @return DTO with the Likert rating (-2..2) or {@code null} if not yet rated
-     * @throws AccessDeniedException if the user is not a member of the research
-     *                               group of the application's job
+     * @throws EntityNotFoundException if the application does not exist
+     * @throws AccessDeniedException   if the user is not a member of the research
+     *                                 group of the application's job
      */
     public InterviewRatingDTO getInterviewRatingForApplication(UUID applicationId) {
-        Optional<Interviewee> mostRecent = intervieweeRepository.findMostRecentByApplicationId(applicationId);
-        if (mostRecent.isEmpty()) {
-            return new InterviewRatingDTO(null);
-        }
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        verifyResearchGroupAccess(application.getJob());
 
-        Interviewee interviewee = mostRecent.get();
-        verifyResearchGroupAccess(interviewee.getInterviewProcess().getJob());
-
-        return InterviewRatingDTO.of(interviewee.getRating());
+        return intervieweeRepository
+            .findMostRecentRatedByApplicationId(applicationId)
+            .map(interviewee -> InterviewRatingDTO.of(interviewee.getRating()))
+            .orElseGet(() -> new InterviewRatingDTO(null));
     }
 
     /**

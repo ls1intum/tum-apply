@@ -149,31 +149,27 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 
     /**
-     * Finds the most recently updated interviewee for a given application across
-     * all interview processes. Used by the application review page to surface a
-     * single interview rating per application.
+     * Finds the most recently updated rated interviewee for a given application
+     * across all interview processes. Used by the application review page to
+     * surface a single interview rating per application.
      *
      * @param applicationId the ID of the application
      * @param pageable      pagination information used to limit results
-     * @return Optional containing the most recent interviewee if found
+     * @return Optional containing the most recent rated interviewee if found
      */
     @Query(
         """
         SELECT i FROM Interviewee i
-        JOIN FETCH i.interviewProcess ip
-        JOIN FETCH ip.job j
-        JOIN FETCH j.researchGroup
         WHERE i.application.applicationId = :applicationId
+        AND i.rating IS NOT NULL
         ORDER BY i.lastModifiedAt DESC
         """
     )
-    List<Interviewee> findMostRecentByApplicationId(@Param("applicationId") UUID applicationId, Pageable pageable);
+    List<Interviewee> findMostRecentRatedByApplicationId(@Param("applicationId") UUID applicationId, Pageable pageable);
 
-    default Optional<Interviewee> findMostRecentByApplicationId(UUID applicationId) {
-        return findMostRecentByApplicationId(applicationId, PageRequest.of(0, 1)).stream().findFirst();
+    default Optional<Interviewee> findMostRecentRatedByApplicationId(UUID applicationId) {
+        return findMostRecentRatedByApplicationId(applicationId, PageRequest.of(0, 1)).stream().findFirst();
     }
-
-    void deleteByApplication(Application application);
 
     /**
      * Counts interviewees grouped by their derived state for multiple interview processes.
