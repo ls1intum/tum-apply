@@ -109,6 +109,7 @@
       "ratingYourRating": "Deine Bewertung",
       "ratingYourRatingLabel": "Klicke auf ein Feld, um deine Bewertung auszuwählen",
       "ratingOtherRatings": "Bewertungen Anderer",
+      "interviewRatingTitle": "Interview-Bewertung",
       "commentTitle": "Kommentare",
       "commentDescription": "Hinterlasse interne Kommentare, um die Bewerbung mit anderen zu diskutieren oder persönliche Notizen zu machen."
     },
@@ -134,6 +135,10 @@
       "noProcessFound": {
         "summary": "Fehler",
         "detail": "Kein Interviewprozess für diesen Job gefunden"
+      },
+      "loadInterviewRating": {
+        "summary": "Fehler",
+        "detail": "Laden der Interview-Bewertung fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   }

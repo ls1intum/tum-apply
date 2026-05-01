@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.Document;
@@ -182,16 +181,6 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Retrieves all DocumentDictionary entries for a given custom field answer.
-     *
-     * @param customFieldAnswer the custom field answer whose documents to retrieve
-     * @return set of matching DocumentDictionary entries
-     */
-    public Set<DocumentDictionary> getCustomFieldAnswerDocumentDictionaries(CustomFieldAnswer customFieldAnswer) {
-        return documentDictionaryRepository.findByCustomFieldAnswer(customFieldAnswer);
-    }
-
-    /**
      * Retrieves a {@link ApplicationDocumentIdsDTO} containing categorized document
      * IDs
      * associated with the specified {@link Application}.
@@ -277,9 +266,8 @@ public class DocumentDictionaryService {
     /**
      * Verifies that the current user has access to the given document dictionary.
      * 1) Check application-owned documents (professors/employees need job access, others need to be the applicant or admin)
-     * 2) Check custom-field-answer-owned documents (same logic via the answer's application)
-     * 3) Check applicant-owned documents (must be that applicant or admin)
-     * 4) Reject if no owner association exists
+     * 2) Check applicant-owned documents (must be that applicant or admin)
+     * 3) Reject if no owner association exists
      *
      * @param documentDictionary the document dictionary to verify access for
      * @throws AccessDeniedException if the current user does not have access or if the document has no owner association
@@ -296,24 +284,13 @@ public class DocumentDictionaryService {
             return;
         }
 
-        // 2) Custom-field-answer-owned document
-        if (documentDictionary.getCustomFieldAnswer() != null) {
-            Application application = documentDictionary.getCustomFieldAnswer().getApplication();
-            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
-                currentUserService.verifyJobAccess(application.getJob());
-                return;
-            }
-            currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
-            return;
-        }
-
-        // 3) Applicant-owned document
+        // 2) Applicant-owned document
         if (documentDictionary.getApplicant() != null) {
             currentUserService.isCurrentUserOrAdmin(documentDictionary.getApplicant().getUserId());
             return;
         }
 
-        // 4) No owner association — reject
+        // 3) No owner association — reject
         throw new AccessDeniedException("Cannot verify access for document without owner association");
     }
 }

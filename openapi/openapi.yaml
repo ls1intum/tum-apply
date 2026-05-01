@@ -143,6 +143,41 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
+  /api/ai/feature-toggle/reset-circuit-breaker:
+    post:
+      tags: [ai-feature-toggle-resource]
+      operationId: resetCircuitBreaker
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
+  /api/ai/feature-toggle/status:
+    get:
+      tags: [ai-feature-toggle-resource]
+      operationId: getAiStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
+  /api/ai/feature-toggle/toggle:
+    put:
+      tags: [ai-feature-toggle-resource]
+      operationId: toggleAi
+      parameters:
+      - name: enabled
+        in: query
+        required: true
+        schema: {type: boolean}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -1383,6 +1418,21 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/applications/{applicationId}/rating:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewRatingForApplication
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewRatingDTO'}
   /api/interviews/booking/{processId}:
     get:
       tags: [interview-booking-resource]
@@ -2611,6 +2661,14 @@ components:
             APPLICATIONS_ONLY]
         userResearchGroupRoles: {$ref: '#/components/schemas/Counts'}
         users: {$ref: '#/components/schemas/Counts'}
+    AiFeatureStatusDTO:
+      type: object
+      properties:
+        aiEnabled: {type: boolean}
+        circuitBreakerOpen: {type: boolean}
+        coolDownSeconds: {type: integer, format: int64}
+        manuallyDisabled: {type: boolean}
+        openedAt: {type: integer, format: int64}
     ApplicantDTO:
       type: object
       properties:
@@ -2733,10 +2791,6 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INTERVIEW]
-        customFields:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
-          uniqueItems: true
         desiredDate: {type: string, format: date}
         job: {$ref: '#/components/schemas/JobCardDTO'}
         motivation: {type: string}
@@ -2859,30 +2913,6 @@ components:
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         title: {type: string}
       required: [jobId, title]
-    CustomFieldAnswerDTO:
-      type: object
-      properties:
-        answers:
-          type: array
-          items: {type: string}
-        customField: {$ref: '#/components/schemas/CustomFieldDTO'}
-        customFieldAnswerId: {type: string, format: uuid}
-        documents:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentDTO'}
-    CustomFieldDTO:
-      type: object
-      properties:
-        answerOptions:
-          type: array
-          items: {type: string}
-        customFieldId: {type: string, format: uuid}
-        customFieldType:
-          type: string
-          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
-        question: {type: string}
-        required: {type: boolean}
-        sequence: {type: integer, format: int32}
     DataExportStatusDTO:
       type: object
       properties:
@@ -2935,7 +2965,6 @@ components:
         vulnerabilities:
           type: array
           items: {$ref: '#/components/schemas/VulnerabilityDTO'}
-    DocumentDTO: {}
     DocumentInformationHolderDTO:
       type: object
       properties:
@@ -3096,6 +3125,10 @@ components:
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobState, jobTitle, processId,
         scheduledCount, totalInterviews, totalSlots, uncontactedCount]
+    InterviewRatingDTO:
+      type: object
+      properties:
+        rating: {type: integer, format: int32}
     InterviewSlotDTO:
       type: object
       properties:

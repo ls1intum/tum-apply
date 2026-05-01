@@ -15,8 +15,6 @@ public class DatabaseCleaner {
         "application_reviews",
         "applications",
         "applicants",
-        "custom_field_answers",
-        "custom_fields",
         "data_export_requests",
         "departments",
         "document_dictionary",
