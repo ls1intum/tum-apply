@@ -146,7 +146,7 @@
       "tvlGrade": {
         "label": "TV-L Grade",
         "placeholder": "Select a Pay Grade...",
-        "toolTipText": "To support pay transparency (in line with EU directives), specifying the TV-L pay grade is recommended (for doctoral positions, usually E13). More info: <a href=\"https://portal.mytum.de/kompass/personalwirtschaft_public/tabellenentgelt_stufenzuordnung_tv_l\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">TUM Pay Grades</a>."
+        "toolTipText": "Specify the <a href=\"https://portal.mytum.de/kompass/personalwirtschaft_public/tabellenentgelt_stufenzuordnung_tv_l\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">TUM TV-L Pay Grade</a> to support pay transparency."
       }
     },
     "aiSidebar": {
@@ -410,7 +410,7 @@
       "workload": "Workload",
       "contractDuration": "Contract Duration",
       "fundingType": "Funding Type",
-      "tvlGrade": "Pay Grade",
+      "tvlGrade": "TV-L Grade",
       "startDate": "Start Date",
       "applicationEndDate": "Application End Date"
     },
