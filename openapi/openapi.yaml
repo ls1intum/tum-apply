@@ -143,6 +143,41 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
+  /api/ai/feature-toggle/reset-circuit-breaker:
+    post:
+      tags: [ai-feature-toggle-resource]
+      operationId: resetCircuitBreaker
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
+  /api/ai/feature-toggle/status:
+    get:
+      tags: [ai-feature-toggle-resource]
+      operationId: getAiStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
+  /api/ai/feature-toggle/toggle:
+    put:
+      tags: [ai-feature-toggle-resource]
+      operationId: toggleAi
+      parameters:
+      - name: enabled
+        in: query
+        required: true
+        schema: {type: boolean}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -2618,6 +2653,14 @@ components:
             APPLICATIONS_ONLY]
         userResearchGroupRoles: {$ref: '#/components/schemas/Counts'}
         users: {$ref: '#/components/schemas/Counts'}
+    AiFeatureStatusDTO:
+      type: object
+      properties:
+        aiEnabled: {type: boolean}
+        circuitBreakerOpen: {type: boolean}
+        coolDownSeconds: {type: integer, format: int64}
+        manuallyDisabled: {type: boolean}
+        openedAt: {type: integer, format: int64}
     ApplicantDTO:
       type: object
       properties:

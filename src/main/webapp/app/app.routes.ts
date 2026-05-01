@@ -385,6 +385,17 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Admin - System Settings
+  // ======================================================================================
+  {
+    path: 'system-settings',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
+    loadComponent: () => import('./admin/system-settings/admin-system-settings.component').then(m => m.AdminSystemSettingsComponent),
+    title: 'global.routes.admin.systemSettings',
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,
