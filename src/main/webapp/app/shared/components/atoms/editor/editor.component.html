@@ -84,6 +84,7 @@
               }
               @if (shouldShowButton()) {
                 <jhi-info-icon
+                  class="[&_button]:!float-none [&_button]:!h-auto [&_button]:!w-auto [&_button]:!p-0"
                   [clickable]="true"
                   size="sm"
                   [disabled]="!analysisResult()"
