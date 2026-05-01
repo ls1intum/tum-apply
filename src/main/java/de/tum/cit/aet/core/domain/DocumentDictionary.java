@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
@@ -33,10 +32,6 @@ public class DocumentDictionary {
     @ManyToOne
     @JoinColumn(name = "application_id")
     private Application application;
-
-    @ManyToOne
-    @JoinColumn(name = "custom_field_answer_id")
-    private CustomFieldAnswer customFieldAnswer;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", nullable = false)

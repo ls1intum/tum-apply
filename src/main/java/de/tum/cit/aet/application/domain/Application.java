@@ -137,9 +137,6 @@ public class Application extends AbstractAuditingEntity {
     private String applicantMasterUniversity;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
-    private Set<CustomFieldAnswer> customFieldAnswers;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")

@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.domain.ResearchGroupRole;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
@@ -321,7 +320,6 @@ public class CurrentUserService {
         switch (entity) {
             case Application app -> hasAccessTo(app);
             case ApplicationReview review -> hasAccessTo(review);
-            case CustomFieldAnswer answer -> hasAccessTo(answer);
             case ResearchGroup group -> hasAccessTo(group);
             case Job job -> hasAccessTo(job);
             case InternalComment comment -> hasAccessTo(comment);
@@ -350,20 +348,6 @@ public class CurrentUserService {
      */
     private void hasAccessTo(ApplicationReview review) {
         isAdminOrMemberOf(review.getApplication().getJob().getResearchGroup().getResearchGroupId());
-    }
-
-    /**
-     * Checks if the current user has access to the given custom field answer.
-     * The user must be an admin, professor of the research group, or the applicant.
-     *
-     * @param answer the custom field answer to check
-     * @throws AccessDeniedException if access is denied
-     */
-    private void hasAccessTo(CustomFieldAnswer answer) {
-        Application application = answer.getApplication();
-
-        isAdminOrMemberOf(application.getJob().getResearchGroup().getResearchGroupId());
-        isCurrentUserOrAdmin(application.getApplicant().getUserId());
     }
 
     /**
