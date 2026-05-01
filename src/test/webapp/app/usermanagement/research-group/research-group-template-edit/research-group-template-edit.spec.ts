@@ -1,17 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ResearchGroupTemplateEdit } from 'app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
 import { EmailTemplateDTOEmailTypeEnum } from 'app/generated/model/email-template-dto';
-
-import { ResearchGroupTemplateEdit } from '../../../../../../main/webapp/app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
-import { EmailTemplateResourceApi } from '../../../../../../main/webapp/app/generated/api/email-template-resource-api';
-import { ToastService } from '../../../../../../main/webapp/app/service/toast-service';
-import { AccountService } from '../../../../../../main/webapp/app/core/auth/account.service';
+import { provideToastServiceMock } from 'util/toast-service.mock';
+import { provideAccountServiceMock } from 'util/account.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
+import { provideRouterMock } from 'util/router.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 class FakeApi {
   getTemplate = vi.fn();
@@ -20,33 +21,35 @@ class FakeApi {
   updateTemplate = vi.fn();
 }
 
-class FakeToast {
-  showSuccess = vi.fn();
-  showError = vi.fn();
-}
-
-class FakeAccount {
-  userAuthorities: string[] = [];
+class ResizeObserverMock {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
 }
 
 describe('ResearchGroupTemplateEdit', () => {
   let api: FakeApi;
 
   beforeEach(() => {
+    global.ResizeObserver = ResizeObserverMock;
+
     api = new FakeApi();
     api.getTemplate.mockReturnValue(of({}));
     api.getTemplates.mockReturnValue(of([]));
 
     TestBed.configureTestingModule({
-      imports: [ResearchGroupTemplateEdit, TranslateModule.forRoot()],
+      imports: [ResearchGroupTemplateEdit],
       providers: [
-        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        provideFontAwesomeTesting(),
+        provideRouterMock(),
+        provideActivatedRouteMock(createActivatedRouteMock()),
+        provideTranslateMock(),
+        provideToastServiceMock(),
+        provideAccountServiceMock(),
         { provide: EmailTemplateResourceApi, useValue: api },
-        { provide: ToastService, useValue: new FakeToast() },
-        { provide: AccountService, useValue: new FakeAccount() },
       ],
     });
   });

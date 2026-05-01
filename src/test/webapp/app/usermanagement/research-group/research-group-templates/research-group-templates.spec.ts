@@ -1,53 +1,46 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
+import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
 import {
   EmailTemplateOverviewDTO,
   EmailTemplateOverviewDTOEmailTypeEnum,
 } from 'app/generated/model/email-template-overview-dto';
-
-import { ResearchGroupTemplates } from '../../../../../../main/webapp/app/usermanagement/research-group/research-group-templates/research-group-templates';
-import { EmailTemplateResourceApi } from '../../../../../../main/webapp/app/generated/api/email-template-resource-api';
-import { ToastService } from '../../../../../../main/webapp/app/service/toast-service';
-import { AccountService } from '../../../../../../main/webapp/app/core/auth/account.service';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
+import { provideAccountServiceMock } from 'util/account.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
+import { provideRouterMock } from 'util/router.mock';
 
 class FakeApi {
   getTemplates = vi.fn();
   deleteTemplate = vi.fn();
 }
 
-class FakeToast {
-  showSuccess = vi.fn();
-  showError = vi.fn();
-}
-
-class FakeAccount {
-  userAuthorities: string[] = [];
-}
-
 describe('ResearchGroupTemplates', () => {
   let api: FakeApi;
-  let toast: FakeToast;
+  let toast: ToastServiceMock;
 
   beforeEach(() => {
     api = new FakeApi();
-    toast = new FakeToast();
+    toast = createToastServiceMock();
 
     TestBed.configureTestingModule({
-      imports: [ResearchGroupTemplates, TranslateModule.forRoot()],
+      imports: [ResearchGroupTemplates],
       providers: [
-        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        provideFontAwesomeTesting(),
+        provideRouterMock(),
+        provideTranslateMock(),
+        provideToastServiceMock(toast),
+        provideAccountServiceMock(),
         { provide: EmailTemplateResourceApi, useValue: api },
-        { provide: ToastService, useValue: toast },
-        { provide: AccountService, useValue: new FakeAccount() },
       ],
     });
   });
@@ -73,7 +66,7 @@ describe('ResearchGroupTemplates', () => {
     await fixture.whenStable();
 
     expect(api.getTemplates).toHaveBeenCalledWith();
-    expect((fixture.componentInstance as any)['responseData']()).toHaveLength(2);
+    expect(fixture.componentInstance['tableData']()).toHaveLength(2);
   });
 
   it('shows an error toast when loading fails', async () => {
