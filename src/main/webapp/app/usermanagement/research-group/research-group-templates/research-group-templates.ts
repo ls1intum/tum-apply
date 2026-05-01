@@ -109,7 +109,7 @@ export class ResearchGroupTemplates {
   private async load(): Promise<void> {
     try {
       const res = await firstValueFrom(this.emailTemplateApi.getTemplates());
-      this.responseData.set(res ?? []);
+      this.responseData.set(res);
     } catch {
       this.toastService.showError({ detail: 'Failed to load templates' });
     }
