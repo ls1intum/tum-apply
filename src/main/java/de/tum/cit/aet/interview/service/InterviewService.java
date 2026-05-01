@@ -1188,8 +1188,6 @@ public class InterviewService {
 
     /**
      * Returns the interview rating recorded for the given application, if any.
-     * Picks the most recently updated rated interviewee when an application is
-     * linked to several interview processes (rare but possible).
      *
      * @param applicationId the ID of the application
      * @return DTO with the Likert rating (-2..2) or {@code null} if not yet rated
@@ -1204,7 +1202,7 @@ public class InterviewService {
         verifyResearchGroupAccess(application.getJob());
 
         return intervieweeRepository
-            .findMostRecentRatedByApplicationId(applicationId)
+            .findByApplicationApplicationIdAndRatingIsNotNull(applicationId)
             .map(interviewee -> InterviewRatingDTO.of(interviewee.getRating()))
             .orElseGet(() -> new InterviewRatingDTO(null));
     }

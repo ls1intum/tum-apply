@@ -9,8 +9,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -149,27 +147,14 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 
     /**
-     * Finds the most recently updated rated interviewee for a given application
-     * across all interview processes. Used by the application review page to
-     * surface a single interview rating per application.
+     * Finds the rated interviewee for a given application. Each application maps
+     * to at most one interviewee (Application → Job → InterviewProcess is 1:1, with
+     * a unique constraint on (application_id, interview_process_id)).
      *
      * @param applicationId the ID of the application
-     * @param pageable      pagination information used to limit results
-     * @return Optional containing the most recent rated interviewee if found
+     * @return Optional containing the rated interviewee if found
      */
-    @Query(
-        """
-        SELECT i FROM Interviewee i
-        WHERE i.application.applicationId = :applicationId
-        AND i.rating IS NOT NULL
-        ORDER BY i.lastModifiedAt DESC
-        """
-    )
-    List<Interviewee> findMostRecentRatedByApplicationId(@Param("applicationId") UUID applicationId, Pageable pageable);
-
-    default Optional<Interviewee> findMostRecentRatedByApplicationId(UUID applicationId) {
-        return findMostRecentRatedByApplicationId(applicationId, PageRequest.of(0, 1)).stream().findFirst();
-    }
+    Optional<Interviewee> findByApplicationApplicationIdAndRatingIsNotNull(UUID applicationId);
 
     /**
      * Counts interviewees grouped by their derived state for multiple interview processes.
