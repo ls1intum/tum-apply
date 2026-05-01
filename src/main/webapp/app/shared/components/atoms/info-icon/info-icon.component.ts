@@ -20,7 +20,7 @@ export class InfoIconComponent {
 
   clicked = output();
 
-  iconSizeClass = computed(() => (this.size() === 'sm' ? 'text-sm' : 'text-base'));
+  iconSizeClass = computed(() => (this.size() === 'sm' ? 'text-base' : 'text-xl'));
   paddingClass = computed(() => (this.size() === 'sm' ? 'p-1' : 'p-2'));
 
   onClick(event: Event): void {
