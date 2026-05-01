@@ -16,7 +16,6 @@ import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.notification.service.DefaultEmailTemplateProvider.DefaultContent;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -202,13 +201,5 @@ public class EmailTemplateService {
 
     private static String toQuill(String html) {
         return TemplateUtil.convertFreemarkerToQuillMentions(html);
-    }
-
-    /**
-     * Resolves the timestamp value used for sorting customs (Instant for DTO, LocalDateTime in entity).
-     * Helper retained for parity with previous public surface.
-     */
-    public static Instant lastModifiedInstant(EmailTemplate t) {
-        return t.getLastModifiedAt() == null ? null : t.getLastModifiedAt().toInstant(java.time.ZoneOffset.UTC);
     }
 }

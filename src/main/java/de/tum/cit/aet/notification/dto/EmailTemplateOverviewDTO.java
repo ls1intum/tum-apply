@@ -1,5 +1,6 @@
 package de.tum.cit.aet.notification.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.notification.constants.EmailType;
 import java.time.Instant;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * @param lastName         creator last name (customs only)
  * @param lastModifiedAt   last modification timestamp (customs only)
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record EmailTemplateOverviewDTO(
     UUID emailTemplateId,
     EmailType emailType,

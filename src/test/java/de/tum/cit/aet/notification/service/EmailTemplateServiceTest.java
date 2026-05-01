@@ -22,6 +22,7 @@ import de.tum.cit.aet.notification.service.DefaultEmailTemplateProvider.DefaultC
 import de.tum.cit.aet.notification.service.EmailTemplateService.EmailContent;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.utility.testdata.EmailTemplateTestData;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -61,17 +62,13 @@ class EmailTemplateServiceTest {
 
     @Test
     void resolveContent_returnsCustom_whenRowExists() {
-        EmailTemplate custom = new EmailTemplate();
-        custom.setSubjectEn("Custom EN Subject");
-        custom.setBodyHtmlEn("<p>EN body</p>");
-        custom.setSubjectDe("Custom DE Subject");
-        custom.setBodyHtmlDe("<p>DE body</p>");
+        EmailTemplate custom = EmailTemplateTestData.newTemplate(researchGroup, user, EmailType.APPLICATION_SENT);
         when(repository.findByResearchGroupAndEmailType(researchGroup, EmailType.APPLICATION_SENT)).thenReturn(Optional.of(custom));
 
         EmailContent content = service.resolveContent(researchGroup, EmailType.APPLICATION_SENT, Language.ENGLISH);
 
-        assertThat(content.subject()).isEqualTo("Custom EN Subject");
-        assertThat(content.bodyHtml()).isEqualTo("<p>EN body</p>");
+        assertThat(content.subject()).isEqualTo(custom.getSubjectEn());
+        assertThat(content.bodyHtml()).isEqualTo(custom.getBodyHtmlEn());
         verify(defaultProvider, never()).load(any(), any());
     }
 
@@ -97,13 +94,8 @@ class EmailTemplateServiceTest {
 
     @Test
     void listMerged_emitsCustomsFirstThenDefaults() {
-        EmailTemplate custom = new EmailTemplate();
+        EmailTemplate custom = EmailTemplateTestData.newTemplate(researchGroup, user, EmailType.APPLICATION_SENT);
         custom.setEmailTemplateId(UUID.randomUUID());
-        custom.setEmailType(EmailType.APPLICATION_SENT);
-        custom.setSubjectEn("S");
-        custom.setBodyHtmlEn("B");
-        custom.setSubjectDe("S");
-        custom.setBodyHtmlDe("B");
         custom.setLastModifiedAt(LocalDateTime.now());
         when(repository.findAllByResearchGroup(researchGroup)).thenReturn(List.of(custom));
         lenient()

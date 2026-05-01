@@ -61,9 +61,13 @@ export class ResearchGroupTemplateEdit {
 
   readonly currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
   readonly templateId = computed(() => this.paramMapSignal().get('templateId') ?? undefined);
-  readonly preselectedEmailTypeFromQuery = computed(
-    () => (this.queryParamMapSignal().get('emailType') as EmailTemplateDTOEmailTypeEnum | null) ?? undefined,
-  );
+  readonly preselectedEmailTypeFromQuery = computed<EmailTemplateDTOEmailTypeEnum | undefined>(() => {
+    const raw = this.queryParamMapSignal().get('emailType') ?? undefined;
+    if (raw === undefined) {
+      return undefined;
+    }
+    return EmailTemplateDTOEmailTypeEnumValues.find(v => v === raw);
+  });
 
   readonly formModel = signal<EmailTemplateDTO>({
     emailType: undefined,
