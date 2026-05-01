@@ -21,7 +21,7 @@ export class InfoIconComponent {
   clicked = output();
 
   iconSizeClass = computed(() => (this.size() === 'sm' ? 'text-base' : 'text-xl'));
-  paddingClass = computed(() => (this.size() === 'sm' ? 'p-1' : 'p-2'));
+  paddingClass = computed(() => 'p-0');
 
   onClick(event: Event): void {
     if (this.disabled()) {
