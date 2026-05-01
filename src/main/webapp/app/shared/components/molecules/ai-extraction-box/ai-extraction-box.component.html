@@ -8,12 +8,11 @@
     </div>
 
     <div class="flex-shrink-0 inline-flex flex-row-reverse justify-end items-center gap-2 md:flex-row md:justify-start">
-      <jhi-button
-        label="?"
-        variant="outlined"
-        severity="primary"
-        styleClass="!relative !flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
-        (click)="aiConsentVisible.set(true)"
+      <jhi-info-icon
+        [clickable]="true"
+        ariaLabel="entity.aiExtraction.consentInfo"
+        [shouldTranslate]="true"
+        (clicked)="aiConsentVisible.set(true)"
       />
       @if (isExtractingAi()) {
         <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border-default">
