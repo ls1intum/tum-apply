@@ -179,6 +179,20 @@ public class DocumentService {
         return documentRepository.findApplicationDocumentsByType(application.getApplicationId(), type);
     }
 
+    public Document findById(UUID documentId) {
+        return findOrThrow(documentId);
+    }
+
+    @Transactional
+    public ApplicantDocument saveApplicantDocument(ApplicantDocument document) {
+        return documentRepository.save(document);
+    }
+
+    @Transactional
+    public ApplicationDocument saveApplicationDocument(ApplicationDocument document) {
+        return documentRepository.save(document);
+    }
+
     // ---------------------------------------------------------------------
     // Mutation: rename, delete
     // ---------------------------------------------------------------------
