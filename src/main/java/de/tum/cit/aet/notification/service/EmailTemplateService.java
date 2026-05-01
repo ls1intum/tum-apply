@@ -43,6 +43,11 @@ public class EmailTemplateService {
     /**
      * Resolves the subject + body to use for the given research group, email type, and language.
      * Returns the customised content if a row exists, otherwise the system default loaded from resource files.
+     *
+     * @param researchGroup the research group whose customisations should be considered (may be {@code null} for system-wide emails)
+     * @param emailType     the email type whose content is needed
+     * @param language      the language to render
+     * @return the resolved subject and body
      */
     public EmailContent resolveContent(ResearchGroup researchGroup, EmailType emailType, Language language) {
         if (researchGroup != null) {
@@ -60,6 +65,9 @@ public class EmailTemplateService {
      * then defaults loaded from resource files. Only EmailTypes flagged {@code customizable} are
      * included — system-only types (e.g. data deletion warnings, research group approval) are hidden.
      * Content is converted to Quill-mention form for the editor.
+     *
+     * @param researchGroup the research group whose templates should be listed
+     * @return the merged list of customs followed by defaults
      */
     public List<EmailTemplateOverviewDTO> listMerged(ResearchGroup researchGroup) {
         Map<EmailType, EmailTemplate> customs = emailTemplateRepository
@@ -84,6 +92,9 @@ public class EmailTemplateService {
 
     /**
      * Retrieves a custom template by its ID. Throws if the template does not exist.
+     *
+     * @param templateId the ID of the custom template
+     * @return the matching template as a DTO
      */
     public EmailTemplateDTO getTemplate(UUID templateId) {
         EmailTemplate template = findById(templateId);
@@ -93,8 +104,13 @@ public class EmailTemplateService {
 
     /**
      * Creates a new custom template for the (group, emailType) pair.
-     * Throws {@link ResourceAlreadyExistsException} if a custom already exists for this pair.
-     * Throws {@link EmailTemplateException} if the EmailType is not customizable per research group.
+     *
+     * @param dto           the template payload to persist
+     * @param researchGroup the owning research group
+     * @param createdBy     the user creating the customisation
+     * @return the persisted template as a DTO
+     * @throws ResourceAlreadyExistsException if a custom already exists for this (group, emailType) pair
+     * @throws EmailTemplateException         if the EmailType is not customizable per research group
      */
     public EmailTemplateDTO createTemplate(EmailTemplateDTO dto, ResearchGroup researchGroup, User createdBy) {
         if (!dto.emailType().isCustomizable()) {
@@ -124,6 +140,11 @@ public class EmailTemplateService {
     /**
      * Updates content of an existing custom template. EmailType may be changed to another customizable type
      * as long as no other custom row already exists for the new (group, emailType) pair.
+     *
+     * @param dto the updated template payload (must include the existing id)
+     * @return the persisted template as a DTO
+     * @throws ResourceAlreadyExistsException if changing the EmailType would collide with an existing custom
+     * @throws EmailTemplateException         if the new EmailType is not customizable
      */
     public EmailTemplateDTO updateTemplate(EmailTemplateDTO dto) {
         EmailTemplate template = findById(dto.emailTemplateId());
@@ -155,6 +176,8 @@ public class EmailTemplateService {
 
     /**
      * Deletes a custom template. The system default (loaded from resource files) takes its place automatically.
+     *
+     * @param templateId the ID of the custom template to delete
      */
     public void deleteTemplate(UUID templateId) {
         EmailTemplate toDelete = findById(templateId);

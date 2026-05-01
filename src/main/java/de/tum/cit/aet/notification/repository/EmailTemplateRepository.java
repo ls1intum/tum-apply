@@ -17,16 +17,27 @@ import org.springframework.stereotype.Repository;
 public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemplate, UUID> {
     /**
      * Finds the (at most one) custom {@link EmailTemplate} for the given research group and email type.
+     *
+     * @param researchGroup the research group owning the template
+     * @param emailType     the email type to look up
+     * @return the matching template if it exists
      */
     Optional<EmailTemplate> findByResearchGroupAndEmailType(ResearchGroup researchGroup, EmailType emailType);
 
     /**
      * Returns whether a custom {@link EmailTemplate} exists for the given research group and email type.
+     *
+     * @param researchGroup the research group owning the template
+     * @param emailType     the email type to look up
+     * @return {@code true} if a custom row exists for this pair
      */
     boolean existsByResearchGroupAndEmailType(ResearchGroup researchGroup, EmailType emailType);
 
     /**
      * Returns all custom {@link EmailTemplate}s belonging to the given research group.
+     *
+     * @param researchGroup the research group whose customs should be returned
+     * @return all custom templates for the group, in no particular order
      */
     List<EmailTemplate> findAllByResearchGroup(ResearchGroup researchGroup);
 

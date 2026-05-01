@@ -22,7 +22,10 @@ public class DefaultEmailTemplateProvider {
     /**
      * Loads default subject + body for the given email type and language.
      *
-     * @throws TemplateProcessingException if a required default file is missing.
+     * @param emailType the email type whose default content should be loaded
+     * @param language  the language whose default content should be loaded
+     * @return the cached or freshly loaded default subject and body
+     * @throws TemplateProcessingException if a required default file is missing
      */
     public DefaultContent load(EmailType emailType, Language language) {
         String key = language.getCode() + "/" + emailType.name();

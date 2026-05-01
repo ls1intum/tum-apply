@@ -24,6 +24,8 @@ public class EmailTemplateResource {
     /**
      * Returns the unified list of templates for the current user's research group:
      * customs first (most recently modified), then defaults loaded from resource files.
+     *
+     * @return the merged list of customs and defaults
      */
     @ProfessorOrEmployee
     @GetMapping
@@ -33,6 +35,9 @@ public class EmailTemplateResource {
 
     /**
      * Retrieves a single custom email template by its ID.
+     *
+     * @param templateId the ID of the custom template
+     * @return the matching custom template
      */
     @ProfessorOrEmployee
     @GetMapping("/{templateId}")
@@ -41,7 +46,11 @@ public class EmailTemplateResource {
     }
 
     /**
-     * Updates an existing custom template's content. EmailType is immutable.
+     * Updates an existing custom template's content. The {@code emailType} may be changed to
+     * any other customizable type that does not yet have a custom row in this research group.
+     *
+     * @param emailTemplateDTO the updated template payload (must include the existing id)
+     * @return the persisted template
      */
     @ProfessorOrEmployee
     @PutMapping
@@ -52,6 +61,9 @@ public class EmailTemplateResource {
     /**
      * Creates a new custom template for the current user's research group.
      * Returns 409 Conflict if a custom already exists for the (group, emailType) pair.
+     *
+     * @param emailTemplateDTO the template payload to persist
+     * @return the created template wrapped in a 201 response
      */
     @ProfessorOrEmployee
     @PostMapping
@@ -66,6 +78,9 @@ public class EmailTemplateResource {
 
     /**
      * Deletes a custom template. The system default reappears in the list automatically.
+     *
+     * @param templateId the ID of the custom template to delete
+     * @return an empty 204 response
      */
     @Professor
     @DeleteMapping("/{templateId}")

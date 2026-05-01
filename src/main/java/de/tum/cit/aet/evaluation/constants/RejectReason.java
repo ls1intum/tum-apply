@@ -14,6 +14,12 @@ public enum RejectReason {
 
     private final String value;
 
+    /**
+     * Maps this reject reason to the corresponding {@link EmailType} variant used to
+     * select the rejection template at send time.
+     *
+     * @return the matching {@link EmailType} for this reject reason
+     */
     public EmailType toEmailType() {
         return switch (this) {
             case JOB_FILLED -> EmailType.APPLICATION_REJECTED_JOB_FILLED;
