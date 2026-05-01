@@ -109,6 +109,7 @@
       "ratingYourRating": "Your Rating",
       "ratingYourRatingLabel": "Click a box to select your rating",
       "ratingOtherRatings": "Other Ratings",
+      "interviewRatingTitle": "Interview Rating",
       "commentTitle": "Comments",
       "commentDescription": "Leave internal comments to discuss the application with other reviewers or keep personal notes."
     },
@@ -134,6 +135,10 @@
       "noProcessFound": {
         "summary": "Error",
         "detail": "No interview process found for this job"
+      },
+      "loadInterviewRating": {
+        "summary": "Error",
+        "detail": "Failed to load interview rating. Please try refreshing the page, or contact us if the problem persists."
       }
     }
   }

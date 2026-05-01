@@ -116,7 +116,6 @@ class ApplicationServiceTest {
         application.setApplicant(applicant);
         application.setJob(job);
         application.setState(ApplicationState.SAVED);
-        application.setCustomFieldAnswers(new HashSet<>());
         application.setInternalComments(new HashSet<>());
     }
 

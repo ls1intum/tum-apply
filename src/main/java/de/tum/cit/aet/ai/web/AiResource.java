@@ -3,6 +3,7 @@ package de.tum.cit.aet.ai.web;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
+import de.tum.cit.aet.ai.service.AiFeatureToggleService;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
@@ -10,6 +11,7 @@ import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +29,11 @@ import reactor.core.publisher.Flux;
 public class AiResource {
 
     private final AiService aiService;
+    private final AiFeatureToggleService aiFeatureToggleService;
 
-    public AiResource(AiService aiService) {
+    public AiResource(AiService aiService, AiFeatureToggleService aiFeatureToggleService) {
         this.aiService = aiService;
+        this.aiFeatureToggleService = aiFeatureToggleService;
     }
 
     /**
@@ -39,16 +43,19 @@ public class AiResource {
      *
      * @param descriptionLanguage the language for the generated job description ("de" or "en")
      * @param jobForm             the job form data used to build the AI prompt
-     * @return a Flux of content chunks streamed as Server-Sent Events
+     * @return a Flux of content chunks streamed as Server-Sent Events, or 503 if AI is unavailable
      */
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "generateJobApplicationDraftStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> generateJobApplicationDraftStream(
+    public ResponseEntity<Flux<String>> generateJobApplicationDraftStream(
         @RequestBody JobFormDTO jobForm,
         @RequestParam("lang") String descriptionLanguage
     ) {
+        if (!aiFeatureToggleService.isAiAvailable()) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
         log.info("PUT /api/ai/generateJobApplicationDraftStream - Streaming request received (lang={})", descriptionLanguage);
-        return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage);
+        return ResponseEntity.ok(aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage));
     }
 
     /**
@@ -57,13 +64,19 @@ public class AiResource {
      *
      * @param toLang  the target language for translation ("de" or "en")
      * @param request A DTO containing the text to translate
-     * @return a Flux of content chunks streamed as Server-Sent Events
+     * @return a Flux of content chunks streamed as Server-Sent Events, or 503 if AI is unavailable
      */
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "translateJobDescriptionStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> translateJobDescriptionStream(@RequestParam("toLang") String toLang, @RequestBody TranslateComplianceDTO request) {
+    public ResponseEntity<Flux<String>> translateJobDescriptionStream(
+        @RequestParam("toLang") String toLang,
+        @RequestBody TranslateComplianceDTO request
+    ) {
+        if (!aiFeatureToggleService.isAiAvailable()) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
         log.info("PUT /api/ai/translateJobDescriptionStream - Streaming translation request received (toLang={})", toLang);
-        return aiService.translateTextStream(request.text(), toLang);
+        return ResponseEntity.ok(aiService.translateTextStream(request.text(), toLang));
     }
 
     /**
@@ -86,6 +99,9 @@ public class AiResource {
         @RequestParam(value = "isCv", defaultValue = "true") boolean isCv,
         @RequestParam(value = "saveData", defaultValue = "false") boolean saveData
     ) {
+        if (!aiFeatureToggleService.isAiAvailable()) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
         int fileCount = files == null ? 0 : files.size();
         log.info(
             "PUT /api/ai/extractPdfData - PDF extraction request received (applicationId={}, docIds={}, fileCount={}, isCV={}, saveData={})",
@@ -115,6 +131,7 @@ public class AiResource {
         @RequestParam("lang") String descriptionLanguage,
         @RequestParam(defaultValue = "en") String userLanguage
     ) {
+        // Service skips LLM calls internally when AI is disabled, rule-based gender bias analysis and score computation remain enabled
         log.info("POST /api/ai/analyzeJobDescription - Request received (toLang={})", descriptionLanguage);
         return ResponseEntity.ok(aiService.analyzeCurrentJobDescription(jobForm, descriptionLanguage, userLanguage));
     }

@@ -249,10 +249,6 @@
       }
     },
     "additionalInformationSection": {
-      "extras": {
-        "title": "Extras",
-        "description": "Add custom questions that applicants will see in the application form."
-      },
       "suitableForDisabled": {
         "label": "This position is suitable for persons with disabilities",
         "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with disabilities"
