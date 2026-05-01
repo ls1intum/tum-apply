@@ -51,7 +51,7 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
+import { ComplianceIssue } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
@@ -820,12 +820,9 @@ export class JobCreationFormComponent {
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
-    const highlights = (compliance ?? [])
-      .flatMap(issue =>
-        issue.text && issue.category && (!issue.language || issue.language === lang)
-          ? [{ text: issue.text, category: issue.category }]
-          : []
-      );
+    const highlights = (compliance ?? []).flatMap(issue =>
+      issue.text && issue.category && (!issue.language || issue.language === lang) ? [{ text: issue.text, category: issue.category }] : [],
+    );
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 

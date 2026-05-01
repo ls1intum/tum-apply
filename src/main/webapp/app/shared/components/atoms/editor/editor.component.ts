@@ -16,9 +16,9 @@ import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analys
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
+import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
-import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Quill.import() returns unknown; no public type for inline blots
 const Inline = Quill.import('blots/inline') as any;
@@ -83,7 +83,7 @@ class HighlightBlot extends Inline {
 
   static formats(node: HTMLElement): { category: ComplianceIssueCategoryEnum } | undefined {
     const data = node.dataset['category'];
-    const category = ComplianceIssueCategoryEnumValues.find((value) => value === data);
+    const category = ComplianceIssueCategoryEnumValues.find(value => value === data);
     if (category === undefined) return undefined;
     return { category };
   }
