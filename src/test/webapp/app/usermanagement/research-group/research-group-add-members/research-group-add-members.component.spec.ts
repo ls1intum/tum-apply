@@ -121,7 +121,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     it('should initialize with default values', () => {
       expect(component.totalRecords()).toBe(0);
       expect(component.page()).toBe(0);
-      expect(component.pageSize()).toBe(10);
+      expect(component.pageSize()).toBe(5);
       expect(component.users()).toEqual([]);
       expect(component.searchQuery()).toBe('');
       expect(component.selectedUserCount()).toBe(0);
@@ -143,7 +143,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       expect(component.users()).toEqual((mockPageResponse.content ?? []).map(withDisplayName));
       expect(component.totalRecords()).toBe(mockPageResponse.totalElements);
-      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(5, 0, 'john');
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
     });
 
@@ -153,7 +153,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       await component.loadAvailableUsers('john');
 
-      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(5, 0, 'john');
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
     });
 
@@ -191,7 +191,7 @@ describe('ResearchGroupAddMembersComponent', () => {
 
       expect(component.page()).toBe(0);
       expect(component.searchQuery()).toBe('new-query');
-      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'new-query');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(5, 0, 'new-query');
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
     });
 
@@ -362,8 +362,8 @@ describe('ResearchGroupAddMembersComponent', () => {
       await Promise.resolve();
 
       expect(component.page()).toBe(0);
-      expect(component.pageSize()).toBe(10); // Unchanged
-      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'abc');
+      expect(component.pageSize()).toBe(5); // Unchanged
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(5, 0, 'abc');
       expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
     });
 
