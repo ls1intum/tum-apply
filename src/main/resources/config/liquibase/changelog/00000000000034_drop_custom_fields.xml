@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="034a_drop_document_dictionary_custom_field_answer_link" author="assistant">
+    <dropForeignKeyConstraint baseTableName="document_dictionary"
+                              constraintName="fk_document_dictionary_custom_field_answer"/>
+    <dropIndex indexName="idx_document_dictionary_custom_field_answer_id"
+               tableName="document_dictionary"/>
+    <dropColumn tableName="document_dictionary" columnName="custom_field_answer_id"/>
+  </changeSet>
+
+  <changeSet id="034b_drop_custom_field_answers_table" author="assistant">
+    <dropTable tableName="custom_field_answers"/>
+  </changeSet>
+
+  <changeSet id="034c_drop_custom_fields_table" author="assistant">
+    <dropTable tableName="custom_fields"/>
+  </changeSet>
+
+</databaseChangeLog>
