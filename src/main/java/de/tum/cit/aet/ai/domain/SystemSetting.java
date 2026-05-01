@@ -2,6 +2,7 @@ package de.tum.cit.aet.ai.domain;
 
 import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "system_settings")
 @NoArgsConstructor
+@AllArgsConstructor
 @NoUserDataExportRequired(reason = "System configuration settings are not part of user-personal export scope")
 public class SystemSetting {
 
@@ -24,9 +26,4 @@ public class SystemSetting {
 
     @Column(name = "setting_value", length = 1000)
     private String value;
-
-    public SystemSetting(String key, String value) {
-        this.key = key;
-        this.value = value;
-    }
 }

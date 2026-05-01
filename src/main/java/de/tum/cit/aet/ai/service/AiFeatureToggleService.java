@@ -107,11 +107,7 @@ public class AiFeatureToggleService {
      * Record a successful LLM call. Closes the circuit breaker and resets failure count.
      */
     public void recordSuccess() {
-        synchronized (circuitLock) {
-            consecutiveFailures = 0;
-            circuitState = CircuitState.CLOSED;
-            openedAt = 0;
-        }
+        resetCircuitBreaker();
     }
 
     /**
@@ -120,13 +116,10 @@ public class AiFeatureToggleService {
      */
     public void recordFailure() {
         synchronized (circuitLock) {
-            if (circuitState == CircuitState.HALF_OPEN) {
-                circuitState = CircuitState.OPEN;
-                openedAt = System.currentTimeMillis();
-                return;
-            }
-            consecutiveFailures++;
-            if (circuitState == CircuitState.CLOSED && consecutiveFailures >= FAILURE_THRESHOLD) {
+            if (
+                circuitState == CircuitState.HALF_OPEN ||
+                (circuitState == CircuitState.CLOSED && ++consecutiveFailures >= FAILURE_THRESHOLD)
+            ) {
                 circuitState = CircuitState.OPEN;
                 openedAt = System.currentTimeMillis();
             }
@@ -134,7 +127,8 @@ public class AiFeatureToggleService {
     }
 
     /**
-     * Manually reset the circuit breaker (admin action).
+     * Resets the circuit breaker to closed state. Used both after a successful LLM probe
+     * and as a manual admin action.
      */
     public void resetCircuitBreaker() {
         synchronized (circuitLock) {
