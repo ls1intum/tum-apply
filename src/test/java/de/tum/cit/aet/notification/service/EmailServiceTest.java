@@ -68,9 +68,9 @@ class EmailServiceTest {
     void send_resolvesContentFromTemplateService_whenNoCustomBodyOrSubject() {
         ReflectionTestUtils.setField(emailService, "emailEnabled", false);
         EmailContent content = new EmailContent("Hello", "<p>body</p>");
-        when(emailTemplateService.resolveContent(any(ResearchGroup.class), eq(EmailType.APPLICATION_SENT), eq(Language.ENGLISH))).thenReturn(
-            content
-        );
+        when(
+            emailTemplateService.resolveContent(any(ResearchGroup.class), eq(EmailType.APPLICATION_SENT), eq(Language.ENGLISH))
+        ).thenReturn(content);
         when(templateProcessingService.renderSubject(eq("Hello"), any())).thenReturn("rendered-subject");
         when(templateProcessingService.renderTemplate(eq(Language.ENGLISH), eq("<p>body</p>"), any())).thenReturn("rendered-body");
         lenient().when(emailSettingService.canNotify(any(), any())).thenReturn(true);

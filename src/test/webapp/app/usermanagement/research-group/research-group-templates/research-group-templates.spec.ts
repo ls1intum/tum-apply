@@ -6,10 +6,7 @@ import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
 import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
-import {
-  EmailTemplateOverviewDTO,
-  EmailTemplateOverviewDTOEmailTypeEnum,
-} from 'app/generated/model/email-template-overview-dto';
+import { EmailTemplateOverviewDTO, EmailTemplateOverviewDTOEmailTypeEnum } from 'app/generated/model/email-template-overview-dto';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';

@@ -76,7 +76,9 @@ class EmailTemplateServiceTest {
     @Test
     void resolveContent_fallsBackToDefault_whenNoCustom() {
         when(repository.findByResearchGroupAndEmailType(researchGroup, EmailType.APPLICATION_SENT)).thenReturn(Optional.empty());
-        when(defaultProvider.load(EmailType.APPLICATION_SENT, Language.ENGLISH)).thenReturn(new DefaultContent("Default", "<p>Default</p>"));
+        when(defaultProvider.load(EmailType.APPLICATION_SENT, Language.ENGLISH)).thenReturn(
+            new DefaultContent("Default", "<p>Default</p>")
+        );
 
         EmailContent content = service.resolveContent(researchGroup, EmailType.APPLICATION_SENT, Language.ENGLISH);
 

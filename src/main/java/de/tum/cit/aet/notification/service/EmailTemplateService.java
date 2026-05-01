@@ -74,8 +74,7 @@ public class EmailTemplateService {
             .sorted(Comparator.comparing(EmailTemplate::getLastModifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
             .map(this::toOverviewCustom);
 
-        Stream<EmailTemplateOverviewDTO> defaultRows = java.util.Arrays
-            .stream(EmailType.values())
+        Stream<EmailTemplateOverviewDTO> defaultRows = java.util.Arrays.stream(EmailType.values())
             .filter(EmailType::isCustomizable)
             .filter(type -> !customs.containsKey(type))
             .map(this::toOverviewDefault);

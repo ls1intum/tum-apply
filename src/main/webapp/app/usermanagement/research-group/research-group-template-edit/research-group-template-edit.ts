@@ -103,9 +103,7 @@ export class ResearchGroupTemplateEdit {
     })),
   );
 
-  preselectedEmailType = computed(
-    () => this.selectOptions().find(o => o.value === (this.formModel().emailType ?? '')) ?? undefined,
-  );
+  preselectedEmailType = computed(() => this.selectOptions().find(o => o.value === (this.formModel().emailType ?? '')) ?? undefined);
 
   readonly modules = {
     toolbar: [

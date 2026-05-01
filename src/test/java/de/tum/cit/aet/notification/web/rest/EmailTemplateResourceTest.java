@@ -93,7 +93,10 @@ class EmailTemplateResourceTest {
             )
         );
 
-        mvc.perform(get("/api/email-templates/{id}", id)).andExpect(status().isOk()).andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
+        mvc
+            .perform(get("/api/email-templates/{id}", id))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
     }
 
     @Test

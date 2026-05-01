@@ -14,10 +14,7 @@ import lombok.Setter;
 @NoUserDataExportRequired(reason = "System template configuration is not user-personal export data")
 @Table(
     name = "email_templates",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_email_templates_group_type",
-        columnNames = { "research_group_id", "email_type" }
-    )
+    uniqueConstraints = @UniqueConstraint(name = "uk_email_templates_group_type", columnNames = { "research_group_id", "email_type" })
 )
 @Getter
 @Setter
