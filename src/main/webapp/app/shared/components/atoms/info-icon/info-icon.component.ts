@@ -16,17 +16,25 @@ export class InfoIconComponent {
   ariaLabel = input<string>('More information');
   size = input<InfoIconSize>('md');
   clickable = input<boolean>(false);
+  disabled = input<boolean>(false);
 
   clicked = output();
 
   iconSizeClass = computed(() => (this.size() === 'sm' ? 'text-sm' : 'text-base'));
+  paddingClass = computed(() => (this.size() === 'sm' ? 'p-1' : 'p-2'));
 
   onClick(event: Event): void {
+    if (this.disabled()) {
+      return;
+    }
     event.stopPropagation();
     this.clicked.emit();
   }
 
   onKeydown(event: KeyboardEvent): void {
+    if (this.disabled()) {
+      return;
+    }
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.clicked.emit();
