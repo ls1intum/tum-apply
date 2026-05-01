@@ -25,7 +25,7 @@
       [translateItems]="true"
       [selected]="preselectedEmailType()"
       [required]="true"
-      [disabled]="formModel().emailTemplateId != null"
+      [disabled]="formModel().emailTemplateId !== undefined"
       (selectedChange)="setSelectedEmailType($event)"
     />
   </div>

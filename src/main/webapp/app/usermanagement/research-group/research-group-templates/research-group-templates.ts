@@ -57,7 +57,14 @@ export class ResearchGroupTemplates {
         : this.translate.instant(`${this.translationKey}.systemDefault`);
 
       return {
-        ...template,
+        emailTemplateId: template.emailTemplateId,
+        emailType: template.emailType,
+        isCustom: template.isCustom,
+        english: template.english,
+        german: template.german,
+        firstName: template.firstName,
+        lastName: template.lastName,
+        lastModifiedAt: template.lastModifiedAt,
         displayName,
         createdBy,
       };

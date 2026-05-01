@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation, computed, effect, inject, signal, untracked } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { QuillEditorComponent } from 'ngx-quill';
@@ -16,6 +17,7 @@ import {
   EmailTemplateDTOEmailTypeEnum,
   EmailTemplateDTOEmailTypeEnumValues,
 } from 'app/generated/model/email-template-dto';
+import { EmailTemplateTranslationDTO } from 'app/generated/model/email-template-translation-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
@@ -23,6 +25,9 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApi } from '../../../generated/api/email-template-resource-api';
 import { AccountService } from '../../../core/auth/account.service';
+
+const EMPTY_TRANSLATION: EmailTemplateTranslationDTO = { subject: '', body: '' };
+const AUTOSAVE_DELAY_MS = 3000;
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -82,14 +87,14 @@ export class ResearchGroupTemplateEdit {
   readonly templateDisplayName = computed(() => {
     this.currentLang();
     const emailType = this.formModel().emailType;
-    if (emailType == null) {
+    if (emailType === undefined) {
       return '';
     }
     return this.translate.instant(`${this.translationKey}.messageType.${emailType}`);
   });
 
-  readonly english = computed(() => this.formModel().english ?? { subject: '', body: '' });
-  readonly german = computed(() => this.formModel().german ?? { subject: '', body: '' });
+  readonly english = computed(() => this.formModel().english ?? EMPTY_TRANSLATION);
+  readonly german = computed(() => this.formModel().german ?? EMPTY_TRANSLATION);
 
   readonly selectOptions = computed<SelectOption[]>(() =>
     EmailTemplateDTOEmailTypeEnumValues.map(v => ({
@@ -116,7 +121,7 @@ export class ResearchGroupTemplateEdit {
       showDenotationChar: false,
       spaceAfterInsert: false,
 
-      source: (searchTerm: string, renderList: (values: any[], searchTerm: string) => void) => {
+      source: (searchTerm: string, renderList: (values: unknown[], searchTerm: string) => void) => {
         const items = this.TEMPLATE_VARIABLES.map(v => ({
           id: v,
           value: this.translate.instant(`researchGroup.emailTemplates.variables.${v}`),
@@ -157,13 +162,13 @@ export class ResearchGroupTemplateEdit {
 
   readonly loadEffect = effect(() => {
     const templateId = this.templateId();
-    if (templateId != null) {
+    if (templateId !== undefined) {
       void this.load(templateId);
-    } else {
-      const preselected = this.preselectedEmailTypeFromQuery();
-      if (preselected != null) {
-        void this.prefillFromDefault(preselected);
-      }
+      return;
+    }
+    const preselected = this.preselectedEmailTypeFromQuery();
+    if (preselected !== undefined) {
+      void this.prefillFromDefault(preselected);
     }
   });
 
@@ -181,17 +186,21 @@ export class ResearchGroupTemplateEdit {
       this.skipNextAutosave = false;
       return;
     }
-    if (!form.emailType) return;
+    if (form.emailType === undefined) {
+      return;
+    }
 
     const isEmployee = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Employee);
-    if (isEmployee) return;
+    if (isEmployee) {
+      return;
+    }
 
     this.savingState.set('SAVING');
     this.clearAutoSaveTimer();
 
     this.autoSaveTimer = window.setTimeout(() => {
       void this.performAutoSave();
-    }, 3000);
+    }, AUTOSAVE_DELAY_MS);
   });
 
   constructor() {
@@ -205,26 +214,51 @@ export class ResearchGroupTemplateEdit {
   };
 
   setSelectedEmailType(selection: SelectOption): void {
-    this.formModel.update(prev => ({
-      ...prev,
-      emailType: selection.value as EmailTemplateDTOEmailTypeEnum,
-    }));
+    const matched = EmailTemplateDTOEmailTypeEnumValues.find(v => v === selection.value);
+    this.formModel.update(prev => this.withEmailType(prev, matched));
   }
 
   updateEnglishSubject(subject: string): void {
-    this.formModel.update(prev => ({ ...prev, english: { ...prev.english, subject } }));
+    this.formModel.update(prev => this.withEnglish(prev, { subject, body: prev.english?.body ?? '' }));
   }
 
   updateEnglishBody(body: string): void {
-    this.formModel.update(prev => ({ ...prev, english: { ...prev.english, body } }));
+    this.formModel.update(prev => this.withEnglish(prev, { subject: prev.english?.subject ?? '', body }));
   }
 
   updateGermanSubject(subject: string): void {
-    this.formModel.update(prev => ({ ...prev, german: { ...prev.german, subject } }));
+    this.formModel.update(prev => this.withGerman(prev, { subject, body: prev.german?.body ?? '' }));
   }
 
   updateGermanBody(body: string): void {
-    this.formModel.update(prev => ({ ...prev, german: { ...prev.german, body } }));
+    this.formModel.update(prev => this.withGerman(prev, { subject: prev.german?.subject ?? '', body }));
+  }
+
+  private withEmailType(form: EmailTemplateDTO, emailType: EmailTemplateDTOEmailTypeEnum | undefined): EmailTemplateDTO {
+    return {
+      emailTemplateId: form.emailTemplateId,
+      emailType,
+      english: form.english,
+      german: form.german,
+    };
+  }
+
+  private withEnglish(form: EmailTemplateDTO, english: EmailTemplateTranslationDTO): EmailTemplateDTO {
+    return {
+      emailTemplateId: form.emailTemplateId,
+      emailType: form.emailType,
+      english,
+      german: form.german,
+    };
+  }
+
+  private withGerman(form: EmailTemplateDTO, german: EmailTemplateTranslationDTO): EmailTemplateDTO {
+    return {
+      emailTemplateId: form.emailTemplateId,
+      emailType: form.emailType,
+      english: form.english,
+      german,
+    };
   }
 
   private translateMentionsInTemplate(form: EmailTemplateDTO): EmailTemplateDTO {
@@ -235,7 +269,9 @@ export class ResearchGroupTemplateEdit {
       const mentionElements = doc.querySelectorAll('.mention');
       mentionElements.forEach(el => {
         const id = el.getAttribute('data-id');
-        if (!id) return;
+        if (!id) {
+          return;
+        }
         const translationKey = `researchGroup.emailTemplates.variables.${id}`;
         const translatedValue = this.translate.instant(translationKey);
         el.setAttribute('data-value', translatedValue);
@@ -249,9 +285,16 @@ export class ResearchGroupTemplateEdit {
     };
 
     return {
-      ...form,
-      english: { ...form.english, body: updateMentionValues(form.english?.body ?? '') },
-      german: { ...form.german, body: updateMentionValues(form.german?.body ?? '') },
+      emailTemplateId: form.emailTemplateId,
+      emailType: form.emailType,
+      english: {
+        subject: form.english?.subject ?? '',
+        body: updateMentionValues(form.english?.body ?? ''),
+      },
+      german: {
+        subject: form.german?.subject ?? '',
+        body: updateMentionValues(form.german?.body ?? ''),
+      },
     };
   }
 
@@ -264,23 +307,28 @@ export class ResearchGroupTemplateEdit {
 
   private async performAutoSave(): Promise<void> {
     const form = this.formModel();
-    if (!form.emailType) {
+    if (form.emailType === undefined) {
       this.savingState.set('SAVED');
       return;
     }
 
     try {
-      if (form.emailTemplateId != null) {
+      if (form.emailTemplateId !== undefined) {
         await firstValueFrom(this.emailTemplateApi.updateTemplate(form));
       } else {
         const created = await firstValueFrom(this.emailTemplateApi.createTemplate(form));
-        this.formModel.set({ ...form, emailTemplateId: created.emailTemplateId });
+        this.formModel.set({
+          emailTemplateId: created.emailTemplateId,
+          emailType: form.emailType,
+          english: form.english,
+          german: form.german,
+        });
         this.skipNextAutosave = true;
       }
       this.lastSavedSnapshot.set(this.formModel());
       this.savingState.set('SAVED');
-    } catch (error: any) {
-      if (error?.status === 409) {
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 409) {
         this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.duplicateError`) });
         this.savingState.set('UNSAVED');
       } else {
@@ -293,9 +341,10 @@ export class ResearchGroupTemplateEdit {
     try {
       const res = await firstValueFrom(this.emailTemplateApi.getTemplate(templateId));
       const safeTemplate: EmailTemplateDTO = {
-        ...res,
-        english: res.english ?? { subject: '', body: '' },
-        german: res.german ?? { subject: '', body: '' },
+        emailTemplateId: res.emailTemplateId,
+        emailType: res.emailType,
+        english: res.english ?? EMPTY_TRANSLATION,
+        german: res.german ?? EMPTY_TRANSLATION,
       };
       const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
       this.skipNextAutosave = true;
@@ -317,8 +366,8 @@ export class ResearchGroupTemplateEdit {
       }
       const prefilled: EmailTemplateDTO = {
         emailType,
-        english: match.english ?? { subject: '', body: '' },
-        german: match.german ?? { subject: '', body: '' },
+        english: match.english ?? EMPTY_TRANSLATION,
+        german: match.german ?? EMPTY_TRANSLATION,
       };
       this.skipNextAutosave = true;
       this.formModel.set(this.translateMentionsInTemplate(prefilled));
