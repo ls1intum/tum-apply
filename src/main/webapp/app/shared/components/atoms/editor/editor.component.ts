@@ -13,6 +13,7 @@ import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
 import Quill from 'quill';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
+import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-icon.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
@@ -100,6 +101,7 @@ const STANDARD_CHARACTER_BUFFER = 300;
     TranslateModule,
     TooltipModule,
     GenderBiasAnalysisDialogComponent,
+    InfoIconComponent,
     TranslateDirective,
   ],
   templateUrl: './editor.component.html',

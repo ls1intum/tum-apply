@@ -1,0 +1,39 @@
+@if (clickable()) {
+  <button
+    type="button"
+    [class]="buttonClass()"
+    [attr.aria-label]="displayAriaLabel()"
+    [attr.aria-disabled]="disabled() ? true : undefined"
+    [disabled]="disabled()"
+    [pTooltip]="displayTooltip()"
+    [tooltipPosition]="tooltipPosition()"
+    (click)="onClick($event)"
+    (keydown)="onKeydown($event)"
+  >
+    <ng-container [ngTemplateOutlet]="infoSvg" />
+  </button>
+} @else {
+  <span
+    class="inline-flex shrink-0 items-center justify-center leading-none text-text-secondary"
+    role="img"
+    [attr.aria-label]="displayAriaLabel()"
+    [pTooltip]="displayTooltip()"
+    [tooltipPosition]="tooltipPosition()"
+  >
+    <ng-container [ngTemplateOutlet]="infoSvg" />
+  </span>
+}
+
+<ng-template #infoSvg>
+  <svg [class]="iconSizeClass() + ' translate-y-[0.12em]'" width="1em" height="1em" viewBox="0 0 24 24" aria-hidden="true">
+    <circle
+      cx="12"
+      cy="12"
+      r="9.25"
+      stroke-width="1.75"
+      class="fill-transparent stroke-current transition-colors duration-150 group-hover:fill-text-secondary/15"
+    />
+    <line x1="12" y1="11" x2="12" y2="16.5" stroke-width="1.75" stroke-linecap="round" class="stroke-current" />
+    <circle cx="12" cy="7.75" r="0.9" class="fill-current" />
+  </svg>
+</ng-template>

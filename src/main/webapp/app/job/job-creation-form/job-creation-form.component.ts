@@ -21,6 +21,7 @@ import { SelectComponent } from 'app/shared/components/atoms/select/select.compo
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-icon.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
@@ -28,6 +29,7 @@ import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/share
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
+import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
@@ -99,6 +101,7 @@ type JobFormMode = 'create' | 'edit';
     CheckboxModule,
     ProgressSpinnerComponent,
     InfoBoxComponent,
+    InfoIconComponent,
     MessageComponent,
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
@@ -253,11 +256,18 @@ export class JobCreationFormComponent {
   private aiApi = inject(AiResourceApi);
   private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
+  private aiFeatureStatusService = inject(AiFeatureStatusService);
   private researchGroupApi = inject(ResearchGroupResourceApi);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Whether AI features are available system-wide (kill switch / circuit breaker). */
+  readonly aiSystemEnabled = this.aiFeatureStatusService.aiSystemEnabled;
+
+  /** Whether AI is currently unavailable because the circuit breaker is open. */
+  readonly aiCircuitBreakerOpen = this.aiFeatureStatusService.circuitBreakerOpen;
 
   /** Score shown in the AI sidebar (undefined = not yet calculated) */
   readonly aiScore = signal<number | undefined>(undefined);
@@ -892,6 +902,11 @@ export class JobCreationFormComponent {
    * After generation completes, the final content is force-updated to ensure correctness.
    */
   async generateJobApplicationDraft(): Promise<void> {
+    if (!this.aiSystemEnabled()) {
+      const reasonKey = this.aiCircuitBreakerOpen() ? 'ai.featureToggle.circuitBreakerOpen' : 'ai.featureToggle.systemDisabled';
+      this.toastService.showErrorKey(reasonKey);
+      return;
+    }
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
     this.clearAutoSaveTimer();
@@ -1010,7 +1025,7 @@ export class JobCreationFormComponent {
       this.savingState.set('SAVED');
 
       // 3) Analyze source language first so the user sees highlights + score immediately.
-      if (this.aiToggleSignal()) {
+      if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         await this.analyzeAndUpdateScore(sourceLang);
         // Translation and target-language analysis run in the background (fire-and-forget).
         void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
@@ -1550,7 +1565,7 @@ export class JobCreationFormComponent {
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
-      if (this.aiToggleSignal()) {
+      if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         // highlighting before translation
         void (async () => {
           await this.analyzeAndUpdateScore(currentLang);

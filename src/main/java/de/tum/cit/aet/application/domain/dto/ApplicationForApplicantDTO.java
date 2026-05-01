@@ -9,9 +9,7 @@ import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationForApplicantDTO(
@@ -22,8 +20,7 @@ public record ApplicationForApplicantDTO(
     LocalDate desiredDate,
     String projects,
     String specialSkills,
-    String motivation,
-    Set<CustomFieldAnswerDTO> customFields
+    String motivation
 ) {
     /**
      * Converts an Application entity to a DTO for the applicant view.
@@ -60,8 +57,7 @@ public record ApplicationForApplicantDTO(
             application.getDesiredStartDate(),
             HtmlSanitizer.sanitize(application.getProjects()),
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
-            HtmlSanitizer.sanitize(application.getMotivation()),
-            application.getCustomFieldAnswers().stream().map(CustomFieldAnswerDTO::getFromEntity).collect(Collectors.toSet())
+            HtmlSanitizer.sanitize(application.getMotivation())
         );
     }
 }
