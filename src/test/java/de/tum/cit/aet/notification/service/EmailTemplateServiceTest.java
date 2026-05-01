@@ -93,7 +93,7 @@ class EmailTemplateServiceTest {
     }
 
     @Test
-    void listMerged_emitsCustomsFirstThenDefaults() {
+    void listMerged_emitsCustomsFirstThenDefaults_onlyForCustomizableTypes() {
         EmailTemplate custom = EmailTemplateTestData.newTemplate(researchGroup, user, EmailType.APPLICATION_SENT);
         custom.setEmailTemplateId(UUID.randomUUID());
         custom.setLastModifiedAt(LocalDateTime.now());
@@ -104,10 +104,42 @@ class EmailTemplateServiceTest {
 
         List<EmailTemplateOverviewDTO> rows = service.listMerged(researchGroup);
 
-        assertThat(rows).hasSize(EmailType.values().length);
+        long customizableCount = java.util.Arrays.stream(EmailType.values()).filter(EmailType::isCustomizable).count();
+        assertThat(rows).hasSize((int) customizableCount);
         assertThat(rows.get(0).isCustom()).isTrue();
         assertThat(rows.get(0).emailType()).isEqualTo(EmailType.APPLICATION_SENT);
         assertThat(rows.stream().filter(EmailTemplateOverviewDTO::isCustom).count()).isEqualTo(1);
+        assertThat(rows.stream().map(EmailTemplateOverviewDTO::emailType)).allMatch(EmailType::isCustomizable);
+    }
+
+    @Test
+    void listMerged_excludesCustomsForNonCustomizableTypes() {
+        EmailTemplate strayCustom = EmailTemplateTestData.newTemplate(researchGroup, user, EmailType.RESEARCH_GROUP_APPROVED);
+        strayCustom.setEmailTemplateId(UUID.randomUUID());
+        strayCustom.setLastModifiedAt(LocalDateTime.now());
+        when(repository.findAllByResearchGroup(researchGroup)).thenReturn(List.of(strayCustom));
+        lenient()
+            .when(defaultProvider.load(any(EmailType.class), any(Language.class)))
+            .thenReturn(new DefaultContent("default-subject", "default-body"));
+
+        List<EmailTemplateOverviewDTO> rows = service.listMerged(researchGroup);
+
+        assertThat(rows.stream().map(EmailTemplateOverviewDTO::emailType)).doesNotContain(EmailType.RESEARCH_GROUP_APPROVED);
+    }
+
+    @Test
+    void createTemplate_throwsForNonCustomizableType() {
+        EmailTemplateDTO dto = new EmailTemplateDTO(
+            null,
+            EmailType.RESEARCH_GROUP_APPROVED,
+            new EmailTemplateTranslationDTO("S", "<p>B</p>"),
+            new EmailTemplateTranslationDTO("S", "<p>B</p>")
+        );
+
+        assertThatThrownBy(() -> service.createTemplate(dto, researchGroup, user))
+            .isInstanceOf(de.tum.cit.aet.core.exception.EmailTemplateException.class);
+
+        verify(repository, never()).save(any(EmailTemplate.class));
     }
 
     @Test

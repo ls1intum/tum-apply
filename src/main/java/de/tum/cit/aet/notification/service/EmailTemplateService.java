@@ -57,12 +57,15 @@ public class EmailTemplateService {
 
     /**
      * Returns the merged list of templates for the research group: customs first (most recent first),
-     * then defaults loaded from resource files. Content is converted to Quill-mention form for the editor.
+     * then defaults loaded from resource files. Only EmailTypes flagged {@code customizable} are
+     * included — system-only types (e.g. data deletion warnings, research group approval) are hidden.
+     * Content is converted to Quill-mention form for the editor.
      */
     public List<EmailTemplateOverviewDTO> listMerged(ResearchGroup researchGroup) {
         Map<EmailType, EmailTemplate> customs = emailTemplateRepository
             .findAllByResearchGroup(researchGroup)
             .stream()
+            .filter(t -> t.getEmailType().isCustomizable())
             .collect(Collectors.toMap(EmailTemplate::getEmailType, Function.identity()));
 
         Stream<EmailTemplateOverviewDTO> customRows = customs
@@ -73,6 +76,7 @@ public class EmailTemplateService {
 
         Stream<EmailTemplateOverviewDTO> defaultRows = java.util.Arrays
             .stream(EmailType.values())
+            .filter(EmailType::isCustomizable)
             .filter(type -> !customs.containsKey(type))
             .map(this::toOverviewDefault);
 
@@ -91,8 +95,12 @@ public class EmailTemplateService {
     /**
      * Creates a new custom template for the (group, emailType) pair.
      * Throws {@link ResourceAlreadyExistsException} if a custom already exists for this pair.
+     * Throws {@link EmailTemplateException} if the EmailType is not customizable per research group.
      */
     public EmailTemplateDTO createTemplate(EmailTemplateDTO dto, ResearchGroup researchGroup, User createdBy) {
+        if (!dto.emailType().isCustomizable()) {
+            throw new EmailTemplateException(String.format("EmailType %s cannot be customised per research group", dto.emailType()));
+        }
         if (emailTemplateRepository.existsByResearchGroupAndEmailType(researchGroup, dto.emailType())) {
             throw new ResourceAlreadyExistsException(
                 String.format("Custom template for emailType %s already exists in this research group", dto.emailType())
