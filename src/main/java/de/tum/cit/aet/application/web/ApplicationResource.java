@@ -82,29 +82,29 @@ public class ApplicationResource {
     }
 
     /**
-     * @param documentDictionaryId id of the documentDictionary that will be deleted
+     * @param documentId id of the application document that will be deleted
      * @return 204 No Content when deletion is successful
      */
     @ApplicantOrAdmin
-    @DeleteMapping("/documents/{documentDictionaryId}")
-    public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentDictionaryId) {
-        log.info("DELETE /api/applications/documents/{} - Deleting application document", documentDictionaryId);
-        applicationService.deleteDocument(documentDictionaryId);
+    @DeleteMapping("/documents/{documentId}")
+    public ResponseEntity<Void> deleteDocumentFromApplication(@PathVariable UUID documentId) {
+        log.info("DELETE /api/applications/documents/{} - Deleting application document", documentId);
+        applicationService.deleteDocument(documentId);
         return ResponseEntity.noContent().build();
     }
 
     /**
      * Renames a document associated with an application.
      *
-     * @param documentDictionaryId the UUID of the document to rename
-     * @param newName              the new name to assign to the document
+     * @param documentId the UUID of the document to rename
+     * @param newName    the new name to assign to the document
      * @return {@code 200 OK} if the rename operation was successful
      */
     @ApplicantOrAdmin
-    @PutMapping("/documents/{documentDictionaryId}/name")
-    public ResponseEntity<Void> renameDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
-        log.info("PUT /api/applications/documents/{}/name - Renaming application document", documentDictionaryId);
-        applicationService.renameDocument(documentDictionaryId, newName);
+    @PutMapping("/documents/{documentId}/name")
+    public ResponseEntity<Void> renameDocument(@PathVariable UUID documentId, @RequestParam String newName) {
+        log.info("PUT /api/applications/documents/{}/name - Renaming application document", documentId);
+        applicationService.renameDocument(documentId, newName);
         return ResponseEntity.ok().build();
     }
 

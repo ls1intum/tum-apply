@@ -1,10 +1,7 @@
 package de.tum.cit.aet.notification.service;
 
-import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.exception.MailingException;
-import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -38,7 +35,6 @@ public class EmailService {
     private final TemplateProcessingService templateProcessingService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
-    private final DocumentRepository documentRepository;
     private final EmailSettingService emailSettingService;
     private final EmailTemplateService emailTemplateService;
 
@@ -55,14 +51,12 @@ public class EmailService {
         TemplateProcessingService templateProcessingService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
         DocumentService documentService,
-        DocumentRepository documentRepository,
         EmailSettingService emailSettingService,
         EmailTemplateService emailTemplateService
     ) {
         this.templateProcessingService = templateProcessingService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
-        this.documentRepository = documentRepository;
         this.emailSettingService = emailSettingService;
         this.emailTemplateService = emailTemplateService;
     }
@@ -269,11 +263,7 @@ public class EmailService {
 
         int count = 1;
         for (UUID documentId : email.getDocumentIds()) {
-            Document document = documentRepository
-                .findById(documentId)
-                .orElseThrow(() -> EntityNotFoundException.forId("document", documentId));
-
-            Resource content = documentService.download(document);
+            Resource content = documentService.downloadDocument(documentId);
             InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
             helper.addAttachment("document_" + count, attachment);
             count++;
