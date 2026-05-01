@@ -473,18 +473,17 @@ public class JobService {
      * @param score the combined AI score to persist
      * @param complianceAnalysis the compliance issues detected for the job description
      */
-    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis) {
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, String lang) {
         if (jobId == null) {
             return;
         }
 
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        String incomingLang = complianceAnalysis.isEmpty() ? null : complianceAnalysis.get(0).getLanguage();
 
         // Keep issues from the other language, add new ones for target language
         List<ComplianceIssue> issuesToSave = new ArrayList<>();
         for (ComplianceIssue existingLang : job.getComplianceIssues()) {
-            if (!Objects.equals(existingLang.getLanguage(), incomingLang)) {
+            if (!Objects.equals(existingLang.getLanguage(), lang)) {
                 issuesToSave.add(existingLang);
             }
         }

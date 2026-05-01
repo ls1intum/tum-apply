@@ -1674,11 +1674,9 @@ export class JobCreationFormComponent {
       }
       // Clear only if this is still the same request.
       // If a newer one exists, keep it to avoid breaking duplicate checks.
-      if (
-        this.activeTranslationRequest.sourceLang === currentLang &&
-        this.activeTranslationRequest.sourceText === text &&
-        this.activeTranslationRequest.targetLang === targetLang
-      ) {
+      const activeRequest = { sourceLang: currentLang, sourceText: text, targetLang };
+      this.activeTranslationRequest = activeRequest;
+      if (this.activeTranslationRequest === activeRequest) {
         this.activeTranslationRequest = undefined;
       }
     }
