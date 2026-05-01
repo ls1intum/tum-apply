@@ -122,16 +122,35 @@ public class EmailTemplateService {
     }
 
     /**
-     * Updates content of an existing custom template. EmailType is immutable.
+     * Updates content of an existing custom template. EmailType may be changed to another customizable type
+     * as long as no other custom row already exists for the new (group, emailType) pair.
      */
     public EmailTemplateDTO updateTemplate(EmailTemplateDTO dto) {
         EmailTemplate template = findById(dto.emailTemplateId());
         currentUserService.assertAccessTo(template);
 
+        if (dto.emailType() != template.getEmailType()) {
+            if (!dto.emailType().isCustomizable()) {
+                throw new EmailTemplateException(String.format("EmailType %s cannot be customised per research group", dto.emailType()));
+            }
+            if (emailTemplateRepository.existsByResearchGroupAndEmailType(template.getResearchGroup(), dto.emailType())) {
+                throw new ResourceAlreadyExistsException(
+                    String.format("Custom template for emailType %s already exists in this research group", dto.emailType())
+                );
+            }
+            template.setEmailType(dto.emailType());
+        }
+
         applyContent(template, dto);
         template.setLastModifiedAt(java.time.LocalDateTime.now(java.time.ZoneOffset.UTC));
 
-        return toDTOForEditing(emailTemplateRepository.save(template));
+        try {
+            return toDTOForEditing(emailTemplateRepository.save(template));
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceAlreadyExistsException(
+                String.format("Custom template for emailType %s already exists in this research group", dto.emailType())
+            );
+        }
     }
 
     /**
