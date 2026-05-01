@@ -11,7 +11,16 @@
         [singleEntity]="'researchGroup.members.singleEntity' | translate"
         [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
         (searchOutput)="onSearch($event)"
-      />
+        searchWidth="max-w-[60%]"
+      >
+        <span records-extra>
+          @if (selectedUserCount() === 1) {
+            {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
+          } @else if (selectedUserCount() > 1) {
+            {{ 'researchGroup.members.selectedCountMultiple' | translate: { count: selectedUserCount() } }}
+          }
+        </span>
+      </jhi-search-filter-sort-bar>
     </div>
 
     <!-- User List -->
@@ -66,27 +75,17 @@
     </div>
   </div>
 
-  <!-- Pagination row with selection count -->
-  <div class="grid grid-cols-[1fr_auto_1fr] items-center mt-2 min-h-10">
-    <span class="text-xs text-text-secondary justify-self-start">
-      @if (selectedUserCount() === 1) {
-        {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
-      } @else if (selectedUserCount() > 1) {
-        {{ 'researchGroup.members.selectedCountMultiple' | translate: { count: selectedUserCount() } }}
-      }
-    </span>
-    <div class="justify-self-center">
-      @if (totalRecords() > 0 && totalRecords() > pageSize()) {
-        <p-paginator
-          [rows]="pageSize()"
-          [totalRecords]="totalRecords()"
-          [first]="page() * pageSize()"
-          (onPageChange)="onPageChange($event)"
-        />
-      }
+  <!-- Pagination -->
+  @if (totalRecords() > 0 && totalRecords() > pageSize()) {
+    <div class="flex justify-center">
+      <p-paginator
+        [rows]="pageSize()"
+        [totalRecords]="totalRecords()"
+        [first]="page() * pageSize()"
+        (onPageChange)="onPageChange($event)"
+      />
     </div>
-    <span></span>
-  </div>
+  }
 
   <!-- Action Buttons -->
   <div class="flex justify-end gap-2 mt-4">
