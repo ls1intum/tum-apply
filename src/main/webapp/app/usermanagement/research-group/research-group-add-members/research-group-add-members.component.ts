@@ -38,7 +38,7 @@ type UserListItem = KeycloakUserDTO & { displayName: string };
 export class ResearchGroupAddMembersComponent {
   totalRecords = signal<number>(0);
   page = signal<number>(0);
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
   loading = signal<boolean>(false);
 
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
