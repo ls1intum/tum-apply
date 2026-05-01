@@ -147,6 +147,10 @@ public class AiFeatureToggleService {
      * reported as open indefinitely, since the client blocks AI requests based on this status
      * and would never trigger the transition.
      *
+     * <p>{@link CircuitState#HALF_OPEN} is also reported as closed: a probe is in flight, so
+     * from the user's perspective AI is "trying" rather than rejecting requests. Reporting it
+     * as open would cause the UI to flicker to "open" for the duration of every recovery probe.
+     *
      * @return the current AI feature status including manual toggle and circuit breaker state
      */
     public AiFeatureStatusDTO getStatus() {
@@ -155,7 +159,7 @@ public class AiFeatureToggleService {
         synchronized (circuitLock) {
             openedAtSnapshot = openedAt;
             boolean cooldownElapsed = circuitState == CircuitState.OPEN && System.currentTimeMillis() - openedAt > COOLDOWN_SECONDS * 1000;
-            breakerOpen = circuitState != CircuitState.CLOSED && !cooldownElapsed;
+            breakerOpen = circuitState == CircuitState.OPEN && !cooldownElapsed;
         }
         return new AiFeatureStatusDTO(manuallyEnabled && !breakerOpen, !manuallyEnabled, breakerOpen, COOLDOWN_SECONDS, openedAtSnapshot);
     }
