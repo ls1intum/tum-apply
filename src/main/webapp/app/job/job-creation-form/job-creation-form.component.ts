@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
 import { TranslateDirective } from 'app/shared/language';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -106,6 +107,7 @@ type JobFormMode = 'create' | 'edit';
     CheckboxComponent,
     AiAssistantCardComponent,
     CompliancePopoverComponent,
+    TooltipModule,
   ],
   providers: [JobResourceApi],
 })

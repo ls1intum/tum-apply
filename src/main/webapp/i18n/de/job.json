@@ -146,7 +146,7 @@
       "tvlGrade": {
         "label": "TV-L Gruppe",
         "placeholder": "Wähle eine Entgeltgruppe...",
-        "toolTipText": "Im Sinne der Gehaltstransparenz (vgl. EU-Richtlinie) wird empfohlen, die TV-L Entgeltgruppe anzugeben (für Doktorandenstellen i.d.R. E13)."
+        "toolTipText": "Zur Förderung der Gehaltstransparenz (vgl. EU-Richtlinie) wird empfohlen, die TV-L Entgeltgruppe anzugeben (für Doktorandenstellen i.d.R. E13). Weitere Infos: <a href=\"https://portal.mytum.de/kompass/personalwirtschaft_public/tabellenentgelt_stufenzuordnung_tv_l\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">TUM Entgeltgruppen</a>."
       }
     },
     "aiSidebar": {
