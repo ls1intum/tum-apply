@@ -12,6 +12,7 @@ import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { InfoIconComponent } from '../../atoms/info-icon/info-icon.component';
 import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -20,7 +21,7 @@ const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO
 @Component({
   selector: 'jhi-ai-extraction-box',
   standalone: true,
-  imports: [ButtonComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
+  imports: [ButtonComponent, InfoIconComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
   templateUrl: './ai-extraction-box.component.html',
 })
 export class AiExtractionBoxComponent {

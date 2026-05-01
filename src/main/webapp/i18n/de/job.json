@@ -244,10 +244,6 @@
       }
     },
     "additionalInformationSection": {
-      "extras": {
-        "title": "Zusätzliches",
-        "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
-      },
       "suitableForDisabled": {
         "label": "Diese Stelle ist für schwerbehinderte Menschen geeignet",
         "tooltip": "Nur abwählen, wenn objektive stellenbezogene Gründe gegen die Eignung für schwerbehinderte Menschen sprechen"

@@ -13,8 +13,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE applicants;
 TRUNCATE TABLE application_reviews;
 TRUNCATE TABLE applications;
-TRUNCATE TABLE custom_field_answers;
-TRUNCATE TABLE custom_fields;
 TRUNCATE TABLE departments;
 TRUNCATE TABLE document_dictionary;
 TRUNCATE TABLE documents;
