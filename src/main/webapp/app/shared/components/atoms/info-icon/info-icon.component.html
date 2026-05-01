@@ -17,7 +17,7 @@
     (click)="onClick($event)"
     (keydown)="onKeydown($event)"
   >
-    <fa-icon [icon]="['fas', 'circle-info']" [class]="iconSizeClass()" />
+    <ng-container [ngTemplateOutlet]="infoSvg" />
   </button>
 } @else {
   <span
@@ -27,6 +27,25 @@
     [pTooltip]="tooltip()"
     [tooltipPosition]="tooltipPosition()"
   >
-    <fa-icon [icon]="['fas', 'circle-info']" [class]="iconSizeClass()" />
+    <ng-container [ngTemplateOutlet]="infoSvg" />
   </span>
 }
+
+<ng-template #infoSvg>
+  <svg
+    [class]="iconSizeClass()"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="9.25" />
+    <line x1="12" y1="11" x2="12" y2="16.5" />
+    <circle cx="12" cy="7.75" r="0.9" fill="currentColor" stroke="none" />
+  </svg>
+</ng-template>

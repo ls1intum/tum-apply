@@ -1,5 +1,5 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 
 export type InfoIconSize = 'sm' | 'md';
@@ -7,7 +7,7 @@ export type InfoIconSize = 'sm' | 'md';
 @Component({
   selector: 'jhi-info-icon',
   standalone: true,
-  imports: [FontAwesomeModule, TooltipModule],
+  imports: [NgTemplateOutlet, TooltipModule],
   templateUrl: './info-icon.component.html',
 })
 export class InfoIconComponent {
