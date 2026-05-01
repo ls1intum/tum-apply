@@ -1,0 +1,23 @@
+@if (clickable()) {
+  <button
+    type="button"
+    class="inline-flex shrink-0 items-center justify-center bg-transparent p-0 m-0 border-0 leading-none cursor-pointer text-text-secondary hover:text-primary-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-default focus-visible:ring-offset-1 rounded-full transition-colors"
+    [attr.aria-label]="ariaLabel()"
+    [pTooltip]="tooltip()"
+    [tooltipPosition]="tooltipPosition()"
+    (click)="onClick($event)"
+    (keydown)="onKeydown($event)"
+  >
+    <fa-icon [icon]="['fas', 'circle-info']" [class]="iconSizeClass()" />
+  </button>
+} @else {
+  <span
+    class="inline-flex shrink-0 items-center justify-center leading-none text-text-secondary"
+    role="img"
+    [attr.aria-label]="ariaLabel()"
+    [pTooltip]="tooltip()"
+    [tooltipPosition]="tooltipPosition()"
+  >
+    <fa-icon [icon]="['fas', 'circle-info']" [class]="iconSizeClass()" />
+  </span>
+}

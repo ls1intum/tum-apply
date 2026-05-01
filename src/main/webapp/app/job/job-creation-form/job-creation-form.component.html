@@ -25,13 +25,10 @@
             [translateLabels]="true"
             (valueChange)="onAiToggleChanged($event === 'right')"
           />
-          <jhi-button
-            label="?"
-            severity="primary"
-            variant="outlined"
-            size="xs"
-            class="[&_button]:flex [&_button]:h-6 [&_button]:w-7 [&_button]:min-w-5 [&_button]:shrink-0 [&_button]:items-center [&_button]:justify-center [&_button]:rounded-full [&_button]:border [&_button]:border-primary-default [&_button]:bg-background-default [&_button]:p-0 [&_button]:text-xs [&_button]:font-bold [&_button]:leading-none [&_button]:text-text-secondary hover:[&_button]:text-primary-default"
-            (click)="openAiInfoDialog()"
+          <jhi-info-icon
+            [clickable]="true"
+            [ariaLabel]="'jobCreationForm.positionDetailsSection.jobDescription.aiInfoDialog.title' | translate"
+            (clicked)="openAiInfoDialog()"
           />
         </div>
       }

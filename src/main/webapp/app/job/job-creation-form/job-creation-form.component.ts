@@ -21,6 +21,7 @@ import { SelectComponent } from 'app/shared/components/atoms/select/select.compo
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-icon.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
@@ -99,6 +100,7 @@ type JobFormMode = 'create' | 'edit';
     CheckboxModule,
     ProgressSpinnerComponent,
     InfoBoxComponent,
+    InfoIconComponent,
     MessageComponent,
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
