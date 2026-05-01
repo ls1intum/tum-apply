@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
@@ -26,6 +27,7 @@ import { AiFeatureStatusDTO } from 'app/generated/model/ai-feature-status-dto';
     TagComponent,
     ToggleSwitchComponent,
     ProgressSpinnerComponent,
+    DatePipe,
   ],
   templateUrl: './admin-system-settings.component.html',
 })
@@ -47,6 +49,12 @@ export class AdminSystemSettingsComponent {
 
   /** Whether AI was manually disabled by an admin (derived from status). */
   readonly manuallyDisabled = computed(() => this.aiStatus()?.manuallyDisabled ?? false);
+
+  /** Cooldown duration in minutes (derived from status). */
+  readonly cooldownMinutes = computed(() => (this.aiStatus()?.coolDownSeconds ?? 0) / 60);
+
+  /** Epoch millis when the circuit breaker opened (derived from status). */
+  readonly openedAt = computed(() => this.aiStatus()?.openedAt ?? 0);
 
   private readonly aiFeatureToggleApi = inject(AiFeatureToggleResourceApi);
   private readonly toastService = inject(ToastService);

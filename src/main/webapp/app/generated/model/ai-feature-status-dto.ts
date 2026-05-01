@@ -12,5 +12,7 @@
 export interface AiFeatureStatusDTO {
     readonly aiEnabled?: boolean;
     readonly circuitBreakerOpen?: boolean;
+    readonly coolDownSeconds?: number;
     readonly manuallyDisabled?: boolean;
+    readonly openedAt?: number;
 }

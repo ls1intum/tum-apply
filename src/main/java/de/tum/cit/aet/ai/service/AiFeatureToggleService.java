@@ -27,7 +27,7 @@ public class AiFeatureToggleService {
 
     private static final String SETTING_KEY = "ai.enabled";
     private static final int FAILURE_THRESHOLD = 5;
-    private static final long COOLDOWN_SECONDS = 300;
+    private static final long COOLDOWN_SECONDS = 7200;
 
     private enum CircuitState {
         CLOSED,
@@ -141,13 +141,22 @@ public class AiFeatureToggleService {
     /**
      * Returns a snapshot of the current AI feature status.
      *
+     * <p>The cooldown is honored read-only here: once it has elapsed the breaker is reported
+     * as closed without mutating state, so the next actual AI call performs the OPEN → HALF_OPEN
+     * transition and serves as the probe. Reading state directly would let the breaker stay
+     * reported as open indefinitely, since the client blocks AI requests based on this status
+     * and would never trigger the transition.
+     *
      * @return the current AI feature status including manual toggle and circuit breaker state
      */
     public AiFeatureStatusDTO getStatus() {
         boolean breakerOpen;
+        long openedAtSnapshot;
         synchronized (circuitLock) {
-            breakerOpen = circuitState != CircuitState.CLOSED;
+            openedAtSnapshot = openedAt;
+            boolean cooldownElapsed = circuitState == CircuitState.OPEN && System.currentTimeMillis() - openedAt > COOLDOWN_SECONDS * 1000;
+            breakerOpen = circuitState != CircuitState.CLOSED && !cooldownElapsed;
         }
-        return new AiFeatureStatusDTO(manuallyEnabled && !breakerOpen, !manuallyEnabled, breakerOpen);
+        return new AiFeatureStatusDTO(manuallyEnabled && !breakerOpen, !manuallyEnabled, breakerOpen, COOLDOWN_SECONDS, openedAtSnapshot);
     }
 }

@@ -9,8 +9,8 @@
       },
       "circuitBreaker": {
         "label": "Circuit Breaker",
-        "description": "Automatically disables AI after consecutive failures. Resets after a cooldown period.",
-        "open": "Open (AI disabled)",
+        "description": "Automatically disables AI after consecutive failures. Resets after a cooldown period of {{cooldown}} min.",
+        "open": "Open since {{time}} o'clock (AI disabled)",
         "closed": "Closed (AI operational)",
         "reset": "Reset Circuit Breaker"
       },

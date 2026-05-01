@@ -29,12 +29,19 @@
           <div class="flex items-center justify-between">
             <div>
               <div class="font-medium text-text-primary" jhiTranslate="systemSettings.ai.circuitBreaker.label">Circuit Breaker</div>
-              <div class="text-sm text-text-secondary mt-1" jhiTranslate="systemSettings.ai.circuitBreaker.description">
+              <div
+                class="text-sm text-text-secondary mt-1"
+                jhiTranslate="systemSettings.ai.circuitBreaker.description"
+                [translateValues]="{ cooldown: cooldownMinutes() }"
+              >
                 Automatically disables AI after consecutive failures. Resets after a cooldown period.
               </div>
               <div class="mt-2">
                 @if (circuitBreakerOpen()) {
-                  <jhi-tag [text]="'systemSettings.ai.circuitBreaker.open' | translate" color="danger" />
+                  <jhi-tag
+                    [text]="'systemSettings.ai.circuitBreaker.open' | translate: { time: openedAt() | date: 'HH:mm' }"
+                    color="danger"
+                  />
                 } @else {
                   <jhi-tag [text]="'systemSettings.ai.circuitBreaker.closed' | translate" color="success" />
                 }

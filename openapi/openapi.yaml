@@ -2658,7 +2658,9 @@ components:
       properties:
         aiEnabled: {type: boolean}
         circuitBreakerOpen: {type: boolean}
+        coolDownSeconds: {type: integer, format: int64}
         manuallyDisabled: {type: boolean}
+        openedAt: {type: integer, format: int64}
     ApplicantDTO:
       type: object
       properties:
