@@ -2869,7 +2869,7 @@ components:
         article: {type: string}
         category:
           type: string
-          enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
+          enum: [CRITICAL_AGG, TRANSPARENCY, DSGVO_MINIMIZATION, PUBLIC_SECTOR]
         explanation: {type: string}
         id: {type: string}
         language: {type: string}

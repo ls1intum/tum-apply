@@ -121,24 +121,29 @@
       />
     </div>
   </p-drawer>
-  <div class="flex flex-row pt-1 gap-2">
-    <div
-      class="text-xs"
-      jhiTranslate="entity.filters.recordsFound"
-      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-    ></div>
-    @if (hasActiveFilters()) {
-      <span class="text-xs">-</span>
-      <button
-        type="button"
-        class="text-xs text-primary-default cursor-pointer hover:underline"
-        (click)="clearAllFilter(); $event.stopPropagation()"
-      >
-        {{ 'entity.filters.resetFilter' | translate }}
-      </button>
-    }
+  <div class="flex flex-row justify-between pt-1 w-full">
+    <!-- Left Side: Count and Reset -->
+    <div class="flex flex-row gap-2">
+      <div
+        class="text-xs"
+        jhiTranslate="entity.filters.recordsFound"
+        [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+      ></div>
+      @if (hasActiveFilters()) {
+        <span class="text-xs">-</span>
+        <button
+          type="button"
+          class="text-xs text-primary-default cursor-pointer hover:underline"
+          (click)="clearAllFilter(); $event.stopPropagation()"
+        >
+          {{ 'entity.filters.resetFilter' | translate }}
+        </button>
+      }
+    </div>
+
+    <!-- Right Side: Records Extra -->
+    <div class="text-xs text-text-secondary">
+      <ng-content select="[records-extra]" />
+    </div>
   </div>
-  <span class="ml-auto">
-    <ng-content select="[records-extra]" />
-  </span>
 </div>
