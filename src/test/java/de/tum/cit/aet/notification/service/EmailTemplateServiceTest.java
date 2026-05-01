@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.exception.EmailTemplateException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -136,8 +137,7 @@ class EmailTemplateServiceTest {
             new EmailTemplateTranslationDTO("S", "<p>B</p>")
         );
 
-        assertThatThrownBy(() -> service.createTemplate(dto, researchGroup, user))
-            .isInstanceOf(de.tum.cit.aet.core.exception.EmailTemplateException.class);
+        assertThatThrownBy(() -> service.createTemplate(dto, researchGroup, user)).isInstanceOf(EmailTemplateException.class);
 
         verify(repository, never()).save(any(EmailTemplate.class));
     }
