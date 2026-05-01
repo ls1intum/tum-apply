@@ -14,14 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller for the unified document model.
- *
- * <p>Mounted at {@code /api/v2/documents} during the migration window so it does not collide with the legacy
- * {@code DocumentResource} at {@code /api/documents}. The path is renamed back to {@code /api/documents}
- * once the legacy controller is deleted.</p>
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v2/documents")
+@RequestMapping("/api/documents")
 @AllArgsConstructor
 public class DocumentResource {
 
@@ -29,7 +25,7 @@ public class DocumentResource {
 
     @GetMapping("/{documentId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentId) {
-        log.info("GET /api/v2/documents/{} - Download request received", documentId);
+        log.info("GET /api/documents/{} - Download request received", documentId);
         return ResponseEntity.ok(documentService.downloadDocument(documentId));
     }
 

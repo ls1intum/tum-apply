@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="036_drop_legacy_document_tables_and_rename_v2" author="claude">
+    <!--
+      Final document-model migration step.
+
+      The application now reads exclusively from the unified `documents_v2` table.
+      Drop the legacy `document_dictionary` and `documents` tables and rename
+      `documents_v2` to `documents` so the new entity maps to the canonical name.
+
+      Constraint and index names (still referencing `_v2`) are left as-is — they
+      are internal identifiers and nothing else references them by name.
+    -->
+
+    <dropTable tableName="document_dictionary"/>
+    <dropTable tableName="documents"/>
+    <renameTable oldTableName="documents_v2" newTableName="documents"/>
+  </changeSet>
+
+</databaseChangeLog>

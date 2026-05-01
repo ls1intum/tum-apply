@@ -15,10 +15,6 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Repository for the unified Document model (STI base + ApplicantDocument + ApplicationDocument).
- *
- * <p>JPA entity name {@code DocumentNew} is used in JPQL because the legacy
- * {@code de.tum.cit.aet.core.domain.Document} still claims the default entity name {@code Document}
- * during the migration window.</p>
  */
 @Repository
 public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID> {
@@ -49,7 +45,7 @@ public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID
     @Query("SELECT d.documentId FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId")
     List<UUID> findDocumentIdsByApplicantId(@Param("applicantUserId") UUID applicantUserId);
 
-    @Query("SELECT COUNT(d) FROM DocumentNew d WHERE d.path = :path AND d.documentId <> :excludeId")
+    @Query("SELECT COUNT(d) FROM Document d WHERE d.path = :path AND d.documentId <> :excludeId")
     long countOtherReferencesByPath(@Param("path") String path, @Param("excludeId") UUID excludeId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -64,6 +60,6 @@ public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID
     @Query("DELETE FROM ApplicationDocument d WHERE d.application.applicationId = :applicationId")
     void deleteByApplicationId(@Param("applicationId") UUID applicationId);
 
-    @Query("SELECT d FROM DocumentNew d WHERE d.uploadedBy.userId = :userId")
+    @Query("SELECT d FROM Document d WHERE d.uploadedBy.userId = :userId")
     List<Document> findByUploadedByUserId(@Param("userId") UUID userId);
 }

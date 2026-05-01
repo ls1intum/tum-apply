@@ -30,15 +30,12 @@ import lombok.Setter;
  *   <li>{@link ApplicantDocument}: documents owned by an applicant's profile (CV, transcripts, references)</li>
  *   <li>{@link ApplicationDocument}: snapshot copies of applicant documents attached to a specific application</li>
  * </ul>
- *
- * <p>This is the v2 model. Once {@code de.tum.cit.aet.core.domain.Document} and the legacy
- * {@code DocumentDictionary} are removed, this class is renamed and remapped to the {@code documents} table.</p>
  */
-@Entity(name = "DocumentNew")
+@Entity
 @NoUserDataExportRequired(reason = "Documents are exported as binary files by UserExportZipWriter")
 @Getter
 @Setter
-@Table(name = "documents_v2")
+@Table(name = "documents")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "doc_owner_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Document extends AbstractAuditingEntity {

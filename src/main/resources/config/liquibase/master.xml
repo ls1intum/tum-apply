@@ -45,6 +45,7 @@
   <include file="changelog/00000000000033_add_ai_compliance_to_jobs.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000034_drop_custom_fields.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000035_create_documents_v2_table.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000036_drop_legacy_document_tables.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

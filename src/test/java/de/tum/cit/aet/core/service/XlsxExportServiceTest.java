@@ -68,7 +68,7 @@ class XlsxExportServiceTest {
 
     private static ZipExportService createZipService() {
         // ZipExportService needs a DocumentService dependency we don't exercise here
-        ZipExportService service = new ZipExportService(null, null);
+        ZipExportService service = new ZipExportService(null);
         // Disable deterministic ZIP to keep the test independent of any application config
         ReflectionTestUtils.setField(service, "deterministicZip", false);
         return service;

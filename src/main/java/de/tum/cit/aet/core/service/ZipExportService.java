@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,13 +19,7 @@ public class ZipExportService {
     @Value("${aet.download.deterministic-zip:false}")
     private boolean deterministicZip;
 
-    private final de.tum.cit.aet.core.documents.service.DocumentService documentService;
-    // Retained alongside the new DocumentService for the legacy
-    // addDocumentToZip(... legacy Document) overload below, which is still
-    // called from non-migrated production code (UserExportZipWriter,
-    // ApplicationEvaluationService). Both the field and the legacy overload
-    // are removed in session 3 along with the legacy Document entity itself.
-    private final DocumentService legacyDocumentService;
+    private final DocumentService documentService;
 
     /**
      * Initializes the HTTP response for a ZIP file download.
@@ -40,11 +35,6 @@ public class ZipExportService {
 
     /**
      * Adds a file to the ZIP output stream.
-     *
-     * @param zos      the ZipOutputStream
-     * @param filename the name of the file entry in the ZIP
-     * @param content  the content of the file
-     * @throws IOException if an I/O error occurs
      */
     public void addFileToZip(ZipOutputStream zos, String filename, byte[] content) throws IOException {
         ZipEntry entry = new ZipEntry(filename);
@@ -57,13 +47,7 @@ public class ZipExportService {
     }
 
     /**
-     * Adds a file entry to the given ZIP output stream and writes the contents of the provided
-     * InputStream into that entry.
-     *
-     * @param zos the ZipOutputStream to which the entry and data will be written
-     * @param filename the name/path of the entry inside the ZIP archive
-     * @param inputStream the source InputStream providing the file data; it will be fully consumed but not closed
-     * @throws IOException if an I/O error occurs while adding the entry or transferring data
+     * Adds a file entry by streaming an InputStream into the archive.
      */
     public void addFileToZip(ZipOutputStream zos, String filename, InputStream inputStream) throws IOException {
         ZipEntry entry = new ZipEntry(filename);
@@ -76,34 +60,10 @@ public class ZipExportService {
     }
 
     /**
-     * Adds a document to the ZIP output stream by downloading it via the unified DocumentService.
-     *
-     * @param zos      the ZipOutputStream
-     * @param filename the name of the file entry in the ZIP
-     * @param document the document to add (unified model)
-     * @throws IOException if an I/O error occurs
+     * Adds a document to the ZIP output stream by loading it through DocumentService.
      */
     public void addDocumentToZip(ZipOutputStream zos, String filename, Document document) throws IOException {
         Resource resource = documentService.loadResourceForExport(document);
-        try (InputStream is = resource.getInputStream()) {
-            addFileToZip(zos, filename, is);
-        }
-    }
-
-    /**
-     * Adds a legacy document to the ZIP output stream by downloading it via the legacy DocumentService.
-     *
-     * <p>Retained during the document-model migration so non-migrated callers
-     * (UserExportZipWriter, ApplicationEvaluationService) continue to compile.
-     * Removed in session 3 once the legacy {@code Document} entity is dropped.
-     *
-     * @param zos      the ZipOutputStream
-     * @param filename the name of the file entry in the ZIP
-     * @param document the legacy document to add
-     * @throws IOException if an I/O error occurs
-     */
-    public void addDocumentToZip(ZipOutputStream zos, String filename, de.tum.cit.aet.core.domain.Document document) throws IOException {
-        Resource resource = legacyDocumentService.download(document);
         try (InputStream is = resource.getInputStream()) {
             addFileToZip(zos, filename, is);
         }
