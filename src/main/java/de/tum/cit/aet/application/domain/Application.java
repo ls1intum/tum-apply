@@ -1,6 +1,7 @@
 package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
@@ -141,4 +142,7 @@ public class Application extends AbstractAuditingEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<DocumentDictionary> documentDictionaries;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
+    private Set<ApplicationDocument> applicationDocuments;
 }
