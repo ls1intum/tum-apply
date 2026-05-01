@@ -143,15 +143,9 @@
         "SelfFunded": "Selbstfinanziert",
         "PartiallyFunded": "Teilweise finanziert"
       },
-      "tvlGrades": {
+      "tvlGrade": {
         "label": "TV-L Gruppe",
-        "placeholder": "Wähle eine Entgeltgruppe...",
-        "E10": "E10",
-        "E11": "E11",
-        "E12": "E12",
-        "E13": "E13",
-        "E14": "E14",
-        "E15": "E15"
+        "placeholder": "Wähle eine Entgeltgruppe..."
       }
     },
     "aiSidebar": {
@@ -415,7 +409,7 @@
       "workload": "Arbeitsaufwand",
       "contractDuration": "Vertragslaufzeit",
       "fundingType": "Finanzierungsart",
-      "tvlGrades": "Entgeltgruppe",
+      "tvlGrade": "Entgeltgruppe",
       "startDate": "Startdatum",
       "applicationEndDate": "Bewerbungsfrist"
     },

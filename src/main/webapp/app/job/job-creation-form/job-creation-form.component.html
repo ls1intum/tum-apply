@@ -306,10 +306,11 @@
                 [selected]="positionDetailsForm.get('tvlGrade')?.value"
                 (selectedChange)="positionDetailsForm.get('tvlGrade')?.setValue($event)"
                 [items]="translatedTariffGrades()"
-                [label]="'jobCreationForm.basicInformationSection.tvlGrades.label' | translate"
-                [placeholder]="'jobCreationForm.basicInformationSection.tvlGrades.placeholder' | translate"
+                [label]="'jobCreationForm.basicInformationSection.tvlGrade.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.tvlGrade.placeholder' | translate"
                 [width]="'100%'"
                 [filter]="true"
+                [showClear]="true"
                 [dataKey]="'value'"
               />
             </div>

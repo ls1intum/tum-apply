@@ -498,7 +498,7 @@ export class JobCreationFormComponent {
   translatedTariffGrades = computed(() => {
     void this.currentLang();
     return DropdownOptions.tvlGrades
-      .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
+      .map(option => ({ value: option.value, name: option.name }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 

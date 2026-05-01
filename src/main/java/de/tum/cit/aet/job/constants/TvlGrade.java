@@ -1,6 +1,5 @@
 package de.tum.cit.aet.job.constants;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

@@ -143,15 +143,9 @@
         "SelfFunded": "Self Funded",
         "PartiallyFunded": "Partially Funded"
       },
-      "tvlGrades": {
+      "tvlGrade": {
         "label": "TV-L Grade",
-        "placeholder": "Select a pay grade...",
-        "E10": "E10",
-        "E11": "E11",
-        "E12": "E12",
-        "E13": "E13",
-        "E14": "E14",
-        "E15": "E15"
+        "placeholder": "Select a Pay Grade..."
       }
     },
     "aiSidebar": {
@@ -415,7 +409,7 @@
       "workload": "Workload",
       "contractDuration": "Contract Duration",
       "fundingType": "Funding Type",
-      "tvlGrades": "Pay Grade",
+      "tvlGrade": "Pay Grade",
       "startDate": "Start Date",
       "applicationEndDate": "Application End Date"
     },
