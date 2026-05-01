@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -164,7 +166,11 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         ORDER BY i.lastModifiedAt DESC
         """
     )
-    List<Interviewee> findByApplicationIdOrderByLastModifiedDesc(@Param("applicationId") UUID applicationId);
+    List<Interviewee> findMostRecentByApplicationId(@Param("applicationId") UUID applicationId, Pageable pageable);
+
+    default Optional<Interviewee> findMostRecentByApplicationId(UUID applicationId) {
+        return findMostRecentByApplicationId(applicationId, PageRequest.of(0, 1)).stream().findFirst();
+    }
 
     void deleteByApplication(Application application);
 

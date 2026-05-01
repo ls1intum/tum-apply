@@ -1197,15 +1197,15 @@ public class InterviewService {
      *                               group of the application's job
      */
     public InterviewRatingDTO getInterviewRatingForApplication(UUID applicationId) {
-        List<Interviewee> interviewees = intervieweeRepository.findByApplicationIdOrderByLastModifiedDesc(applicationId);
-        if (interviewees.isEmpty()) {
+        Optional<Interviewee> mostRecent = intervieweeRepository.findMostRecentByApplicationId(applicationId);
+        if (mostRecent.isEmpty()) {
             return new InterviewRatingDTO(null);
         }
 
-        Interviewee mostRecent = interviewees.getFirst();
-        verifyResearchGroupAccess(mostRecent.getInterviewProcess().getJob());
+        Interviewee interviewee = mostRecent.get();
+        verifyResearchGroupAccess(interviewee.getInterviewProcess().getJob());
 
-        return InterviewRatingDTO.of(mostRecent.getRating());
+        return InterviewRatingDTO.of(interviewee.getRating());
     }
 
     /**
