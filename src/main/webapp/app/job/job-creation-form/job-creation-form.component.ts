@@ -814,41 +814,18 @@ export class JobCreationFormComponent {
 
   /**
    * Applies highlights to the editor based on compliance issues.
-   * Issues are filtered by language, and colors are assigned based on category.
+   * Filters issues by language and skips those with missing text or category.
+   *
    * @param compliance List of issues to process
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
-    const highlights: { text: string; color: string; bg: string }[] = [];
-
-    const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
-
-    for (const issues of filtered) {
-      if (!issues.text) continue;
-      let cat: { color: string; bg: string };
-      switch (issues.category) {
-        case ComplianceIssueCategoryEnum.CriticalAgg:
-          cat = { color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)' };
-          break;
-        case ComplianceIssueCategoryEnum.Transparency:
-          cat = { color: 'var(--color-compliance-transparency-border)', bg: 'var(--color-compliance-transparency-bg)' };
-          break;
-        case ComplianceIssueCategoryEnum.DsgvoMinimization:
-          cat = { color: 'var(--color-compliance-dsgvo-border)', bg: 'var(--color-compliance-dsgvo-bg)' };
-          break;
-        case ComplianceIssueCategoryEnum.PublicSector:
-          cat = { color: 'var(--color-compliance-public-sector-border)', bg: 'var(--color-compliance-public-sector-bg)' };
-          break;
-        default:
-          cat = { color: 'var(--color-compliance-critical-border)', bg: 'var(--color-compliance-critical-bg)' };
-          break;
-      }
-      highlights.push({
-        text: issues.text,
-        color: cat.color,
-        bg: cat.bg,
-      });
-    }
+    const highlights = (compliance ?? [])
+      .flatMap(issue =>
+        issue.text && issue.category && (!issue.language || issue.language === lang)
+          ? [{ text: issue.text, category: issue.category }]
+          : []
+      );
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 

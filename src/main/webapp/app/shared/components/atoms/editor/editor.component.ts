@@ -18,11 +18,10 @@ import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
+import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Quill.import() returns unknown; no public type for inline blots
 const Inline = Quill.import('blots/inline') as any;
-
-type HighlightCategory = 'critical' | 'transparency' | 'dsgvo' | 'public-sector';
 
 /**
  * Custom Quill Blot for highlighting text with Tailwind utility classes.
@@ -48,71 +47,45 @@ class HighlightBlot extends Inline {
     'cursor-pointer',
   ];
 
-  private static readonly categoryStyles = {
+  private static readonly categoryStyles: Record<ComplianceIssueCategoryEnum, string[]> = {
     // Tailwind classes applied to every highlighted text span
-    critical: {
-      classes: [
-        '[border-bottom-color:var(--color-compliance-critical-border)]',
-        'hover:[background-color:var(--color-compliance-critical-bg)]',
-      ],
-      color: 'var(--color-compliance-critical-border)',
-      bg: 'var(--color-compliance-critical-bg)',
-    },
-    transparency: {
-      classes: [
-        '[border-bottom-color:var(--color-compliance-transparency-border)]',
-        'hover:[background-color:var(--color-compliance-transparency-bg)]',
-      ],
-      color: 'var(--color-compliance-transparency-border)',
-      bg: 'var(--color-compliance-transparency-bg)',
-    },
-    dsgvo: {
-      classes: ['[border-bottom-color:var(--color-compliance-dsgvo-border)]', 'hover:[background-color:var(--color-compliance-dsgvo-bg)]'],
-      color: 'var(--color-compliance-dsgvo-border)',
-      bg: 'var(--color-compliance-dsgvo-bg)',
-    },
-    'public-sector': {
-      classes: [
-        '[border-bottom-color:var(--color-compliance-public-sector-border)]',
-        'hover:[background-color:var(--color-compliance-public-sector-bg)]',
-      ],
-      color: 'var(--color-compliance-public-sector-border)',
-      bg: 'var(--color-compliance-public-sector-bg)',
-    },
-  } as const;
-
-  /** Returns the Tailwind classes for a given category. */
-  public static getColorForCategory(category: HighlightCategory): string[] {
-    return HighlightBlot.baseClasses.concat(HighlightBlot.categoryStyles[category].classes);
-  }
+    CRITICAL_AGG: [
+      '[border-bottom-color:var(--color-compliance-critical-border)]',
+      'hover:[background-color:var(--color-compliance-critical-bg)]',
+    ],
+    TRANSPARENCY: [
+      '[border-bottom-color:var(--color-compliance-transparency-border)]',
+      'hover:[background-color:var(--color-compliance-transparency-bg)]',
+    ],
+    DSGVO_MINIMIZATION: [
+      '[border-bottom-color:var(--color-compliance-dsgvo-border)]',
+      'hover:[background-color:var(--color-compliance-dsgvo-bg)]',
+    ],
+    PUBLIC_SECTOR: [
+      '[border-bottom-color:var(--color-compliance-public-sector-border)]',
+      'hover:[background-color:var(--color-compliance-public-sector-bg)]',
+    ],
+  };
 
   /**
    * Factory method called by Quill to create the DOM node.
-   * @param value The color variable passed
+   * Applies base classes and category-specific styling, and stores
+   * the category on the dataset for later retrieval by formats()
+   * @param value The highlight's color scheme
    */
-  static create(value: { color: string; bg: string }): HTMLElement {
+  static create(value: { category: ComplianceIssueCategoryEnum }): HTMLElement {
     const node = super.create() as HTMLElement;
-    const category = HighlightBlot.findColorForCategory(value.color);
-    const classes = HighlightBlot.getColorForCategory(category);
+    const classes = HighlightBlot.baseClasses.concat(HighlightBlot.categoryStyles[value.category]);
     classes.forEach((cls: string) => node.classList.add(cls));
-    node.dataset['category'] = category;
+    node.dataset['category'] = value.category;
     return node;
   }
 
-  static formats(node: HTMLElement): { color: string; bg: string } {
+  static formats(node: HTMLElement): { category: ComplianceIssueCategoryEnum } | undefined {
     const data = node.dataset['category'];
-    const category: HighlightCategory = data === 'critical' || data === 'transparency' || data === 'dsgvo' ? data : 'public-sector';
-    const style = HighlightBlot.categoryStyles[category];
-    return { color: style.color, bg: style.bg };
-  }
-
-  /** Detects the category from the CSS variable name passed in the format value. */
-  private static findColorForCategory(color: string): HighlightCategory {
-    if (color.includes('critical')) return 'critical';
-    if (color.includes('transparency')) return 'transparency';
-    if (color.includes('dsgvo')) return 'dsgvo';
-    if (color.includes('public-sector')) return 'public-sector';
-    return 'critical';
+    const category = ComplianceIssueCategoryEnumValues.find((value) => value === data);
+    if (category === undefined) return undefined;
+    return { category };
   }
 }
 
@@ -376,9 +349,9 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   /**
    * Highlights specific text passages in the editor.
-   * @param highlights Array of {text, color} to highlight
+   * @param highlights Array of {text, category} to highlight
    */
-  public highlightTexts(highlights: { text: string; color: string; bg: string }[]): void {
+  public highlightTexts(highlights: { text: string; category: ComplianceIssueCategoryEnum }[]): void {
     const editor = this.quillEditorComponent()?.quillEditor;
     if (!editor) return;
 
@@ -388,7 +361,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     const fullText = editor.getText().toLowerCase();
 
-    for (const { text, color, bg } of highlights) {
+    for (const { text, category } of highlights) {
       const searchText = text.toLowerCase();
       let startIndex = 0;
 
@@ -396,7 +369,7 @@ export class EditorComponent extends BaseInputDirective<string> {
       while (startIndex < fullText.length) {
         const index = fullText.indexOf(searchText, startIndex);
         if (index === -1) break;
-        editor.formatText(index, text.length, 'customHighlight', { color, bg });
+        editor.formatText(index, text.length, 'customHighlight', { category });
         startIndex = index + text.length;
       }
     }
