@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.service.export.admin;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.domain.dto.CustomFieldAnswerDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.AdminExportType;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
@@ -26,7 +25,6 @@ import de.tum.cit.aet.interview.dto.InterviewDTO;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.job.dto.CustomFieldDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -630,12 +628,9 @@ public class JobsExportStrategy {
     // ----------------------------- DTO conversion -----------------------------
 
     AdminJobExportDTO toJobDto(Job job) {
-        List<CustomFieldDTO> customFields =
-            job.getCustomFields() == null ? List.of() : job.getCustomFields().stream().map(CustomFieldDTO::getFromEntity).toList();
         return new AdminJobExportDTO(
             JobFormDTO.getFromEntity(job),
             job.getResearchGroup() == null ? null : job.getResearchGroup().getResearchGroupId(),
-            customFields,
             job.getCreatedAt(),
             job.getLastModifiedAt()
         );
@@ -654,11 +649,6 @@ public class JobsExportStrategy {
             app.getInternalComments() == null
                 ? List.of()
                 : app.getInternalComments().stream().map(InternalCommentDetailDTO::getFromEntity).toList();
-
-        List<CustomFieldAnswerDetailDTO> answerDtos =
-            app.getCustomFieldAnswers() == null
-                ? List.of()
-                : app.getCustomFieldAnswers().stream().map(CustomFieldAnswerDetailDTO::getFromEntity).toList();
 
         // Mirrors the filename allocation in writeApplicationFolder so the JSON's
         // zipPath matches the actual file on disk inside the ZIP.
@@ -698,7 +688,6 @@ public class JobsExportStrategy {
             reviewDto,
             ratingDtos,
             commentDtos,
-            answerDtos,
             docRefs,
             null,
             app.getCreatedAt(),
