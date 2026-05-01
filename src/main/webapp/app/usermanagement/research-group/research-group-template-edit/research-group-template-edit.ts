@@ -12,11 +12,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import 'quill-mention/autoregister';
-import {
-  EmailTemplateDTO,
-  EmailTemplateDTOEmailTypeEnum,
-  EmailTemplateDTOEmailTypeEnumValues,
-} from 'app/generated/model/email-template-dto';
+import { EmailTemplateDTO, EmailTemplateDTOEmailTypeEnum } from 'app/generated/model/email-template-dto';
 import { EmailTemplateTranslationDTO } from 'app/generated/model/email-template-translation-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
@@ -28,6 +24,25 @@ import { AccountService } from '../../../core/auth/account.service';
 
 const EMPTY_TRANSLATION: EmailTemplateTranslationDTO = { subject: '', body: '' };
 const AUTOSAVE_DELAY_MS = 3000;
+
+/**
+ * EmailTypes that can be customised per research group via the admin templates page.
+ * Must stay in sync with `EmailType.customizable = true` on the server.
+ */
+const CUSTOMIZABLE_EMAIL_TYPES: readonly EmailTemplateDTOEmailTypeEnum[] = [
+  EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
+  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedJobFilled,
+  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedJobOutdated,
+  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedFailedRequirements,
+  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedOtherReason,
+  EmailTemplateDTOEmailTypeEnum.ApplicationSent,
+  EmailTemplateDTOEmailTypeEnum.InterviewInvitation,
+  EmailTemplateDTOEmailTypeEnum.ResearchGroupMemberAdded,
+  EmailTemplateDTOEmailTypeEnum.InterviewLocationChanged,
+  EmailTemplateDTOEmailTypeEnum.InterviewSelfSchedulingInvitation,
+  EmailTemplateDTOEmailTypeEnum.InterviewCancelled,
+  EmailTemplateDTOEmailTypeEnum.InterviewRescheduleRequested,
+];
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -71,7 +86,7 @@ export class ResearchGroupTemplateEdit {
     if (raw === undefined) {
       return undefined;
     }
-    return EmailTemplateDTOEmailTypeEnumValues.find(v => v === raw);
+    return CUSTOMIZABLE_EMAIL_TYPES.find(v => v === raw);
   });
 
   readonly formModel = signal<EmailTemplateDTO>({
@@ -97,7 +112,7 @@ export class ResearchGroupTemplateEdit {
   readonly german = computed(() => this.formModel().german ?? EMPTY_TRANSLATION);
 
   readonly selectOptions = computed<SelectOption[]>(() =>
-    EmailTemplateDTOEmailTypeEnumValues.map(v => ({
+    CUSTOMIZABLE_EMAIL_TYPES.map(v => ({
       name: `researchGroup.emailTemplates.messageType.${v}`,
       value: v,
     })),
@@ -212,7 +227,7 @@ export class ResearchGroupTemplateEdit {
   };
 
   setSelectedEmailType(selection: SelectOption): void {
-    const matched = EmailTemplateDTOEmailTypeEnumValues.find(v => v === selection.value);
+    const matched = CUSTOMIZABLE_EMAIL_TYPES.find(v => v === selection.value);
     this.formModel.update(prev => this.withEmailType(prev, matched));
   }
 
