@@ -17,15 +17,6 @@
     </div>
   </div>
   <div class="meta-info">
-    <jhi-string-input
-      class="template-name-input"
-      [model]="templateDisplayName()"
-      [required]="true"
-      [label]="'researchGroup.emailTemplates.templateName' | translate"
-      [placeholder]="'researchGroup.emailTemplates.addTemplateName' | translate"
-      [disabled]="formModel().isDefault ?? true"
-      (modelChange)="setTemplateName($event)"
-    />
     <jhi-select
       class="template-type-select"
       [label]="'researchGroup.emailTemplates.sendWhen' | translate"
@@ -34,7 +25,7 @@
       [translateItems]="true"
       [selected]="preselectedEmailType()"
       [required]="true"
-      [disabled]="formModel().isDefault ?? true"
+      [disabled]="formModel().emailTemplateId != null"
       (selectedChange)="setSelectedEmailType($event)"
     />
   </div>
@@ -48,7 +39,6 @@
     <p-tabpanel value="0" class="tab-panel">
       <div>
         <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
-
         <div class="subject-wrapper">
           <span class="subject-prefix">TUMApply -</span>
           <jhi-string-input
@@ -63,7 +53,6 @@
 
       <div>
         <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
-        <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
           [modules]="modules"
@@ -91,7 +80,6 @@
 
       <div>
         <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
-        <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
           [modules]="modules"

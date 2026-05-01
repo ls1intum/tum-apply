@@ -112,7 +112,6 @@ model/page-application-overview-dto.ts
 model/page-created-job-dto.ts
 model/page-job-card-dto.ts
 model/page-response-dto-department-dto.ts
-model/page-response-dto-email-template-overview-dto.ts
 model/page-response-dto-interview-slot-dto.ts
 model/page-response-dto-keycloak-user-dto.ts
 model/page-response-dto-research-group-admin-dto.ts

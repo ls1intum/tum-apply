@@ -1,17 +1,14 @@
 package de.tum.cit.aet.notification.web;
 
-import de.tum.cit.aet.core.dto.PageDTO;
-import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.notification.service.EmailTemplateService;
-import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +22,17 @@ public class EmailTemplateResource {
     private final CurrentUserService currentUserService;
 
     /**
-     * Returns a paginated list of email templates for the current user's research group.
-     *
-     * @param pageDTO pagination parameters including page number and size
-     * @return a list of {@link EmailTemplateOverviewDTO} wrapped in a {@link ResponseEntity}
+     * Returns the unified list of templates for the current user's research group:
+     * customs first (most recently modified), then defaults loaded from resource files.
      */
     @ProfessorOrEmployee
     @GetMapping
-    public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        return ResponseEntity.ok(emailTemplateService.getTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
+    public ResponseEntity<List<EmailTemplateOverviewDTO>> getTemplates() {
+        return ResponseEntity.ok(emailTemplateService.listMerged(currentUserService.getResearchGroupIfProfessor()));
     }
 
     /**
-     * Retrieves a single email template by its ID.
-     *
-     * @param templateId the ID of the template to retrieve
-     * @return the full {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity}
+     * Retrieves a single custom email template by its ID.
      */
     @ProfessorOrEmployee
     @GetMapping("/{templateId}")
@@ -49,10 +41,7 @@ public class EmailTemplateResource {
     }
 
     /**
-     * Updates an existing email template.
-     *
-     * @param emailTemplateDTO the updated template data
-     * @return the updated {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity}
+     * Updates an existing custom template's content. EmailType is immutable.
      */
     @ProfessorOrEmployee
     @PutMapping
@@ -61,28 +50,22 @@ public class EmailTemplateResource {
     }
 
     /**
-     * Creates a new email template for the current user's research group.
-     *
-     * @param emailTemplateDTO the template data to create
-     * @return the created {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity} with status 201 (Created)
+     * Creates a new custom template for the current user's research group.
+     * Returns 409 Conflict if a custom already exists for the (group, emailType) pair.
      */
     @ProfessorOrEmployee
     @PostMapping
     public ResponseEntity<EmailTemplateDTO> createTemplate(@RequestBody EmailTemplateDTO emailTemplateDTO) {
-        EmailTemplateDTO createdTemplates = emailTemplateService.createTemplate(
+        EmailTemplateDTO created = emailTemplateService.createTemplate(
             emailTemplateDTO,
             currentUserService.getResearchGroupIfProfessor(),
             currentUserService.getUser()
         );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTemplates);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
-     * Deletes an existing email template by its ID.
-     *
-     * @param templateId the ID of the template to delete
-     * @return an empty {@link ResponseEntity} with status 204 (No Content)
+     * Deletes a custom template. The system default reappears in the list automatically.
      */
     @Professor
     @DeleteMapping("/{templateId}")

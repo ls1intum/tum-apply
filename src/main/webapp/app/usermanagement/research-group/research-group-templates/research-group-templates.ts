@@ -1,7 +1,6 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, map } from 'rxjs';
-import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -22,10 +21,6 @@ import { AccountService } from '../../../core/auth/account.service';
   styleUrl: './research-group-templates.scss',
 })
 export class ResearchGroupTemplates {
-  protected pageNumber = signal<number>(0);
-  protected pageSize = signal<number>(10);
-  protected total = signal<number>(0);
-
   protected readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
@@ -47,7 +42,7 @@ export class ResearchGroupTemplates {
     return [
       { field: 'displayName', header: `${this.translationKey}.tableColumns.templateName`, width: '28rem' },
       { field: 'createdBy', header: `${this.translationKey}.tableColumns.createdBy`, width: '15rem' },
-      { field: 'actions', header: '', width: '5rem', template: actionsTemplate },
+      { field: 'actions', header: '', width: '7rem', template: actionsTemplate },
     ];
   });
 
@@ -56,38 +51,29 @@ export class ResearchGroupTemplates {
   protected readonly tableData = computed(() => {
     this.currentLang();
     return this.responseData().map(template => {
-      let displayName = template.templateName;
-      let createdBy = (template.firstName ?? '') + ' ' + (template.lastName ?? '');
-
-      if (template.isDefault === true) {
-        createdBy = this.translate.instant(`${this.translationKey}.systemDefault`);
-        if (template.templateName != null) {
-          displayName = this.translate.instant(`${this.translationKey}.default.${template.emailType}-${template.templateName}`);
-        } else {
-          displayName = this.translate.instant(`${this.translationKey}.default.${template.emailType}`);
-        }
-      }
+      const displayName = this.translate.instant(`${this.translationKey}.messageType.${template.emailType}`);
+      const createdBy = template.isCustom
+        ? `${template.firstName ?? ''} ${template.lastName ?? ''}`.trim()
+        : this.translate.instant(`${this.translationKey}.systemDefault`);
 
       return {
         ...template,
-        createdBy,
         displayName,
+        createdBy,
       };
     });
   });
 
+  protected readonly availableEmailTypesForCreate = computed(() =>
+    this.responseData()
+      .filter(t => !t.isCustom)
+      .map(t => t.emailType),
+  );
+
   private readonly responseData = signal<EmailTemplateOverviewDTO[]>([]);
 
   constructor() {
-    void this.loadPage();
-  }
-
-  onTableEmit(event: TableLazyLoadEvent): void {
-    const first = event.first ?? 0;
-    const rows = event.rows ?? 10;
-    this.pageNumber.set(first / rows);
-
-    void this.loadPage();
+    void this.load();
   }
 
   async delete(templateId: string): Promise<void> {
@@ -97,7 +83,7 @@ export class ResearchGroupTemplates {
     } catch {
       this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.deleteFailed`) });
     } finally {
-      void this.loadPage();
+      void this.load();
     }
   }
 
@@ -109,12 +95,14 @@ export class ResearchGroupTemplates {
     void this.router.navigate(['/research-group/template', templateId, 'edit']);
   }
 
-  private async loadPage(): Promise<void> {
-    try {
-      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageSize(), this.pageNumber()));
+  protected navigateToView(emailType: string): void {
+    void this.router.navigate(['/research-group/template/new'], { queryParams: { emailType } });
+  }
 
-      this.responseData.set(res.content ?? []);
-      this.total.set(res.totalElements ?? 0);
+  private async load(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates());
+      this.responseData.set(res ?? []);
     } catch {
       this.toastService.showError({ detail: 'Failed to load templates' });
     }

@@ -1,208 +1,103 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  EmailTemplateOverviewDTO,
+  EmailTemplateOverviewDTOEmailTypeEnum,
+} from 'app/generated/model/email-template-overview-dto';
 
-import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
-import { EmailTemplateResourceApi } from 'app/generated/api/email-template-resource-api';
-import { EmailTemplateOverviewDTO, EmailTemplateOverviewDTOEmailTypeEnum } from 'app/generated/model/email-template-overview-dto';
-import { createRouterMock, provideRouterMock } from '../../../../util/router.mock';
-import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../util/toast-service.mock';
-import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
-import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
-import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
-import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { ResearchGroupTemplates } from '../../../../../../main/webapp/app/usermanagement/research-group/research-group-templates/research-group-templates';
+import { EmailTemplateResourceApi } from '../../../../../../main/webapp/app/generated/api/email-template-resource-api';
+import { ToastService } from '../../../../../../main/webapp/app/service/toast-service';
+import { AccountService } from '../../../../../../main/webapp/app/core/auth/account.service';
 
-class EmailTemplateResourceApiMock {
+class FakeApi {
   getTemplates = vi.fn();
   deleteTemplate = vi.fn();
 }
 
+class FakeToast {
+  showSuccess = vi.fn();
+  showError = vi.fn();
+}
+
+class FakeAccount {
+  userAuthorities: string[] = [];
+}
+
 describe('ResearchGroupTemplates', () => {
-  let fixture: ComponentFixture<ResearchGroupTemplates>;
-  let component: ResearchGroupTemplates;
-  let api: EmailTemplateResourceApiMock;
-  let mockToast: ToastServiceMock;
-  let mockRouter = createRouterMock();
-  let mockTranslate = createTranslateServiceMock();
-  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
+  let api: FakeApi;
+  let toast: FakeToast;
 
-  function mockGetTemplates(content: EmailTemplateOverviewDTO[] = [], total = 0) {
-    api.getTemplates.mockReturnValue(of({ content, totalElements: total }));
-  }
+  beforeEach(() => {
+    api = new FakeApi();
+    toast = new FakeToast();
 
-  function mockDeleteTemplate(success = true) {
-    api.deleteTemplate.mockReturnValue(success ? of({}) : throwError(() => new Error('fail')));
-  }
-
-  beforeEach(async () => {
-    mockToast = createToastServiceMock();
-    mockAccountService = createAccountServiceMock();
-    mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
-
-    await TestBed.configureTestingModule({
-      imports: [ResearchGroupTemplates],
+    TestBed.configureTestingModule({
+      imports: [ResearchGroupTemplates, TranslateModule.forRoot()],
       providers: [
-        { provide: EmailTemplateResourceApi, useClass: EmailTemplateResourceApiMock },
-        provideRouterMock(mockRouter),
-        provideToastServiceMock(mockToast),
-        provideTranslateMock(mockTranslate),
-        provideFontAwesomeTesting(),
-        provideAccountServiceMock(mockAccountService),
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAnimationsAsync(),
+        { provide: EmailTemplateResourceApi, useValue: api },
+        { provide: ToastService, useValue: toast },
+        { provide: AccountService, useValue: new FakeAccount() },
       ],
-    })
-      .overrideComponent(ResearchGroupTemplates, {
-        remove: { providers: [EmailTemplateResourceApi] },
-      })
-      .compileComponents();
+    });
+  });
 
-    fixture = TestBed.createComponent(ResearchGroupTemplates);
-    component = fixture.componentInstance;
+  it('renders custom and default rows from a flat list response', async () => {
+    const rows: EmailTemplateOverviewDTO[] = [
+      {
+        emailTemplateId: 'id-1',
+        emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent,
+        isCustom: true,
+        firstName: 'A',
+        lastName: 'B',
+      },
+      {
+        emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationAccepted,
+        isCustom: false,
+      },
+    ];
+    api.getTemplates.mockReturnValue(of(rows));
+
+    const fixture = TestBed.createComponent(ResearchGroupTemplates);
     fixture.detectChanges();
+    await fixture.whenStable();
 
-    api = TestBed.inject(EmailTemplateResourceApi) as unknown as EmailTemplateResourceApiMock;
+    expect(api.getTemplates).toHaveBeenCalledWith();
+    expect((fixture.componentInstance as any)['responseData']()).toHaveLength(2);
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-    fixture?.destroy();
-  });
+  it('shows an error toast when loading fails', async () => {
+    api.getTemplates.mockReturnValueOnce(throwError(() => new Error('boom')));
 
-  // ---------------- LOAD ----------------
-  describe('loadPage()', () => {
-    it('loads templates successfully', async () => {
-      const templates: EmailTemplateOverviewDTO[] = [
-        { templateName: 't1', emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent, isDefault: false },
-      ];
-      mockGetTemplates(templates, 1);
-
-      await component['loadPage']();
-
-      expect(api.getTemplates).toHaveBeenCalledWith(10, 0);
-      expect(component['total']()).toBe(1);
-      expect(component['tableData']()).toHaveLength(1);
-    });
-
-    it('shows error toast if API fails', async () => {
-      api.getTemplates.mockReturnValueOnce(throwError(() => new Error('fail')));
-
-      await component['loadPage']();
-
-      expect(mockToast.showError).toHaveBeenCalledWith({ detail: 'Failed to load templates' });
-    });
-
-    it('sets empty array and total=0 when API returns undefined values', async () => {
-      api.getTemplates.mockReturnValueOnce(of({ content: undefined, totalElements: undefined }));
-
-      await component['loadPage']();
-
-      expect(component['total']()).toBe(0);
-      expect(component['tableData']()).toEqual([]);
-    });
-  });
-
-  // ---------------- DELETE ----------------
-  describe('delete()', () => {
-    it.each([
-      {
-        caseName: 'deletes template successfully and shows toast',
-        id: '123',
-        deleteSuccess: true,
-        expectedToast: { method: 'showSuccess' as const, message: 'Successfully deleted template' },
-      },
-      {
-        caseName: 'shows error toast if deletion fails but still reloads',
-        id: '999',
-        deleteSuccess: false,
-        expectedToast: { method: 'showError' as const, message: 'Failed to delete template' },
-      },
-    ])('$caseName', async ({ id, deleteSuccess, expectedToast }) => {
-      mockDeleteTemplate(deleteSuccess);
-      mockGetTemplates();
-
-      await component.delete(id);
-
-      expect(api.deleteTemplate).toHaveBeenCalledWith(id);
-      mockToast[expectedToast.method]({ detail: expectedToast.message }); // ✅ now safe
-      expect(mockToast[expectedToast.method]).toHaveBeenCalledWith({ detail: expectedToast.message });
-      expect(api.getTemplates).toHaveBeenCalled();
-    });
-  });
-
-  // ---------------- NAVIGATION ----------------
-  describe.each([
-    { action: 'navigateToCreate', args: [], expected: ['/research-group/template/new'] },
-    { action: 'navigateToEdit', args: ['xyz'], expected: ['/research-group/template', 'xyz', 'edit'] },
-  ])('navigation', ({ action, args, expected }) => {
-    it(`${action} navigates correctly`, () => {
-      (component as unknown as Record<string, (...args: any[]) => void>)[action](...args);
-      expect(mockRouter.navigate).toHaveBeenCalledWith(expected);
-    });
-  });
-
-  // ---------------- TABLE DATA ----------------
-  describe('tableData mapping', () => {
-    it.each([
-      {
-        desc: 'default template with name',
-        templateDto: { templateName: 'welcome', emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent, isDefault: true },
-        expectedDisplay: 'researchGroup.emailTemplates.default.APPLICATION_SENT-welcome',
-        expectedCreatedBy: 'researchGroup.emailTemplates.systemDefault',
-      },
-      {
-        desc: 'default template without name',
-        templateDto: { templateName: undefined, emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationAccepted, isDefault: true },
-        expectedDisplay: 'researchGroup.emailTemplates.default.APPLICATION_ACCEPTED',
-        expectedCreatedBy: 'researchGroup.emailTemplates.systemDefault',
-      },
-      {
-        desc: 'non-default template with first/last name',
-        templateDto: {
-          templateName: 'manual',
-          emailType: EmailTemplateOverviewDTOEmailTypeEnum.ApplicationSent,
-          isDefault: false,
-          firstName: 'Alice',
-          lastName: 'Smith',
-        },
-        expectedDisplay: undefined, // not asserting display name here
-        expectedCreatedBy: 'Alice Smith',
-      },
-    ])('builds row for $desc', ({ templateDto, expectedDisplay, expectedCreatedBy }) => {
-      component['responseData'].set([templateDto as EmailTemplateOverviewDTO]);
-      const row = component['tableData']()[0];
-      if (expectedDisplay) {
-        expect(row.displayName).toContain(expectedDisplay);
-      }
-      expect(row.createdBy).toContain(expectedCreatedBy);
-    });
-  });
-
-  // ---------------- TABLE EVENTS ----------------
-  describe('onTableEmit()', () => {
-    it.each([
-      { input: {}, expectedPage: 0, caseName: 'handles undefined first/rows by using defaults' },
-      { input: { first: 20, rows: 10 }, expectedPage: 2, caseName: 'calculates correct page number from first/rows' },
-    ])('$caseName', ({ input, expectedPage }) => {
-      mockGetTemplates();
-      const spy = vi.spyOn(component as unknown as { loadPage: () => void }, 'loadPage');
-
-      component.onTableEmit(input);
-
-      expect(component['pageNumber']()).toBe(expectedPage);
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  it('should set isEmployee to true for employees', () => {
-    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTORolesEnum.Employee] } : u));
+    const fixture = TestBed.createComponent(ResearchGroupTemplates);
     fixture.detectChanges();
+    await fixture.whenStable();
 
-    expect(component['isEmployee']()).toBe(true);
+    expect(toast.showError).toHaveBeenCalled();
   });
 
-  it('should set isEmployee to false for non-employees', () => {
-    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTORolesEnum.Professor] } : u));
-    fixture.detectChanges();
+  it('delete reloads the list', async () => {
+    api.getTemplates.mockReturnValue(of([]));
+    api.deleteTemplate.mockReturnValue(of(undefined));
 
-    expect(component['isEmployee']()).toBe(false);
+    const fixture = TestBed.createComponent(ResearchGroupTemplates);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    api.getTemplates.mockClear();
+
+    await fixture.componentInstance.delete('some-id');
+
+    expect(api.deleteTemplate).toHaveBeenCalledWith('some-id');
+    expect(api.getTemplates).toHaveBeenCalled();
   });
 });

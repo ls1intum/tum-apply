@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.constants;
 
+import de.tum.cit.aet.notification.constants.EmailType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,4 +13,13 @@ public enum RejectReason {
     OTHER_REASON("OTHER_REASON");
 
     private final String value;
+
+    public EmailType toEmailType() {
+        return switch (this) {
+            case JOB_FILLED -> EmailType.APPLICATION_REJECTED_JOB_FILLED;
+            case JOB_OUTDATED -> EmailType.APPLICATION_REJECTED_JOB_OUTDATED;
+            case FAILED_REQUIREMENTS -> EmailType.APPLICATION_REJECTED_FAILED_REQUIREMENTS;
+            case OTHER_REASON -> EmailType.APPLICATION_REJECTED_OTHER_REASON;
+        };
+    }
 }

@@ -4,13 +4,12 @@ import de.tum.cit.aet.notification.constants.EmailType;
 import java.util.UUID;
 
 /**
- * DTO used to read, update, create a single template
+ * DTO used to read, update, or create a single template.
+ * Defaults have a {@code null} id; customs have a populated id.
  */
 public record EmailTemplateDTO(
     UUID emailTemplateId,
-    String templateName,
     EmailType emailType,
-    boolean isDefault,
     EmailTemplateTranslationDTO english,
     EmailTemplateTranslationDTO german
 ) {}

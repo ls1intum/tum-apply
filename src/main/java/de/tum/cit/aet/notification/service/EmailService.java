@@ -5,7 +5,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.service.DocumentService;
-import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.service.EmailTemplateService.EmailContent;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
@@ -77,12 +77,12 @@ public class EmailService {
     protected void send(Email email) {
         email.validate();
 
-        EmailTemplateTranslation tpl = null;
+        EmailContent content = null;
         if (StringUtils.isEmpty(email.getCustomSubject()) && StringUtils.isEmpty(email.getCustomBody())) {
-            tpl = getEmailTemplateTranslation(email);
+            content = resolveContent(email);
         }
-        String subject = renderSubject(email, tpl);
-        String body = renderBody(email, tpl);
+        String subject = renderSubject(email, content);
+        String body = renderBody(email, content);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
@@ -94,55 +94,26 @@ public class EmailService {
 
     /**
      * Recovery method called when all retry attempts for sending an email fail.
-     *
-     * @param ex    the cause of the failure
-     * @param email the email that failed to send
      */
     @Recover
     protected void recoverMailingException(MailingException ex, Email email) {
         log.error("Email sending failed permanently after retries. To: {}", email.getRecipients());
     }
 
-    /**
-     * Renders the email subject using the template processor.
-     * If a custom subject is set it will be rendered as-is
-     * Otherwise, the subject of the template will be used
-     *
-     * @param email                    the email
-     * @param emailTemplateTranslation the template translation
-     * @return the rendered subject
-     */
-    private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getCustomSubject()) || emailTemplateTranslation == null) {
+    private String renderSubject(Email email, EmailContent content) {
+        if (StringUtils.isNotEmpty(email.getCustomSubject()) || content == null) {
             return templateProcessingService.renderSubject(email.getCustomSubject(), email.getContent());
         }
-        return templateProcessingService.renderSubject(emailTemplateTranslation, email.getContent());
+        return templateProcessingService.renderSubject(content.subject(), email.getContent());
     }
 
-    /**
-     * Renders the email body.
-     * If an HTML body is already present in the email, it will be rendered as-is
-     * Otherwise, the body is rendered using the template.
-     *
-     * @param email                    the email to render
-     * @param emailTemplateTranslation the template translation
-     * @return the rendered HTML body
-     */
-    private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getCustomBody()) || emailTemplateTranslation == null) {
+    private String renderBody(Email email, EmailContent content) {
+        if (StringUtils.isNotEmpty(email.getCustomBody()) || content == null) {
             return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
         }
-        return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
+        return templateProcessingService.renderTemplate(email.getLanguage(), content.bodyHtml(), email.getContent());
     }
 
-    /**
-     * Logs the email instead of sending it. Used for local testing or when sending
-     * is disabled.
-     *
-     * @param email   the email
-     * @param subject the rendered subject
-     * @param body    the rendered HTML body
-     */
     private void simulateEmail(Email email, String subject, String body) {
         org.jsoup.nodes.Document parsedBody = Jsoup.parse(body);
         log.info(
@@ -164,15 +135,6 @@ public class EmailService {
         );
     }
 
-    /**
-     * Sends a fully constructed email using JavaMailSender.
-     * Includes optional CC, BCC, and file attachments.
-     *
-     * @param email   the email
-     * @param subject the rendered subject
-     * @param body    the rendered HTML body
-     * @throws MailingException if sending fails
-     */
     private void sendEmail(Email email, String subject, String body) {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
@@ -207,42 +169,16 @@ public class EmailService {
     }
 
     /**
-     * Loads the appropriate template translation based on email metadata.
-     *
-     * @param email the email
-     * @return the corresponding {@link EmailTemplateTranslation}
+     * Loads custom or default content for an email based on its type, research group, and language.
      */
-    private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
+    private EmailContent resolveContent(Email email) {
         if (email.getEmailType() == null) {
-            log.warn("Cannot translate email template: EmailType is null for email to recipients {}", email.getRecipients());
+            log.warn("Cannot resolve email content: EmailType is null for email to recipients {}", email.getRecipients());
             return null;
         }
-
-        if (email.getResearchGroup() == null && email.getEmailType().isMultipleTemplates()) {
-            log.warn(
-                "Cannot translate email template: ResearchGroup is null but EmailType '{}' requires multiple templates for email to recipients {}",
-                email.getEmailType(),
-                email.getRecipients()
-            );
-            return null;
-        }
-
-        return emailTemplateService.getTemplateTranslation(
-            email.getResearchGroup(),
-            email.getTemplateName(),
-            email.getEmailType(),
-            email.getLanguage()
-        );
+        return emailTemplateService.resolveContent(email.getResearchGroup(), email.getEmailType(), email.getLanguage());
     }
 
-    /**
-     * Filters a list of users to those who have notification enabled for a given
-     * email type.
-     *
-     * @param users the users to filter
-     * @param email the email context
-     * @return a set of email addresses to notify
-     */
     private Set<String> getRecipientsToNotify(Set<User> users, Email email) {
         if (email.isSendAlways()) {
             return users.stream().map(User::getEmail).collect(Collectors.toSet());
@@ -254,14 +190,6 @@ public class EmailService {
             .collect(Collectors.toSet());
     }
 
-    /**
-     * Attaches documents to the outgoing email message.
-     *
-     * @param email  the email containing document references
-     * @param helper the message helper
-     * @throws IOException        if reading document content fails
-     * @throws MessagingException if attaching documents fails
-     */
     private void attachDocuments(Email email, MimeMessageHelper helper) throws IOException, MessagingException {
         if (email.getDocumentIds() == null) {
             return;
@@ -280,14 +208,6 @@ public class EmailService {
         }
     }
 
-    /**
-     * Attaches ICS calendar file to the outgoing email message.
-     * If attaching fails, the error is logged but the email is still sent without
-     * the attachment.
-     *
-     * @param email  the email containing ICS content
-     * @param helper the message helper
-     */
     private void attachIcsCalendar(Email email, MimeMessageHelper helper) {
         if (email.getIcsContent() == null || email.getIcsFileName() == null) {
             return;

@@ -6,8 +6,6 @@ import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +15,8 @@ import lombok.Setter;
 @Table(
     name = "email_templates",
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_email_templates_type_name_group",
-        columnNames = { "template_name", "research_group_id", "email_type" }
+        name = "uk_email_templates_group_type",
+        columnNames = { "research_group_id", "email_type" }
     )
 )
 @Getter
@@ -30,9 +28,6 @@ public class EmailTemplate extends AbstractAuditingEntity {
     @Column(name = "email_template_id", nullable = false, updatable = false)
     private UUID emailTemplateId;
 
-    @Column(name = "template_name", nullable = false)
-    private String templateName;
-
     @ManyToOne
     @JoinColumn(name = "research_group_id", nullable = false)
     private ResearchGroup researchGroup;
@@ -41,11 +36,17 @@ public class EmailTemplate extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     private EmailType emailType;
 
-    @Column(name = "is_default", nullable = false)
-    private boolean isDefault;
+    @Column(name = "subject_en", nullable = false, columnDefinition = "TEXT")
+    private String subjectEn;
 
-    @OneToMany(mappedBy = "emailTemplate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<EmailTemplateTranslation> translations = new HashSet<>();
+    @Column(name = "body_html_en", nullable = false, columnDefinition = "TEXT")
+    private String bodyHtmlEn;
+
+    @Column(name = "subject_de", nullable = false, columnDefinition = "TEXT")
+    private String subjectDe;
+
+    @Column(name = "body_html_de", nullable = false, columnDefinition = "TEXT")
+    private String bodyHtmlDe;
 
     @ManyToOne
     @JoinColumn(name = "created_by")

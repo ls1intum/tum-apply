@@ -11,30 +11,26 @@
   </div>
 
   <div class="table-wrapper">
-    <jhi-dynamic-table
-      [columns]="columns()"
-      [data]="tableData()"
-      [totalRecords]="total()"
-      [page]="pageNumber()"
-      [rows]="pageSize()"
-      (lazyLoad)="onTableEmit($event)"
-    />
+    <jhi-dynamic-table [columns]="columns()" [data]="tableData()" />
 
     <ng-template #actionsTemplate let-template>
       <div class="flex justify-end gap-1">
-        <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
-        @if (!isEmployee()) {
-          <jhi-confirm-dialog
-            [label]="'button.delete' | translate"
-            [header]="'researchGroup.emailTemplates.deleteTemplateModal.title' | translate"
-            [message]="'researchGroup.emailTemplates.deleteTemplateModal.message' | translate"
-            confirmIcon="trash"
-            (confirmed)="delete(template.emailTemplateId)"
-            severity="danger"
-            [tooltip]="(template.isDefault ? 'researchGroup.emailTemplates.deleteDefaultDisabled' : 'button.delete') | translate"
-            [iconOnly]="true"
-            [disabled]="template.isDefault"
-          />
+        @if (template.isCustom) {
+          <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
+          @if (!isEmployee()) {
+            <jhi-confirm-dialog
+              [label]="'button.delete' | translate"
+              [header]="'researchGroup.emailTemplates.deleteTemplateModal.title' | translate"
+              [message]="'researchGroup.emailTemplates.deleteTemplateModal.message' | translate"
+              confirmIcon="trash"
+              (confirmed)="delete(template.emailTemplateId)"
+              severity="danger"
+              [tooltip]="'button.delete' | translate"
+              [iconOnly]="true"
+            />
+          }
+        } @else {
+          <jhi-button variant="text" icon="eye" [tooltip]="'button.view' | translate" (click)="navigateToView(template.emailType)" />
         }
       </div>
     </ng-template>

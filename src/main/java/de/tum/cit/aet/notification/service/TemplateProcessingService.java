@@ -8,7 +8,6 @@ import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
-import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.dto.DataExportEmailContextDTO;
 import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
@@ -47,17 +46,6 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Renders the email subject line for display in the final email using the provided content for variable binding.
-     *
-     * @param emailTemplateTranslation the email template translation
-     * @param content                  the domain object for variable binding
-     * @return the prefixed subject line
-     */
-    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
-        return renderSubject(emailTemplateTranslation.getSubject(), content);
-    }
-
-    /**
      * Renders a raw subject string using FreeMarker variables.
      *
      * @param rawSubject the raw subject string
@@ -79,39 +67,23 @@ public class TemplateProcessingService {
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
      *
-     * @param emailTemplateTranslation the template translation containing raw HTML
-     *                                 and language
-     * @param content                  the domain object (e.g. Application, Job) for
-     *                                 variable binding
+     * @param language the email language
+     * @param bodyHtml the raw template body (FreeMarker source)
+     * @param content  the domain object (e.g. Application, Job) for variable binding
      * @return the fully rendered HTML email body
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
-    public String renderTemplate(@NonNull EmailTemplateTranslation emailTemplateTranslation, @NonNull Object content) {
+    public String renderTemplate(@NonNull Language language, @NonNull String bodyHtml, @NonNull Object content) {
         try {
             Map<String, Object> dataModel = createDataModel(content);
-            addMetaData(emailTemplateTranslation.getLanguage(), dataModel);
+            addMetaData(language, dataModel);
 
-            String templateName =
-                emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
-                    ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
-                    : "inline";
-
-            Template inlineTemplate = new Template(
-                templateName,
-                new StringReader(asHtmlTemplate(emailTemplateTranslation.getBodyHtml())),
-                freemarkerConfig
-            );
+            Template inlineTemplate = new Template("inline", new StringReader(asHtmlTemplate(bodyHtml)), freemarkerConfig);
 
             String htmlBody = render(inlineTemplate, dataModel);
-            return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody, false);
+            return renderLayout(language, htmlBody, false);
         } catch (IOException ex) {
-            throw new TemplateProcessingException(
-                "Failed to process inline FreeMarker template: " +
-                    emailTemplateTranslation.getEmailTemplate().getTemplateName() +
-                    " for language: " +
-                    emailTemplateTranslation.getLanguage(),
-                ex
-            );
+            throw new TemplateProcessingException("Failed to process inline FreeMarker template for language: " + language, ex);
         }
     }
 

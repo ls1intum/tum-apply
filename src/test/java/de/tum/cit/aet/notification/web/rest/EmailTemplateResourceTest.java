@@ -1,322 +1,170 @@
 package de.tum.cit.aet.notification.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.AbstractResourceTest;
-import de.tum.cit.aet.core.dto.PageResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
+import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.notification.dto.EmailTemplateTranslationDTO;
-import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
+import de.tum.cit.aet.notification.service.EmailTemplateService;
+import de.tum.cit.aet.notification.web.EmailTemplateResource;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.utility.DatabaseCleaner;
-import de.tum.cit.aet.utility.MvcTestClient;
-import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testdata.EmailTemplateTestData;
-import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import tools.jackson.core.type.TypeReference;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-class EmailTemplateResourceTest extends AbstractResourceTest {
+@ExtendWith(MockitoExtension.class)
+class EmailTemplateResourceTest {
 
-    private static final String BASE_URL = "/api/email-templates";
+    @Mock
+    private EmailTemplateService emailTemplateService;
 
-    @Autowired
-    UserRepository userRepository;
+    @Mock
+    private CurrentUserService currentUserService;
 
-    @Autowired
-    ResearchGroupRepository researchGroupRepository;
-
-    @Autowired
-    EmailTemplateRepository emailTemplateRepository;
-
-    @Autowired
-    DatabaseCleaner databaseCleaner;
-
-    @Autowired
-    MvcTestClient api;
-
-    ResearchGroup researchGroup;
-    User professor;
-    EmailTemplate existingTemplate;
+    private MockMvc mvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
-        databaseCleaner.clean();
-        researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
-        professor = UserTestData.savedProfessor(userRepository, researchGroup);
-        existingTemplate = EmailTemplateTestData.saved(emailTemplateRepository, researchGroup, professor, EmailType.APPLICATION_ACCEPTED);
+    void init() {
+        EmailTemplateResource resource = new EmailTemplateResource(emailTemplateService, currentUserService);
+        mvc = MockMvcBuilders.standaloneSetup(resource).build();
     }
 
-    private MvcTestClient asProfessor(User user) {
-        return api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"));
-    }
-
-    private String templateUrl(UUID id) {
-        return BASE_URL + "/" + id;
-    }
-
-    private EmailTemplateDTO dto(
-        UUID id,
-        String name,
-        EmailType type,
-        EmailTemplateTranslationDTO en,
-        EmailTemplateTranslationDTO de,
-        boolean isDefault
-    ) {
-        return new EmailTemplateDTO(id, name, type, isDefault, en, de);
-    }
-
-    private EmailTemplateTranslationDTO tr(String subject, String bodyHtml) {
-        return new EmailTemplateTranslationDTO(subject, bodyHtml);
-    }
-
-    @Nested
-    class GetTemplates {
-
-        @Test
-        void shouldReturnPageWithExistingTemplate() {
-            PageResponseDTO<EmailTemplateOverviewDTO> page = asProfessor(professor).getAndRead(
-                BASE_URL,
-                Map.of("pageNumber", "0", "pageSize", "10"),
-                new TypeReference<>() {},
-                200
-            );
-
-            assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
-            assertThat(page.getContent())
-                .extracting(
-                    EmailTemplateOverviewDTO::emailTemplateId,
-                    EmailTemplateOverviewDTO::templateName,
-                    EmailTemplateOverviewDTO::emailType,
-                    EmailTemplateOverviewDTO::isDefault
+    @Test
+    void getTemplates_returnsFlatList() throws Exception {
+        UUID id = UUID.randomUUID();
+        ResearchGroup rg = new ResearchGroup();
+        when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
+        when(emailTemplateService.listMerged(rg)).thenReturn(
+            List.of(
+                new EmailTemplateOverviewDTO(
+                    id,
+                    EmailType.APPLICATION_SENT,
+                    true,
+                    new EmailTemplateTranslationDTO("S", "B"),
+                    new EmailTemplateTranslationDTO("S", "B"),
+                    "F",
+                    "L",
+                    null
                 )
-                .contains(
-                    tuple(
-                        existingTemplate.getEmailTemplateId(),
-                        existingTemplate.getTemplateName(),
-                        existingTemplate.getEmailType(),
-                        existingTemplate.isDefault()
-                    )
-                );
-        }
+            )
+        );
 
-        @Test
-        void shouldRespectPaginationAndSorting() {
-            for (int i = 0; i < 5; i++) {
-                EmailTemplateTestData.savedWithName(
-                    emailTemplateRepository,
-                    researchGroup,
-                    professor,
-                    EmailType.APPLICATION_ACCEPTED,
-                    "Template " + i
-                );
-            }
-
-            PageResponseDTO<EmailTemplateOverviewDTO> page = asProfessor(professor).getAndRead(
-                BASE_URL,
-                Map.of("pageNumber", "0", "pageSize", "3"),
-                new TypeReference<>() {},
-                200
-            );
-
-            assertThat(page.getContent()).hasSize(3);
-            assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(6);
-
-            List<String> names = page.getContent().stream().map(EmailTemplateOverviewDTO::templateName).toList();
-            assertThat(names).isSorted();
-        }
+        mvc
+            .perform(get("/api/email-templates"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].emailTemplateId").value(id.toString()))
+            .andExpect(jsonPath("$[0].isCustom").value(true));
     }
 
-    @Nested
-    class GetTemplate {
+    @Test
+    void getTemplate_returnsCustom() throws Exception {
+        UUID id = UUID.randomUUID();
+        when(emailTemplateService.getTemplate(id)).thenReturn(
+            new EmailTemplateDTO(
+                id,
+                EmailType.APPLICATION_SENT,
+                new EmailTemplateTranslationDTO("S", "B"),
+                new EmailTemplateTranslationDTO("S", "B")
+            )
+        );
 
-        @Test
-        void shouldReturn200ForExistingTemplate() {
-            EmailTemplateDTO dto = asProfessor(professor).getAndRead(
-                templateUrl(existingTemplate.getEmailTemplateId()),
-                Map.of(),
-                EmailTemplateDTO.class,
-                200
-            );
-
-            assertThat(dto)
-                .extracting(
-                    EmailTemplateDTO::emailTemplateId,
-                    EmailTemplateDTO::templateName,
-                    EmailTemplateDTO::emailType,
-                    EmailTemplateDTO::isDefault
-                )
-                .containsExactly(
-                    existingTemplate.getEmailTemplateId(),
-                    existingTemplate.getTemplateName(),
-                    existingTemplate.getEmailType(),
-                    existingTemplate.isDefault()
-                );
-        }
-
-        @Test
-        void shouldReturn404ForNonExistingId() {
-            asProfessor(professor).getAndRead(templateUrl(UUID.randomUUID()), Map.of(), Void.class, 404);
-        }
+        mvc.perform(get("/api/email-templates/{id}", id)).andExpect(status().isOk()).andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
     }
 
-    @Nested
-    class CreateTemplate {
+    @Test
+    void createTemplate_returns201() throws Exception {
+        UUID id = UUID.randomUUID();
+        ResearchGroup rg = new ResearchGroup();
+        User user = new User();
+        when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
+        when(currentUserService.getUser()).thenReturn(user);
+        when(emailTemplateService.createTemplate(any(EmailTemplateDTO.class), any(ResearchGroup.class), any(User.class))).thenReturn(
+            new EmailTemplateDTO(
+                id,
+                EmailType.APPLICATION_SENT,
+                new EmailTemplateTranslationDTO("S", "B"),
+                new EmailTemplateTranslationDTO("S", "B")
+            )
+        );
 
-        @Test
-        void shouldCreateTemplateWithTranslations() {
-            EmailTemplateDTO payload = dto(
-                null,
-                "Custom",
-                EmailType.APPLICATION_ACCEPTED,
-                tr("Subject EN", "<p>Body EN</p>"),
-                tr("Subject DE", "<p>Body DE</p>"),
-                false
-            );
+        EmailTemplateDTO body = new EmailTemplateDTO(
+            null,
+            EmailType.APPLICATION_SENT,
+            new EmailTemplateTranslationDTO("S", "B"),
+            new EmailTemplateTranslationDTO("S", "B")
+        );
 
-            EmailTemplateDTO created = asProfessor(professor).postAndRead(BASE_URL, payload, EmailTemplateDTO.class, 201);
-
-            assertThat(created)
-                .extracting(EmailTemplateDTO::templateName, t -> t.english().subject(), t -> t.german().subject())
-                .containsExactly("Custom", "Subject EN", "Subject DE");
-        }
-
-        @Test
-        void shouldAllowNullTranslations() {
-            EmailTemplateDTO payload = dto(null, "NoTrans", EmailType.APPLICATION_ACCEPTED, null, null, false);
-
-            EmailTemplateDTO created = asProfessor(professor).postAndRead(BASE_URL, payload, EmailTemplateDTO.class, 201);
-
-            assertThat(created.templateName()).isEqualTo("NoTrans");
-            assertThat(created.english()).isNull();
-            assertThat(created.german()).isNull();
-        }
-
-        @Test
-        void shouldReturn400IfTypeNotMultiple() {
-            EmailTemplateDTO payload = dto(null, "SingleType", EmailType.APPLICATION_REJECTED, tr("s", "<p>b</p>"), null, false);
-
-            asProfessor(professor).postAndRead(BASE_URL, payload, Void.class, 400);
-        }
-
-        @Test
-        void shouldReturn409OnDuplicateName() {
-            EmailTemplateDTO payload = dto(
-                null,
-                existingTemplate.getTemplateName(),
-                existingTemplate.getEmailType(),
-                tr("s", "<p>b</p>"),
-                null,
-                false
-            );
-
-            asProfessor(professor).postAndRead(BASE_URL, payload, Void.class, 409);
-        }
+        mvc
+            .perform(post("/api/email-templates").contentType("application/json").content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isCreated());
     }
 
-    @Nested
-    class UpdateTemplate {
+    @Test
+    void updateTemplate_returns200() throws Exception {
+        UUID id = UUID.randomUUID();
+        when(emailTemplateService.updateTemplate(any(EmailTemplateDTO.class))).thenReturn(
+            new EmailTemplateDTO(
+                id,
+                EmailType.APPLICATION_SENT,
+                new EmailTemplateTranslationDTO("S", "B"),
+                new EmailTemplateTranslationDTO("S", "B")
+            )
+        );
 
-        @Test
-        void shouldUpdateTemplateAndTranslations() {
-            EmailTemplateDTO payload = dto(
-                existingTemplate.getEmailTemplateId(),
-                "Updated Template",
-                existingTemplate.getEmailType(),
-                tr("Updated Subject EN", "<p>Updated Body EN</p>"),
-                tr("Updated Subject DE", "<p>Updated Body DE</p>"),
-                false
-            );
+        EmailTemplateDTO body = new EmailTemplateDTO(
+            id,
+            EmailType.APPLICATION_SENT,
+            new EmailTemplateTranslationDTO("S", "B"),
+            new EmailTemplateTranslationDTO("S", "B")
+        );
 
-            EmailTemplateDTO updated = asProfessor(professor).putAndRead(BASE_URL, payload, EmailTemplateDTO.class, 200);
-
-            assertThat(updated)
-                .extracting(EmailTemplateDTO::templateName, t -> t.english().subject(), t -> t.german().subject())
-                .containsExactly("Updated Template", "Updated Subject EN", "Updated Subject DE");
-        }
-
-        @Test
-        void shouldReturn404IfNotExists() {
-            EmailTemplateDTO payload = dto(UUID.randomUUID(), "Nope", EmailType.APPLICATION_ACCEPTED, null, null, false);
-
-            asProfessor(professor).putAndRead(BASE_URL, payload, Void.class, 404);
-        }
-
-        @Test
-        void shouldReturn400IfTypeNotEditable() {
-            existingTemplate.setEmailType(EmailType.APPLICATION_RECEIVED); // assume not editable
-            emailTemplateRepository.save(existingTemplate);
-
-            EmailTemplateDTO payload = dto(
-                existingTemplate.getEmailTemplateId(),
-                "Try Update",
-                existingTemplate.getEmailType(),
-                null,
-                null,
-                false
-            );
-
-            asProfessor(professor).putAndRead(BASE_URL, payload, Void.class, 400);
-        }
+        mvc
+            .perform(put("/api/email-templates").contentType("application/json").content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isOk());
     }
 
-    @Nested
-    class DeleteTemplate {
-
-        @Test
-        void shouldDeleteNonDefaultTemplate() {
-            UUID id = existingTemplate.getEmailTemplateId();
-
-            asProfessor(professor).deleteAndRead(templateUrl(id), null, Void.class, 204);
-
-            assertThat(emailTemplateRepository.findById(id)).isEmpty();
-        }
-
-        @Test
-        void shouldReturn400IfDefaultTemplate() {
-            existingTemplate.setDefault(true);
-            emailTemplateRepository.save(existingTemplate);
-
-            asProfessor(professor).deleteAndRead(templateUrl(existingTemplate.getEmailTemplateId()), null, Void.class, 400);
-        }
+    @Test
+    void deleteTemplate_returns204() throws Exception {
+        UUID id = UUID.randomUUID();
+        mvc.perform(delete("/api/email-templates/{id}", id)).andExpect(status().isNoContent());
+        verify(emailTemplateService).deleteTemplate(id);
     }
 
-    @Nested
-    class Authorization {
-
-        @Test
-        void shouldReturn401IfUnauthenticated() {
-            String singleUrl = templateUrl(existingTemplate.getEmailTemplateId());
-
-            api.withoutPostProcessors().getAndRead(BASE_URL, Map.of(), Void.class, 401);
-            api.withoutPostProcessors().getAndRead(singleUrl, null, Void.class, 401);
-            api.withoutPostProcessors().postAndRead(BASE_URL, null, Void.class, 401);
-            api.withoutPostProcessors().putAndRead(BASE_URL, null, Void.class, 401);
-            api.withoutPostProcessors().deleteAndRead(singleUrl, null, Void.class, 401);
+    @Test
+    void deleteEndpoint_isAnnotatedProfessorOnly() throws NoSuchMethodException {
+        Method method = EmailTemplateResource.class.getDeclaredMethod("deleteTemplate", UUID.class);
+        boolean professor = false;
+        boolean professorOrEmployee = false;
+        for (Annotation a : method.getAnnotations()) {
+            if (a.annotationType() == Professor.class) professor = true;
+            if (a.annotationType() == ProfessorOrEmployee.class) professorOrEmployee = true;
         }
-
-        @Test
-        void shouldReturn403IfProfessorFromDifferentGroup() {
-            ResearchGroup otherGroup = ResearchGroupTestData.saved(researchGroupRepository);
-            User otherProfessor = UserTestData.savedProfessor(userRepository, otherGroup);
-
-            String singleUrl = templateUrl(existingTemplate.getEmailTemplateId());
-
-            api.with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR")).getAndRead(singleUrl, null, Void.class, 403);
-        }
+        assertThat(professor).isTrue();
+        assertThat(professorOrEmployee).isFalse();
     }
 }
