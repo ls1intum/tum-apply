@@ -154,6 +154,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * single interview rating per application.
      *
      * @param applicationId the ID of the application
+     * @param pageable      pagination information used to limit results
      * @return Optional containing the most recent interviewee if found
      */
     @Query(
