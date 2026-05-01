@@ -9,14 +9,12 @@
  */
 
 import type { JobCardDTO } from './job-card-dto';
-import type { CustomFieldAnswerDTO } from './custom-field-answer-dto';
 import type { ApplicantDTO } from './applicant-dto';
 
 export interface ApplicationForApplicantDTO {
     readonly applicant?: ApplicantDTO;
     readonly applicationId?: string;
     readonly applicationState: ApplicationForApplicantDTOApplicationStateEnum;
-    readonly customFields?: Array<CustomFieldAnswerDTO>;
     readonly desiredDate?: string;
     readonly job: JobCardDTO;
     readonly motivation?: string;

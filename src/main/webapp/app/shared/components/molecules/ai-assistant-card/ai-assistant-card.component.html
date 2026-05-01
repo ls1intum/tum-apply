@@ -10,12 +10,12 @@
           class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
           jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
         ></h3>
-        <jhi-button
-          label="?"
-          severity="primary"
-          variant="outlined"
-          styleClass="!flex !h-6 !w-7 !min-w-5 !shrink-0 !cursor-pointer !items-center !justify-center !whitespace-nowrap !rounded-full !border !border-primary-default !bg-background-default !p-0 !text-xs !font-bold !leading-none !text-text-secondary hover:!text-primary-default hover:brightness-93"
-          (click)="openScoreDialog()"
+        <jhi-info-icon
+          [clickable]="true"
+          size="sm"
+          ariaLabel="jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title"
+          [shouldTranslate]="true"
+          (clicked)="openScoreDialog()"
         />
       </div>
       <!-- Inclusivity feedback text -->
@@ -77,11 +77,10 @@
         jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
       ></h3>
       <!-- Tooltip with AI assistant hint -->
-      <fa-icon
-        class="text-primary"
-        [icon]="['fas', 'circle-info']"
-        [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
+      <jhi-info-icon
+        tooltip="jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText"
         tooltipPosition="top"
+        [shouldTranslate]="true"
       />
     </div>
 

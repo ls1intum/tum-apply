@@ -40,7 +40,8 @@
       },
       "admin": {
         "dependencies": "TUMApply - Dependencies",
-        "exports": "TUMApply - Admin Exports"
+        "exports": "TUMApply - Admin Exports",
+        "systemSettings": "TUMApply - System Settings"
       },
       "about-us": "TUMApply - About Us",
       "interview": {
@@ -351,6 +352,7 @@
       "helperCv": "Save time by letting our AI automatically fill your details from your CV.",
       "helperCertificates": "Save time by letting our AI automatically fill your degree information from your certificates.",
       "checkInfo": "Please check the extracted information for completeness and accuracy.",
+      "consentInfo": "AI consent information",
       "button": "AI Extraction",
       "loading": "Extracting...",
       "aiExtractionFailed": {

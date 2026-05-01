@@ -10,6 +10,7 @@ import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
+import de.tum.cit.aet.ai.service.AiFeatureToggleService;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.ai.web.AiResource;
 import de.tum.cit.aet.job.constants.Campus;
@@ -42,6 +43,9 @@ class AiResourceTest extends AbstractResourceTest {
     @Autowired
     private AiResource aiResource;
 
+    @Autowired
+    private AiFeatureToggleService aiFeatureToggleService;
+
     private AiService aiService;
 
     private final String TRANSLATE_STREAM_URL = "/api/ai/translateJobDescriptionStream";
@@ -53,6 +57,8 @@ class AiResourceTest extends AbstractResourceTest {
     void setUp() {
         aiService = Mockito.mock(AiService.class);
         ReflectionTestUtils.setField(aiResource, "aiService", aiService);
+        aiFeatureToggleService.setEnabled(true);
+        aiFeatureToggleService.resetCircuitBreaker();
     }
 
     @Test
