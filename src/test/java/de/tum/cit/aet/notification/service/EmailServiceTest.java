@@ -5,12 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.MailingException;
 import de.tum.cit.aet.core.exception.UploadException;
-import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -18,7 +16,6 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,9 +60,6 @@ class EmailServiceTest {
 
     @Mock
     private DocumentService documentService;
-
-    @Mock
-    private DocumentRepository documentRepository;
 
     @Mock
     private EmailSettingService emailSettingService;
@@ -153,7 +147,7 @@ class EmailServiceTest {
 
             emailService.send(email);
 
-            verifyNoInteractions(documentService, documentRepository, emailTemplateService);
+            verifyNoInteractions(documentService, emailTemplateService);
             verify(mailSenderProvider, never()).getIfAvailable();
         }
 
@@ -227,11 +221,9 @@ class EmailServiceTest {
             stubRenderedFromTemplate(tpl, TEST_CONTENT, SHORT_SUBJECT, ALT_BODY_HTML);
 
             UUID docId = UUID.randomUUID();
-            Document doc = new Document();
             Resource res = mock(Resource.class);
 
-            when(documentRepository.findById(docId)).thenReturn(Optional.of(doc));
-            when(documentService.download(doc)).thenReturn(res);
+            when(documentService.downloadDocument(docId)).thenReturn(res);
             when(res.getContentAsByteArray()).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
 
             Email email = Email.builder()
@@ -249,8 +241,7 @@ class EmailServiceTest {
             emailService.send(email);
 
             verify(mailSender).send(any(MimeMessage.class));
-            verify(documentRepository).findById(docId);
-            verify(documentService).download(doc);
+            verify(documentService).downloadDocument(docId);
         }
     }
 
@@ -307,9 +298,7 @@ class EmailServiceTest {
             stubRenderedFromTemplate(tpl, TEST_CONTENT, SHORT_SUBJECT, ALT_BODY_HTML);
 
             UUID docId = UUID.randomUUID();
-            Document doc = new Document();
-            when(documentRepository.findById(docId)).thenReturn(Optional.of(doc));
-            when(documentService.download(doc)).thenThrow(new UploadException("io boom"));
+            when(documentService.downloadDocument(docId)).thenThrow(new UploadException("io boom"));
 
             Email email = baseEmail
                 .researchGroup(new ResearchGroup())
@@ -332,7 +321,7 @@ class EmailServiceTest {
             stubMailSender();
 
             UUID missing = UUID.randomUUID();
-            when(documentRepository.findById(missing)).thenReturn(Optional.empty());
+            when(documentService.downloadDocument(missing)).thenThrow(new EntityNotFoundException("Document with id " + missing + " not found"));
 
             EmailTemplateTranslation tpl = stubTemplateTranslation();
             stubRenderedFromTemplate(tpl, TEST_CONTENT, SHORT_SUBJECT, ALT_BODY_HTML);

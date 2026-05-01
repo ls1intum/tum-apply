@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-@Service
+@Service("legacyDocumentService")
 public class DocumentService {
 
     private final DocumentRepository documentRepository;

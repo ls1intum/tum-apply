@@ -147,6 +147,14 @@ public class DocumentService {
     }
 
     /**
+     * Loads the underlying file resource for a document WITHOUT performing access control.
+     * Intended for trusted internal callers (e.g., the export ZIP writer running as a scheduled job).
+     */
+    public Resource loadResourceForExport(Document document) {
+        return loadResource(document);
+    }
+
+    /**
      * Resolves the file extension for the given document.
      */
     public FileExtension resolveFileExtension(Document document) {
@@ -297,6 +305,10 @@ public class DocumentService {
         try {
             Path resolved = resolveStoredPath(storedPath);
             Files.deleteIfExists(resolved);
+        } catch (IllegalStateException e) {
+            // Path lies outside the configured storage root (e.g., mock fixtures or stale data).
+            // Skip the file delete; the DB row deletion has already succeeded.
+            log.warn("Skipping orphan file delete for path outside storage root: {}", storedPath);
         } catch (IOException e) {
             log.error("Failed to delete orphaned document file at {}", storedPath, e);
         }

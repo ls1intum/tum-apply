@@ -84,7 +84,7 @@ public class ZipExportService {
      * @throws IOException if an I/O error occurs
      */
     public void addDocumentToZip(ZipOutputStream zos, String filename, Document document) throws IOException {
-        Resource resource = documentService.downloadDocument(document.getDocumentId());
+        Resource resource = documentService.loadResourceForExport(document);
         try (InputStream is = resource.getInputStream()) {
             addFileToZip(zos, filename, is);
         }

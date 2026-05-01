@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController
+@RestController("legacyDocumentResource")
 @RequestMapping("/api/documents")
 @AllArgsConstructor
 public class DocumentResource {

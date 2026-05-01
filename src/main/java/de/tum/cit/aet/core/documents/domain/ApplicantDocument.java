@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.documents.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -14,6 +15,7 @@ import lombok.Setter;
  */
 @Entity
 @DiscriminatorValue("APPLICANT")
+@NoUserDataExportRequired(reason = "Documents are exported as binary files by UserExportZipWriter")
 @Getter
 @Setter
 public class ApplicantDocument extends Document {
