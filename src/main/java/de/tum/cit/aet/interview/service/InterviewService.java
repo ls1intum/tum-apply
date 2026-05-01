@@ -11,7 +11,6 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.InterviewProcessClosedException;
-import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -376,14 +375,13 @@ public class InterviewService {
 
     /**
      * Deletes a single interview slot.
-     * Only unbooked slots whose start time is in the future can be deleted.
+     * Only unbooked slots can be deleted.
      *
      * @param slotId the ID of the slot to delete
      * @throws EntityNotFoundException if the slot is not found
      * @throws AccessDeniedException   if the user is not authorized to delete this
      *                                 slot
-     * @throws OperationNotAllowedException if the slot has already started
-     * @throws BadRequestException          if the slot is booked
+     * @throws BadRequestException     if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
@@ -399,18 +397,13 @@ public class InterviewService {
         // 3. Security: Check if Job is CLOSED
         checkJobNotClosed(job);
 
-        // 4. Cannot delete slots that have already started
-        if (slot.getStartDateTime() != null && slot.getStartDateTime().isBefore(Instant.now())) {
-            throw new OperationNotAllowedException("Cannot delete a slot that already started.");
-        }
-
-        // 5. Cannot delete booked slots
+        // 4. Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
             throw new BadRequestException("Cannot delete booked slot.");
         }
 
-        // 6. Delete the slot
+        // 5. Delete the slot
         interviewSlotRepository.delete(slot);
     }
 
