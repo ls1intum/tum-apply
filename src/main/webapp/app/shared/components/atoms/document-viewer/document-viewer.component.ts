@@ -20,9 +20,6 @@ export class DocumentViewerComponent {
   private documentApi = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
 
-  // Read the signal synchronously here so the dependency is captured even
-  // though the download is async. Mounting under a structural directive in
-  // a zoneless app can otherwise miss the first trigger.
   private readonly docDownloadEffect = effect(() => {
     const docId = this.documentId().id;
     void this.initDocument(docId);
