@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -68,6 +68,8 @@ const CAROUSEL_SIZE = 7;
   styleUrl: './application-detail.component.scss',
 })
 export class ApplicationDetailComponent {
+  readonly interviewRatingSection = viewChild(InterviewRatingSection);
+
   applications = signal<ApplicationEvaluationDetailDTO[]>([]);
   totalRecords = signal<number>(0);
   currentIndex = signal<number>(0);

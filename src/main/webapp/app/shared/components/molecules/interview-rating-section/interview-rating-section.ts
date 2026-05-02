@@ -1,6 +1,5 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { DividerModule } from 'primeng/divider';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { ToastService } from 'app/service/toast-service';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
@@ -10,7 +9,7 @@ import { Prose } from '../../atoms/prose/prose';
 
 @Component({
   selector: 'jhi-interview-rating-section',
-  imports: [Section, RatingComponent, Prose, DividerModule],
+  imports: [Section, RatingComponent, Prose],
   templateUrl: './interview-rating-section.html',
 })
 export class InterviewRatingSection {
