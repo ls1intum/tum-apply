@@ -315,10 +315,12 @@
             </jhi-section>
           </div>
         </div>
-        @if (interviewRatingSection()?.hasRating()) {
+        @if (hasInterviewRating()) {
           <p-divider />
+          <div class="mb-8">
+            <jhi-interview-rating-section [rating]="interviewRating()" [assessmentNotes]="interviewAssessmentNotes()" />
+          </div>
         }
-        <jhi-interview-rating-section #interviewRatingSection [applicationId]="currentApplicationId()" />
       </div>
     }
   </div>

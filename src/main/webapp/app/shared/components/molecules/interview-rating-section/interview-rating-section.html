@@ -1,16 +1,14 @@
-@if (hasRating()) {
-  <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
-    <div>
-      <jhi-section titleKey="evaluation.details.interviewRatingTitle" icon="star">
-        <div class="mt-2">
-          <jhi-rating [rating]="rating()" />
-        </div>
-      </jhi-section>
-    </div>
-    <div>
-      <jhi-section titleKey="evaluation.details.interviewAssessmentTitle" icon="comments">
-        <jhi-prose [text]="assessmentNotes()" />
-      </jhi-section>
-    </div>
+<div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
+  <div>
+    <jhi-section titleKey="evaluation.details.interviewRatingTitle" icon="star">
+      <div class="mt-2">
+        <jhi-rating [rating]="rating()" />
+      </div>
+    </jhi-section>
   </div>
-}
+  <div>
+    <jhi-section titleKey="evaluation.details.interviewAssessmentTitle" icon="comments">
+      <jhi-prose [text]="assessmentNotes()" />
+    </jhi-section>
+  </div>
+</div>
