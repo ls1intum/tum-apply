@@ -274,6 +274,11 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Sends a confirmation email to the applicant after a successful submission.
+     *
+     * @param application the application that was just sent
+     */
     private void confirmApplicationToApplicant(Application application) {
         User user = application.getApplicant().getUser();
         Email email = Email.builder()
@@ -286,6 +291,11 @@ public class ApplicationService {
         sender.sendAsync(email);
     }
 
+    /**
+     * Sends a notification email to the supervising professor of the job.
+     *
+     * @param application the application that was just sent
+     */
     private void confirmApplicationToProfessor(Application application) {
         User supervisingProfessor = application.getJob().getSupervisingProfessor();
         Email email = Email.builder()
@@ -514,6 +524,12 @@ public class ApplicationService {
         documentService.saveApplicationDocument(applicationDocument);
     }
 
+    /**
+     * Asserts that the current user can manage the application with the given ID.
+     *
+     * @param applicationId the ID of the application to check
+     * @return the application entity if the user can manage it
+     */
     private Application assertCanManageApplication(UUID applicationId) {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
@@ -525,6 +541,12 @@ public class ApplicationService {
         return application;
     }
 
+    /**
+     * Asserts that the current user can manage the application document with the given ID.
+     *
+     * @param documentId the ID of the application document to check
+     * @return the application document entity if the user can manage it
+     */
     private ApplicationDocument assertCanManageApplicationDocument(UUID documentId) {
         Document document = documentService.findById(documentId);
         if (!(document instanceof ApplicationDocument applicationDocument)) {
@@ -534,12 +556,29 @@ public class ApplicationService {
         return applicationDocument;
     }
 
+    /**
+     * Asserts that the application is in a state where documents may still be modified.
+     * Documents are only editable while the application is in {@link ApplicationState#SAVED}.
+     *
+     * @param application the application to check
+     * @throws OperationNotAllowedException if the application has already been sent
+     */
     private void assertApplicationDocumentsEditable(Application application) {
         if (!ApplicationState.SAVED.equals(application.getState())) {
             throw new OperationNotAllowedException("Documents can only be modified while the application is in SAVED state.");
         }
     }
 
+    /**
+     * Asserts that the current user can view the application with the given ID.
+     * Allows access to:
+     * - the application owner (applicant)
+     * - admins
+     * - any professor or employee with access to the underlying job
+     *
+     * @param applicationId the ID of the application to check
+     * @return the application entity if the user can view it
+     */
     private Application assertCanViewApplication(UUID applicationId) {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
@@ -555,6 +594,17 @@ public class ApplicationService {
         return application;
     }
 
+    /**
+     * Asserts that the current user can view the application with the given ID,
+     * returning the projection DTO directly from the repository.
+     * Allows access to:
+     * - the application owner (applicant)
+     * - admins
+     * - any professor or employee with access to the underlying job
+     *
+     * @param applicationId the ID of the application to check
+     * @return the {@link ApplicationForApplicantDTO} if the user can view it
+     */
     private ApplicationForApplicantDTO assertCanViewApplicationDTO(UUID applicationId) {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
@@ -577,6 +627,13 @@ public class ApplicationService {
         return application;
     }
 
+    /**
+     * Applies AI-extracted PDF data to an application, only updating fields that
+     * are currently null or blank. Existing values are never overwritten.
+     *
+     * @param applicationId the ID of the application to update
+     * @param extracted     the extracted data from the AI service
+     */
     public void applyExtractedPdfData(String applicationId, ExtractedApplicationDataDTO extracted) {
         Application application = assertCanManageApplication(UUID.fromString(applicationId));
 
@@ -614,6 +671,14 @@ public class ApplicationService {
         applicationRepository.save(application);
     }
 
+    /**
+     * Sets a value on the application only if the current value is null or blank
+     * and the new value is non-null and non-blank.
+     *
+     * @param getter   supplier for the current field value
+     * @param setter   consumer to set the new field value
+     * @param newValue the value to set if the current value is empty
+     */
     private void setIfEmpty(Supplier<String> getter, Consumer<String> setter, String newValue) {
         String current = getter.get();
         if ((current == null || current.isBlank()) && newValue != null && !newValue.isBlank()) {
