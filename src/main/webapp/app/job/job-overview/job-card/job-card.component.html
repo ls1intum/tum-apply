@@ -1,21 +1,13 @@
 <div
-  class="group relative rounded-lg border border-border-default bg-background-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="group rounded-lg border border-border-default bg-background-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
   tabindex="0"
   role="button"
   [attr.aria-label]="'jobOverviewPage.ariaLabels.viewJobDetails' | translate: { title: jobTitle() }"
   (click)="onViewDetails()"
   (keydown)="onKeyDown($event)"
 >
-  @if (hasApplied()) {
-    <span
-      class="absolute top-3 right-3 z-10 px-3 py-1 text-xs font-semibold rounded-pill bg-positive-default text-text-on-primary shadow"
-      [pTooltip]="'jobOverviewPage.alreadyAppliedTooltip' | translate"
-      tooltipPosition="top"
-      jhiTranslate="jobOverviewPage.alreadyAppliedBadge"
-    ></span>
-  }
   <div
-    class="h-32 px-4 pb-3 bg-cover bg-center flex flex-shrink-0 items-end"
+    class="h-32 px-4 pt-3 pb-3 bg-cover bg-center flex flex-shrink-0 items-end justify-between"
     [style.background-image]="
       headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
     "
@@ -39,6 +31,12 @@
         </span>
       </div>
     </div>
+    @if (hasApplied()) {
+      <span
+        class="self-start px-3 py-1 text-xs font-semibold rounded-pill bg-positive-default text-text-on-primary shadow"
+        jhiTranslate="jobOverviewPage.alreadyAppliedBadge"
+      ></span>
+    }
   </div>
 
   <!-- Content section -->
