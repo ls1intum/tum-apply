@@ -20,8 +20,8 @@ export interface AuthOpenOptions {
 
 export interface PasskeyCredentialSummary {
   id: string;
-  label: string | null;
-  createdDate: number | null;
+  label?: string;
+  createdDate?: number;
 }
 
 // Substates within the login flow:

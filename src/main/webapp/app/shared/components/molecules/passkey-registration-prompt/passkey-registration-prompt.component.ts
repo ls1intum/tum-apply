@@ -25,28 +25,27 @@ export class PasskeyRegistrationPromptComponent {
   readonly neverAskAgain = signal(false);
   readonly busy = signal(false);
   private readonly shownThisSession = signal(false);
-  private readonly hasPasskeyConfigured = signal<boolean | null>(null);
+  private readonly passkeyConfigurationLoaded = signal(false);
+  private readonly hasPasskeyConfigured = signal(false);
   private readonly checkingPasskeys = signal(false);
 
-  constructor() {
-    effect(() => {
-      if (!this.canEvaluatePrompt()) {
-        return;
-      }
+  private readonly promptEvaluationEffect = effect(() => {
+    if (!this.canEvaluatePrompt()) {
+      return;
+    }
 
-      if (this.hasPasskeyConfigured() === null) {
-        if (!this.checkingPasskeys()) {
-          void this.loadPasskeyConfiguration();
-        }
-        return;
+    if (!this.passkeyConfigurationLoaded()) {
+      if (!this.checkingPasskeys()) {
+        void this.loadPasskeyConfiguration();
       }
+      return;
+    }
 
-      if (this.shouldShowPrompt()) {
-        this.visible.set(true);
-        this.shownThisSession.set(true);
-      }
-    });
-  }
+    if (this.shouldShowPrompt()) {
+      this.visible.set(true);
+      this.shownThisSession.set(true);
+    }
+  });
 
   close(): void {
     this.persistPreference();
@@ -75,7 +74,7 @@ export class PasskeyRegistrationPromptComponent {
   }
 
   private shouldShowPrompt(): boolean {
-    return this.canEvaluatePrompt() && this.hasPasskeyConfigured() === false;
+    return this.canEvaluatePrompt() && this.passkeyConfigurationLoaded() && !this.hasPasskeyConfigured();
   }
 
   private async loadPasskeyConfiguration(): Promise<void> {
@@ -87,6 +86,7 @@ export class PasskeyRegistrationPromptComponent {
       // Do not show a setup prompt when passkey status cannot be determined.
       this.hasPasskeyConfigured.set(true);
     } finally {
+      this.passkeyConfigurationLoaded.set(true);
       this.checkingPasskeys.set(false);
     }
   }

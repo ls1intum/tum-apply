@@ -319,7 +319,7 @@ describe('KeycloakAuthenticationService', () => {
 
       await expect(service.listPasskeys()).resolves.toEqual([
         { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
-        { id: 'passkey-2', label: 'Backup key', createdDate: null },
+        { id: 'passkey-2', label: 'Backup key' },
       ]);
       expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/mock-realm/account/credentials', {
         headers: {

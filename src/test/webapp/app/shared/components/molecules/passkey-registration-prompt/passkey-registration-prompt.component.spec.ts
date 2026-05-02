@@ -2,8 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
-import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
-import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { AuthFacadeServiceMock, createAuthFacadeServiceMock, provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
+import {
+  createKeycloakAuthenticationServiceMock,
+  KeycloakAuthenticationServiceMock,
+  provideKeycloakAuthenticationServiceMock,
+} from 'util/keycloak.mock';
 import { provideTranslateMock } from 'util/translate.mock';
 import { PasskeyRegistrationPromptComponent } from 'app/shared/components/molecules/passkey-registration-prompt/passkey-registration-prompt.component';
 
@@ -13,13 +17,8 @@ describe('PasskeyRegistrationPromptComponent', () => {
   let fixture: ComponentFixture<PasskeyRegistrationPromptComponent>;
   let component: PasskeyRegistrationPromptComponent;
   let accountServiceMock: AccountServiceMock;
-  let authFacadeMock: {
-    registerPasskey: ReturnType<typeof vi.fn>;
-  };
-  let keycloakAuthenticationServiceMock: {
-    isLoggedIn: ReturnType<typeof vi.fn>;
-    listPasskeys: ReturnType<typeof vi.fn>;
-  };
+  let authFacadeMock: AuthFacadeServiceMock;
+  let keycloakAuthenticationServiceMock: KeycloakAuthenticationServiceMock;
 
   const createComponent = async (): Promise<void> => {
     fixture = TestBed.createComponent(PasskeyRegistrationPromptComponent);
@@ -31,13 +30,8 @@ describe('PasskeyRegistrationPromptComponent', () => {
 
   beforeEach(async () => {
     accountServiceMock = createAccountServiceMock(true);
-    authFacadeMock = {
-      registerPasskey: vi.fn().mockResolvedValue(undefined),
-    };
-    keycloakAuthenticationServiceMock = {
-      isLoggedIn: vi.fn().mockReturnValue(true),
-      listPasskeys: vi.fn().mockResolvedValue([]),
-    };
+    authFacadeMock = createAuthFacadeServiceMock();
+    keycloakAuthenticationServiceMock = createKeycloakAuthenticationServiceMock();
 
     localStorage.removeItem(promptPreferenceId);
 
@@ -45,8 +39,8 @@ describe('PasskeyRegistrationPromptComponent', () => {
       imports: [PasskeyRegistrationPromptComponent],
       providers: [
         provideAccountServiceMock(accountServiceMock),
-        { provide: AuthFacadeService, useValue: authFacadeMock },
-        { provide: KeycloakAuthenticationService, useValue: keycloakAuthenticationServiceMock },
+        provideAuthFacadeServiceMock(authFacadeMock),
+        provideKeycloakAuthenticationServiceMock(keycloakAuthenticationServiceMock),
         provideTranslateMock(),
       ],
     }).compileComponents();
@@ -67,7 +61,7 @@ describe('PasskeyRegistrationPromptComponent', () => {
   });
 
   it('should keep the prompt hidden when passkeys are already configured', async () => {
-    keycloakAuthenticationServiceMock.listPasskeys.mockResolvedValue([{ id: 'pk-1', label: 'Laptop', createdDate: null }]);
+    keycloakAuthenticationServiceMock.listPasskeys.mockResolvedValue([{ id: 'pk-1', label: 'Laptop' }]);
 
     await createComponent();
 

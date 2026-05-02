@@ -8,7 +8,8 @@
         </div>
 
         <jhi-button
-          [label]="'settings.passkeys.actions.create' | translate"
+          label="settings.passkeys.actions.create"
+          [shouldTranslate]="true"
           icon="plus"
           [disabled]="!canManagePasskeys()"
           [loading]="creating()"
@@ -33,16 +34,18 @@
         </div>
       } @else {
         <div class="flex flex-col gap-3">
-          @for (passkey of passkeys(); track passkey.id; let index = $index) {
+          @for (passkey of passkeyItems(); track passkey.id) {
             <div class="rounded-xl border border-border-default bg-background-surface px-4 py-4">
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0 flex-1">
-                  <p class="truncate font-medium text-text-primary">{{ passkeyLabel(passkey, index) }}</p>
+                  <p class="truncate font-medium text-text-primary">{{ passkey.label }}</p>
 
-                  @if (createdAt(passkey); as createdAtLabel) {
-                    <p class="mt-1 text-sm text-text-secondary">
-                      {{ 'settings.passkeys.createdAt' | translate: { date: createdAtLabel } }}
-                    </p>
+                  @if (passkey.createdAtLabel; as createdAtLabel) {
+                    <p
+                      class="mt-1 text-sm text-text-secondary"
+                      jhiTranslate="settings.passkeys.createdAt"
+                      [translateValues]="{ date: createdAtLabel }"
+                    ></p>
                   }
                 </div>
 
@@ -52,19 +55,20 @@
                     [showOpenButton]="false"
                     [label]="'button.remove' | translate"
                     [header]="'settings.passkeys.removeConfirm.header' | translate"
-                    [message]="'settings.passkeys.removeConfirm.message' | translate: { name: passkeyLabel(passkey, index) }"
+                    [message]="'settings.passkeys.removeConfirm.message' | translate: { name: passkey.label }"
                     confirmIcon="trash"
                     severity="danger"
-                    [disabled]="removeDisabled(passkey.id)"
+                    [disabled]="passkey.removeDisabled"
                     (confirmed)="removePasskey(passkey.id)"
                   />
                   <jhi-button
-                    [label]="'button.remove' | translate"
+                    [shouldTranslate]="true"
+                    label="button.remove"
                     icon="trash"
                     severity="danger"
                     variant="outlined"
-                    [disabled]="removeDisabled(passkey.id)"
-                    [loading]="removingId() === passkey.id"
+                    [disabled]="passkey.removeDisabled"
+                    [loading]="passkey.removing"
                     (click)="removePasskeyDialog.confirm()"
                   />
                 </div>

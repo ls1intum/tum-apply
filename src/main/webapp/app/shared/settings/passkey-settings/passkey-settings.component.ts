@@ -8,6 +8,14 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
 
+interface PasskeySettingsItem {
+  id: string;
+  label: string;
+  createdAtLabel?: string;
+  removeDisabled: boolean;
+  removing: boolean;
+}
+
 @Component({
   selector: 'jhi-passkey-settings',
   standalone: true,
@@ -19,9 +27,20 @@ export class PasskeySettingsComponent {
   readonly loaded = signal(false);
   readonly loadFailed = signal(false);
   readonly creating = signal(false);
-  readonly removingId = signal<string | null>(null);
+  readonly removingId = signal<string | undefined>(undefined);
   readonly canManagePasskeys = signal(false);
-  readonly hasPasskeys = computed(() => this.passkeys().length > 0);
+
+  readonly passkeyItems = computed<PasskeySettingsItem[]>(() => {
+    const removingId = this.removingId();
+    return this.passkeys().map((passkey, index) => ({
+      id: passkey.id,
+      label: this.getPasskeyLabel(passkey, index),
+      createdAtLabel: this.getCreatedAtLabel(passkey),
+      removeDisabled: removingId !== undefined && removingId !== passkey.id,
+      removing: removingId === passkey.id,
+    }));
+  });
+  readonly hasPasskeys = computed(() => this.passkeyItems().length > 0);
 
   private readonly authFacade = inject(AuthFacadeService);
   private readonly keycloakAuthenticationService = inject(KeycloakAuthenticationService);
@@ -51,7 +70,7 @@ export class PasskeySettingsComponent {
   }
 
   async removePasskey(id: string): Promise<void> {
-    if (this.removingId() !== null || !this.canManagePasskeys()) {
+    if (this.removingId() !== undefined || !this.canManagePasskeys()) {
       return;
     }
 
@@ -63,33 +82,28 @@ export class PasskeySettingsComponent {
     } catch {
       this.toastService.showErrorKey('settings.passkeys.removeFailed');
     } finally {
-      this.removingId.set(null);
+      this.removingId.set(undefined);
     }
   }
 
-  passkeyLabel(passkey: PasskeyCredentialSummary, index: number): string {
+  private getPasskeyLabel(passkey: PasskeyCredentialSummary, index: number): string {
     const label = passkey.label?.trim();
-    if (label) {
+    if (label !== undefined && label !== '') {
       return label;
     }
     return `Passkey ${index + 1}`;
   }
 
-  createdAt(passkey: PasskeyCredentialSummary): string | null {
-    if (passkey.createdDate == null) {
-      return null;
+  private getCreatedAtLabel(passkey: PasskeyCredentialSummary): string | undefined {
+    if (passkey.createdDate === undefined) {
+      return undefined;
     }
 
     try {
       return this.dateFormatter.format(passkey.createdDate);
     } catch {
-      return null;
+      return undefined;
     }
-  }
-
-  removeDisabled(passkeyId: string): boolean {
-    const removingId = this.removingId();
-    return removingId !== null && removingId !== passkeyId;
   }
 
   private async loadPasskeys(): Promise<void> {

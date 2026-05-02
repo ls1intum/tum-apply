@@ -1,32 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
-import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { AuthFacadeServiceMock, createAuthFacadeServiceMock, provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
+import {
+  createKeycloakAuthenticationServiceMock,
+  KeycloakAuthenticationServiceMock,
+  provideKeycloakAuthenticationServiceMock,
+} from 'util/keycloak.mock';
 import { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
-import { ToastService } from 'app/service/toast-service';
 import { PasskeySettingsComponent } from 'app/shared/settings/passkey-settings/passkey-settings.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { createToastServiceMock } from 'util/toast-service.mock';
+import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { provideTranslateMock } from 'util/translate.mock';
+import { ToastServiceMock } from '../../../../util/toast-service.mock';
 
 describe('PasskeySettingsComponent', () => {
   let fixture: ComponentFixture<PasskeySettingsComponent>;
   let component: PasskeySettingsComponent;
 
-  let authFacadeMock: {
-    registerPasskey: ReturnType<typeof vi.fn>;
-  };
-  let keycloakAuthenticationServiceMock: {
-    isLoggedIn: ReturnType<typeof vi.fn>;
-    listPasskeys: ReturnType<typeof vi.fn>;
-    removePasskey: ReturnType<typeof vi.fn>;
-  };
-  let toastServiceMock: ReturnType<typeof createToastServiceMock>;
+  let authFacadeMock: AuthFacadeServiceMock;
+  let keycloakAuthenticationServiceMock: KeycloakAuthenticationServiceMock;
+  let toastServiceMock: ToastServiceMock;
 
   const existingPasskeys: PasskeyCredentialSummary[] = [
     { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
-    { id: 'passkey-2', label: null, createdDate: null },
+    { id: 'passkey-2' },
   ];
 
   const createComponent = async (): Promise<void> => {
@@ -38,22 +36,16 @@ describe('PasskeySettingsComponent', () => {
   };
 
   beforeEach(async () => {
-    authFacadeMock = {
-      registerPasskey: vi.fn().mockResolvedValue(undefined),
-    };
-    keycloakAuthenticationServiceMock = {
-      isLoggedIn: vi.fn().mockReturnValue(true),
-      listPasskeys: vi.fn().mockResolvedValue([]),
-      removePasskey: vi.fn().mockResolvedValue(undefined),
-    };
+    authFacadeMock = createAuthFacadeServiceMock();
+    keycloakAuthenticationServiceMock = createKeycloakAuthenticationServiceMock();
     toastServiceMock = createToastServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [PasskeySettingsComponent],
       providers: [
-        { provide: AuthFacadeService, useValue: authFacadeMock },
-        { provide: KeycloakAuthenticationService, useValue: keycloakAuthenticationServiceMock },
-        { provide: ToastService, useValue: toastServiceMock },
+        provideAuthFacadeServiceMock(authFacadeMock),
+        provideKeycloakAuthenticationServiceMock(keycloakAuthenticationServiceMock),
+        provideToastServiceMock(toastServiceMock),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -123,8 +115,8 @@ describe('PasskeySettingsComponent', () => {
     fixture.detectChanges();
 
     expect(keycloakAuthenticationServiceMock.removePasskey).toHaveBeenCalledWith('passkey-1');
-    expect(component.passkeys()).toEqual([{ id: 'passkey-2', label: null, createdDate: null }]);
-    expect(component.removingId()).toBeNull();
+    expect(component.passkeys()).toEqual([{ id: 'passkey-2' }]);
+    expect(component.removingId()).toBeUndefined();
     expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.passkeys.removed');
   });
 
@@ -136,20 +128,28 @@ describe('PasskeySettingsComponent', () => {
     await component.removePasskey('passkey-1');
 
     expect(component.passkeys()).toEqual(existingPasskeys);
-    expect(component.removingId()).toBeNull();
+    expect(component.removingId()).toBeUndefined();
     expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.passkeys.removeFailed');
   });
 
-  it('should use fallback labels and safe date formatting helpers', async () => {
+  it('should expose fallback labels, safe date formatting, and removal state in passkey items', async () => {
     await createComponent();
 
-    expect(component.passkeyLabel({ id: 'passkey-3', label: '   ', createdDate: null }, 1)).toBe('Passkey 2');
-    expect(component.createdAt({ id: 'passkey-3', label: null, createdDate: Number.NaN })).toBeNull();
-    expect(component.removeDisabled('passkey-1')).toBe(false);
+    component.passkeys.set([
+      { id: 'passkey-1', label: '   ' },
+      { id: 'passkey-2', createdDate: Number.NaN },
+    ]);
+
+    expect(component.passkeyItems()).toEqual([
+      { id: 'passkey-1', label: 'Passkey 1', createdAtLabel: undefined, removeDisabled: false, removing: false },
+      { id: 'passkey-2', label: 'Passkey 2', createdAtLabel: undefined, removeDisabled: false, removing: false },
+    ]);
 
     component.removingId.set('passkey-2');
 
-    expect(component.removeDisabled('passkey-1')).toBe(true);
-    expect(component.removeDisabled('passkey-2')).toBe(false);
+    expect(component.passkeyItems()).toEqual([
+      { id: 'passkey-1', label: 'Passkey 1', createdAtLabel: undefined, removeDisabled: true, removing: false },
+      { id: 'passkey-2', label: 'Passkey 2', createdAtLabel: undefined, removeDisabled: false, removing: true },
+    ]);
   });
 });

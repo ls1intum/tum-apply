@@ -22,23 +22,21 @@ interface PasskeyChallengeResponse {
 
 interface AccountCredentialTypeResponse {
   type?: string;
-  userCredentialMetadatas?:
-    | {
-        credential?: {
-          id?: string | null;
-          name?: string | null;
-          userLabel?: string | null;
-          createdDate?: number | null;
-        } | null;
-      }[]
-    | null;
+  userCredentialMetadatas?: {
+    credential?: {
+      id?: string;
+      name?: string;
+      userLabel?: string;
+      createdDate?: number;
+    };
+  }[];
 }
 
 interface AccountCredentialResponse {
-  id?: string | null;
-  name?: string | null;
-  userLabel?: string | null;
-  createdDate?: number | null;
+  id?: string;
+  name?: string;
+  userLabel?: string;
+  createdDate?: number;
 }
 
 /**
@@ -70,7 +68,7 @@ export class KeycloakAuthenticationService {
 
   private keycloak: Keycloak | undefined;
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
-  private refreshInFlight: Promise<void> | null = null;
+  private refreshInFlight: Promise<void> | undefined;
   private windowListenersActive = false;
 
   /**
@@ -181,17 +179,28 @@ export class KeycloakAuthenticationService {
     this.assertPasskeySupport();
 
     const challenge = await this.getPasskeyChallenge();
-    const allowCredentialId = challenge.credentialId != null && challenge.credentialId.trim() !== '' ? challenge.credentialId : undefined;
-    const assertion = (await navigator.credentials.get({
-      publicKey: {
-        challenge: this.fromBase64Url(challenge.challenge),
-        ...(allowCredentialId != null ? { allowCredentials: [{ type: 'public-key', id: this.fromBase64Url(allowCredentialId) }] } : {}),
-        userVerification: 'preferred',
-      },
-    })) as PublicKeyCredential | null;
-    const response = assertion?.response;
+    const allowCredentialId =
+      typeof challenge.credentialId === 'string' && challenge.credentialId.trim() !== '' ? challenge.credentialId : undefined;
+    const publicKey: PublicKeyCredentialRequestOptions = {
+      challenge: this.fromBase64Url(challenge.challenge),
+      userVerification: 'preferred',
+    };
 
-    if (assertion?.rawId == null || !(response instanceof AuthenticatorAssertionResponse)) {
+    if (allowCredentialId !== undefined) {
+      publicKey.allowCredentials = [{ type: 'public-key', id: this.fromBase64Url(allowCredentialId) }];
+    }
+
+    const assertion =
+      (await navigator.credentials.get({
+        publicKey,
+      })) ?? undefined;
+
+    if (!(assertion instanceof PublicKeyCredential)) {
+      throw new Error('Incomplete passkey authentication assertion');
+    }
+
+    const response = assertion.response;
+    if (!(response instanceof AuthenticatorAssertionResponse)) {
       throw new Error('Incomplete passkey authentication assertion');
     }
 
@@ -228,9 +237,9 @@ export class KeycloakAuthenticationService {
 
     const token = await this.getAuthenticatedToken();
     const claims = (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>;
-    const accountId = this.getFirstNonEmptyString(claims.sub, claims.preferred_username) ?? '';
-    const accountName = this.getFirstNonEmptyString(claims.preferred_username, claims.email) ?? '';
-    const displayName = this.getFirstNonEmptyString(claims.name, accountName) ?? 'Keycloak User';
+    const accountId = this.getFirstNonEmptyString([claims.sub, claims.preferred_username]) ?? '';
+    const accountName = this.getFirstNonEmptyString([claims.preferred_username, claims.email]) ?? '';
+    const displayName = this.getFirstNonEmptyString([claims.name, accountName]) ?? 'Keycloak User';
 
     if (accountId === '' || accountName === '') {
       throw new Error('Missing user identity claims for passkey registration');
@@ -238,19 +247,24 @@ export class KeycloakAuthenticationService {
 
     const challenge = await this.getPasskeyChallenge();
     const userIdBytes = new Uint8Array(new TextEncoder().encode(accountId).slice(0, 64));
-    const credential = (await navigator.credentials.create({
-      publicKey: {
-        challenge: this.fromBase64Url(challenge.challenge),
-        rp: { name: 'TUM AET', id: window.location.hostname },
-        user: { id: userIdBytes.buffer, name: accountName, displayName },
-        pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
-        authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
-        attestation: 'none',
-      },
-    })) as PublicKeyCredential | null;
-    const response = credential?.response;
+    const credential =
+      (await navigator.credentials.create({
+        publicKey: {
+          challenge: this.fromBase64Url(challenge.challenge),
+          rp: { name: 'TUM AET', id: window.location.hostname },
+          user: { id: userIdBytes.buffer, name: accountName, displayName },
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
+          authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
+          attestation: 'none',
+        },
+      })) ?? undefined;
 
-    if (credential?.rawId == null || !(response instanceof AuthenticatorAttestationResponse)) {
+    if (!(credential instanceof PublicKeyCredential)) {
+      throw new Error('Incomplete passkey registration credential');
+    }
+
+    const response = credential.response;
+    if (!(response instanceof AuthenticatorAttestationResponse)) {
       throw new Error('Incomplete passkey registration credential');
     }
 
@@ -303,11 +317,15 @@ export class KeycloakAuthenticationService {
     for (const credential of credentials) {
       const id = credential.id?.trim() ?? '';
       if (id !== '') {
-        summaries.push({
-          id,
-          label: credential.name ?? credential.userLabel ?? null,
-          createdDate: credential.createdDate ?? null,
-        });
+        const summary: PasskeyCredentialSummary = { id };
+        const label = credential.name ?? credential.userLabel;
+        if (typeof label === 'string') {
+          summary.label = label;
+        }
+        if (typeof credential.createdDate === 'number') {
+          summary.createdDate = credential.createdDate;
+        }
+        summaries.push(summary);
       }
     }
     return summaries;
@@ -342,10 +360,10 @@ export class KeycloakAuthenticationService {
    * @throws An error if the token refresh fails.
    */
   async ensureFreshToken(): Promise<void> {
-    if (!this.keycloak?.authenticated) {
+    if (this.keycloak?.authenticated !== true) {
       return;
     }
-    if (this.refreshInFlight) {
+    if (this.refreshInFlight !== undefined) {
       return this.refreshInFlight;
     }
 
@@ -362,7 +380,7 @@ export class KeycloakAuthenticationService {
         throw e;
       })
       .finally(() => {
-        this.refreshInFlight = null;
+        this.refreshInFlight = undefined;
       });
     return this.refreshInFlight;
   }
@@ -372,7 +390,7 @@ export class KeycloakAuthenticationService {
    */
   private startTokenRefreshScheduler(): void {
     this.bindWindowListeners();
-    if (this.refreshIntervalId) {
+    if (this.refreshIntervalId !== undefined) {
       return;
     }
     this.refreshIntervalId = setInterval(() => {
@@ -385,7 +403,7 @@ export class KeycloakAuthenticationService {
    */
   private stopTokenRefreshScheduler(): void {
     this.unbindWindowListeners();
-    if (this.refreshIntervalId) {
+    if (this.refreshIntervalId !== undefined) {
       clearInterval(this.refreshIntervalId);
       this.refreshIntervalId = undefined;
     }
@@ -447,7 +465,7 @@ export class KeycloakAuthenticationService {
   private async getAuthenticatedToken(): Promise<string> {
     await this.ensureFreshToken();
     const token = this.keycloak?.token;
-    if (token == null || token.trim() === '') {
+    if (token === undefined || token.trim() === '') {
       throw new Error('Keycloak user is not authenticated');
     }
     return token;
@@ -459,11 +477,15 @@ export class KeycloakAuthenticationService {
     });
     const payload = (await response.json().catch(() => ({}))) as PasskeyChallengeResponse;
 
-    if (!response.ok || payload.challenge == null || payload.challenge.trim() === '') {
+    if (!response.ok || typeof payload.challenge !== 'string' || payload.challenge.trim() === '') {
       throw new Error(this.getErrorMessage(payload.error, `Failed to create passkey challenge: ${response.status}`));
     }
 
-    return { ...payload, challenge: payload.challenge };
+    return {
+      challenge: payload.challenge,
+      credentialId: payload.credentialId,
+      error: payload.error,
+    };
   }
 
   /** Endpoint builders */
@@ -482,10 +504,10 @@ export class KeycloakAuthenticationService {
   }
 
   private getErrorMessage(errorMessage: string | undefined, fallback: string): string {
-    return errorMessage != null && errorMessage.trim() !== '' ? errorMessage : fallback;
+    return errorMessage !== undefined && errorMessage.trim() !== '' ? errorMessage : fallback;
   }
 
-  private getFirstNonEmptyString(...values: unknown[]): string | null {
+  private getFirstNonEmptyString(values: unknown[]): string | undefined {
     for (const value of values) {
       if (typeof value === 'string') {
         const trimmed = value.trim();
@@ -494,7 +516,7 @@ export class KeycloakAuthenticationService {
         }
       }
     }
-    return null;
+    return undefined;
   }
 
   /** Extracts webauthn credentials from the given payload */
@@ -512,7 +534,7 @@ export class KeycloakAuthenticationService {
         continue;
       }
       for (const metadata of credentialType.userCredentialMetadatas ?? []) {
-        if (metadata.credential != null) {
+        if (metadata.credential instanceof Object) {
           credentials.push(metadata.credential);
         }
       }
@@ -543,7 +565,7 @@ export class KeycloakAuthenticationService {
    */
   private buildRedirectUri(redirectUri?: string): string {
     const origin = window.location.origin;
-    if (redirectUri?.startsWith(origin)) {
+    if (redirectUri?.startsWith(origin) === true) {
       const rest = redirectUri.slice(origin.length);
       // Only allow if what follows is a path, query, fragment, or nothing —
       // reject domains that share the origin as a prefix (e.g. origin.evil.com)

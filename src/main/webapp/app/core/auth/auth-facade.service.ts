@@ -75,7 +75,7 @@ export class AuthFacadeService {
         if (keycloakInitialized) {
           this.authMethod = 'keycloak';
           await this.accountService.loadUser();
-          if (this.accountService.user() == null && this.keycloakAuthenticationService.isLoggedIn()) {
+          if (!this.accountService.user() && this.keycloakAuthenticationService.isLoggedIn()) {
             await this.accountService.loadUser();
           }
 
@@ -183,7 +183,7 @@ export class AuthFacadeService {
    * @param redirectUri optional post-login redirect URI to be set before initiating the flow
    */
   async loginWithPasskey(redirectUri?: string): Promise<void> {
-    if (redirectUri != null && redirectUri.trim() !== '') {
+    if (redirectUri !== undefined && redirectUri.trim() !== '') {
       this.authOrchestrator.redirectUri.set(redirectUri);
     }
     return this.runAuthAction(
@@ -274,7 +274,7 @@ export class AuthFacadeService {
     if (pending === 'true') {
       localStorage.removeItem(this.REGISTRATION_KEY);
       const user = this.accountService.user();
-      if (user == null) return;
+      if (user === undefined) return;
 
       const email = user.email;
       if (email.trim() === '') return;

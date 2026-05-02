@@ -4,8 +4,8 @@
 <div class="login-content">
   <div class="login-panel">
     @if (this.authOrchestrator.loginStep() !== 'otp') {
-      <section class="passkey-login-section">
-        <div class="login-passkey-actions">
+      <section class="mb-0.5 w-full border-b-[0.0625rem] border-border-default pb-3.5">
+        <div class="flex w-full flex-col gap-3">
           <jhi-button
             [shouldTranslate]="true"
             [disabled]="authOrchestrator.isBusy()"

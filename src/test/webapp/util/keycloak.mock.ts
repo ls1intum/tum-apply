@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import { Provider } from '@angular/core';
+import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 
 export type KeycloakMock = {
   authenticated: boolean;
@@ -23,4 +24,28 @@ export function createKeycloakMock(): KeycloakMock {
 
 export function provideKeycloakMock(mock: KeycloakMock = createKeycloakMock(), provideToken: any = 'Keycloak'): Provider {
   return { provide: provideToken, useValue: mock };
+}
+
+export type KeycloakAuthenticationServiceMock = {
+  isLoggedIn: ReturnType<typeof vi.fn>;
+  listPasskeys: ReturnType<typeof vi.fn>;
+  loginWithPasskey: ReturnType<typeof vi.fn>;
+  registerPasskey: ReturnType<typeof vi.fn>;
+  removePasskey: ReturnType<typeof vi.fn>;
+};
+
+export function createKeycloakAuthenticationServiceMock(): KeycloakAuthenticationServiceMock {
+  return {
+    isLoggedIn: vi.fn().mockReturnValue(true),
+    listPasskeys: vi.fn().mockResolvedValue([]),
+    loginWithPasskey: vi.fn().mockResolvedValue(undefined),
+    registerPasskey: vi.fn().mockResolvedValue(undefined),
+    removePasskey: vi.fn().mockResolvedValue(undefined),
+  };
+}
+
+export function provideKeycloakAuthenticationServiceMock(
+  mock: KeycloakAuthenticationServiceMock = createKeycloakAuthenticationServiceMock(),
+): Provider {
+  return { provide: KeycloakAuthenticationService, useValue: mock };
 }
