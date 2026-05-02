@@ -94,10 +94,6 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "suitable_for_disabled")
     private Boolean suitableForDisabled;
 
-    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("sequence ASC")
-    private List<CustomField> customFields;
-
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Application> applications;

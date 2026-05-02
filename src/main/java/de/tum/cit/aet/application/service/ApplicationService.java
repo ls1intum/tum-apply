@@ -101,7 +101,6 @@ public class ApplicationService {
         newApplication.setApplicant(applicant);
         newApplication.setJob(job);
         newApplication.setState(ApplicationState.SAVED);
-        newApplication.setCustomFieldAnswers(new HashSet<>());
         newApplication.setInternalComments(new HashSet<>());
 
         // Initialize snapshot fields from applicant's current profile data

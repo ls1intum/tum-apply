@@ -1,0 +1,74 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 jhiTranslate="systemSettings.title">System Settings</h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-16">
+      <jhi-progress-spinner class="w-12 h-12" strokeWidth="4" />
+    </div>
+  } @else if (aiStatus()) {
+    <!-- AI Features Section -->
+    <div class="mt-6">
+      <h2 class="text-lg font-semibold text-text-primary mb-4" jhiTranslate="systemSettings.ai.title">AI Features</h2>
+
+      <div class="bg-background-surface border border-border-default rounded-lg p-6">
+        <!-- Manual Toggle -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-text-primary" jhiTranslate="systemSettings.ai.toggle.label">Enable AI Features</div>
+            <div class="text-sm text-text-secondary mt-1" jhiTranslate="systemSettings.ai.toggle.description">
+              When disabled, all AI-powered features are turned off system-wide.
+            </div>
+          </div>
+          <jhi-toggle-switch [model]="!manuallyDisabled()" [disabled]="isUpdating()" (modelChange)="onAiToggleChanged($event)" />
+        </div>
+
+        <!-- Circuit Breaker Status -->
+        <div class="border-t border-border-default mt-6 pt-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-medium text-text-primary" jhiTranslate="systemSettings.ai.circuitBreaker.label">Circuit Breaker</div>
+              <div
+                class="text-sm text-text-secondary mt-1"
+                jhiTranslate="systemSettings.ai.circuitBreaker.description"
+                [translateValues]="{ cooldown: cooldownMinutes() }"
+              >
+                Automatically disables AI after consecutive failures. Resets after a cooldown period.
+              </div>
+              <div class="mt-2">
+                @if (circuitBreakerOpen()) {
+                  <jhi-tag
+                    [text]="'systemSettings.ai.circuitBreaker.open' | translate: { time: openedAt() | date: 'HH:mm' }"
+                    color="danger"
+                  />
+                } @else {
+                  <jhi-tag [text]="'systemSettings.ai.circuitBreaker.closed' | translate" color="success" />
+                }
+              </div>
+            </div>
+            @if (circuitBreakerOpen()) {
+              <jhi-button
+                severity="secondary"
+                variant="outlined"
+                size="sm"
+                [label]="'systemSettings.ai.circuitBreaker.reset'"
+                [shouldTranslate]="true"
+                [disabled]="isUpdating()"
+                [loading]="isUpdating()"
+                (click)="resetCircuitBreaker()"
+              />
+            }
+          </div>
+        </div>
+
+        <!-- Overall Status Warning -->
+        @if (manuallyDisabled() || circuitBreakerOpen()) {
+          <div class="mt-6">
+            <jhi-info-box severity="warning" message="systemSettings.ai.statusWarning" [shouldTranslate]="true" />
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

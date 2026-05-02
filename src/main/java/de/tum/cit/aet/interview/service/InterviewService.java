@@ -21,6 +21,7 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.*;
 import de.tum.cit.aet.interview.dto.CancelInterviewDTO;
+import de.tum.cit.aet.interview.dto.InterviewRatingDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeState;
 import de.tum.cit.aet.interview.dto.IntervieweeStateCounts;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
@@ -1183,6 +1184,27 @@ public class InterviewService {
     public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
         List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
         return processes == null ? List.of() : processes;
+    }
+
+    /**
+     * Returns the interview rating recorded for the given application, if any.
+     *
+     * @param applicationId the ID of the application
+     * @return DTO with the Likert rating (-2..2) or {@code null} if not yet rated
+     * @throws EntityNotFoundException if the application does not exist
+     * @throws AccessDeniedException   if the user is not a member of the research
+     *                                 group of the application's job
+     */
+    public InterviewRatingDTO getInterviewRatingForApplication(UUID applicationId) {
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        verifyResearchGroupAccess(application.getJob());
+
+        return intervieweeRepository
+            .findByApplicationApplicationIdAndRatingIsNotNull(applicationId)
+            .map(interviewee -> InterviewRatingDTO.of(interviewee.getRating()))
+            .orElseGet(() -> new InterviewRatingDTO(null));
     }
 
     /**
