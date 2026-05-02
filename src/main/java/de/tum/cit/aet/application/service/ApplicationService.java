@@ -76,10 +76,12 @@ public class ApplicationService {
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
+        // 1) Resolve the job
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         UUID userId = currentUserService.getUserId();
 
+        // 2) Anonymous preview: return a transient stub for unauthenticated callers
         if (userId == null) {
             Application application = new Application();
             application.setJob(job);
@@ -87,19 +89,21 @@ public class ApplicationService {
             return getFromEntity(application);
         }
 
+        // 3) Idempotency: if the applicant already has an application for this job, return it
         Application existingApplication = applicationRepository.getByApplicantByUserIdAndJobId(userId, jobId);
         if (existingApplication != null) {
             return getFromEntity(existingApplication);
         }
         Applicant applicant = applicantService.findOrCreateApplicant(userId);
 
+        // 4) Build the new application shell
         Application newApplication = new Application();
         newApplication.setApplicant(applicant);
         newApplication.setJob(job);
         newApplication.setState(ApplicationState.SAVED);
         newApplication.setInternalComments(new HashSet<>());
 
-        // Initialize snapshot fields from applicant's current profile data
+        // 5) Snapshot the applicant's current profile data onto the application
         User user = applicant.getUser();
         newApplication.setApplicantFirstName(user.getFirstName());
         newApplication.setApplicantLastName(user.getLastName());
@@ -128,9 +132,10 @@ public class ApplicationService {
         newApplication.setApplicantMasterGrade(applicant.getMasterGrade());
         newApplication.setApplicantMasterUniversity(applicant.getMasterUniversity());
 
+        // 6) Persist the application
         Application savedApplication = applicationRepository.save(newApplication);
 
-        // Prefill documents from applicant profile to the new application
+        // 7) Prefill profile documents (CV, transcripts, references) onto the new application
         documentService.copyApplicantDocumentsToApplication(applicant, savedApplication, PROFILE_SYNCED_DOCUMENT_TYPES);
 
         return getFromEntity(savedApplication);
@@ -151,8 +156,8 @@ public class ApplicationService {
      * Updates are stored in the application's snapshot fields, not in the applicant entity.
      * When the application is sent, the snapshot data is synced back to the applicant profile.
      *
-     * <p>Rich-text fields (motivation, specialSkills, projects) are sanitized on write
-     * to remove unsafe HTML before persisting.</p>
+     * Rich-text fields (motivation, specialSkills, projects) are sanitized on write
+     * to remove unsafe HTML before persisting.
      *
      * @param updateApplicationDTO DTO containing updated application data
      * @return the updated ApplicationForApplicantDTO
@@ -239,29 +244,31 @@ public class ApplicationService {
      * Syncs documents of a specific type from the application to the applicant profile.
      * Replaces existing documents in the applicant profile with those from the application.
      *
-     * <p>The replacement is intentional: after submission, the profile becomes the source for
-     * prefilling future applications with the latest confirmed document set.</p>
+     * The replacement is intentional: after submission, the profile becomes the source for
+     * prefilling future applications with the latest confirmed document set.
      *
      * @param application  the application containing the documents
      * @param applicant    the applicant whose profile should receive the documents
      * @param documentType the type of documents to sync
      */
     private void syncDocumentsByType(Application application, Applicant applicant, DocumentType documentType) {
-        Set<ApplicationDocument> applicationDocs = documentService.listForApplicationByType(application, documentType);
-        Set<ApplicantDocument> applicantDocs = documentService.listForApplicantByType(applicant, documentType);
+        Set<ApplicationDocument> applicationDocuments = documentService.listForApplicationByType(application, documentType);
+        Set<ApplicantDocument> applicantDocuments = documentService.listForApplicantByType(applicant, documentType);
 
-        for (ApplicantDocument applicantDoc : applicantDocs) {
-            documentService.deleteApplicantOwnedDocument(applicant.getUserId(), applicantDoc.getDocumentId());
+        // 1) Delete the applicant's existing documents of this type
+        for (ApplicantDocument applicantDocument : applicantDocuments) {
+            documentService.deleteApplicantOwnedDocument(applicant.getUserId(), applicantDocument.getDocumentId());
         }
 
-        for (ApplicationDocument appDoc : applicationDocs) {
+        // 2) Copy each application document into a new applicant-scoped row, sharing the same on-disk path
+        for (ApplicationDocument applicationDocument : applicationDocuments) {
             ApplicantDocument copy = new ApplicantDocument();
-            copy.setDocumentType(appDoc.getDocumentType());
-            copy.setName(appDoc.getName());
-            copy.setPath(appDoc.getPath());
-            copy.setMimeType(appDoc.getMimeType());
-            copy.setSizeBytes(appDoc.getSizeBytes());
-            copy.setUploadedBy(appDoc.getUploadedBy());
+            copy.setDocumentType(applicationDocument.getDocumentType());
+            copy.setName(applicationDocument.getName());
+            copy.setPath(applicationDocument.getPath());
+            copy.setMimeType(applicationDocument.getMimeType());
+            copy.setSizeBytes(applicationDocument.getSizeBytes());
+            copy.setUploadedBy(applicationDocument.getUploadedBy());
             copy.setApplicant(applicant);
             documentService.saveApplicantDocument(copy);
         }
@@ -331,8 +338,8 @@ public class ApplicationService {
      * @param documentId the ID of the document to delete
      */
     public void deleteDocument(UUID documentId) {
-        ApplicationDocument doc = assertCanManageApplicationDocument(documentId);
-        assertApplicationDocumentsEditable(doc.getApplication());
+        ApplicationDocument applicationDocument = assertCanManageApplicationDocument(documentId);
+        assertApplicationDocumentsEditable(applicationDocument.getApplication());
         documentService.deleteById(documentId);
     }
 
@@ -456,15 +463,15 @@ public class ApplicationService {
      */
     public ApplicationDocumentIdsDTO getDocumentIdsOfApplication(UUID applicationId) {
         Application application = assertCanViewApplication(applicationId);
-        Set<ApplicationDocument> docs = documentService.listForApplication(application);
+        Set<ApplicationDocument> applicationDocuments = documentService.listForApplication(application);
 
         ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
         Set<DocumentInformationHolderDTO> bachelor = new HashSet<>();
         Set<DocumentInformationHolderDTO> master = new HashSet<>();
         Set<DocumentInformationHolderDTO> reference = new HashSet<>();
-        for (ApplicationDocument d : docs) {
-            DocumentInformationHolderDTO info = DocumentInformationHolderDTO.fromDocument(d);
-            switch (d.getDocumentType()) {
+        for (ApplicationDocument applicationDocument : applicationDocuments) {
+            DocumentInformationHolderDTO info = DocumentInformationHolderDTO.fromDocument(applicationDocument);
+            switch (applicationDocument.getDocumentType()) {
                 case BACHELOR_TRANSCRIPT -> bachelor.add(info);
                 case MASTER_TRANSCRIPT -> master.add(info);
                 case REFERENCE -> reference.add(info);
@@ -501,10 +508,10 @@ public class ApplicationService {
      * @param newName    the new name to set
      */
     public void renameDocument(UUID documentId, String newName) {
-        ApplicationDocument doc = assertCanManageApplicationDocument(documentId);
-        assertApplicationDocumentsEditable(doc.getApplication());
-        doc.setName(newName);
-        documentService.saveApplicationDocument(doc);
+        ApplicationDocument applicationDocument = assertCanManageApplicationDocument(documentId);
+        assertApplicationDocumentsEditable(applicationDocument.getApplication());
+        applicationDocument.setName(newName);
+        documentService.saveApplicationDocument(applicationDocument);
     }
 
     private Application assertCanManageApplication(UUID applicationId) {
@@ -520,11 +527,11 @@ public class ApplicationService {
 
     private ApplicationDocument assertCanManageApplicationDocument(UUID documentId) {
         Document document = documentService.findById(documentId);
-        if (!(document instanceof ApplicationDocument appDoc)) {
+        if (!(document instanceof ApplicationDocument applicationDocument)) {
             throw new OperationNotAllowedException("Only application documents can be managed via this endpoint.");
         }
-        currentUserService.isCurrentUserOrAdmin(appDoc.getApplication().getApplicant().getUserId());
-        return appDoc;
+        currentUserService.isCurrentUserOrAdmin(applicationDocument.getApplication().getApplicant().getUserId());
+        return applicationDocument;
     }
 
     private void assertApplicationDocumentsEditable(Application application) {

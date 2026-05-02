@@ -27,11 +27,9 @@ import lombok.Setter;
 /**
  * Abstract base class for all document types using Single Table Inheritance.
  *
- * <p>Subclasses:</p>
- * <ul>
- *   <li>{@link ApplicantDocument}: documents owned by an applicant's profile (CV, transcripts, references)</li>
- *   <li>{@link ApplicationDocument}: snapshot copies of applicant documents attached to a specific application</li>
- * </ul>
+ * Subclasses:
+ * - {@link ApplicantDocument}: documents owned by an applicant's profile (CV, transcripts, references)
+ * - {@link ApplicationDocument}: snapshot copies of applicant documents attached to a specific application
  */
 @Entity
 @NoUserDataExportRequired(reason = "Documents are exported as binary files by UserExportZipWriter")

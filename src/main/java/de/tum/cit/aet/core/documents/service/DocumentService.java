@@ -43,9 +43,9 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Unified document service replacing the legacy {@code DocumentService} + {@code DocumentDictionaryService}.
  *
- * <p>One row per document. {@link ApplicantDocument} rows live on the applicant profile;
+ * One row per document. {@link ApplicantDocument} rows live on the applicant profile;
  * {@link ApplicationDocument} rows are snapshot copies created when the applicant submits a job application.
- * Both reference the same hash-named file on disk; deletion removes the file only when no other row references it.</p>
+ * Both reference the same hash-named file on disk; deletion removes the file only when no other row references it.
  */
 @Slf4j
 @Service
@@ -88,10 +88,10 @@ public class DocumentService {
     @Transactional
     public ApplicantDocument uploadApplicantDocument(MultipartFile file, DocumentType type, String name, Applicant applicant) {
         StoredFile stored = storeFile(file);
-        ApplicantDocument doc = new ApplicantDocument();
-        populateBase(doc, stored, type, name, currentUserService.getUser());
-        doc.setApplicant(applicant);
-        return documentRepository.save(doc);
+        ApplicantDocument applicantDocument = new ApplicantDocument();
+        populateBase(applicantDocument, stored, type, name, currentUserService.getUser());
+        applicantDocument.setApplicant(applicant);
+        return documentRepository.save(applicantDocument);
     }
 
     /**
@@ -100,10 +100,10 @@ public class DocumentService {
     @Transactional
     public ApplicationDocument uploadApplicationDocument(MultipartFile file, DocumentType type, String name, Application application) {
         StoredFile stored = storeFile(file);
-        ApplicationDocument doc = new ApplicationDocument();
-        populateBase(doc, stored, type, name, currentUserService.getUser());
-        doc.setApplication(application);
-        return documentRepository.save(doc);
+        ApplicationDocument applicationDocument = new ApplicationDocument();
+        populateBase(applicationDocument, stored, type, name, currentUserService.getUser());
+        applicationDocument.setApplication(application);
+        return documentRepository.save(applicationDocument);
     }
 
     /**
@@ -208,39 +208,39 @@ public class DocumentService {
 
     @Transactional
     public void renameApplicantDocument(UUID applicantUserId, UUID documentId, String newName) {
-        ApplicantDocument doc = assertApplicantOwned(applicantUserId, documentId);
-        doc.setName(newName);
-        documentRepository.save(doc);
+        ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
+        applicantDocument.setName(newName);
+        documentRepository.save(applicantDocument);
     }
 
     @Transactional
     public void deleteById(UUID documentId) {
-        Document doc = findOrThrow(documentId);
-        verifyDeletePermission(doc);
-        deleteRowAndOrphanedFile(doc);
+        Document document = findOrThrow(documentId);
+        verifyDeletePermission(document);
+        deleteRowAndOrphanedFile(document);
     }
 
     @Transactional
     public void deleteApplicantOwnedDocument(UUID applicantUserId, UUID documentId) {
-        ApplicantDocument doc = assertApplicantOwned(applicantUserId, documentId);
-        deleteRowAndOrphanedFile(doc);
+        ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
+        deleteRowAndOrphanedFile(applicantDocument);
     }
 
     @Transactional
     public void deleteAllByApplicantId(UUID applicantUserId) {
-        Set<ApplicantDocument> docs = documentRepository.findAllApplicantDocuments(applicantUserId);
+        Set<ApplicantDocument> applicantDocuments = documentRepository.findAllApplicantDocuments(applicantUserId);
         documentRepository.deleteByApplicantUserId(applicantUserId);
-        for (ApplicantDocument d : docs) {
-            removeFileIfOrphan(d.getPath(), d.getDocumentId());
+        for (ApplicantDocument applicantDocument : applicantDocuments) {
+            removeFileIfOrphan(applicantDocument.getPath(), applicantDocument.getDocumentId());
         }
     }
 
     @Transactional
     public void deleteAllByApplicationId(UUID applicationId) {
-        Set<ApplicationDocument> docs = documentRepository.findAllApplicationDocuments(applicationId);
+        Set<ApplicationDocument> applicationDocuments = documentRepository.findAllApplicationDocuments(applicationId);
         documentRepository.deleteByApplicationId(applicationId);
-        for (ApplicationDocument d : docs) {
-            removeFileIfOrphan(d.getPath(), d.getDocumentId());
+        for (ApplicationDocument applicationDocument : applicationDocuments) {
+            removeFileIfOrphan(applicationDocument.getPath(), applicationDocument.getDocumentId());
         }
     }
 
@@ -253,16 +253,19 @@ public class DocumentService {
     }
 
     private ApplicantDocument assertApplicantOwned(UUID applicantUserId, UUID documentId) {
-        Document doc = findOrThrow(documentId);
-        if (!(doc instanceof ApplicantDocument applicantDoc) || !applicantDoc.getApplicant().getUserId().equals(applicantUserId)) {
+        Document document = findOrThrow(documentId);
+        if (
+            !(document instanceof ApplicantDocument applicantDocument) ||
+            !applicantDocument.getApplicant().getUserId().equals(applicantUserId)
+        ) {
             throw EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId);
         }
-        return applicantDoc;
+        return applicantDocument;
     }
 
     private void verifyAccess(Document document) {
-        if (document instanceof ApplicationDocument appDoc) {
-            Application application = appDoc.getApplication();
+        if (document instanceof ApplicationDocument applicationDocument) {
+            Application application = applicationDocument.getApplication();
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 currentUserService.verifyJobAccess(application.getJob());
                 return;
@@ -270,18 +273,18 @@ public class DocumentService {
             currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
             return;
         }
-        if (document instanceof ApplicantDocument applicantDoc) {
-            currentUserService.isCurrentUserOrAdmin(applicantDoc.getApplicant().getUserId());
+        if (document instanceof ApplicantDocument applicantDocument) {
+            currentUserService.isCurrentUserOrAdmin(applicantDocument.getApplicant().getUserId());
             return;
         }
         throw new AccessDeniedException("Cannot verify access for document without owner association");
     }
 
     private void verifyDeletePermission(Document document) {
-        if (document instanceof ApplicationDocument appDoc) {
-            currentUserService.isCurrentUserOrAdmin(appDoc.getApplication().getApplicant().getUserId());
-        } else if (document instanceof ApplicantDocument applicantDoc) {
-            currentUserService.isCurrentUserOrAdmin(applicantDoc.getApplicant().getUserId());
+        if (document instanceof ApplicationDocument applicationDocument) {
+            currentUserService.isCurrentUserOrAdmin(applicationDocument.getApplication().getApplicant().getUserId());
+        } else if (document instanceof ApplicantDocument applicantDocument) {
+            currentUserService.isCurrentUserOrAdmin(applicantDocument.getApplicant().getUserId());
         } else {
             throw new AccessDeniedException("Cannot verify delete permission for document without owner association");
         }
@@ -311,13 +314,13 @@ public class DocumentService {
         }
     }
 
-    private void populateBase(Document doc, StoredFile stored, DocumentType type, String name, User uploader) {
-        doc.setDocumentType(type);
-        doc.setName(name);
-        doc.setPath(stored.path);
-        doc.setMimeType(stored.mimeType);
-        doc.setSizeBytes(stored.sizeBytes);
-        doc.setUploadedBy(uploader);
+    private void populateBase(Document document, StoredFile stored, DocumentType type, String name, User uploader) {
+        document.setDocumentType(type);
+        document.setName(name);
+        document.setPath(stored.path);
+        document.setMimeType(stored.mimeType);
+        document.setSizeBytes(stored.sizeBytes);
+        document.setUploadedBy(uploader);
     }
 
     private StoredFile storeFile(MultipartFile file) {
