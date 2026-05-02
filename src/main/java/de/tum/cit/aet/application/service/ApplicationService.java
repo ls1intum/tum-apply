@@ -296,7 +296,6 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application to withdraw
      */
-    @Transactional
     public void withdrawApplication(UUID applicationId) {
         Application application = assertCanManageApplication(applicationId);
         User user = application.getApplicant().getUser();
@@ -321,7 +320,6 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application to delete
      */
-    @Transactional
     public void deleteApplication(UUID applicationId) {
         assertCanManageApplication(applicationId);
         applicationRepository.deleteById(applicationId);
@@ -332,7 +330,6 @@ public class ApplicationService {
      *
      * @param documentId the ID of the document to delete
      */
-    @Transactional
     public void deleteDocument(UUID documentId) {
         ApplicationDocument doc = assertCanManageApplicationDocument(documentId);
         assertApplicationDocumentsEditable(doc.getApplication());
@@ -503,7 +500,6 @@ public class ApplicationService {
      * @param documentId the ID of the document to rename
      * @param newName    the new name to set
      */
-    @Transactional
     public void renameDocument(UUID documentId, String newName) {
         ApplicationDocument doc = assertCanManageApplicationDocument(documentId);
         assertApplicationDocumentsEditable(doc.getApplication());
