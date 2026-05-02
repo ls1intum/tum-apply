@@ -49,7 +49,7 @@ SQL_PATH="$SCRIPT_DIR"
 # We copy the bundled sample-document.pdf to that hash-named location so the seeded
 # rows resolve to a real, readable file when downloaded through the UI.
 SAMPLE_PDF_SRC="$SCRIPT_DIR/sample-document.pdf"
-SAMPLE_PDF_SHA256="3a72f206c5b1a847af7045c34fb8df91e7f3274a69e75a9b7da6dcfd0a7de08c"
+SAMPLE_PDF_SHA256="ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 STORAGE_ROOT="${AET_STORAGE_ROOT:-$PROJECT_ROOT/storage/docs}"
 SAMPLE_PDF_DEST="$STORAGE_ROOT/$SAMPLE_PDF_SHA256.pdf"
