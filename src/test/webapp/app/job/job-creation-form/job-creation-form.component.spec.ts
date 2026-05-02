@@ -400,7 +400,10 @@ describe('JobCreationFormComponent', () => {
       component.jobId.set('id123');
 
       const draftSave = new Subject<JobFormDTO>();
-      mockJobApi.updateJob = vi.fn().mockReturnValueOnce(draftSave).mockReturnValueOnce(of({ jobId: 'id123', state: JobFormDTOStateEnum.Published }));
+      mockJobApi.updateJob = vi
+        .fn()
+        .mockReturnValueOnce(draftSave)
+        .mockReturnValueOnce(of({ jobId: 'id123', state: JobFormDTOStateEnum.Published }));
 
       const autoSavePromise = getPrivate(component).performAutoSave();
       const publishPromise = component.publishJob();
