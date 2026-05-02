@@ -38,8 +38,8 @@ export function getTemplateResource(templateId: Signal<string> | string): HttpRe
  * Query parameters for getTemplates
  */
 export interface GetTemplatesParams {
-    pageSize?: number;
-    pageNumber?: number;
+    page?: number;
+    size?: number;
 }
 
 /**
@@ -52,11 +52,11 @@ export function getTemplatesResource(params?: Signal<GetTemplatesParams>): HttpR
     return httpResource<PageResponseDTOEmailTemplateOverviewDTO>(() => {
         const queryParams = params?.() ?? {};
         const searchParams = new URLSearchParams();
-        if (queryParams.pageSize !== undefined && queryParams.pageSize !== null) {
-            searchParams.set('pageSize', String(queryParams.pageSize));
+        if (queryParams.page !== undefined && queryParams.page !== null) {
+            searchParams.set('page', String(queryParams.page));
         }
-        if (queryParams.pageNumber !== undefined && queryParams.pageNumber !== null) {
-            searchParams.set('pageNumber', String(queryParams.pageNumber));
+        if (queryParams.size !== undefined && queryParams.size !== null) {
+            searchParams.set('size', String(queryParams.size));
         }
         const query = searchParams.toString();
         return `${BASE_PATH}/api/email-templates${query ? `?${query}` : ''}`;
