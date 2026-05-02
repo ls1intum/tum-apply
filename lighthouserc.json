@@ -3,7 +3,8 @@
     "collect": {
       "numberOfRuns": 1,
       "settings": {
-        "onlyCategories": ["accessibility"]
+        "onlyCategories": ["accessibility"],
+        "disableStorageReset": true
       },
       "puppeteerScript": "./lighthouse-auth.js",
       "puppeteerLaunchOptions": {
