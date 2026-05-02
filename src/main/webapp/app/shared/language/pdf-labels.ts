@@ -56,6 +56,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     workload: `${translate.instant('jobDetailPage.labels.workload')}:`,
     hoursPerWeek: translate.instant('jobDetailPage.units.hoursPerWeek'),
     duration: `${translate.instant('jobDetailPage.labels.contractDuration')}:`,
+    year: translate.instant('jobDetailPage.units.year'),
     years: translate.instant('jobDetailPage.units.years'),
     fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
