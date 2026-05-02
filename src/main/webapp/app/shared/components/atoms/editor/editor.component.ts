@@ -135,8 +135,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly analysisResult = toSignal(this.fieldIdChanges$.pipe(switchMap(fieldId => this.genderBiasService.getAnalysisForField(fieldId))), {
     initialValue: undefined,
   });
-  // Triggers highlight's apply after content update
-  readonly editorReady = signal(0);
 
   showAnalysisModal = signal(false);
 
@@ -270,7 +268,6 @@ export class EditorComponent extends BaseInputDirective<string> {
    */
   private reapplyHighlightsEffect = effect(() => {
     this.quillEditorComponent();
-    this.editorReady();
     this.pendingHighlights();
     requestAnimationFrame(() => this.applyPendingHighlights());
   });
