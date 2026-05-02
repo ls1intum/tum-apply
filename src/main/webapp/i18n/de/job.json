@@ -285,6 +285,7 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "alreadyAppliedBadge": "Beworben",
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
@@ -408,6 +409,7 @@
     },
     "units": {
       "hoursPerWeek": "Stunden/Woche",
+      "year": "Jahr",
       "years": "Jahre"
     },
     "workload": {

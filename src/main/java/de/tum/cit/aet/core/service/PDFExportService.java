@@ -84,7 +84,10 @@ public class PDFExportService {
                 )
                 .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
                 .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
-                .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
+                .addOverviewItem(
+                    labels.get("duration"),
+                    formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years"))
+                )
                 .addOverviewItem(
                     labels.get("fundingType"),
                     job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
@@ -197,7 +200,7 @@ public class PDFExportService {
                 job.subjectArea() != null ? job.subjectArea().correctLanguageValue(lang) : "-",
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
-                formatContractDuration(job.contractDuration(), labels.get("years")),
+                formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
@@ -262,7 +265,7 @@ public class PDFExportService {
                 jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(lang) : "-",
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
-                jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
+                formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
@@ -565,8 +568,12 @@ public class PDFExportService {
         return workload != null ? workload + (" " + unit) : "-";
     }
 
-    private String formatContractDuration(Integer duration, String unit) {
-        return duration != null ? duration + (" " + unit) : "-";
+    private String formatContractDuration(Integer duration, String singularUnit, String pluralUnit) {
+        if (duration == null) {
+            return "-";
+        }
+        String unit = duration == 1 ? singularUnit : pluralUnit;
+        return duration + " " + unit;
     }
 
     private String sanitizeFilename(String filename) {

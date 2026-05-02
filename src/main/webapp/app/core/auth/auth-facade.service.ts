@@ -57,38 +57,61 @@ export class AuthFacadeService {
    * First attempts the email session refresh,
    * otherwise falls back to Keycloak SSO initialization.
    *
+   * Runs as a background bootstrap and intentionally does NOT go through
+   * `runAuthAction`: this is silent SSO/refresh, not a user-initiated action,
+   * so it must not toggle `authOrchestrator.isBusy`. Otherwise a slow Keycloak
+   * iframe or refresh call would leave the orchestrator busy and silently reject
+   * subsequent user clicks on Login.
+   *
+   * If a user-driven login establishes a session while this is still in flight,
+   * the `authMethod !== 'none'` guards prevent init from overriding it.
+   *
    * @return true if the user is authenticated, false otherwise.
    */
   async initAuth(): Promise<boolean> {
-    return this.runAuthAction(
-      async () => {
-        // 1) Email-Authentication-Flow (server session)
-        const refreshed = await this.serverAuthenticationService.refreshTokens(true);
-        if (refreshed) {
-          await this.accountService.loadUser();
-          this.authMethod = 'server';
+    try {
+      // 1) Email-Authentication-Flow (server session)
+      const refreshed = await this.serverAuthenticationService.refreshTokens(true);
+      if (this.hasActiveAuthMethod()) {
+        return true;
+      }
+      if (refreshed) {
+        await this.accountService.loadUser();
+        if (this.hasActiveAuthMethod()) {
           return true;
         }
+        this.authMethod = 'server';
+        return true;
+      }
 
-        // 2) Keycloak-Flow
-        const keycloakInitialized = await this.keycloakAuthenticationService.init();
-        if (keycloakInitialized) {
-          await this.accountService.loadUser();
-          this.authMethod = 'keycloak';
-
-          // Check if IdP registration to be done
-          await this.handlePendingIdpRegistration();
+      // 2) Keycloak-Flow
+      const keycloakInitialized = await this.keycloakAuthenticationService.init();
+      if (this.hasActiveAuthMethod()) {
+        return true;
+      }
+      if (keycloakInitialized) {
+        await this.accountService.loadUser();
+        if (this.hasActiveAuthMethod()) {
           return true;
         }
+        this.authMethod = 'keycloak';
 
-        // 3) not authenticated
-        return false;
-      },
-      {
+        // Check if IdP registration to be done
+        await this.handlePendingIdpRegistration();
+        return true;
+      }
+
+      // 3) not authenticated
+      return false;
+    } catch {
+      // Don't rethrow: initAuth is awaited by Angular's appInitializer at startup,
+      // and a rejected promise there would block app bootstrap.
+      this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.autoSignInFailed.summary`),
         detail: this.translate.instant(`${this.translationKey}.autoSignInFailed.detail`),
-      },
-    );
+      });
+      return false;
+    }
   }
 
   // --------------- Email/Password ---------------
@@ -224,6 +247,17 @@ export class AuthFacadeService {
         detail: this.translate.instant(`${this.translationKey}.logoutFailed.detail`),
       },
     );
+  }
+
+  /**
+   * Read the current auth method through a method call so the TypeScript compiler
+   * cannot narrow the field to its initializer literal across `await` boundaries.
+   * Concurrent user-driven login flows can mutate `authMethod` while `initAuth`
+   * is still in flight; the narrowing would otherwise hide that possibility from
+   * the guards in `initAuth`.
+   */
+  private hasActiveAuthMethod(): boolean {
+    return this.authMethod !== 'none';
   }
 
   private async handlePendingIdpRegistration(): Promise<void> {

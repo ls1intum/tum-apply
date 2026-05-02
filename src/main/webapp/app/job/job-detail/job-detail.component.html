@@ -155,7 +155,10 @@
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.contractDuration"></span>
                 @if (job.contractDuration !== '') {
-                  <span class="value">{{ job.contractDuration }} <span jhiTranslate="jobDetailPage.units.years"></span></span>
+                  <span class="value"
+                    >{{ job.contractDuration }}
+                    <span [jhiTranslate]="job.contractDuration === '1' ? 'jobDetailPage.units.year' : 'jobDetailPage.units.years'"></span
+                  ></span>
                 } @else {
                   <span class="value">-</span>
                 }
