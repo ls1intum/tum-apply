@@ -101,6 +101,12 @@ export const AquaBloomTheme = definePreset(Aura, {
       600: '#bf5a20',
       700: '#9f401e',
     },
+    compliance: {
+      critical: '#d63d57',
+      transparency: '#e89220',
+      dsgvo: '#359968',
+      publicSector: '#3a6da0',
+    },
     colorScheme: {
       light: {
         ...sharedLightColorScheme,
