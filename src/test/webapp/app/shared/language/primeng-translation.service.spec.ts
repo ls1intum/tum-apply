@@ -141,6 +141,15 @@ describe('PrimengTranslationService', () => {
         }),
       );
     });
+
+    it('should set English dropdown empty messages', () => {
+      expect(primeNG.setTranslation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          emptyFilterMessage: 'No results found',
+          emptyMessage: 'No available options',
+        }),
+      );
+    });
   });
 
   describe('German locale configuration', () => {
@@ -198,6 +207,15 @@ describe('PrimengTranslationService', () => {
       expect(primeNG.setTranslation).toHaveBeenCalledWith(
         expect.objectContaining({
           monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        }),
+      );
+    });
+
+    it('should set German dropdown empty messages', () => {
+      expect(primeNG.setTranslation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          emptyFilterMessage: 'Keine Ergebnisse gefunden',
+          emptyMessage: 'Keine Optionen verfügbar',
         }),
       );
     });

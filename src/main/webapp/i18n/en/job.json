@@ -286,6 +286,7 @@
   "jobOverviewPage": {
     "title": "Find Your Perfect Position",
     "noJobsFound": "No Jobs Found.",
+    "alreadyAppliedBadge": "Applied",
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {
@@ -409,6 +410,7 @@
     },
     "units": {
       "hoursPerWeek": "hours/week",
+      "year": "year",
       "years": "years"
     },
     "workload": {
