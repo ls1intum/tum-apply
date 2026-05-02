@@ -5,40 +5,58 @@ module.exports = async browser => {
   const targetUrl = process.env.TARGET_URL || 'http://localhost:4200';
   const authPath = '/settings';
   const authUrl = new URL(authPath, targetUrl).toString();
-  const appOrigin = new URL(targetUrl).origin;
+  const appUrl = new URL('/', targetUrl).toString();
+
+  const username = process.env.TEST_USERNAME;
+  const password = process.env.TEST_PASSWORD;
+
+  if (!username || !password) {
+    throw new Error('TEST_USERNAME or TEST_PASSWORD environment variables are missing!');
+  }
 
   // 1. Open a new setup tab in the browser Lighthouse just launched
   const page = await browser.newPage();
 
-  // 2. Navigate to a protected URL to trigger the Keycloak redirect
-  await page.goto(authUrl, { waitUntil: 'domcontentloaded' });
+  // 2. Open the app origin so we can establish the authentication cookies on the correct site.
+  await page.goto(appUrl, { waitUntil: 'domcontentloaded' });
 
-  // 3. Wait until the page either reaches Keycloak or clearly fails elsewhere.
+  // 3. Use the existing server login endpoint to mint durable auth cookies for Lighthouse.
+  const loginResult = await page.evaluate(
+    async credentials => {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(credentials),
+      });
+
+      return {
+        ok: response.ok,
+        status: response.status,
+      };
+    },
+    { email: username, password },
+  );
+
+  if (!loginResult.ok) {
+    throw new Error(`Failed to authenticate Lighthouse user via /api/auth/login (status ${loginResult.status}).`);
+  }
+
+  // 4. Confirm that a protected page now loads inside the authenticated app.
+  await page.goto(authUrl, { waitUntil: 'networkidle0' });
+
   await page
     .waitForFunction(
-      (expectedAppOrigin, expectedPath) => {
-        const isAuthenticatedAppPage = [
-          window.location.origin === expectedAppOrigin,
-          window.location.pathname === expectedPath,
-          (document.body?.innerText?.trim().length ?? 0) > 0,
-        ].every(Boolean);
-
-        return [
-          document.querySelector('#username') != null,
-          document.querySelector('#kc-form-login') != null,
-          window.location.href.includes('/protocol/openid-connect/auth'),
-          window.location.pathname === '/accessdenied',
-          isAuthenticatedAppPage,
-        ].some(Boolean);
+      expectedPath => {
+        return window.location.pathname === expectedPath && (document.body?.innerText?.trim().length ?? 0) > 0;
       },
       {
         timeout: 30_000,
       },
-      appOrigin,
       authPath,
     )
-    .catch(async () => {
-      throw new Error(`Timed out waiting for the Keycloak login flow at ${page.url()}.`);
+    .catch(() => {
+      throw new Error(`Timed out waiting for the authenticated app page at ${page.url()}.`);
     });
 
   const currentUrl = new URL(page.url());
@@ -47,30 +65,6 @@ module.exports = async browser => {
     throw new Error(`Reached /accessdenied instead of Keycloak from ${authUrl}.`);
   }
 
-  if (currentUrl.origin === appOrigin && currentUrl.pathname === authPath) {
-    await page.close();
-    return;
-  }
-
-  await page.waitForSelector('#username', { timeout: 15_000 }).catch(() => {
-    throw new Error(`Reached Keycloak but the login form did not render at ${page.url()}.`);
-  });
-
-  // 4. Read credentials from the GitHub Actions environment variables
-  const username = process.env.TEST_USERNAME;
-  const password = process.env.TEST_PASSWORD;
-
-  if (!username || !password) {
-    throw new Error('TEST_USERNAME or TEST_PASSWORD environment variables are missing!');
-  }
-
-  // 5. Type the credentials into Keycloak
-  await page.type('#username', username);
-  await page.type('#password', password);
-
-  // 6. Click login and wait for the redirect back to Angular to finish completely
-  await Promise.all([page.click('#kc-login'), page.waitForNavigation({ waitUntil: 'networkidle0' })]);
-
-  // 7. Close this setup tab. Lighthouse takes over the authenticated session.
+  // 5. Close this setup tab. Lighthouse takes over the authenticated session cookies.
   await page.close();
 };
