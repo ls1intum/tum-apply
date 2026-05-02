@@ -79,7 +79,7 @@ export class ResearchGroupTemplates {
   );
 
   protected readonly pageNumber = signal<number>(0);
-  protected readonly pageSize = signal<number>(8);
+  protected readonly pageSize = signal<number>(10);
   protected readonly total = signal<number>(0);
 
   private readonly responseData = signal<EmailTemplateOverviewDTO[]>([]);

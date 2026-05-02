@@ -62,7 +62,7 @@ describe('ResearchGroupTemplates', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(api.getTemplates).toHaveBeenCalledWith(0, 8);
+    expect(api.getTemplates).toHaveBeenCalledWith(0, 10);
     expect(fixture.componentInstance['tableData']()).toHaveLength(2);
   });
 
