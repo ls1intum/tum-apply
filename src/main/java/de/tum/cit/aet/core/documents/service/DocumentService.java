@@ -249,18 +249,13 @@ public class DocumentService {
     // ---------------------------------------------------------------------
 
     private Document findOrThrow(UUID documentId) {
-        return OptionalUtils.getOrThrow(
-            documentRepository.findById(documentId),
-            () -> new EntityNotFoundException("Document with id " + documentId + " not found")
-        );
+        return OptionalUtils.getOrThrow(documentRepository.findById(documentId), () -> EntityNotFoundException.forId("Document", documentId));
     }
 
     private ApplicantDocument assertApplicantOwned(UUID applicantUserId, UUID documentId) {
         Document doc = findOrThrow(documentId);
         if (!(doc instanceof ApplicantDocument applicantDoc) || !applicantDoc.getApplicant().getUserId().equals(applicantUserId)) {
-            throw new EntityNotFoundException(
-                "Applicant document with id " + documentId + " not found for applicant " + applicantUserId
-            );
+            throw EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId);
         }
         return applicantDoc;
     }
