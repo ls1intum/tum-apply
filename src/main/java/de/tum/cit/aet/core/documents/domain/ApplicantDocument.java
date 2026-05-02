@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.documents.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.DiscriminatorValue;
@@ -23,5 +24,6 @@ public class ApplicantDocument extends Document {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "applicant_id")
+    @JsonIgnoreProperties({ "submittedApplications", "applicantDocuments" })
     private Applicant applicant;
 }

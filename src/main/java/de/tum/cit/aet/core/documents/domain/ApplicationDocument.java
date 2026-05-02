@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.documents.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.DiscriminatorValue;
@@ -23,5 +24,6 @@ public class ApplicationDocument extends Document {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "application_id")
+    @JsonIgnoreProperties({ "applicant", "applicationReview", "internalComments", "applicationDocuments" })
     private Application application;
 }

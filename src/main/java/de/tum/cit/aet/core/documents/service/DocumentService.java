@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.util.OptionalUtils;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.io.IOException;
@@ -248,9 +249,10 @@ public class DocumentService {
     // ---------------------------------------------------------------------
 
     private Document findOrThrow(UUID documentId) {
-        return documentRepository
-            .findById(documentId)
-            .orElseThrow(() -> new EntityNotFoundException("Document with id " + documentId + " not found"));
+        return OptionalUtils.getOrThrow(
+            documentRepository.findById(documentId),
+            () -> new EntityNotFoundException("Document with id " + documentId + " not found")
+        );
     }
 
     private ApplicantDocument assertApplicantOwned(UUID applicantUserId, UUID documentId) {

@@ -15,7 +15,6 @@
       Constraint and index names (still referencing `_v2`) are left as-is — they
       are internal identifiers and nothing else references them by name.
     -->
-
     <dropTable tableName="document_dictionary"/>
     <dropTable tableName="documents"/>
     <renameTable oldTableName="documents_v2" newTableName="documents"/>
