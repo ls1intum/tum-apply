@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -85,7 +84,6 @@ public class DocumentService {
     /**
      * Uploads a document owned by an applicant's profile.
      */
-    @Transactional
     public ApplicantDocument uploadApplicantDocument(MultipartFile file, DocumentType type, String name, Applicant applicant) {
         StoredFile stored = storeFile(file);
         ApplicantDocument applicantDocument = new ApplicantDocument();
@@ -97,7 +95,6 @@ public class DocumentService {
     /**
      * Uploads a document attached directly to an application.
      */
-    @Transactional
     public ApplicationDocument uploadApplicationDocument(MultipartFile file, DocumentType type, String name, Application application) {
         StoredFile stored = storeFile(file);
         ApplicationDocument applicationDocument = new ApplicationDocument();
@@ -110,7 +107,6 @@ public class DocumentService {
      * Copies all applicant-owned documents of the given types into application-scoped snapshot rows.
      * The new rows reference the same {@code path} on disk as the source applicant documents.
      */
-    @Transactional
     public List<ApplicationDocument> copyApplicantDocumentsToApplication(
         Applicant applicant,
         Application application,
@@ -192,12 +188,10 @@ public class DocumentService {
         return findOrThrow(documentId);
     }
 
-    @Transactional
     public ApplicantDocument saveApplicantDocument(ApplicantDocument document) {
         return documentRepository.save(document);
     }
 
-    @Transactional
     public ApplicationDocument saveApplicationDocument(ApplicationDocument document) {
         return documentRepository.save(document);
     }
@@ -206,27 +200,23 @@ public class DocumentService {
     // Mutation: rename, delete
     // ---------------------------------------------------------------------
 
-    @Transactional
     public void renameApplicantDocument(UUID applicantUserId, UUID documentId, String newName) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         applicantDocument.setName(newName);
         documentRepository.save(applicantDocument);
     }
 
-    @Transactional
     public void deleteById(UUID documentId) {
         Document document = findOrThrow(documentId);
         verifyDeletePermission(document);
         deleteRowAndOrphanedFile(document);
     }
 
-    @Transactional
     public void deleteApplicantOwnedDocument(UUID applicantUserId, UUID documentId) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         deleteRowAndOrphanedFile(applicantDocument);
     }
 
-    @Transactional
     public void deleteAllByApplicantId(UUID applicantUserId) {
         Set<ApplicantDocument> applicantDocuments = documentRepository.findAllApplicantDocuments(applicantUserId);
         documentRepository.deleteAll(applicantDocuments);
@@ -235,7 +225,6 @@ public class DocumentService {
         }
     }
 
-    @Transactional
     public void deleteAllByApplicationId(UUID applicationId) {
         Set<ApplicationDocument> applicationDocuments = documentRepository.findAllApplicationDocuments(applicationId);
         documentRepository.deleteAll(applicationDocuments);
