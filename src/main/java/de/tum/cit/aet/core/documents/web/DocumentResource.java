@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.documents.web;
 
 import de.tum.cit.aet.core.documents.service.DocumentService;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +24,14 @@ public class DocumentResource {
 
     private final DocumentService documentService;
 
+    @Authenticated
     @GetMapping("/{documentId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentId) {
         log.info("GET /api/documents/{} - Download request received", documentId);
         return ResponseEntity.ok(documentService.downloadDocument(documentId));
     }
 
+    @Authenticated
     @DeleteMapping("/{documentId}")
     public ResponseEntity<Void> deleteDocument(@PathVariable UUID documentId) {
         documentService.deleteById(documentId);

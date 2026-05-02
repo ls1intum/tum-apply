@@ -36,21 +36,8 @@ public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID
         @Param("documentType") DocumentType documentType
     );
 
-    @Query("SELECT d.documentId FROM ApplicationDocument d WHERE d.application.applicationId = :applicationId")
-    List<UUID> findDocumentIdsByApplicationId(@Param("applicationId") UUID applicationId);
-
-    @Query("SELECT d.documentId FROM ApplicationDocument d WHERE d.application.applicationId IN :applicationIds")
-    List<UUID> findDocumentIdsByApplicationIds(@Param("applicationIds") List<UUID> applicationIds);
-
-    @Query("SELECT d.documentId FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId")
-    List<UUID> findDocumentIdsByApplicantId(@Param("applicantUserId") UUID applicantUserId);
-
     @Query("SELECT COUNT(d) FROM Document d WHERE d.path = :path AND d.documentId <> :excludeId")
     long countOtherReferencesByPath(@Param("path") String path, @Param("excludeId") UUID excludeId);
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("DELETE FROM ApplicationDocument d WHERE d.application.applicationId IN :applicationIds")
-    void deleteByApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM ApplicantDocument d WHERE d.applicant.userId = :applicantUserId")

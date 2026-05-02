@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="036_drop_legacy_document_tables_and_rename_v2" author="claude">
+  <changeSet id="036_drop_legacy_document_tables_and_rename_v2" author="aniruddh">
     <!--
       Final document-model migration step.
 

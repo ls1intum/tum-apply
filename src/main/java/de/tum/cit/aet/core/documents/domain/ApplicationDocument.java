@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @Setter
 public class ApplicationDocument extends Document {
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "application_id")
     private Application application;
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -61,7 +62,7 @@ public abstract class Document extends AbstractAuditingEntity {
     @Column(name = "size_bytes", nullable = false)
     private Long sizeBytes;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", nullable = false)
     private User uploadedBy;
 }
