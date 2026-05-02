@@ -1203,8 +1203,8 @@ public class InterviewService {
 
         return intervieweeRepository
             .findByApplicationApplicationIdAndRatingIsNotNull(applicationId)
-            .map(interviewee -> InterviewRatingDTO.of(interviewee.getRating()))
-            .orElseGet(() -> new InterviewRatingDTO(null));
+            .map(interviewee -> InterviewRatingDTO.of(interviewee.getRating(), interviewee.getAssessmentNotes()))
+            .orElseGet(() -> new InterviewRatingDTO(null, null));
     }
 
     /**
