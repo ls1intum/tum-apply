@@ -175,7 +175,7 @@ class UserRetentionIntegrationTest {
         InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
         InterviewSlot slot = saveInterviewSlot(application, job);
 
-        DocumentTestData.savedDictionaryWithMockDocument(
+        DocumentTestData.savedMockDocument(
             documentRepository,
             savedApplicantUser,
             application,
@@ -183,7 +183,7 @@ class UserRetentionIntegrationTest {
             DocumentType.CV,
             "cv.pdf"
         );
-        Document applicantProfileDictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        Document applicantProfileDictionary = DocumentTestData.savedMockDocument(
             documentRepository,
             savedApplicantUser,
             null,
@@ -342,7 +342,7 @@ class UserRetentionIntegrationTest {
 
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Batch Job", JobState.PUBLISHED, null);
         Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
-        DocumentTestData.savedDictionaryWithMockDocument(
+        DocumentTestData.savedMockDocument(
             documentRepository,
             savedApplicantUser,
             application,

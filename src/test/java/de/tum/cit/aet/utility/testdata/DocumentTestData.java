@@ -18,19 +18,26 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.mock.web.MockMultipartFile;
 
 /**
- * Test data helpers for the unified Document model (ApplicantDocument / ApplicationDocument).
- *
- * <p>The legacy {@code DocumentDictionary} model has been replaced by a single STI hierarchy where
- * each row is either an {@link ApplicantDocument} (profile-owned) or an {@link ApplicationDocument}
- * (application-scoped snapshot). Method names referencing "Dictionary" are kept for now to minimize
- * caller churn during the parallel migration; the return types and internals point at the new model.</p>
+ * Test data helpers for the unified Document model. Each persisted row is either an
+ * {@link ApplicantDocument} (profile-owned) or an {@link ApplicationDocument}
+ * (application-scoped snapshot).
  */
 public final class DocumentTestData {
 
     private DocumentTestData() {}
 
     /**
-     * Copies a test resource into the given storage root and persists an {@link ApplicantDocument}.
+     * Copies a classpath resource into the given storage root and persists an {@link ApplicantDocument}.
+     *
+     * @param storageRootConfig  the storage root directory configured for the test (e.g. {@code aet.storage.root})
+     * @param documentRepository the JPA repository for the unified Document model
+     * @param uploadedBy         the user recorded as the uploader
+     * @param applicant          the applicant who owns the document
+     * @param type               the document type (e.g. CV, REFERENCE)
+     * @param classpathResource  the path of the source PDF on the test classpath (e.g. {@code /testdocs/test-doc1.pdf})
+     * @param filename           the on-disk filename inside the storage root
+     * @return the persisted {@link ApplicantDocument}
+     * @throws IOException if the resource cannot be read or copied
      */
     public static ApplicantDocument savedApplicantDocument(
         String storageRootConfig,
@@ -55,7 +62,17 @@ public final class DocumentTestData {
     }
 
     /**
-     * Copies a test resource into the given storage root and persists an {@link ApplicationDocument}.
+     * Copies a classpath resource into the given storage root and persists an {@link ApplicationDocument}.
+     *
+     * @param storageRootConfig  the storage root directory configured for the test
+     * @param documentRepository the JPA repository for the unified Document model
+     * @param uploadedBy         the user recorded as the uploader
+     * @param application        the application the document belongs to
+     * @param type               the document type (e.g. CV, REFERENCE)
+     * @param classpathResource  the path of the source PDF on the test classpath
+     * @param filename           the on-disk filename inside the storage root
+     * @return the persisted {@link ApplicationDocument}
+     * @throws IOException if the resource cannot be read or copied
      */
     public static ApplicationDocument savedApplicationDocument(
         String storageRootConfig,
@@ -79,6 +96,15 @@ public final class DocumentTestData {
         return documentRepository.saveAndFlush(doc);
     }
 
+    /**
+     * Copies a classpath resource into the storage root.
+     *
+     * @param storageRootConfig the storage root directory
+     * @param classpathResource the resource path on the test classpath
+     * @param filename          the target filename inside the storage root
+     * @return the absolute path of the copied file
+     * @throws IOException if the resource cannot be read or copied
+     */
     private static Path copyClasspathResource(String storageRootConfig, String classpathResource, String filename) throws IOException {
         Path storageRoot = Path.of(storageRootConfig).toAbsolutePath().normalize();
         Files.createDirectories(storageRoot);
@@ -94,11 +120,23 @@ public final class DocumentTestData {
     /**
      * Persists a Document tied to either an Application or an Applicant (XOR), with an already-prepared path.
      *
-     * <p>Returns {@link Document} (the abstract STI base) so callers may treat the result polymorphically.
-     * The actual concrete type is {@link ApplicationDocument} when {@code application} is non-null, or
-     * {@link ApplicantDocument} when {@code applicant} is non-null.</p>
+     * Returns the abstract {@link Document} base so callers may treat the result polymorphically.
+     * The concrete subtype is {@link ApplicationDocument} when {@code application} is non-null, or
+     * {@link ApplicantDocument} when {@code applicant} is non-null.
+     *
+     * @param documentRepository the JPA repository for the unified Document model
+     * @param uploadedBy         the user recorded as the uploader
+     * @param path               the on-disk path of the file (must lie within the storage root)
+     * @param sizeBytes          the file size in bytes
+     * @param mimeType           the MIME type (e.g. {@code application/pdf})
+     * @param application        the owning application (XOR with applicant)
+     * @param applicant          the owning applicant (XOR with application)
+     * @param type               the document type (e.g. CV, REFERENCE)
+     * @param name               the user-facing display name
+     * @return the persisted {@link Document}
+     * @throws IllegalArgumentException if both or neither of {@code application} and {@code applicant} are provided
      */
-    public static Document savedDictionary(
+    public static Document savedDocument(
         DocumentRepository documentRepository,
         User uploadedBy,
         String path,
@@ -132,12 +170,24 @@ public final class DocumentTestData {
     }
 
     /**
-     * Convenience method: copies the classpath resource and persists an {@link ApplicationDocument}
-     * or {@link ApplicantDocument} (XOR) referring to that file.
+     * Convenience helper that copies the classpath resource and persists an {@link ApplicationDocument}
+     * or {@link ApplicantDocument} (XOR) referring to that file. The persisted document's name is overridden
+     * with the supplied logical {@code name}.
      *
-     * <p>Return type is the abstract {@link Document} base; the concrete type matches the non-null owner.</p>
+     * @param storageRootConfig  the storage root directory configured for the test
+     * @param documentRepository the JPA repository for the unified Document model
+     * @param professor          the user recorded as the uploader
+     * @param application        the owning application (XOR with applicant)
+     * @param applicant          the owning applicant (XOR with application)
+     * @param classpathResource  the path of the source PDF on the test classpath
+     * @param filename           the on-disk filename inside the storage root
+     * @param type               the document type (e.g. CV, REFERENCE)
+     * @param name               the user-facing display name to set after the file is copied
+     * @return the persisted {@link Document}; the concrete subtype matches the non-null owner
+     * @throws IOException              if the resource cannot be read or copied
+     * @throws IllegalArgumentException if both or neither of {@code application} and {@code applicant} are provided
      */
-    public static Document savedDictionaryWithDocument(
+    public static Document savedDocumentWithFile(
         String storageRootConfig,
         DocumentRepository documentRepository,
         User professor,
@@ -180,20 +230,20 @@ public final class DocumentTestData {
     }
 
     /**
-     * Creates and persists a mock Document without writing an actual file to disk.
-     * Useful for simple tests that don't require real file content.
+     * Creates and persists a Document without writing an actual file to disk. Useful for simple tests
+     * that don't require real file content. The path is rooted at {@code /tmp/test-storage} so it
+     * passes {@code DocumentService.removeFileIfOrphan} validation; {@code Files.deleteIfExists}
+     * tolerates the missing file.
      *
-     * <p>Returns {@link Document} (STI base). The concrete subtype is selected by the non-null owner:
-     * {@link ApplicationDocument} when {@code application} is non-null, else {@link ApplicantDocument}.</p>
-     *
-     * @param documentRepository repo to persist Document (new model)
-     * @param uploadedBy uploader user
-     * @param application linked application (XOR with applicant)
-     * @param applicant linked applicant (XOR with application)
-     * @param documentType document type (e.g. CV, MOTIVATION_LETTER)
-     * @param fileName logical file name (e.g. "test_cv.pdf")
+     * @param documentRepository the JPA repository for the unified Document model
+     * @param uploadedBy         the user recorded as the uploader
+     * @param application        the owning application (XOR with applicant)
+     * @param applicant          the owning applicant (XOR with application)
+     * @param documentType       the document type (e.g. CV, REFERENCE)
+     * @param fileName           the logical file name (used both for the display name and the mock path suffix)
+     * @return the persisted {@link Document}; the concrete subtype is selected by the non-null owner
      */
-    public static Document savedDictionaryWithMockDocument(
+    public static Document savedMockDocument(
         DocumentRepository documentRepository,
         User uploadedBy,
         Application application,
@@ -201,10 +251,8 @@ public final class DocumentTestData {
         DocumentType documentType,
         String fileName
     ) {
-        // Use a path inside the configured test storage root (application-test.properties: aet.storage.root=/tmp/test-storage)
-        // so DocumentService.removeFileIfOrphan accepts it. Files.deleteIfExists tolerates missing files.
         Path mockPath = Path.of("/tmp/test-storage", "mock-" + fileName).toAbsolutePath().normalize();
-        return savedDictionary(
+        return savedDocument(
             documentRepository,
             uploadedBy,
             mockPath.toString(),
@@ -218,36 +266,36 @@ public final class DocumentTestData {
     }
 
     /**
-     * Creates a MockMultipartFile for testing document uploads.
+     * Creates a {@link MockMultipartFile} for testing document uploads.
      *
-     * @param fieldName the form field name (typically "files")
-     * @param filename the original filename
-     * @param contentType the MIME type (e.g., "application/pdf")
-     * @param content the file content as bytes
-     * @return a MockMultipartFile instance
+     * @param fieldName   the form field name (typically {@code "files"})
+     * @param filename    the original filename
+     * @param contentType the MIME type (e.g. {@code application/pdf})
+     * @param content     the file content as raw bytes
+     * @return a {@link MockMultipartFile} instance
      */
     public static MockMultipartFile createMockMultipartFile(String fieldName, String filename, String contentType, byte[] content) {
         return new MockMultipartFile(fieldName, filename, contentType, content);
     }
 
     /**
-     * Creates a MockMultipartFile with default PDF content for testing.
+     * Creates a {@link MockMultipartFile} with default PDF content for testing.
      *
-     * @param fieldName the form field name (typically "files")
-     * @param filename the original filename
-     * @return a MockMultipartFile instance with PDF MIME type and default content
+     * @param fieldName the form field name (typically {@code "files"})
+     * @param filename  the original filename
+     * @return a {@link MockMultipartFile} instance with PDF MIME type and default content
      */
     public static MockMultipartFile createMockPdfFile(String fieldName, String filename) {
         return createMockMultipartFile(fieldName, filename, "application/pdf", "PDF content here".getBytes());
     }
 
     /**
-     * Creates a MockMultipartFile with specific content for testing.
+     * Creates a {@link MockMultipartFile} with the supplied content for testing.
      *
-     * @param fieldName the form field name (typically "files")
-     * @param filename the original filename
-     * @param content the file content as string
-     * @return a MockMultipartFile instance with PDF MIME type
+     * @param fieldName the form field name (typically {@code "files"})
+     * @param filename  the original filename
+     * @param content   the file content as a string (encoded with the platform default charset)
+     * @return a {@link MockMultipartFile} instance with PDF MIME type
      */
     public static MockMultipartFile createMockPdfFile(String fieldName, String filename, String content) {
         return createMockMultipartFile(fieldName, filename, "application/pdf", content.getBytes());

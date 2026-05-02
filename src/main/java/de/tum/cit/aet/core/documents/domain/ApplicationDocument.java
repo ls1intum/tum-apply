@@ -1,6 +1,5 @@
 package de.tum.cit.aet.core.documents.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.DiscriminatorValue;
@@ -12,8 +11,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Document attached to a specific application — a snapshot at submit time.
- * Created by copying an applicant-owned document; references the same path on disk.
+ * Document attached to a specific application. May be created either by copying an
+ * applicant-profile document (snapshot at submit time, sharing the same path on disk)
+ * or by uploading a file directly while editing the application.
  */
 @Entity
 @DiscriminatorValue("APPLICATION")
@@ -24,6 +24,5 @@ public class ApplicationDocument extends Document {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "application_id")
-    @JsonIgnoreProperties({ "applicant", "applicationReview", "internalComments", "applicationDocuments" })
     private Application application;
 }

@@ -1,6 +1,5 @@
 package de.tum.cit.aet.core.documents.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
@@ -63,6 +62,5 @@ public abstract class Document extends AbstractAuditingEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", nullable = false)
-    @JsonIgnoreProperties({ "applicant", "documentDictionaries", "applicantDocuments" })
     private User uploadedBy;
 }

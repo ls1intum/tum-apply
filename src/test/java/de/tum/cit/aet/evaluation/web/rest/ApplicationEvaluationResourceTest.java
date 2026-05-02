@@ -406,7 +406,7 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
             int i = 1;
             for (Map.Entry<DocumentType, String> entry : expectedFileNames.entrySet()) {
-                DocumentTestData.savedDictionaryWithDocument(
+                DocumentTestData.savedDocumentWithFile(
                     storageRootConfig,
                     documentRepository,
                     professor,
@@ -470,7 +470,7 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
         @Test
         void multipleSameTypeAddsNumbering() throws Exception {
-            DocumentTestData.savedDictionaryWithDocument(
+            DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
                 professor,
@@ -481,7 +481,7 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                 DocumentType.CV,
                 "cv"
             );
-            DocumentTestData.savedDictionaryWithDocument(
+            DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
                 professor,

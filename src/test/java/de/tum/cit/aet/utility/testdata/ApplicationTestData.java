@@ -159,7 +159,7 @@ public final class ApplicationTestData {
             null
         );
         Application application = savedRejected(ctx.applicationRepository(), job, applicant);
-        Document dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        Document dictionary = DocumentTestData.savedMockDocument(
             ctx.documentRepository(),
             ctx.professor(),
             application,

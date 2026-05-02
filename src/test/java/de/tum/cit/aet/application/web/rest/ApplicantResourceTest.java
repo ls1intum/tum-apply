@@ -471,7 +471,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void getApplicantProfileDocumentIdsReturnsGroupedDocuments() {
-            DocumentTestData.savedDictionaryWithMockDocument(
+            DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,
@@ -479,7 +479,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 DocumentType.BACHELOR_TRANSCRIPT,
                 "bachelor_profile.pdf"
             );
-            DocumentTestData.savedDictionaryWithMockDocument(
+            DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,
@@ -487,7 +487,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 DocumentType.CV,
                 "cv_profile.pdf"
             );
-            DocumentTestData.savedDictionaryWithMockDocument(
+            DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,
@@ -521,7 +521,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromProfileRemovesIt() {
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,
@@ -541,7 +541,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromProfileWithoutAuthReturnsForbidden() {
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,
@@ -569,7 +569,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void renameApplicantProfileDocumentUpdatesName() {
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,
@@ -607,7 +607,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void renameApplicantProfileDocumentWithoutAuthReturnsForbidden() {
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 null,

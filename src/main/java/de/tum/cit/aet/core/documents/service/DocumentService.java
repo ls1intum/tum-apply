@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -172,6 +173,7 @@ public class DocumentService {
      * @throws EntityNotFoundException if the document does not exist
      * @throws AccessDeniedException   if the current user is not allowed to read the document
      */
+    @Transactional(readOnly = true)
     public Resource downloadDocument(UUID documentId) {
         Document document = findOrThrow(documentId);
         verifyAccess(document);
@@ -295,6 +297,7 @@ public class DocumentService {
      * @param newName         the new display name
      * @throws EntityNotFoundException if the document does not exist or is not owned by the applicant
      */
+    @Transactional
     public void renameApplicantDocument(UUID applicantUserId, UUID documentId, String newName) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         applicantDocument.setName(newName);
@@ -309,6 +312,7 @@ public class DocumentService {
      * @throws EntityNotFoundException if the document does not exist
      * @throws AccessDeniedException   if the current user is not allowed to delete the document
      */
+    @Transactional
     public void deleteById(UUID documentId) {
         Document document = findOrThrow(documentId);
         verifyDeletePermission(document);
@@ -323,6 +327,7 @@ public class DocumentService {
      * @param documentId      the id of the document to delete
      * @throws EntityNotFoundException if the document does not exist or is not owned by the applicant
      */
+    @Transactional
     public void deleteApplicantOwnedDocument(UUID applicantUserId, UUID documentId) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         deleteRowAndOrphanedFile(applicantDocument);

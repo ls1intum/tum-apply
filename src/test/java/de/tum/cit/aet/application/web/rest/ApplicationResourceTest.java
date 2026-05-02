@@ -12,6 +12,7 @@ import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
 import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
 import de.tum.cit.aet.core.documents.domain.Document;
 import de.tum.cit.aet.core.documents.repository.DocumentRepository;
@@ -226,7 +227,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         }
 
         private Document createApplicantProfileDocument(String sourcePath, String filename, DocumentType documentType) throws Exception {
-            return DocumentTestData.savedDictionaryWithDocument(
+            return DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
                 applicant.getUser(),
@@ -290,7 +291,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
 
             // Attach a CV document to the application (not to the applicant profile)
-            Document appCv = DocumentTestData.savedDictionaryWithMockDocument(
+            Document appCv = DocumentTestData.savedMockDocument(
                 documentRepository,
                 professor,
                 application,
@@ -318,7 +319,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
 
             // After sending, the applicant profile should contain the CV from the application
-            var applicantCvs = documentRepository.findApplicantDocumentsByType(applicant.getUserId(), DocumentType.CV);
+            Set<ApplicantDocument> applicantCvs = documentRepository.findApplicantDocumentsByType(applicant.getUserId(), DocumentType.CV);
             assertThat(applicantCvs).hasSize(1);
             assertThat(applicantCvs.iterator().next().getPath()).isEqualTo(appCv.getPath());
         }
@@ -326,7 +327,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void sendingApplicationReplacesOldApplicantDocuments() throws Exception {
             // Create an applicant profile CV that should be replaced
-            Document existingProfileCv = DocumentTestData.savedDictionaryWithMockDocument(
+            Document existingProfileCv = DocumentTestData.savedMockDocument(
                 documentRepository,
                 professor,
                 null,
@@ -337,7 +338,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             // Create application with a different CV
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
-            Document appCv = DocumentTestData.savedDictionaryWithMockDocument(
+            Document appCv = DocumentTestData.savedMockDocument(
                 documentRepository,
                 professor,
                 application,
@@ -365,7 +366,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
 
             // After sending, profile CVs should contain only the application's CV
-            var applicantCvs = documentRepository.findApplicantDocumentsByType(applicant.getUserId(), DocumentType.CV);
+            Set<ApplicantDocument> applicantCvs = documentRepository.findApplicantDocumentsByType(applicant.getUserId(), DocumentType.CV);
             assertThat(applicantCvs).hasSize(1);
             assertThat(applicantCvs.iterator().next().getPath()).isEqualTo(appCv.getPath());
             // Old profile doc should no longer exist in the profile
@@ -398,7 +399,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void deleteApplicationRemovesIt() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,
@@ -605,7 +606,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void deleteDocumentFromApplicationRemovesIt() {
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,
@@ -635,7 +636,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void deleteDocumentFromApplicationWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,
@@ -651,7 +652,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void deleteDocumentFromSentApplicationReturnsBadRequest() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,
@@ -675,7 +676,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void renameDocumentUpdatesName() {
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,
@@ -706,7 +707,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void renameDocumentWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,
@@ -728,7 +729,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void renameDocumentForSentApplicationReturnsBadRequest() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            Document doc = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
                 application,

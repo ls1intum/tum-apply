@@ -18,6 +18,7 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
@@ -361,7 +362,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
 
     @Test
     void exportIncludesStaffDataWhenStaffRoleExists() throws Exception {
-        var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
         User user = UserTestData.savedProfessor(userRepository, researchGroup);
         JobTestData.saved(jobRepository, user, researchGroup, "Staff Export Job", JobState.DRAFT, LocalDate.now());
 
@@ -383,7 +384,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         User applicantUser = applicant.getUser();
         Set<String> applicantEntries = readZipEntries(processExportAndGetZipPath(applicantUser));
 
-        var researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
         User staffUser = UserTestData.savedProfessor(userRepository, researchGroup);
         staffUser = userRepository.findById(staffUser.getUserId()).orElseThrow();
         JobTestData.saved(jobRepository, staffUser, researchGroup, "Coverage Job", JobState.DRAFT, LocalDate.now());

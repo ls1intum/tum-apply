@@ -190,7 +190,7 @@ class ApplicantRetentionServiceIntegrationTest {
 
         InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
 
-        Document dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        Document dictionary = DocumentTestData.savedMockDocument(
             documentRepository,
             professor,
             application,
@@ -224,7 +224,7 @@ class ApplicantRetentionServiceIntegrationTest {
             "Outdated application"
         );
 
-        Document oldDict = DocumentTestData.savedDictionaryWithMockDocument(
+        Document oldDict = DocumentTestData.savedMockDocument(
             documentRepository,
             professor,
             oldApp,
@@ -238,7 +238,7 @@ class ApplicantRetentionServiceIntegrationTest {
 
         forceApplicationLastModified(recentApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusHours(6));
 
-        Document recentDict = DocumentTestData.savedDictionaryWithMockDocument(
+        Document recentDict = DocumentTestData.savedMockDocument(
             documentRepository,
             professor,
             recentApp,
