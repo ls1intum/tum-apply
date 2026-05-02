@@ -5,7 +5,9 @@ import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
 import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
 import de.tum.cit.aet.core.documents.domain.Document;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.job.domain.Job;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
@@ -87,4 +89,44 @@ public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID
      */
     @Query("SELECT d FROM Document d WHERE d.uploadedBy.userId = :userId")
     List<Document> findByUploadedByUserId(@Param("userId") UUID userId);
+
+    /**
+     * Returns the owning applicant's user id for the given {@link ApplicantDocument}.
+     * Used by access checks to avoid traversing lazy associations outside a session.
+     *
+     * @param documentId the id of the applicant document
+     * @return the owning applicant's user id, or empty if the document is not an {@link ApplicantDocument}
+     */
+    @Query("SELECT d.applicant.userId FROM ApplicantDocument d WHERE d.documentId = :documentId")
+    Optional<UUID> findApplicantOwnerUserId(@Param("documentId") UUID documentId);
+
+    /**
+     * Returns the application's owning applicant's user id for the given {@link ApplicationDocument}.
+     * Used by access checks to avoid traversing lazy associations outside a session.
+     *
+     * @param documentId the id of the application document
+     * @return the application's applicant user id, or empty if the document is not an {@link ApplicationDocument}
+     */
+    @Query("SELECT d.application.applicant.userId FROM ApplicationDocument d WHERE d.documentId = :documentId")
+    Optional<UUID> findApplicationOwnerUserId(@Param("documentId") UUID documentId);
+
+    /**
+     * Returns the {@link Job} associated with an {@link ApplicationDocument}, with the supervising
+     * professor and research group eagerly fetched so callers can run staff access checks without
+     * triggering lazy loads outside a session.
+     *
+     * @param documentId the id of the application document
+     * @return the associated job, eagerly populated
+     */
+    @Query(
+        """
+        SELECT j FROM ApplicationDocument d
+        JOIN d.application a
+        JOIN a.job j
+        LEFT JOIN FETCH j.supervisingProfessor
+        LEFT JOIN FETCH j.researchGroup
+        WHERE d.documentId = :documentId
+        """
+    )
+    Optional<Job> findJobForApplicationDocument(@Param("documentId") UUID documentId);
 }

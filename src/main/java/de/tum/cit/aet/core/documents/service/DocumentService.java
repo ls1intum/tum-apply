@@ -12,6 +12,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.OptionalUtils;
+import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.io.IOException;
@@ -36,7 +37,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -173,7 +173,6 @@ public class DocumentService {
      * @throws EntityNotFoundException if the document does not exist
      * @throws AccessDeniedException   if the current user is not allowed to read the document
      */
-    @Transactional(readOnly = true)
     public Resource downloadDocument(UUID documentId) {
         Document document = findOrThrow(documentId);
         verifyAccess(document);
@@ -297,7 +296,6 @@ public class DocumentService {
      * @param newName         the new display name
      * @throws EntityNotFoundException if the document does not exist or is not owned by the applicant
      */
-    @Transactional
     public void renameApplicantDocument(UUID applicantUserId, UUID documentId, String newName) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         applicantDocument.setName(newName);
@@ -312,7 +310,6 @@ public class DocumentService {
      * @throws EntityNotFoundException if the document does not exist
      * @throws AccessDeniedException   if the current user is not allowed to delete the document
      */
-    @Transactional
     public void deleteById(UUID documentId) {
         Document document = findOrThrow(documentId);
         verifyDeletePermission(document);
@@ -327,7 +324,6 @@ public class DocumentService {
      * @param documentId      the id of the document to delete
      * @throws EntityNotFoundException if the document does not exist or is not owned by the applicant
      */
-    @Transactional
     public void deleteApplicantOwnedDocument(UUID applicantUserId, UUID documentId) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         deleteRowAndOrphanedFile(applicantDocument);
@@ -390,12 +386,24 @@ public class DocumentService {
      * @throws EntityNotFoundException if the document does not exist, is not applicant-owned, or
      *                                 is owned by a different applicant
      */
+    /**
+     * Loads the document and asserts it is an {@link ApplicantDocument} owned by the given applicant.
+     * Ownership is checked via a scalar repository query rather than entity-graph traversal so that
+     * the method does not require an open transaction.
+     *
+     * @throws EntityNotFoundException if the document does not exist, is not applicant-owned, or
+     *                                 is owned by a different applicant
+     */
     private ApplicantDocument assertApplicantOwned(UUID applicantUserId, UUID documentId) {
         Document document = findOrThrow(documentId);
-        if (
-            !(document instanceof ApplicantDocument applicantDocument) ||
-            !applicantDocument.getApplicant().getUserId().equals(applicantUserId)
-        ) {
+        if (!(document instanceof ApplicantDocument applicantDocument)) {
+            throw EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId);
+        }
+        UUID ownerUserId = OptionalUtils.getOrThrow(
+            documentRepository.findApplicantOwnerUserId(documentId),
+            () -> EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId)
+        );
+        if (!ownerUserId.equals(applicantUserId)) {
             throw EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId);
         }
         return applicantDocument;
@@ -406,22 +414,38 @@ public class DocumentService {
      * Access rules:
      * - Application-scoped: professors and employees with job access; otherwise the owning applicant or admin.
      * - Applicant-scoped: the owning applicant or admin.
+     *
+     * Uses dedicated repository queries to fetch only the access-check data so the method does not
+     * require an open transaction.
      */
     private void verifyAccess(Document document) {
+        UUID documentId = document.getDocumentId();
+
         // 1) Application-scoped document: staff with job access OR the owning applicant / admin
-        if (document instanceof ApplicationDocument applicationDocument) {
-            Application application = applicationDocument.getApplication();
+        if (document instanceof ApplicationDocument) {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
-                currentUserService.verifyJobAccess(application.getJob());
+                Job job = OptionalUtils.getOrThrow(
+                    documentRepository.findJobForApplicationDocument(documentId),
+                    () -> EntityNotFoundException.forId("Job", documentId)
+                );
+                currentUserService.verifyJobAccess(job);
                 return;
             }
-            currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+            UUID ownerUserId = OptionalUtils.getOrThrow(
+                documentRepository.findApplicationOwnerUserId(documentId),
+                () -> EntityNotFoundException.forId("ApplicationDocument", documentId)
+            );
+            currentUserService.isCurrentUserOrAdmin(ownerUserId);
             return;
         }
 
         // 2) Applicant-scoped document: only the owning applicant or admin
-        if (document instanceof ApplicantDocument applicantDocument) {
-            currentUserService.isCurrentUserOrAdmin(applicantDocument.getApplicant().getUserId());
+        if (document instanceof ApplicantDocument) {
+            UUID ownerUserId = OptionalUtils.getOrThrow(
+                documentRepository.findApplicantOwnerUserId(documentId),
+                () -> EntityNotFoundException.forId("ApplicantDocument", documentId)
+            );
+            currentUserService.isCurrentUserOrAdmin(ownerUserId);
             return;
         }
 
@@ -431,13 +455,23 @@ public class DocumentService {
 
     /**
      * Verifies the current user is allowed to delete the given document.
-     * Both subtypes require the owning applicant or an admin.
+     * Both subtypes require the owning applicant or an admin. Uses scalar repository queries
+     * so the method does not require an open transaction.
      */
     private void verifyDeletePermission(Document document) {
-        if (document instanceof ApplicationDocument applicationDocument) {
-            currentUserService.isCurrentUserOrAdmin(applicationDocument.getApplication().getApplicant().getUserId());
-        } else if (document instanceof ApplicantDocument applicantDocument) {
-            currentUserService.isCurrentUserOrAdmin(applicantDocument.getApplicant().getUserId());
+        UUID documentId = document.getDocumentId();
+        if (document instanceof ApplicationDocument) {
+            UUID ownerUserId = OptionalUtils.getOrThrow(
+                documentRepository.findApplicationOwnerUserId(documentId),
+                () -> EntityNotFoundException.forId("ApplicationDocument", documentId)
+            );
+            currentUserService.isCurrentUserOrAdmin(ownerUserId);
+        } else if (document instanceof ApplicantDocument) {
+            UUID ownerUserId = OptionalUtils.getOrThrow(
+                documentRepository.findApplicantOwnerUserId(documentId),
+                () -> EntityNotFoundException.forId("ApplicantDocument", documentId)
+            );
+            currentUserService.isCurrentUserOrAdmin(ownerUserId);
         } else {
             throw new AccessDeniedException("Cannot verify delete permission for document without owner association");
         }
