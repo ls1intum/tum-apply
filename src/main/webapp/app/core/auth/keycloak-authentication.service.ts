@@ -498,7 +498,7 @@ export class KeycloakAuthenticationService {
   }
 
   private getPasskeyRelyingPartyId(): string {
-    const relyingPartyId = environment.keycloak.relyingPartyId;
+    const relyingPartyId = this.config.keycloak.relyingPartyId;
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
   }
 

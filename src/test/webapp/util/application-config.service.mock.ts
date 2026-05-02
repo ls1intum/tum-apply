@@ -21,6 +21,7 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
       url: 'http://mock-keycloak',
       realm: 'mock-realm',
       clientId: 'mock-client',
+      relyingPartyId: '',
       ...overrides.keycloak,
     },
     otp: {

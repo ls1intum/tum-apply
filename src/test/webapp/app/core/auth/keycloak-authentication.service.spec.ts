@@ -1,9 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
-import { environment } from 'app/environments/environment';
 import { createKeycloakMock, KeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
-import { createApplicationConfigServiceMock, provideApplicationConfigServiceMock } from 'util/application-config.service.mock';
+import {
+  ApplicationConfigServiceMock,
+  createApplicationConfigServiceMock,
+  provideApplicationConfigServiceMock,
+} from 'util/application-config.service.mock';
 import { MessageService } from 'primeng/api';
 import { provideTranslateMock } from 'util/translate.mock';
 
@@ -17,17 +20,18 @@ describe('KeycloakAuthenticationService', () => {
   let service: KeycloakAuthenticationService;
   let keycloakInstance: KeycloakMock;
   let fetchMock: ReturnType<typeof vi.fn>;
-  const originalRelyingPartyId = environment.keycloak.relyingPartyId;
+  let applicationConfigService: ApplicationConfigServiceMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
     keycloakInstance = createKeycloakMock();
+    applicationConfigService = createApplicationConfigServiceMock();
     TestBed.configureTestingModule({
       providers: [
         KeycloakAuthenticationService,
-        provideApplicationConfigServiceMock(createApplicationConfigServiceMock()),
+        provideApplicationConfigServiceMock(applicationConfigService),
         provideKeycloakMock(keycloakInstance),
         { provide: MessageService, useValue: { add: vi.fn() } },
         provideTranslateMock(),
@@ -38,7 +42,6 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   afterEach(() => {
-    environment.keycloak.relyingPartyId = originalRelyingPartyId;
     vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
@@ -296,13 +299,13 @@ describe('KeycloakAuthenticationService', () => {
 
   describe('passkey credentials', () => {
     it('should use the configured relying party id for passkey registration', () => {
-      environment.keycloak.relyingPartyId = 'staging.apply.in.tum.de';
+      applicationConfigService.keycloak!.relyingPartyId = 'staging.apply.in.tum.de';
 
       expect(service['getPasskeyRelyingPartyId']()).toBe('staging.apply.in.tum.de');
     });
 
     it('should fall back to the current hostname when relying party id is not configured', () => {
-      environment.keycloak.relyingPartyId = '   ';
+      applicationConfigService.keycloak!.relyingPartyId = '   ';
 
       expect(service['getPasskeyRelyingPartyId']()).toBe(window.location.hostname);
     });

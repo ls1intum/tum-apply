@@ -31,7 +31,7 @@ describe('ApplicationConfigService', () => {
   describe('setAppConfig & getAppConfig', () => {
     it('should store a frozen clone and not the original reference', () => {
       const input = {
-        keycloak: { url: 'http://kc', realm: 'tumapply', clientId: 'client' },
+        keycloak: { url: 'http://kc', realm: 'tumapply', clientId: 'client', relyingPartyId: 'localhost' },
         otp: { length: 3, ttlSeconds: 120, resendCooldownSeconds: 30 },
       };
 
@@ -48,8 +48,8 @@ describe('ApplicationConfigService', () => {
     });
 
     it('should override previous config on subsequent calls', () => {
-      service.setAppConfig({ keycloak: { url: 'first', realm: 'r', clientId: 'c' } });
-      service.setAppConfig({ keycloak: { url: 'second', realm: 'r', clientId: 'c' } });
+      service.setAppConfig({ keycloak: { url: 'first', realm: 'r', clientId: 'c', relyingPartyId: '' } });
+      service.setAppConfig({ keycloak: { url: 'second', realm: 'r', clientId: 'c', relyingPartyId: '' } });
       expect(service.getAppConfig().keycloak?.url).toBe('second');
     });
   });
@@ -58,24 +58,24 @@ describe('ApplicationConfigService', () => {
     it('should return same defaults when sub-objects are missing', () => {
       service.setAppConfig({});
 
-      expect(service.keycloak).toEqual({ url: '', realm: '', clientId: '' });
+      expect(service.keycloak).toEqual({ url: '', realm: '', clientId: '', relyingPartyId: '' });
       expect(service.otp).toEqual({ length: 4, ttlSeconds: 300, resendCooldownSeconds: 60 });
     });
 
     it('should return provided values when present', () => {
       service.setAppConfig({
-        keycloak: { url: 'http://kc', realm: 'tum', clientId: 'cli' },
+        keycloak: { url: 'http://kc', realm: 'tum', clientId: 'cli', relyingPartyId: 'apply.in.tum.de' },
         otp: { length: 8, ttlSeconds: 600, resendCooldownSeconds: 120 },
       });
 
-      expect(service.keycloak).toEqual({ url: 'http://kc', realm: 'tum', clientId: 'cli' });
+      expect(service.keycloak).toEqual({ url: 'http://kc', realm: 'tum', clientId: 'cli', relyingPartyId: 'apply.in.tum.de' });
       expect(service.otp).toEqual({ length: 8, ttlSeconds: 600, resendCooldownSeconds: 120 });
     });
   });
 
   describe('getter results are copies (no internal mutation)', () => {
     it('mutating keycloak getter result must not change stored config', () => {
-      service.setAppConfig({ keycloak: { url: 'A', realm: 'R', clientId: 'C' } });
+      service.setAppConfig({ keycloak: { url: 'A', realm: 'R', clientId: 'C', relyingPartyId: '' } });
       const k = service.keycloak;
       k.url = 'B';
       expect(service.keycloak.url).toBe('A');

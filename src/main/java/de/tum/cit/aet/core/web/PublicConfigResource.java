@@ -30,6 +30,7 @@ public class PublicConfigResource {
         keycloak.put("url", env.getProperty("keycloak.url"));
         keycloak.put("realm", env.getProperty("keycloak.realm"));
         keycloak.put("clientId", env.getProperty("keycloak.client-id"));
+        keycloak.put("relyingPartyId", env.getProperty("keycloak.relying-party-id", ""));
         response.put("keycloak", keycloak);
 
         Map<String, Object> otp = new HashMap<>();

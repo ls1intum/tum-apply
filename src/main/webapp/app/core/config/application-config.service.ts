@@ -20,6 +20,7 @@ export class ApplicationConfigService {
       url: keycloak?.url ?? '',
       realm: keycloak?.realm ?? '',
       clientId: keycloak?.clientId ?? '',
+      relyingPartyId: keycloak?.relyingPartyId ?? '',
     };
   }
 
