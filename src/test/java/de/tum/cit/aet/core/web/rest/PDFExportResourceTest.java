@@ -153,6 +153,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("workload", "Workload");
         labels.put("hoursPerWeek", " hours/week");
         labels.put("duration", "Duration");
+        labels.put("year", " year");
         labels.put("years", " years");
         labels.put("fundingType", "Funding Type");
         labels.put("startDate", "Start Date");

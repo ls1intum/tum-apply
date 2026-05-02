@@ -9,6 +9,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { TranslateDirective } from 'app/shared/language';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { JobCardDTOApplicationStateEnum, JobCardDTOSubjectAreaEnum } from 'app/generated/model/job-card-dto';
 
 import * as DropDownOptions from '../../dropdown-options';
@@ -21,7 +22,16 @@ export const ApplicationStatusExtended = {
 @Component({
   selector: 'jhi-job-card',
   templateUrl: './job-card.component.html',
-  imports: [FontAwesomeModule, CardModule, TooltipModule, TranslateModule, TranslateDirective, LocalizedDatePipe, UserAvatarComponent],
+  imports: [
+    FontAwesomeModule,
+    CardModule,
+    TooltipModule,
+    TranslateModule,
+    TranslateDirective,
+    LocalizedDatePipe,
+    UserAvatarComponent,
+    TagComponent,
+  ],
 })
 export class JobCardComponent {
   jobId = input<string>('');
@@ -68,6 +78,15 @@ export class JobCardComponent {
       return undefined;
     }
     return duration;
+  });
+
+  /**
+   * True when the applicant has already submitted an application for this job.
+   * Drafts (`SAVED`) are excluded so the user can still come back to a draft.
+   */
+  readonly hasApplied = computed(() => {
+    const state = this.applicationState();
+    return state !== ApplicationStatusExtended.NotYetApplied && state !== JobCardDTOApplicationStateEnum.Saved;
   });
 
   private router = inject(Router);
