@@ -174,10 +174,19 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
-                @if (job.startDateByArrangement) {
+                @if (job.startDate) {
+                  <span class="value">
+                    {{ job.startDate | localizedDate }}
+                    @if (job.startDateByArrangement) {
+                      <span class="text-text-secondary"
+                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.startDate.byArrangement"></span
+                      ></span>
+                    }
+                  </span>
+                } @else if (job.startDateByArrangement) {
                   <span class="value" jhiTranslate="jobCreationForm.basicInformationSection.startDate.byArrangement"></span>
                 } @else {
-                  <span class="value">{{ (job.startDate | localizedDate) || '-' }}</span>
+                  <span class="value">-</span>
                 }
               </div>
               @if (job.endDate) {

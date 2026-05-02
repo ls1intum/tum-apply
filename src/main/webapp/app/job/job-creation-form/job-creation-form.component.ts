@@ -706,18 +706,6 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Toggles the "start date by arrangement" flag and clears the start date when enabled.
-   *
-   * @param value the new checkbox value
-   */
-  onStartDateByArrangementChange(value: boolean): void {
-    this.positionDetailsForm.get('startDateByArrangement')?.setValue(value);
-    if (value) {
-      this.positionDetailsForm.get('startDate')?.setValue('');
-    }
-  }
-
-  /**
    * Performs a save after changing the step.
    */
   async onStepChange(): Promise<void> {
@@ -1232,7 +1220,7 @@ export class JobCreationFormComponent {
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
-      startDate: positionDetailsValue.startDateByArrangement ? undefined : (positionDetailsValue.startDate ?? undefined),
+      startDate: positionDetailsValue.startDate ?? undefined,
       startDateByArrangement: positionDetailsValue.startDateByArrangement ?? false,
       endDate: positionDetailsValue.applicationDeadline ?? undefined,
       workload: positionDetailsValue.workload,

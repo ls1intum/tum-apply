@@ -252,13 +252,12 @@
                 [shouldTranslate]="true"
                 [width]="'100%'"
                 [errorEnabled]="true"
-                [disabled]="positionDetailsForm.get('startDateByArrangement')?.value === true"
               />
               <div class="mt-2">
                 <jhi-checkbox
                   label="jobCreationForm.basicInformationSection.startDate.byArrangement"
                   [model]="positionDetailsForm.get('startDateByArrangement')?.value"
-                  (modelChange)="onStartDateByArrangementChange($event)"
+                  (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
                   [shouldTranslate]="true"
                 />
               </div>
