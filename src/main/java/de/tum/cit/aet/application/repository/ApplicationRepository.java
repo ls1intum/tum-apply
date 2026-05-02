@@ -75,8 +75,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
-                a.motivation,
-                NULL
+                a.motivation
             )
             FROM Application a
             LEFT JOIN a.applicant ap
@@ -141,8 +140,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
-                a.motivation,
-                NULL
+                a.motivation
             )
             FROM Application a
             LEFT JOIN a.job j

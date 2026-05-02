@@ -83,17 +83,17 @@
                 </span>
               }
               @if (shouldShowButton()) {
-                <button
-                  type="button"
-                  class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
-                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: var(--p-background-default);'"
-                  (click)="onGenderDecoderClick()"
-                  [pTooltip]="'genderDecoder.openAnaylsis' | translate"
-                  tooltipPosition="top"
+                <jhi-info-icon
+                  class="[&_button]:!float-none [&_button]:!h-auto [&_button]:!w-auto [&_button]:!p-0"
+                  [clickable]="true"
+                  size="sm"
                   [disabled]="!analysisResult()"
-                >
-                  ?
-                </button>
+                  tooltip="genderDecoder.openAnaylsis"
+                  tooltipPosition="top"
+                  ariaLabel="genderDecoder.openAnaylsis"
+                  [shouldTranslate]="true"
+                  (clicked)="onGenderDecoderClick()"
+                />
               }
             </span>
           }
