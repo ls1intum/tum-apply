@@ -480,7 +480,11 @@ public class PDFExportService {
     private String buildMetadataText(Map<String, String> labels) {
         StringBuilder metadata = new StringBuilder();
 
-        String currentDateTime = LocalDateTime.now().format(DATETIME_FORMATTER);
+        // Render the footer timestamp in Munich time. Production JVMs run on UTC, so a plain
+        // LocalDateTime.now() footer is one hour behind during CET (or two during CEST), which
+        // is misleading for the user reading the PDF. Matches the pattern used by the other
+        // date helpers in this service.
+        String currentDateTime = LocalDateTime.now(ZoneId.of("Europe/Berlin")).format(DATETIME_FORMATTER);
         metadata.append(labels.get("thisDocumentWasGeneratedOn"));
         metadata.append(currentDateTime);
 
