@@ -37,6 +37,7 @@ class HighlightBlot extends Inline {
   // CSS class that allows Quill to identify elements in DOM
   static className = 'compliance-highlight';
 
+  // Tailwind classes applied to every highlighted text span
   static baseClasses = [
     'border-b-2',
     '[border-bottom-style:solid]',
@@ -48,8 +49,8 @@ class HighlightBlot extends Inline {
     'cursor-pointer',
   ];
 
+  // Fixed color classes for each compliance issue category.
   private static readonly categoryStyles: Record<ComplianceIssueCategoryEnum, string[]> = {
-    // Tailwind classes applied to every highlighted text span
     CRITICAL_AGG: [
       '[border-bottom-color:var(--color-compliance-critical-border)]',
       'hover:[background-color:var(--color-compliance-critical-bg)]',

@@ -151,7 +151,8 @@
       "transparency": "Improve transparency and clarity",
       "dsgvo": "Fix Data privacy",
       "publicSector": "Check Academic Law",
-      "filterByCategory": "Filter by category"
+      "filterByCategory": "Filter by category",
+      "complianceTooltipText": "Colors indicate category, not severity. All items are equally important."
     },
     "positionDetailsSection": {
       "jobDescription": {

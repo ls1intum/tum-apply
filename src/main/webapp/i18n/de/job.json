@@ -151,7 +151,8 @@
       "transparency": "Transparenz verbessern",
       "dsgvo": "Datenschutz anpassen",
       "publicSector": "Wissenschaftsrecht prüfen",
-      "filterByCategory": "Nach Kategorie filtern"
+      "filterByCategory": "Nach Kategorie filtern",
+      "complianceTooltipText": "Farben dienen nur der Kategorisierung, nicht der Priorisierung. Es gibt keine Unterschiede in der Wichtigkeit."
     },
     "positionDetailsSection": {
       "jobDescription": {
