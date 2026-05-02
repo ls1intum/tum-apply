@@ -69,6 +69,10 @@ public class ApplicationService {
     /**
      * Creates a new job application for the given applicant and job.
      * If an application already exists for the applicant and job, an exception is thrown.
+     *
+     * @param jobId the id of the job
+     * @return the created ApplicationForApplicantDTO
+     * @throws OperationNotAllowedException if the applicant has already applied for the job
      */
     @Transactional
     public ApplicationForApplicantDTO createApplication(UUID jobId) {
@@ -132,10 +136,27 @@ public class ApplicationService {
         return getFromEntity(savedApplication);
     }
 
+    /**
+     * Retrieves an application by its ID.
+     *
+     * @param applicationId the UUID of the application
+     * @return the ApplicationForApplicantDTO with the given ID
+     */
     public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
         return assertCanViewApplicationDTO(applicationId);
     }
 
+    /**
+     * Updates an existing application with new information.
+     * Updates are stored in the application's snapshot fields, not in the applicant entity.
+     * When the application is sent, the snapshot data is synced back to the applicant profile.
+     *
+     * <p>Rich-text fields (motivation, specialSkills, projects) are sanitized on write
+     * to remove unsafe HTML before persisting.</p>
+     *
+     * @param updateApplicationDTO DTO containing updated application data
+     * @return the updated ApplicationForApplicantDTO
+     */
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
@@ -185,6 +206,12 @@ public class ApplicationService {
         return ApplicationForApplicantDTO.getFromEntity(application);
     }
 
+    /**
+     * Syncs snapshot data from the application back to the applicant profile.
+     * Ensures the applicant's profile is updated with the latest data when an application is sent.
+     *
+     * @param application the application containing the snapshot data to sync
+     */
     private void syncSnapshotDataToApplicant(Application application) {
         Applicant applicant = application.getApplicant();
         User user = applicant.getUser();
@@ -208,6 +235,17 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Syncs documents of a specific type from the application to the applicant profile.
+     * Replaces existing documents in the applicant profile with those from the application.
+     *
+     * <p>The replacement is intentional: after submission, the profile becomes the source for
+     * prefilling future applications with the latest confirmed document set.</p>
+     *
+     * @param application  the application containing the documents
+     * @param applicant    the applicant whose profile should receive the documents
+     * @param documentType the type of documents to sync
+     */
     private void syncDocumentsByType(Application application, Applicant applicant, DocumentType documentType) {
         Set<ApplicationDocument> applicationDocs = documentService.listForApplicationByType(application, documentType);
         Set<ApplicantDocument> applicantDocs = documentService.listForApplicantByType(applicant, documentType);
@@ -253,6 +291,11 @@ public class ApplicationService {
         sender.sendAsync(email);
     }
 
+    /**
+     * Withdraws an application by setting its state to WITHDRAWN.
+     *
+     * @param applicationId the UUID of the application to withdraw
+     */
     @Transactional
     public void withdrawApplication(UUID applicationId) {
         Application application = assertCanManageApplication(applicationId);
@@ -273,6 +316,11 @@ public class ApplicationService {
         sender.sendAsync(email);
     }
 
+    /**
+     * Deletes an application by its ID.
+     *
+     * @param applicationId the UUID of the application to delete
+     */
     @Transactional
     public void deleteApplication(UUID applicationId) {
         assertCanManageApplication(applicationId);
@@ -281,6 +329,8 @@ public class ApplicationService {
 
     /**
      * Deletes an application document by its ID.
+     *
+     * @param documentId the ID of the document to delete
      */
     @Transactional
     public void deleteDocument(UUID documentId) {
@@ -289,33 +339,77 @@ public class ApplicationService {
         documentService.deleteById(documentId);
     }
 
+    /**
+     * Retrieves a paginated list of application overviews for the current applicant.
+     *
+     * @param pageDTO the pagination information
+     * @param sortDTO the sorting configuration
+     * @return a page of application overview DTOs
+     */
     public Page<ApplicationOverviewDTO> getAllApplications(PageDTO pageDTO, SortDTO sortDTO) {
         UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS, true);
         return applicationRepository.findApplicationsByApplicant(userId, pageable);
     }
 
+    /**
+     * Retrieves all CV documents attached to the given application.
+     *
+     * @param application the application to retrieve CVs for
+     * @return set of CV documents
+     */
     public Set<ApplicationDocument> getCVs(Application application) {
         return documentService.listForApplicationByType(application, DocumentType.CV);
     }
 
+    /**
+     * Retrieves all reference documents attached to the given application.
+     *
+     * @param application the application to retrieve references for
+     * @return set of reference documents
+     */
     public Set<ApplicationDocument> getReferences(Application application) {
         return documentService.listForApplicationByType(application, DocumentType.REFERENCE);
     }
 
+    /**
+     * Retrieves all bachelor transcript documents attached to the given application.
+     *
+     * @param application the application to retrieve bachelor transcripts for
+     * @return set of bachelor transcript documents
+     */
     public Set<ApplicationDocument> getBachelorTranscripts(Application application) {
         return documentService.listForApplicationByType(application, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
+    /**
+     * Retrieves all master transcript documents attached to the given application.
+     *
+     * @param application the application to retrieve master transcripts for
+     * @return set of master transcript documents
+     */
     public Set<ApplicationDocument> getMasterTranscripts(Application application) {
         return documentService.listForApplicationByType(application, DocumentType.MASTER_TRANSCRIPT);
     }
 
+    /**
+     * Uploads a single CV document and attaches it to the application.
+     *
+     * @param cv          the uploaded CV file
+     * @param application the application the CV belongs to
+     */
     private void uploadCV(MultipartFile cv, Application application) {
         String name = Optional.ofNullable(cv.getOriginalFilename()).orElse("<empty>.pdf");
         documentService.uploadApplicationDocument(cv, DocumentType.CV, name, application);
     }
 
+    /**
+     * Uploads multiple transcript documents and attaches them to the application.
+     *
+     * @param transcripts the uploaded files
+     * @param type        the type of the documents
+     * @param application the application the documents belong to
+     */
     private void uploadAdditionalTranscripts(List<MultipartFile> transcripts, DocumentType type, Application application) {
         for (MultipartFile file : transcripts) {
             String name = Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf");
@@ -325,6 +419,11 @@ public class ApplicationService {
 
     /**
      * Uploads documents for an application of the given type and returns the resulting list.
+     *
+     * @param applicationId the UUID of the application
+     * @param documentType  the type of documents to upload
+     * @param files         the files to upload
+     * @return the document IDs after upload, grouped by type
      */
     public Set<DocumentInformationHolderDTO> getDocumentIdsOfApplicationAndType(
         UUID applicationId,
@@ -353,6 +452,10 @@ public class ApplicationService {
 
     /**
      * Returns the document IDs grouped by category for the given application.
+     *
+     * @param applicationId the UUID of the application
+     * @return an {@link ApplicationDocumentIdsDTO} containing the categorized document IDs
+     * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentIdsOfApplication(UUID applicationId) {
         Application application = assertCanViewApplication(applicationId);
@@ -380,6 +483,12 @@ public class ApplicationService {
         return dto;
     }
 
+    /**
+     * Retrieves the detail DTO for the given application.
+     *
+     * @param applicationId the UUID of the application
+     * @return the {@link ApplicationDetailDTO}
+     */
     public ApplicationDetailDTO getApplicationDetail(UUID applicationId) {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
@@ -390,6 +499,9 @@ public class ApplicationService {
 
     /**
      * Renames an application document.
+     *
+     * @param documentId the ID of the document to rename
+     * @param newName    the new name to set
      */
     @Transactional
     public void renameDocument(UUID documentId, String newName) {

@@ -37,6 +37,12 @@ public class ApplicantService {
         return applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
     }
 
+    /**
+     * Retrieves the current user's applicant profile with all personal information.
+     * Creates an empty applicant profile if none exists yet.
+     *
+     * @return the ApplicantDTO with current user and applicant data
+     */
     @Transactional
     public ApplicantDTO getApplicantProfile() {
         UUID userId = currentUserService.getUserId();
@@ -47,6 +53,13 @@ public class ApplicantService {
         return ApplicantDTO.getFromEntity(findOrCreateApplicant(userId));
     }
 
+    /**
+     * Updates the current user's applicant profile with personal information.
+     * Writes directly to {@code User} and {@code Applicant} entities.
+     *
+     * @param dto the updated applicant data
+     * @return the updated ApplicantDTO
+     */
     @Transactional
     public ApplicantDTO updateApplicantProfile(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
@@ -65,6 +78,12 @@ public class ApplicantService {
         return ApplicantDTO.getFromEntity(applicant);
     }
 
+    /**
+     * Updates only the current user's personal information segment.
+     *
+     * @param dto the updated applicant personal information
+     * @return the updated ApplicantDTO
+     */
     @Transactional
     public ApplicantDTO updateApplicantPersonalInformation(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
@@ -82,6 +101,12 @@ public class ApplicantService {
         return ApplicantDTO.getFromEntity(applicant);
     }
 
+    /**
+     * Updates only the current user's degree/document settings segment.
+     *
+     * @param dto the updated applicant document settings
+     * @return the updated ApplicantDTO
+     */
     @Transactional
     public ApplicantDTO updateApplicantDocumentSettings(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
@@ -98,6 +123,10 @@ public class ApplicantService {
 
     /**
      * Uploads applicant-profile documents of a given type and returns the resulting document list.
+     *
+     * @param documentType the type of documents to upload
+     * @param files        the files to upload
+     * @return the updated document list for that type
      */
     @Transactional
     public Set<DocumentInformationHolderDTO> uploadApplicantProfileDocuments(DocumentType documentType, List<MultipartFile> files) {
@@ -123,7 +152,10 @@ public class ApplicantService {
     }
 
     /**
-     * Retrieves the current applicant profile's document IDs grouped by type.
+     * Retrieves the current applicant profile's document IDs grouped by document type.
+     * Creates an empty applicant profile if none exists yet.
+     *
+     * @return an {@link ApplicationDocumentIdsDTO} containing the applicant profile documents
      */
     @Transactional
     public ApplicationDocumentIdsDTO getApplicantProfileDocumentIds() {
@@ -144,6 +176,8 @@ public class ApplicantService {
 
     /**
      * Deletes an applicant-profile document.
+     *
+     * @param documentId the id of the document to delete
      */
     public void deleteApplicantProfileDocument(UUID documentId) {
         UUID userId = currentUserService.getUserId();
@@ -156,6 +190,9 @@ public class ApplicantService {
 
     /**
      * Renames an applicant-profile document.
+     *
+     * @param documentId the id of the document to rename
+     * @param newName    the new name to set
      */
     public void renameApplicantProfileDocument(UUID documentId, String newName) {
         UUID userId = currentUserService.getUserId();
@@ -166,27 +203,64 @@ public class ApplicantService {
         documentService.renameApplicantDocument(userId, documentId, newName);
     }
 
+    /**
+     * Retrieves all CV documents for the given applicant.
+     *
+     * @param applicant the applicant to retrieve CVs for
+     * @return set of CV documents
+     */
     public Set<ApplicantDocument> getCVs(Applicant applicant) {
         return documentService.listForApplicantByType(applicant, DocumentType.CV);
     }
 
+    /**
+     * Retrieves all reference documents for the given applicant.
+     *
+     * @param applicant the applicant to retrieve references for
+     * @return set of reference documents
+     */
     public Set<ApplicantDocument> getReferences(Applicant applicant) {
         return documentService.listForApplicantByType(applicant, DocumentType.REFERENCE);
     }
 
+    /**
+     * Retrieves all bachelor transcript documents for the given applicant.
+     *
+     * @param applicant the applicant to retrieve bachelor transcripts for
+     * @return set of bachelor transcript documents
+     */
     public Set<ApplicantDocument> getBachelorTranscripts(Applicant applicant) {
         return documentService.listForApplicantByType(applicant, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
+    /**
+     * Retrieves all master transcript documents for the given applicant.
+     *
+     * @param applicant the applicant to retrieve master transcripts for
+     * @return set of master transcript documents
+     */
     public Set<ApplicantDocument> getMasterTranscripts(Applicant applicant) {
         return documentService.listForApplicantByType(applicant, DocumentType.MASTER_TRANSCRIPT);
     }
 
+    /**
+     * Uploads a single CV document for the given applicant.
+     *
+     * @param cv        the uploaded CV file
+     * @param applicant the applicant the CV belongs to
+     */
     public void uploadCV(MultipartFile cv, Applicant applicant) {
         String name = Optional.ofNullable(cv.getOriginalFilename()).orElse("<empty>.pdf");
         documentService.uploadApplicantDocument(cv, DocumentType.CV, name, applicant);
     }
 
+    /**
+     * Uploads multiple documents of the given type for the applicant.
+     *
+     * @param files     the uploaded files
+     * @param type      the type of the documents
+     * @param applicant the applicant the documents belong to
+     */
     public void uploadTranscripts(List<MultipartFile> files, DocumentType type, Applicant applicant) {
         for (MultipartFile file : files) {
             String name = Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf");
