@@ -878,8 +878,7 @@ export class JobCreationFormComponent {
     if (untracked(() => this.isGeneratingDraft() || (this.isTranslating() && this.translationTargetLang() === lang))) return;
     const filtered = filter ? issues.filter(i => i.category === filter) : issues;
 
-    const content = untracked(() => (lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE()));
-    editor.forceUpdate(content, () => this.applyHighlights(filtered, lang));
+    this.applyHighlights(filtered, lang);
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1596,7 +1595,9 @@ export class JobCreationFormComponent {
     // 2) Cancel any active translation and set up fresh state
     this.cancelTranslation();
     const abortController = new AbortController();
-    this.activeTranslationRequest = { sourceLang: currentLang, sourceText: text, targetLang };
+    // If a newer request exists, keep it to avoid breaking duplicate checks.
+    const activeRequest = { sourceLang: currentLang, sourceText: text, targetLang };
+    this.activeTranslationRequest = activeRequest;
     this.translationAbortController = abortController;
     this.isTranslating.set(true);
     this.translationTargetLang.set(targetLang);
@@ -1679,9 +1680,6 @@ export class JobCreationFormComponent {
         this.translationAbortController = undefined;
       }
       // Clear only if this is still the same request.
-      // If a newer one exists, keep it to avoid breaking duplicate checks.
-      const activeRequest = { sourceLang: currentLang, sourceText: text, targetLang };
-      this.activeTranslationRequest = activeRequest;
       if (this.activeTranslationRequest === activeRequest) {
         this.activeTranslationRequest = undefined;
       }
