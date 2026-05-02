@@ -25,25 +25,6 @@ import { AccountService } from '../../../core/auth/account.service';
 const EMPTY_TRANSLATION: EmailTemplateTranslationDTO = { subject: '', body: '' };
 const AUTOSAVE_DELAY_MS = 3000;
 
-/**
- * EmailTypes that can be customised per research group via the admin templates page.
- * Must stay in sync with `EmailType.customizable = true` on the server.
- */
-const CUSTOMIZABLE_EMAIL_TYPES: readonly EmailTemplateDTOEmailTypeEnum[] = [
-  EmailTemplateDTOEmailTypeEnum.ApplicationAccepted,
-  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedJobFilled,
-  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedJobOutdated,
-  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedFailedRequirements,
-  EmailTemplateDTOEmailTypeEnum.ApplicationRejectedOtherReason,
-  EmailTemplateDTOEmailTypeEnum.ApplicationSent,
-  EmailTemplateDTOEmailTypeEnum.InterviewInvitation,
-  EmailTemplateDTOEmailTypeEnum.ResearchGroupMemberAdded,
-  EmailTemplateDTOEmailTypeEnum.InterviewLocationChanged,
-  EmailTemplateDTOEmailTypeEnum.InterviewSelfSchedulingInvitation,
-  EmailTemplateDTOEmailTypeEnum.InterviewCancelled,
-  EmailTemplateDTOEmailTypeEnum.InterviewRescheduleRequested,
-];
-
 @Component({
   selector: 'jhi-research-group-template-edit',
   imports: [
@@ -81,12 +62,15 @@ export class ResearchGroupTemplateEdit {
 
   readonly currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
   readonly templateId = computed(() => this.paramMapSignal().get('templateId') ?? undefined);
+  readonly customizableEmailTypes = signal<EmailTemplateDTOEmailTypeEnum[]>([]);
+  readonly alreadyCustomEmailTypes = signal<Set<EmailTemplateDTOEmailTypeEnum>>(new Set());
+
   readonly preselectedEmailTypeFromQuery = computed<EmailTemplateDTOEmailTypeEnum | undefined>(() => {
     const raw = this.queryParamMapSignal().get('emailType') ?? undefined;
     if (raw === undefined) {
       return undefined;
     }
-    return CUSTOMIZABLE_EMAIL_TYPES.find(v => v === raw);
+    return this.customizableEmailTypes().find(v => v === raw);
   });
 
   readonly formModel = signal<EmailTemplateDTO>({
@@ -111,12 +95,16 @@ export class ResearchGroupTemplateEdit {
   readonly english = computed(() => this.formModel().english ?? EMPTY_TRANSLATION);
   readonly german = computed(() => this.formModel().german ?? EMPTY_TRANSLATION);
 
-  readonly selectOptions = computed<SelectOption[]>(() =>
-    CUSTOMIZABLE_EMAIL_TYPES.map(v => ({
-      name: `researchGroup.emailTemplates.messageType.${v}`,
-      value: v,
-    })),
-  );
+  readonly selectOptions = computed<SelectOption[]>(() => {
+    const taken = this.alreadyCustomEmailTypes();
+    const currentType = this.formModel().emailType;
+    return this.customizableEmailTypes()
+      .filter(v => !taken.has(v) || v === currentType)
+      .map(v => ({
+        name: `researchGroup.emailTemplates.messageType.${v}`,
+        value: v,
+      }));
+  });
 
   preselectedEmailType = computed(() => this.selectOptions().find(o => o.value === (this.formModel().emailType ?? '')) ?? undefined);
 
@@ -218,6 +206,24 @@ export class ResearchGroupTemplateEdit {
 
   constructor() {
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
+    void this.loadCustomizableEmailTypes();
+  }
+
+  private async loadCustomizableEmailTypes(): Promise<void> {
+    try {
+      const all = await firstValueFrom(this.emailTemplateApi.getTemplates());
+      const types = Array.from(new Set(all.map(t => t.emailType).filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined)));
+      const taken = new Set(
+        all
+          .filter(t => t.isCustom === true)
+          .map(t => t.emailType)
+          .filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined),
+      );
+      this.customizableEmailTypes.set(types);
+      this.alreadyCustomEmailTypes.set(taken);
+    } catch {
+      this.toastService.showError({ detail: 'Failed to load email types' });
+    }
   }
 
   readonly beforeUnloadHandler = (): void => {
@@ -227,7 +233,7 @@ export class ResearchGroupTemplateEdit {
   };
 
   setSelectedEmailType(selection: SelectOption): void {
-    const matched = CUSTOMIZABLE_EMAIL_TYPES.find(v => v === selection.value);
+    const matched = this.customizableEmailTypes().find(v => v === selection.value);
     this.formModel.update(prev => this.withEmailType(prev, matched));
   }
 

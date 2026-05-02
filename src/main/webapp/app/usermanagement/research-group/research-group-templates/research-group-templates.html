@@ -11,7 +11,7 @@
   </div>
 
   <div class="table-wrapper">
-    <jhi-dynamic-table [columns]="columns()" [data]="tableData()" />
+    <jhi-dynamic-table [columns]="columns()" [data]="tableData()" [rows]="100" [totalRecords]="tableData().length" />
 
     <ng-template #actionsTemplate let-template>
       <div class="flex justify-end gap-1">

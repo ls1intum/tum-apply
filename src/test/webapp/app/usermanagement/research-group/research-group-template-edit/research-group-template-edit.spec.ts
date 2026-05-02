@@ -14,7 +14,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock } from 'util/router.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
-class FakeApi {
+class EmailTemplateResourceApiMock {
   getTemplate = vi.fn();
   getTemplates = vi.fn();
   createTemplate = vi.fn();
@@ -28,12 +28,12 @@ class ResizeObserverMock {
 }
 
 describe('ResearchGroupTemplateEdit', () => {
-  let api: FakeApi;
+  let api: EmailTemplateResourceApiMock;
 
   beforeEach(() => {
     global.ResizeObserver = ResizeObserverMock;
 
-    api = new FakeApi();
+    api = new EmailTemplateResourceApiMock();
     api.getTemplate.mockReturnValue(of({}));
     api.getTemplates.mockReturnValue(of([]));
 

@@ -56,6 +56,7 @@
       "deleteSuccess": "Template deleted successfully.",
       "deleteDefaultDisabled": "System default templates cannot be deleted.",
       "deleteFailed": "Failed to delete template. Please try again.",
+      "duplicateError": "A custom template for this email type already exists.",
       "signature": "Signature",
       "systemDefault": "System default",
       "tableColumns": {
@@ -77,10 +78,10 @@
       "unsaved": "Changes not saved",
       "messageType": {
         "APPLICATION_ACCEPTED": "Application accepted",
-        "APPLICATION_REJECTED_JOB_FILLED": "Application rejected — Job already filled",
-        "APPLICATION_REJECTED_JOB_OUTDATED": "Application rejected — Job outdated",
-        "APPLICATION_REJECTED_FAILED_REQUIREMENTS": "Application rejected — Failed requirements",
-        "APPLICATION_REJECTED_OTHER_REASON": "Application rejected — Other reason",
+        "APPLICATION_REJECTED_JOB_FILLED": "Application rejected - Job already filled",
+        "APPLICATION_REJECTED_JOB_OUTDATED": "Application rejected - Job outdated",
+        "APPLICATION_REJECTED_FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
+        "APPLICATION_REJECTED_OTHER_REASON": "Application rejected - Other reason",
         "APPLICATION_SENT": "Application received",
         "INTERVIEW_INVITATION": "Interview invitation",
         "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview self-scheduling invitation",
@@ -88,20 +89,6 @@
         "INTERVIEW_LOCATION_CHANGED": "Interview location changed",
         "INTERVIEW_RESCHEDULE_REQUESTED": "Interview reschedule requested",
         "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group"
-      },
-      "default": {
-        "APPLICATION_ACCEPTED": "Application: Accepted",
-        "APPLICATION_SENT": "Application: Received Confirmation",
-        "INTERVIEW_INVITATION": "Interview: Invitation",
-        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Interview: Self-Scheduling Invitation",
-        "INTERVIEW_CANCELLED": "Interview: Cancelled",
-        "INTERVIEW_LOCATION_CHANGED": "Interview: Location Changed",
-        "INTERVIEW_RESCHEDULE_REQUESTED": "Interview: Reschedule Requested",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Research Group: Member Added",
-        "APPLICATION_REJECTED_JOB_FILLED": "Application: Rejected - Job Already Filled",
-        "APPLICATION_REJECTED_JOB_OUTDATED": "Application: Rejected - Job Outdated",
-        "APPLICATION_REJECTED_FAILED_REQUIREMENTS": "Application: Rejected - Failed Requirements",
-        "APPLICATION_REJECTED_OTHER_REASON": "Application: Rejected - Other Reason"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",

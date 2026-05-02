@@ -13,17 +13,17 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideRouterMock } from 'util/router.mock';
 
-class FakeApi {
+class EmailTemplateResourceApiMock {
   getTemplates = vi.fn();
   deleteTemplate = vi.fn();
 }
 
 describe('ResearchGroupTemplates', () => {
-  let api: FakeApi;
+  let api: EmailTemplateResourceApiMock;
   let toast: ToastServiceMock;
 
   beforeEach(() => {
-    api = new FakeApi();
+    api = new EmailTemplateResourceApiMock();
     toast = createToastServiceMock();
 
     TestBed.configureTestingModule({

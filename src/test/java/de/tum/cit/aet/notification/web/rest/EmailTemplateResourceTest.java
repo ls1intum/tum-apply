@@ -38,6 +38,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 class EmailTemplateResourceTest {
 
+    private static final String BASE_URL = "/api/email-templates";
+
     @Mock
     private EmailTemplateService emailTemplateService;
 
@@ -74,7 +76,7 @@ class EmailTemplateResourceTest {
         );
 
         mvc
-            .perform(get("/api/email-templates"))
+            .perform(get(BASE_URL))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].emailTemplateId").value(id.toString()))
@@ -93,10 +95,7 @@ class EmailTemplateResourceTest {
             )
         );
 
-        mvc
-            .perform(get("/api/email-templates/{id}", id))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
+        mvc.perform(get(BASE_URL + "/{id}", id)).andExpect(status().isOk()).andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
     }
 
     @Test
@@ -123,7 +122,7 @@ class EmailTemplateResourceTest {
         );
 
         mvc
-            .perform(post("/api/email-templates").contentType("application/json").content(objectMapper.writeValueAsString(body)))
+            .perform(post(BASE_URL).contentType("application/json").content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());
     }
 
@@ -147,14 +146,14 @@ class EmailTemplateResourceTest {
         );
 
         mvc
-            .perform(put("/api/email-templates").contentType("application/json").content(objectMapper.writeValueAsString(body)))
+            .perform(put(BASE_URL).contentType("application/json").content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isOk());
     }
 
     @Test
     void deleteTemplate_returns204() throws Exception {
         UUID id = UUID.randomUUID();
-        mvc.perform(delete("/api/email-templates/{id}", id)).andExpect(status().isNoContent());
+        mvc.perform(delete(BASE_URL + "/{id}", id)).andExpect(status().isNoContent());
         verify(emailTemplateService).deleteTemplate(id);
     }
 

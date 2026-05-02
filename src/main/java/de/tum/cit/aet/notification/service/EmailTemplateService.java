@@ -16,6 +16,7 @@ import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.notification.service.DefaultEmailTemplateProvider.DefaultContent;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -82,9 +83,10 @@ public class EmailTemplateService {
             .sorted(Comparator.comparing(EmailTemplate::getLastModifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
             .map(this::toOverviewCustom);
 
-        Stream<EmailTemplateOverviewDTO> defaultRows = java.util.Arrays.stream(EmailType.values())
+        Stream<EmailTemplateOverviewDTO> defaultRows = Arrays.stream(EmailType.values())
             .filter(EmailType::isCustomizable)
             .filter(type -> !customs.containsKey(type))
+            .sorted(Comparator.comparing(EmailType::name))
             .map(this::toOverviewDefault);
 
         return Stream.concat(customRows, defaultRows).toList();
