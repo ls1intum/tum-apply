@@ -224,14 +224,7 @@ class ApplicantRetentionServiceIntegrationTest {
             "Outdated application"
         );
 
-        Document oldDict = DocumentTestData.savedMockDocument(
-            documentRepository,
-            professor,
-            oldApp,
-            null,
-            DocumentType.CV,
-            "old-cv.pdf"
-        );
+        Document oldDict = DocumentTestData.savedMockDocument(documentRepository, professor, oldApp, null, DocumentType.CV, "old-cv.pdf");
 
         // Recent application
         Application recentApp = applicationRepository.saveAndFlush(ApplicationTestData.sent(job, applicant));

@@ -421,9 +421,8 @@ public class DocumentService {
         if (!(document instanceof ApplicantDocument applicantDocument)) {
             throw EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId);
         }
-        UUID ownerUserId = OptionalUtils.getOrThrow(
-            documentRepository.findApplicantOwnerUserId(documentId),
-            () -> EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId)
+        UUID ownerUserId = OptionalUtils.getOrThrow(documentRepository.findApplicantOwnerUserId(documentId), () ->
+            EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId)
         );
         if (!ownerUserId.equals(applicantUserId)) {
             throw EntityNotFoundException.forId("ApplicantDocument", documentId, applicantUserId);
@@ -446,16 +445,14 @@ public class DocumentService {
         // 1) Application-scoped document: staff with job access OR the owning applicant / admin
         if (document instanceof ApplicationDocument) {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
-                Job job = OptionalUtils.getOrThrow(
-                    documentRepository.findJobForApplicationDocument(documentId),
-                    () -> EntityNotFoundException.forId("Job", documentId)
+                Job job = OptionalUtils.getOrThrow(documentRepository.findJobForApplicationDocument(documentId), () ->
+                    EntityNotFoundException.forId("Job", documentId)
                 );
                 currentUserService.verifyJobAccess(job);
                 return;
             }
-            UUID ownerUserId = OptionalUtils.getOrThrow(
-                documentRepository.findApplicationOwnerUserId(documentId),
-                () -> EntityNotFoundException.forId("ApplicationDocument", documentId)
+            UUID ownerUserId = OptionalUtils.getOrThrow(documentRepository.findApplicationOwnerUserId(documentId), () ->
+                EntityNotFoundException.forId("ApplicationDocument", documentId)
             );
             currentUserService.isCurrentUserOrAdmin(ownerUserId);
             return;
@@ -463,9 +460,8 @@ public class DocumentService {
 
         // 2) Applicant-scoped document: only the owning applicant or admin
         if (document instanceof ApplicantDocument) {
-            UUID ownerUserId = OptionalUtils.getOrThrow(
-                documentRepository.findApplicantOwnerUserId(documentId),
-                () -> EntityNotFoundException.forId("ApplicantDocument", documentId)
+            UUID ownerUserId = OptionalUtils.getOrThrow(documentRepository.findApplicantOwnerUserId(documentId), () ->
+                EntityNotFoundException.forId("ApplicantDocument", documentId)
             );
             currentUserService.isCurrentUserOrAdmin(ownerUserId);
             return;
@@ -483,15 +479,13 @@ public class DocumentService {
     private void verifyDeletePermission(Document document) {
         UUID documentId = document.getDocumentId();
         if (document instanceof ApplicationDocument) {
-            UUID ownerUserId = OptionalUtils.getOrThrow(
-                documentRepository.findApplicationOwnerUserId(documentId),
-                () -> EntityNotFoundException.forId("ApplicationDocument", documentId)
+            UUID ownerUserId = OptionalUtils.getOrThrow(documentRepository.findApplicationOwnerUserId(documentId), () ->
+                EntityNotFoundException.forId("ApplicationDocument", documentId)
             );
             currentUserService.isCurrentUserOrAdmin(ownerUserId);
         } else if (document instanceof ApplicantDocument) {
-            UUID ownerUserId = OptionalUtils.getOrThrow(
-                documentRepository.findApplicantOwnerUserId(documentId),
-                () -> EntityNotFoundException.forId("ApplicantDocument", documentId)
+            UUID ownerUserId = OptionalUtils.getOrThrow(documentRepository.findApplicantOwnerUserId(documentId), () ->
+                EntityNotFoundException.forId("ApplicantDocument", documentId)
             );
             currentUserService.isCurrentUserOrAdmin(ownerUserId);
         } else {

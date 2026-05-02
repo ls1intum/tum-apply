@@ -479,14 +479,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 DocumentType.BACHELOR_TRANSCRIPT,
                 "bachelor_profile.pdf"
             );
-            DocumentTestData.savedMockDocument(
-                documentRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "cv_profile.pdf"
-            );
+            DocumentTestData.savedMockDocument(documentRepository, applicant.getUser(), null, applicant, DocumentType.CV, "cv_profile.pdf");
             DocumentTestData.savedMockDocument(
                 documentRepository,
                 applicant.getUser(),
