@@ -73,6 +73,10 @@
   --color-background-surface: var(--p-background-surface);
   --color-background-surface-alt: var(--p-background-surface-alt);
 
+  // Accent Semantic Colors
+  --color-accent-DEFAULT: var(--p-accent-color);
+  --color-accent-default: var(--p-accent-color);
+
   // Border & Divider Semantic Colors
   --color-border-default: var(--p-border-default);
   --color-border-hover: var(--p-border-hover);
@@ -94,8 +98,12 @@
   // Quill highlighting Semantic colors
   --color-compliance-critical-border: var(--color-negative-DEFAULT);
   --color-compliance-critical-bg: color-mix(in srgb, var(--color-negative-DEFAULT) 18%, transparent);
-  --color-compliance-warning-border: var(--color-warning-DEFAULT);
-  --color-compliance-warning-bg: color-mix(in srgb, var(--color-warning-DEFAULT) 18%, transparent);
+  --color-compliance-transparency-border: var(--color-accent-DEFAULT);
+  --color-compliance-transparency-bg: color-mix(in srgb, var(--color-accent-DEFAULT) 18%, transparent);
+  --color-compliance-dsgvo-border: var(--color-positive-DEFAULT);
+  --color-compliance-dsgvo-bg: color-mix(in srgb, var(--color-positive-DEFAULT) 18%, transparent);
+  --color-compliance-public-sector-border: var(--color-primary-DEFAULT);
+  --color-compliance-public-sector-bg: color-mix(in srgb, var(--color-primary-DEFAULT) 18%, transparent);
 
   // ========================================================
   // Border Radius Tokens

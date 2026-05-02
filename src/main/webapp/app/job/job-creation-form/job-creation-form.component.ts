@@ -53,7 +53,7 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
+import { ComplianceIssue } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
@@ -829,24 +829,15 @@ export class JobCreationFormComponent {
 
   /**
    * Applies highlights to the editor based on compliance issues.
-   * Issues are filtered by language, and colors are assigned based on category.
+   * Filters issues by language and skips those with missing text or category.
+   *
    * @param compliance List of issues to process
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
-    const highlights: { text: string; color: string; bg: string }[] = [];
-
-    const filtered = (compliance ?? []).filter(issue => !issue.language || issue.language === lang);
-
-    for (const issues of filtered) {
-      if (!issues.text) continue;
-      const isCritical = issues.category === ComplianceIssueCategoryEnum.CriticalAgg;
-      highlights.push({
-        text: issues.text,
-        color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
-        bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
-      });
-    }
+    const highlights = (compliance ?? []).flatMap(issue =>
+      issue.text && issue.category && (!issue.language || issue.language === lang) ? [{ text: issue.text, category: issue.category }] : [],
+    );
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
 

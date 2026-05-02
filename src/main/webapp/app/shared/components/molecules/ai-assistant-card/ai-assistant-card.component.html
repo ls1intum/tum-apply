@@ -44,11 +44,27 @@
         />
         <jhi-status-pill
           labelKey="jobCreationForm.aiSidebar.transparency"
-          dotColor="bg-warning-default"
+          dotColor="bg-accent-default"
           [count]="transparencyCount()"
           [isActive]="activeFilter() === ComplianceIssueCategoryEnum.Transparency"
           [loading]="isAnalyzing()"
           (selected)="selectCategoryFilter(ComplianceIssueCategoryEnum.Transparency)"
+        />
+        <jhi-status-pill
+          labelKey="jobCreationForm.aiSidebar.dsgvo"
+          dotColor="bg-positive-default"
+          [count]="dsgvoCount()"
+          [isActive]="activeFilter() === ComplianceIssueCategoryEnum.DsgvoMinimization"
+          [loading]="isAnalyzing()"
+          (selected)="selectCategoryFilter(ComplianceIssueCategoryEnum.DsgvoMinimization)"
+        />
+        <jhi-status-pill
+          labelKey="jobCreationForm.aiSidebar.publicSector"
+          dotColor="bg-primary-default"
+          [count]="publicSectorCount()"
+          [isActive]="activeFilter() === ComplianceIssueCategoryEnum.PublicSector"
+          [loading]="isAnalyzing()"
+          (selected)="selectCategoryFilter(ComplianceIssueCategoryEnum.PublicSector)"
         />
       </div>
     </div>

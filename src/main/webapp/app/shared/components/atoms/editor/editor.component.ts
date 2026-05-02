@@ -17,6 +17,7 @@ import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-ic
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
+import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -36,52 +37,56 @@ class HighlightBlot extends Inline {
   // CSS class that allows Quill to identify elements in DOM
   static className = 'compliance-highlight';
 
-  // Tailwind classes applied to every highlighted text span
-  static criticalClasses = [
+  static baseClasses = [
     'border-b-2',
     '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-critical-border)]',
     'rounded-[var(--border-radius-xs)]',
     '[box-decoration-break:clone]',
     '[-webkit-box-decoration-break:clone]',
     'transition-colors',
     'duration-150',
     'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-critical-bg)]',
   ];
 
-  static warningClasses = [
-    'border-b-2',
-    '[border-bottom-style:solid]',
-    '[border-bottom-color:var(--color-compliance-warning-border)]',
-    'rounded-[var(--border-radius-xs)]',
-    '[box-decoration-break:clone]',
-    '[-webkit-box-decoration-break:clone]',
-    'transition-colors',
-    'duration-150',
-    'cursor-pointer',
-    'hover:[background-color:var(--color-compliance-warning-bg)]',
-  ];
+  private static readonly categoryStyles: Record<ComplianceIssueCategoryEnum, string[]> = {
+    // Tailwind classes applied to every highlighted text span
+    CRITICAL_AGG: [
+      '[border-bottom-color:var(--color-compliance-critical-border)]',
+      'hover:[background-color:var(--color-compliance-critical-bg)]',
+    ],
+    TRANSPARENCY: [
+      '[border-bottom-color:var(--color-compliance-transparency-border)]',
+      'hover:[background-color:var(--color-compliance-transparency-bg)]',
+    ],
+    DSGVO_MINIMIZATION: [
+      '[border-bottom-color:var(--color-compliance-dsgvo-border)]',
+      'hover:[background-color:var(--color-compliance-dsgvo-bg)]',
+    ],
+    PUBLIC_SECTOR: [
+      '[border-bottom-color:var(--color-compliance-public-sector-border)]',
+      'hover:[background-color:var(--color-compliance-public-sector-bg)]',
+    ],
+  };
 
   /**
    * Factory method called by Quill to create the DOM node.
-   * @param value The color variable passed
+   * Applies base classes and category-specific styling, and stores
+   * the category on the dataset for later retrieval by formats()
+   * @param value The highlight's color scheme
    */
-  static create(value: { color: string; bg: string }): HTMLElement {
+  static create(value: { category: ComplianceIssueCategoryEnum }): HTMLElement {
     const node = super.create() as HTMLElement;
-    const isCritical = value.color.includes('critical');
-    const classes = isCritical ? HighlightBlot.criticalClasses : HighlightBlot.warningClasses;
-    classes.forEach(cls => node.classList.add(cls));
-    node.dataset['category'] = isCritical ? 'critical' : 'warning';
+    const classes = HighlightBlot.baseClasses.concat(HighlightBlot.categoryStyles[value.category]);
+    classes.forEach((cls: string) => node.classList.add(cls));
+    node.dataset['category'] = value.category;
     return node;
   }
 
-  static formats(node: HTMLElement): { color: string; bg: string } {
-    const isCritical = node.dataset['category'] === 'critical';
-    return {
-      color: isCritical ? 'var(--color-compliance-critical-border)' : 'var(--color-compliance-warning-border)',
-      bg: isCritical ? 'var(--color-compliance-critical-bg)' : 'var(--color-compliance-warning-bg)',
-    };
+  static formats(node: HTMLElement): { category: ComplianceIssueCategoryEnum } | undefined {
+    const data = node.dataset['category'];
+    const category = ComplianceIssueCategoryEnumValues.find(value => value === data);
+    if (category === undefined) return undefined;
+    return { category };
   }
 }
 
@@ -352,9 +357,9 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   /**
    * Highlights specific text passages in the editor.
-   * @param highlights Array of {text, color} to highlight
+   * @param highlights Array of {text, category} to highlight
    */
-  public highlightTexts(highlights: { text: string; color: string; bg: string }[]): void {
+  public highlightTexts(highlights: { text: string; category: ComplianceIssueCategoryEnum }[]): void {
     const editor = this.quillEditorComponent()?.quillEditor;
     if (!editor) return;
 
@@ -364,7 +369,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     const fullText = editor.getText().toLowerCase();
 
-    for (const { text, color, bg } of highlights) {
+    for (const { text, category } of highlights) {
       const searchText = text.toLowerCase();
       let startIndex = 0;
 
@@ -372,7 +377,7 @@ export class EditorComponent extends BaseInputDirective<string> {
       while (startIndex < fullText.length) {
         const index = fullText.indexOf(searchText, startIndex);
         if (index === -1) break;
-        editor.formatText(index, text.length, 'customHighlight', { color, bg });
+        editor.formatText(index, text.length, 'customHighlight', { category });
         startIndex = index + text.length;
       }
     }
