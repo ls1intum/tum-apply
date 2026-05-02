@@ -449,11 +449,22 @@ jobs:
           echo "SERVER_PID=$!" >> $GITHUB_ENV
 
           echo "Waiting for server to start..."
-          sleep 240
+          for i in {1..60}; do
+            if curl -sSf http://localhost:8080/actuator/health >/dev/null 2>&1; then
+              echo "✅ Server started successfully!"
+              break
+            fi
 
-          if grep -q "Application 'TUMApply' is running!" server.log; then
-            echo "✅ Server started successfully!"
-          else
+            if grep -q "Application 'TUMApply' is running!" server.log; then
+              echo "✅ Server started successfully!"
+              break
+            fi
+
+            echo "Waiting ($i/60)..."
+            sleep 3
+          done
+
+          if ! curl -sSf http://localhost:8080/actuator/health >/dev/null 2>&1 && ! grep -q "Application 'TUMApply' is running!" server.log; then
             echo "❌ Server failed to start!"
             cat server.log
             exit 1
