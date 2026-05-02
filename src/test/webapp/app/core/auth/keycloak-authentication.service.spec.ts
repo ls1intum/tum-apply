@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { environment } from 'app/environments/environment';
 import { createKeycloakMock, KeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { createApplicationConfigServiceMock, provideApplicationConfigServiceMock } from 'util/application-config.service.mock';
 import { MessageService } from 'primeng/api';
@@ -16,6 +17,7 @@ describe('KeycloakAuthenticationService', () => {
   let service: KeycloakAuthenticationService;
   let keycloakInstance: KeycloakMock;
   let fetchMock: ReturnType<typeof vi.fn>;
+  const originalRelyingPartyId = environment.keycloak.relyingPartyId;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -36,6 +38,7 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   afterEach(() => {
+    environment.keycloak.relyingPartyId = originalRelyingPartyId;
     vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
@@ -292,6 +295,18 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   describe('passkey credentials', () => {
+    it('should use the configured relying party id for passkey registration', () => {
+      environment.keycloak.relyingPartyId = 'staging.apply.in.tum.de';
+
+      expect(service['getPasskeyRelyingPartyId']()).toBe('staging.apply.in.tum.de');
+    });
+
+    it('should fall back to the current hostname when relying party id is not configured', () => {
+      environment.keycloak.relyingPartyId = '   ';
+
+      expect(service['getPasskeyRelyingPartyId']()).toBe(window.location.hostname);
+    });
+
     it('should list passkeys from keycloak account credentials', async () => {
       keycloakInstance.authenticated = true;
       const credentialsPayload = [

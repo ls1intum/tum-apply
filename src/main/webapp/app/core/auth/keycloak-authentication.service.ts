@@ -251,7 +251,7 @@ export class KeycloakAuthenticationService {
       (await navigator.credentials.create({
         publicKey: {
           challenge: this.fromBase64Url(challenge.challenge),
-          rp: { name: 'TUM AET', id: window.location.hostname },
+          rp: { name: 'TUM AET', id: this.getPasskeyRelyingPartyId() },
           user: { id: userIdBytes.buffer, name: accountName, displayName },
           pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
           authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
@@ -495,6 +495,11 @@ export class KeycloakAuthenticationService {
 
   private getAccountCredentialsEndpoint(): string {
     return this.getRealmEndpoint('account/credentials');
+  }
+
+  private getPasskeyRelyingPartyId(): string {
+    const relyingPartyId = environment.keycloak.relyingPartyId;
+    return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
   }
 
   private getRealmEndpoint(path: string): string {

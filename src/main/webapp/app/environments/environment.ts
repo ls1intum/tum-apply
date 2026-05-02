@@ -9,5 +9,6 @@ export const environment = {
   production: false,
   keycloak: {
     enableLogging: true,
+    relyingPartyId: '',
   },
 };
