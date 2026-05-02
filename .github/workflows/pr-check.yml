@@ -344,7 +344,7 @@ jobs:
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     env:
-      TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:8080' }}
+      TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
 
     strategy:
       fail-fast: false
@@ -413,14 +413,33 @@ jobs:
             exit 1
           fi
 
-      # --- Build Client for Spring Boot to serve ---
+      # --- Install Client Dependencies for Local Angular Dev Server ---
       - name: Install Client Dependencies
         if: ${{ !vars.AET_CLIENT_URL }}
         run: npm ci
 
-      - name: Build Client for Production
+      - name: Start Angular Dev Server
         if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm run build
+        run: |
+          echo "Starting Angular dev server..."
+          npm run webapp:dev -- --host 0.0.0.0 > client.log 2>&1 &
+          echo "CLIENT_PID=$!" >> $GITHUB_ENV
+
+          echo "Waiting for Angular dev server to start..."
+          for i in {1..60}; do
+            if curl -sSf http://localhost:4200 >/dev/null 2>&1; then
+              echo "✅ Angular dev server started successfully!"
+              break
+            fi
+            echo "Waiting ($i/60)..."
+            sleep 5
+          done
+
+          if ! curl -sSf http://localhost:4200 >/dev/null 2>&1; then
+            echo "❌ Angular dev server did not start in time."
+            cat client.log
+            exit 1
+          fi
 
       # --- Start Server ---
       - name: Start Spring Boot Server
@@ -475,9 +494,17 @@ jobs:
         if: always()
         run: |
           echo "Stopping servers..."
+          kill $CLIENT_PID || true
           kill $SERVER_PID || true
 
       # --- Upload Logs on Failure ---
+      - name: Upload Client Log
+        if: failure() && !vars.AET_CLIENT_URL
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-client-log-${{ matrix.role }}
+          path: client.log
+
       - name: Upload Server Log
         if: failure()
         uses: actions/upload-artifact@v7
