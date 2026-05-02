@@ -132,8 +132,8 @@ export class ResearchGroupDepartmentsComponent {
   private activeDeleteDialog = signal<Confirmable | undefined>(undefined);
 
   constructor() {
+    // Schools populate the filter dropdown; the table's lazyLoad event drives the initial loadDepartments call.
     void this.loadSchools();
-    void this.loadDepartments();
   }
 
   onMenuToggle(event: Event, menu: MenuComponent, department: DepartmentTableRow, deleteDialog: Confirmable): void {
