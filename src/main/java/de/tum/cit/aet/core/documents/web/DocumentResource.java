@@ -24,6 +24,12 @@ public class DocumentResource {
 
     private final DocumentService documentService;
 
+    /**
+     * Streams the binary content of a document to the caller.
+     *
+     * @param documentId the UUID of the document to download
+     * @return the document file as a downloadable HTTP resource
+     */
     @Authenticated
     @GetMapping("/{documentId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentId) {
@@ -31,6 +37,13 @@ public class DocumentResource {
         return ResponseEntity.ok(documentService.downloadDocument(documentId));
     }
 
+    /**
+     * Deletes a document by id. Permission is checked at the service layer based on the
+     * document's owner type (applicant or application).
+     *
+     * @param documentId the UUID of the document to delete
+     * @return 204 No Content on success
+     */
     @Authenticated
     @DeleteMapping("/{documentId}")
     public ResponseEntity<Void> deleteDocument(@PathVariable UUID documentId) {

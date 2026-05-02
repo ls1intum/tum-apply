@@ -57,6 +57,16 @@ public class DocumentService {
     private final long maxFileSize;
     private final MessageDigest sha256;
 
+    /**
+     * Initialises the service and ensures the storage root directory exists on disk.
+     *
+     * @param documentRepository the JPA repository for the unified Document model
+     * @param currentUserService the authenticated-user service used for ownership checks
+     * @param rootDir            the storage root directory for uploaded documents
+     * @param maxFileSize        the maximum allowed upload size in bytes
+     * @throws NoSuchAlgorithmException if SHA-256 is unavailable on the JVM
+     * @throws IllegalStateException    if the storage root cannot be created
+     */
     public DocumentService(
         DocumentRepository documentRepository,
         CurrentUserService currentUserService,
@@ -82,6 +92,12 @@ public class DocumentService {
 
     /**
      * Uploads a document owned by an applicant's profile.
+     *
+     * @param file      the multipart file to be stored
+     * @param type      the type of the document (e.g. CV, REFERENCE)
+     * @param name      the user-facing display name of the document
+     * @param applicant the applicant who owns the document
+     * @return the persisted {@link ApplicantDocument}
      */
     public ApplicantDocument uploadApplicantDocument(MultipartFile file, DocumentType type, String name, Applicant applicant) {
         StoredFile stored = storeFile(file);
@@ -93,6 +109,12 @@ public class DocumentService {
 
     /**
      * Uploads a document attached directly to an application.
+     *
+     * @param file        the multipart file to be stored
+     * @param type        the type of the document (e.g. CV, REFERENCE)
+     * @param name        the user-facing display name of the document
+     * @param application the application the document belongs to
+     * @return the persisted {@link ApplicationDocument}
      */
     public ApplicationDocument uploadApplicationDocument(MultipartFile file, DocumentType type, String name, Application application) {
         StoredFile stored = storeFile(file);
@@ -104,14 +126,23 @@ public class DocumentService {
 
     /**
      * Copies all applicant-owned documents of the given types into application-scoped snapshot rows.
-     * The new rows reference the same {@code path} on disk as the source applicant documents.
+     * The new rows reference the same {@code path} on disk as the source applicant documents,
+     * so no file content is duplicated — only ownership rows are created.
+     *
+     * @param applicant   the applicant whose profile documents should be copied
+     * @param application the application that will receive the snapshot rows
+     * @param types       the document types to include in the copy (e.g. CV, REFERENCE, transcripts)
+     * @return the list of newly created {@link ApplicationDocument} rows
      */
     public List<ApplicationDocument> copyApplicantDocumentsToApplication(
         Applicant applicant,
         Application application,
         Set<DocumentType> types
     ) {
+        // 1) Fetch every applicant-profile document for the given applicant
         Set<ApplicantDocument> sources = documentRepository.findAllApplicantDocuments(applicant.getUserId());
+
+        // 2) For each source matching the requested types, build an ApplicationDocument copy that shares the path
         return sources
             .stream()
             .filter(src -> types.contains(src.getDocumentType()))
@@ -135,6 +166,11 @@ public class DocumentService {
 
     /**
      * Downloads a document by its ID, performing access control based on owner type.
+     *
+     * @param documentId the UUID of the document to download
+     * @return the file as a Spring {@link Resource}
+     * @throws EntityNotFoundException if the document does not exist
+     * @throws AccessDeniedException   if the current user is not allowed to read the document
      */
     public Resource downloadDocument(UUID documentId) {
         Document document = findOrThrow(documentId);
@@ -145,13 +181,20 @@ public class DocumentService {
     /**
      * Loads the underlying file resource for a document WITHOUT performing access control.
      * Intended for trusted internal callers (e.g., the export ZIP writer running as a scheduled job).
+     *
+     * @param document the document whose binary should be loaded
+     * @return the file as a Spring {@link Resource}
      */
     public Resource loadResourceForExport(Document document) {
         return loadResource(document);
     }
 
     /**
-     * Resolves the file extension for the given document.
+     * Resolves the file extension for the given document based on its mime type.
+     *
+     * @param document the document to inspect
+     * @return the matching {@link FileExtension}
+     * @throws IllegalArgumentException if the mime type is missing or unsupported
      */
     public FileExtension resolveFileExtension(Document document) {
         if (document.getMimeType() == null) {
@@ -167,30 +210,75 @@ public class DocumentService {
     // Listing
     // ---------------------------------------------------------------------
 
+    /**
+     * Returns all documents owned by an applicant's profile.
+     *
+     * @param applicant the applicant whose documents should be listed
+     * @return the set of profile-owned documents
+     */
     public Set<ApplicantDocument> listForApplicant(Applicant applicant) {
         return documentRepository.findAllApplicantDocuments(applicant.getUserId());
     }
 
+    /**
+     * Returns the applicant-profile documents of a specific type.
+     *
+     * @param applicant the applicant whose documents should be listed
+     * @param type      the document type to filter by
+     * @return the matching set of profile-owned documents
+     */
     public Set<ApplicantDocument> listForApplicantByType(Applicant applicant, DocumentType type) {
         return documentRepository.findApplicantDocumentsByType(applicant.getUserId(), type);
     }
 
+    /**
+     * Returns all documents attached to a specific application.
+     *
+     * @param application the application whose documents should be listed
+     * @return the set of application-scoped documents
+     */
     public Set<ApplicationDocument> listForApplication(Application application) {
         return documentRepository.findAllApplicationDocuments(application.getApplicationId());
     }
 
+    /**
+     * Returns the application-scoped documents of a specific type.
+     *
+     * @param application the application whose documents should be listed
+     * @param type        the document type to filter by
+     * @return the matching set of application-scoped documents
+     */
     public Set<ApplicationDocument> listForApplicationByType(Application application, DocumentType type) {
         return documentRepository.findApplicationDocumentsByType(application.getApplicationId(), type);
     }
 
+    /**
+     * Looks up a document by its ID without performing any access checks.
+     *
+     * @param documentId the UUID of the document to look up
+     * @return the {@link Document} entity
+     * @throws EntityNotFoundException if the document does not exist
+     */
     public Document findById(UUID documentId) {
         return findOrThrow(documentId);
     }
 
+    /**
+     * Persists changes to an applicant-profile document.
+     *
+     * @param document the modified document to save
+     * @return the persisted (and possibly merged) {@link ApplicantDocument}
+     */
     public ApplicantDocument saveApplicantDocument(ApplicantDocument document) {
         return documentRepository.save(document);
     }
 
+    /**
+     * Persists changes to an application-scoped document.
+     *
+     * @param document the modified document to save
+     * @return the persisted (and possibly merged) {@link ApplicationDocument}
+     */
     public ApplicationDocument saveApplicationDocument(ApplicationDocument document) {
         return documentRepository.save(document);
     }
@@ -199,34 +287,80 @@ public class DocumentService {
     // Mutation: rename, delete
     // ---------------------------------------------------------------------
 
+    /**
+     * Renames an applicant-profile document. Caller must own the document.
+     *
+     * @param applicantUserId the owning applicant's user id
+     * @param documentId      the id of the document to rename
+     * @param newName         the new display name
+     * @throws EntityNotFoundException if the document does not exist or is not owned by the applicant
+     */
     public void renameApplicantDocument(UUID applicantUserId, UUID documentId, String newName) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         applicantDocument.setName(newName);
         documentRepository.save(applicantDocument);
     }
 
+    /**
+     * Deletes a document by id and removes the underlying file when nothing else references it.
+     * Performs an access-control check based on the document's owner type.
+     *
+     * @param documentId the id of the document to delete
+     * @throws EntityNotFoundException if the document does not exist
+     * @throws AccessDeniedException   if the current user is not allowed to delete the document
+     */
     public void deleteById(UUID documentId) {
         Document document = findOrThrow(documentId);
         verifyDeletePermission(document);
         deleteRowAndOrphanedFile(document);
     }
 
+    /**
+     * Deletes an applicant-owned document. Used internally for sync flows where the caller has
+     * already verified ownership.
+     *
+     * @param applicantUserId the owning applicant's user id
+     * @param documentId      the id of the document to delete
+     * @throws EntityNotFoundException if the document does not exist or is not owned by the applicant
+     */
     public void deleteApplicantOwnedDocument(UUID applicantUserId, UUID documentId) {
         ApplicantDocument applicantDocument = assertApplicantOwned(applicantUserId, documentId);
         deleteRowAndOrphanedFile(applicantDocument);
     }
 
+    /**
+     * Deletes every applicant-profile document for the given applicant and removes any orphaned
+     * files from disk. Used by retention and account-deletion flows.
+     *
+     * @param applicantUserId the owning applicant's user id
+     */
     public void deleteAllByApplicantId(UUID applicantUserId) {
+        // 1) Fetch the docs first because we need each path for orphan-file cleanup
         Set<ApplicantDocument> applicantDocuments = documentRepository.findAllApplicantDocuments(applicantUserId);
+
+        // 2) Bulk delete the rows; Hibernate batches via hibernate.jdbc.batch_size
         documentRepository.deleteAll(applicantDocuments);
+
+        // 3) Remove each file from disk if no other Document row still references that path
         for (ApplicantDocument applicantDocument : applicantDocuments) {
             removeFileIfOrphan(applicantDocument.getPath(), applicantDocument.getDocumentId());
         }
     }
 
+    /**
+     * Deletes every document attached to the given application and removes any orphaned
+     * files from disk. Used by retention and application-deletion flows.
+     *
+     * @param applicationId the id of the application whose documents should be removed
+     */
     public void deleteAllByApplicationId(UUID applicationId) {
+        // 1) Fetch the docs first because we need each path for orphan-file cleanup
         Set<ApplicationDocument> applicationDocuments = documentRepository.findAllApplicationDocuments(applicationId);
+
+        // 2) Bulk delete the rows; Hibernate batches via hibernate.jdbc.batch_size
         documentRepository.deleteAll(applicationDocuments);
+
+        // 3) Remove each file from disk if no other Document row still references that path
         for (ApplicationDocument applicationDocument : applicationDocuments) {
             removeFileIfOrphan(applicationDocument.getPath(), applicationDocument.getDocumentId());
         }
@@ -236,10 +370,19 @@ public class DocumentService {
     // Internal helpers
     // ---------------------------------------------------------------------
 
+    /**
+     * Loads a document by id or throws if it does not exist.
+     */
     private Document findOrThrow(UUID documentId) {
         return OptionalUtils.getOrThrow(documentRepository.findById(documentId), () -> EntityNotFoundException.forId("Document", documentId));
     }
 
+    /**
+     * Loads a document and asserts it is an {@link ApplicantDocument} owned by the given applicant.
+     *
+     * @throws EntityNotFoundException if the document does not exist, is not applicant-owned, or
+     *                                 is owned by a different applicant
+     */
     private ApplicantDocument assertApplicantOwned(UUID applicantUserId, UUID documentId) {
         Document document = findOrThrow(documentId);
         if (
@@ -251,7 +394,14 @@ public class DocumentService {
         return applicantDocument;
     }
 
+    /**
+     * Verifies the current user is allowed to read the given document.
+     * Access rules:
+     * - Application-scoped: professors and employees with job access; otherwise the owning applicant or admin.
+     * - Applicant-scoped: the owning applicant or admin.
+     */
     private void verifyAccess(Document document) {
+        // 1) Application-scoped document: staff with job access OR the owning applicant / admin
         if (document instanceof ApplicationDocument applicationDocument) {
             Application application = applicationDocument.getApplication();
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
@@ -261,13 +411,21 @@ public class DocumentService {
             currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
             return;
         }
+
+        // 2) Applicant-scoped document: only the owning applicant or admin
         if (document instanceof ApplicantDocument applicantDocument) {
             currentUserService.isCurrentUserOrAdmin(applicantDocument.getApplicant().getUserId());
             return;
         }
+
+        // 3) Reject anything without a known owner association
         throw new AccessDeniedException("Cannot verify access for document without owner association");
     }
 
+    /**
+     * Verifies the current user is allowed to delete the given document.
+     * Both subtypes require the owning applicant or an admin.
+     */
     private void verifyDeletePermission(Document document) {
         if (document instanceof ApplicationDocument applicationDocument) {
             currentUserService.isCurrentUserOrAdmin(applicationDocument.getApplication().getApplicant().getUserId());
@@ -278,6 +436,9 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Deletes the document row and removes the underlying file if no other row references its path.
+     */
     private void deleteRowAndOrphanedFile(Document document) {
         String path = document.getPath();
         UUID id = document.getDocumentId();
@@ -285,11 +446,22 @@ public class DocumentService {
         removeFileIfOrphan(path, id);
     }
 
+    /**
+     * Removes the file at {@code storedPath} from disk only when no other Document row
+     * (excluding the just-deleted one identified by {@code excludeId}) references it.
+     *
+     * @param storedPath the absolute or storage-root-relative path of the file to potentially remove
+     * @param excludeId  the id of the document already deleted (and therefore not counted)
+     * @throws UncheckedIOException if the file deletion fails for an I/O reason
+     */
     private void removeFileIfOrphan(String storedPath, UUID excludeId) {
+        // 1) Skip removal if any other document row still references this path
         long others = documentRepository.countOtherReferencesByPath(storedPath, excludeId);
         if (others > 0) {
             return;
         }
+
+        // 2) Resolve the path against the storage root and delete if present
         try {
             Files.deleteIfExists(resolveStoredPath(storedPath));
         } catch (IOException e) {
@@ -297,6 +469,10 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Copies the immutable storage attributes from {@code stored} onto a new Document row,
+     * and stamps the type, display name, and uploader.
+     */
     private void populateBase(Document document, StoredFile stored, DocumentType type, String name, User uploader) {
         document.setDocumentType(type);
         document.setName(name);
@@ -306,14 +482,25 @@ public class DocumentService {
         document.setUploadedBy(uploader);
     }
 
+    /**
+     * Validates the upload, computes its content hash, and writes it to the storage root if not already there.
+     *
+     * @param file the multipart upload to persist on disk
+     * @return a {@link StoredFile} record carrying the on-disk path, mime type, and size
+     * @throws UploadException if the file is invalid or cannot be stored
+     */
     private StoredFile storeFile(MultipartFile file) {
+        // 1) Validate basic upload constraints (non-empty, allowed extension, size limit)
         validate(file);
         try {
             FileExtension ext = parseExtension(file);
+
+            // 2) Hash the content to derive a deterministic filename, deduplicating identical bytes on disk
             String hash = computeFileHash(file);
             String storageFilename = hash + '.' + ext.getExtension();
             Path target = root.resolve(storageFilename);
 
+            // 3) Only write if the target does not already exist (content hashes match means same bytes)
             if (Files.notExists(target)) {
                 try (InputStream in = file.getInputStream()) {
                     Files.copy(in, target);
@@ -327,6 +514,11 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Loads the file backing a document as a Spring {@link Resource}.
+     *
+     * @throws UploadException if the file cannot be read
+     */
     private Resource loadResource(Document document) {
         try {
             Path path = resolveStoredPath(document.getPath());
@@ -343,7 +535,14 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Resolves a stored path string to an absolute path inside the storage root.
+     *
+     * @throws IllegalStateException if the resolved path lies outside the configured storage root
+     */
     private Path resolveStoredPath(String storedPath) {
+        // 1) Convert the stored string to a path; resolve relative paths against either the storage root
+        //    (for single-name relative paths like "abc.pdf") or the working directory (for nested relative paths)
         Path path = Paths.get(storedPath);
         if (!path.isAbsolute()) {
             if (path.getNameCount() == 1) {
@@ -353,6 +552,8 @@ public class DocumentService {
                 path = workingDir.resolve(path);
             }
         }
+
+        // 2) Normalise and reject anything outside the configured storage root (path-traversal guard)
         path = path.toAbsolutePath().normalize();
         Path normalizedRoot = root.toAbsolutePath().normalize();
         if (!path.startsWith(normalizedRoot)) {
@@ -361,6 +562,11 @@ public class DocumentService {
         return path;
     }
 
+    /**
+     * Validates that the upload is non-empty, has a filename, and does not exceed the size limit.
+     *
+     * @throws UploadException on any rule violation
+     */
     private void validate(MultipartFile file) {
         if (file.isEmpty() || !StringUtils.hasText(file.getOriginalFilename())) {
             throw new UploadException("Empty file or missing filename");
@@ -370,6 +576,11 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Parses the file extension from the upload's original filename and verifies it is allowed.
+     *
+     * @throws UploadException if the extension is missing, unparseable, or not in the allow-list
+     */
     private FileExtension parseExtension(MultipartFile file) {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         try {
@@ -386,6 +597,9 @@ public class DocumentService {
         }
     }
 
+    /**
+     * Streams the file through SHA-256 to compute its content hash without loading it fully into memory.
+     */
     private String computeFileHash(MultipartFile file) throws IOException {
         sha256.reset();
         try (DigestInputStream in = new DigestInputStream(file.getInputStream(), sha256)) {
@@ -394,5 +608,6 @@ public class DocumentService {
         return HexFormat.of().withLowerCase().formatHex(sha256.digest());
     }
 
+    /** Snapshot of an upload after it has been validated, hashed, and written to disk. */
     private record StoredFile(String path, String mimeType, long sizeBytes) {}
 }
