@@ -72,12 +72,12 @@ export class AuthFacadeService {
     try {
       // 1) Email-Authentication-Flow (server session)
       const refreshed = await this.serverAuthenticationService.refreshTokens(true);
-      if (this.authMethod !== 'none') {
+      if (this.hasActiveAuthMethod()) {
         return true;
       }
       if (refreshed) {
         await this.accountService.loadUser();
-        if (this.authMethod !== 'none') {
+        if (this.hasActiveAuthMethod()) {
           return true;
         }
         this.authMethod = 'server';
@@ -86,12 +86,12 @@ export class AuthFacadeService {
 
       // 2) Keycloak-Flow
       const keycloakInitialized = await this.keycloakAuthenticationService.init();
-      if (this.authMethod !== 'none') {
+      if (this.hasActiveAuthMethod()) {
         return true;
       }
       if (keycloakInitialized) {
         await this.accountService.loadUser();
-        if (this.authMethod !== 'none') {
+        if (this.hasActiveAuthMethod()) {
           return true;
         }
         this.authMethod = 'keycloak';
@@ -247,6 +247,17 @@ export class AuthFacadeService {
         detail: this.translate.instant(`${this.translationKey}.logoutFailed.detail`),
       },
     );
+  }
+
+  /**
+   * Read the current auth method through a method call so the TypeScript compiler
+   * cannot narrow the field to its initializer literal across `await` boundaries.
+   * Concurrent user-driven login flows can mutate `authMethod` while `initAuth`
+   * is still in flight; the narrowing would otherwise hide that possibility from
+   * the guards in `initAuth`.
+   */
+  private hasActiveAuthMethod(): boolean {
+    return this.authMethod !== 'none';
   }
 
   private async handlePendingIdpRegistration(): Promise<void> {
