@@ -125,6 +125,17 @@ describe('ServerAuthenticationService', () => {
       consoleWarnSpy.mockRestore();
     });
 
+    it('should treat authenticated=false response as no session without warning', async () => {
+      authApi.refresh.mockReturnValueOnce(of({ authenticated: false, expiresIn: 0, refreshExpiresIn: 0 }));
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
+      expect(await service.refreshTokens(true)).toBe(false);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+      expect(setTimeoutSpy).not.toHaveBeenCalled();
+      consoleWarnSpy.mockRestore();
+      setTimeoutSpy.mockRestore();
+    });
+
     it('should not start new refresh if already in flight', async () => {
       const firstRefresh = service.refreshTokens();
       const secondRefresh = service.refreshTokens();

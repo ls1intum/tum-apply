@@ -79,11 +79,16 @@ public class AuthenticationResource {
 
     /**
      * Refreshes authentication cookies using the refresh token cookie.
+     * <p>
+     * Always returns HTTP 200. The {@code authenticated} flag in the response indicates whether a valid server
+     * session is present: it is {@code false} when no auth cookies are sent (e.g. anonymous startup probe) or
+     * when the cookies are stale/invalid. In the stale case the cookies are cleared as a side effect. Reserving
+     * 401 for "actually unauthorized" requests keeps the dev console clean and lets the client probe without
+     * treating an absent session as an error.
      *
      * @param request  the HTTP servlet request containing the refresh_token cookie
      * @param response the HTTP servlet response used to set new authentication cookies
-     * @return HTTP 200 OK if refresh is successful
-     * @throws UnauthorizedException if the refresh token is missing or invalid
+     * @return session info with token lifetimes when authenticated, otherwise an unauthenticated marker
      */
     @Public
     @PostMapping("/refresh")
@@ -100,10 +105,21 @@ public class AuthenticationResource {
                 }
             }
         }
-        AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(accessToken, refreshToken);
 
-        CookieUtils.setAuthCookies(response, tokens);
-        return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
+        boolean hasAccessToken = accessToken != null && !accessToken.isBlank();
+        boolean hasRefreshToken = refreshToken != null && !refreshToken.isBlank();
+        if (!hasAccessToken && !hasRefreshToken) {
+            return AuthSessionInfoDTO.unauthenticated();
+        }
+
+        try {
+            AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(accessToken, refreshToken);
+            CookieUtils.setAuthCookies(response, tokens);
+            return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
+        } catch (UnauthorizedException ex) {
+            CookieUtils.setAuthCookies(response, null);
+            return AuthSessionInfoDTO.unauthenticated();
+        }
     }
 
     /**
