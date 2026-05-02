@@ -22,13 +22,15 @@ export class DocumentViewerComponent {
 
   constructor() {
     effect(() => {
-      void this.initDocument();
+      // Read the signal synchronously here so the dependency is captured even
+      // though the download is async. Mounting under a structural directive in
+      // a zoneless app can otherwise miss the first trigger.
+      const docId = this.documentId().id;
+      void this.initDocument(docId);
     });
   }
 
-  async initDocument(): Promise<void> {
-    const docId = this.documentId().id;
-
+  async initDocument(docId: string = this.documentId().id): Promise<void> {
     // check cache first
     const cached = this.cache.get(docId);
     if (cached !== undefined) {
