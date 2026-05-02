@@ -76,10 +76,6 @@ export class ResearchGroupSchoolsComponent {
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
 
-  constructor() {
-    void this.loadSchools();
-  }
-
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
