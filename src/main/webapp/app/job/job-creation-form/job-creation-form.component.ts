@@ -544,12 +544,7 @@ export class JobCreationFormComponent {
   /** Timer ID for the debounced auto-save (2-second delay) */
   private autoSaveTimer: number | undefined;
 
-  /**
-   * The currently in-flight auto-save promise, or undefined if none is running.
-   * Used by publishJob to wait for an in-flight Draft save to settle before
-   * sending the Published DTO, so the autosave can't land afterwards and
-   * silently revert the job to Draft.
-   */
+  /** The currently in-flight auto-save promise, or undefined if none is running. */
   private autoSaveInFlight: Promise<void> | undefined;
 
   /** Flag to prevent auto-save from triggering during initial form population */
@@ -693,7 +688,7 @@ export class JobCreationFormComponent {
    * Before sending the Published DTO, cancels any pending debounced autosave
    * and waits for an in-flight autosave to settle. Otherwise a Draft autosave
    * could land on the server *after* the publish call and silently revert the
-   * job to Draft — see issue #2228.
+   * job to Draft.
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
