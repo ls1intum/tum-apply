@@ -14,27 +14,29 @@ module.exports = async browser => {
   await page.goto(authUrl, { waitUntil: 'domcontentloaded' });
 
   // 3. Wait until the page either reaches Keycloak or clearly fails elsewhere.
-  await page.waitForFunction(
-    (expectedAppOrigin, expectedPath) => {
-      const url = window.location.href;
-      return (
-        document.querySelector('#username') != null ||
-        document.querySelector('#kc-form-login') != null ||
-        url.includes('/protocol/openid-connect/auth') ||
-        window.location.pathname === '/accessdenied' ||
-        (window.location.origin === expectedAppOrigin &&
-          window.location.pathname === expectedPath &&
-          (document.body?.innerText?.trim().length ?? 0) > 0)
-      );
-    },
-    {
-      timeout: 30_000,
-    },
-    appOrigin,
-    authPath,
-  ).catch(async () => {
-    throw new Error(`Timed out waiting for the Keycloak login flow at ${page.url()}.`);
-  });
+  await page
+    .waitForFunction(
+      (expectedAppOrigin, expectedPath) => {
+        const url = window.location.href;
+        return (
+          document.querySelector('#username') != null ||
+          document.querySelector('#kc-form-login') != null ||
+          url.includes('/protocol/openid-connect/auth') ||
+          window.location.pathname === '/accessdenied' ||
+          (window.location.origin === expectedAppOrigin &&
+            window.location.pathname === expectedPath &&
+            (document.body?.innerText?.trim().length ?? 0) > 0)
+        );
+      },
+      {
+        timeout: 30_000,
+      },
+      appOrigin,
+      authPath,
+    )
+    .catch(async () => {
+      throw new Error(`Timed out waiting for the Keycloak login flow at ${page.url()}.`);
+    });
 
   const currentUrl = new URL(page.url());
 
