@@ -1,7 +1,17 @@
 @if (hasRating()) {
-  <jhi-sub-section class="w-full flex gap-8 mt-6" titleKey="evaluation.details.interviewRatingTitle">
-    <div class="mt-2">
-      <jhi-rating [rating]="rating()" />
+  <p-divider />
+  <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
+    <div>
+      <jhi-section titleKey="evaluation.details.interviewRatingTitle" icon="star">
+        <div class="mt-2">
+          <jhi-rating [rating]="rating()" />
+        </div>
+      </jhi-section>
     </div>
-  </jhi-sub-section>
+    <div>
+      <jhi-section titleKey="evaluation.details.interviewAssessmentTitle" icon="comments">
+        <jhi-prose [text]="assessmentNotes()" />
+      </jhi-section>
+    </div>
+  </div>
 }

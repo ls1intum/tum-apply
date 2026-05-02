@@ -307,7 +307,6 @@
           <div>
             <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">
               <jhi-rating-section [applicationId]="currentApplicationId()" (ratingUpdated)="onRatingUpdated()" />
-              <jhi-interview-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
           <div>
@@ -316,6 +315,7 @@
             </jhi-section>
           </div>
         </div>
+        <jhi-interview-rating-section [applicationId]="currentApplicationId()" />
       </div>
     }
   </div>

@@ -11,4 +11,5 @@
 
 export interface InterviewRatingDTO {
     readonly rating?: number;
+    readonly assessmentNotes?: string;
 }

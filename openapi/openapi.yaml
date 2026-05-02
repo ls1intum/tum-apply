@@ -3147,6 +3147,7 @@ components:
       type: object
       properties:
         rating: {type: integer, format: int32}
+        assessmentNotes: {type: string}
     InterviewSlotDTO:
       type: object
       properties:
