@@ -2,8 +2,8 @@
  * @param {import('puppeteer').Browser} browser
  */
 module.exports = async browser => {
-  const targetUrl = process.env.TARGET_URL || 'http://localhost:8080';
-  const authUrl = new URL('/settings', targetUrl).toString();
+  const targetUrl = process.env.TARGET_URL || 'http://localhost:4200';
+  const authUrl = new URL('/my-positions', targetUrl).toString();
 
   // 1. Open a new setup tab in the browser Lighthouse just launched
   const page = await browser.newPage();
@@ -12,11 +12,15 @@ module.exports = async browser => {
   await page.goto(authUrl, { waitUntil: 'domcontentloaded' });
 
   // 3. Wait for the Keycloak login form to fully render
-  await page.waitForSelector('#username', {
-    timeout: 30_000,
-  }).catch(() => {
-    throw new Error(`Timed out waiting for the Keycloak login form at ${page.url()}. Check that TARGET_URL is reachable and redirects to Keycloak.`);
-  });
+  await page
+    .waitForSelector('#username', {
+      timeout: 30_000,
+    })
+    .catch(() => {
+      throw new Error(
+        `Timed out waiting for the Keycloak login form at ${page.url()}. Check that TARGET_URL is reachable and redirects to Keycloak.`,
+      );
+    });
 
   // 4. Read credentials from the GitHub Actions environment variables
   const username = process.env.TEST_USERNAME;
