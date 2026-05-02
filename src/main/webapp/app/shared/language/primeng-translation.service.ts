@@ -3,11 +3,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { PrimeNG } from 'primeng/config';
 
 /**
- * Wires PrimeNG's internal i18n (month/weekday names, Today/Clear labels) to the app language.
- * PrimeNG v20 reads these from a global translation map, configured via PrimeNG.setTranslation().
+ * Wires PrimeNG's internal i18n (month/weekday names, calendar labels, dropdown empty
+ * messages) to the app language. PrimeNG reads these from a global translation map,
+ * configured via PrimeNG.setTranslation().
  *
- * This service is primarily used by PrimeNG Calendar components (DatePicker) to display
- * localized month names, day names, and UI labels based on the current application language.
+ * Used by PrimeNG Calendar/DatePicker components for localized month/day names and by
+ * Select/Dropdown components for the "no results found" / "no available options"
+ * placeholders shown when filtering yields no match or the option list is empty.
  */
 @Injectable({ providedIn: 'root' })
 export class PrimengTranslationService {
@@ -34,6 +36,8 @@ export class PrimengTranslationService {
         today: 'Heute',
         clear: 'Zurücksetzen',
         weekHeader: 'KW',
+        emptyFilterMessage: 'Keine Ergebnisse gefunden',
+        emptyMessage: 'Keine Optionen verfügbar',
       });
     } else {
       this.primeNG.setTranslation({
@@ -58,6 +62,8 @@ export class PrimengTranslationService {
         today: 'Today',
         clear: 'Clear',
         weekHeader: 'Wk',
+        emptyFilterMessage: 'No results found',
+        emptyMessage: 'No available options',
       });
     }
   }

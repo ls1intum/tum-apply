@@ -20,15 +20,12 @@ export class DocumentViewerComponent {
   private documentApi = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
 
-  constructor() {
-    effect(() => {
-      void this.initDocument();
-    });
-  }
-
-  async initDocument(): Promise<void> {
+  private readonly docDownloadEffect = effect(() => {
     const docId = this.documentId().id;
+    void this.initDocument(docId);
+  });
 
+  async initDocument(docId: string = this.documentId().id): Promise<void> {
     // check cache first
     const cached = this.cache.get(docId);
     if (cached !== undefined) {

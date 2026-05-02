@@ -412,6 +412,7 @@
     },
     "units": {
       "hoursPerWeek": "Stunden/Woche",
+      "year": "Jahr",
       "years": "Jahre"
     },
     "workload": {
