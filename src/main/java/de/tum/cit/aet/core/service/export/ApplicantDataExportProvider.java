@@ -50,13 +50,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .listForApplicant(applicant)
             .stream()
             .map(doc ->
-                new DocumentExportDTO(
-                    doc.getDocumentId(),
-                    doc.getName(),
-                    doc.getDocumentType(),
-                    doc.getMimeType(),
-                    doc.getSizeBytes()
-                )
+                new DocumentExportDTO(doc.getDocumentId(), doc.getName(), doc.getDocumentType(), doc.getMimeType(), doc.getSizeBytes())
             )
             .collect(Collectors.toSet());
 

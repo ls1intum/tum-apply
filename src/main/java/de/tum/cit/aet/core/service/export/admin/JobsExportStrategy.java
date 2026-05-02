@@ -468,12 +468,7 @@ public class JobsExportStrategy {
                 manifest.failed(ExportManifest.Category.DOCUMENT, doc.getDocumentId(), filename, sae);
                 throw sae;
             } catch (Exception e) {
-                log.warn(
-                    "Failed to add document {} for application {}: {}",
-                    doc.getDocumentId(),
-                    app.getApplicationId(),
-                    e.getMessage()
-                );
+                log.warn("Failed to add document {} for application {}: {}", doc.getDocumentId(), app.getApplicationId(), e.getMessage());
                 manifest.failed(ExportManifest.Category.DOCUMENT, doc.getDocumentId(), filename, e);
                 rethrowIfStreamBroken(e);
                 writeTextEntry(

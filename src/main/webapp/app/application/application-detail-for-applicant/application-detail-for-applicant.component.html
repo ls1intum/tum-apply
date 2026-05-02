@@ -270,10 +270,7 @@
     @if (documentIds(); as documentIds) {
       <section class="documents-section">
         @if (
-          documentIds.bachelorDocumentIds ||
-          documentIds.masterDocumentIds ||
-          documentIds.cvDocumentId ||
-          documentIds.referenceDocumentIds
+          documentIds.bachelorDocumentIds || documentIds.masterDocumentIds || documentIds.cvDocumentId || documentIds.referenceDocumentIds
         ) {
           @if (!previewDetailData()) {
             <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>

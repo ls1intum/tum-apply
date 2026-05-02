@@ -204,11 +204,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void createApplicationPrefillsDocumentsFromApplicantProfile() throws Exception {
             Document cvDoc = createApplicantProfileDocument("/testdocs/test-doc1.pdf", "cv.pdf", DocumentType.CV);
-            Document referenceDoc = createApplicantProfileDocument(
-                "/testdocs/test-doc2.pdf",
-                "reference.pdf",
-                DocumentType.REFERENCE
-            );
+            Document referenceDoc = createApplicantProfileDocument("/testdocs/test-doc2.pdf", "reference.pdf", DocumentType.REFERENCE);
             Document bachelorDoc = createApplicantProfileDocument(
                 "/testdocs/test-doc3.pdf",
                 "bachelor_transcript.pdf",
@@ -224,11 +220,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Application createdApplication = applicationRepository.findById(returnedApp.applicationId()).orElseThrow();
             assertApplicationHasDocumentPathForType(createdApplication, DocumentType.CV, cvDoc.getPath());
             assertApplicationHasDocumentPathForType(createdApplication, DocumentType.REFERENCE, referenceDoc.getPath());
-            assertApplicationHasDocumentPathForType(
-                createdApplication,
-                DocumentType.BACHELOR_TRANSCRIPT,
-                bachelorDoc.getPath()
-            );
+            assertApplicationHasDocumentPathForType(createdApplication, DocumentType.BACHELOR_TRANSCRIPT, bachelorDoc.getPath());
 
             assertThat(documentRepository.findApplicantDocumentsByType(applicant.getUserId(), DocumentType.CV)).hasSize(1);
         }
@@ -696,12 +688,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead(
-                    "/api/applications/documents/" + doc.getDocumentId() + "/name?newName=new_cv_name.pdf",
-                    null,
-                    Void.class,
-                    200
-                );
+                .putAndRead("/api/applications/documents/" + doc.getDocumentId() + "/name?newName=new_cv_name.pdf", null, Void.class, 200);
 
             Document updated = documentRepository.findById(doc.getDocumentId()).orElseThrow();
             assertThat(updated.getName()).isEqualTo("new_cv_name.pdf");
@@ -752,12 +739,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
             Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead(
-                    "/api/applications/documents/" + doc.getDocumentId() + "/name?newName=renamed.pdf",
-                    null,
-                    Void.class,
-                    400
-                );
+                .putAndRead("/api/applications/documents/" + doc.getDocumentId() + "/name?newName=renamed.pdf", null, Void.class, 400);
 
             assertThat(response).isNull();
         }

@@ -550,12 +550,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 "profile_cv.pdf"
             );
 
-            Void response = api.deleteAndRead(
-                "/api/applicants/profile/documents/" + doc.getDocumentId(),
-                null,
-                Void.class,
-                403
-            );
+            Void response = api.deleteAndRead("/api/applicants/profile/documents/" + doc.getDocumentId(), null, Void.class, 403);
             assertThat(response).isNull();
         }
 

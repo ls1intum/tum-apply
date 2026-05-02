@@ -374,7 +374,9 @@ public class DocumentService {
      * Loads a document by id or throws if it does not exist.
      */
     private Document findOrThrow(UUID documentId) {
-        return OptionalUtils.getOrThrow(documentRepository.findById(documentId), () -> EntityNotFoundException.forId("Document", documentId));
+        return OptionalUtils.getOrThrow(documentRepository.findById(documentId), () ->
+            EntityNotFoundException.forId("Document", documentId)
+        );
     }
 
     /**
