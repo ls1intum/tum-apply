@@ -34,6 +34,7 @@ import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
+import { InterviewRatingSection } from '../../shared/components/molecules/interview-rating-section/interview-rating-section';
 import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
 type ApplicationStateEnum = ApplicationDetailDTOApplicationStateEnum;
@@ -59,6 +60,7 @@ const CAROUSEL_SIZE = 7;
     DocumentSection,
     CommentSection,
     RatingSection,
+    InterviewRatingSection,
     LocalizedDatePipe,
     TooltipModule,
   ],

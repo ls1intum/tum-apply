@@ -12,6 +12,7 @@ import de.tum.cit.aet.interview.dto.CancelInterviewDTO;
 import de.tum.cit.aet.interview.dto.ConflictDataDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
+import de.tum.cit.aet.interview.dto.InterviewRatingDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
@@ -84,6 +85,25 @@ public class InterviewResource {
         List<UpcomingInterviewDTO> upcomingCalls = interviewService.getUpcomingInterviews();
         log.info("GET /api/interviews/upcoming - Returning {} upcoming interviews", upcomingCalls.size());
         return ResponseEntity.ok(upcomingCalls);
+    }
+
+    /**
+     * {@code GET /api/interviews/applications/{applicationId}/rating} : Get the
+     * interview rating recorded for the given application.
+     * <p>
+     * Returns {@code rating: null} when no interviewee has been rated yet, so the
+     * client can hide the section. If the application is linked to multiple
+     * interview processes, the most recently updated interviewee wins.
+     *
+     * @param applicationId the ID of the application
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link InterviewRatingDTO}
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/applications/{applicationId}/rating")
+    public ResponseEntity<InterviewRatingDTO> getInterviewRatingForApplication(@PathVariable UUID applicationId) {
+        log.info("GET /api/interviews/applications/{}/rating - Fetching interview rating", applicationId);
+        return ResponseEntity.ok(interviewService.getInterviewRatingForApplication(applicationId));
     }
 
     /**

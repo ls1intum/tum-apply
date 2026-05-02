@@ -4,16 +4,25 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="035_create_documents_v2_table" author="aniruddh">
+  <changeSet id="036_simplify_document_model" author="aniruddh">
     <!--
-      New unified documents table using Single Table Inheritance.
-      Replaces the legacy `document` + `document_dictionary` two-table model.
+      Replaces the legacy `document` + `document_dictionary` two-table model with a single
+      unified `documents` table using Single Table Inheritance.
 
-      During the migration window this table coexists with the legacy tables.
-      In the final migration session, the legacy tables are dropped and this
-      table is renamed to `documents`.
+      The new entity hierarchy:
+      - Document (abstract STI base, table `documents`)
+      - ApplicantDocument (discriminator APPLICANT) — owned by an applicant's profile
+      - ApplicationDocument (discriminator APPLICATION) — snapshot copy attached to an application
+
+      Production data is wiped, so dropping the legacy tables is safe.
     -->
-    <createTable tableName="documents_v2">
+
+    <!-- 1) Drop the legacy two-table model. -->
+    <dropTable tableName="document_dictionary"/>
+    <dropTable tableName="documents"/>
+
+    <!-- 2) Create the new unified documents table. -->
+    <createTable tableName="documents">
       <column name="document_id" type="CHAR(36)">
         <constraints nullable="false" primaryKey="true"/>
       </column>
@@ -48,49 +57,47 @@
       </column>
     </createTable>
 
-    <addForeignKeyConstraint baseTableName="documents_v2"
+    <addForeignKeyConstraint baseTableName="documents"
                              baseColumnNames="uploaded_by"
-                             constraintName="fk_documents_v2_user"
+                             constraintName="fk_documents_user"
                              referencedTableName="users"
                              referencedColumnNames="user_id"
                              onDelete="CASCADE"/>
 
-    <addForeignKeyConstraint baseTableName="documents_v2"
+    <addForeignKeyConstraint baseTableName="documents"
                              baseColumnNames="applicant_id"
-                             constraintName="fk_documents_v2_applicant"
+                             constraintName="fk_documents_applicant"
                              referencedTableName="applicants"
                              referencedColumnNames="user_id"
                              onDelete="CASCADE"/>
 
-    <addForeignKeyConstraint baseTableName="documents_v2"
+    <addForeignKeyConstraint baseTableName="documents"
                              baseColumnNames="application_id"
-                             constraintName="fk_documents_v2_application"
+                             constraintName="fk_documents_application"
                              referencedTableName="applications"
                              referencedColumnNames="application_id"
                              onDelete="CASCADE"/>
 
-    <createIndex indexName="idx_documents_v2_applicant" tableName="documents_v2">
+    <createIndex indexName="idx_documents_applicant" tableName="documents">
       <column name="applicant_id"/>
     </createIndex>
 
-    <createIndex indexName="idx_documents_v2_application" tableName="documents_v2">
+    <createIndex indexName="idx_documents_application" tableName="documents">
       <column name="application_id"/>
     </createIndex>
 
-    <createIndex indexName="idx_documents_v2_path" tableName="documents_v2">
+    <createIndex indexName="idx_documents_path" tableName="documents">
       <column name="path"/>
     </createIndex>
 
     <sql>
-      ALTER TABLE documents_v2 MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
+      ALTER TABLE documents MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
 
-    <!--
-      Discriminator XOR constraint: every row must reference exactly one owner that matches its discriminator.
-    -->
+    <!-- Discriminator XOR constraint: every row must reference exactly one owner matching its discriminator. -->
     <sql>
-      ALTER TABLE documents_v2
-      ADD CONSTRAINT chk_documents_v2_owner_xor
+      ALTER TABLE documents
+      ADD CONSTRAINT chk_documents_owner_xor
       CHECK (
         (doc_owner_type = 'APPLICANT' AND applicant_id IS NOT NULL AND application_id IS NULL)
         OR

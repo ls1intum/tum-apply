@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 import { JobFormDTO } from 'app/generated/model/job-form-dto';
 
+import { AiFeatureStatusService } from './ai-feature-status.service';
+
 /**
  * Service for streaming AI responses using Server-Sent Events (SSE).
  *
@@ -17,6 +19,7 @@ import { JobFormDTO } from 'app/generated/model/job-form-dto';
 })
 export class AiStreamingService {
   private keycloakService = inject(KeycloakAuthenticationService);
+  private aiFeatureStatus = inject(AiFeatureStatusService);
 
   /**
    * Generates a job application draft using streaming SSE.
@@ -111,6 +114,9 @@ export class AiStreamingService {
     });
 
     if (!response.ok) {
+      if (response.status === 503) {
+        this.aiFeatureStatus.markUnavailable();
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

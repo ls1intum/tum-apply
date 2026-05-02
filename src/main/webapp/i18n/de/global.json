@@ -40,7 +40,8 @@
       },
       "admin": {
         "dependencies": "TUMApply - Abhängigkeiten",
-        "exports": "TUMApply - Admin-Exporte"
+        "exports": "TUMApply - Admin-Exporte",
+        "systemSettings": "TUMApply - Systemeinstellungen"
       },
       "about-us": "TUMApply - Über uns",
       "interview": {
