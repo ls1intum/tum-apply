@@ -103,15 +103,13 @@ export class AuthFacadeService {
 
       // 3) not authenticated
       return false;
-    } catch (e) {
+    } catch {
+      // Don't rethrow: initAuth is awaited by Angular's appInitializer at startup,
+      // and a rejected promise there would block app bootstrap.
       this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.autoSignInFailed.summary`),
         detail: this.translate.instant(`${this.translationKey}.autoSignInFailed.detail`),
       });
-      // Don't rethrow: initAuth is awaited by Angular's appInitializer at startup,
-      // and a rejected promise there would block app bootstrap. Mirrors the pattern
-      // used by KeycloakAuthenticationService.init().
-      console.warn('Auto sign-in failed:', e);
       return false;
     }
   }
