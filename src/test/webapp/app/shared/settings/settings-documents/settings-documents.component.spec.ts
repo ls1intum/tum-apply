@@ -51,10 +51,10 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   const createDocumentIds = (): ApplicationDocumentIdsDTO => ({
-    bachelorDocumentDictionaryIds: [{ id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 }],
-    masterDocumentDictionaryIds: [{ id: 'master-doc-1', name: 'master.pdf', size: 100 }],
-    cvDocumentDictionaryId: { id: 'cv-doc-1', name: 'cv.pdf', size: 100 },
-    referenceDocumentDictionaryIds: [{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }],
+    bachelorDocumentIds: [{ id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 }],
+    masterDocumentIds: [{ id: 'master-doc-1', name: 'master.pdf', size: 100 }],
+    cvDocumentId: { id: 'cv-doc-1', name: 'cv.pdf', size: 100 },
+    referenceDocumentIds: [{ id: 'reference-doc-1', name: 'reference.pdf', size: 100 }],
   });
 
   const createComponent = async (): Promise<SettingsDocumentsComponent> => {

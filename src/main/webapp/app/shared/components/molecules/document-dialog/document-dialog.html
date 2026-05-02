@@ -41,7 +41,7 @@
     <div class="h-full flex items-center justify-center overflow-hidden md:flex-1">
       @if (selectedDocument(); as doc) {
         <div class="h-full w-full max-w-full rounded-lg overflow-hidden bg-white">
-          <jhi-document-viewer class="w-full h-full object-contain" [documentDictionaryId]="doc" />
+          <jhi-document-viewer class="w-full h-full object-contain" [documentId]="doc" />
         </div>
       }
     </div>

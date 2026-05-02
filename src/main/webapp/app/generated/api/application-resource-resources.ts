@@ -92,7 +92,7 @@ export function getApplicationPagesResource(params?: Signal<GetApplicationPagesP
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param applicationId 
  */
-export function getDocumentDictionaryIdsResource(applicationId: Signal<string> | string): HttpResourceRef<ApplicationDocumentIdsDTO | undefined> {
+export function getDocumentIdsResource(applicationId: Signal<string> | string): HttpResourceRef<ApplicationDocumentIdsDTO | undefined> {
     return httpResource<ApplicationDocumentIdsDTO>(() => {
         const applicationIdValue = typeof applicationId === 'function' ? applicationId() : applicationId;
         const applicationIdPath = encodeURIComponent(String(applicationIdValue));

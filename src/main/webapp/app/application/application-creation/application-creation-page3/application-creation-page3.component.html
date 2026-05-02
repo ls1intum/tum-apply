@@ -7,7 +7,7 @@
 
     @if (data(); as data) {
       <div class="w-full lg:w-1/2 lg:pe-3">
-        <label>
+        <span class="custom-label">
           <span jhiTranslate="entity.applicationPage3.label.desiredStartDate"></span>
           <fa-icon
             class="icon"
@@ -15,7 +15,7 @@
             [pTooltip]="'entity.applicationPage3.tooltip.desiredStartDate' | translate"
             tooltipPosition="top"
           />
-        </label>
+        </span>
         <jhi-datepicker
           [selectedDate]="data.desiredStartDate"
           label=""
@@ -30,7 +30,7 @@
     @if (applicationIdForDocuments(); as applicationId) {
       <!-- Reference Upload -->
       <div class="w-full mb-6">
-        <label>
+        <span class="custom-label">
           <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
           <fa-icon
             class="icon"
@@ -38,7 +38,7 @@
             [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
             tooltipPosition="top"
           />
-        </label>
+        </span>
         <jhi-upload-button
           documentType="REFERENCE"
           [applicationId]="applicationId"

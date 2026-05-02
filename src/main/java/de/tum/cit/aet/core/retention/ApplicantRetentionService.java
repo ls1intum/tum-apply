@@ -3,8 +3,7 @@ package de.tum.cit.aet.core.retention;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
@@ -32,8 +31,7 @@ public class ApplicantRetentionService {
     private final ApplicationReviewRepository applicationReviewRepository;
     private final AsyncEmailSender sender;
     private final InternalCommentRepository internalCommentRepository;
-    private final DocumentDictionaryRepository documentDictionaryRepository;
-    private final DocumentRepository documentRepository;
+    private final DocumentService documentService;
     private final IntervieweeRepository intervieweeRepository;
     private final UserRepository userRepository;
 
@@ -66,19 +64,11 @@ public class ApplicantRetentionService {
 
             log.info("Processing deletion for application with ID {}", applicationId);
 
-            // Collect documents to delete
-            List<UUID> documentIdsToDelete = documentDictionaryRepository.findDocumentIdsByApplicationId(application.getApplicationId());
-
             // Delete related data first (no CASCADE)
             applicationReviewRepository.deleteByApplication(application);
             internalCommentRepository.deleteByApplication(application);
-            documentDictionaryRepository.deleteByApplicationIdIn(List.of(application.getApplicationId()));
+            documentService.deleteAllByApplicationId(application.getApplicationId());
             intervieweeRepository.deleteByApplicationIdIn(List.of(application.getApplicationId()));
-
-            // Delete associated documents
-            for (UUID documentId : documentIdsToDelete) {
-                documentRepository.deleteById(documentId);
-            }
 
             applicationRepository.delete(application);
 

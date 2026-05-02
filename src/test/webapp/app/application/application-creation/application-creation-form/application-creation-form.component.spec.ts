@@ -1795,13 +1795,13 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       comp.applicationId.set('app-123');
 
-      const getDocumentDictionaryIdsSpy = vi.spyOn(applicationApi, 'getDocumentDictionaryIds');
-      getDocumentDictionaryIdsSpy.mockClear();
+      const getDocumentIdsSpy = vi.spyOn(applicationApi, 'getDocumentIds');
+      getDocumentIdsSpy.mockClear();
 
       comp.updateDocumentInformation();
 
-      // Should NOT call getDocumentDictionaryIds when using local storage
-      expect(getDocumentDictionaryIdsSpy).not.toHaveBeenCalled();
+      // Should NOT call getDocumentIds when using local storage
+      expect(getDocumentIdsSpy).not.toHaveBeenCalled();
 
       // documentIds should remain empty
       expect(comp.documentIds()).toStrictEqual({});
@@ -1812,25 +1812,25 @@ describe('ApplicationForm', () => {
       comp.applicationId.set('app-456');
 
       const mockDocumentIds = { documentId1: 'doc-1', documentId2: 'doc-2' };
-      applicationApi.getDocumentDictionaryIds = vi.fn().mockReturnValue(of(mockDocumentIds));
+      applicationApi.getDocumentIds = vi.fn().mockReturnValue(of(mockDocumentIds));
 
       comp.updateDocumentInformation();
 
       // Wait for async operation to complete
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      // Should call getDocumentDictionaryIds
-      expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalledWith('app-456');
+      // Should call getDocumentIds
+      expect(applicationApi.getDocumentIds).toHaveBeenCalledWith('app-456');
 
       // Should set documentIds
       expect(comp.documentIds()).toEqual(mockDocumentIds);
     });
 
-    it('should show error toast when getDocumentDictionaryIds fails', async () => {
+    it('should show error toast when getDocumentIds fails', async () => {
       comp.useLocalStorage.set(false);
       comp.applicationId.set('app-error');
 
-      applicationApi.getDocumentDictionaryIds = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
+      applicationApi.getDocumentIds = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
 
       comp.updateDocumentInformation();
 
@@ -1848,7 +1848,7 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       comp.applicationId.set('app-any-id');
 
-      const getDocumentSpy = vi.spyOn(applicationApi, 'getDocumentDictionaryIds');
+      const getDocumentSpy = vi.spyOn(applicationApi, 'getDocumentIds');
       const errorSpy = vi.spyOn(toast, 'showErrorKey');
       getDocumentSpy.mockClear();
 

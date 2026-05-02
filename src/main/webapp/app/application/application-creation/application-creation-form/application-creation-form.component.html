@@ -20,7 +20,7 @@
       (changed)="onValueChanged()"
       (educationDataExtracted)="onEducationDataExtracted($event)"
       [applicationIdForDocuments]="applicationId()"
-      [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
+      [documentIdsCv]="documentIds()?.cvDocumentId"
       [requestAuth]="requestAuthCallback"
     />
   </div>
@@ -34,8 +34,8 @@
       (valid)="onEducationDataValidityChanged($event)"
       (changed)="onValueChanged()"
       [applicationIdForDocuments]="applicationId()"
-      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
-      [documentIdsMasterTranscript]="documentIds()?.masterDocumentDictionaryIds"
+      [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentIds"
+      [documentIdsMasterTranscript]="documentIds()?.masterDocumentIds"
     />
   </div>
 </ng-template>
@@ -49,7 +49,7 @@
         (changed)="onValueChanged()"
         (valid)="onApplicationDetailsDataValidityChanged($event)"
         [applicationIdForDocuments]="applicationId()"
-        [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
+        [documentIdsReferences]="documentIds()?.referenceDocumentIds"
       />
     }
   </div>
@@ -75,8 +75,10 @@
 
   <div [formGroup]="additionalInfoForm">
     <div class="flex align-items-center gap-2">
-      <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
-      <label><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span></label>
+      <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" inputId="privacyCheckbox" />
+      <label for="privacyCheckbox"
+        ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
+      ></label>
     </div>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
@@ -95,10 +97,10 @@
   <div [formGroup]="additionalInfoForm">
     <div class="flex align-items-center">
       <div class="relative mr-2">
-        <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" />
+        <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" inputId="doctoralRequirementsCheckbox" />
         <span class="required">*</span>
       </div>
-      <label jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></label>
+      <label for="doctoralRequirementsCheckbox" jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></label>
     </div>
 
     @if (!doctoralRequirementsAcceptedSignal() && submitAttempted()) {

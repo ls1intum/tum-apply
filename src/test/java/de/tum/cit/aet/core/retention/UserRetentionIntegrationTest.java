@@ -10,10 +10,9 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.core.domain.ProfileImage;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
@@ -103,9 +102,6 @@ class UserRetentionIntegrationTest {
     private DocumentRepository documentRepository;
 
     @Autowired
-    private DocumentDictionaryRepository documentDictionaryRepository;
-
-    @Autowired
     private EmailSettingRepository emailSettingRepository;
 
     @Autowired
@@ -179,18 +175,9 @@ class UserRetentionIntegrationTest {
         InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
         InterviewSlot slot = saveInterviewSlot(application, job);
 
-        DocumentTestData.savedDictionaryWithMockDocument(
+        DocumentTestData.savedMockDocument(documentRepository, savedApplicantUser, application, null, DocumentType.CV, "cv.pdf");
+        Document applicantProfileDictionary = DocumentTestData.savedMockDocument(
             documentRepository,
-            documentDictionaryRepository,
-            savedApplicantUser,
-            application,
-            null,
-            DocumentType.CV,
-            "cv.pdf"
-        );
-        DocumentDictionary applicantProfileDictionary = DocumentTestData.savedDictionaryWithMockDocument(
-            documentRepository,
-            documentDictionaryRepository,
             savedApplicantUser,
             null,
             applicant,
@@ -204,8 +191,7 @@ class UserRetentionIntegrationTest {
         userRetentionService.processUserIdsList(List.of(applicantId), LocalDateTime.now(), false);
 
         assertApplicantDataDeleted(savedApplicantUser, application, review, rating, comment, slot, profileImage);
-        assertThat(documentDictionaryRepository.findById(applicantProfileDictionary.getDocumentDictionaryId())).isEmpty();
-        assertThat(documentRepository.findById(applicantProfileDictionary.getDocument().getDocumentId())).isEmpty();
+        assertThat(documentRepository.findById(applicantProfileDictionary.getDocumentId())).isEmpty();
     }
 
     @Test
@@ -349,15 +335,7 @@ class UserRetentionIntegrationTest {
 
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Batch Job", JobState.PUBLISHED, null);
         Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
-        DocumentTestData.savedDictionaryWithMockDocument(
-            documentRepository,
-            documentDictionaryRepository,
-            savedApplicantUser,
-            application,
-            null,
-            DocumentType.CV,
-            "cv-batch.pdf"
-        );
+        DocumentTestData.savedMockDocument(documentRepository, savedApplicantUser, application, null, DocumentType.CV, "cv-batch.pdf");
 
         EmailTemplate template = EmailTemplateTestData.saved(emailTemplateRepository, researchGroup, professor, EmailType.APPLICATION_SENT);
 
@@ -512,7 +490,7 @@ class UserRetentionIntegrationTest {
         assertThat(internalCommentRepository.findById(commentId)).isEmpty();
         assertThat(intervieweeRepository.findById(intervieweeId)).isEmpty();
         assertThat(interviewSlotRepository.findById(slotId)).isEmpty();
-        assertThat(documentDictionaryRepository.findAllByApplicationApplicationId(applicationId)).isEmpty();
+        assertThat(documentRepository.findAllApplicationDocuments(applicationId)).isEmpty();
         assertThat(documentRepository.findAll()).noneMatch(d -> d.getUploadedBy().getUserId().equals(userId));
         assertThat(userSettingRepository.findAllByIdUserId(userId)).isEmpty();
         assertThat(emailSettingRepository.findAllByUser(user)).isEmpty();

@@ -24,11 +24,22 @@ export class DocumentResourceApi {
     /**
      * 
      * 
-     * @param documentDictionaryId 
+     * @param documentId 
      */
-    downloadDocument(documentDictionaryId: string): Observable<HttpResponse<Blob>> {
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
-        const url = `${this.basePath}/api/documents/${documentDictionaryIdPath}`;
+    deleteDocument(documentId: string): Observable<void> {
+        const documentIdPath = encodeURIComponent(String(documentId));
+        const url = `${this.basePath}/api/documents/${documentIdPath}`;
+        return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param documentId 
+     */
+    downloadDocument(documentId: string): Observable<HttpResponse<Blob>> {
+        const documentIdPath = encodeURIComponent(String(documentId));
+        const url = `${this.basePath}/api/documents/${documentIdPath}`;
         return this.http.get(url, { responseType: 'blob', observe: 'response' });
     }
 

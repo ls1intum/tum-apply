@@ -71,7 +71,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const docIds: ApplicationDocumentIdsDTO = {};
     const { component } = setupTest('APP1', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(appData)),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of(docIds)),
+      getDocumentIds: vi.fn((applicationId: string) => of(docIds)),
     });
     await component.init();
     expect(component.applicationId()).toBe('APP1');
@@ -90,7 +90,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       // Arrange
       const setup = setupTest('APP1', {
         getApplicationForDetailPage: vi.fn((applicationId: string) => of(appData)),
-        getDocumentDictionaryIds: vi.fn((applicationId: string) => of(docIds)),
+        getDocumentIds: vi.fn((applicationId: string) => of(docIds)),
       });
       component = setup.component;
       applicationApi = setup.applicationApi;
@@ -103,7 +103,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       // Assert
       expect(component.applicationId()).toBe('APP1');
       expect(applicationApi.getApplicationForDetailPage).toHaveBeenCalledWith('APP1');
-      expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalledWith('APP1');
+      expect(applicationApi.getDocumentIds).toHaveBeenCalledWith('APP1');
     });
 
     it('stores application and document data in signals', () => {
@@ -121,7 +121,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('shows error when application id missing', async () => {
     const { component, toast } = setupTest(null, {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'MISSING', jobId: 'JOBX' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidApplicationId');
@@ -130,17 +130,17 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('handles application fetch error', async () => {
     const { component, toast, applicationApi } = setupTest('APP2', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchApplicationFailed');
-    expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalled();
+    expect(applicationApi.getDocumentIds).toHaveBeenCalled();
   });
 
   it('handles document ID fetch error', async () => {
     const { component, toast } = setupTest('APP3', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP3' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
+      getDocumentIds: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
     });
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchDocumentIdsFailed');
@@ -149,7 +149,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('navigates to job detail when jobId present', () => {
     const { component, router } = setupTest('APP4', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP4', jobId: 'JOBX' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     component.applicationId.set('APP4');
     // Supply minimal ApplicationDetailDTO required fields
@@ -168,7 +168,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('shows error when jobId missing on view job details', () => {
     const { component, router, toast } = setupTest('APP5', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP5', jobId: '' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     component.applicationId.set('APP5');
     component.actualDetailData.set({
@@ -188,7 +188,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const delete$ = of(void 0);
     const { component, applicationApi, toast, router } = setupTest('APP6', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP6' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       deleteApplication: vi.fn((applicationId: string) => delete$),
     });
     component.applicationId.set('APP6');
@@ -201,7 +201,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('handles delete application error', () => {
     const { component, applicationApi, toast } = setupTest('APP7', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP7' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       deleteApplication: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
     });
     component.applicationId.set('APP7');
@@ -213,7 +213,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('withdraws application successfully and re-inits', () => {
     const { component, applicationApi, toast } = setupTest('APP8', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP8' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       withdrawApplication: vi.fn((applicationId: string) => of(void 0)),
     });
     component.applicationId.set('APP8');
@@ -227,7 +227,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('handles withdraw application error', () => {
     const { component, applicationApi, toast } = setupTest('APP9', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP9' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
       withdrawApplication: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
     });
     component.applicationId.set('APP9');
@@ -239,7 +239,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('downloads PDF and uses filename from header', async () => {
     const { component, pdfExportApi } = setupTest('APP10', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP10' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     component.applicationId.set('APP10');
     const clickSpy = vi.fn();
@@ -274,7 +274,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
   it('falls back to default filename when header missing', async () => {
     const { component, pdfExportApi } = setupTest('APP11', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP11' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+      getDocumentIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
     });
     component.applicationId.set('APP11');
     const anchor: { click: () => void; href: string; download: string } = { click: vi.fn(), href: '', download: '' };
