@@ -46,7 +46,7 @@ export interface JobDetails {
   workload: string;
   contractDuration: string;
   fundingType: JobFormDTOFundingTypeEnum | undefined;
-  tvlGrades: JobFormDTOTvlGradeEnum | undefined;
+  tvlGrade: JobFormDTOTvlGradeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
@@ -520,7 +520,7 @@ export class JobDetailComponent {
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
-      tvlGrades: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
+      tvlGrade: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,

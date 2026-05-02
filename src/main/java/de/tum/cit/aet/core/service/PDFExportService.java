@@ -393,7 +393,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("workload"), getValue(data.workload()))
             .addOverviewItem(labels.get("duration"), getValue(data.duration()))
             .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
-            .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrades()))
+            .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrade()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
