@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -73,7 +74,7 @@ public class XlsxExportService {
 
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
-            var headerStyle = workbook.createCellStyle();
+            CellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setFont(headerFont);
 
             for (Map.Entry<String, SheetData> entry : sheets.entrySet()) {
@@ -98,7 +99,7 @@ public class XlsxExportService {
         }
     }
 
-    private void writeSheetContent(Sheet sheet, org.apache.poi.ss.usermodel.CellStyle headerStyle, SheetData data) {
+    private void writeSheetContent(Sheet sheet, CellStyle headerStyle, SheetData data) {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < data.headers().size(); i++) {
             Cell cell = headerRow.createCell(i);

@@ -52,11 +52,11 @@ export class ApplicationResourceApi {
     /**
      * 
      * 
-     * @param documentDictionaryId 
+     * @param documentId 
      */
-    deleteDocumentFromApplication(documentDictionaryId: string): Observable<void> {
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
-        const url = `${this.basePath}/api/applications/documents/${documentDictionaryIdPath}`;
+    deleteDocumentFromApplication(documentId: string): Observable<void> {
+        const documentIdPath = encodeURIComponent(String(documentId));
+        const url = `${this.basePath}/api/applications/documents/${documentIdPath}`;
         return this.http.delete<void>(url);
     }
 
@@ -114,7 +114,7 @@ export class ApplicationResourceApi {
      * 
      * @param applicationId 
      */
-    getDocumentDictionaryIds(applicationId: string): Observable<ApplicationDocumentIdsDTO> {
+    getDocumentIds(applicationId: string): Observable<ApplicationDocumentIdsDTO> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/applications/getDocumentIds/${applicationIdPath}`;
         return this.http.get<ApplicationDocumentIdsDTO>(url);
@@ -123,17 +123,17 @@ export class ApplicationResourceApi {
     /**
      * 
      * 
-     * @param documentDictionaryId 
+     * @param documentId 
      * @param newName 
      */
-    renameDocument(documentDictionaryId: string, newName: string): Observable<void> {
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
+    renameDocument(documentId: string, newName: string): Observable<void> {
+        const documentIdPath = encodeURIComponent(String(documentId));
         const queryParams = new URLSearchParams();
         if (newName !== undefined && newName !== null) {
             queryParams.set('newName', String(newName));
         }
         const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/applications/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
+        const url = `${this.basePath}/api/applications/documents/${documentIdPath}/name${queryString ? `?${queryString}` : ''}`;
         return this.http.put<void>(url, null);
     }
 

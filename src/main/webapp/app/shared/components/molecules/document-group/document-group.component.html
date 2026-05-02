@@ -1,43 +1,43 @@
 <div class="flex flex-1 flex-col overflow-y-auto">
-  @if (this.documentIds().bachelorDocumentDictionaryIds; as bachelorDocDictId) {
+  @if (this.documentIds().bachelorDocumentIds; as bachelorDocId) {
     <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
       <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT">Bachelor Transcript</span>
       <div class="document-viewer-width">
-        @for (id of bachelorDocDictId; track $index) {
+        @for (id of bachelorDocId; track $index) {
           <div class="border-neutral-rounded rounded mb-1 w-full h-80">
-            <jhi-document-viewer [documentDictionaryId]="bachelorDocDictId[0]" />
+            <jhi-document-viewer [documentId]="bachelorDocId[0]" />
           </div>
         }
       </div>
     </div>
   }
-  @if (this.documentIds().masterDocumentDictionaryIds; as masterDocDictId) {
+  @if (this.documentIds().masterDocumentIds; as masterDocId) {
     <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
       <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT">Master Transcript</span>
       <div class="document-viewer-width">
-        @for (id of masterDocDictId; track $index) {
+        @for (id of masterDocId; track $index) {
           <div class="border-neutral-rounded rounded mb-1 w-full h-80">
-            <jhi-document-viewer [documentDictionaryId]="id" />
+            <jhi-document-viewer [documentId]="id" />
           </div>
         }
       </div>
     </div>
   }
-  @if (this.documentIds().cvDocumentDictionaryId; as cvDocDictId) {
+  @if (this.documentIds().cvDocumentId; as cvDocId) {
     <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
       <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.CV">CV</span>
       <div class="document-viewer-width h-80">
-        <jhi-document-viewer [documentDictionaryId]="cvDocDictId" />
+        <jhi-document-viewer [documentId]="cvDocId" />
       </div>
     </div>
   }
-  @if (this.documentIds().referenceDocumentDictionaryIds; as referenceDocumentDictionaryIds) {
+  @if (this.documentIds().referenceDocumentIds; as referenceDocumentIds) {
     <div class="flex flex-col border-neutral-rounded rounded p-4 mb-2">
       <span class="w-full font-bold" jhiTranslate="entity.upload.document_type.REFERENCES">References</span>
       <div class="document-viewer-width">
-        @for (id of referenceDocumentDictionaryIds; track $index) {
+        @for (id of referenceDocumentIds; track $index) {
           <div class="border-neutral-rounded rounded mb-1 w-full h-80">
-            <jhi-document-viewer [documentDictionaryId]="id" />
+            <jhi-document-viewer [documentId]="id" />
           </div>
         }
       </div>

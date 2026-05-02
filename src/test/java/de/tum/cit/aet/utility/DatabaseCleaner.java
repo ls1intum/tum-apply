@@ -17,7 +17,6 @@ public class DatabaseCleaner {
         "applicants",
         "data_export_requests",
         "departments",
-        "document_dictionary",
         "documents",
         "email_settings",
         "email_template_translations",

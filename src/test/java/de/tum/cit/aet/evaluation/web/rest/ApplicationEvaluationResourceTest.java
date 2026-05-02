@@ -8,10 +8,9 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
@@ -72,9 +71,6 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Autowired
     DocumentRepository documentRepository;
-
-    @Autowired
-    DocumentDictionaryRepository documentDictionaryRepository;
 
     @Autowired
     MvcTestClient api;
@@ -410,10 +406,9 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
             int i = 1;
             for (Map.Entry<DocumentType, String> entry : expectedFileNames.entrySet()) {
-                DocumentTestData.savedDictionaryWithDocument(
+                DocumentTestData.savedDocumentWithFile(
                     storageRootConfig,
                     documentRepository,
-                    documentDictionaryRepository,
                     professor,
                     sentApp,
                     null,
@@ -475,10 +470,9 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
         @Test
         void multipleSameTypeAddsNumbering() throws Exception {
-            DocumentTestData.savedDictionaryWithDocument(
+            DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
-                documentDictionaryRepository,
                 professor,
                 sentApp,
                 null,
@@ -487,10 +481,9 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                 DocumentType.CV,
                 "cv"
             );
-            DocumentTestData.savedDictionaryWithDocument(
+            DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
-                documentDictionaryRepository,
                 professor,
                 sentApp,
                 null,

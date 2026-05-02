@@ -229,7 +229,7 @@ export default class ApplicationDetailForApplicantComponent {
     }
 
     try {
-      const ids = await firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()));
+      const ids = await firstValueFrom(this.applicationApi.getDocumentIds(this.applicationId()));
       this.actualDocumentData.set(ids);
       this.actualDocumentDataExists.set(true);
     } catch {

@@ -416,9 +416,9 @@ export class SettingsDocumentsComponent {
   }
 
   private applyProfileDocumentIds(documentIds: ApplicationDocumentIdsDTO): void {
-    this.bachelorDocuments.set(documentIds.bachelorDocumentDictionaryIds ?? []);
-    this.masterDocuments.set(documentIds.masterDocumentDictionaryIds ?? []);
-    this.referenceDocuments.set(documentIds.referenceDocumentDictionaryIds ?? []);
+    this.bachelorDocuments.set(documentIds.bachelorDocumentIds ?? []);
+    this.masterDocuments.set(documentIds.masterDocumentIds ?? []);
+    this.referenceDocuments.set(documentIds.referenceDocumentIds ?? []);
   }
 
   private async saveQueuedDocuments(): Promise<void> {

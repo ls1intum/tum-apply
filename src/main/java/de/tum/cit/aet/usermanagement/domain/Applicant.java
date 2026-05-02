@@ -1,7 +1,7 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.constants.SubjectArea;
@@ -35,7 +35,7 @@ public class Applicant {
     private Set<Application> submittedApplications;
 
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<DocumentDictionary> documentDictionaries;
+    private Set<ApplicantDocument> applicantDocuments;
 
     @ElementCollection(targetClass = SubjectArea.class)
     @CollectionTable(name = "applicant_subject_area_subscriptions", joinColumns = @JoinColumn(name = "user_id"))

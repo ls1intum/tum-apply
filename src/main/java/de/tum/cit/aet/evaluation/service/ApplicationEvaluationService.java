@@ -4,15 +4,13 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
@@ -37,6 +35,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,6 @@ import org.springframework.stereotype.Service;
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
-    private final DocumentDictionaryService documentDictionaryService;
     private final DocumentService documentService;
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
@@ -335,7 +333,7 @@ public class ApplicationEvaluationService {
         Application application = getApplication(applicationId);
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
-        Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
+        Set<ApplicationDocument> applicationDocuments = documentService.listForApplication(application);
 
         User user = application.getApplicant().getUser();
         String zipName = FileUtil.sanitizeFilename(
@@ -345,10 +343,10 @@ public class ApplicationEvaluationService {
         zipExportService.initZipResponse(response, zipName);
 
         // Count per type to decide if numbering is needed
-        Map<DocumentType, Long> typeCounts = documentDictionaries
+        Map<DocumentType, Long> typeCounts = applicationDocuments
             .stream()
             .collect(
-                Collectors.groupingBy(DocumentDictionary::getDocumentType, () -> new EnumMap<>(DocumentType.class), Collectors.counting())
+                Collectors.groupingBy(ApplicationDocument::getDocumentType, () -> new EnumMap<>(DocumentType.class), Collectors.counting())
             );
 
         // Per-type index used only when count > 1
@@ -360,9 +358,8 @@ public class ApplicationEvaluationService {
         ) {
             zos.setLevel(Deflater.BEST_SPEED);
 
-            for (DocumentDictionary dd : documentDictionaries) {
-                DocumentType type = dd.getDocumentType();
-                Document doc = dd.getDocument();
+            for (ApplicationDocument doc : applicationDocuments) {
+                DocumentType type = doc.getDocumentType();
 
                 long count = typeCounts.getOrDefault(type, 0L);
                 String base = fileName(type);
@@ -372,7 +369,9 @@ public class ApplicationEvaluationService {
                 String ext = documentService.resolveFileExtension(doc).getExtension();
                 entryName += "." + ext;
 
-                zipExportService.addDocumentToZip(zos, entryName, doc);
+                try (InputStream is = documentService.downloadDocument(doc.getDocumentId()).getInputStream()) {
+                    zipExportService.addFileToZip(zos, entryName, is);
+                }
             }
 
             zos.finish();

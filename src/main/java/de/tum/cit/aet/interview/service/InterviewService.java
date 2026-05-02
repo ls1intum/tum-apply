@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
@@ -14,7 +15,6 @@ import de.tum.cit.aet.core.exception.InterviewProcessClosedException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
@@ -68,7 +68,7 @@ public class InterviewService {
     private final JobRepository jobRepository;
     private final AsyncEmailSender asyncEmailSender;
     private final IcsCalendarService icsCalendarService;
-    private final DocumentDictionaryService documentDictionaryService;
+    private final ApplicationService applicationService;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
     /*--------------------------------------------------------------
@@ -1171,7 +1171,7 @@ public class InterviewService {
             interviewee.getRating() != null ? interviewee.getRating().getValue() : null,
             interviewee.getAssessmentNotes(),
             ApplicationDetailDTO.getFromEntity(application, job),
-            documentDictionaryService.getDocumentIdsDTO(application)
+            applicationService.getDocumentIdsOfApplication(application.getApplicationId())
         );
     }
 

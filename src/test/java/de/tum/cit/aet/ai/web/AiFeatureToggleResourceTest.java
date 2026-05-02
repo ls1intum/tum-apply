@@ -3,12 +3,14 @@ package de.tum.cit.aet.ai.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.ai.domain.SystemSetting;
 import de.tum.cit.aet.ai.dto.AiFeatureStatusDTO;
 import de.tum.cit.aet.ai.repository.SystemSettingRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,7 +43,7 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReturnStatusWhenAuthenticated() {
-            var result = api
+            AiFeatureStatusDTO result = api
                 .with(JwtPostProcessors.jwtUser(regularUserId, "ROLE_APPLICANT"))
                 .getAndRead(BASE_URL + "/status", null, AiFeatureStatusDTO.class, 200);
 
@@ -62,7 +64,7 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldDisableAiWhenAdmin() {
-            var result = api
+            AiFeatureStatusDTO result = api
                 .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
@@ -79,7 +81,7 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
             // Then enable
-            var result = api
+            AiFeatureStatusDTO result = api
                 .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=true", null, AiFeatureStatusDTO.class, 200);
 
@@ -94,7 +96,7 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
-            var setting = systemSettingRepository.findById("ai.enabled");
+            Optional<SystemSetting> setting = systemSettingRepository.findById("ai.enabled");
             assertThat(setting).isPresent();
             assertThat(setting.get().getValue()).isEqualTo("false");
         }
@@ -117,7 +119,7 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldResetCircuitBreakerWhenAdmin() {
-            var result = api
+            AiFeatureStatusDTO result = api
                 .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .postAndRead(BASE_URL + "/reset-circuit-breaker", null, AiFeatureStatusDTO.class, 200);
 
@@ -147,7 +149,7 @@ class AiFeatureToggleResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
                 .putAndRead(BASE_URL + "/toggle?enabled=false", null, AiFeatureStatusDTO.class, 200);
 
-            var status = api
+            AiFeatureStatusDTO status = api
                 .with(JwtPostProcessors.jwtUser(regularUserId, "ROLE_APPLICANT"))
                 .getAndRead(BASE_URL + "/status", null, AiFeatureStatusDTO.class, 200);
 

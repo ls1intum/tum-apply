@@ -6,9 +6,8 @@ import de.tum.cit.aet.IntegrationTest;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
@@ -87,9 +86,6 @@ class ApplicantRetentionServiceIntegrationTest {
     private DocumentRepository documentRepository;
 
     @Autowired
-    private DocumentDictionaryRepository documentDictionaryRepository;
-
-    @Autowired
     private InternalCommentRepository internalCommentRepository;
 
     @Autowired
@@ -119,7 +115,7 @@ class ApplicantRetentionServiceIntegrationTest {
         assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isNotPresent();
         assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isNotPresent();
         assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isNotPresent();
-        assertThat(documentDictionaryRepository.findById(fixtures.dictionary.getDocumentDictionaryId())).isNotPresent();
+        assertThat(documentRepository.findById(fixtures.dictionary.getDocumentId())).isNotPresent();
         assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isNotPresent();
     }
 
@@ -133,7 +129,7 @@ class ApplicantRetentionServiceIntegrationTest {
         assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isPresent();
         assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isPresent();
         assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isPresent();
-        assertThat(documentDictionaryRepository.findById(fixtures.dictionary.getDocumentDictionaryId())).isPresent();
+        assertThat(documentRepository.findById(fixtures.dictionary.getDocumentId())).isPresent();
         assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isPresent();
     }
 
@@ -158,13 +154,11 @@ class ApplicantRetentionServiceIntegrationTest {
         // Old application and its artifacts are gone
         assertThat(applicationRepository.findById(fixtures.oldApplication.getApplicationId())).isNotPresent();
         assertThat(applicationReviewRepository.findById(fixtures.oldReview.getApplicationReviewId())).isNotPresent();
-        assertThat(documentDictionaryRepository.findById(fixtures.oldDictionary.getDocumentDictionaryId())).isNotPresent();
-        assertThat(documentRepository.findById(fixtures.oldDictionary.getDocument().getDocumentId())).isNotPresent();
+        assertThat(documentRepository.findById(fixtures.oldDictionary.getDocumentId())).isNotPresent();
 
         // Newer application and its documents remain untouched
         assertThat(applicationRepository.findById(fixtures.recentApplication.getApplicationId())).isPresent();
-        assertThat(documentDictionaryRepository.findById(fixtures.recentDictionary.getDocumentDictionaryId())).isPresent();
-        assertThat(documentRepository.findById(fixtures.recentDictionary.getDocument().getDocumentId())).isPresent();
+        assertThat(documentRepository.findById(fixtures.recentDictionary.getDocumentId())).isPresent();
     }
 
     // -------------------------
@@ -196,9 +190,8 @@ class ApplicantRetentionServiceIntegrationTest {
 
         InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
 
-        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        Document dictionary = DocumentTestData.savedMockDocument(
             documentRepository,
-            documentDictionaryRepository,
             professor,
             application,
             null,
@@ -231,24 +224,15 @@ class ApplicantRetentionServiceIntegrationTest {
             "Outdated application"
         );
 
-        DocumentDictionary oldDict = DocumentTestData.savedDictionaryWithMockDocument(
-            documentRepository,
-            documentDictionaryRepository,
-            professor,
-            oldApp,
-            null,
-            DocumentType.CV,
-            "old-cv.pdf"
-        );
+        Document oldDict = DocumentTestData.savedMockDocument(documentRepository, professor, oldApp, null, DocumentType.CV, "old-cv.pdf");
 
         // Recent application
         Application recentApp = applicationRepository.saveAndFlush(ApplicationTestData.sent(job, applicant));
 
         forceApplicationLastModified(recentApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusHours(6));
 
-        DocumentDictionary recentDict = DocumentTestData.savedDictionaryWithMockDocument(
+        Document recentDict = DocumentTestData.savedMockDocument(
             documentRepository,
-            documentDictionaryRepository,
             professor,
             recentApp,
             null,
@@ -274,15 +258,15 @@ class ApplicantRetentionServiceIntegrationTest {
         Application application,
         ApplicationReview review,
         InternalComment comment,
-        DocumentDictionary dictionary,
+        Document dictionary,
         Interviewee interviewee
     ) {}
 
     private record DualApplicationFixtures(
         Application oldApplication,
         ApplicationReview oldReview,
-        DocumentDictionary oldDictionary,
+        Document oldDictionary,
         Application recentApplication,
-        DocumentDictionary recentDictionary
+        Document recentDictionary
     ) {}
 }

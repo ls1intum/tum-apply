@@ -3,9 +3,8 @@ package de.tum.cit.aet.application.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -35,9 +34,6 @@ class ApplicantServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private DocumentDictionaryService documentDictionaryService;
 
     @Mock
     private DocumentService documentService;
