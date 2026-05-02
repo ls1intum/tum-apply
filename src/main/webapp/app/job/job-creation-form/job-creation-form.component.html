@@ -318,7 +318,7 @@
               <jhi-select
                 [selected]="positionDetailsForm.get('tvlGrade')?.value"
                 (selectedChange)="positionDetailsForm.get('tvlGrade')?.setValue($event)"
-                [items]="translatedTariffGrades()"
+                [items]="tvlGrades"
                 [placeholder]="'jobCreationForm.basicInformationSection.tvlGrade.placeholder' | translate"
                 [width]="'100%'"
                 [filter]="true"

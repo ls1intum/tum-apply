@@ -506,14 +506,6 @@ export class JobCreationFormComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  /** Computed: Returns localized and sorted TVL grade options */
-  translatedTariffGrades = computed(() => {
-    void this.currentLang();
-    return DropdownOptions.tvlGrades
-      .map(option => ({ value: option.value, name: option.name }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
-
   // ═══════════════════════════════════════════════════════════════════════════
   // SUPERVISING PROFESSOR OPTIONS
   // ═══════════════════════════════════════════════════════════════════════════
