@@ -13,6 +13,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.io.IOException;
@@ -171,7 +172,7 @@ public class FullAdminExportStrategy {
         List<AdminApplicationExportDTO> appDtos = allApplications.stream().map(jobsExportStrategy::toApplicationDto).toList();
         writeJsonEntry(zos, "_machine_readable/applications.json", appDtos);
 
-        var allUsers = userRepository.findAll();
+        List<User> allUsers = userRepository.findAll();
         manifest.expect(ExportManifest.Category.USER, allUsers.size());
         List<AdminUserExportDTO> userDtos = allUsers
             .stream()

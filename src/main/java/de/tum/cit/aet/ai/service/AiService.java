@@ -6,12 +6,12 @@ import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import de.tum.cit.aet.core.util.CountryCodeNormalizer;
 import de.tum.cit.aet.core.util.DateNormalizer;
@@ -70,7 +70,7 @@ public class AiService {
 
     private final ApplicationService applicationService;
 
-    private final DocumentDictionaryService documentDictionaryService;
+    private final DocumentService documentService;
 
     private final CurrentUserService currentUserService;
 
@@ -84,7 +84,7 @@ public class AiService {
         ChatClient.Builder chatClientBuilder,
         JobService jobService,
         ApplicationService applicationService,
-        DocumentDictionaryService documentDictionaryService,
+        DocumentService documentService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
         ComplianceScoreService complianceScoreService,
@@ -93,7 +93,7 @@ public class AiService {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
         this.applicationService = applicationService;
-        this.documentDictionaryService = documentDictionaryService;
+        this.documentService = documentService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
         this.complianceScoreService = complianceScoreService;
@@ -283,7 +283,7 @@ public class AiService {
         // 1) Download documents from UUIDs if provided
         if (docIds != null) {
             for (String docId : docIds) {
-                docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
+                docs.add(documentService.downloadDocument(UUID.fromString(docId)));
             }
         }
 

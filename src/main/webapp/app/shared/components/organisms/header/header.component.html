@@ -20,6 +20,7 @@
     <div class="flex items-center gap-1 mr-2">
       @for (language of languages; track language; let isLast = $last) {
         <button
+          type="button"
           (click)="toggleLanguage(language)"
           class="text-primary-default cursor-pointer hover:underline"
           [class.font-bold]="currentLanguage() === language"

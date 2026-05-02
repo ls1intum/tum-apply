@@ -9,8 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.EmailTemplateService.EmailContent;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -39,9 +38,6 @@ class EmailServiceTest {
 
     @Mock
     private DocumentService documentService;
-
-    @Mock
-    private DocumentRepository documentRepository;
 
     @Mock
     private EmailSettingService emailSettingService;

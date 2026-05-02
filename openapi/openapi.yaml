@@ -271,23 +271,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applicants/profile/documents/{documentDictionaryId}:
+  /api/applicants/profile/documents/{documentId}:
     delete:
       tags: [applicant-resource]
       operationId: deleteApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applicants/profile/documents/{documentDictionaryId}/name:
+  /api/applicants/profile/documents/{documentId}/name:
     put:
       tags: [applicant-resource]
       operationId: renameApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -438,23 +438,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/documents/{documentDictionaryId}:
+  /api/applications/documents/{documentId}:
     delete:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applications/documents/{documentDictionaryId}/name:
+  /api/applications/documents/{documentId}/name:
     put:
       tags: [application-resource]
       operationId: renameDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -467,7 +467,7 @@ paths:
   /api/applications/getDocumentIds/{applicationId}:
     get:
       tags: [application-resource]
-      operationId: getDocumentDictionaryIds
+      operationId: getDocumentIds
       parameters:
       - name: applicationId
         in: path
@@ -871,12 +871,12 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-  /api/documents/{documentDictionaryId}:
+  /api/documents/{documentId}:
     get:
       tags: [document-resource]
       operationId: downloadDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -886,6 +886,16 @@ paths:
           content:
             application/json:
               schema: {type: string, format: binary}
+    delete:
+      tags: [document-resource]
+      operationId: deleteDocument
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/email-templates:
     get:
       tags: [email-template-resource]
@@ -2739,16 +2749,16 @@ components:
     ApplicationDocumentIdsDTO:
       type: object
       properties:
-        bachelorDocumentDictionaryIds:
+        bachelorDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        cvDocumentDictionaryId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-        masterDocumentDictionaryIds:
+        cvDocumentId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+        masterDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        referenceDocumentDictionaryIds:
+        referenceDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true

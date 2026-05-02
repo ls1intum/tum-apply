@@ -252,7 +252,7 @@ export class ApplicationInformationSettingsComponent {
       this.loadedProfile.set(profile);
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
-      this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
+      this.cvDocuments.set(profileDocumentIds.cvDocumentId != null ? [profileDocumentIds.cvDocumentId] : []);
       this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
       this.queuedCvFiles.set([]);
     } catch {

@@ -1,4 +1,4 @@
-<div [class]="containerClasses()" (click)="fileInput.click()">
+<div [class]="containerClasses()" tabindex="0" role="button" (click)="fileInput.click()" (keydown.enter)="fileInput.click()">
   <input type="file" [accept]="acceptedImageTypes()" (change)="onImageSelected($event)" #fileInput class="hidden" />
   <div [class]="innerClasses()">
     @if (isUploading()) {

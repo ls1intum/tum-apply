@@ -57,7 +57,7 @@ describe('DocumentViewerComponent', () => {
 
     fixture = TestBed.createComponent(DocumentViewerComponent);
     comp = fixture.componentInstance;
-    fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
+    fixture.componentRef.setInput('documentId', mockDocInfo);
   });
 
   afterEach(() => {
@@ -135,7 +135,7 @@ describe('DocumentViewerComponent', () => {
     });
   });
 
-  describe('documentDictionaryId input changes', () => {
+  describe('documentId input changes', () => {
     it('should handle document with different IDs sequentially', async () => {
       const mockBlob = new ArrayBuffer(100);
       const mockDocInfo2 = createMockDocumentInfo({ id: 'doc-2' });
@@ -145,13 +145,13 @@ describe('DocumentViewerComponent', () => {
       cacheService.set = vi.fn().mockReturnValueOnce(mockSafeUrl).mockReturnValueOnce(mockSafeUrl2);
 
       // Test first document
-      fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
+      fixture.componentRef.setInput('documentId', mockDocInfo);
       await comp.initDocument();
       expect(documentApi.downloadDocument).toHaveBeenCalledWith('doc-123');
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
 
       // Test second document
-      fixture.componentRef.setInput('documentDictionaryId', mockDocInfo2);
+      fixture.componentRef.setInput('documentId', mockDocInfo2);
       await comp.initDocument();
       expect(documentApi.downloadDocument).toHaveBeenCalledWith('doc-2');
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl2);
@@ -185,7 +185,7 @@ describe('DocumentViewerComponent', () => {
     it('should handle empty document ID', async () => {
       mockDocInfo = createMockDocumentInfo({ id: '' });
       const mockBlob = new ArrayBuffer(100);
-      fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
+      fixture.componentRef.setInput('documentId', mockDocInfo);
       cacheService.get = vi.fn().mockReturnValue(undefined);
       documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
@@ -199,7 +199,7 @@ describe('DocumentViewerComponent', () => {
       const size = 10485760; // 10MB
       mockDocInfo = createMockDocumentInfo({ id: 'large-doc', size: size });
       const largeBlob = new ArrayBuffer(size);
-      fixture.componentRef.setInput('documentDictionaryId', mockDocInfo);
+      fixture.componentRef.setInput('documentId', mockDocInfo);
       documentApi.downloadDocument = vi.fn().mockReturnValue(of(largeBlob));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
 
