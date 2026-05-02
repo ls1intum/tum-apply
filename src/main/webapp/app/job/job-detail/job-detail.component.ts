@@ -44,10 +44,12 @@ export interface JobDetails {
   location: JobFormDTOLocationEnum;
   workload: string;
   contractDuration: string;
+  contractExtendable: boolean;
   fundingType: JobFormDTOFundingTypeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
+  startDateByArrangement: boolean;
   endDate: string;
   createdAt: string;
   lastModifiedAt: string;
@@ -517,10 +519,12 @@ export class JobDetailComponent {
       location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
+      contractExtendable: (data as { contractExtendable?: boolean }).contractExtendable === true,
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,
+      startDateByArrangement: (data as { startDateByArrangement?: boolean }).startDateByArrangement === true,
       endDate,
       createdAt,
       lastModifiedAt,

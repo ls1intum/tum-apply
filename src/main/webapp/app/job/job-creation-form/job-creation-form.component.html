@@ -252,7 +252,16 @@
                 [shouldTranslate]="true"
                 [width]="'100%'"
                 [errorEnabled]="true"
+                [disabled]="positionDetailsForm.get('startDateByArrangement')?.value === true"
               />
+              <div class="mt-2">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.startDate.byArrangement"
+                  [model]="positionDetailsForm.get('startDateByArrangement')?.value"
+                  (modelChange)="onStartDateByArrangementChange($event)"
+                  [shouldTranslate]="true"
+                />
+              </div>
             </div>
           </div>
 
@@ -284,6 +293,14 @@
                 icon="circle-info"
                 [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
               />
+              <div class="mt-2">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.contractDuration.extendable"
+                  [model]="positionDetailsForm.get('contractExtendable')?.value"
+                  (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
+                  [shouldTranslate]="true"
+                />
+              </div>
             </div>
           </div>
 

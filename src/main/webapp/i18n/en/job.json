@@ -113,7 +113,8 @@
       "startDate": {
         "label": "Start Date of Job",
         "placeholder": "Select a Start Date...",
-        "toolTipText": "Expected start date for this position."
+        "toolTipText": "Expected start date for this position.",
+        "byArrangement": "By arrangement"
       },
       "applicationDeadline": {
         "label": "Application Deadline",
@@ -128,7 +129,8 @@
       "contractDuration": {
         "label": "Contract Duration",
         "placeholder": "e.g. 3 years",
-        "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
+        "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years.",
+        "extendable": "Extension possible"
       },
       "fundingType": {
         "label": "Funding Type",

@@ -426,6 +426,8 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 JobState.DRAFT,
                 null,
                 true,
+                false,
+                false,
                 null,
                 null
             );
@@ -492,6 +494,8 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 JobState.DRAFT,
                 null,
                 true,
+                false,
+                false,
                 null,
                 null
             );

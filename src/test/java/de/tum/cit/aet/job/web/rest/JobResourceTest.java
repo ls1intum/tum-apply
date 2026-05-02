@@ -101,6 +101,8 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             imageId,
             true,
+            false,
+            false,
             null,
             null
         );
@@ -199,6 +201,8 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.PUBLISHED,
             null,
             true,
+            false,
+            false,
             null,
             null
         );
@@ -292,6 +296,8 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             null,
             true,
+            false,
+            false,
             null,
             null
         );
@@ -320,6 +326,8 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             null,
             true,
+            false,
+            false,
             null,
             null
         );
@@ -365,6 +373,8 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             null,
             true,
+            false,
+            false,
             null,
             null
         );
@@ -396,6 +406,8 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             null,
             true,
+            false,
+            false,
             null,
             null
         );

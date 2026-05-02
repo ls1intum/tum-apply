@@ -113,7 +113,8 @@
       "startDate": {
         "label": "Startdatum der Stelle",
         "placeholder": "Wähle ein Startdatum...",
-        "toolTipText": "Voraussichtliches Startdatum dieser Stelle."
+        "toolTipText": "Voraussichtliches Startdatum dieser Stelle.",
+        "byArrangement": "Nach Vereinbarung"
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",
@@ -128,7 +129,8 @@
       "contractDuration": {
         "label": "Vertragslaufzeit",
         "placeholder": "z.B. 3 Jahre",
-        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
+        "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben.",
+        "extendable": "Verlängerung möglich"
       },
       "fundingType": {
         "label": "Finanzierungsart",

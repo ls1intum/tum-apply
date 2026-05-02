@@ -144,6 +144,8 @@ class AiResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             null,
             true,
+            false,
+            false,
             null,
             null
         );

@@ -706,6 +706,18 @@ export class JobCreationFormComponent {
   }
 
   /**
+   * Toggles the "start date by arrangement" flag and clears the start date when enabled.
+   *
+   * @param value the new checkbox value
+   */
+  onStartDateByArrangementChange(value: boolean): void {
+    this.positionDetailsForm.get('startDateByArrangement')?.setValue(value);
+    if (value) {
+      this.positionDetailsForm.get('startDate')?.setValue('');
+    }
+  }
+
+  /**
    * Performs a save after changing the step.
    */
   async onStepChange(): Promise<void> {
@@ -1161,9 +1173,11 @@ export class JobCreationFormComponent {
       // Position Details Form: Currently required for publishing a job
       fundingType: [undefined],
       startDate: [''],
+      startDateByArrangement: [false],
       applicationDeadline: [''],
       workload: [undefined],
       contractDuration: [undefined],
+      contractExtendable: [false],
       suitableForDisabled: [true],
     });
   }
@@ -1218,10 +1232,12 @@ export class JobCreationFormComponent {
       jobDescriptionEN: jobDescriptionEN ?? undefined,
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
-      startDate: positionDetailsValue.startDate ?? undefined,
+      startDate: positionDetailsValue.startDateByArrangement ? undefined : (positionDetailsValue.startDate ?? undefined),
+      startDateByArrangement: positionDetailsValue.startDateByArrangement ?? false,
       endDate: positionDetailsValue.applicationDeadline ?? undefined,
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
+      contractExtendable: positionDetailsValue.contractExtendable ?? false,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
@@ -1369,9 +1385,11 @@ export class JobCreationFormComponent {
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
+      startDateByArrangement: job?.startDateByArrangement ?? false,
       applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
+      contractExtendable: job?.contractExtendable ?? false,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
       suitableForDisabled: job?.suitableForDisabled ?? true,
     });

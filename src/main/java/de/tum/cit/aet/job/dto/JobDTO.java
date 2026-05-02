@@ -30,6 +30,8 @@ public record JobDTO(
     UUID imageId,
     String imageUrl,
     Boolean suitableForDisabled,
+    Boolean startDateByArrangement,
+    Boolean contractExtendable,
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues
 ) {}
