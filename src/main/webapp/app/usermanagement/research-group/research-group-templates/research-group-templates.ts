@@ -84,10 +84,6 @@ export class ResearchGroupTemplates {
 
   private readonly responseData = signal<EmailTemplateOverviewDTO[]>([]);
 
-  constructor() {
-    void this.loadPage();
-  }
-
   async delete(templateId: string): Promise<void> {
     try {
       await firstValueFrom(this.emailTemplateApi.deleteTemplate(templateId));
