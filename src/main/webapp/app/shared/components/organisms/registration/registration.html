@@ -56,7 +56,12 @@
   @if (authOrchestrator.registerStep() === 'email') {
     <p class="registration-footer">
       <span jhiTranslate="auth.register.texts.accountPresent.prefix"></span>
-      <a (click)="authOrchestrator.switchToLogin()" jhiTranslate="auth.register.texts.accountPresent.link"></a>
+      <a
+        tabindex="0"
+        (click)="authOrchestrator.switchToLogin()"
+        (keydown.enter)="authOrchestrator.switchToLogin()"
+        jhiTranslate="auth.register.texts.accountPresent.link"
+      ></a>
     </p>
   }
 </div>

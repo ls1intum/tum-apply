@@ -54,12 +54,12 @@
     -->
     <ul class="list-none mt-6 flex flex-col gap-6">
       <li class="flex items-center gap-2">
-        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
-        <label class="text-[0.95rem]" jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
+        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" inputId="notifyApplicantCb" />
+        <label class="text-[0.95rem]" for="notifyApplicantCb" jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
       </li>
       <li class="flex items-center gap-2">
-        <p-checkbox [(ngModel)]="closeJob" [binary]="true" />
-        <label class="text-[0.95rem]" jhiTranslate="evaluation.closeJobAndRejectAll"></label>
+        <p-checkbox [(ngModel)]="closeJob" [binary]="true" inputId="closeJobCb" />
+        <label class="text-[0.95rem]" for="closeJobCb" jhiTranslate="evaluation.closeJobAndRejectAll"></label>
       </li>
     </ul>
   </div>
@@ -79,8 +79,8 @@
     />
     <ul class="list-none mt-6 flex flex-col gap-6">
       <li class="flex items-center gap-2">
-        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" />
-        <label class="text-[0.95rem]" jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
+        <p-checkbox [(ngModel)]="notifyApplicant" [binary]="true" inputId="notifyApplicantCb2" />
+        <label class="text-[0.95rem]" for="notifyApplicantCb2" jhiTranslate="evaluation.notifyApplicant">Notify the applicant</label>
       </li>
     </ul>
   </div>
