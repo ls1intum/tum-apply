@@ -201,10 +201,13 @@ public final class DocumentTestData {
         DocumentType documentType,
         String fileName
     ) {
+        // Use a path inside the configured test storage root (application-test.properties: aet.storage.root=/tmp/test-storage)
+        // so DocumentService.removeFileIfOrphan accepts it. Files.deleteIfExists tolerates missing files.
+        Path mockPath = Path.of("/tmp/test-storage", "mock-" + fileName).toAbsolutePath().normalize();
         return savedDictionary(
             documentRepository,
             uploadedBy,
-            "/test/path/" + fileName,
+            mockPath.toString(),
             1024L,
             "application/pdf",
             application,

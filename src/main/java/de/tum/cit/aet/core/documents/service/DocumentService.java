@@ -17,6 +17,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -46,7 +46,6 @@ import org.springframework.web.multipart.MultipartFile;
  * {@link ApplicationDocument} rows are snapshot copies created when the applicant submits a job application.
  * Both reference the same hash-named file on disk; deletion removes the file only when no other row references it.
  */
-@Slf4j
 @Service
 public class DocumentService {
 
@@ -292,14 +291,9 @@ public class DocumentService {
             return;
         }
         try {
-            Path resolved = resolveStoredPath(storedPath);
-            Files.deleteIfExists(resolved);
-        } catch (IllegalStateException e) {
-            // Path lies outside the configured storage root (e.g., mock fixtures or stale data).
-            // Skip the file delete; the DB row deletion has already succeeded.
-            log.warn("Skipping orphan file delete for path outside storage root: {}", storedPath);
+            Files.deleteIfExists(resolveStoredPath(storedPath));
         } catch (IOException e) {
-            log.error("Failed to delete orphaned document file at {}", storedPath, e);
+            throw new UncheckedIOException("Failed to delete orphaned document file at " + storedPath, e);
         }
     }
 
