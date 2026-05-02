@@ -1,11 +1,11 @@
 <p-table
   [value]="loading() ? [] : data()"
-  [paginator]="!loading()"
+  [paginator]="paginator() && !loading()"
   [totalRecords]="totalRecords()"
   [scrollable]="true"
   [first]="page() * rows()"
   [rows]="rows()"
-  [lazy]="true"
+  [lazy]="lazy()"
   (onLazyLoad)="emitLazy($event)"
   [tableStyle]="{ width: '100%' }"
 >

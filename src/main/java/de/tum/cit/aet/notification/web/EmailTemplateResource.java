@@ -8,10 +8,8 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.notification.service.EmailTemplateService;
-import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +23,28 @@ public class EmailTemplateResource {
     private final CurrentUserService currentUserService;
 
     /**
-     * Returns a paginated list of email templates for the current user's research group.
+     * Returns the unified list of templates for the current user's research group:
+     * customs first (most recently modified), then defaults loaded from resource files.
      *
-     * @param pageDTO pagination parameters including page number and size
-     * @return a list of {@link EmailTemplateOverviewDTO} wrapped in a {@link ResponseEntity}
+     * @param page zero-based page index (default: 0)
+     * @param size the size of the page (default: 20)
+     * @return the merged page of customs and defaults
      */
     @ProfessorOrEmployee
     @GetMapping
-    public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        return ResponseEntity.ok(emailTemplateService.getTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
+    public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        PageDTO pageDTO = new PageDTO(size, page);
+        return ResponseEntity.ok(emailTemplateService.listMerged(currentUserService.getResearchGroupIfProfessor(), pageDTO));
     }
 
     /**
-     * Retrieves a single email template by its ID.
+     * Retrieves a single custom email template by its ID.
      *
-     * @param templateId the ID of the template to retrieve
-     * @return the full {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity}
+     * @param templateId the ID of the custom template
+     * @return the matching custom template
      */
     @ProfessorOrEmployee
     @GetMapping("/{templateId}")
@@ -49,10 +53,11 @@ public class EmailTemplateResource {
     }
 
     /**
-     * Updates an existing email template.
+     * Updates an existing custom template's content. The {@code emailType} may be changed to
+     * any other customizable type that does not yet have a custom row in this research group.
      *
-     * @param emailTemplateDTO the updated template data
-     * @return the updated {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity}
+     * @param emailTemplateDTO the updated template payload (must include the existing id)
+     * @return the persisted template
      */
     @ProfessorOrEmployee
     @PutMapping
@@ -61,28 +66,28 @@ public class EmailTemplateResource {
     }
 
     /**
-     * Creates a new email template for the current user's research group.
+     * Creates a new custom template for the current user's research group.
+     * Returns 409 Conflict if a custom already exists for the (group, emailType) pair.
      *
-     * @param emailTemplateDTO the template data to create
-     * @return the created {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity} with status 201 (Created)
+     * @param emailTemplateDTO the template payload to persist
+     * @return the created template wrapped in a 201 response
      */
     @ProfessorOrEmployee
     @PostMapping
     public ResponseEntity<EmailTemplateDTO> createTemplate(@RequestBody EmailTemplateDTO emailTemplateDTO) {
-        EmailTemplateDTO createdTemplates = emailTemplateService.createTemplate(
+        EmailTemplateDTO created = emailTemplateService.createTemplate(
             emailTemplateDTO,
             currentUserService.getResearchGroupIfProfessor(),
             currentUserService.getUser()
         );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTemplates);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
-     * Deletes an existing email template by its ID.
+     * Deletes a custom template. The system default reappears in the list automatically.
      *
-     * @param templateId the ID of the template to delete
-     * @return an empty {@link ResponseEntity} with status 204 (No Content)
+     * @param templateId the ID of the custom template to delete
+     * @return an empty 204 response
      */
     @Professor
     @DeleteMapping("/{templateId}")
