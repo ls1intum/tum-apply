@@ -303,7 +303,7 @@
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-1.5 mb-1">
-                <label>
+                <label for="tvlGradeSelect">
                   {{ 'jobCreationForm.basicInformationSection.tvlGrade.label' | translate }}
                 </label>
                 <fa-icon
@@ -316,6 +316,7 @@
                 />
               </div>
               <jhi-select
+                id="tvlGradeSelect"
                 [selected]="positionDetailsForm.get('tvlGrade')?.value"
                 (selectedChange)="positionDetailsForm.get('tvlGrade')?.setValue($event)"
                 [items]="tvlGrades"
