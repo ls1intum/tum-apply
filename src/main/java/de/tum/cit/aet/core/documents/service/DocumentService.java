@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.documents.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.FileExtension;
@@ -262,6 +263,27 @@ public class DocumentService {
      */
     public Document findById(UUID documentId) {
         return findOrThrow(documentId);
+    }
+
+    /**
+     * Returns the application's owning applicant's user id for an {@link ApplicationDocument},
+     * or empty if the given id is not an {@link ApplicationDocument}.
+     *
+     * @param documentId the document id
+     * @return the application's applicant user id, if any
+     */
+    public Optional<UUID> findApplicationOwnerUserId(UUID documentId) {
+        return documentRepository.findApplicationOwnerUserId(documentId);
+    }
+
+    /**
+     * Returns the {@link ApplicationState} of the application owning an {@link ApplicationDocument}.
+     *
+     * @param documentId the document id
+     * @return the state of the owning application, if the document is application-scoped
+     */
+    public Optional<ApplicationState> findApplicationStateForDocument(UUID documentId) {
+        return documentRepository.findApplicationStateForDocument(documentId);
     }
 
     /**

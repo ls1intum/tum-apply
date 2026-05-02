@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.documents.repository;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
 import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
@@ -129,4 +130,14 @@ public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID
         """
     )
     Optional<Job> findJobForApplicationDocument(@Param("documentId") UUID documentId);
+
+    /**
+     * Returns the {@link ApplicationState} of the application owning an {@link ApplicationDocument}.
+     * Used by editability checks to avoid traversing lazy associations outside a session.
+     *
+     * @param documentId the id of the application document
+     * @return the state of the owning application
+     */
+    @Query("SELECT a.state FROM ApplicationDocument d JOIN d.application a WHERE d.documentId = :documentId")
+    Optional<ApplicationState> findApplicationStateForDocument(@Param("documentId") UUID documentId);
 }

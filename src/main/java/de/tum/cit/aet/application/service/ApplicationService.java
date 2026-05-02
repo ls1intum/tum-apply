@@ -348,8 +348,8 @@ public class ApplicationService {
      * @param documentId the ID of the document to delete
      */
     public void deleteDocument(UUID documentId) {
-        ApplicationDocument applicationDocument = assertCanManageApplicationDocument(documentId);
-        assertApplicationDocumentsEditable(applicationDocument.getApplication());
+        assertCanManageApplicationDocument(documentId);
+        assertApplicationDocumentEditable(documentId);
         documentService.deleteById(documentId);
     }
 
@@ -519,7 +519,7 @@ public class ApplicationService {
      */
     public void renameDocument(UUID documentId, String newName) {
         ApplicationDocument applicationDocument = assertCanManageApplicationDocument(documentId);
-        assertApplicationDocumentsEditable(applicationDocument.getApplication());
+        assertApplicationDocumentEditable(documentId);
         applicationDocument.setName(newName);
         documentService.saveApplicationDocument(applicationDocument);
     }
@@ -552,19 +552,41 @@ public class ApplicationService {
         if (!(document instanceof ApplicationDocument applicationDocument)) {
             throw new OperationNotAllowedException("Only application documents can be managed via this endpoint.");
         }
-        currentUserService.isCurrentUserOrAdmin(applicationDocument.getApplication().getApplicant().getUserId());
+        UUID ownerUserId = documentService
+            .findApplicationOwnerUserId(documentId)
+            .orElseThrow(() -> EntityNotFoundException.forId("ApplicationDocument", documentId));
+        currentUserService.isCurrentUserOrAdmin(ownerUserId);
         return applicationDocument;
     }
 
     /**
      * Asserts that the application is in a state where documents may still be modified.
      * Documents are only editable while the application is in {@link ApplicationState#SAVED}.
+     * The state is fetched via a scalar repository query so this method does not need
+     * to traverse lazy associations.
      *
      * @param application the application to check
      * @throws OperationNotAllowedException if the application has already been sent
      */
     private void assertApplicationDocumentsEditable(Application application) {
         if (!ApplicationState.SAVED.equals(application.getState())) {
+            throw new OperationNotAllowedException("Documents can only be modified while the application is in SAVED state.");
+        }
+    }
+
+    /**
+     * Variant of {@link #assertApplicationDocumentsEditable(Application)} that resolves the
+     * application state from the document id via a scalar query, avoiding lazy-association traversal.
+     *
+     * @param documentId the id of the application document whose owning application is checked
+     * @throws OperationNotAllowedException if the application has already been sent
+     * @throws EntityNotFoundException      if no application is associated with the document
+     */
+    private void assertApplicationDocumentEditable(UUID documentId) {
+        ApplicationState state = documentService
+            .findApplicationStateForDocument(documentId)
+            .orElseThrow(() -> EntityNotFoundException.forId("ApplicationDocument", documentId));
+        if (!ApplicationState.SAVED.equals(state)) {
             throw new OperationNotAllowedException("Documents can only be modified while the application is in SAVED state.");
         }
     }
