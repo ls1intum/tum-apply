@@ -283,6 +283,8 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "alreadyAppliedBadge": "Beworben",
+    "alreadyAppliedTooltip": "Du hast dich bereits auf diese Stelle beworben.",
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {

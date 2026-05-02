@@ -283,6 +283,8 @@
   "jobOverviewPage": {
     "title": "Find Your Perfect Position",
     "noJobsFound": "No Jobs Found.",
+    "alreadyAppliedBadge": "Applied",
+    "alreadyAppliedTooltip": "You have already applied to this position.",
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {

@@ -70,6 +70,15 @@ export class JobCardComponent {
     return duration;
   });
 
+  /**
+   * True when the applicant has already submitted an application for this job.
+   * Drafts (`SAVED`) are excluded so the user can still come back to a draft.
+   */
+  readonly hasApplied = computed(() => {
+    const state = this.applicationState();
+    return state !== ApplicationStatusExtended.NotYetApplied && state !== JobCardDTOApplicationStateEnum.Saved;
+  });
+
   private router = inject(Router);
 
   onViewDetails(): void {

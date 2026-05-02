@@ -1,11 +1,23 @@
 <div
-  class="group rounded-lg border border-border-default bg-background-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="group relative rounded-lg border border-border-default bg-background-default focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  [class.opacity-60]="hasApplied()"
+  [class.hover:scale-[1.02]]="!hasApplied()"
+  [class.hover:bg-background-surface]="!hasApplied()"
+  [class.hover:opacity-100]="hasApplied()"
   tabindex="0"
   role="button"
   [attr.aria-label]="'jobOverviewPage.ariaLabels.viewJobDetails' | translate: { title: jobTitle() }"
   (click)="onViewDetails()"
   (keydown)="onKeyDown($event)"
 >
+  @if (hasApplied()) {
+    <span
+      class="absolute top-3 right-3 z-10 px-3 py-1 text-xs font-semibold rounded-pill bg-positive-default text-text-on-primary shadow"
+      [pTooltip]="'jobOverviewPage.alreadyAppliedTooltip' | translate"
+      tooltipPosition="top"
+      jhiTranslate="jobOverviewPage.alreadyAppliedBadge"
+    ></span>
+  }
   <div
     class="h-32 px-4 pb-3 bg-cover bg-center flex flex-shrink-0 items-end"
     [style.background-image]="
