@@ -229,7 +229,7 @@ public class DocumentService {
     @Transactional
     public void deleteAllByApplicantId(UUID applicantUserId) {
         Set<ApplicantDocument> applicantDocuments = documentRepository.findAllApplicantDocuments(applicantUserId);
-        documentRepository.deleteByApplicantUserId(applicantUserId);
+        documentRepository.deleteAll(applicantDocuments);
         for (ApplicantDocument applicantDocument : applicantDocuments) {
             removeFileIfOrphan(applicantDocument.getPath(), applicantDocument.getDocumentId());
         }
@@ -238,7 +238,7 @@ public class DocumentService {
     @Transactional
     public void deleteAllByApplicationId(UUID applicationId) {
         Set<ApplicationDocument> applicationDocuments = documentRepository.findAllApplicationDocuments(applicationId);
-        documentRepository.deleteByApplicationId(applicationId);
+        documentRepository.deleteAll(applicationDocuments);
         for (ApplicationDocument applicationDocument : applicationDocuments) {
             removeFileIfOrphan(applicationDocument.getPath(), applicationDocument.getDocumentId());
         }
