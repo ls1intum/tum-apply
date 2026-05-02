@@ -89,6 +89,7 @@ public class PDFExportService {
                     labels.get("fundingType"),
                     job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
                 )
+                .addOverviewItem(labels.get("tvlGrade"), job.tvlGrade() != null ? job.tvlGrade().name() : "-")
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
                 .setOverviewDescriptionTitle(labels.get("jobDetails"))
