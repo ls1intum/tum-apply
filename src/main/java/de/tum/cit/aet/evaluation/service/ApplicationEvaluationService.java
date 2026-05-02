@@ -35,6 +35,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -368,7 +369,7 @@ public class ApplicationEvaluationService {
                 String ext = documentService.resolveFileExtension(doc).getExtension();
                 entryName += "." + ext;
 
-                try (java.io.InputStream is = documentService.downloadDocument(doc.getDocumentId()).getInputStream()) {
+                try (InputStream is = documentService.downloadDocument(doc.getDocumentId()).getInputStream()) {
                     zipExportService.addFileToZip(zos, entryName, is);
                 }
             }
