@@ -2852,6 +2852,7 @@ components:
     AuthSessionInfoDTO:
       type: object
       properties:
+        authenticated: {type: boolean}
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
