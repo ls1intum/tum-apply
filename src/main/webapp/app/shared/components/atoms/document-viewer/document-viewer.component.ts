@@ -13,7 +13,7 @@ import { DocumentCacheService } from 'app/service/document-cache.service';
   standalone: true,
 })
 export class DocumentViewerComponent {
-  documentDictionaryId = input.required<DocumentInformationHolderDTO>();
+  documentId = input.required<DocumentInformationHolderDTO>();
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
@@ -27,7 +27,7 @@ export class DocumentViewerComponent {
   }
 
   async initDocument(): Promise<void> {
-    const docId = this.documentDictionaryId().id;
+    const docId = this.documentId().id;
 
     // check cache first
     const cached = this.cache.get(docId);

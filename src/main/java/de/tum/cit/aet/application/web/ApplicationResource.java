@@ -202,7 +202,7 @@ public class ApplicationResource {
      */
     @Authenticated
     @GetMapping("/getDocumentIds/{applicationId}")
-    public ResponseEntity<ApplicationDocumentIdsDTO> getDocumentDictionaryIds(@PathVariable UUID applicationId) {
-        return ResponseEntity.ok(applicationService.getDocumentDictionaryIdsOfApplication(applicationId));
+    public ResponseEntity<ApplicationDocumentIdsDTO> getDocumentIds(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.getDocumentIdsOfApplication(applicationId));
     }
 }

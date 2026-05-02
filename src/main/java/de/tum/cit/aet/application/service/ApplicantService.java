@@ -135,10 +135,10 @@ public class ApplicantService {
         Applicant applicant = findOrCreateApplicant(userId);
 
         ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
-        dto.setBachelorDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.BACHELOR_TRANSCRIPT));
-        dto.setMasterDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.MASTER_TRANSCRIPT));
-        dto.setReferenceDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.REFERENCE));
-        dto.setCvDocumentDictionaryId(getApplicantDocumentInformation(applicant, DocumentType.CV).stream().findFirst().orElse(null));
+        dto.setBachelorDocumentIds(getApplicantDocumentInformation(applicant, DocumentType.BACHELOR_TRANSCRIPT));
+        dto.setMasterDocumentIds(getApplicantDocumentInformation(applicant, DocumentType.MASTER_TRANSCRIPT));
+        dto.setReferenceDocumentIds(getApplicantDocumentInformation(applicant, DocumentType.REFERENCE));
+        dto.setCvDocumentId(getApplicantDocumentInformation(applicant, DocumentType.CV).stream().findFirst().orElse(null));
         return dto;
     }
 

@@ -1170,7 +1170,7 @@ public class InterviewService {
             interviewee.getRating() != null ? interviewee.getRating().getValue() : null,
             interviewee.getAssessmentNotes(),
             ApplicationDetailDTO.getFromEntity(application, job),
-            applicationService.getDocumentDictionaryIdsOfApplication(application.getApplicationId())
+            applicationService.getDocumentIdsOfApplication(application.getApplicationId())
         );
     }
 

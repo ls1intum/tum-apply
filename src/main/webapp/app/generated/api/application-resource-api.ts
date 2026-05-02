@@ -114,7 +114,7 @@ export class ApplicationResourceApi {
      * 
      * @param applicationId 
      */
-    getDocumentDictionaryIds(applicationId: string): Observable<ApplicationDocumentIdsDTO> {
+    getDocumentIds(applicationId: string): Observable<ApplicationDocumentIdsDTO> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/applications/getDocumentIds/${applicationIdPath}`;
         return this.http.get<ApplicationDocumentIdsDTO>(url);

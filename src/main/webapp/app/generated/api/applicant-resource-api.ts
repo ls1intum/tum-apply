@@ -38,11 +38,11 @@ export class ApplicantResourceApi {
     /**
      * 
      * 
-     * @param documentDictionaryId 
+     * @param documentId 
      */
-    deleteApplicantProfileDocument(documentDictionaryId: string): Observable<void> {
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
-        const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}`;
+    deleteApplicantProfileDocument(documentId: string): Observable<void> {
+        const documentIdPath = encodeURIComponent(String(documentId));
+        const url = `${this.basePath}/api/applicants/profile/documents/${documentIdPath}`;
         return this.http.delete<void>(url);
     }
 
@@ -87,17 +87,17 @@ export class ApplicantResourceApi {
     /**
      * 
      * 
-     * @param documentDictionaryId 
+     * @param documentId 
      * @param newName 
      */
-    renameApplicantProfileDocument(documentDictionaryId: string, newName: string): Observable<void> {
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryId));
+    renameApplicantProfileDocument(documentId: string, newName: string): Observable<void> {
+        const documentIdPath = encodeURIComponent(String(documentId));
         const queryParams = new URLSearchParams();
         if (newName !== undefined && newName !== null) {
             queryParams.set('newName', String(newName));
         }
         const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/applicants/profile/documents/${documentDictionaryIdPath}/name${queryString ? `?${queryString}` : ''}`;
+        const url = `${this.basePath}/api/applicants/profile/documents/${documentIdPath}/name${queryString ? `?${queryString}` : ''}`;
         return this.http.put<void>(url, null);
     }
 

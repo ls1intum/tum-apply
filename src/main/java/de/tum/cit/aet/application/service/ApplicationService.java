@@ -354,7 +354,7 @@ public class ApplicationService {
     /**
      * Returns the document IDs grouped by category for the given application.
      */
-    public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
+    public ApplicationDocumentIdsDTO getDocumentIdsOfApplication(UUID applicationId) {
         Application application = assertCanViewApplication(applicationId);
         Set<ApplicationDocument> docs = documentService.listForApplication(application);
 
@@ -368,15 +368,15 @@ public class ApplicationService {
                 case BACHELOR_TRANSCRIPT -> bachelor.add(info);
                 case MASTER_TRANSCRIPT -> master.add(info);
                 case REFERENCE -> reference.add(info);
-                case CV -> dto.setCvDocumentDictionaryId(info);
+                case CV -> dto.setCvDocumentId(info);
                 default -> {
                     // Skip CUSTOM/others
                 }
             }
         }
-        dto.setBachelorDocumentDictionaryIds(bachelor);
-        dto.setMasterDocumentDictionaryIds(master);
-        dto.setReferenceDocumentDictionaryIds(reference);
+        dto.setBachelorDocumentIds(bachelor);
+        dto.setMasterDocumentIds(master);
+        dto.setReferenceDocumentIds(reference);
         return dto;
     }
 

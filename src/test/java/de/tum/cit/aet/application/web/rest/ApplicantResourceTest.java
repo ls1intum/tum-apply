@@ -501,12 +501,12 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 .getAndRead("/api/applicants/profile/document-ids", null, ApplicationDocumentIdsDTO.class, 200);
 
             assertThat(dto).isNotNull();
-            assertThat(dto.getBachelorDocumentDictionaryIds()).hasSize(1);
-            assertThat(dto.getBachelorDocumentDictionaryIds().iterator().next().getName()).isEqualTo("bachelor_profile.pdf");
-            assertThat(dto.getCvDocumentDictionaryId()).isNotNull();
-            assertThat(dto.getCvDocumentDictionaryId().getName()).isEqualTo("cv_profile.pdf");
-            assertThat(dto.getReferenceDocumentDictionaryIds()).hasSize(1);
-            assertThat(dto.getReferenceDocumentDictionaryIds().iterator().next().getName()).isEqualTo("reference_profile.pdf");
+            assertThat(dto.getBachelorDocumentIds()).hasSize(1);
+            assertThat(dto.getBachelorDocumentIds().iterator().next().getName()).isEqualTo("bachelor_profile.pdf");
+            assertThat(dto.getCvDocumentId()).isNotNull();
+            assertThat(dto.getCvDocumentId().getName()).isEqualTo("cv_profile.pdf");
+            assertThat(dto.getReferenceDocumentIds()).hasSize(1);
+            assertThat(dto.getReferenceDocumentIds().iterator().next().getName()).isEqualTo("reference_profile.pdf");
         }
 
         @Test

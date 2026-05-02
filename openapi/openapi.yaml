@@ -236,23 +236,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applicants/profile/documents/{documentDictionaryId}:
+  /api/applicants/profile/documents/{documentId}:
     delete:
       tags: [applicant-resource]
       operationId: deleteApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applicants/profile/documents/{documentDictionaryId}/name:
+  /api/applicants/profile/documents/{documentId}/name:
     put:
       tags: [applicant-resource]
       operationId: renameApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -432,7 +432,7 @@ paths:
   /api/applications/getDocumentIds/{applicationId}:
     get:
       tags: [application-resource]
-      operationId: getDocumentDictionaryIds
+      operationId: getDocumentIds
       parameters:
       - name: applicationId
         in: path
@@ -2691,16 +2691,16 @@ components:
     ApplicationDocumentIdsDTO:
       type: object
       properties:
-        bachelorDocumentDictionaryIds:
+        bachelorDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        cvDocumentDictionaryId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-        masterDocumentDictionaryIds:
+        cvDocumentId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+        masterDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        referenceDocumentDictionaryIds:
+        referenceDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true

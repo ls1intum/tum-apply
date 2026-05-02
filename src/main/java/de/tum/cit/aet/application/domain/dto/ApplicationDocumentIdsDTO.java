@@ -8,11 +8,11 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ApplicationDocumentIdsDTO {
 
-    private Set<DocumentInformationHolderDTO> bachelorDocumentDictionaryIds;
+    private Set<DocumentInformationHolderDTO> bachelorDocumentIds;
 
-    private Set<DocumentInformationHolderDTO> masterDocumentDictionaryIds;
+    private Set<DocumentInformationHolderDTO> masterDocumentIds;
 
-    private Set<DocumentInformationHolderDTO> referenceDocumentDictionaryIds;
+    private Set<DocumentInformationHolderDTO> referenceDocumentIds;
 
-    private DocumentInformationHolderDTO cvDocumentDictionaryId;
+    private DocumentInformationHolderDTO cvDocumentId;
 }
