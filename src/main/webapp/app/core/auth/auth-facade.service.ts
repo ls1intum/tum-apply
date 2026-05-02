@@ -57,38 +57,63 @@ export class AuthFacadeService {
    * First attempts the email session refresh,
    * otherwise falls back to Keycloak SSO initialization.
    *
+   * Runs as a background bootstrap and intentionally does NOT go through
+   * `runAuthAction`: this is silent SSO/refresh, not a user-initiated action,
+   * so it must not toggle `authOrchestrator.isBusy`. Otherwise a slow Keycloak
+   * iframe or refresh call would leave the orchestrator busy and silently reject
+   * subsequent user clicks on Login.
+   *
+   * If a user-driven login establishes a session while this is still in flight,
+   * the `authMethod !== 'none'` guards prevent init from overriding it.
+   *
    * @return true if the user is authenticated, false otherwise.
    */
   async initAuth(): Promise<boolean> {
-    return this.runAuthAction(
-      async () => {
-        // 1) Email-Authentication-Flow (server session)
-        const refreshed = await this.serverAuthenticationService.refreshTokens(true);
-        if (refreshed) {
-          await this.accountService.loadUser();
-          this.authMethod = 'server';
+    try {
+      // 1) Email-Authentication-Flow (server session)
+      const refreshed = await this.serverAuthenticationService.refreshTokens(true);
+      if (this.authMethod !== 'none') {
+        return true;
+      }
+      if (refreshed) {
+        await this.accountService.loadUser();
+        if (this.authMethod !== 'none') {
           return true;
         }
+        this.authMethod = 'server';
+        return true;
+      }
 
-        // 2) Keycloak-Flow
-        const keycloakInitialized = await this.keycloakAuthenticationService.init();
-        if (keycloakInitialized) {
-          await this.accountService.loadUser();
-          this.authMethod = 'keycloak';
-
-          // Check if IdP registration to be done
-          await this.handlePendingIdpRegistration();
+      // 2) Keycloak-Flow
+      const keycloakInitialized = await this.keycloakAuthenticationService.init();
+      if (this.authMethod !== 'none') {
+        return true;
+      }
+      if (keycloakInitialized) {
+        await this.accountService.loadUser();
+        if (this.authMethod !== 'none') {
           return true;
         }
+        this.authMethod = 'keycloak';
 
-        // 3) not authenticated
-        return false;
-      },
-      {
+        // Check if IdP registration to be done
+        await this.handlePendingIdpRegistration();
+        return true;
+      }
+
+      // 3) not authenticated
+      return false;
+    } catch (e) {
+      this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.autoSignInFailed.summary`),
         detail: this.translate.instant(`${this.translationKey}.autoSignInFailed.detail`),
-      },
-    );
+      });
+      // Don't rethrow: initAuth is awaited by Angular's appInitializer at startup,
+      // and a rejected promise there would block app bootstrap. Mirrors the pattern
+      // used by KeycloakAuthenticationService.init().
+      console.warn('Auto sign-in failed:', e);
+      return false;
+    }
   }
 
   // --------------- Email/Password ---------------
