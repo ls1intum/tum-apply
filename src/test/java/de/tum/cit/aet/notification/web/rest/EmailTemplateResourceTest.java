@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -56,31 +58,35 @@ class EmailTemplateResourceTest {
     }
 
     @Test
-    void getTemplates_returnsFlatList() throws Exception {
+    void getTemplates_returnsPagedResponse() throws Exception {
         UUID id = UUID.randomUUID();
         ResearchGroup rg = new ResearchGroup();
         when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
-        when(emailTemplateService.listMerged(rg)).thenReturn(
-            List.of(
-                new EmailTemplateOverviewDTO(
-                    id,
-                    EmailType.APPLICATION_SENT,
-                    true,
-                    new EmailTemplateTranslationDTO("S", "B"),
-                    new EmailTemplateTranslationDTO("S", "B"),
-                    "F",
-                    "L",
-                    null
-                )
+        when(emailTemplateService.listMerged(any(ResearchGroup.class), any(PageDTO.class))).thenReturn(
+            new PageResponseDTO<>(
+                List.of(
+                    new EmailTemplateOverviewDTO(
+                        id,
+                        EmailType.APPLICATION_SENT,
+                        true,
+                        new EmailTemplateTranslationDTO("S", "B"),
+                        new EmailTemplateTranslationDTO("S", "B"),
+                        "F",
+                        "L",
+                        null
+                    )
+                ),
+                1L
             )
         );
 
         mvc
             .perform(get(BASE_URL))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(1))
-            .andExpect(jsonPath("$[0].emailTemplateId").value(id.toString()))
-            .andExpect(jsonPath("$[0].isCustom").value(true));
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].emailTemplateId").value(id.toString()))
+            .andExpect(jsonPath("$.content[0].isCustom").value(true));
     }
 
     @Test

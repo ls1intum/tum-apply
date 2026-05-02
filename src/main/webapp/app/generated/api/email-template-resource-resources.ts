@@ -16,7 +16,7 @@
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
 import { EmailTemplateDTO } from '../model/email-template-dto';
-import { EmailTemplateOverviewDTO } from '../model/email-template-overview-dto';
+import { PageResponseDTOEmailTemplateOverviewDTO } from '../model/page-response-dto-email-template-overview-dto';
 
 const BASE_PATH = '';
 
@@ -35,13 +35,31 @@ export function getTemplateResource(templateId: Signal<string> | string): HttpRe
 }
 
 /**
+ * Query parameters for getTemplates
+ */
+export interface GetTemplatesParams {
+    page?: number;
+    size?: number;
+}
+
+/**
  * 
  * 
  * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param params Optional signal containing query parameters
  */
-export function getTemplatesResource(): HttpResourceRef<Array<EmailTemplateOverviewDTO> | undefined> {
-    return httpResource<Array<EmailTemplateOverviewDTO>>(() => {
-        return `${BASE_PATH}/api/email-templates`;
+export function getTemplatesResource(params?: Signal<GetTemplatesParams>): HttpResourceRef<PageResponseDTOEmailTemplateOverviewDTO | undefined> {
+    return httpResource<PageResponseDTOEmailTemplateOverviewDTO>(() => {
+        const queryParams = params?.() ?? {};
+        const searchParams = new URLSearchParams();
+        if (queryParams.page !== undefined && queryParams.page !== null) {
+            searchParams.set('page', String(queryParams.page));
+        }
+        if (queryParams.size !== undefined && queryParams.size !== null) {
+            searchParams.set('size', String(queryParams.size));
+        }
+        const query = searchParams.toString();
+        return `${BASE_PATH}/api/email-templates${query ? `?${query}` : ''}`;
     });
 }
 

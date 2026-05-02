@@ -56,7 +56,6 @@
       "deleteSuccess": "Template deleted successfully.",
       "deleteDefaultDisabled": "System default templates cannot be deleted.",
       "deleteFailed": "Failed to delete template. Please try again.",
-      "duplicateError": "A custom template for this email type already exists.",
       "signature": "Signature",
       "systemDefault": "System default",
       "tableColumns": {

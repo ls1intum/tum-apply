@@ -1,7 +1,6 @@
 import { Component, ViewEncapsulation, computed, effect, inject, signal, untracked } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { QuillEditorComponent } from 'ngx-quill';
@@ -24,6 +23,7 @@ import { AccountService } from '../../../core/auth/account.service';
 
 const EMPTY_TRANSLATION: EmailTemplateTranslationDTO = { subject: '', body: '' };
 const AUTOSAVE_DELAY_MS = 3000;
+const ALL_TYPES_PAGE_SIZE = 100;
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -236,18 +236,33 @@ export class ResearchGroupTemplateEdit {
     this.formModel.update(prev => this.withGerman(prev, { subject: prev.german?.subject ?? '', body }));
   }
 
+  /**
+   * Loads the customizable email types and the subset already customised by this research group.
+   * Populates the dropdown options and the "taken" set used to hide duplicates.
+   *
+   * The dataset is bounded by the EmailType enum, so a single large-page request retrieves it all.
+   */
   private async loadCustomizableEmailTypes(): Promise<void> {
     try {
-      const all = await firstValueFrom(this.emailTemplateApi.getTemplates());
-      const types = Array.from(new Set(all.map(t => t.emailType).filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined)));
-      const taken = new Set(
-        all
-          .filter(t => t.isCustom === true)
-          .map(t => t.emailType)
+      // 1) Fetch the merged overview list from the server (already filtered to customizable types).
+      const page = await firstValueFrom(this.emailTemplateApi.getTemplates(0, ALL_TYPES_PAGE_SIZE));
+      const allOverviews = page.content ?? [];
+
+      // 2) Derive the set of all customizable types (de-duplicated).
+      const customizableTypes = Array.from(
+        new Set(allOverviews.map(o => o.emailType).filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined)),
+      );
+
+      // 3) Derive the set of types that already have a custom row for this research group.
+      const alreadyCustomTypes = new Set(
+        allOverviews
+          .filter(o => o.isCustom === true)
+          .map(o => o.emailType)
           .filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined),
       );
-      this.customizableEmailTypes.set(types);
-      this.alreadyCustomEmailTypes.set(taken);
+
+      this.customizableEmailTypes.set(customizableTypes);
+      this.alreadyCustomEmailTypes.set(alreadyCustomTypes);
     } catch {
       this.toastService.showError({ detail: 'Failed to load email types' });
     }
@@ -280,27 +295,37 @@ export class ResearchGroupTemplateEdit {
     };
   }
 
+  /**
+   * Re-renders the visible labels of every Quill mention span using the current language's translation
+   * for the variable id. Returns a new template with both translations updated.
+   *
+   * @param form the current form model
+   * @returns a new template with mention labels translated
+   */
   private translateMentionsInTemplate(form: EmailTemplateDTO): EmailTemplateDTO {
-    const updateMentionValues = (html: string): string => {
+    const translateMentionsInHtml = (html: string): string => {
+      // 1) Parse the HTML so we can rewrite each mention span in place.
       const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
+      const parsed = parser.parseFromString(html, 'text/html');
 
-      const mentionElements = doc.querySelectorAll('.mention');
-      mentionElements.forEach(el => {
-        const id = el.getAttribute('data-id');
-        if (!id) {
+      // 2) For each `.mention`, rewrite its data-value and inner label using the current translation.
+      const mentionElements = parsed.querySelectorAll('.mention');
+      mentionElements.forEach(mention => {
+        const variableId = mention.getAttribute('data-id');
+        if (!variableId) {
           return;
         }
-        const translationKey = `researchGroup.emailTemplates.variables.${id}`;
-        const translatedValue = this.translate.instant(translationKey);
-        el.setAttribute('data-value', translatedValue);
-        const innerSpan = el.querySelector('span[contenteditable="false"]');
+        const translationKey = `researchGroup.emailTemplates.variables.${variableId}`;
+        const translatedLabel = this.translate.instant(translationKey);
+        mention.setAttribute('data-value', translatedLabel);
+        const innerSpan = mention.querySelector('span[contenteditable="false"]');
         if (innerSpan) {
-          innerSpan.innerHTML = `<span class="ql-mention-denotation-char">$</span>${translatedValue}`;
+          innerSpan.innerHTML = `<span class="ql-mention-denotation-char">$</span>${translatedLabel}`;
         }
       });
 
-      return doc.body.innerHTML;
+      // 3) Serialise back to HTML.
+      return parsed.body.innerHTML;
     };
 
     return {
@@ -308,11 +333,11 @@ export class ResearchGroupTemplateEdit {
       emailType: form.emailType,
       english: {
         subject: form.english?.subject ?? '',
-        body: updateMentionValues(form.english?.body ?? ''),
+        body: translateMentionsInHtml(form.english?.body ?? ''),
       },
       german: {
         subject: form.german?.subject ?? '',
-        body: updateMentionValues(form.german?.body ?? ''),
+        body: translateMentionsInHtml(form.german?.body ?? ''),
       },
     };
   }
@@ -324,14 +349,20 @@ export class ResearchGroupTemplateEdit {
     }
   }
 
+  /**
+   * Persists the current form model. Updates an existing template when an id is present,
+   * otherwise creates a new one and back-fills the assigned id.
+   */
   private async performAutoSave(): Promise<void> {
     const form = this.formModel();
+    // 1) Skip if no email type was picked yet — there is nothing meaningful to save.
     if (form.emailType === undefined) {
       this.savingState.set('SAVED');
       return;
     }
 
     try {
+      // 2) Update if we already have an id, otherwise create and adopt the new id.
       if (form.emailTemplateId !== undefined) {
         await firstValueFrom(this.emailTemplateApi.updateTemplate(form));
       } else {
@@ -344,26 +375,30 @@ export class ResearchGroupTemplateEdit {
         });
         this.skipNextAutosave = true;
       }
+      // 3) Snapshot the saved state so subsequent diffs detect "unsaved changes" correctly.
       this.lastSavedSnapshot.set(this.formModel());
       this.savingState.set('SAVED');
-    } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 409) {
-        this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.duplicateError`) });
-        this.savingState.set('UNSAVED');
-      } else {
-        this.toastService.showError({ detail: 'Autosave failed' });
-      }
+    } catch {
+      // 4) Surface a generic toast and reset the saving state. The dropdown already prevents
+      //    duplicate-type collisions; reaching this point is a rare race or non-UI client.
+      this.toastService.showError({ detail: 'Autosave failed' });
+      this.savingState.set('UNSAVED');
     }
   }
 
+  /**
+   * Loads an existing custom template by id and seeds the form, translating mentions to the current language.
+   *
+   * @param templateId the id of the custom template to load
+   */
   private async load(templateId: string): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateApi.getTemplate(templateId));
+      const fetched = await firstValueFrom(this.emailTemplateApi.getTemplate(templateId));
       const safeTemplate: EmailTemplateDTO = {
-        emailTemplateId: res.emailTemplateId,
-        emailType: res.emailType,
-        english: res.english ?? EMPTY_TRANSLATION,
-        german: res.german ?? EMPTY_TRANSLATION,
+        emailTemplateId: fetched.emailTemplateId,
+        emailType: fetched.emailType,
+        english: fetched.english ?? EMPTY_TRANSLATION,
+        german: fetched.german ?? EMPTY_TRANSLATION,
       };
       const translatedTemplate = this.translateMentionsInTemplate(safeTemplate);
       this.skipNextAutosave = true;
@@ -375,18 +410,27 @@ export class ResearchGroupTemplateEdit {
     }
   }
 
+  /**
+   * Prefills the form using the system default content for the given email type.
+   * Used when the user opens the editor with `?emailType=...` to start customising from the default.
+   *
+   * @param emailType the email type whose default content should be loaded
+   */
   private async prefillFromDefault(emailType: EmailTemplateDTOEmailTypeEnum): Promise<void> {
     try {
-      const all = await firstValueFrom(this.emailTemplateApi.getTemplates());
-      const match = all.find(t => t.emailType === emailType);
-      if (!match) {
+      // 1) Find the overview row matching the requested email type.
+      const page = await firstValueFrom(this.emailTemplateApi.getTemplates(0, ALL_TYPES_PAGE_SIZE));
+      const allOverviews = page.content ?? [];
+      const matchingOverview = allOverviews.find(o => o.emailType === emailType);
+      if (!matchingOverview) {
         this.toastService.showError({ detail: 'Default template not found' });
         return;
       }
+      // 2) Seed the form with the default content (no id, so the next save will create a new custom).
       const prefilled: EmailTemplateDTO = {
         emailType,
-        english: match.english ?? EMPTY_TRANSLATION,
-        german: match.german ?? EMPTY_TRANSLATION,
+        english: matchingOverview.english ?? EMPTY_TRANSLATION,
+        german: matchingOverview.german ?? EMPTY_TRANSLATION,
       };
       this.skipNextAutosave = true;
       this.formModel.set(this.translateMentionsInTemplate(prefilled));

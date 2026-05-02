@@ -11,7 +11,14 @@
   </div>
 
   <div class="table-wrapper">
-    <jhi-dynamic-table [columns]="columns()" [data]="tableData()" [rows]="100" [totalRecords]="tableData().length" />
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [rows]="pageSize()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      (lazyLoad)="onTableEmit($event)"
+    />
 
     <ng-template #actionsTemplate let-template>
       <div class="flex justify-end gap-1">

@@ -35,7 +35,7 @@ describe('ResearchGroupTemplateEdit', () => {
 
     api = new EmailTemplateResourceApiMock();
     api.getTemplate.mockReturnValue(of({}));
-    api.getTemplates.mockReturnValue(of([]));
+    api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
 
     TestBed.configureTestingModule({
       imports: [ResearchGroupTemplateEdit],

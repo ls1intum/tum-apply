@@ -16,7 +16,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { EmailTemplateDTO } from '../model/email-template-dto';
-import { EmailTemplateOverviewDTO } from '../model/email-template-overview-dto';
+import { PageResponseDTOEmailTemplateOverviewDTO } from '../model/page-response-dto-email-template-overview-dto';
 
 @Injectable({ providedIn: 'root' })
 export class EmailTemplateResourceApi {
@@ -58,10 +58,20 @@ export class EmailTemplateResourceApi {
     /**
      * 
      * 
+     * @param page 
+     * @param size 
      */
-    getTemplates(): Observable<Array<EmailTemplateOverviewDTO>> {
-        const url = `${this.basePath}/api/email-templates`;
-        return this.http.get<Array<EmailTemplateOverviewDTO>>(url);
+    getTemplates(page?: number, size?: number): Observable<PageResponseDTOEmailTemplateOverviewDTO> {
+        const queryParams = new URLSearchParams();
+        if (page !== undefined && page !== null) {
+            queryParams.set('page', String(page));
+        }
+        if (size !== undefined && size !== null) {
+            queryParams.set('size', String(size));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/email-templates${queryString ? `?${queryString}` : ''}`;
+        return this.http.get<PageResponseDTOEmailTemplateOverviewDTO>(url);
     }
 
     /**

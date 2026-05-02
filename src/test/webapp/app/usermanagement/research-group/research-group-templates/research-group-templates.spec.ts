@@ -42,7 +42,7 @@ describe('ResearchGroupTemplates', () => {
     });
   });
 
-  it('renders custom and default rows from a flat list response', async () => {
+  it('renders custom and default rows from a paged response', async () => {
     const rows: EmailTemplateOverviewDTO[] = [
       {
         emailTemplateId: 'id-1',
@@ -56,13 +56,13 @@ describe('ResearchGroupTemplates', () => {
         isCustom: false,
       },
     ];
-    api.getTemplates.mockReturnValue(of(rows));
+    api.getTemplates.mockReturnValue(of({ content: rows, totalElements: 2 }));
 
     const fixture = TestBed.createComponent(ResearchGroupTemplates);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(api.getTemplates).toHaveBeenCalledWith();
+    expect(api.getTemplates).toHaveBeenCalledWith(0, 8);
     expect(fixture.componentInstance['tableData']()).toHaveLength(2);
   });
 
@@ -73,11 +73,11 @@ describe('ResearchGroupTemplates', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(toast.showError).toHaveBeenCalled();
+    expect(toast.showError).toHaveBeenCalledOnce();
   });
 
   it('delete reloads the list', async () => {
-    api.getTemplates.mockReturnValue(of([]));
+    api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
     api.deleteTemplate.mockReturnValue(of(undefined));
 
     const fixture = TestBed.createComponent(ResearchGroupTemplates);
@@ -88,6 +88,6 @@ describe('ResearchGroupTemplates', () => {
     await fixture.componentInstance.delete('some-id');
 
     expect(api.deleteTemplate).toHaveBeenCalledWith('some-id');
-    expect(api.getTemplates).toHaveBeenCalled();
+    expect(api.getTemplates).toHaveBeenCalledOnce();
   });
 });

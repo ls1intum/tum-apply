@@ -1,12 +1,13 @@
 package de.tum.cit.aet.notification.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.notification.service.EmailTemplateService;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,12 +26,18 @@ public class EmailTemplateResource {
      * Returns the unified list of templates for the current user's research group:
      * customs first (most recently modified), then defaults loaded from resource files.
      *
-     * @return the merged list of customs and defaults
+     * @param page zero-based page index (default: 0)
+     * @param size the size of the page (default: 20)
+     * @return the merged page of customs and defaults
      */
     @ProfessorOrEmployee
     @GetMapping
-    public ResponseEntity<List<EmailTemplateOverviewDTO>> getTemplates() {
-        return ResponseEntity.ok(emailTemplateService.listMerged(currentUserService.getResearchGroupIfProfessor()));
+    public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        PageDTO pageDTO = new PageDTO(size, page);
+        return ResponseEntity.ok(emailTemplateService.listMerged(currentUserService.getResearchGroupIfProfessor(), pageDTO));
     }
 
     /**

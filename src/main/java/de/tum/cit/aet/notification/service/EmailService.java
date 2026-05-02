@@ -208,6 +208,9 @@ public class EmailService {
 
     /**
      * Loads custom or default content for an email based on its type, research group, and language.
+     *
+     * @param email the email
+     * @return the resolved {@link EmailContent}, or {@code null} if no email type is set
      */
     private EmailContent resolveContent(Email email) {
         if (email.getEmailType() == null) {

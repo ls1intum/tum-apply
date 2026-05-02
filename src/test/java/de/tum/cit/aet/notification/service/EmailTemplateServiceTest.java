@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EmailTemplateException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
@@ -105,10 +107,12 @@ class EmailTemplateServiceTest {
             .when(defaultProvider.load(any(EmailType.class), any(Language.class)))
             .thenReturn(new DefaultContent("default-subject", "default-body"));
 
-        List<EmailTemplateOverviewDTO> rows = service.listMerged(researchGroup);
+        PageResponseDTO<EmailTemplateOverviewDTO> page = service.listMerged(researchGroup, new PageDTO(100, 0));
+        List<EmailTemplateOverviewDTO> rows = List.copyOf(page.getContent());
 
         long customizableCount = java.util.Arrays.stream(EmailType.values()).filter(EmailType::isCustomizable).count();
         assertThat(rows).hasSize((int) customizableCount);
+        assertThat(page.getTotalElements()).isEqualTo(customizableCount);
         assertThat(rows.get(0).isCustom()).isTrue();
         assertThat(rows.get(0).emailType()).isEqualTo(EmailType.APPLICATION_SENT);
         assertThat(rows.stream().filter(EmailTemplateOverviewDTO::isCustom).count()).isEqualTo(1);
@@ -125,7 +129,8 @@ class EmailTemplateServiceTest {
             .when(defaultProvider.load(any(EmailType.class), any(Language.class)))
             .thenReturn(new DefaultContent("default-subject", "default-body"));
 
-        List<EmailTemplateOverviewDTO> rows = service.listMerged(researchGroup);
+        PageResponseDTO<EmailTemplateOverviewDTO> page = service.listMerged(researchGroup, new PageDTO(100, 0));
+        List<EmailTemplateOverviewDTO> rows = List.copyOf(page.getContent());
 
         assertThat(rows.stream().map(EmailTemplateOverviewDTO::emailType)).doesNotContain(EmailType.RESEARCH_GROUP_APPROVED);
     }

@@ -56,7 +56,6 @@
       "deleteSuccess": "Vorlage erfolgreich gelöscht.",
       "deleteDefaultDisabled": "Systemvorlagen können nicht gelöscht werden.",
       "deleteFailed": "Vorlage konnte nicht gelöscht werden. Bitte versuche es erneut.",
-      "duplicateError": "Für diesen E-Mail-Typ existiert bereits eine eigene Vorlage.",
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {

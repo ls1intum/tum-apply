@@ -1,6 +1,7 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, map } from 'rxjs';
+import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -77,10 +78,14 @@ export class ResearchGroupTemplates {
       .map(t => t.emailType),
   );
 
+  protected readonly pageNumber = signal<number>(0);
+  protected readonly pageSize = signal<number>(8);
+  protected readonly total = signal<number>(0);
+
   private readonly responseData = signal<EmailTemplateOverviewDTO[]>([]);
 
   constructor() {
-    void this.load();
+    void this.loadPage();
   }
 
   async delete(templateId: string): Promise<void> {
@@ -90,8 +95,16 @@ export class ResearchGroupTemplates {
     } catch {
       this.toastService.showError({ detail: this.translate.instant(`${this.translationKey}.deleteFailed`) });
     } finally {
-      void this.load();
+      void this.loadPage();
     }
+  }
+
+  onTableEmit(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? this.pageSize();
+    this.pageNumber.set(first / rows);
+    this.pageSize.set(rows);
+    void this.loadPage();
   }
 
   protected navigateToCreate(): void {
@@ -106,10 +119,11 @@ export class ResearchGroupTemplates {
     void this.router.navigate(['/research-group/template/new'], { queryParams: { emailType } });
   }
 
-  private async load(): Promise<void> {
+  private async loadPage(): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateApi.getTemplates());
-      this.responseData.set(res);
+      const page = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageNumber(), this.pageSize()));
+      this.responseData.set(page.content ?? []);
+      this.total.set(page.totalElements ?? 0);
     } catch {
       this.toastService.showError({ detail: 'Failed to load templates' });
     }

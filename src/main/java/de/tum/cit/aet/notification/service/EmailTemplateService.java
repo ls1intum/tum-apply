@@ -1,6 +1,8 @@
 package de.tum.cit.aet.notification.service;
 
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EmailTemplateException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
@@ -62,34 +64,44 @@ public class EmailTemplateService {
     }
 
     /**
-     * Returns the merged list of templates for the research group: customs first (most recent first),
+     * Returns the merged page of templates for the research group: customs first (most recent first),
      * then defaults loaded from resource files. Only EmailTypes flagged {@code customizable} are
      * included — system-only types (e.g. data deletion warnings, research group approval) are hidden.
      * Content is converted to Quill-mention form for the editor.
      *
      * @param researchGroup the research group whose templates should be listed
-     * @return the merged list of customs followed by defaults
+     * @param pageDTO       the requested page (size + zero-based page index)
+     * @return the merged page (content + total count) of customs followed by defaults
      */
-    public List<EmailTemplateOverviewDTO> listMerged(ResearchGroup researchGroup) {
-        Map<EmailType, EmailTemplate> customs = emailTemplateRepository
+    public PageResponseDTO<EmailTemplateOverviewDTO> listMerged(ResearchGroup researchGroup, PageDTO pageDTO) {
+        // 1) Load all customs for this research group, indexed by email type, restricted to customizable types.
+        Map<EmailType, EmailTemplate> customsByType = emailTemplateRepository
             .findAllByResearchGroup(researchGroup)
             .stream()
-            .filter(t -> t.getEmailType().isCustomizable())
+            .filter(template -> template.getEmailType().isCustomizable())
             .collect(Collectors.toMap(EmailTemplate::getEmailType, Function.identity()));
 
-        Stream<EmailTemplateOverviewDTO> customRows = customs
+        // 2) Build the custom rows ordered by most recently modified first.
+        Stream<EmailTemplateOverviewDTO> customRows = customsByType
             .values()
             .stream()
             .sorted(Comparator.comparing(EmailTemplate::getLastModifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
             .map(this::toOverviewCustom);
 
+        // 3) Build the default rows for every customizable email type without a custom, ordered alphabetically.
         Stream<EmailTemplateOverviewDTO> defaultRows = Arrays.stream(EmailType.values())
             .filter(EmailType::isCustomizable)
-            .filter(type -> !customs.containsKey(type))
+            .filter(type -> !customsByType.containsKey(type))
             .sorted(Comparator.comparing(EmailType::name))
             .map(this::toOverviewDefault);
 
-        return Stream.concat(customRows, defaultRows).toList();
+        // 4) Concatenate: customs come first, then defaults.
+        List<EmailTemplateOverviewDTO> merged = Stream.concat(customRows, defaultRows).toList();
+
+        // 5) Slice the merged list according to the requested page.
+        int fromIndex = Math.min(pageDTO.pageNumber() * pageDTO.pageSize(), merged.size());
+        int toIndex = Math.min(fromIndex + pageDTO.pageSize(), merged.size());
+        return new PageResponseDTO<>(merged.subList(fromIndex, toIndex), merged.size());
     }
 
     /**
@@ -115,21 +127,25 @@ public class EmailTemplateService {
      * @throws EmailTemplateException         if the EmailType is not customizable per research group
      */
     public EmailTemplateDTO createTemplate(EmailTemplateDTO dto, ResearchGroup researchGroup, User createdBy) {
+        // 1) Validate that the email type is allowed to be customised per research group.
         if (!dto.emailType().isCustomizable()) {
             throw new EmailTemplateException(String.format("EmailType %s cannot be customised per research group", dto.emailType()));
         }
+        // 2) Reject if a custom row already exists for this (group, emailType) pair.
         if (emailTemplateRepository.existsByResearchGroupAndEmailType(researchGroup, dto.emailType())) {
             throw new ResourceAlreadyExistsException(
                 String.format("Custom template for emailType %s already exists in this research group", dto.emailType())
             );
         }
 
+        // 3) Build the new entity with the validated metadata and sanitised content.
         EmailTemplate template = new EmailTemplate();
         template.setResearchGroup(researchGroup);
         template.setCreatedBy(createdBy);
         template.setEmailType(dto.emailType());
         applyContent(template, dto);
 
+        // 4) Persist; the unique constraint guards against races that the existence check missed.
         try {
             return toDTOForEditing(emailTemplateRepository.save(template));
         } catch (DataIntegrityViolationException e) {
@@ -149,9 +165,11 @@ public class EmailTemplateService {
      * @throws EmailTemplateException         if the new EmailType is not customizable
      */
     public EmailTemplateDTO updateTemplate(EmailTemplateDTO dto) {
+        // 1) Load the existing custom and verify the caller may modify it.
         EmailTemplate template = findById(dto.emailTemplateId());
         currentUserService.assertAccessTo(template);
 
+        // 2) If the email type is being changed, validate the new type and ensure it does not collide.
         if (dto.emailType() != template.getEmailType()) {
             if (!dto.emailType().isCustomizable()) {
                 throw new EmailTemplateException(String.format("EmailType %s cannot be customised per research group", dto.emailType()));
@@ -164,9 +182,11 @@ public class EmailTemplateService {
             template.setEmailType(dto.emailType());
         }
 
+        // 3) Apply sanitised content and bump the last-modified timestamp.
         applyContent(template, dto);
         template.setLastModifiedAt(java.time.LocalDateTime.now(java.time.ZoneOffset.UTC));
 
+        // 4) Persist; the unique constraint guards against races that the existence check missed.
         try {
             return toDTOForEditing(emailTemplateRepository.save(template));
         } catch (DataIntegrityViolationException e) {
@@ -187,69 +207,120 @@ public class EmailTemplateService {
         emailTemplateRepository.delete(toDelete);
     }
 
+    /**
+     * Loads an {@link EmailTemplate} by its ID or throws if it is missing.
+     *
+     * @param id the template ID
+     * @return the matching template
+     * @throws EntityNotFoundException if no template exists with this ID
+     */
     private EmailTemplate findById(UUID id) {
         return emailTemplateRepository.findById(id).orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", id));
     }
 
-    private EmailContent contentFromCustom(EmailTemplate t, Language language) {
+    /**
+     * Picks the language-specific subject and body off a custom {@link EmailTemplate}.
+     *
+     * @param template the custom template
+     * @param language the language to extract
+     * @return the resolved {@link EmailContent}
+     */
+    private EmailContent contentFromCustom(EmailTemplate template, Language language) {
         return switch (language) {
-            case ENGLISH -> new EmailContent(t.getSubjectEn(), t.getBodyHtmlEn());
-            case GERMAN -> new EmailContent(t.getSubjectDe(), t.getBodyHtmlDe());
+            case ENGLISH -> new EmailContent(template.getSubjectEn(), template.getBodyHtmlEn());
+            case GERMAN -> new EmailContent(template.getSubjectDe(), template.getBodyHtmlDe());
         };
     }
 
-    private EmailTemplateOverviewDTO toOverviewCustom(EmailTemplate t) {
+    /**
+     * Maps a custom {@link EmailTemplate} to an overview DTO with both translations converted to Quill-mention form.
+     *
+     * @param template the custom template
+     * @return the overview DTO with {@code isCustom = true}
+     */
+    private EmailTemplateOverviewDTO toOverviewCustom(EmailTemplate template) {
         return new EmailTemplateOverviewDTO(
-            t.getEmailTemplateId(),
-            t.getEmailType(),
+            template.getEmailTemplateId(),
+            template.getEmailType(),
             true,
-            new EmailTemplateTranslationDTO(t.getSubjectEn(), toQuill(t.getBodyHtmlEn())),
-            new EmailTemplateTranslationDTO(t.getSubjectDe(), toQuill(t.getBodyHtmlDe())),
-            t.getCreatedBy() != null ? t.getCreatedBy().getFirstName() : null,
-            t.getCreatedBy() != null ? t.getCreatedBy().getLastName() : null,
-            t.getLastModifiedAt() != null ? t.getLastModifiedAt().toInstant(java.time.ZoneOffset.UTC) : null
+            new EmailTemplateTranslationDTO(template.getSubjectEn(), toQuill(template.getBodyHtmlEn())),
+            new EmailTemplateTranslationDTO(template.getSubjectDe(), toQuill(template.getBodyHtmlDe())),
+            template.getCreatedBy() != null ? template.getCreatedBy().getFirstName() : null,
+            template.getCreatedBy() != null ? template.getCreatedBy().getLastName() : null,
+            template.getLastModifiedAt() != null ? template.getLastModifiedAt().toInstant(java.time.ZoneOffset.UTC) : null
         );
     }
 
+    /**
+     * Builds an overview DTO from the system default content for a given email type.
+     *
+     * @param emailType the email type to load defaults for
+     * @return the overview DTO with {@code isCustom = false}
+     */
     private EmailTemplateOverviewDTO toOverviewDefault(EmailType emailType) {
-        DefaultContent en = defaultProvider.load(emailType, Language.ENGLISH);
-        DefaultContent de = defaultProvider.load(emailType, Language.GERMAN);
+        DefaultContent englishContent = defaultProvider.load(emailType, Language.ENGLISH);
+        DefaultContent germanContent = defaultProvider.load(emailType, Language.GERMAN);
         return new EmailTemplateOverviewDTO(
             null,
             emailType,
             false,
-            new EmailTemplateTranslationDTO(en.subject(), toQuill(en.bodyHtml())),
-            new EmailTemplateTranslationDTO(de.subject(), toQuill(de.bodyHtml())),
+            new EmailTemplateTranslationDTO(englishContent.subject(), toQuill(englishContent.bodyHtml())),
+            new EmailTemplateTranslationDTO(germanContent.subject(), toQuill(germanContent.bodyHtml())),
             null,
             null,
             null
         );
     }
 
-    private EmailTemplateDTO toDTOForEditing(EmailTemplate t) {
+    /**
+     * Maps a custom template to a full DTO suitable for the edit page (Quill-mention form).
+     *
+     * @param template the custom template
+     * @return the DTO carrying both translations
+     */
+    private EmailTemplateDTO toDTOForEditing(EmailTemplate template) {
         return new EmailTemplateDTO(
-            t.getEmailTemplateId(),
-            t.getEmailType(),
-            new EmailTemplateTranslationDTO(t.getSubjectEn(), toQuill(t.getBodyHtmlEn())),
-            new EmailTemplateTranslationDTO(t.getSubjectDe(), toQuill(t.getBodyHtmlDe()))
+            template.getEmailTemplateId(),
+            template.getEmailType(),
+            new EmailTemplateTranslationDTO(template.getSubjectEn(), toQuill(template.getBodyHtmlEn())),
+            new EmailTemplateTranslationDTO(template.getSubjectDe(), toQuill(template.getBodyHtmlDe()))
         );
     }
 
-    private void applyContent(EmailTemplate t, EmailTemplateDTO dto) {
+    /**
+     * Writes the DTO's English and German content onto the entity, sanitising and converting Quill mentions to FreeMarker.
+     *
+     * @param template the entity to update
+     * @param dto      the DTO carrying the new content (both translations are required)
+     * @throws EmailTemplateException if either translation is missing
+     */
+    private void applyContent(EmailTemplate template, EmailTemplateDTO dto) {
         if (dto.english() == null || dto.german() == null) {
             throw new EmailTemplateException("Both English and German content are required");
         }
-        t.setSubjectEn(dto.english().subject());
-        t.setBodyHtmlEn(toFreemarker(dto.english().body()));
-        t.setSubjectDe(dto.german().subject());
-        t.setBodyHtmlDe(toFreemarker(dto.german().body()));
+        template.setSubjectEn(dto.english().subject());
+        template.setBodyHtmlEn(toFreemarker(dto.english().body()));
+        template.setSubjectDe(dto.german().subject());
+        template.setBodyHtmlDe(toFreemarker(dto.german().body()));
     }
 
+    /**
+     * Sanitises Quill-mention HTML and converts the mention spans into FreeMarker placeholders for storage.
+     *
+     * @param html the editor-side HTML with Quill mention spans
+     * @return the FreeMarker-ready HTML
+     */
     private static String toFreemarker(String html) {
         String sanitized = HtmlSanitizer.sanitizeQuillMentions(html);
         return TemplateUtil.convertQuillMentionsToFreemarker(sanitized);
     }
 
+    /**
+     * Converts FreeMarker placeholders back into Quill-mention spans for the editor.
+     *
+     * @param html the stored HTML with FreeMarker placeholders
+     * @return the Quill-mention-ready HTML
+     */
     private static String toQuill(String html) {
         return TemplateUtil.convertFreemarkerToQuillMentions(html);
     }
