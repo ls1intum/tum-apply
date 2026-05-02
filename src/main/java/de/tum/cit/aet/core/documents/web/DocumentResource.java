@@ -47,6 +47,7 @@ public class DocumentResource {
     @Authenticated
     @DeleteMapping("/{documentId}")
     public ResponseEntity<Void> deleteDocument(@PathVariable UUID documentId) {
+        log.info("DELETE /api/documents/{} - Delete request received", documentId);
         documentService.deleteById(documentId);
         return ResponseEntity.noContent().build();
     }
