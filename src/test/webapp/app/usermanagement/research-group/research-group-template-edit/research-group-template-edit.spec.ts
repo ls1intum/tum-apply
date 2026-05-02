@@ -68,6 +68,7 @@ describe('ResearchGroupTemplateEdit', () => {
     const fixture = TestBed.createComponent(ResearchGroupTemplateEdit);
     fixture.detectChanges();
 
+    fixture.componentInstance.customizableEmailTypes.set([EmailTemplateDTOEmailTypeEnum.ApplicationSent]);
     fixture.componentInstance.setSelectedEmailType({ name: 'X', value: EmailTemplateDTOEmailTypeEnum.ApplicationSent });
 
     expect(fixture.componentInstance.formModel().emailType).toBe(EmailTemplateDTOEmailTypeEnum.ApplicationSent);

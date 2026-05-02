@@ -209,23 +209,6 @@ export class ResearchGroupTemplateEdit {
     void this.loadCustomizableEmailTypes();
   }
 
-  private async loadCustomizableEmailTypes(): Promise<void> {
-    try {
-      const all = await firstValueFrom(this.emailTemplateApi.getTemplates());
-      const types = Array.from(new Set(all.map(t => t.emailType).filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined)));
-      const taken = new Set(
-        all
-          .filter(t => t.isCustom === true)
-          .map(t => t.emailType)
-          .filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined),
-      );
-      this.customizableEmailTypes.set(types);
-      this.alreadyCustomEmailTypes.set(taken);
-    } catch {
-      this.toastService.showError({ detail: 'Failed to load email types' });
-    }
-  }
-
   readonly beforeUnloadHandler = (): void => {
     if (this.hasUnsavedChanges()) {
       void this.performAutoSave();
@@ -251,6 +234,23 @@ export class ResearchGroupTemplateEdit {
 
   updateGermanBody(body: string): void {
     this.formModel.update(prev => this.withGerman(prev, { subject: prev.german?.subject ?? '', body }));
+  }
+
+  private async loadCustomizableEmailTypes(): Promise<void> {
+    try {
+      const all = await firstValueFrom(this.emailTemplateApi.getTemplates());
+      const types = Array.from(new Set(all.map(t => t.emailType).filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined)));
+      const taken = new Set(
+        all
+          .filter(t => t.isCustom === true)
+          .map(t => t.emailType)
+          .filter((t): t is EmailTemplateDTOEmailTypeEnum => t !== undefined),
+      );
+      this.customizableEmailTypes.set(types);
+      this.alreadyCustomEmailTypes.set(taken);
+    } catch {
+      this.toastService.showError({ detail: 'Failed to load email types' });
+    }
   }
 
   private withEmailType(form: EmailTemplateDTO, emailType: EmailTemplateDTOEmailTypeEnum | undefined): EmailTemplateDTO {
