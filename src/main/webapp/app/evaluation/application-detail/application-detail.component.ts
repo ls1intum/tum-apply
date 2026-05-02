@@ -638,7 +638,7 @@ export class ApplicationDetailComponent {
   }
 
   private updateDocumentInformation(applicationId: string): void {
-    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(applicationId))
+    firstValueFrom(this.applicationApi.getDocumentIds(applicationId))
       .then(ids => {
         this.currentDocumentIds.set(ids);
       })

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service;
 
-import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +55,8 @@ public class ZipExportService {
      * Adds a file entry to the given ZIP output stream and writes the contents of the provided
      * InputStream into that entry.
      *
-     * @param zos the ZipOutputStream to which the entry and data will be written
-     * @param filename the name/path of the entry inside the ZIP archive
+     * @param zos         the ZipOutputStream to which the entry and data will be written
+     * @param filename    the name/path of the entry inside the ZIP archive
      * @param inputStream the source InputStream providing the file data; it will be fully consumed but not closed
      * @throws IOException if an I/O error occurs while adding the entry or transferring data
      */
@@ -70,15 +71,15 @@ public class ZipExportService {
     }
 
     /**
-     * Adds a document to the ZIP output stream by downloading it via DocumentService.
+     * Adds a document to the ZIP output stream by loading it through DocumentService.
      *
      * @param zos      the ZipOutputStream
      * @param filename the name of the file entry in the ZIP
-     * @param document the document to add
+     * @param document the document whose binary should be streamed into the archive
      * @throws IOException if an I/O error occurs
      */
     public void addDocumentToZip(ZipOutputStream zos, String filename, Document document) throws IOException {
-        Resource resource = documentService.download(document);
+        Resource resource = documentService.loadResourceForExport(document);
         try (InputStream is = resource.getInputStream()) {
             addFileToZip(zos, filename, is);
         }

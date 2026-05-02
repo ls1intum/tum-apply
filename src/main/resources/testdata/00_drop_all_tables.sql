@@ -4,6 +4,9 @@
 -- Preconditions:
 --   - All tables must already exist
 --   - This script removes all data and resets auto-increment values
+-- Notes:
+--   - system_settings is intentionally NOT truncated. Its default rows (e.g. ai.enabled)
+--     are seeded by Liquibase only on first run, so truncating would silently remove them.
 -- =============================================
 
 -- Disable foreign key checks
@@ -11,20 +14,22 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- Truncate all tables
 TRUNCATE TABLE applicants;
+TRUNCATE TABLE applicant_subject_area_subscriptions;
 TRUNCATE TABLE application_reviews;
 TRUNCATE TABLE applications;
+TRUNCATE TABLE data_export_requests;
 TRUNCATE TABLE departments;
-TRUNCATE TABLE document_dictionary;
 TRUNCATE TABLE documents;
 TRUNCATE TABLE email_settings;
-TRUNCATE TABLE email_template_translations;
 TRUNCATE TABLE email_templates;
 TRUNCATE TABLE email_verification_otp;
+TRUNCATE TABLE images;
 TRUNCATE TABLE internal_comments;
 TRUNCATE TABLE interview_processes;
 TRUNCATE TABLE interview_slots;
+TRUNCATE TABLE interviewees;
+TRUNCATE TABLE job_compliance_issues;
 TRUNCATE TABLE jobs;
-TRUNCATE TABLE applicant_subject_area_subscriptions;
 TRUNCATE TABLE ratings;
 TRUNCATE TABLE research_groups;
 TRUNCATE TABLE schools;

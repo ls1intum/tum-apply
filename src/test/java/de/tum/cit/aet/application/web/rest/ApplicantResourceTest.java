@@ -6,9 +6,8 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -41,9 +40,6 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
     @Autowired
     DocumentRepository documentRepository;
-
-    @Autowired
-    DocumentDictionaryRepository documentDictionaryRepository;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -475,27 +471,17 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void getApplicantProfileDocumentIdsReturnsGroupedDocuments() {
-            DocumentTestData.savedDictionaryWithMockDocument(
+            DocumentTestData.savedMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
                 DocumentType.BACHELOR_TRANSCRIPT,
                 "bachelor_profile.pdf"
             );
-            DocumentTestData.savedDictionaryWithMockDocument(
+            DocumentTestData.savedMockDocument(documentRepository, applicant.getUser(), null, applicant, DocumentType.CV, "cv_profile.pdf");
+            DocumentTestData.savedMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
-                applicant.getUser(),
-                null,
-                applicant,
-                DocumentType.CV,
-                "cv_profile.pdf"
-            );
-            DocumentTestData.savedDictionaryWithMockDocument(
-                documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -508,12 +494,12 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 .getAndRead("/api/applicants/profile/document-ids", null, ApplicationDocumentIdsDTO.class, 200);
 
             assertThat(dto).isNotNull();
-            assertThat(dto.getBachelorDocumentDictionaryIds()).hasSize(1);
-            assertThat(dto.getBachelorDocumentDictionaryIds().iterator().next().getName()).isEqualTo("bachelor_profile.pdf");
-            assertThat(dto.getCvDocumentDictionaryId()).isNotNull();
-            assertThat(dto.getCvDocumentDictionaryId().getName()).isEqualTo("cv_profile.pdf");
-            assertThat(dto.getReferenceDocumentDictionaryIds()).hasSize(1);
-            assertThat(dto.getReferenceDocumentDictionaryIds().iterator().next().getName()).isEqualTo("reference_profile.pdf");
+            assertThat(dto.getBachelorDocumentIds()).hasSize(1);
+            assertThat(dto.getBachelorDocumentIds().iterator().next().getName()).isEqualTo("bachelor_profile.pdf");
+            assertThat(dto.getCvDocumentId()).isNotNull();
+            assertThat(dto.getCvDocumentId().getName()).isEqualTo("cv_profile.pdf");
+            assertThat(dto.getReferenceDocumentIds()).hasSize(1);
+            assertThat(dto.getReferenceDocumentIds().iterator().next().getName()).isEqualTo("reference_profile.pdf");
         }
 
         @Test
@@ -528,9 +514,8 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteDocumentFromProfileRemovesIt() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -538,20 +523,19 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 "profile_cv.pdf"
             );
 
-            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
+            assertThat(documentRepository.existsById(doc.getDocumentId())).isTrue();
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .deleteAndRead("/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
+                .deleteAndRead("/api/applicants/profile/documents/" + doc.getDocumentId(), null, Void.class, 204);
 
-            assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
+            assertThat(documentRepository.existsById(doc.getDocumentId())).isFalse();
         }
 
         @Test
         void deleteDocumentFromProfileWithoutAuthReturnsForbidden() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -559,12 +543,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
                 "profile_cv.pdf"
             );
 
-            Void response = api.deleteAndRead(
-                "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId(),
-                null,
-                Void.class,
-                403
-            );
+            Void response = api.deleteAndRead("/api/applicants/profile/documents/" + doc.getDocumentId(), null, Void.class, 403);
             assertThat(response).isNull();
         }
 
@@ -583,9 +562,8 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void renameApplicantProfileDocumentUpdatesName() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -596,13 +574,13 @@ class ApplicantResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .putAndRead(
-                    "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
+                    "/api/applicants/profile/documents/" + doc.getDocumentId() + "/name?newName=profile_new_name.pdf",
                     null,
                     Void.class,
                     200
                 );
 
-            DocumentDictionary updated = documentDictionaryRepository.findById(docDict.getDocumentDictionaryId()).orElseThrow();
+            Document updated = documentRepository.findById(doc.getDocumentId()).orElseThrow();
             assertThat(updated.getName()).isEqualTo("profile_new_name.pdf");
         }
 
@@ -622,9 +600,8 @@ class ApplicantResourceTest extends AbstractResourceTest {
 
         @Test
         void renameApplicantProfileDocumentWithoutAuthReturnsForbidden() {
-            DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            Document doc = DocumentTestData.savedMockDocument(
                 documentRepository,
-                documentDictionaryRepository,
                 applicant.getUser(),
                 null,
                 applicant,
@@ -633,7 +610,7 @@ class ApplicantResourceTest extends AbstractResourceTest {
             );
 
             Void response = api.putAndRead(
-                "/api/applicants/profile/documents/" + docDict.getDocumentDictionaryId() + "/name?newName=profile_new_name.pdf",
+                "/api/applicants/profile/documents/" + doc.getDocumentId() + "/name?newName=profile_new_name.pdf",
                 null,
                 Void.class,
                 403

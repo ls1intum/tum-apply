@@ -539,7 +539,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()))
+    firstValueFrom(this.applicationApi.getDocumentIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })

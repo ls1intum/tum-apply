@@ -4,8 +4,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
 import de.tum.cit.aet.core.constants.Language;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
@@ -28,10 +27,8 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +49,7 @@ public class UserRetentionService {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
-    private final DocumentRepository documentRepository;
-    private final DocumentDictionaryRepository documentDictionaryRepository;
+    private final DocumentService documentService;
     private final EmailSettingRepository emailSettingRepository;
     private final EmailTemplateRepository emailTemplateRepository;
     private final ImageRepository imageRepository;
@@ -190,13 +186,10 @@ public class UserRetentionService {
         }
         log.info("User retention: processing APPLICANT userId={}", user.getUserId());
 
-        Set<UUID> documentIdsToDelete = new HashSet<>();
-
-        // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and dictionaries)
+        // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and documents)
         List<Application> applications = applicationRepository.findAllByApplicantId(user.getUserId());
         if (!applications.isEmpty()) {
             List<UUID> applicationIds = applications.stream().map(Application::getApplicationId).toList();
-            documentIdsToDelete.addAll(documentDictionaryRepository.findDocumentIdsByApplicationIds(applicationIds));
 
             interviewSlotRepository.deleteByIntervieweeApplicationIdIn(applicationIds);
             intervieweeRepository.deleteByApplicationIdIn(applicationIds);
@@ -205,23 +198,17 @@ public class UserRetentionService {
             ratingRepository.deleteByApplicationIdIn(applicationIds);
             internalCommentRepository.deleteByApplicationIdIn(applicationIds);
 
-            documentDictionaryRepository.deleteByApplicationIdIn(applicationIds);
+            for (UUID applicationId : applicationIds) {
+                documentService.deleteAllByApplicationId(applicationId);
+            }
             applicationRepository.deleteAllInBatch(applications);
         }
 
-        // 2. Delete applicant-owned profile/custom dictionaries
+        // 2. Delete applicant-owned profile/custom documents (rows + orphan files atomically)
         UUID userId = user.getUserId();
-        documentIdsToDelete.addAll(documentDictionaryRepository.findDocumentIdsByApplicantId(userId));
-        documentDictionaryRepository.deleteByApplicantId(userId);
+        documentService.deleteAllByApplicantId(userId);
 
-        // 3. Delete documents that became unreferenced after dictionary cleanup
-        for (UUID documentId : documentIdsToDelete) {
-            if (!documentDictionaryRepository.existsByDocumentDocumentId(documentId)) {
-                documentRepository.deleteById(documentId);
-            }
-        }
-
-        // 4. Delete applicant data
+        // 3. Delete applicant data
         applicantRepository.deleteById(userId);
     }
 

@@ -39,9 +39,6 @@ public class Email {
 
     private EmailType emailType;
 
-    @Builder.Default
-    private String templateName = null;
-
     /**
      * Must be an instance of ResearchGroup, Job or Application
      * Must be present if no customBody is set

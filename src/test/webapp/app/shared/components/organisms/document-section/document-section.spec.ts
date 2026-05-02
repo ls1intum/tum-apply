@@ -55,10 +55,10 @@ describe('DocumentSection', () => {
 
     it('should populate documents and extraDocuments correctly', () => {
       const dto: ApplicationDocumentIdsDTO = {
-        masterDocumentDictionaryIds: [{ id: 'm1' } as DocumentInformationHolderDTO, { id: 'm2' } as DocumentInformationHolderDTO],
-        cvDocumentDictionaryId: { id: 'cv' } as DocumentInformationHolderDTO,
-        bachelorDocumentDictionaryIds: [{ id: 'b1' } as DocumentInformationHolderDTO],
-        referenceDocumentDictionaryIds: [{ id: 'r1' } as DocumentInformationHolderDTO, { id: 'r2' } as DocumentInformationHolderDTO],
+        masterDocumentIds: [{ id: 'm1' } as DocumentInformationHolderDTO, { id: 'm2' } as DocumentInformationHolderDTO],
+        cvDocumentId: { id: 'cv' } as DocumentInformationHolderDTO,
+        bachelorDocumentIds: [{ id: 'b1' } as DocumentInformationHolderDTO],
+        referenceDocumentIds: [{ id: 'r1' } as DocumentInformationHolderDTO, { id: 'r2' } as DocumentInformationHolderDTO],
       };
       fixture.componentRef.setInput('idsDTO', dto);
       fixture.detectChanges();

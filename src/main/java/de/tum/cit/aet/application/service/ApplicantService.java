@@ -3,13 +3,11 @@ package de.tum.cit.aet.application.service;
 import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.documents.domain.ApplicantDocument;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -22,7 +20,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +30,6 @@ public class ApplicantService {
 
     private final ApplicantRepository applicantRepository;
     private final UserRepository userRepository;
-    private final DocumentDictionaryService documentDictionaryService;
     private final DocumentService documentService;
     private final CurrentUserService currentUserService;
 
@@ -59,7 +55,7 @@ public class ApplicantService {
 
     /**
      * Updates the current user's applicant profile with personal information.
-     * Writes directly to `User` and `Applicant` entities.
+     * Writes directly to {@code User} and {@code Applicant} entities.
      *
      * @param dto the updated applicant data
      * @return the updated ApplicantDTO
@@ -140,14 +136,13 @@ public class ApplicantService {
         }
 
         Applicant applicant = findOrCreateApplicant(userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
         switch (documentType) {
             case BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE:
-                uploadTranscripts(files, documentType, applicant, user);
+                uploadTranscripts(files, documentType, applicant);
                 break;
             case CV:
-                uploadCV(files.getFirst(), applicant, user);
+                uploadCV(files.getFirst(), applicant);
                 break;
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
@@ -172,131 +167,112 @@ public class ApplicantService {
         Applicant applicant = findOrCreateApplicant(userId);
 
         ApplicationDocumentIdsDTO dto = new ApplicationDocumentIdsDTO();
-        dto.setBachelorDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.BACHELOR_TRANSCRIPT));
-        dto.setMasterDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.MASTER_TRANSCRIPT));
-        dto.setReferenceDocumentDictionaryIds(getApplicantDocumentInformation(applicant, DocumentType.REFERENCE));
-        dto.setCvDocumentDictionaryId(getApplicantDocumentInformation(applicant, DocumentType.CV).stream().findFirst().orElse(null));
+        dto.setBachelorDocumentIds(getApplicantDocumentInformation(applicant, DocumentType.BACHELOR_TRANSCRIPT));
+        dto.setMasterDocumentIds(getApplicantDocumentInformation(applicant, DocumentType.MASTER_TRANSCRIPT));
+        dto.setReferenceDocumentIds(getApplicantDocumentInformation(applicant, DocumentType.REFERENCE));
+        dto.setCvDocumentId(getApplicantDocumentInformation(applicant, DocumentType.CV).stream().findFirst().orElse(null));
         return dto;
     }
 
     /**
      * Deletes an applicant-profile document.
      *
-     * @param documentDictionaryId the id of the document dictionary entry to delete
+     * @param documentId the id of the document to delete
      */
-    public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
+    public void deleteApplicantProfileDocument(UUID documentId) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
             throw new InvalidParameterException("UserId must not be null.");
         }
 
-        documentDictionaryService.deleteApplicantOwnedDocumentDictionary(userId, documentDictionaryId);
+        documentService.deleteApplicantOwnedDocument(userId, documentId);
     }
 
     /**
      * Renames an applicant-profile document.
      *
-     * @param documentDictionaryId the id of the document dictionary entry to rename
-     * @param newName              the new name to set
+     * @param documentId the id of the document to rename
+     * @param newName    the new name to set
      */
-    public void renameApplicantProfileDocument(UUID documentDictionaryId, String newName) {
+    public void renameApplicantProfileDocument(UUID documentId, String newName) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
             throw new InvalidParameterException("UserId must not be null.");
         }
 
-        documentDictionaryService.renameApplicantOwnedDocumentDictionary(userId, documentDictionaryId, newName);
+        documentService.renameApplicantDocument(userId, documentId, newName);
     }
 
     /**
-     * Retrieves all CV document entries for the given applicant.
+     * Retrieves all CV documents for the given applicant.
      *
      * @param applicant the applicant to retrieve CVs for
-     * @return set of document dictionary entries of type CV
+     * @return set of CV documents
      */
-    public Set<DocumentDictionary> getCVs(Applicant applicant) {
-        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.CV);
+    public Set<ApplicantDocument> getCVs(Applicant applicant) {
+        return documentService.listForApplicantByType(applicant, DocumentType.CV);
     }
 
     /**
-     * Retrieves all reference document entries for the given applicant.
+     * Retrieves all reference documents for the given applicant.
      *
      * @param applicant the applicant to retrieve references for
-     * @return set of document dictionary entries of type REFERENCE
+     * @return set of reference documents
      */
-    public Set<DocumentDictionary> getReferences(Applicant applicant) {
-        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.REFERENCE);
+    public Set<ApplicantDocument> getReferences(Applicant applicant) {
+        return documentService.listForApplicantByType(applicant, DocumentType.REFERENCE);
     }
 
     /**
-     * Retrieves all bachelor transcript document entries for the given applicant.
+     * Retrieves all bachelor transcript documents for the given applicant.
      *
      * @param applicant the applicant to retrieve bachelor transcripts for
-     * @return set of document dictionary entries of type BACHELOR_TRANSCRIPT
+     * @return set of bachelor transcript documents
      */
-    public Set<DocumentDictionary> getBachelorTranscripts(Applicant applicant) {
-        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT);
+    public Set<ApplicantDocument> getBachelorTranscripts(Applicant applicant) {
+        return documentService.listForApplicantByType(applicant, DocumentType.BACHELOR_TRANSCRIPT);
     }
 
     /**
-     * Retrieves all master transcript document entries for the given applicant.
+     * Retrieves all master transcript documents for the given applicant.
      *
      * @param applicant the applicant to retrieve master transcripts for
-     * @return set of document dictionary entries of type MASTER_TRANSCRIPT
+     * @return set of master transcript documents
      */
-    public Set<DocumentDictionary> getMasterTranscripts(Applicant applicant) {
-        return documentDictionaryService.getApplicantDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT);
+    public Set<ApplicantDocument> getMasterTranscripts(Applicant applicant) {
+        return documentService.listForApplicantByType(applicant, DocumentType.MASTER_TRANSCRIPT);
     }
 
     /**
-     * Uploads a single CV document and updates the dictionary mapping.
+     * Uploads a single CV document for the given applicant.
      *
-     * @param cv the uploaded CV file
+     * @param cv        the uploaded CV file
      * @param applicant the applicant the CV belongs to
-     * @param user the user uploading the document
      */
-    public void uploadCV(MultipartFile cv, Applicant applicant, User user) {
-        Document document = documentService.upload(cv, user);
-        updateDocumentDictionaries(
-            applicant,
-            DocumentType.CV,
-            Set.of(Pair.of(document, Optional.ofNullable(cv.getOriginalFilename()).orElse("<empty>.pdf")))
-        );
+    public void uploadCV(MultipartFile cv, Applicant applicant) {
+        String name = Optional.ofNullable(cv.getOriginalFilename()).orElse("<empty>.pdf");
+        documentService.uploadApplicantDocument(cv, DocumentType.CV, name, applicant);
     }
 
     /**
-     * Uploads multiple documents and updates the dictionary mapping.
+     * Uploads multiple documents of the given type for the applicant.
      *
-     * @param references the uploaded files
-     * @param type the type of the document
-     * @param applicant the applicant the belong to
-     * @param user the user uploading the documents
+     * @param files     the uploaded files
+     * @param type      the type of the documents
+     * @param applicant the applicant the documents belong to
      */
-    public void uploadTranscripts(List<MultipartFile> references, DocumentType type, Applicant applicant, User user) {
-        Set<Pair<Document, String>> documents = references
-            .stream()
-            .map(file -> Pair.of(documentService.upload(file, user), Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf")))
-            .collect(Collectors.toSet());
-        updateDocumentDictionaries(applicant, type, documents);
-    }
-
-    /**
-     * Updates the document dictionary entries for a given applicant and document type.
-     *
-     * @param applicant      the applicant to associate the documents with
-     * @param type           the type of documents being updated (e.g., CV, REFERENCE)
-     * @param newDocuments   the set of newly uploaded documents to associate
-     */
-    protected void updateDocumentDictionaries(Applicant applicant, DocumentType type, Set<Pair<Document, String>> newDocuments) {
-        Set<DocumentDictionary> existingEntries = documentDictionaryService.getApplicantDocumentDictionaries(applicant, type);
-        documentDictionaryService.updateDocumentDictionaries(existingEntries, newDocuments, type, dd -> dd.setApplicant(applicant));
+    public void uploadTranscripts(List<MultipartFile> files, DocumentType type, Applicant applicant) {
+        for (MultipartFile file : files) {
+            String name = Optional.ofNullable(file.getOriginalFilename()).orElse("<empty>.pdf");
+            documentService.uploadApplicantDocument(file, type, name, applicant);
+        }
     }
 
     Set<DocumentInformationHolderDTO> getApplicantDocumentInformation(Applicant applicant, DocumentType documentType) {
-        return documentDictionaryService
-            .getApplicantDocumentDictionaries(applicant, documentType)
+        return documentService
+            .listForApplicantByType(applicant, documentType)
             .stream()
-            .map(DocumentInformationHolderDTO::getFromDocumentDictionary)
+            .map(DocumentInformationHolderDTO::fromDocument)
             .collect(Collectors.toSet());
     }
 

@@ -5,12 +5,12 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.AdminExportType;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.DocumentRefDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminJobExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.PDFExportService;
 import de.tum.cit.aet.core.service.XlsxExportService;
 import de.tum.cit.aet.core.service.ZipExportService;
@@ -443,20 +443,13 @@ public class JobsExportStrategy {
         // applicant has multiple files of the same type (cv.pdf, cv_2.pdf, …).
         // Catch every exception per file so a missing/corrupted blob never
         // aborts the surrounding ZIP stream.
-        Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
-        long docsWithBinary = docDicts
-            .stream()
-            .filter(dd -> dd.getDocument() != null)
-            .count();
-        manifest.expect(ExportManifest.Category.DOCUMENT, (int) docsWithBinary);
+        Set<ApplicationDocument> appDocs = app.getApplicationDocuments() == null ? Set.of() : app.getApplicationDocuments();
+        manifest.expect(ExportManifest.Category.DOCUMENT, appDocs.size());
         FolderNameAllocator docAllocator = new FolderNameAllocator(false);
-        for (DocumentDictionary dd : docDicts) {
-            if (dd.getDocument() == null) {
-                continue;
-            }
-            String typeLabel = dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
-            String baseName = docAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
-            String filename = baseName + AdminExportNaming.extensionForMime(dd.getDocument().getMimeType());
+        for (ApplicationDocument doc : appDocs) {
+            String typeLabel = doc.getDocumentType() == null ? "document" : doc.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
+            String baseName = docAllocator.allocate(typeLabel, doc.getDocumentId());
+            String filename = baseName + AdminExportNaming.extensionForMime(doc.getMimeType());
             // Read the binary FULLY into memory before touching the ZIP stream:
             // a partial write (truncated read, broken pipe, missing file mid-stream)
             // would otherwise leave the deflater between putNextEntry and closeEntry,
@@ -464,7 +457,7 @@ public class JobsExportStrategy {
             // Utility refuses to open. Buffering keeps the failure isolated to this
             // single document and the catch block writes a placeholder instead.
             try {
-                Resource resource = documentService.download(dd.getDocument());
+                Resource resource = documentService.downloadDocument(doc.getDocumentId());
                 byte[] bytes;
                 try (InputStream is = resource.getInputStream()) {
                     bytes = is.readAllBytes();
@@ -472,21 +465,16 @@ public class JobsExportStrategy {
                 zipExportService.addFileToZip(zos, folder + "documents/" + filename, bytes);
                 manifest.exported(ExportManifest.Category.DOCUMENT);
             } catch (StreamAbortedException sae) {
-                manifest.failed(ExportManifest.Category.DOCUMENT, dd.getDocument().getDocumentId(), filename, sae);
+                manifest.failed(ExportManifest.Category.DOCUMENT, doc.getDocumentId(), filename, sae);
                 throw sae;
             } catch (Exception e) {
-                log.warn(
-                    "Failed to add document {} for application {}: {}",
-                    dd.getDocument().getDocumentId(),
-                    app.getApplicationId(),
-                    e.getMessage()
-                );
-                manifest.failed(ExportManifest.Category.DOCUMENT, dd.getDocument().getDocumentId(), filename, e);
+                log.warn("Failed to add document {} for application {}: {}", doc.getDocumentId(), app.getApplicationId(), e.getMessage());
+                manifest.failed(ExportManifest.Category.DOCUMENT, doc.getDocumentId(), filename, e);
                 rethrowIfStreamBroken(e);
                 writeTextEntry(
                     zos,
                     folder + "documents/" + filename + ".error.txt",
-                    "Failed to load document " + dd.getDocument().getDocumentId() + ": " + e.getMessage()
+                    "Failed to load document " + doc.getDocumentId() + ": " + e.getMessage()
                 );
             }
         }
@@ -652,22 +640,21 @@ public class JobsExportStrategy {
 
         // Mirrors the filename allocation in writeApplicationFolder so the JSON's
         // zipPath matches the actual file on disk inside the ZIP.
-        Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
+        Set<ApplicationDocument> appDocs = app.getApplicationDocuments() == null ? Set.of() : app.getApplicationDocuments();
         FolderNameAllocator docPathAllocator = new FolderNameAllocator(false);
-        List<DocumentRefDTO> docRefs = docDicts
+        List<DocumentRefDTO> docRefs = appDocs
             .stream()
-            .filter(dd -> dd.getDocument() != null)
-            .map(dd -> {
+            .map(doc -> {
                 String typeLabel =
-                    dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
-                String baseName = docPathAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
+                    doc.getDocumentType() == null ? "document" : doc.getDocumentType().name().toLowerCase(java.util.Locale.ROOT);
+                String baseName = docPathAllocator.allocate(typeLabel, doc.getDocumentId());
                 return new DocumentRefDTO(
-                    dd.getDocument().getDocumentId(),
-                    dd.getName(),
-                    dd.getDocumentType(),
-                    dd.getDocument().getMimeType(),
-                    dd.getDocument().getSizeBytes(),
-                    "documents/" + baseName + AdminExportNaming.extensionForMime(dd.getDocument().getMimeType())
+                    doc.getDocumentId(),
+                    doc.getName(),
+                    doc.getDocumentType(),
+                    doc.getMimeType(),
+                    doc.getSizeBytes(),
+                    "documents/" + baseName + AdminExportNaming.extensionForMime(doc.getMimeType())
                 );
             })
             .toList();

@@ -30,8 +30,8 @@ public final class SqlQueryUtil {
             return;
         }
         int index = 0;
-        for (var entry : dynamicFilters.entrySet()) {
-            var values = entry.getValue().stream().map(String::valueOf).toList();
+        for (Map.Entry<String, List<?>> entry : dynamicFilters.entrySet()) {
+            List<String> values = entry.getValue().stream().map(String::valueOf).toList();
             if (values == null || values.isEmpty()) {
                 continue;
             }
@@ -95,7 +95,7 @@ public final class SqlQueryUtil {
      * @param params a map of parameter names to their values
      */
     public static void bindParameters(Query q, Map<String, Object> params) {
-        for (var e : params.entrySet()) {
+        for (Map.Entry<String, Object> e : params.entrySet()) {
             Object v = e.getValue();
             q.setParameter(e.getKey(), v);
         }

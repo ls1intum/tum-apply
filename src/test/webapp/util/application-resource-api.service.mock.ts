@@ -15,7 +15,7 @@ export type ApplicationResourceApiMock = {
   getApplicationForDetailPage: ReturnType<typeof vi.fn>;
   updateApplication: ReturnType<typeof vi.fn>;
   withdrawApplication: ReturnType<typeof vi.fn>;
-  getDocumentDictionaryIds: ReturnType<typeof vi.fn>;
+  getDocumentIds: ReturnType<typeof vi.fn>;
   deleteApplication: ReturnType<typeof vi.fn>;
   getApplicationPages: ReturnType<typeof vi.fn>;
   renameDocument: ReturnType<typeof vi.fn>;
@@ -63,7 +63,7 @@ export function createApplicationResourceApiMock(): ApplicationResourceApiMock {
     getApplicationForDetailPage: vi.fn().mockReturnValue(of({})),
     updateApplication: vi.fn().mockReturnValue(of({})),
     withdrawApplication: vi.fn().mockReturnValue(of({})),
-    getDocumentDictionaryIds: vi.fn().mockReturnValue(of({})),
+    getDocumentIds: vi.fn().mockReturnValue(of({})),
     deleteApplication: vi.fn().mockReturnValue(of(void 0)),
     getApplicationPages: vi.fn().mockReturnValue(of({ content: mockApplicationOverviewPages, totalElements: 2 })),
     uploadDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),

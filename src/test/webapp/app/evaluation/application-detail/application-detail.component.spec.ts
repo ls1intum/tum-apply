@@ -32,7 +32,7 @@ function makeDetailApp(id: string, state: string = ApplicationDetailDTOApplicati
 
 function makeDocumentIds(): ApplicationDocumentIdsDTO {
   return {
-    cvDocumentDictionaryId: { id: 'cv-1', size: 123456, name: 'CV.pdf' },
+    cvDocumentId: { id: 'cv-1', size: 123456, name: 'CV.pdf' },
   };
 }
 
@@ -59,7 +59,7 @@ describe('ApplicationDetailComponent', () => {
     };
 
     applicationApi = {
-      getDocumentDictionaryIds: vi.fn().mockReturnValue(of(makeDocumentIds())),
+      getDocumentIds: vi.fn().mockReturnValue(of(makeDocumentIds())),
     };
 
     const mockActivatedRoute = createActivatedRouteMock({}, {});
@@ -578,7 +578,7 @@ describe('ApplicationDetailComponent', () => {
 
     it('should updateDocumentInformation set currentDocumentIds', async () => {
       const ids = makeDocumentIds();
-      applicationApi.getDocumentDictionaryIds.mockReturnValueOnce(of(ids));
+      applicationApi.getDocumentIds.mockReturnValueOnce(of(ids));
 
       const testComp = component as unknown as {
         updateDocumentInformation: (appId: string) => Promise<void>;
