@@ -403,23 +403,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/documents/{documentDictionaryId}:
+  /api/applications/documents/{documentId}:
     delete:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applications/documents/{documentDictionaryId}/name:
+  /api/applications/documents/{documentId}/name:
     put:
       tags: [application-resource]
       operationId: renameDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -836,12 +836,12 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-  /api/documents/{documentDictionaryId}:
+  /api/documents/{documentId}:
     get:
       tags: [document-resource]
       operationId: downloadDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -851,6 +851,16 @@ paths:
           content:
             application/json:
               schema: {type: string, format: binary}
+    delete:
+      tags: [document-resource]
+      operationId: deleteDocument
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/email-templates:
     get:
       tags: [email-template-resource]
