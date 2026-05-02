@@ -3,7 +3,7 @@
  */
 module.exports = async browser => {
   const targetUrl = process.env.TARGET_URL || 'http://localhost:4200';
-  const authUrl = new URL('/my-positions', targetUrl).toString();
+  const authUrl = new URL('/settings', targetUrl).toString();
 
   // 1. Open a new setup tab in the browser Lighthouse just launched
   const page = await browser.newPage();
