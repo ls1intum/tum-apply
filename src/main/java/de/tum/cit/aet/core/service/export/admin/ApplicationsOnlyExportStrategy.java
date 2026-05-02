@@ -2,10 +2,10 @@ package de.tum.cit.aet.core.service.export.admin;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.exportdata.admin.AdminApplicationExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import java.io.IOException;
@@ -57,7 +57,7 @@ import tools.jackson.databind.ObjectMapper;
  * user retention ran mid-flight — go into {@code applications/_orphans/}
  * instead of a named folder.
  *
- * <p>Documents are looked up via {@link Application#getDocumentDictionaries()}
+ * <p>Documents are looked up via {@link Application#getApplicationDocuments()}
  * (the same source the per-job export uses) and deduped within each applicant
  * folder by document id, so an applicant with two applications that both
  * reference the same CV only contributes one {@code cv.pdf} to the ZIP.
@@ -161,25 +161,22 @@ public class ApplicationsOnlyExportStrategy {
         FolderNameAllocator docAllocator = new FolderNameAllocator(false);
         Set<UUID> writtenDocumentIds = new HashSet<>();
         for (Application app : apps) {
-            Set<DocumentDictionary> docDicts = app.getDocumentDictionaries() == null ? Set.of() : app.getDocumentDictionaries();
-            for (DocumentDictionary dd : docDicts) {
-                if (dd.getDocument() == null) {
-                    continue;
-                }
-                if (!writtenDocumentIds.add(dd.getDocument().getDocumentId())) {
+            Set<ApplicationDocument> appDocs = app.getApplicationDocuments() == null ? Set.of() : app.getApplicationDocuments();
+            for (ApplicationDocument doc : appDocs) {
+                if (!writtenDocumentIds.add(doc.getDocumentId())) {
                     continue;
                 }
                 manifest.expect(ExportManifest.Category.DOCUMENT, 1);
-                String typeLabel = dd.getDocumentType() == null ? "document" : dd.getDocumentType().name().toLowerCase(Locale.ROOT);
-                String baseName = docAllocator.allocate(typeLabel, dd.getDocument().getDocumentId());
-                String filename = baseName + AdminExportNaming.extensionForMime(dd.getDocument().getMimeType());
+                String typeLabel = doc.getDocumentType() == null ? "document" : doc.getDocumentType().name().toLowerCase(Locale.ROOT);
+                String baseName = docAllocator.allocate(typeLabel, doc.getDocumentId());
+                String filename = baseName + AdminExportNaming.extensionForMime(doc.getMimeType());
                 // Read the binary fully into memory before writing into the ZIP —
                 // a partial write (truncated stream, missing blob mid-flight) would
                 // otherwise corrupt the surrounding ZIP. Buffering isolates the
                 // failure to this one document and the catch block writes an
                 // error placeholder instead.
                 try {
-                    Resource resource = documentService.download(dd.getDocument());
+                    Resource resource = documentService.downloadDocument(doc.getDocumentId());
                     byte[] bytes;
                     try (InputStream is = resource.getInputStream()) {
                         bytes = is.readAllBytes();
@@ -187,21 +184,21 @@ public class ApplicationsOnlyExportStrategy {
                     zipExportService.addFileToZip(zos, folder + "documents/" + filename, bytes);
                     manifest.exported(ExportManifest.Category.DOCUMENT);
                 } catch (JobsExportStrategy.StreamAbortedException sae) {
-                    manifest.failed(ExportManifest.Category.DOCUMENT, dd.getDocument().getDocumentId(), filename, sae);
+                    manifest.failed(ExportManifest.Category.DOCUMENT, doc.getDocumentId(), filename, sae);
                     throw sae;
                 } catch (Exception e) {
                     log.warn(
                         "Failed to add document {} for application {}: {}",
-                        dd.getDocument().getDocumentId(),
+                        doc.getDocumentId(),
                         app.getApplicationId(),
                         e.getMessage()
                     );
-                    manifest.failed(ExportManifest.Category.DOCUMENT, dd.getDocument().getDocumentId(), filename, e);
+                    manifest.failed(ExportManifest.Category.DOCUMENT, doc.getDocumentId(), filename, e);
                     JobsExportStrategy.rethrowIfStreamBroken(e);
                     writeTextEntry(
                         zos,
                         folder + "documents/" + filename + ".error.txt",
-                        "Failed to load document " + dd.getDocument().getDocumentId() + ": " + e.getMessage()
+                        "Failed to load document " + doc.getDocumentId() + ": " + e.getMessage()
                     );
                 }
             }

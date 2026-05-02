@@ -1,207 +1,174 @@
 -- =============================================
 -- 08a_documents.sql
--- Inserts example documents and links them to applications
+-- Inserts example documents and links them to applicants and applications.
+--
+-- Schema (single STI table `documents`, see changeset 36):
+--   - doc_owner_type = 'APPLICANT'   -> applicant_id IS NOT NULL, application_id IS NULL
+--   - doc_owner_type = 'APPLICATION' -> application_id IS NOT NULL, applicant_id IS NULL
+--
+-- Storage:
+--   DocumentService stores files at "{aet.storage.root}/{sha256}.{ext}". The bundled
+--   sample-document.pdf has SHA-256
+--     ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2
+--   and is copied into the configured storage root by import-testdata.sh. We store the
+--   filename without a leading directory so that DocumentService.resolveStoredPath
+--   resolves it against the storage root regardless of the working directory.
+--
 -- Preconditions:
---   - applications must exist
---   - users must exist
+--   - applicants and applications must exist (06_applicants.sql, 07_applications.sql)
+--   - users must exist (01_users.sql)
 -- =============================================
 
 -- Clean existing test documents
-DELETE FROM TUMApply.document_dictionary WHERE document_dictionary_id LIKE '00000000-0000-0000-0000-40000000%';
 DELETE FROM TUMApply.documents WHERE document_id LIKE '00000000-0000-0000-0000-40000000%';
 
 -- Insert test documents
-INSERT INTO TUMApply.documents (document_id, sha256_id, path, mime_type, size_bytes, uploaded_by, created_at, last_modified_at)
-VALUES 
-    -- Single test document used for all test cases
-    ('00000000-0000-0000-0000-400000000001', 
-     'sha256_test_document_001', 
-     'storage/docs/testdata/test-document.pdf', 
-     'application/pdf', 
-     1048576, 
-     '00000000-0000-0000-0000-000000000103',
-     NOW(), 
-     NOW());
-
--- Link documents to applications via document_dictionary.
--- IMPORTANT:
---   - application snapshot document: applicant_id = NULL, application_id = <application>
---   - applicant profile document:   applicant_id = <applicant>, application_id = NULL
-INSERT INTO TUMApply.document_dictionary (document_dictionary_id, document_id, applicant_id, application_id, document_type, name)
-VALUES 
-    -- Documents for SAVED application (Max Applicant - Time Series Forecasting Intern)
-    ('00000000-0000-0000-0000-400000010001', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020313',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010002', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020313',
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    -- Documents for ACCEPTED application (Max Applicant)
-    ('00000000-0000-0000-0000-400000010003', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020003',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010004', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020003',
-     'MASTER_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010005', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020003',
-     'REFERENCE',
-     'test-document.pdf'),
-     
-    -- Documents for SENT application (Max Applicant)
-    ('00000000-0000-0000-0000-400000010006', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020111',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010007', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020111',
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010008', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020111',
-     'MASTER_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    -- Documents for INTERVIEW application (Max Applicant)
-    ('00000000-0000-0000-0000-400000010009', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020002',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010010', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020002',
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010011', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020002',
-     'MASTER_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010012', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020002',
-     'REFERENCE',
-     'test-document.pdf'),
-     
-    -- Documents for REJECTED application (Max Applicant)
-    ('00000000-0000-0000-0000-400000010013', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020837',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010014', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020837',
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    -- Documents for JOB_CLOSED application (Max Applicant)
-    ('00000000-0000-0000-0000-400000010020', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020123',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010021', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020123',
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    -- Documents for SENT application (Sophie Lee)
-    ('00000000-0000-0000-0000-400000010015', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020010',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010016', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020010',
-     'MASTER_TRANSCRIPT',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010017', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020010',
-     'REFERENCE',
-     'test-document.pdf'),
-     
-    -- Documents for IN_REVIEW application (Noor Ahmed)
-    ('00000000-0000-0000-0000-400000010018', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020007',
-     'CV',
-     'test-document.pdf'),
-     
-    ('00000000-0000-0000-0000-400000010019', 
-     '00000000-0000-0000-0000-400000000001',
-     NULL,
-     '00000000-0000-0000-0000-300000020007',
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf'),
-
+INSERT INTO TUMApply.documents (
+    document_id,
+    doc_owner_type,
+    document_type,
+    name,
+    path,
+    mime_type,
+    size_bytes,
+    uploaded_by,
+    applicant_id,
+    application_id,
+    created_at,
+    last_modified_at
+) VALUES
     -- Applicant profile documents (used to prefill newly created applications)
     ('00000000-0000-0000-0000-400000020001',
-     '00000000-0000-0000-0000-400000000001',
+     'APPLICANT',
+     'CV',
+     'sample-cv.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
      '00000000-0000-0000-0000-000000000103',
      NULL,
-     'CV',
-     'test-document.pdf'),
+     NOW(),
+     NOW()),
 
     ('00000000-0000-0000-0000-400000020002',
-     '00000000-0000-0000-0000-400000000001',
+     'APPLICANT',
+     'BACHELOR_TRANSCRIPT',
+     'sample-bachelor-transcript.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     NOW(),
+     NOW()),
+
+    -- Application snapshot documents (Max Applicant - Time Series Forecasting Intern, SAVED)
+    ('00000000-0000-0000-0000-400000010001',
+     'APPLICATION',
+     'CV',
+     'sample-cv.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     '00000000-0000-0000-0000-300000020313',
+     NOW(),
+     NOW()),
+
+    ('00000000-0000-0000-0000-400000010002',
+     'APPLICATION',
+     'BACHELOR_TRANSCRIPT',
+     'sample-bachelor-transcript.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     '00000000-0000-0000-0000-300000020313',
+     NOW(),
+     NOW()),
+
+    -- Application snapshot documents (Max Applicant - ACCEPTED)
+    ('00000000-0000-0000-0000-400000010003',
+     'APPLICATION',
+     'CV',
+     'sample-cv.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     '00000000-0000-0000-0000-300000020003',
+     NOW(),
+     NOW()),
+
+    ('00000000-0000-0000-0000-400000010004',
+     'APPLICATION',
+     'MASTER_TRANSCRIPT',
+     'sample-master-transcript.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     '00000000-0000-0000-0000-300000020003',
+     NOW(),
+     NOW()),
+
+    -- Application snapshot documents (Max Applicant - INTERVIEW)
+    ('00000000-0000-0000-0000-400000010005',
+     'APPLICATION',
+     'CV',
+     'sample-cv.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     '00000000-0000-0000-0000-300000020002',
+     NOW(),
+     NOW()),
+
+    ('00000000-0000-0000-0000-400000010006',
+     'APPLICATION',
+     'REFERENCE',
+     'sample-reference.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
+     '00000000-0000-0000-0000-000000000103',
+     NULL,
+     '00000000-0000-0000-0000-300000020002',
+     NOW(),
+     NOW()),
+
+    -- Application snapshot documents (Sophie Lee - SENT)
+    ('00000000-0000-0000-0000-400000010007',
+     'APPLICATION',
+     'CV',
+     'sample-cv.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
      '11111111-0000-0000-0000-000000000011',
      NULL,
-     'REFERENCE',
-     'test-document.pdf'),
+     '00000000-0000-0000-0000-300000020010',
+     NOW(),
+     NOW()),
 
-    ('00000000-0000-0000-0000-400000020003',
-     '00000000-0000-0000-0000-400000000001',
+    -- Application snapshot documents (Noor Ahmed - IN_REVIEW)
+    ('00000000-0000-0000-0000-400000010008',
+     'APPLICATION',
+     'CV',
+     'sample-cv.pdf',
+     'ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2.pdf',
+     'application/pdf',
+     3306,
      '11111111-0000-0000-0000-000000000007',
      NULL,
-     'BACHELOR_TRANSCRIPT',
-     'test-document.pdf');
+     '00000000-0000-0000-0000-300000020007',
+     NOW(),
+     NOW());

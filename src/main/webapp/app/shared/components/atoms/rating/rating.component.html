@@ -6,7 +6,10 @@
       [style.background-color]="getSectionColor($index)"
       pTooltip="{{ getTooltip($index) | translate }}"
       tooltipPosition="top"
+      tabindex="0"
+      role="button"
       (click)="onSectionClick($index)"
+      (keydown.enter)="onSectionClick($index)"
     ></div>
   }
 </div>

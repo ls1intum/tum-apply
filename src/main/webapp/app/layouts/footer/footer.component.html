@@ -11,10 +11,31 @@
   </div>
 
   <div class="legal-section">
-    <p (click)="navigateToImprint()" class="footer-links" jhiTranslate="footer.imprint"></p>
+    <p
+      (click)="navigateToImprint()"
+      (keydown.enter)="navigateToImprint()"
+      class="footer-links"
+      jhiTranslate="footer.imprint"
+      tabindex="0"
+      role="button"
+    ></p>
     <span class="divider">|</span>
-    <p (click)="navigateToPrivacy()" class="footer-links" jhiTranslate="footer.privacy"></p>
+    <p
+      (click)="navigateToPrivacy()"
+      (keydown.enter)="navigateToPrivacy()"
+      class="footer-links"
+      jhiTranslate="footer.privacy"
+      tabindex="0"
+      role="button"
+    ></p>
     <span class="divider">|</span>
-    <p (click)="navigateToAboutUs()" class="footer-links" jhiTranslate="footer.about-us"></p>
+    <p
+      (click)="navigateToAboutUs()"
+      (keydown.enter)="navigateToAboutUs()"
+      class="footer-links"
+      jhiTranslate="footer.about-us"
+      tabindex="0"
+      role="button"
+    ></p>
   </div>
 </div>

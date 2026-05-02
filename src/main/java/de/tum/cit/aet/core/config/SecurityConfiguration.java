@@ -131,6 +131,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/auth/logout")
                     .permitAll()
+                    .requestMatchers("/api/auth/refresh")
+                    .permitAll()
                     .requestMatchers("/api/export/job/**")
                     .permitAll()
                     // Public GET endpoints for schools

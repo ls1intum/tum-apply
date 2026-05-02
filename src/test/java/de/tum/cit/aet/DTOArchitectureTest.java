@@ -57,7 +57,7 @@ class DTOArchitectureTest {
     void restControllersShouldNotReturnEntities() {
         List<String> violations = new ArrayList<>();
 
-        var condition = new ArchCondition<JavaClass>("not return @Entity types from REST controller methods") {
+        ArchCondition<JavaClass> condition = new ArchCondition<JavaClass>("not return @Entity types from REST controller methods") {
             @Override
             public void check(JavaClass controllerClass, ConditionEvents events) {
                 Class<?> reflectedController = controllerClass.reflect();
@@ -119,7 +119,7 @@ class DTOArchitectureTest {
     void restControllersShouldNotAcceptEntitiesAsInput() {
         List<String> violations = new ArrayList<>();
 
-        var condition = new ArchCondition<JavaClass>("not use @Entity types in @RequestBody/@RequestPart parameters") {
+        ArchCondition<JavaClass> condition = new ArchCondition<JavaClass>("not use @Entity types in @RequestBody/@RequestPart parameters") {
             @Override
             public void check(JavaClass controllerClass, ConditionEvents events) {
                 Class<?> reflectedController = controllerClass.reflect();
@@ -196,7 +196,7 @@ class DTOArchitectureTest {
     void dtosShouldNotContainEntityFields() {
         List<String> violations = new ArrayList<>();
 
-        var condition = new ArchCondition<JavaClass>("not contain fields that reference @Entity types") {
+        ArchCondition<JavaClass> condition = new ArchCondition<JavaClass>("not contain fields that reference @Entity types") {
             @Override
             public void check(JavaClass dtoClass, ConditionEvents events) {
                 Class<?> reflectedDto = dtoClass.reflect();

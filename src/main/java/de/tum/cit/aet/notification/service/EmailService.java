@@ -1,11 +1,8 @@
 package de.tum.cit.aet.notification.service;
 
-import de.tum.cit.aet.core.domain.Document;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.exception.MailingException;
-import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.DocumentService;
-import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.service.EmailTemplateService.EmailContent;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
@@ -38,7 +35,6 @@ public class EmailService {
     private final TemplateProcessingService templateProcessingService;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final DocumentService documentService;
-    private final DocumentRepository documentRepository;
     private final EmailSettingService emailSettingService;
     private final EmailTemplateService emailTemplateService;
 
@@ -55,14 +51,12 @@ public class EmailService {
         TemplateProcessingService templateProcessingService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
         DocumentService documentService,
-        DocumentRepository documentRepository,
         EmailSettingService emailSettingService,
         EmailTemplateService emailTemplateService
     ) {
         this.templateProcessingService = templateProcessingService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
-        this.documentRepository = documentRepository;
         this.emailSettingService = emailSettingService;
         this.emailTemplateService = emailTemplateService;
     }
@@ -77,12 +71,12 @@ public class EmailService {
     protected void send(Email email) {
         email.validate();
 
-        EmailTemplateTranslation tpl = null;
+        EmailContent content = null;
         if (StringUtils.isEmpty(email.getCustomSubject()) && StringUtils.isEmpty(email.getCustomBody())) {
-            tpl = getEmailTemplateTranslation(email);
+            content = resolveContent(email);
         }
-        String subject = renderSubject(email, tpl);
-        String body = renderBody(email, tpl);
+        String subject = renderSubject(email, content);
+        String body = renderBody(email, content);
 
         if (!emailEnabled) {
             simulateEmail(email, subject, body);
@@ -108,15 +102,15 @@ public class EmailService {
      * If a custom subject is set it will be rendered as-is
      * Otherwise, the subject of the template will be used
      *
-     * @param email                    the email
-     * @param emailTemplateTranslation the template translation
+     * @param email   the email
+     * @param content the resolved email content
      * @return the rendered subject
      */
-    private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getCustomSubject()) || emailTemplateTranslation == null) {
+    private String renderSubject(Email email, EmailContent content) {
+        if (StringUtils.isNotEmpty(email.getCustomSubject()) || content == null) {
             return templateProcessingService.renderSubject(email.getCustomSubject(), email.getContent());
         }
-        return templateProcessingService.renderSubject(emailTemplateTranslation, email.getContent());
+        return templateProcessingService.renderSubject(content.subject(), email.getContent());
     }
 
     /**
@@ -124,15 +118,15 @@ public class EmailService {
      * If an HTML body is already present in the email, it will be rendered as-is
      * Otherwise, the body is rendered using the template.
      *
-     * @param email                    the email to render
-     * @param emailTemplateTranslation the template translation
+     * @param email   the email to render
+     * @param content the resolved email content
      * @return the rendered HTML body
      */
-    private String renderBody(Email email, EmailTemplateTranslation emailTemplateTranslation) {
-        if (StringUtils.isNotEmpty(email.getCustomBody()) || emailTemplateTranslation == null) {
+    private String renderBody(Email email, EmailContent content) {
+        if (StringUtils.isNotEmpty(email.getCustomBody()) || content == null) {
             return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
         }
-        return templateProcessingService.renderTemplate(emailTemplateTranslation, email.getContent());
+        return templateProcessingService.renderTemplate(email.getLanguage(), content.bodyHtml(), email.getContent());
     }
 
     /**
@@ -207,32 +201,17 @@ public class EmailService {
     }
 
     /**
-     * Loads the appropriate template translation based on email metadata.
+     * Loads custom or default content for an email based on its type, research group, and language.
      *
      * @param email the email
-     * @return the corresponding {@link EmailTemplateTranslation}
+     * @return the resolved {@link EmailContent}, or {@code null} if no email type is set
      */
-    private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
+    private EmailContent resolveContent(Email email) {
         if (email.getEmailType() == null) {
-            log.warn("Cannot translate email template: EmailType is null for email to recipients {}", email.getRecipients());
+            log.warn("Cannot resolve email content: EmailType is null for email to recipients {}", email.getRecipients());
             return null;
         }
-
-        if (email.getResearchGroup() == null && email.getEmailType().isMultipleTemplates()) {
-            log.warn(
-                "Cannot translate email template: ResearchGroup is null but EmailType '{}' requires multiple templates for email to recipients {}",
-                email.getEmailType(),
-                email.getRecipients()
-            );
-            return null;
-        }
-
-        return emailTemplateService.getTemplateTranslation(
-            email.getResearchGroup(),
-            email.getTemplateName(),
-            email.getEmailType(),
-            email.getLanguage()
-        );
+        return emailTemplateService.resolveContent(email.getResearchGroup(), email.getEmailType(), email.getLanguage());
     }
 
     /**
@@ -269,11 +248,7 @@ public class EmailService {
 
         int count = 1;
         for (UUID documentId : email.getDocumentIds()) {
-            Document document = documentRepository
-                .findById(documentId)
-                .orElseThrow(() -> EntityNotFoundException.forId("document", documentId));
-
-            Resource content = documentService.download(document);
+            Resource content = documentService.downloadDocument(documentId);
             InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
             helper.addAttachment("document_" + count, attachment);
             count++;

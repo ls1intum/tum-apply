@@ -6,8 +6,7 @@ import de.tum.cit.aet.IntegrationTest;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
@@ -52,9 +51,6 @@ class ApplicantRetentionJobIntegrationTest {
     private DocumentRepository documentRepository;
 
     @Autowired
-    private DocumentDictionaryRepository documentDictionaryRepository;
-
-    @Autowired
     private ApplicantRepository applicantRepository;
 
     @Autowired
@@ -97,7 +93,6 @@ class ApplicantRetentionJobIntegrationTest {
             userRepository,
             jobRepository,
             documentRepository,
-            documentDictionaryRepository,
             entityManager,
             professor,
             researchGroup
@@ -139,7 +134,6 @@ class ApplicantRetentionJobIntegrationTest {
         assertThat(applicationRepository.existsById(oldApplication.application().getApplicationId())).isFalse();
         assertThat(applicationRepository.existsById(recentApplication.application().getApplicationId())).isTrue();
 
-        assertThat(documentDictionaryRepository.findById(recentApplication.dictionary().getDocumentDictionaryId())).isPresent();
-        assertThat(documentRepository.findById(recentApplication.dictionary().getDocument().getDocumentId())).isPresent();
+        assertThat(documentRepository.findById(recentApplication.dictionary().getDocumentId())).isPresent();
     }
 }

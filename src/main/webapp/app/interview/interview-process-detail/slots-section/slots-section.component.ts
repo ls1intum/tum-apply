@@ -604,8 +604,8 @@ export class SlotsSectionComponent {
     if (this.locationChangedTemplateId() !== undefined) return;
 
     try {
-      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(100, 0));
-      const template = res.content?.find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED');
+      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(0, 100));
+      const template = (res.content ?? []).find(t => t.emailType === 'INTERVIEW_LOCATION_CHANGED' && t.isCustom);
       if (template?.emailTemplateId) {
         this.locationChangedTemplateId.set(template.emailTemplateId);
       }

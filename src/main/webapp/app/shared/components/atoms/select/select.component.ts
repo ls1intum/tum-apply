@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, input, output } from '@angular/core';
 import { SelectModule } from 'primeng/select';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ export type size = 'small' | 'large' | undefined;
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectComponent {
+  id = input<string | undefined>(undefined);
   items = input<SelectOption[]>([]);
   selected = input<SelectOption | undefined>(undefined);
   label = input<string>('');
@@ -48,6 +49,7 @@ export class SelectComponent {
   selectedChange = output<SelectOption>();
 
   isOpen = false;
+  readonly inputId = computed(() => this.id() ?? 'select-input');
 
   onSelectionChange(value: SelectOption): void {
     this.selectedChange.emit(value);

@@ -22,13 +22,13 @@ const BASE_PATH = '';
  * 
  * 
  * Creates a reactive HTTP resource that automatically refetches when signals change.
- * @param documentDictionaryId 
+ * @param documentId 
  */
-export function downloadDocumentResource(documentDictionaryId: Signal<string> | string): HttpResourceRef<Blob | undefined> {
+export function downloadDocumentResource(documentId: Signal<string> | string): HttpResourceRef<Blob | undefined> {
     return httpResource<Blob>(() => {
-        const documentDictionaryIdValue = typeof documentDictionaryId === 'function' ? documentDictionaryId() : documentDictionaryId;
-        const documentDictionaryIdPath = encodeURIComponent(String(documentDictionaryIdValue));
-        return `${BASE_PATH}/api/documents/${documentDictionaryIdPath}`;
+        const documentIdValue = typeof documentId === 'function' ? documentId() : documentId;
+        const documentIdPath = encodeURIComponent(String(documentIdValue));
+        return `${BASE_PATH}/api/documents/${documentIdPath}`;
     });
 }
 

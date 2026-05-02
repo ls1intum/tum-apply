@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service.export;
 
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantInternalCommentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantRatingExportDTO;
@@ -8,7 +9,6 @@ import de.tum.cit.aet.core.dto.exportdata.ApplicantReviewExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.DocumentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.IntervieweeExportDTO;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class ApplicantDataExportProvider implements UserDataSectionProvider {
 
     private final ApplicantRepository applicantRepository;
-    private final DocumentDictionaryRepository documentDictionaryRepository;
+    private final DocumentService documentService;
     private final ApplicationRepository applicationRepository;
     private final IntervieweeRepository intervieweeRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
@@ -46,17 +46,11 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private ApplicantDataExportDTO buildApplicantData(UUID userId) {
         Applicant applicant = applicantRepository.findById(userId).orElseThrow();
 
-        Set<DocumentExportDTO> documents = documentDictionaryRepository
-            .findAllByApplicant(applicant)
+        Set<DocumentExportDTO> documents = documentService
+            .listForApplicant(applicant)
             .stream()
-            .map(dd ->
-                new DocumentExportDTO(
-                    dd.getDocument().getDocumentId(),
-                    dd.getName(),
-                    dd.getDocumentType(),
-                    dd.getDocument().getMimeType(),
-                    dd.getDocument().getSizeBytes()
-                )
+            .map(doc ->
+                new DocumentExportDTO(doc.getDocumentId(), doc.getName(), doc.getDocumentType(), doc.getMimeType(), doc.getSizeBytes())
             )
             .collect(Collectors.toSet());
 

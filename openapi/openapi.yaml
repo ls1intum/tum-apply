@@ -271,23 +271,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applicants/profile/documents/{documentDictionaryId}:
+  /api/applicants/profile/documents/{documentId}:
     delete:
       tags: [applicant-resource]
       operationId: deleteApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applicants/profile/documents/{documentDictionaryId}/name:
+  /api/applicants/profile/documents/{documentId}/name:
     put:
       tags: [applicant-resource]
       operationId: renameApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -438,23 +438,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/documents/{documentDictionaryId}:
+  /api/applications/documents/{documentId}:
     delete:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applications/documents/{documentDictionaryId}/name:
+  /api/applications/documents/{documentId}/name:
     put:
       tags: [application-resource]
       operationId: renameDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -467,7 +467,7 @@ paths:
   /api/applications/getDocumentIds/{applicationId}:
     get:
       tags: [application-resource]
-      operationId: getDocumentDictionaryIds
+      operationId: getDocumentIds
       parameters:
       - name: applicationId
         in: path
@@ -871,12 +871,12 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-  /api/documents/{documentDictionaryId}:
+  /api/documents/{documentId}:
     get:
       tags: [document-resource]
       operationId: downloadDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -886,19 +886,29 @@ paths:
           content:
             application/json:
               schema: {type: string, format: binary}
+    delete:
+      tags: [document-resource]
+      operationId: deleteDocument
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/email-templates:
     get:
       tags: [email-template-resource]
       operationId: getTemplates
       parameters:
-      - name: pageSize
+      - name: page
         in: query
         required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
         in: query
         required: false
-        schema: {type: integer, format: int32, minimum: 0}
+        schema: {type: integer, format: int32, default: 20}
       responses:
         '200':
           description: OK
@@ -2739,16 +2749,16 @@ components:
     ApplicationDocumentIdsDTO:
       type: object
       properties:
-        bachelorDocumentDictionaryIds:
+        bachelorDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        cvDocumentDictionaryId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-        masterDocumentDictionaryIds:
+        cvDocumentId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+        masterDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        referenceDocumentDictionaryIds:
+        referenceDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
@@ -2842,6 +2852,7 @@ components:
     AuthSessionInfoDTO:
       type: object
       properties:
+        authenticated: {type: boolean}
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
@@ -2987,12 +2998,14 @@ components:
       properties:
         emailType:
           type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
-            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
-            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
-            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED_JOB_FILLED, APPLICATION_REJECTED_JOB_OUTDATED,
+            APPLICATION_REJECTED_FAILED_REQUIREMENTS, APPLICATION_REJECTED_OTHER_REASON,
+            APPLICATION_RECEIVED, APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA,
+            INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED,
+            INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
+            INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -3000,32 +3013,36 @@ components:
         emailTemplateId: {type: string, format: uuid}
         emailType:
           type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
-            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
-            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
-            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED_JOB_FILLED, APPLICATION_REJECTED_JOB_OUTDATED,
+            APPLICATION_REJECTED_FAILED_REQUIREMENTS, APPLICATION_REJECTED_OTHER_REASON,
+            APPLICATION_RECEIVED, APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA,
+            INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED,
+            INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
+            INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
-        isDefault: {type: boolean}
-        templateName: {type: string}
     EmailTemplateOverviewDTO:
       type: object
       properties:
         emailTemplateId: {type: string, format: uuid}
         emailType:
           type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
-            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
-            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
-            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED_JOB_FILLED, APPLICATION_REJECTED_JOB_OUTDATED,
+            APPLICATION_REJECTED_FAILED_REQUIREMENTS, APPLICATION_REJECTED_OTHER_REASON,
+            APPLICATION_RECEIVED, APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA,
+            INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED,
+            INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
+            INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING]
+        english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         firstName: {type: string}
-        isDefault: {type: boolean}
+        german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
+        isCustom: {type: boolean}
+        lastModifiedAt: {type: string, format: date-time}
         lastName: {type: string}
-        templateName: {type: string}
     EmailTemplateTranslationDTO:
       type: object
       properties:

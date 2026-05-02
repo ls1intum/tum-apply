@@ -12,9 +12,8 @@ import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
-import de.tum.cit.aet.core.service.DocumentService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -65,9 +64,6 @@ class ApplicationServiceTest {
 
     @Mock
     private DocumentService documentService;
-
-    @Mock
-    private DocumentDictionaryService documentDictionaryService;
 
     @Mock
     private ApplicantService applicantService;
@@ -128,7 +124,6 @@ class ApplicationServiceTest {
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(applicationRepository.getByApplicantByUserIdAndJobId(TEST_USER_ID, TEST_JOB_ID)).thenReturn(null);
             when(applicantService.findOrCreateApplicant(TEST_USER_ID)).thenReturn(applicant);
-            when(documentDictionaryService.getApplicantDocumentDictionaries(eq(applicant), any(DocumentType.class))).thenReturn(Set.of());
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> {
                 Application saved = invocation.getArgument(0);
                 saved.setApplicationId(TEST_APPLICATION_ID);
@@ -156,7 +151,7 @@ class ApplicationServiceTest {
 
             assertThat(result.applicationId()).isEqualTo(TEST_APPLICATION_ID);
             assertThat(result.applicant().user().email()).isEqualTo("ada@example.com");
-            verify(documentDictionaryService, times(5)).getApplicantDocumentDictionaries(eq(applicant), any(DocumentType.class));
+            verify(documentService).copyApplicantDocumentsToApplication(eq(applicant), eq(savedApplication), any());
         }
     }
 
@@ -262,10 +257,8 @@ class ApplicationServiceTest {
         void shouldSyncSnapshotBackToApplicantWhenStateChangesToSent() {
             when(applicationRepository.findById(TEST_APPLICATION_ID)).thenReturn(Optional.of(application));
             when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-            when(documentDictionaryService.getApplicationDocumentDictionaries(eq(application), any(DocumentType.class))).thenReturn(
-                Set.of()
-            );
-            when(documentDictionaryService.getApplicantDocumentDictionaries(eq(applicant), any(DocumentType.class))).thenReturn(Set.of());
+            when(documentService.listForApplicationByType(eq(application), any(DocumentType.class))).thenReturn(Set.of());
+            when(documentService.listForApplicantByType(eq(applicant), any(DocumentType.class))).thenReturn(Set.of());
 
             UpdateApplicationDTO update = new UpdateApplicationDTO(
                 TEST_APPLICATION_ID,
@@ -313,8 +306,8 @@ class ApplicationServiceTest {
             assertThat(documentDto.bachelorDegreeName()).isEqualTo("Synced Bachelor Degree");
             assertThat(documentDto.masterDegreeName()).isEqualTo("Synced Master Degree");
 
-            verify(documentDictionaryService, times(5)).getApplicationDocumentDictionaries(eq(application), any(DocumentType.class));
-            verify(documentDictionaryService, times(5)).getApplicantDocumentDictionaries(eq(applicant), any(DocumentType.class));
+            verify(documentService, times(5)).listForApplicationByType(eq(application), any(DocumentType.class));
+            verify(documentService, times(5)).listForApplicantByType(eq(applicant), any(DocumentType.class));
         }
     }
 
