@@ -26,7 +26,7 @@ export class DocumentCacheService {
 
   set(documentId: string, blob: Blob): SafeResourceUrl {
     const rawUrl = URL.createObjectURL(blob);
-    const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl + '#toolbar=0&navpanes=0');
+    const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl + '#toolbar=0&navpanes=0&view=Fit');
 
     // drop existing if present
     if (this.cache.has(documentId)) {
