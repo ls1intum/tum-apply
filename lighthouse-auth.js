@@ -17,16 +17,19 @@ module.exports = async browser => {
   await page
     .waitForFunction(
       (expectedAppOrigin, expectedPath) => {
-        const url = window.location.href;
-        return (
-          document.querySelector('#username') != null ||
-          document.querySelector('#kc-form-login') != null ||
-          url.includes('/protocol/openid-connect/auth') ||
-          window.location.pathname === '/accessdenied' ||
-          (window.location.origin === expectedAppOrigin &&
-            window.location.pathname === expectedPath &&
-            (document.body?.innerText?.trim().length ?? 0) > 0)
-        );
+        const isAuthenticatedAppPage = [
+          window.location.origin === expectedAppOrigin,
+          window.location.pathname === expectedPath,
+          (document.body?.innerText?.trim().length ?? 0) > 0,
+        ].every(Boolean);
+
+        return [
+          document.querySelector('#username') != null,
+          document.querySelector('#kc-form-login') != null,
+          window.location.href.includes('/protocol/openid-connect/auth'),
+          window.location.pathname === '/accessdenied',
+          isAuthenticatedAppPage,
+        ].some(Boolean);
       },
       {
         timeout: 30_000,

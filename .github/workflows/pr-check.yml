@@ -339,7 +339,7 @@ jobs:
   # ============================================
 
   lighthouse-scan:
-    name: Server Startup (Lighthouse Performance & Accessibility temporarily disabled)
+    name: Server Startup
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -504,7 +504,7 @@ jobs:
         run: npm install -g @lhci/cli@0.11.x
 
       - name: ✅ Run Lighthouse for ${{ matrix.role }}
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18
         with:
           urls: ${{ steps.lighthouse-urls.outputs.urls }}
           configPath: ./lighthouserc.json
