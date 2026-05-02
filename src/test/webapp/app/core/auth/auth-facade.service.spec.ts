@@ -79,6 +79,46 @@ describe('AuthFacadeService', () => {
       const result = await facade.initAuth();
       expect(result).toBe(false);
     });
+
+    it('should not toggle orchestrator isBusy when running as background bootstrap', async () => {
+      const { facade, server, keycloak, orchestrator } = setup();
+      let observedDuringRefresh = false;
+      server.refreshTokens.mockImplementation(async () => {
+        observedDuringRefresh = orchestrator.isBusy();
+        return false;
+      });
+      keycloak.init.mockResolvedValue(false);
+
+      await facade.initAuth();
+
+      expect(observedDuringRefresh).toBe(false);
+      expect(orchestrator.isBusy()).toBe(false);
+    });
+
+    it('should not block user-initiated login when initAuth is still in flight', async () => {
+      const { facade, server, keycloak, account } = setup();
+
+      let resolveKeycloakInit: (v: boolean) => void = () => {};
+      const keycloakInitPromise = new Promise<boolean>(resolve => {
+        resolveKeycloakInit = resolve;
+      });
+      server.refreshTokens.mockResolvedValue(false);
+      keycloak.init.mockReturnValue(keycloakInitPromise);
+      account.loadUser.mockResolvedValue(undefined);
+
+      // Kick off init but don't await — simulates a slow Keycloak silent SSO check.
+      const initPromise = facade.initAuth();
+
+      // While init is still in flight, the user clicks Login. It must succeed.
+      server.login.mockResolvedValue(undefined);
+      await expect(facade.loginWithEmail('a@b.com', 'pw')).resolves.toBe(true);
+      expect(server.login).toHaveBeenCalledTimes(1);
+
+      // Finish the slow init; it must not overwrite the server-established session.
+      resolveKeycloakInit(true);
+      await initPromise;
+      expect((facade as any).authMethod).toBe('server');
+    });
   });
 
   describe('loginWithEmail', () => {
