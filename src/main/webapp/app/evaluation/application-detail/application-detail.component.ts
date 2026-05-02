@@ -177,7 +177,7 @@ export class ApplicationDetailComponent {
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   private currentLang = toSignal(this.translateService.onLangChange);
 
-  private _loadInterviewRatingEffect = effect(() => {
+  private loadInterviewRatingEffect = effect(() => {
     const id = this.currentApplicationId();
     if (id !== undefined) {
       void this.loadInterviewRating(id);
