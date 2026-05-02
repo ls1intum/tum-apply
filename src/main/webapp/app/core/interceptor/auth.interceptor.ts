@@ -23,6 +23,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.keycloakService.getToken();
+    const isRefreshRequest = request.url.includes('/api/auth/refresh');
+
     if (token?.length) {
       request = request.clone({
         setHeaders: { Authorization: `Bearer ${token}` },
@@ -31,7 +33,9 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) {
+        // Startup probes intentionally call the refresh endpoint before we know whether a server session exists.
+        // A 401 there is expected and should not trigger a competing global logout flow.
+        if (err.status === 401 && !isRefreshRequest) {
           console.warn('Unauthorized – logging out');
           void this.authFacade.logout(true);
         }

@@ -3,7 +3,9 @@
  */
 module.exports = async browser => {
   const targetUrl = process.env.TARGET_URL || 'http://localhost:4200';
-  const authUrl = new URL('/settings', targetUrl).toString();
+  const authPath = '/settings';
+  const authUrl = new URL(authPath, targetUrl).toString();
+  const appOrigin = new URL(targetUrl).origin;
   const consoleMessages = [];
   const pageErrors = [];
   const failedRequests = [];
@@ -78,24 +80,36 @@ module.exports = async browser => {
 
   // 3. Wait until the page either reaches Keycloak or clearly fails elsewhere.
   await page.waitForFunction(
-    () => {
+    (expectedAppOrigin, expectedPath) => {
       const url = window.location.href;
       return (
         document.querySelector('#username') != null ||
         document.querySelector('#kc-form-login') != null ||
         url.includes('/protocol/openid-connect/auth') ||
-        window.location.pathname === '/accessdenied'
+        window.location.pathname === '/accessdenied' ||
+        (window.location.origin === expectedAppOrigin &&
+          window.location.pathname === expectedPath &&
+          (document.body?.innerText?.trim().length ?? 0) > 0)
       );
     },
     {
       timeout: 30_000,
     },
+    appOrigin,
+    authPath,
   ).catch(async () => {
     throw new Error(`Timed out waiting for the Keycloak login flow.\n${await buildDiagnostics(page)}`);
   });
 
-  if (new URL(page.url()).pathname === '/accessdenied') {
+  const currentUrl = new URL(page.url());
+
+  if (currentUrl.pathname === '/accessdenied') {
     throw new Error(`Reached /accessdenied instead of Keycloak.\n${await buildDiagnostics(page)}`);
+  }
+
+  if (currentUrl.origin === appOrigin && currentUrl.pathname === authPath) {
+    await page.close();
+    return;
   }
 
   await page.waitForSelector('#username', { timeout: 15_000 }).catch(async () => {
