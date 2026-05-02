@@ -607,8 +607,9 @@ public class PDFExportService {
      * @return the selected job description for export or a "-" if none is available
      */
     private String selectJobDescriptionForLang(String englishDesc, String germanDesc, String lang) {
-        String primary = "de".equalsIgnoreCase(lang) ? germanDesc : englishDesc;
-        String secondary = "de".equalsIgnoreCase(lang) ? englishDesc : germanDesc;
+        boolean isGerman = lang != null && lang.toLowerCase(Locale.ROOT).startsWith("de");
+        String primary = isGerman ? germanDesc : englishDesc;
+        String secondary = isGerman ? englishDesc : germanDesc;
 
         if (primary != null && !primary.trim().isEmpty()) {
             return primary;
