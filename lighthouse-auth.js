@@ -6,74 +6,9 @@ module.exports = async browser => {
   const authPath = '/settings';
   const authUrl = new URL(authPath, targetUrl).toString();
   const appOrigin = new URL(targetUrl).origin;
-  const consoleMessages = [];
-  const pageErrors = [];
-  const failedRequests = [];
-  const badResponses = [];
-  const navigationEvents = [];
-
-  const remember = (entries, value) => {
-    entries.push(value);
-    if (entries.length > 20) {
-      entries.shift();
-    }
-  };
-
-  const formatEntries = (label, entries) => {
-    if (entries.length === 0) {
-      return `${label}: none`;
-    }
-
-    return `${label}:\n- ${entries.join('\n- ')}`;
-  };
-
-  const buildDiagnostics = async page => {
-    const title = await page.title().catch(() => '(unavailable)');
-    const bodyText = await page
-      .evaluate(() => document.body?.innerText?.replace(/\s+/g, ' ').trim().slice(0, 1000) || '(empty body)')
-      .catch(() => '(failed to read body text)');
-
-    return [
-      `Current URL: ${page.url()}`,
-      `Page title: ${title}`,
-      `Body text: ${bodyText}`,
-      formatEntries('Recent navigations', navigationEvents),
-      formatEntries('Console messages', consoleMessages),
-      formatEntries('Page errors', pageErrors),
-      formatEntries('Failed requests', failedRequests),
-      formatEntries('HTTP error responses', badResponses),
-    ].join('\n');
-  };
 
   // 1. Open a new setup tab in the browser Lighthouse just launched
   const page = await browser.newPage();
-
-  page.on('console', msg => {
-    const location = msg.location();
-    const suffix = location?.url ? ` (${location.url}${location.lineNumber ? `:${location.lineNumber}` : ''})` : '';
-    remember(consoleMessages, `[${msg.type()}] ${msg.text()}${suffix}`);
-  });
-
-  page.on('pageerror', error => {
-    remember(pageErrors, error?.stack || error?.message || String(error));
-  });
-
-  page.on('requestfailed', request => {
-    const failure = request.failure();
-    remember(failedRequests, `${request.method()} ${request.url()}${failure?.errorText ? ` -> ${failure.errorText}` : ''}`);
-  });
-
-  page.on('response', response => {
-    if (response.status() >= 400) {
-      remember(badResponses, `${response.status()} ${response.url()}`);
-    }
-  });
-
-  page.on('framenavigated', frame => {
-    if (frame === page.mainFrame()) {
-      remember(navigationEvents, frame.url());
-    }
-  });
 
   // 2. Navigate to a protected URL to trigger the Keycloak redirect
   await page.goto(authUrl, { waitUntil: 'domcontentloaded' });
@@ -98,13 +33,13 @@ module.exports = async browser => {
     appOrigin,
     authPath,
   ).catch(async () => {
-    throw new Error(`Timed out waiting for the Keycloak login flow.\n${await buildDiagnostics(page)}`);
+    throw new Error(`Timed out waiting for the Keycloak login flow at ${page.url()}.`);
   });
 
   const currentUrl = new URL(page.url());
 
   if (currentUrl.pathname === '/accessdenied') {
-    throw new Error(`Reached /accessdenied instead of Keycloak.\n${await buildDiagnostics(page)}`);
+    throw new Error(`Reached /accessdenied instead of Keycloak from ${authUrl}.`);
   }
 
   if (currentUrl.origin === appOrigin && currentUrl.pathname === authPath) {
@@ -112,8 +47,8 @@ module.exports = async browser => {
     return;
   }
 
-  await page.waitForSelector('#username', { timeout: 15_000 }).catch(async () => {
-    throw new Error(`Reached Keycloak but the login form did not render.\n${await buildDiagnostics(page)}`);
+  await page.waitForSelector('#username', { timeout: 15_000 }).catch(() => {
+    throw new Error(`Reached Keycloak but the login form did not render at ${page.url()}.`);
   });
 
   // 4. Read credentials from the GitHub Actions environment variables
