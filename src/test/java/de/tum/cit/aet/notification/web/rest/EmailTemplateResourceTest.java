@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,122 +58,142 @@ class EmailTemplateResourceTest {
         mvc = MockMvcBuilders.standaloneSetup(resource).build();
     }
 
-    @Test
-    void getTemplates_returnsPagedResponse() throws Exception {
-        UUID id = UUID.randomUUID();
-        ResearchGroup rg = new ResearchGroup();
-        when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
-        when(emailTemplateService.listMerged(any(ResearchGroup.class), any(PageDTO.class))).thenReturn(
-            new PageResponseDTO<>(
-                List.of(
-                    new EmailTemplateOverviewDTO(
-                        id,
-                        EmailType.APPLICATION_SENT,
-                        true,
-                        new EmailTemplateTranslationDTO("S", "B"),
-                        new EmailTemplateTranslationDTO("S", "B"),
-                        "F",
-                        "L",
-                        null
-                    )
-                ),
-                1L
-            )
-        );
+    // ===== GET TEMPLATES =====
+    @Nested
+    class GetTemplatesTests {
 
-        mvc
-            .perform(get(BASE_URL))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements").value(1))
-            .andExpect(jsonPath("$.content.length()").value(1))
-            .andExpect(jsonPath("$.content[0].emailTemplateId").value(id.toString()))
-            .andExpect(jsonPath("$.content[0].isCustom").value(true));
-    }
+        @Test
+        void getTemplates_returnsPagedResponse() throws Exception {
+            UUID id = UUID.randomUUID();
+            ResearchGroup rg = new ResearchGroup();
+            when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
+            when(emailTemplateService.listMerged(any(ResearchGroup.class), any(PageDTO.class))).thenReturn(
+                new PageResponseDTO<>(
+                    List.of(
+                        new EmailTemplateOverviewDTO(
+                            id,
+                            EmailType.APPLICATION_SENT,
+                            true,
+                            new EmailTemplateTranslationDTO("S", "B"),
+                            new EmailTemplateTranslationDTO("S", "B"),
+                            "F",
+                            "L",
+                            null
+                        )
+                    ),
+                    1L
+                )
+            );
 
-    @Test
-    void getTemplate_returnsCustom() throws Exception {
-        UUID id = UUID.randomUUID();
-        when(emailTemplateService.getTemplate(id)).thenReturn(
-            new EmailTemplateDTO(
-                id,
-                EmailType.APPLICATION_SENT,
-                new EmailTemplateTranslationDTO("S", "B"),
-                new EmailTemplateTranslationDTO("S", "B")
-            )
-        );
-
-        mvc.perform(get(BASE_URL + "/{id}", id)).andExpect(status().isOk()).andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
-    }
-
-    @Test
-    void createTemplate_returns201() throws Exception {
-        UUID id = UUID.randomUUID();
-        ResearchGroup rg = new ResearchGroup();
-        User user = new User();
-        when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
-        when(currentUserService.getUser()).thenReturn(user);
-        when(emailTemplateService.createTemplate(any(EmailTemplateDTO.class), any(ResearchGroup.class), any(User.class))).thenReturn(
-            new EmailTemplateDTO(
-                id,
-                EmailType.APPLICATION_SENT,
-                new EmailTemplateTranslationDTO("S", "B"),
-                new EmailTemplateTranslationDTO("S", "B")
-            )
-        );
-
-        EmailTemplateDTO body = new EmailTemplateDTO(
-            null,
-            EmailType.APPLICATION_SENT,
-            new EmailTemplateTranslationDTO("S", "B"),
-            new EmailTemplateTranslationDTO("S", "B")
-        );
-
-        mvc
-            .perform(post(BASE_URL).contentType("application/json").content(objectMapper.writeValueAsString(body)))
-            .andExpect(status().isCreated());
-    }
-
-    @Test
-    void updateTemplate_returns200() throws Exception {
-        UUID id = UUID.randomUUID();
-        when(emailTemplateService.updateTemplate(any(EmailTemplateDTO.class))).thenReturn(
-            new EmailTemplateDTO(
-                id,
-                EmailType.APPLICATION_SENT,
-                new EmailTemplateTranslationDTO("S", "B"),
-                new EmailTemplateTranslationDTO("S", "B")
-            )
-        );
-
-        EmailTemplateDTO body = new EmailTemplateDTO(
-            id,
-            EmailType.APPLICATION_SENT,
-            new EmailTemplateTranslationDTO("S", "B"),
-            new EmailTemplateTranslationDTO("S", "B")
-        );
-
-        mvc
-            .perform(put(BASE_URL).contentType("application/json").content(objectMapper.writeValueAsString(body)))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteTemplate_returns204() throws Exception {
-        UUID id = UUID.randomUUID();
-        mvc.perform(delete(BASE_URL + "/{id}", id)).andExpect(status().isNoContent());
-        verify(emailTemplateService).deleteTemplate(id);
-    }
-
-    @Test
-    void deleteEndpoint_isAnnotatedProfessorOnly() throws NoSuchMethodException {
-        Method method = EmailTemplateResource.class.getDeclaredMethod("deleteTemplate", UUID.class);
-        boolean professor = false;
-        boolean professorOrEmployee = false;
-        for (Annotation a : method.getAnnotations()) {
-            if (a.annotationType() == Professor.class) professor = true;
-            if (a.annotationType() == ProfessorOrEmployee.class) professorOrEmployee = true;
+            mvc
+                .perform(get(BASE_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].emailTemplateId").value(id.toString()))
+                .andExpect(jsonPath("$.content[0].isCustom").value(true));
         }
-        assertThat(professor).isTrue();
-        assertThat(professorOrEmployee).isFalse();
+
+        @Test
+        void getTemplate_returnsCustom() throws Exception {
+            UUID id = UUID.randomUUID();
+            when(emailTemplateService.getTemplate(id)).thenReturn(
+                new EmailTemplateDTO(
+                    id,
+                    EmailType.APPLICATION_SENT,
+                    new EmailTemplateTranslationDTO("S", "B"),
+                    new EmailTemplateTranslationDTO("S", "B")
+                )
+            );
+
+            mvc.perform(get(BASE_URL + "/{id}", id)).andExpect(status().isOk()).andExpect(jsonPath("$.emailTemplateId").value(id.toString()));
+        }
+    }
+
+    // ===== CREATE TEMPLATE =====
+    @Nested
+    class CreateTemplateTests {
+
+        @Test
+        void createTemplate_returns201() throws Exception {
+            UUID id = UUID.randomUUID();
+            ResearchGroup rg = new ResearchGroup();
+            User user = new User();
+            when(currentUserService.getResearchGroupIfProfessor()).thenReturn(rg);
+            when(currentUserService.getUser()).thenReturn(user);
+            when(emailTemplateService.createTemplate(any(EmailTemplateDTO.class), any(ResearchGroup.class), any(User.class))).thenReturn(
+                new EmailTemplateDTO(
+                    id,
+                    EmailType.APPLICATION_SENT,
+                    new EmailTemplateTranslationDTO("S", "B"),
+                    new EmailTemplateTranslationDTO("S", "B")
+                )
+            );
+
+            EmailTemplateDTO body = new EmailTemplateDTO(
+                null,
+                EmailType.APPLICATION_SENT,
+                new EmailTemplateTranslationDTO("S", "B"),
+                new EmailTemplateTranslationDTO("S", "B")
+            );
+
+            mvc
+                .perform(post(BASE_URL).contentType("application/json").content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isCreated());
+        }
+    }
+
+    // ===== UPDATE TEMPLATE =====
+    @Nested
+    class UpdateTemplateTests {
+
+        @Test
+        void updateTemplate_returns200() throws Exception {
+            UUID id = UUID.randomUUID();
+            when(emailTemplateService.updateTemplate(any(EmailTemplateDTO.class))).thenReturn(
+                new EmailTemplateDTO(
+                    id,
+                    EmailType.APPLICATION_SENT,
+                    new EmailTemplateTranslationDTO("S", "B"),
+                    new EmailTemplateTranslationDTO("S", "B")
+                )
+            );
+
+            EmailTemplateDTO body = new EmailTemplateDTO(
+                id,
+                EmailType.APPLICATION_SENT,
+                new EmailTemplateTranslationDTO("S", "B"),
+                new EmailTemplateTranslationDTO("S", "B")
+            );
+
+            mvc
+                .perform(put(BASE_URL).contentType("application/json").content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isOk());
+        }
+    }
+
+    // ===== DELETE TEMPLATE =====
+    @Nested
+    class DeleteTemplateTests {
+
+        @Test
+        void deleteTemplate_returns204() throws Exception {
+            UUID id = UUID.randomUUID();
+            mvc.perform(delete(BASE_URL + "/{id}", id)).andExpect(status().isNoContent());
+            verify(emailTemplateService).deleteTemplate(id);
+        }
+
+        @Test
+        void deleteEndpoint_isAnnotatedProfessorOnly() throws NoSuchMethodException {
+            Method method = EmailTemplateResource.class.getDeclaredMethod("deleteTemplate", UUID.class);
+            boolean professor = false;
+            boolean professorOrEmployee = false;
+            for (Annotation a : method.getAnnotations()) {
+                if (a.annotationType() == Professor.class) professor = true;
+                if (a.annotationType() == ProfessorOrEmployee.class) professorOrEmployee = true;
+            }
+            assertThat(professor).isTrue();
+            assertThat(professorOrEmployee).isFalse();
+        }
     }
 }
