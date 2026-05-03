@@ -12,6 +12,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { selectGender } from 'app/shared/constants/genders';
+import { SavingState } from 'app/shared/constants/saving-states';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
@@ -96,6 +97,8 @@ export default class ApplicationCreationPage1Component {
   valid = output<boolean>();
   changed = output<boolean>();
   educationDataExtracted = output<ExtractedCertificateDataDTO | undefined>();
+  documentPersistenceStarted = output();
+  documentPersistenceFinished = output<SavingState>();
 
   cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 

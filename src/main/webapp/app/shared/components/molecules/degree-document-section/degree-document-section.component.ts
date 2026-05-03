@@ -9,9 +9,10 @@ import {
   DocumentInformationHolderDTODocumentTypeEnum,
 } from 'app/generated/model/document-information-holder-dto';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { SavingState } from 'app/shared/constants/saving-states';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
-import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
+import { UploadButtonComponent, UploadTarget } from '../../atoms/upload-button/upload-button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
@@ -31,6 +32,7 @@ import TranslateDirective from '../../../language/translate.directive';
 export class DegreeDocumentSectionComponent {
   applicationId = input<string | undefined>(undefined);
   deferUpload = input<boolean>(false);
+  uploadTarget = input<UploadTarget>('application');
   required = input<boolean>(false);
 
   // Bachelor-specific bindings
@@ -58,6 +60,8 @@ export class DegreeDocumentSectionComponent {
   bachelorQueuedFiles = input<File[]>([]);
   masterQueuedFiles = input<File[]>([]);
   extracted = output<ExtractedApplicationDataDTO>();
+  persistenceStarted = output();
+  persistenceFinished = output<SavingState>();
 
   readonly combinedDocumentIds = computed(() => {
     const bachelor = this.bachelorDocumentIds() ?? [];

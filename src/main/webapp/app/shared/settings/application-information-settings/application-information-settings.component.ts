@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -10,21 +10,21 @@ import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-appli
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
-import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
+import { SavingState } from 'app/shared/constants/saving-states';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
+import { createAutosaveController } from 'app/shared/util/autosave-controller';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import { AutosaveStatusFooterComponent } from '../../components/molecules/autosave-status-footer/autosave-status-footer.component';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -68,9 +68,9 @@ interface ApplicationInformationSnapshot {
     StringInputComponent,
     TranslateModule,
     TranslateDirective,
-    ButtonComponent,
     UploadButtonComponent,
     AiExtractionBoxComponent,
+    AutosaveStatusFooterComponent,
   ],
   templateUrl: './application-information-settings.component.html',
   standalone: true,
@@ -94,26 +94,19 @@ export class ApplicationInformationSettingsComponent {
 
   // Document tracking for CV
   cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  queuedCvFiles = signal<File[]>([]);
 
-  // Placeholder ID to render the same upload UI structure as application page 1.
-  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+  readonly uploadHostId = '00000000-0000-0000-0000-000000000000';
 
   isValid = signal<boolean>(false);
   loadedProfile = signal<ApplicantDTO | undefined>(undefined);
   initialDataSnapshot = signal<ApplicationInformationSnapshot | undefined>(undefined);
+  savingState = computed<SavingState>(() => this.autosave.savingState());
   hasChanges = computed(() => {
     const initial = this.initialDataSnapshot();
     if (initial === undefined) {
       return false;
     }
-    const personalChanged = !deepEqual(this.toSnapshot(this.data()), initial);
-    const cvChanged = !deepEqual(
-      this.profileDocumentService.normalizedDocuments(this.cvDocuments()),
-      this.profileDocumentService.normalizedDocuments(this.initialCvDocuments()),
-    );
-    return personalChanged || cvChanged;
+    return !deepEqual(this.toSnapshot(this.data()), initial);
   });
 
   readonly disabledEmail = true;
@@ -131,7 +124,6 @@ export class ApplicationInformationSettingsComponent {
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
-  profileDocumentService = inject(ProfileDocumentService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -218,9 +210,13 @@ export class ApplicationInformationSettingsComponent {
     });
   });
 
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly autosave = createAutosaveController(this.destroyRef);
+
   constructor() {
     // Load initial data from backend API
     void this.loadApplicationInformation();
+    this.setupAutoSave();
   }
 
   async loadApplicationInformation(): Promise<void> {
@@ -253,8 +249,7 @@ export class ApplicationInformationSettingsComponent {
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
       this.cvDocuments.set(profileDocumentIds.cvDocumentId != null ? [profileDocumentIds.cvDocumentId] : []);
-      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
-      this.queuedCvFiles.set([]);
+      this.autosave.markMetadataSaveSucceeded();
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -272,10 +267,11 @@ export class ApplicationInformationSettingsComponent {
     this.data.set(updatedData);
   }
 
-  async onSave(): Promise<void> {
+  async performAutoSave(): Promise<void> {
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
+        this.autosave.markMetadataSaveFailed();
         this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
         return;
       }
@@ -313,16 +309,13 @@ export class ApplicationInformationSettingsComponent {
       };
 
       await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
-      await this.saveDeferredCvChanges();
-      await this.loadApplicationInformation();
-      this.toastService.showSuccessKey('settings.applicationInformation.saved');
+      this.loadedProfile.update(current => (current != null ? { ...current, ...applicantDTO } : current));
+      this.initialDataSnapshot.set(this.toSnapshot(this.data()));
+      this.autosave.markMetadataSaveSucceeded();
     } catch {
+      this.autosave.markMetadataSaveFailed();
       this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
     }
-  }
-
-  onCvQueuedFilesChange(files: File[]): void {
-    this.queuedCvFiles.set(files);
   }
 
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
@@ -341,13 +334,12 @@ export class ApplicationInformationSettingsComponent {
     form.patchValue(patch);
   }
 
-  private async saveDeferredCvChanges(): Promise<void> {
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.Cv,
-      this.queuedCvFiles(),
-      this.cvDocuments,
-    );
+  onDocumentPersistenceStarted(): void {
+    this.autosave.startOperation();
+  }
+
+  onDocumentPersistenceFinished(state: SavingState): void {
+    this.autosave.finishOperation(state);
   }
 
   private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {
@@ -366,5 +358,30 @@ export class ApplicationInformationSettingsComponent {
       country: data.country?.value,
       postcode: data.postcode,
     };
+  }
+
+  private setupAutoSave(): void {
+    effect(() => {
+      this.data();
+      const isValid = this.isValid();
+      const hasChanges = this.hasChanges();
+
+      if (this.initialDataSnapshot() === undefined) {
+        return;
+      }
+
+      if (this.autosave.shouldSkipInitialAutoSave()) {
+        return;
+      }
+
+      if (!hasChanges || !isValid) {
+        this.autosave.clearScheduledMetadataSave();
+        return;
+      }
+
+      this.autosave.scheduleMetadataSave(() => {
+        void this.performAutoSave();
+      });
+    });
   }
 }

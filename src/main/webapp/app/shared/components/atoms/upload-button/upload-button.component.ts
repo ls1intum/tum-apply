@@ -8,6 +8,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import {
   DocumentInformationHolderDTO,
   DocumentInformationHolderDTODocumentTypeEnum,
@@ -18,6 +20,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { ButtonComponent } from '../button/button.component';
 
 export type DocumentType = DocumentInformationHolderDTODocumentTypeEnum;
+export type UploadTarget = 'application' | 'applicantProfile';
 
 /**
  * Generic PDF upload control used by applicant document flows.
@@ -45,9 +48,12 @@ export class UploadButtonComponent {
 
   documentType = input.required<DocumentType>();
   applicationId = input<string | undefined>();
+  uploadTarget = input<UploadTarget>('application');
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
+  persistenceStarted = output();
+  persistenceFinished = output<SavingState>();
 
   /**
    * Optional callback that authenticates the visitor and yields a real
@@ -75,8 +81,11 @@ export class UploadButtonComponent {
 
   showDuplicateDialog = signal(false);
   showReplacementDialog = signal(false);
+  private activePersistenceOperations = 0;
+  private hasPersistenceFailure = false;
 
   private applicationApi = inject(ApplicationResourceApi);
+  private applicantApi = inject(ApplicantResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
 
@@ -124,33 +133,35 @@ export class UploadButtonComponent {
    * deleted first so the UI state and persisted state stay aligned.
    */
   async onConfirmDuplicate(): Promise<void> {
-    const pendingFile = this.pendingDuplicateFile();
-    if (!pendingFile) {
-      return;
-    }
+    await this.trackPersistence(async () => {
+      const pendingFile = this.pendingDuplicateFile();
+      if (!pendingFile) {
+        return;
+      }
 
-    // Find and delete the existing document with the same name
-    const existingDoc = this.documentIds()?.find(doc => doc.name === pendingFile.name);
-    if (existingDoc) {
-      if (this.deferUpload()) {
-        const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
-        this.documentIds.set(updatedList);
-        this.removeQueuedFileFor(existingDoc.id);
-      } else {
-        try {
-          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(existingDoc.id));
+      // Find and delete the existing document with the same name
+      const existingDoc = this.documentIds()?.find(doc => doc.name === pendingFile.name);
+      if (existingDoc) {
+        if (this.deferUpload()) {
           const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
           this.documentIds.set(updatedList);
-        } catch {
-          this.toastService.showErrorKey('entity.upload.error.replace_failed');
-          this.pendingDuplicateFile.set(null);
-          return;
+          this.removeQueuedFileFor(existingDoc.id);
+        } else {
+          try {
+            await this.deletePersistedDocument(existingDoc.id);
+            const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
+            this.documentIds.set(updatedList);
+          } catch (error) {
+            this.toastService.showErrorKey('entity.upload.error.replace_failed');
+            this.pendingDuplicateFile.set(null);
+            throw error;
+          }
         }
       }
-    }
 
-    await this.processFiles([pendingFile]);
-    this.pendingDuplicateFile.set(null);
+      await this.processFiles([pendingFile]);
+      this.pendingDuplicateFile.set(null);
+    });
   }
 
   /**
@@ -160,76 +171,81 @@ export class UploadButtonComponent {
    * upload or deferred queue addition.
    */
   async onConfirmReplacement(): Promise<void> {
-    const pendingFiles = this.pendingReplacementFiles();
-    if (pendingFiles.length === 0) {
-      return;
-    }
-
-    // Delete all existing documents (for single-file mode replacement)
-    const existingDocs = this.documentIds() ?? [];
-    if (this.deferUpload()) {
-      this.documentIds.set([]);
-      this.queuedFilesById.set(new Map());
-      this.emitQueuedFilesChange();
-    } else {
-      for (const doc of existingDocs) {
-        try {
-          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(doc.id));
-        } catch {
-          this.toastService.showErrorKey('entity.upload.error.replace_failed');
-          return;
-        }
+    await this.trackPersistence(async () => {
+      const pendingFiles = this.pendingReplacementFiles();
+      if (pendingFiles.length === 0) {
+        return;
       }
 
-      // Clear the document list before uploading new file
-      this.documentIds.set([]);
-    }
+      // Delete all existing documents (for single-file mode replacement)
+      const existingDocs = this.documentIds() ?? [];
+      if (this.deferUpload()) {
+        this.documentIds.set([]);
+        this.queuedFilesById.set(new Map());
+        this.emitQueuedFilesChange();
+      } else {
+        for (const doc of existingDocs) {
+          try {
+            await this.deletePersistedDocument(doc.id);
+          } catch (error) {
+            this.toastService.showErrorKey('entity.upload.error.replace_failed');
+            throw error;
+          }
+        }
 
-    await this.processFiles(pendingFiles);
-    this.pendingReplacementFiles.set([]);
+        // Clear the document list before uploading new file
+        this.documentIds.set([]);
+      }
+
+      await this.processFiles(pendingFiles);
+      this.pendingReplacementFiles.set([]);
+    });
   }
 
   async onUpload(): Promise<void> {
-    const files: File[] | undefined = this.selectedFiles();
-    if (!files || files.length === 0) return;
+    await this.trackPersistence(async () => {
+      const files: File[] | undefined = this.selectedFiles();
+      if (!files || files.length === 0) return;
 
-    const appId = this.applicationId();
-    if (!appId) return;
-
-    this.isUploading.set(true);
-    try {
-      const uploadedPromises = files.map(file => firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file)));
-      const uploadResults = await Promise.all(uploadedPromises);
-      const allUploadedIds = uploadResults.flat();
-      this.documentIds.set(allUploadedIds);
-      this.selectedFiles.set([]);
-    } catch {
-      this.toastService.showErrorKey('entity.upload.error.upload_failed');
-    } finally {
-      this.isUploading.set(false);
-      this.resetNativeFileInput();
-    }
+      this.isUploading.set(true);
+      try {
+        const uploadedPromises = files.map(file => this.uploadDocument(file));
+        const uploadResults = await Promise.all(uploadedPromises);
+        const allUploadedIds = uploadResults.flat();
+        this.documentIds.set(allUploadedIds);
+        this.selectedFiles.set([]);
+      } catch (error) {
+        this.toastService.showErrorKey('entity.upload.error.upload_failed');
+        throw error;
+      } finally {
+        this.isUploading.set(false);
+        this.resetNativeFileInput();
+      }
+    });
   }
 
   /**
    * Deletes a persisted server document or, in deferred mode, removes the corresponding local placeholder.
    */
   async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
-    const documentId = documentInfo.id;
-    if (this.deferUpload()) {
-      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
-      this.documentIds.set(updatedList);
-      this.removeQueuedFileFor(documentId);
-      return;
-    }
+    await this.trackPersistence(async () => {
+      const documentId = documentInfo.id;
+      if (this.deferUpload()) {
+        const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+        this.documentIds.set(updatedList);
+        this.removeQueuedFileFor(documentId);
+        return;
+      }
 
-    try {
-      await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
-      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
-      this.documentIds.set(updatedList);
-    } catch {
-      this.toastService.showErrorKey('entity.upload.error.delete_failed');
-    }
+      try {
+        await this.deletePersistedDocument(documentId);
+        const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+        this.documentIds.set(updatedList);
+      } catch (error) {
+        this.toastService.showErrorKey('entity.upload.error.delete_failed');
+        throw error;
+      }
+    });
   }
 
   onClear(): void {
@@ -243,44 +259,47 @@ export class UploadButtonComponent {
    * Deferred mode only updates local placeholder data because there is nothing on the server yet.
    */
   async renameDocument(documentInfo: DocumentInformationHolderDTO): Promise<void> {
-    const newName = documentInfo.name ?? '';
-    if (!newName) {
-      return;
-    }
+    await this.trackPersistence(async () => {
+      const newName = documentInfo.name ?? '';
+      if (!newName) {
+        return;
+      }
 
-    const documentId = documentInfo.id;
-    if (this.deferUpload()) {
-      const updatedDocs =
-        this.documentIds()?.map(doc =>
-          doc.id === documentId
-            ? {
-                id: doc.id,
-                name: newName,
-                size: doc.size,
-              }
-            : doc,
-        ) ?? [];
-      this.documentIds.set(updatedDocs);
-      this.renameQueuedFile(documentId, newName);
-      return;
-    }
+      const documentId = documentInfo.id;
+      if (this.deferUpload()) {
+        const updatedDocs =
+          this.documentIds()?.map(doc =>
+            doc.id === documentId
+              ? {
+                  id: doc.id,
+                  name: newName,
+                  size: doc.size,
+                }
+              : doc,
+          ) ?? [];
+        this.documentIds.set(updatedDocs);
+        this.renameQueuedFile(documentId, newName);
+        return;
+      }
 
-    try {
-      await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
-      const updatedDocs =
-        this.documentIds()?.map(doc =>
-          doc.id === documentId
-            ? {
-                id: doc.id,
-                name: newName,
-                size: doc.size,
-              }
-            : doc,
-        ) ?? [];
-      this.documentIds.set(updatedDocs);
-    } catch {
-      this.toastService.showErrorKey('entity.upload.error.rename_failed');
-    }
+      try {
+        await this.renamePersistedDocument(documentId, newName);
+        const updatedDocs =
+          this.documentIds()?.map(doc =>
+            doc.id === documentId
+              ? {
+                  id: doc.id,
+                  name: newName,
+                  size: doc.size,
+                }
+              : doc,
+          ) ?? [];
+        this.documentIds.set(updatedDocs);
+      } catch (error) {
+        this.toastService.showErrorKey('entity.upload.error.rename_failed');
+        throw error;
+      }
+    });
   }
 
   formatSize(bytes: number): string {
@@ -299,6 +318,9 @@ export class UploadButtonComponent {
    * the callback rejects (user cancelled / validation failed upstream).
    */
   private async ensureAuthenticated(): Promise<boolean> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      return true;
+    }
     if (this.applicationId()) {
       return true;
     }
@@ -440,5 +462,71 @@ export class UploadButtonComponent {
 
   private emitQueuedFilesChange(): void {
     this.queuedFilesChange.emit(this.queuedFiles());
+  }
+
+  private async uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      return firstValueFrom(this.applicantApi.uploadApplicantProfileDocuments(this.documentType(), file));
+    }
+
+    const appId = this.applicationId();
+    if (!appId) {
+      return [];
+    }
+
+    return firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file));
+  }
+
+  private async deletePersistedDocument(documentId: string): Promise<void> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
+      return;
+    }
+
+    await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
+  }
+
+  private async renamePersistedDocument(documentId: string, newName: string): Promise<void> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(documentId, newName));
+      return;
+    }
+
+    await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
+  }
+
+  private async trackPersistence(operation: () => Promise<void>): Promise<void> {
+    if (this.deferUpload()) {
+      await operation();
+      return;
+    }
+
+    this.beginPersistenceTracking();
+    try {
+      await operation();
+      this.finishPersistenceTracking(true);
+    } catch (error) {
+      this.finishPersistenceTracking(false);
+      throw error;
+    }
+  }
+
+  private beginPersistenceTracking(): void {
+    if (this.activePersistenceOperations === 0) {
+      this.hasPersistenceFailure = false;
+      this.persistenceStarted.emit();
+    }
+    this.activePersistenceOperations += 1;
+  }
+
+  private finishPersistenceTracking(success: boolean): void {
+    this.activePersistenceOperations = Math.max(0, this.activePersistenceOperations - 1);
+    if (!success) {
+      this.hasPersistenceFailure = true;
+    }
+
+    if (this.activePersistenceOperations === 0) {
+      this.persistenceFinished.emit(this.hasPersistenceFailure ? SavingStates.FAILED : SavingStates.SAVED);
+    }
   }
 }

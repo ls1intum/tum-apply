@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import { Component, DestroyRef, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,6 +32,7 @@ import { ApplicationResourceApi } from 'app/generated/api/application-resource-a
 import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
+import { createAutosaveController } from 'app/shared/util/autosave-controller';
 
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
@@ -127,13 +128,23 @@ export default class ApplicationCreationFormComponent {
   applicationId = signal<string>('');
   applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
   savingState = signal<SavingState>(SavingStates.SAVED);
+  footerSavingState = computed<SavingState>(() => {
+    const documentState = this.documentPersistenceController.savingState();
+    if (this.savingState() === SavingStates.SAVING || documentState === SavingStates.SAVING) {
+      return SavingStates.SAVING;
+    }
+    if (this.savingState() === SavingStates.FAILED || documentState === SavingStates.FAILED) {
+      return SavingStates.FAILED;
+    }
+    return SavingStates.SAVED;
+  });
 
   savingBadgeCalculatedClass = computed<string>(
     () =>
       `flex flex-wrap justify-around content-center gap-1 ${
-        this.savingState() === SavingStates.SAVED
+        this.footerSavingState() === SavingStates.SAVED
           ? 'saved_color'
-          : this.savingState() === SavingStates.FAILED
+          : this.footerSavingState() === SavingStates.FAILED
             ? 'failed_color'
             : 'saving_color'
       }`,
@@ -340,6 +351,8 @@ export default class ApplicationCreationFormComponent {
     }
     return steps;
   });
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly documentPersistenceController = createAutosaveController(this.destroyRef);
   private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly accountService = inject(AccountService);
   private readonly authFacade = inject(AuthFacadeService);
@@ -548,6 +561,14 @@ export default class ApplicationCreationFormComponent {
 
   onValueChanged(): void {
     this.savingState.set(SavingStates.SAVING);
+  }
+
+  onDocumentPersistenceStarted(): void {
+    this.documentPersistenceController.startOperation();
+  }
+
+  onDocumentPersistenceFinished(state: SavingState): void {
+    this.documentPersistenceController.finishOperation(state);
   }
 
   onPersonalInfoDataValidityChanged(isValid: boolean): void {

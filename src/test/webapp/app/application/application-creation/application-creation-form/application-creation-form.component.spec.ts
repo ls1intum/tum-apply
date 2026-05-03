@@ -451,6 +451,37 @@ describe('ApplicationForm', () => {
     expect(comp.savingState()).toBe(SavingStates.SAVING);
   });
 
+  it('should reflect document persistence in the footer saving state', () => {
+    vi.useFakeTimers();
+    try {
+      comp.onDocumentPersistenceStarted();
+      comp.onDocumentPersistenceFinished(SavingStates.SAVED);
+
+      expect(comp.footerSavingState()).toBe(SavingStates.SAVING);
+
+      vi.advanceTimersByTime(1999);
+      expect(comp.footerSavingState()).toBe(SavingStates.SAVING);
+
+      vi.advanceTimersByTime(1);
+      expect(comp.footerSavingState()).toBe(SavingStates.SAVED);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('should reflect failed document persistence in the footer saving state', () => {
+    vi.useFakeTimers();
+    try {
+      comp.onDocumentPersistenceStarted();
+      comp.onDocumentPersistenceFinished(SavingStates.FAILED);
+
+      vi.advanceTimersByTime(2000);
+      expect(comp.footerSavingState()).toBe(SavingStates.FAILED);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   describe('saveToLocalStorage', () => {
     it('should save application draft to localStorage and return true on success', () => {
       // Set up component state

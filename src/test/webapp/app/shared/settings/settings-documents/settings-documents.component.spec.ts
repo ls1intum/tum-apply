@@ -5,6 +5,7 @@ import { of, Subject, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+import { SavingStates } from 'app/shared/constants/saving-states';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
 import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
@@ -334,17 +335,15 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   describe('saving', () => {
-    it('should save document settings with the expected payload and reload state', async () => {
+    it('should save document settings with the expected payload and reset the local baseline', async () => {
       const component = await createComponent();
-      // Ignore the constructor-triggered load calls so the expectations below only
-      // describe the save flow itself.
       vi.clearAllMocks();
 
       component.form.patchValue({
         masterDegreeName: 'Updated Master Degree',
       });
 
-      await component.saveAll();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -352,10 +351,11 @@ describe('SettingsDocumentsComponent', () => {
           masterDegreeName: 'Updated Master Degree',
         }),
       );
-      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantApiMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.documents.saved');
-      expect(component.saving()).toBe(false);
+      expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
+      expect(component.initialFormValue()).toMatchObject({
+        masterDegreeName: 'Updated Master Degree',
+      });
+      expect(component.savingState()).toBe(SavingStates.SAVED);
     });
 
     it('should normalize null form values to undefined in the save payload', async () => {
@@ -375,7 +375,7 @@ describe('SettingsDocumentsComponent', () => {
         masterGrade: null,
       });
 
-      await component.saveAll();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -393,34 +393,22 @@ describe('SettingsDocumentsComponent', () => {
       );
     });
 
-    it('should persist document deletions, renames and queued uploads during save', async () => {
+    it('should not batch document mutations into metadata autosave anymore', async () => {
       const component = await createComponent();
       vi.clearAllMocks();
-      const referenceFile = new File(['reference'], 'new-reference.pdf', { type: 'application/pdf' });
 
       component.bachelorDocuments.set([]);
       component.referenceDocuments.set([
         { id: 'reference-doc-1', name: 'reference-renamed.pdf', size: 100 },
-        { id: 'temp-upload-1', name: 'new-reference.pdf', size: referenceFile.size },
+        { id: 'temp-upload-1', name: 'new-reference.pdf', size: 123 },
       ]);
-      component.onReferenceQueuedFilesChange([referenceFile]);
-      // Simulate the upload endpoint returning the real persisted document entry
-      // that replaces the temporary placeholder in the UI state.
-      httpClientMock.post.mockReturnValue(
-        of([
-          { id: 'reference-doc-1', name: 'reference-renamed.pdf', size: 100 },
-          { id: 'uploaded-reference-1', name: 'new-reference.pdf', size: referenceFile.size },
-        ]),
-      );
 
-      await component.saveAll();
+      await component.performAutoSave();
 
-      expect(applicantApiMock.deleteApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1');
-      expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('reference-doc-1', 'reference-renamed.pdf');
-      expect(httpClientMock.post).toHaveBeenCalledOnce();
-      expect(httpClientMock.post).toHaveBeenCalledWith('/api/applicants/profile/documents/REFERENCE', expect.any(FormData));
-      const uploadCall = httpClientMock.post.mock.calls[0];
-      expect((uploadCall[1] as FormData).get('files')).toBe(referenceFile);
+      expect(applicantApiMock.deleteApplicantProfileDocument).not.toHaveBeenCalled();
+      expect(applicantApiMock.renameApplicantProfileDocument).not.toHaveBeenCalled();
+      expect(httpClientMock.post).not.toHaveBeenCalled();
+      expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
     });
 
     it('should show an error and skip saving when the loaded user id is missing', async () => {
@@ -431,11 +419,11 @@ describe('SettingsDocumentsComponent', () => {
         bachelorDegreeName: 'Updated Degree',
       });
 
-      await component.saveAll();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
-      expect(component.saving()).toBe(false);
+      expect(component.savingState()).toBe(SavingStates.FAILED);
     });
 
     it('should show an error toast when saving document settings fails', async () => {
@@ -448,10 +436,10 @@ describe('SettingsDocumentsComponent', () => {
         bachelorDegreeName: 'Updated Degree',
       });
 
-      await component.saveAll();
+      await component.performAutoSave();
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
-      expect(component.saving()).toBe(false);
+      expect(component.savingState()).toBe(SavingStates.FAILED);
     });
   });
 });

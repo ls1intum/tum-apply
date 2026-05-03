@@ -1,0 +1,8 @@
+<ng-template #statusTemplate>
+  <div [className]="savingBadgeCalculatedClass()">
+    <fa-icon icon="save" />
+    <span class="font-bold">{{ 'entity.applicationSteps.status.' + savingState() | translate }}</span>
+  </div>
+</ng-template>
+
+<jhi-sticky-footer-shell [statusTemplate]="statusTemplate" />

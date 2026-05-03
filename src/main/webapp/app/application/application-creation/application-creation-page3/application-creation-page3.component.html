@@ -43,6 +43,8 @@
           documentType="REFERENCE"
           [applicationId]="applicationId"
           [documentIds]="documentIdsReferences()"
+          (persistenceStarted)="documentPersistenceStarted.emit()"
+          (persistenceFinished)="documentPersistenceFinished.emit($event)"
           [compact]="true"
         />
       </div>

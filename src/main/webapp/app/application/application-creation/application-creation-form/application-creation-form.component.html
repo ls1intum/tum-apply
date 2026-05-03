@@ -18,6 +18,8 @@
       [(data)]="personalInfoData"
       (valid)="onPersonalInfoDataValidityChanged($event)"
       (changed)="onValueChanged()"
+      (documentPersistenceStarted)="onDocumentPersistenceStarted()"
+      (documentPersistenceFinished)="onDocumentPersistenceFinished($event)"
       (educationDataExtracted)="onEducationDataExtracted($event)"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsCv]="documentIds()?.cvDocumentId"
@@ -33,6 +35,8 @@
       [(data)]="educationData"
       (valid)="onEducationDataValidityChanged($event)"
       (changed)="onValueChanged()"
+      (documentPersistenceStarted)="onDocumentPersistenceStarted()"
+      (documentPersistenceFinished)="onDocumentPersistenceFinished($event)"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentIds"
       [documentIdsMasterTranscript]="documentIds()?.masterDocumentIds"
@@ -48,6 +52,8 @@
         [(data)]="applicationDetailsData"
         (changed)="onValueChanged()"
         (valid)="onApplicationDetailsDataValidityChanged($event)"
+        (documentPersistenceStarted)="onDocumentPersistenceStarted()"
+        (documentPersistenceFinished)="onDocumentPersistenceFinished($event)"
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentIds"
       />
@@ -112,7 +118,7 @@
 <ng-template #saving_state_panel>
   <div [className]="savingBadgeCalculatedClass()">
     <fa-icon icon="save" />
-    <span class="font-bold" [jhiTranslate]="'entity.applicationSteps.status.' + savingState()"></span>
+    <span class="font-bold" [jhiTranslate]="'entity.applicationSteps.status.' + footerSavingState()"></span>
   </div>
 </ng-template>
 

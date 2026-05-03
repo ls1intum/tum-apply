@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -9,12 +9,12 @@ import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
-import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { AccountService } from 'app/core/auth/account.service';
 import { debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
+import { SavingState } from 'app/shared/constants/saving-states';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import {
   GradingScaleLimitsResult,
@@ -27,10 +27,10 @@ import { GradingScaleEditDialogComponent } from 'app/application/application-cre
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
+import { createAutosaveController } from 'app/shared/util/autosave-controller';
 
-import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import { AutosaveStatusFooterComponent } from '../../components/molecules/autosave-status-footer/autosave-status-footer.component';
 import TranslateDirective from '../../language/translate.directive';
 
 interface NormalizedSettingsDocumentsFormValue {
@@ -55,11 +55,11 @@ interface NormalizedSettingsDocumentsFormValue {
     DividerModule,
     ReactiveFormsModule,
     TranslateModule,
-    ButtonComponent,
     TooltipModule,
     FontAwesomeModule,
     UploadButtonComponent,
     TranslateDirective,
+    AutosaveStatusFooterComponent,
   ],
   templateUrl: './settings-documents.component.html',
 })
@@ -85,9 +85,8 @@ export class SettingsDocumentsComponent {
   referenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   // Placeholder ID to render the same upload UI structure as application page 2.
-  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+  readonly uploadHostId = '00000000-0000-0000-0000-000000000000';
 
-  saving = signal(false);
   hasLoaded = signal(false);
   hasInitialLimitsSet = signal(false);
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
@@ -95,33 +94,9 @@ export class SettingsDocumentsComponent {
   lastBachelorGrade = signal<string>(this.form.controls.bachelorGrade.value ?? '');
   lastMasterGrade = signal<string>(this.form.controls.masterGrade.value ?? '');
   initialFormValue = signal(this.form.getRawValue());
-  initialBachelorDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialMasterDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialReferenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-
-  queuedBachelorFiles = signal<File[]>([]);
-  queuedMasterFiles = signal<File[]>([]);
-  queuedReferenceFiles = signal<File[]>([]);
-
   hasFormChanges = computed(() => this.hasLoaded() && !deepEqual(this.normalizedFormValue(), this.initialFormValue()));
-  hasDocumentChanges = computed(() => {
-    if (!this.hasLoaded()) return false;
-    return (
-      !deepEqual(
-        this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()),
-        this.profileDocumentService.normalizedDocuments(this.initialBachelorDocuments()),
-      ) ||
-      !deepEqual(
-        this.profileDocumentService.normalizedDocuments(this.masterDocuments()),
-        this.profileDocumentService.normalizedDocuments(this.initialMasterDocuments()),
-      ) ||
-      !deepEqual(
-        this.profileDocumentService.normalizedDocuments(this.referenceDocuments()),
-        this.profileDocumentService.normalizedDocuments(this.initialReferenceDocuments()),
-      )
-    );
-  });
-  hasChanges = computed(() => this.hasFormChanges() || this.hasDocumentChanges());
+  savingState = computed<SavingState>(() => this.autosave.savingState());
+  hasChanges = computed(() => this.hasFormChanges());
 
   helperTextBachelorGrade = computed(() => {
     this.currentLang();
@@ -145,8 +120,9 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly autosave = createAutosaveController(this.destroyRef);
   private applicantApi = inject(ApplicantResourceApi);
-  private profileDocumentService = inject(ProfileDocumentService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
@@ -178,6 +154,7 @@ export class SettingsDocumentsComponent {
 
   constructor() {
     void this.loadProfile();
+    this.setupAutoSave();
   }
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
@@ -224,15 +201,15 @@ export class SettingsDocumentsComponent {
     });
   }
 
-  async saveAll(): Promise<void> {
-    if (!this.hasChanges() || this.saving()) {
+  async performAutoSave(): Promise<void> {
+    if (!this.hasChanges()) {
       return;
     }
 
-    this.saving.set(true);
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null || loadedUser.id === '') {
+        this.autosave.markMetadataSaveFailed();
         this.toastService.showErrorKey('settings.documents.saveFailed');
         return;
       }
@@ -267,27 +244,12 @@ export class SettingsDocumentsComponent {
       };
 
       await firstValueFrom(this.applicantApi.updateApplicantDocumentSettings(applicantDTO));
-      await this.saveDeferredDocumentChanges();
-      await this.loadProfile();
-
-      this.toastService.showSuccessKey('settings.documents.saved');
+      this.initialFormValue.set(this.normalizedFormValue());
+      this.autosave.markMetadataSaveSucceeded();
     } catch {
+      this.autosave.markMetadataSaveFailed();
       this.toastService.showErrorKey('settings.documents.saveFailed');
-    } finally {
-      this.saving.set(false);
     }
-  }
-
-  onBachelorQueuedFilesChange(files: File[]): void {
-    this.queuedBachelorFiles.set(files);
-  }
-
-  onMasterQueuedFilesChange(files: File[]): void {
-    this.queuedMasterFiles.set(files);
-  }
-
-  onReferenceQueuedFilesChange(files: File[]): void {
-    this.queuedReferenceFiles.set(files);
   }
 
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
@@ -305,6 +267,14 @@ export class SettingsDocumentsComponent {
     }
 
     form.patchValue(patch);
+  }
+
+  onDocumentPersistenceStarted(): void {
+    this.autosave.startOperation();
+  }
+
+  onDocumentPersistenceFinished(state: SavingState): void {
+    this.autosave.finishOperation(state);
   }
 
   // Loads the persisted profile + document state and resets the change-tracking baseline to that backend snapshot.
@@ -357,7 +327,8 @@ export class SettingsDocumentsComponent {
       }
 
       this.hasInitialLimitsSet.set(true);
-      this.storeInitialStateSnapshot();
+      this.initialFormValue.set(this.normalizedFormValue());
+      this.autosave.markMetadataSaveSucceeded();
       this.hasLoaded.set(true);
     } catch {
       this.toastService.showErrorKey('settings.documents.loadFailed');
@@ -403,48 +374,31 @@ export class SettingsDocumentsComponent {
     };
   }
 
-  // Persists the current form/document state as the new clean baseline after a successful load or save.
-  private storeInitialStateSnapshot(): void {
-    this.initialFormValue.set(this.normalizedFormValue());
-    this.initialBachelorDocuments.set(this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()));
-    this.initialMasterDocuments.set(this.profileDocumentService.normalizedDocuments(this.masterDocuments()));
-    this.initialReferenceDocuments.set(this.profileDocumentService.normalizedDocuments(this.referenceDocuments()));
-
-    this.queuedBachelorFiles.set([]);
-    this.queuedMasterFiles.set([]);
-    this.queuedReferenceFiles.set([]);
-  }
-
   private applyProfileDocumentIds(documentIds: ApplicationDocumentIdsDTO): void {
     this.bachelorDocuments.set(documentIds.bachelorDocumentIds ?? []);
     this.masterDocuments.set(documentIds.masterDocumentIds ?? []);
     this.referenceDocuments.set(documentIds.referenceDocumentIds ?? []);
   }
 
-  private async saveQueuedDocuments(): Promise<void> {
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript,
-      this.queuedBachelorFiles(),
-      this.bachelorDocuments,
-    );
+  private setupAutoSave(): void {
+    effect(() => {
+      const hasChanges = this.hasChanges();
+      if (!this.hasLoaded()) {
+        return;
+      }
 
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript,
-      this.queuedMasterFiles(),
-      this.masterDocuments,
-    );
+      if (this.autosave.shouldSkipInitialAutoSave()) {
+        return;
+      }
 
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.Reference,
-      this.queuedReferenceFiles(),
-      this.referenceDocuments,
-    );
-  }
+      if (!hasChanges) {
+        this.autosave.clearScheduledMetadataSave();
+        return;
+      }
 
-  private async saveDeferredDocumentChanges(): Promise<void> {
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialBachelorDocuments(), this.bachelorDocuments());
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialMasterDocuments(), this.masterDocuments());
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialReferenceDocuments(), this.referenceDocuments());
-    await this.saveQueuedDocuments();
+      this.autosave.scheduleMetadataSave(() => {
+        void this.performAutoSave();
+      });
+    });
   }
 }

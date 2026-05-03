@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateDirective } from 'app/shared/language';
+import { SavingState } from 'app/shared/constants/saving-states';
 import {
   GradingScaleLimitsResult,
   getDetectedGradeLimitsPatch,
@@ -66,6 +67,8 @@ export default class ApplicationCreationPage2Component {
 
   valid = output<boolean>();
   changed = output<boolean>();
+  documentPersistenceStarted = output();
+  documentPersistenceFinished = output<SavingState>();
 
   formbuilder = inject(FormBuilder);
   translateService = inject(TranslateService);
