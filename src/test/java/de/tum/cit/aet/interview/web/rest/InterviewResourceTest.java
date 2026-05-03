@@ -599,33 +599,12 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Nested
     class GetIntervieweeDetails {
 
-        @Test
-        void getIntervieweeDetailsAsProfessorReturnsFullDetails() {
-            // Act - use shared testInterviewee
+        @ParameterizedTest(name = "should return full interviewee details for {0}")
+        @ValueSource(strings = { "ROLE_PROFESSOR", "ROLE_EMPLOYEE" })
+        void shouldReturnFullDetailsForProfessorOrEmployee(String role) {
+            UUID userId = role.equals("ROLE_PROFESSOR") ? professor.getUserId() : employee.getUserId();
             IntervieweeDetailDTO result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .getAndRead(
-                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId(),
-                    null,
-                    IntervieweeDetailDTO.class,
-                    200
-                );
-
-            // Assert
-            assertThat(result).isNotNull();
-            assertThat(result.id()).isEqualTo(testInterviewee.getId());
-            assertThat(result.applicationId()).isEqualTo(testApplication.getApplicationId());
-            assertThat(result.user()).isNotNull();
-            assertThat(result.user().email()).isEqualTo(testApplicant.getUser().getEmail());
-            assertThat(result.application()).isNotNull();
-            assertThat(result.application().motivation()).isEqualTo(testApplication.getMotivation());
-        }
-
-        @Test
-        void getIntervieweeDetailsAsEmployeeReturnsFullDetails() {
-            // Act - use employee role
-            IntervieweeDetailDTO result = api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .with(JwtPostProcessors.jwtUser(userId, role))
                 .getAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId(),
                     null,

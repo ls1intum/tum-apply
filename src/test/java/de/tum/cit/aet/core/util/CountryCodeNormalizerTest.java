@@ -2,66 +2,56 @@ package de.tum.cit.aet.core.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CountryCodeNormalizerTest {
 
-    @Test
-    void returnsAlpha2ForLowercaseCode() {
-        assertThat(CountryCodeNormalizer.normalize("us")).isEqualTo("us");
-        assertThat(CountryCodeNormalizer.normalize("de")).isEqualTo("de");
+    @ParameterizedTest(name = "should normalize \"{0}\" to alpha-2 \"{1}\"")
+    @CsvSource(
+        {
+            // Lowercase alpha-2
+            "us, us",
+            "de, de",
+            // Uppercase alpha-2
+            "US, us",
+            "DE, de",
+            // Alpha-3 codes
+            "USA, us",
+            "DEU, de",
+            "ita, it",
+            // English country names
+            "'United States', us",
+            "'united states of america', us",
+            "Germany, de",
+            "ITALY, it",
+            // German country names
+            "Deutschland, de",
+            "Italien, it",
+            // Common aliases
+            "UK, gb",
+            "'Great Britain', gb",
+            // Whitespace handling
+            "'  us  ', us",
+            "'\tGermany\n', de",
+        }
+    )
+    void shouldReturnAlpha2ForValidInput(String input, String expected) {
+        assertThat(CountryCodeNormalizer.normalize(input)).isEqualTo(expected);
     }
 
-    @Test
-    void returnsAlpha2ForUppercaseCode() {
-        assertThat(CountryCodeNormalizer.normalize("US")).isEqualTo("us");
-        assertThat(CountryCodeNormalizer.normalize("DE")).isEqualTo("de");
+    @ParameterizedTest(name = "should return null for unknown input \"{0}\"")
+    @ValueSource(strings = { "Atlantis", "xx", "123" })
+    void shouldReturnNullForUnknownInput(String input) {
+        assertThat(CountryCodeNormalizer.normalize(input)).isNull();
     }
 
-    @Test
-    void returnsAlpha2ForAlpha3Code() {
-        assertThat(CountryCodeNormalizer.normalize("USA")).isEqualTo("us");
-        assertThat(CountryCodeNormalizer.normalize("DEU")).isEqualTo("de");
-        assertThat(CountryCodeNormalizer.normalize("ita")).isEqualTo("it");
-    }
-
-    @Test
-    void returnsAlpha2ForEnglishName() {
-        assertThat(CountryCodeNormalizer.normalize("United States")).isEqualTo("us");
-        assertThat(CountryCodeNormalizer.normalize("united states of america")).isEqualTo("us");
-        assertThat(CountryCodeNormalizer.normalize("Germany")).isEqualTo("de");
-        assertThat(CountryCodeNormalizer.normalize("ITALY")).isEqualTo("it");
-    }
-
-    @Test
-    void returnsAlpha2ForGermanName() {
-        assertThat(CountryCodeNormalizer.normalize("Deutschland")).isEqualTo("de");
-        assertThat(CountryCodeNormalizer.normalize("Italien")).isEqualTo("it");
-    }
-
-    @Test
-    void returnsAlpha2ForCommonAliases() {
-        assertThat(CountryCodeNormalizer.normalize("UK")).isEqualTo("gb");
-        assertThat(CountryCodeNormalizer.normalize("Great Britain")).isEqualTo("gb");
-    }
-
-    @Test
-    void trimsAndIgnoresLeadingTrailingWhitespace() {
-        assertThat(CountryCodeNormalizer.normalize("  us  ")).isEqualTo("us");
-        assertThat(CountryCodeNormalizer.normalize("\tGermany\n")).isEqualTo("de");
-    }
-
-    @Test
-    void returnsNullForUnknownInput() {
-        assertThat(CountryCodeNormalizer.normalize("Atlantis")).isNull();
-        assertThat(CountryCodeNormalizer.normalize("xx")).isNull();
-        assertThat(CountryCodeNormalizer.normalize("123")).isNull();
-    }
-
-    @Test
-    void returnsNullForEmptyOrNullInput() {
-        assertThat(CountryCodeNormalizer.normalize(null)).isNull();
-        assertThat(CountryCodeNormalizer.normalize("")).isNull();
-        assertThat(CountryCodeNormalizer.normalize("   ")).isNull();
+    @ParameterizedTest(name = "should return null for blank input \"{0}\"")
+    @NullAndEmptySource
+    @ValueSource(strings = { "   " })
+    void shouldReturnNullForEmptyOrNullInput(String input) {
+        assertThat(CountryCodeNormalizer.normalize(input)).isNull();
     }
 }

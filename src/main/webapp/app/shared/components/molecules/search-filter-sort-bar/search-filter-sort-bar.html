@@ -38,8 +38,8 @@
           [icon]="'filter'"
           [size]="'sm'"
           [variant]="'text'"
-          [styleClass]="'!border !border-border-default'"
-          [tooltip]="'entity.filters.sortingAndFilter' | translate"
+          [classStyling]="'!border !border-border-default'"
+          tooltip="entity.filters.sortingAndFilter"
           [tooltipOptions]="{ showDelay: 500 }"
           tooltipPosition="left"
           (click)="openMobileSidebar()"
@@ -58,13 +58,7 @@
     </div>
   </div>
 
-  <p-drawer
-    [(visible)]="isMobileSidebarOpen"
-    position="right"
-    [dismissible]="true"
-    [showCloseIcon]="false"
-    styleClass="w-[90vw] max-w-[20rem]"
-  >
+  <p-drawer [(visible)]="isMobileSidebarOpen" position="right" [dismissible]="true" [showCloseIcon]="false" class="w-[90vw] max-w-[20rem]">
     <ng-template #header>
       <div class="flex h-full flex-1 items-center justify-between font-semibold">
         <span jhiTranslate="entity.filters.sortingAndFilter"></span>
@@ -109,16 +103,10 @@
           color="primary"
           variant="outlined"
           (click)="clearAllFilter()"
-          [label]="'entity.filters.resetFilter' | translate"
+          label="entity.filters.resetFilter"
         />
       }
-      <jhi-button
-        type="button"
-        [fullWidth]="true"
-        color="primary"
-        (click)="closeMobileSidebar()"
-        [label]="'entity.filters.show' | translate"
-      />
+      <jhi-button type="button" [fullWidth]="true" color="primary" (click)="closeMobileSidebar()" label="entity.filters.show" />
     </div>
   </p-drawer>
   <div class="flex flex-row justify-between pt-1 w-full">
@@ -136,7 +124,7 @@
           class="text-xs text-primary-default cursor-pointer hover:underline"
           (click)="clearAllFilter(); $event.stopPropagation()"
         >
-          {{ 'entity.filters.resetFilter' | translate }}
+          {{ resetFilterLabel() }}
         </button>
       }
     </div>

@@ -1,12 +1,12 @@
 <div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 border-b border-border-default">
-  @for (tab of tabs(); track tab.key) {
+  @for (tab of renderedTabs(); track tab.key) {
     <button
       type="button"
       class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px cursor-pointer whitespace-nowrap"
       [class]="
         isActive(tab.key) ? 'border-primary-default text-primary-default' : 'border-transparent text-text-primary hover:text-text-primary'
       "
-      [pTooltip]="tab.tooltipKey ? (tab.tooltipKey | translate) : ''"
+      [pTooltip]="tab.tooltipText"
       tooltipPosition="top"
       (click)="onTabClick(tab.key)"
     >

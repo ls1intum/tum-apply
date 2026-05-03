@@ -18,7 +18,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,8 @@ import org.springframework.stereotype.Service;
 public class PDFExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm 'UTC'");
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
 
     private final JobService jobService;
     private final CurrentUserService currentUserService;
@@ -43,7 +44,7 @@ public class PDFExportService {
     // ------------------- Main methods -------------------
 
     /**
-     * Exports application details to PDF
+     * Exports application details to PDF. All timestamps are rendered in UTC.
      *
      * @param app    the ApplicationDetailDTO containing application data
      * @param labels translation labels for PDF content
@@ -159,7 +160,7 @@ public class PDFExportService {
     }
 
     /**
-     * Exports job details to PDF
+     * Exports job details to PDF. All timestamps are rendered in UTC.
      *
      * @param jobId  the job ID
      * @param labels translation labels for PDF content
@@ -227,7 +228,7 @@ public class PDFExportService {
     }
 
     /**
-     * Exports job details to PDF
+     * Exports job details to PDF. All timestamps are rendered in UTC.
      *
      * @param jobFormDTO the job form data
      * @param labels     translation labels for PDF content
@@ -374,17 +375,15 @@ public class PDFExportService {
     }
 
     private String formatInstantDate(Instant instant) {
-        return instant == null ? "-" : DATE_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : DATE_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private String formatInstantTime(Instant instant) {
-        return instant == null
-            ? "-"
-            : DateTimeFormatter.ofPattern("HH:mm").format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : TIME_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private String formatInstantDateTime(Instant instant) {
-        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
@@ -479,7 +478,8 @@ public class PDFExportService {
     }
 
     /**
-     * Builds the metadata text using labels and current user data
+     * Builds the metadata text using labels and current user data.
+     * The "generated on" timestamp is rendered in UTC.
      *
      * @param labels translation labels for metadata parts
      * @return formatted metadata string
@@ -487,7 +487,7 @@ public class PDFExportService {
     private String buildMetadataText(Map<String, String> labels) {
         StringBuilder metadata = new StringBuilder();
 
-        String currentDateTime = LocalDateTime.now().format(DATETIME_FORMATTER);
+        String currentDateTime = LocalDateTime.now(ZoneOffset.UTC).format(DATETIME_FORMATTER);
         metadata.append(labels.get("thisDocumentWasGeneratedOn"));
         metadata.append(currentDateTime);
 

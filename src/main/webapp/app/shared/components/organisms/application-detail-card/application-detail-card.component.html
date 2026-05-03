@@ -26,7 +26,7 @@
         [ngTemplateOutlet]="textCardTemplate"
         [ngTemplateOutletContext]="{
           icon: 'rocket',
-          name: ('entity.applicationDetail.motivation' | translate),
+          name: motivationLabel(),
           text: application().motivation,
         }"
       />
@@ -34,7 +34,7 @@
         [ngTemplateOutlet]="textCardTemplate"
         [ngTemplateOutletContext]="{
           icon: 'brain',
-          name: ('entity.applicationDetail.skills' | translate),
+          name: skillsLabel(),
           text: application().specialSkills,
         }"
       />
@@ -42,7 +42,7 @@
         [ngTemplateOutlet]="textCardTemplate"
         [ngTemplateOutletContext]="{
           icon: 'flask',
-          name: ('entity.applicationDetail.researchExperience' | translate),
+          name: researchExperienceLabel(),
           text: application().projects,
         }"
       />

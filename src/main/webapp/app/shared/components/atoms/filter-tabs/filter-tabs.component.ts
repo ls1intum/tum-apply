@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, computed, inject, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -18,6 +19,10 @@ export interface FilterTab<T extends string = string> {
   tooltipKey?: string;
 }
 
+interface RenderedTab<T extends string = string> extends FilterTab<T> {
+  tooltipText: string;
+}
+
 /**
  * Reusable filter tabs component with underlined tab bar styling.
  * Displays a horizontal list of tabs with optional badge counts.
@@ -25,7 +30,7 @@ export interface FilterTab<T extends string = string> {
 @Component({
   selector: 'jhi-filter-tabs',
   standalone: true,
-  imports: [TranslateModule, TranslateDirective, TooltipModule],
+  imports: [TranslateDirective, TooltipModule],
   templateUrl: './filter-tabs.component.html',
 })
 export class FilterTabsComponent<T extends string = string> {
@@ -35,6 +40,17 @@ export class FilterTabsComponent<T extends string = string> {
 
   // Outputs
   readonly filterChange = output<T>();
+
+  readonly renderedTabs = computed<RenderedTab<T>[]>(() => {
+    this.langChange();
+    return this.tabs().map(tab => ({
+      ...tab,
+      tooltipText: tab.tooltipKey !== undefined && tab.tooltipKey !== '' ? this.translateService.instant(tab.tooltipKey) : '',
+    }));
+  });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   // Methods
   isActive(key: T): boolean {

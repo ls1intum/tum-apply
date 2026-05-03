@@ -1,6 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
@@ -16,8 +18,20 @@ export class SidebarButtonComponent {
   isActive = input<boolean>(false);
   isCollapsed = input<boolean>(false);
   link = input<string>('/');
+  shouldTranslate = input<boolean>(true);
+
+  displayLabel = computed(() => {
+    this.langChange();
+    const value = this.label();
+    if (value === '') {
+      return '';
+    }
+    return this.shouldTranslate() ? this.translateService.instant(value) : value;
+  });
 
   private router = inject(Router);
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   navigate(): void {
     this.router.navigate([this.link()]).catch((err: unknown) => {

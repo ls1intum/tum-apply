@@ -20,9 +20,14 @@ import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -153,80 +158,33 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
     @Nested
     class AnalyzeText {
 
-        @Test
-        void shouldDetectNonInclusiveCodedEnglishText() {
-            BiasedIssues response = analyzeText(NON_INCLUSIVE_ENGLISH_TEXT, "en");
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("de.tum.cit.aet.core.web.GenderBiasAnalysisResourceTest#analyzeTextCases")
+        void shouldDetectExpectedCodingForText(
+            String label,
+            String text,
+            String language,
+            String expectedCoding,
+            List<BiasedWordDTO> expected
+        ) {
+            GenderBiasAnalysisResponse response = analyzeText(text, language);
 
-            assertGenderBiasAnalysisResponse(
-                response,
-                NON_INCLUSIVE_ENGLISH_TEXT,
-                "en",
-                "non-inclusive-coded",
-                NON_INCLUSIVE_ENGLISH_TEXT_LIST
-            );
+            assertGenderBiasAnalysisResponse(response, text, language, expectedCoding, expected);
         }
+    }
 
-        @Test
-        void shouldDetectInclusiveCodedEnglishText() {
-            BiasedIssues response = analyzeText(INCLUSIVE_ENGLISH_TEXT, "en");
-
-            assertGenderBiasAnalysisResponse(response, INCLUSIVE_ENGLISH_TEXT, "en", "inclusive-coded", INCLUSIVE_ENGLISH_TEXT_LIST);
-        }
-
-        @Test
-        void shouldDetectNeutralEnglishText() {
-            BiasedIssues response = analyzeText(NEUTRAL_ENGLISH_TEXT, "en");
-
-            assertGenderBiasAnalysisResponse(response, NEUTRAL_ENGLISH_TEXT, "en", "neutral", NEUTRAL_ENGLISH_TEXT_LIST);
-        }
-
-        @Test
-        void shouldDetectEmptyEnglishText() {
-            BiasedIssues response = analyzeText(EMPTY_ENGLISH_TEXT, "en");
-
-            assertGenderBiasAnalysisResponse(response, EMPTY_ENGLISH_TEXT, "en", "empty", null);
-        }
-
-        @Test
-        void shouldDetectNonInclusiveCodedGermanText() {
-            BiasedIssues response = analyzeText(NON_INCLUSIVE_GERMAN_TEXT, "de");
-
-            assertGenderBiasAnalysisResponse(
-                response,
-                NON_INCLUSIVE_GERMAN_TEXT,
-                "de",
-                "non-inclusive-coded",
-                NON_INCLUSIVE_GERMAN_TEXT_LIST
-            );
-        }
-
-        @Test
-        void shouldDetectInclusiveCodedGermanText() {
-            BiasedIssues response = analyzeText(INCLUSIVE_GERMAN_TEXT, "de");
-
-            assertGenderBiasAnalysisResponse(response, INCLUSIVE_GERMAN_TEXT, "de", "inclusive-coded", INCLUSIVE_GERMAN_TEXT_LIST);
-        }
-
-        @Test
-        void shouldDetectNeutralGermanText() {
-            BiasedIssues response = analyzeText(NEUTRAL_GERMAN_TEXT, "de");
-
-            assertGenderBiasAnalysisResponse(response, NEUTRAL_GERMAN_TEXT, "de", "neutral", NEUTRAL_GERMAN_TEXT_LIST);
-        }
-
-        @Test
-        void shouldDetectEmptyGermanText() {
-            BiasedIssues response = analyzeText(EMPTY_GERMAN_TEXT, "de");
-
-            assertGenderBiasAnalysisResponse(response, EMPTY_GERMAN_TEXT, "de", "empty", null);
-        }
-
-        @Test
-        void shouldHandleTextWithSpecialCharacters() {
-            BiasedIssues response = analyzeText(SPECIAL_CHARACTER_TEXT, "en");
-
-            assertGenderBiasAnalysisResponse(response, SPECIAL_CHARACTER_TEXT, "en", "non-inclusive-coded", SPECIAL_CHARACTER_LIST);
-        }
+    static Stream<Arguments> analyzeTextCases() {
+        return Stream.of(
+            Arguments.of("non-inclusive English", NON_INCLUSIVE_ENGLISH_TEXT, "en", "non-inclusive-coded", NON_INCLUSIVE_ENGLISH_TEXT_LIST),
+            Arguments.of("inclusive English", INCLUSIVE_ENGLISH_TEXT, "en", "inclusive-coded", INCLUSIVE_ENGLISH_TEXT_LIST),
+            Arguments.of("neutral English", NEUTRAL_ENGLISH_TEXT, "en", "neutral", NEUTRAL_ENGLISH_TEXT_LIST),
+            Arguments.of("empty (no biased words) English", EMPTY_ENGLISH_TEXT, "en", "empty", null),
+            Arguments.of("non-inclusive German", NON_INCLUSIVE_GERMAN_TEXT, "de", "non-inclusive-coded", NON_INCLUSIVE_GERMAN_TEXT_LIST),
+            Arguments.of("inclusive German", INCLUSIVE_GERMAN_TEXT, "de", "inclusive-coded", INCLUSIVE_GERMAN_TEXT_LIST),
+            Arguments.of("neutral German", NEUTRAL_GERMAN_TEXT, "de", "neutral", NEUTRAL_GERMAN_TEXT_LIST),
+            Arguments.of("empty (no biased words) German", EMPTY_GERMAN_TEXT, "de", "empty", null),
+            Arguments.of("special characters English", SPECIAL_CHARACTER_TEXT, "en", "non-inclusive-coded", SPECIAL_CHARACTER_LIST)
+        );
     }
 
     @Nested
@@ -254,44 +212,25 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
     @Nested
     class Authorization {
 
-        @Test
-        void analyzeTextWithoutAuthenticationReturns401() {
+        @ParameterizedTest(name = "should return 401 for unauthenticated request to {0}")
+        @ValueSource(strings = { "/analyze", "/analyze-html" })
+        void shouldReturn401ForUnauthenticatedRequest(String endpoint) {
             GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
-            Void result = api.withoutPostProcessors().postAndRead(BASE_URL + "/analyze", request, Void.class, 401);
+            Void result = api.withoutPostProcessors().postAndRead(BASE_URL + endpoint, request, Void.class, 401);
 
             assertThat(result).isNull();
         }
 
-        @Test
-        void analyzeHtmlWithoutAuthenticationReturns401() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(HTML_TEXT, "en");
-
-            Void result = api.withoutPostProcessors().postAndRead(BASE_URL + "/analyze-html", request, Void.class, 401);
-
-            assertThat(result).isNull();
-        }
-
-        @Test
-        void analyzeTextWithNonProfessorRoleReturns403() {
+        @ParameterizedTest(name = "should return 403 for non-professor role on {0}")
+        @ValueSource(strings = { "/analyze", "/analyze-html" })
+        void shouldReturn403ForNonProfessorRole(String endpoint) {
             Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
             GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
             Void result = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUser().getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(BASE_URL + "/analyze", request, Void.class, 403);
-
-            assertThat(result).isNull();
-        }
-
-        @Test
-        void analyzeHtmlWithNonProfessorRoleReturns403() {
-            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
-
-            Void result = api
-                .with(JwtPostProcessors.jwtUser(applicant.getUser().getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(BASE_URL + "/analyze-html", request, Void.class, 403);
+                .postAndRead(BASE_URL + endpoint, request, Void.class, 403);
 
             assertThat(result).isNull();
         }
