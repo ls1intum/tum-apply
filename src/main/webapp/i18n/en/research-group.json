@@ -8,7 +8,7 @@
     "imageHeader": "Images",
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
-      "organizationInfo": "To change the department and school, please contact an administrator.",
+      "organizationInfo": "Please contact us to change the department and school.",
       "noDepartment": "No department",
       "noSchool": "No school",
       "fields": {
@@ -42,9 +42,9 @@
       },
       "toasts": {
         "updated": "Research group information successfully updated.",
-        "saveFailed": "Error saving. Please try again or contact an admin.",
-        "loadFailed": "Error loading. Please refresh the page or contact an admin.",
-        "noId": "No research group found. Contact an admin."
+        "saveFailed": "Error saving. Please try again, or contact us if the problem persists.",
+        "loadFailed": "Error loading. Please refresh the page, or contact us if the problem persists.",
+        "noId": "No research group found. Please contact us."
       }
     },
     "emailTemplates": {
@@ -135,7 +135,7 @@
       "toastMessages": {
         "loadFailed": {
           "summary": "Load Failed",
-          "detail": "Failed to load. Please try again or contact an admin."
+          "detail": "Failed to load. Please try again, or contact us if the problem persists."
         },
         "loadUsersFailed": {
           "summary": "Load Failed",
@@ -167,7 +167,7 @@
         },
         "removeFailed": {
           "summary": "Remove Failed",
-          "detail": "Failed to remove. Please try again or contact an admin."
+          "detail": "Failed to remove. Please try again, or contact us if the problem persists."
         }
       },
       "noRole": "No Role"
@@ -305,7 +305,7 @@
         },
         "save": {
           "summary": "Error",
-          "detail": "Error saving research group information. Please try again or contact an admin."
+          "detail": "Error saving research group information. Please try again, or contact us if the problem persists."
         },
         "loadDepartments": {
           "summary": "Error",
