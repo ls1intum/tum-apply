@@ -482,6 +482,7 @@
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
         "closed": "Geschlossen",
+        "closedDraft": "Geschlossener Entwurf",
         "inReview": "In Prüfung",
         "interview": "Interview"
       },
