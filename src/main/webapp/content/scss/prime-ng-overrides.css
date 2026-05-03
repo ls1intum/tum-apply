@@ -1,5 +1,5 @@
 :root {
-  // Stepper Styles
+  /* Stepper Styles */
   --p-stepper-step-number-size: 1.75rem;
   --p-stepper-step-number-font-size: 1rem;
   --p-stepper-step-title-font-weight: 500;
@@ -147,14 +147,14 @@ p-step[data-p-active='true'] .p-step-title {
   color: var(--p-dialog-color) !important;
 }
 
-// Round the header separately for visual consistency
+/* Round the header separately for visual consistency */
 .p-dialog-header {
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0 !important;
   background: var(--p-dialog-background) !important;
   color: var(--p-dialog-color) !important;
 }
 
-// Round the content area
+/* Round the content area */
 .p-dialog-content {
   border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl) !important;
   background: var(--p-dialog-background) !important;
@@ -186,8 +186,8 @@ p-step[data-p-active='true'] .p-step-title {
 /* -------------------------------
    Custom Tooltip Styles
 ---------------------------------- */
-// Adjust tooltip positioning on the right side to avoid a cramped appearance
-// Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
+/* Adjust tooltip positioning on the right side to avoid a cramped appearance */
+/* Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}" */
 .tooltip-top .p-tooltip-right {
   top: -0.5rem !important;
 }

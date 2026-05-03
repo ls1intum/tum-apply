@@ -1,27 +1,27 @@
-// ========================================================
-// Color Tokens for TUMApply
-//
-// SINGLE SOURCE OF TRUTH: tumapplypreset.ts
-// PrimeNG automatically generates CSS variables from the preset:
-// - Color scales: --p-primary-50 through --p-primary-950
-// - Semantic tokens: --p-primary-color, --p-background-default, etc.
-// - Component tokens: --p-button-background, etc.
-//
-// This file maps PrimeNG variables to Tailwind for use with Tailwind classes.
-// ========================================================
+/* ========================================================
+ * Color Tokens for TUMApply
+ *
+ * SINGLE SOURCE OF TRUTH: tumapplypreset.ts
+ * PrimeNG automatically generates CSS variables from the preset:
+ * - Color scales: --p-primary-50 through --p-primary-950
+ * - Semantic tokens: --p-primary-color, --p-background-default, etc.
+ * - Component tokens: --p-button-background, etc.
+ *
+ * This file maps PrimeNG variables to Tailwind for use with Tailwind classes.
+ * ======================================================== */
 
-// ========================================================
-// Tailwind v4 Theme Configuration
-//
-// Maps PrimeNG CSS variables to Tailwind color tokens.
-// PrimeNG handles light/dark mode switching automatically.
-// Full color scales (50-950) are already available via PrimeNG.
-// Add custom color tokens for Tailwind where PrimeNG does not provide a variable.
-// Please make sure to provide tokens that can be used in both light and dark mode.
-// ========================================================
+/* ========================================================
+ * Tailwind v4 Theme Configuration
+ *
+ * Maps PrimeNG CSS variables to Tailwind color tokens.
+ * PrimeNG handles light/dark mode switching automatically.
+ * Full color scales (50-950) are already available via PrimeNG.
+ * Add custom color tokens for Tailwind where PrimeNG does not provide a variable.
+ * Please make sure to provide tokens that can be used in both light and dark mode.
+ * ======================================================== */
 
 @theme {
-  // Primary Semantic Colors (for bg-primary-default, text-primary, etc.)
+  /* Primary Semantic Colors (for bg-primary-default, text-primary, etc.) */
   --color-primary-DEFAULT: var(--p-primary-color);
   --color-primary-default: var(--p-primary-color);
   --color-primary-hover: var(--p-primary-hover-color);
@@ -29,7 +29,7 @@
   --color-primary-active: var(--p-primary-active-color);
   --color-primary-disabled: var(--p-primary-disabled-color);
 
-  // Secondary Semantic Colors
+  /* Secondary Semantic Colors */
   --color-secondary-DEFAULT: var(--p-secondary-color);
   --color-secondary-default: var(--p-secondary-color);
   --color-secondary-hover: var(--p-secondary-hover-color);
@@ -37,35 +37,35 @@
   --color-secondary-active: var(--p-secondary-active-color);
   --color-secondary-disabled: var(--p-secondary-disabled-color);
 
-  // Info Semantic Colors
+  /* Info Semantic Colors */
   --color-info-DEFAULT: var(--p-info-color);
   --color-info-default: var(--p-info-color);
   --color-info-hover: var(--p-info-hover-color);
   --color-info-active: var(--p-info-active-color);
   --color-info-disabled: var(--p-info-disabled-color);
 
-  // Positive/Success Semantic Colors
+  /* Positive/Success Semantic Colors */
   --color-positive-DEFAULT: var(--p-success-color);
   --color-positive-default: var(--p-success-color);
   --color-positive-hover: var(--p-success-hover-color);
   --color-positive-active: var(--p-success-active-color);
   --color-positive-disabled: var(--p-success-disabled-color);
 
-  // Warning Semantic Colors
+  /* Warning Semantic Colors */
   --color-warning-DEFAULT: var(--p-warn-color);
   --color-warning-default: var(--p-warn-color);
   --color-warning-hover: var(--p-warn-hover-color);
   --color-warning-active: var(--p-warn-active-color);
   --color-warning-disabled: var(--p-warn-disabled-color);
 
-  // Negative/Danger Semantic Colors
+  /* Negative/Danger Semantic Colors */
   --color-negative-DEFAULT: var(--p-danger-color);
   --color-negative-default: var(--p-danger-color);
   --color-negative-hover: var(--p-danger-hover-color);
   --color-negative-active: var(--p-danger-active-color);
   --color-negative-disabled: var(--p-danger-disabled-color);
 
-  // Background Semantic Colors
+  /* Background Semantic Colors */
   --color-background-default: var(--p-background-default);
   --color-background-disabled: var(--p-background-disabled);
   --color-background-footer: var(--p-background-footer);
@@ -73,13 +73,13 @@
   --color-background-surface: var(--p-background-surface);
   --color-background-surface-alt: var(--p-background-surface-alt);
 
-  // Border & Divider Semantic Colors
+  /* Border & Divider Semantic Colors */
   --color-border-default: var(--p-border-default);
   --color-border-hover: var(--p-border-hover);
   --color-divider-default: var(--p-divider-default);
   --color-image-hover-overlay: var(--p-image-hover-overlay);
 
-  // Text Semantic Colors
+  /* Text Semantic Colors */
   --color-text-primary: var(--p-text-primary);
   --color-text-secondary: var(--p-text-secondary);
   --color-text-tertiary: var(--p-text-tertiary);
@@ -91,63 +91,63 @@
   --color-text-on-warn: var(--p-text-on-warn);
   --color-text-on-danger: var(--p-text-on-danger);
 
-  // Quill highlighting Semantic colors
+  /* Quill highlighting Semantic colors */
   --color-compliance-critical-border: var(--color-negative-DEFAULT);
   --color-compliance-critical-bg: color-mix(in srgb, var(--color-negative-DEFAULT) 18%, transparent);
   --color-compliance-warning-border: var(--color-warning-DEFAULT);
   --color-compliance-warning-bg: color-mix(in srgb, var(--color-warning-DEFAULT) 18%, transparent);
 
-  // ========================================================
-  // Border Radius Tokens
-  // ========================================================
-  //
-  // USAGE GUIDE:
-  //
-  // 1. In HTML with Tailwind classes:
-  //    <div class="rounded-sm">   → uses --border-radius-sm
-  //    <div class="rounded-md">   → uses --border-radius-md
-  //    <div class="rounded-lg">   → uses --border-radius-lg
-  //    <div class="rounded-full"> → uses --border-radius-full
-  //
-  // 2. In CSS/SCSS files:
-  //    .my-component {
-  //      border-radius: var(--border-radius-sm);
-  //    }
-  //
-  // 3. With Tailwind's @apply in SCSS:
-  //    .my-component {
-  //      @apply rounded-md;
-  //    }
-  //
-  // ========================================================
+  /* ========================================================
+   * Border Radius Tokens
+   * ========================================================
+   *
+   * USAGE GUIDE:
+   *
+   * 1. In HTML with Tailwind classes:
+   *    <div class="rounded-sm">   → uses --border-radius-sm
+   *    <div class="rounded-md">   → uses --border-radius-md
+   *    <div class="rounded-lg">   → uses --border-radius-lg
+   *    <div class="rounded-full"> → uses --border-radius-full
+   *
+   * 2. In CSS files:
+   *    .my-component {
+   *      border-radius: var(--border-radius-sm);
+   *    }
+   *
+   * 3. With Tailwind's @apply:
+   *    .my-component {
+   *      @apply rounded-md;
+   *    }
+   *
+   * ======================================================== */
 
-  // Checkboxes, Tiny badges, 0.125rem
+  /* Checkboxes, Tiny badges, 0.125rem */
   --border-radius-xs: var(--p-border-radius-xs);
 
-  // Tooltips, Popovers, Info Boxes, 0.25rem
+  /* Tooltips, Popovers, Info Boxes, 0.25rem */
   --border-radius-sm: var(--p-border-radius-sm);
 
-  // Standard, Inputs, Buttons, 0.375rem
+  /* Standard, Inputs, Buttons, 0.375rem */
   --border-radius-md: var(--p-border-radius-md);
 
-  // Cards & Containers, 0.5rem
+  /* Cards & Containers, 0.5rem */
   --border-radius-lg: var(--p-border-radius-lg);
 
-  // Modals, Dialogs, 0.75rem
+  /* Modals, Dialogs, 0.75rem */
   --border-radius-xl: var(--p-border-radius-xl);
 
-  // Hero Cards, 1rem
+  /* Hero Cards, 1rem */
   --border-radius-2xl: var(--p-border-radius-2xl);
 
-  // Avatars, Circles, 50%
+  /* Avatars, Circles, 50% */
   --border-radius-full: 50%;
 }
 
-// ========================================================
-// Explicit Utility Generation for Custom Border Radius
-// ========================================================
+/* ========================================================
+ * Explicit Utility Generation for Custom Border Radius
+ * ======================================================== */
 
-// Status pills
+/* Status pills */
 @utility rounded-pill {
   border-radius: 9999px;
 }
