@@ -28,6 +28,7 @@ import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/compo
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
+import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
@@ -258,6 +259,7 @@ export class JobCreationFormComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private aiApi = inject(AiResourceApi);
+  private genderBiasApi = inject(GenderBiasAnalysisResourceApi);
   private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
   private aiFeatureStatusService = inject(AiFeatureStatusService);
@@ -1574,6 +1576,7 @@ export class JobCreationFormComponent {
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         // highlighting before translation
+        await firstValueFrom(this.genderBiasApi.analyzeHtmlContent({ text: description, language: currentLang })).then(issues => this.biasedIssues.set(issues)).catch(() => undefined);
         void Promise.all([
           this.analyzeAndUpdateScore(currentLang),
           // fire and forget
