@@ -161,7 +161,13 @@
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine",
-        "custom": "Eigenes"
+        "custom": "Eigenes",
+        "durations": {
+          "30min": "30 Min.",
+          "45min": "45 Min.",
+          "60min": "60 Min.",
+          "90min": "90 Min."
+        }
       },
       "delete": {
         "confirm": {

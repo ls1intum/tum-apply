@@ -161,7 +161,13 @@
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
         "useForAll": "Use same location for all slots",
-        "custom": "Custom"
+        "custom": "Custom",
+        "durations": {
+          "30min": "30 min",
+          "45min": "45 min",
+          "60min": "60 min",
+          "90min": "90 min"
+        }
       },
       "delete": {
         "confirm": {
