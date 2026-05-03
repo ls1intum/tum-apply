@@ -62,10 +62,11 @@ describe('ButtonGroupComponent', () => {
     expect(container.className).toContain('flex-row');
   });
 
-  it('should apply full width class when fullWidth is true', () => {
+  it('should apply full width utilities when fullWidth is true', () => {
     const fixture = createButtonFixture({ fullWidth: true });
     const container = fixture.nativeElement.querySelector('div');
-    expect(container.className).toContain('button-group-full-width');
+    expect(container.className).toContain('flex-auto');
+    expect(container.className).toContain('self-stretch');
   });
 
   it('should trigger button onClick handler when clicked', () => {

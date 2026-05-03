@@ -20,7 +20,6 @@ import TranslateDirective from '../../../language/translate.directive';
   standalone: true,
   imports: [InputOtpModule, ButtonModule, ButtonComponent, TranslateDirective, ReactiveFormsModule],
   templateUrl: './otp-input.html',
-  styleUrl: './otp-input.scss',
 })
 export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly config = inject(ApplicationConfigService);

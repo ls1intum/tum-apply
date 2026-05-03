@@ -66,7 +66,6 @@ const applyflow = 'entity.toast.applyFlow';
     MessageComponent,
   ],
   templateUrl: './application-creation-form.component.html',
-  styleUrl: './application-creation-form.component.scss',
   providers: [DialogService],
   standalone: true,
 })
