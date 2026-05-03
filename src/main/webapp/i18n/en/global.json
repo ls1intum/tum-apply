@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Application for ",
       "applicant": {
-        "header": "Application for '{jobTitle}'",
+        "header": "Application for {jobTitle}",
         "title_prefix": "Application for"
       },
       "position_overview": "Position Overview",
