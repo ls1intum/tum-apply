@@ -505,9 +505,8 @@ export class UploadButtonComponent {
     try {
       await operation();
       this.finishPersistenceTracking(true);
-    } catch (error) {
+    } catch {
       this.finishPersistenceTracking(false);
-      throw error;
     }
   }
 

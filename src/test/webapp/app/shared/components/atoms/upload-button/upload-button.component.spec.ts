@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { UploadButtonComponent, DocumentType } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { SavingStates } from 'app/shared/constants/saving-states';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -26,14 +27,6 @@ describe('UploadButtonComponent', () => {
   let applicationApi: ApplicationResourceApiMock;
   let applicantApi: ApplicantResourceApiMock;
   let toastService: ToastServiceMock;
-
-  async function runSilently(action: () => Promise<unknown>): Promise<void> {
-    try {
-      await action();
-    } catch {
-      // Error cases are asserted through component side effects in these tests.
-    }
-  }
 
   function createUploadButtonFixture(inputs: {
     documentType: DocumentType;
@@ -178,6 +171,7 @@ describe('UploadButtonComponent', () => {
     const component = fixture.componentInstance;
 
     const toastSpy = vi.spyOn(toastService, 'showErrorKey');
+    const persistenceFinishedSpy = vi.spyOn(component.persistenceFinished, 'emit');
 
     const error = new Error('Delete failed');
 
@@ -188,9 +182,10 @@ describe('UploadButtonComponent', () => {
     const document = { id: '1', name: 'doc1', size: 1234 };
     component.documentIds.set([document]);
 
-    await runSilently(() => component.deleteDictionary(document));
+    await component.deleteDictionary(document);
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.delete_failed');
+    expect(persistenceFinishedSpy).toHaveBeenCalledWith(SavingStates.FAILED);
   });
 
   it('should set isUploading to false on clear', () => {
@@ -226,7 +221,7 @@ describe('UploadButtonComponent', () => {
     const doc = { id: '1', name: 'newName', size: 1234 };
     component.documentIds.set([doc]);
 
-    await runSilently(() => component.renameDocument(doc));
+    await component.renameDocument(doc);
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.rename_failed');
   });
@@ -270,7 +265,7 @@ describe('UploadButtonComponent', () => {
 
     const firstValueFromSpy = vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Simulated upload failure'));
 
-    await runSilently(() => component.onUpload());
+    await component.onUpload();
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.upload_failed');
 
@@ -491,19 +486,16 @@ describe('UploadButtonComponent', () => {
       component.pendingDuplicateFile.set(newFile);
 
       const toastSpy = vi.spyOn(toastService, 'showErrorKey');
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Mock delete failure
       vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
       vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Delete failed'));
 
-      await runSilently(() => component.onConfirmDuplicate());
+      await component.onConfirmDuplicate();
 
       expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
       expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
       expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
     });
 
     it('should handle documentIds becoming undefined during replace (race condition)', async () => {
