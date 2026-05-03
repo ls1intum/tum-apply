@@ -11,13 +11,14 @@ import { IntervieweeDetailDTO } from 'app/generated/model/interviewee-detail-dto
 import { UpdateAssessmentDTO } from 'app/generated/model/update-assessment-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { Section } from 'app/shared/components/atoms/section/section';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
 import { Prose } from 'app/shared/components/atoms/prose/prose';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatFullName } from 'app/shared/util/name.util';
 
@@ -35,13 +36,13 @@ import { formatFullName } from 'app/shared/util/name.util';
     FontAwesomeModule,
     DividerModule,
     BackButtonComponent,
-    ButtonComponent,
     Section,
     RatingComponent,
     EditorComponent,
     DocumentSection,
     Prose,
     UserAvatarComponent,
+    SavingBadgeComponent,
   ],
   templateUrl: './interviewee-assessment.component.html',
 })
@@ -53,7 +54,7 @@ export class IntervieweeAssessmentComponent {
   protected readonly rating = signal<number | undefined>(undefined);
   protected readonly notesControl = new FormControl<string>('', { nonNullable: true });
 
-  protected readonly saving = signal<boolean>(false);
+  protected readonly autoSave = new AutoSaveController({ save: () => this.persistNotes() });
   protected readonly params = toSignal(inject(ActivatedRoute).paramMap);
   protected readonly queryParamsSignal = toSignal(inject(ActivatedRoute).queryParams);
 
@@ -128,28 +129,19 @@ export class IntervieweeAssessmentComponent {
     void this.saveRating(processId, intervieweeId, rating);
   });
 
-  async saveNotes(): Promise<void> {
-    const processId = this.processId();
-    const intervieweeId = this.intervieweeId();
-    const notes = this.notesControl.value;
+  private readonly notesValueSignal = toSignal(this.notesControl.valueChanges, { initialValue: this.notesControl.value });
 
-    if (!processId || !intervieweeId) return;
-
-    this.saving.set(true);
-
-    const dto: UpdateAssessmentDTO = { notes };
-
-    try {
-      const updated = await firstValueFrom(this.interviewApi.updateAssessment(processId, intervieweeId, dto));
-
-      this.interviewee.set(updated);
-      this.toastService.showSuccessKey('interview.assessment.notes.saved');
-    } catch {
-      this.toastService.showErrorKey('interview.assessment.error.saveFailed');
-    } finally {
-      this.saving.set(false);
-    }
-  }
+  /**
+   * Debounce notes edits through {@link AutoSaveController}. Skips during the initial load
+   * (so simply opening the page does not flip the badge) and when the form value still matches
+   * the last persisted snapshot.
+   */
+  private readonly notesAutoSaveEffect = effect(() => {
+    const notes = this.notesValueSignal();
+    if (this.isInitializing()) return;
+    if (notes === (this.interviewee()?.assessmentNotes ?? '')) return;
+    this.autoSave.notifyChanged();
+  });
 
   // Navigates to process detail or overview fallback
   goBack(): void {
@@ -163,6 +155,27 @@ export class IntervieweeAssessmentComponent {
       void this.router.navigate(['/interviews', processId]);
     } else {
       void this.router.navigate(['/interviews/overview']);
+    }
+  }
+
+  /**
+   * Save callback invoked by {@link AutoSaveController} when the debounce timer fires.
+   * Returns `true` on success so the controller can flip the badge to `SAVED`.
+   */
+  private async persistNotes(): Promise<boolean> {
+    const processId = this.processId();
+    const intervieweeId = this.intervieweeId();
+    if (!processId || !intervieweeId) return false;
+
+    const dto: UpdateAssessmentDTO = { notes: this.notesControl.value };
+
+    try {
+      const updated = await firstValueFrom(this.interviewApi.updateAssessment(processId, intervieweeId, dto));
+      this.interviewee.set(updated);
+      return true;
+    } catch {
+      this.toastService.showErrorKey('interview.assessment.error.saveFailed');
+      return false;
     }
   }
 
