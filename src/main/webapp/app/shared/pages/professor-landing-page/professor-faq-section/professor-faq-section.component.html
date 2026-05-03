@@ -13,7 +13,7 @@
         <p-accordion-panel class="border border-border-default rounded-xl overflow-hidden" [value]="tab.value">
           <p-accordion-header class="font-semibold">{{ tab.title | translate }}</p-accordion-header>
           <p-accordion-content>
-            <div class="leading-relaxed" [innerHTML]="tab.content | translate"></div>
+            <div class="pt-2 leading-relaxed" [innerHTML]="tab.content | translate"></div>
             <div class="registration-button">
               @if (tab.value === 'registration') {
                 <jhi-button (click)="openRegistrationForm()" [shouldTranslate]="true" [label]="translationKey + '.registration.button'" />
