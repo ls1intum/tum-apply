@@ -53,6 +53,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,304 +117,329 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         cleanExportRoot();
     }
 
-    @Test
-    void statusRequiresAuthentication() {
-        api.getAndReturnBytes(STATUS_URL, Map.of(), 401, MediaType.ALL);
+    // ===== STATUS ENDPOINT =====
+    @Nested
+    class StatusTests {
+
+        @Test
+        void statusRequiresAuthentication() {
+            api.getAndReturnBytes(STATUS_URL, Map.of(), 401, MediaType.ALL);
+        }
+
+        @Test
+        void statusReflectsCooldownAndLatestRequest() {
+            User user = savedUser("status-user@tum.de");
+
+            LocalDateTime lastRequested = LocalDateTime.now(ZoneOffset.UTC).minusDays(1);
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.REQUESTED);
+            request.setLastRequestedAt(lastRequested);
+            DataExportRequest savedRequest = dataExportRequestRepository.saveAndFlush(request);
+            DataExportRequest reloadedRequest = dataExportRequestRepository.findById(savedRequest.getExportRequestId()).orElseThrow();
+
+            DataExportStatusDTO status = api
+                .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(STATUS_URL, Map.of(), DataExportStatusDTO.class, 200, MediaType.APPLICATION_JSON);
+
+            assertThat(status.status()).isEqualTo(DataExportState.REQUESTED);
+            assertThat(status.lastRequestedAt()).isEqualTo(reloadedRequest.getLastRequestedAt());
+            assertThat(status.nextAllowedAt()).isEqualTo(reloadedRequest.getLastRequestedAt().plusDays(7));
+            assertThat(status.cooldownSeconds()).isGreaterThan(0);
+        }
     }
 
-    @Test
-    void requestRequiresAuthentication() {
-        api.postAndRead(REQUEST_URL, Map.of(), Void.class, 401, MediaType.ALL);
+    // ===== REQUEST EXPORT =====
+    @Nested
+    class RequestExportTests {
+
+        @Test
+        void requestRequiresAuthentication() {
+            api.postAndRead(REQUEST_URL, Map.of(), Void.class, 401, MediaType.ALL);
+        }
+
+        @Test
+        void requestCreatesPendingExport() {
+            User user = savedUser("request-user@tum.de");
+
+            api
+                .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(REQUEST_URL, Map.of(), Void.class, 202, MediaType.APPLICATION_JSON);
+
+            DataExportRequest latest = dataExportRequestRepository.findTop1ByUserUserIdOrderByCreatedAtDesc(user.getUserId()).orElseThrow();
+
+            assertThat(latest.getStatus()).isEqualTo(DataExportState.REQUESTED);
+            assertThat(latest.getLastRequestedAt()).isNotNull();
+        }
+
+        @Test
+        void requestRejectsWhenActiveExists() {
+            User user = savedUser("active-request@tum.de");
+
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.REQUESTED);
+            request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(8));
+            dataExportRequestRepository.saveAndFlush(request);
+
+            api
+                .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(REQUEST_URL, Map.of(), Void.class, 409, MediaType.APPLICATION_JSON);
+        }
+
+        @Test
+        void requestRejectsWhenRateLimited() {
+            User user = savedUser("rate-limit@tum.de");
+
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.DOWNLOADED);
+            request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(2));
+            dataExportRequestRepository.saveAndFlush(request);
+
+            api
+                .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(REQUEST_URL, Map.of(), Void.class, 429, MediaType.APPLICATION_JSON);
+        }
     }
 
-    @Test
-    void statusReflectsCooldownAndLatestRequest() {
-        User user = savedUser("status-user@tum.de");
+    // ===== EXPORT PROCESSING =====
+    @Nested
+    class ExportProcessingTests {
 
-        LocalDateTime lastRequested = LocalDateTime.now(ZoneOffset.UTC).minusDays(1);
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.REQUESTED);
-        request.setLastRequestedAt(lastRequested);
-        DataExportRequest savedRequest = dataExportRequestRepository.saveAndFlush(request);
-        DataExportRequest reloadedRequest = dataExportRequestRepository.findById(savedRequest.getExportRequestId()).orElseThrow();
+        @Test
+        void pendingExportIsProcessedAndZipCreated() throws Exception {
+            User user = savedUser("process-export@tum.de");
 
-        DataExportStatusDTO status = api
-            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(STATUS_URL, Map.of(), DataExportStatusDTO.class, 200, MediaType.APPLICATION_JSON);
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.REQUESTED);
+            request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+            request = dataExportRequestRepository.saveAndFlush(request);
 
-        assertThat(status.status()).isEqualTo(DataExportState.REQUESTED);
-        assertThat(status.lastRequestedAt()).isEqualTo(reloadedRequest.getLastRequestedAt());
-        assertThat(status.nextAllowedAt()).isEqualTo(reloadedRequest.getLastRequestedAt().plusDays(7));
-        assertThat(status.cooldownSeconds()).isGreaterThan(0);
+            userDataExportService.processPendingDataExports();
+
+            DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+            assertThat(updated.getStatus()).isEqualTo(DataExportState.EMAIL_SENT);
+            assertThat(updated.getFilePath()).startsWith(exportRootConfig);
+            assertThat(updated.getDownloadToken()).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+
+            Path zipPath = Path.of(updated.getFilePath());
+            assertThat(Files.exists(zipPath)).isTrue();
+
+            Set<String> entries = readZipEntries(zipPath);
+            assertThat(entries).contains("data/profile.csv", "README_DATA_EXPORT_DE.txt", "README_DATA_EXPORT_EN.txt");
+
+            String readmeDe = readZipEntryAsString(zipPath, "README_DATA_EXPORT_DE.txt");
+            assertThat(readmeDe).contains("data/profile.csv").contains("Datenexport");
+
+            String readmeEn = readZipEntryAsString(zipPath, "README_DATA_EXPORT_EN.txt");
+            assertThat(readmeEn).contains("data/profile.csv").contains("Data Export");
+        }
+
+        @Test
+        void exportIncludesUploadedDocumentsWithPdfExtension() throws Exception {
+            User user = savedUser("documents-user@tum.de");
+            ApplicantTestData.attachApplicantRole(user);
+            user = userRepository.saveAndFlush(user);
+            Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, user);
+
+            ApplicantDocument document = DocumentTestData.savedApplicantDocument(
+                storageRootConfig,
+                documentRepository,
+                user,
+                applicant,
+                DocumentType.CV,
+                "/testdocs/test-doc1.pdf",
+                "export-test-doc1.pdf"
+            );
+
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.REQUESTED);
+            request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+            request = dataExportRequestRepository.saveAndFlush(request);
+
+            userDataExportService.processPendingDataExports();
+
+            DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+            Set<String> entries = readZipEntries(Path.of(updated.getFilePath()));
+
+            String expectedEntry = "documents/uploaded/" + document.getDocumentId() + ".pdf";
+            assertThat(entries).contains(expectedEntry);
+        }
+
+        @Test
+        @Transactional
+        void exportIncludesApplicantDataWhenApplicantRoleExists() throws Exception {
+            User user = savedUser("applicant-export@tum.de");
+            ApplicantTestData.attachApplicantRole(user);
+            user = userRepository.saveAndFlush(user);
+
+            Applicant applicant = new Applicant();
+            applicant.setUser(user);
+            applicant.setStreet("Teststr. 1");
+            applicant.setPostalCode("12345");
+            applicant.setCity("Munich");
+            applicant.setCountry("de");
+            applicantRepository.saveAndFlush(applicant);
+
+            Path zipPath = processExportAndGetZipPath(user);
+            String profileCsv = readZipEntryAsString(zipPath, "data/profile.csv");
+            String applicantProfileCsv = readZipEntryAsString(zipPath, "data/applicant_profile.csv");
+            Set<String> entries = readZipEntries(zipPath);
+
+            assertThat(profileCsv).contains("email").contains("applicant-export@tum.de");
+            assertThat(applicantProfileCsv).contains("city").contains("Munich");
+            assertThat(entries).doesNotContain("data/staff_supervised_jobs.csv");
+        }
+
+        @Test
+        void exportIncludesStaffDataWhenStaffRoleExists() throws Exception {
+            ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+            User user = UserTestData.savedProfessor(userRepository, researchGroup);
+            JobTestData.saved(jobRepository, user, researchGroup, "Staff Export Job", JobState.DRAFT, LocalDate.now());
+
+            Path zipPath = processExportAndGetZipPath(user);
+            String profileCsv = readZipEntryAsString(zipPath, "data/profile.csv");
+            String supervisedJobsCsv = readZipEntryAsString(zipPath, "data/staff_supervised_jobs.csv");
+            Set<String> entries = readZipEntries(zipPath);
+
+            assertThat(profileCsv).contains("email").contains(user.getEmail());
+            assertThat(supervisedJobsCsv).contains("job_title").contains("Staff Export Job");
+            assertThat(entries).doesNotContain("data/applicant_profile.csv");
+        }
     }
 
-    @Test
-    void requestCreatesPendingExport() {
-        User user = savedUser("request-user@tum.de");
+    // ===== DOWNLOAD EXPORT =====
+    @Nested
+    class DownloadExportTests {
 
-        api
-            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(REQUEST_URL, Map.of(), Void.class, 202, MediaType.APPLICATION_JSON);
+        @Test
+        void downloadRequiresAuthenticationAndUpdatesStatus() {
+            User user = savedUser("download-user@tum.de");
 
-        DataExportRequest latest = dataExportRequestRepository.findTop1ByUserUserIdOrderByCreatedAtDesc(user.getUserId()).orElseThrow();
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.REQUESTED);
+            request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+            request = dataExportRequestRepository.saveAndFlush(request);
 
-        assertThat(latest.getStatus()).isEqualTo(DataExportState.REQUESTED);
-        assertThat(latest.getLastRequestedAt()).isNotNull();
+            userDataExportService.processPendingDataExports();
+
+            DataExportRequest ready = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+            String url = String.format(DOWNLOAD_URL, ready.getDownloadToken());
+
+            MockHttpServletResponse response = api
+                .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+                .getAndReturnResponse(url, Map.of(), 200, MediaType.valueOf("application/zip"));
+
+            assertThat(response.getContentType()).isEqualTo("application/zip");
+            assertThat(response.getHeader("Content-Disposition")).isNotNull().contains("attachment");
+
+            DataExportRequest downloaded = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+            assertThat(downloaded.getStatus()).isEqualTo(DataExportState.DOWNLOADED);
+        }
+
+        @Test
+        void downloadRejectsInvalidToken() {
+            User user = savedUser("invalid-token@tum.de");
+            String url = String.format(DOWNLOAD_URL, UUID.randomUUID());
+            api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 404, MediaType.ALL);
+        }
+
+        @Test
+        void downloadRejectsExpiredToken() {
+            User user = savedUser("expired-token@tum.de");
+
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.EMAIL_SENT);
+            request.setDownloadToken(UUID.randomUUID().toString());
+            request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
+            request.setFilePath("/tmp/nonexistent.zip");
+            dataExportRequestRepository.saveAndFlush(request);
+
+            String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
+            api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
+        }
+
+        @Test
+        void downloadRejectsNotReadyStatus() {
+            User user = savedUser("not-ready@tum.de");
+
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.REQUESTED);
+            request.setDownloadToken(UUID.randomUUID().toString());
+            request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+            request.setFilePath("/tmp/nonexistent.zip");
+            dataExportRequestRepository.saveAndFlush(request);
+
+            String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
+            api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
+        }
+
+        @Test
+        void downloadRejectsMissingFile() {
+            User user = savedUser("missing-file@tum.de");
+
+            DataExportRequest request = new DataExportRequest();
+            request.setUser(user);
+            request.setStatus(DataExportState.EMAIL_SENT);
+            request.setDownloadToken(UUID.randomUUID().toString());
+            request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+            request.setFilePath("/tmp/does-not-exist.zip");
+            dataExportRequestRepository.saveAndFlush(request);
+
+            String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
+            api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 500, MediaType.ALL);
+        }
     }
 
-    @Test
-    void requestRejectsWhenActiveExists() {
-        User user = savedUser("active-request@tum.de");
+    // ===== ENTITY ANNOTATION COVERAGE =====
+    @Nested
+    class EntityAnnotationCoverageTests {
 
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.REQUESTED);
-        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(8));
-        dataExportRequestRepository.saveAndFlush(request);
+        @Test
+        void annotatedEntitiesMustHaveRuntimeCsvCoverage() throws Exception {
+            Set<String> settingsEntries = readZipEntries(processExportAndGetZipPath(savedUser("settings-coverage@tum.de")));
 
-        api
-            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(REQUEST_URL, Map.of(), Void.class, 409, MediaType.APPLICATION_JSON);
-    }
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
+            User applicantUser = applicant.getUser();
+            Set<String> applicantEntries = readZipEntries(processExportAndGetZipPath(applicantUser));
 
-    @Test
-    void requestRejectsWhenRateLimited() {
-        User user = savedUser("rate-limit@tum.de");
+            ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+            User staffUser = UserTestData.savedProfessor(userRepository, researchGroup);
+            staffUser = userRepository.findById(staffUser.getUserId()).orElseThrow();
+            JobTestData.saved(jobRepository, staffUser, researchGroup, "Coverage Job", JobState.DRAFT, LocalDate.now());
+            Set<String> staffEntries = readZipEntries(processExportAndGetZipPath(staffUser));
 
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.DOWNLOADED);
-        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(2));
-        dataExportRequestRepository.saveAndFlush(request);
+            Map<UserDataExportProviderType, Set<String>> entriesByProviderType = new EnumMap<>(UserDataExportProviderType.class);
+            entriesByProviderType.put(UserDataExportProviderType.USER_SETTINGS, settingsEntries);
+            entriesByProviderType.put(UserDataExportProviderType.APPLICANT, applicantEntries);
+            entriesByProviderType.put(UserDataExportProviderType.STAFF, staffEntries);
 
-        api
-            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(REQUEST_URL, Map.of(), Void.class, 429, MediaType.APPLICATION_JSON);
-    }
+            Map<String, String> expectedCsvEntryByEntity = expectedCsvEntryByEntityClassName();
+            List<Class<?>> annotatedEntities = findExportAnnotatedEntities();
 
-    @Test
-    void pendingExportIsProcessedAndZipCreated() throws Exception {
-        User user = savedUser("process-export@tum.de");
+            Set<String> discoveredClassNames = annotatedEntities.stream().map(Class::getName).collect(Collectors.toSet());
+            assertThat(expectedCsvEntryByEntity.keySet())
+                .as("Every @ExportedUserData entity must have an explicit runtime CSV coverage mapping")
+                .isEqualTo(discoveredClassNames);
 
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.REQUESTED);
-        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
-        request = dataExportRequestRepository.saveAndFlush(request);
+            for (Class<?> entityClass : annotatedEntities) {
+                ExportedUserData annotation = entityClass.getAnnotation(ExportedUserData.class);
+                assertThat(annotation).isNotNull();
 
-        userDataExportService.processPendingDataExports();
+                String csvEntry = expectedCsvEntryByEntity.get(entityClass.getName());
+                Set<String> entries = entriesByProviderType.get(annotation.by());
 
-        DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
-        assertThat(updated.getStatus()).isEqualTo(DataExportState.EMAIL_SENT);
-        assertThat(updated.getFilePath()).startsWith(exportRootConfig);
-        assertThat(updated.getDownloadToken()).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-
-        Path zipPath = Path.of(updated.getFilePath());
-        assertThat(Files.exists(zipPath)).isTrue();
-
-        Set<String> entries = readZipEntries(zipPath);
-        assertThat(entries).contains("data/profile.csv", "README_DATA_EXPORT_DE.txt", "README_DATA_EXPORT_EN.txt");
-
-        String readmeDe = readZipEntryAsString(zipPath, "README_DATA_EXPORT_DE.txt");
-        assertThat(readmeDe).contains("data/profile.csv").contains("Datenexport");
-
-        String readmeEn = readZipEntryAsString(zipPath, "README_DATA_EXPORT_EN.txt");
-        assertThat(readmeEn).contains("data/profile.csv").contains("Data Export");
-    }
-
-    @Test
-    void downloadRequiresAuthenticationAndUpdatesStatus() {
-        User user = savedUser("download-user@tum.de");
-
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.REQUESTED);
-        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
-        request = dataExportRequestRepository.saveAndFlush(request);
-
-        userDataExportService.processPendingDataExports();
-
-        DataExportRequest ready = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
-        String url = String.format(DOWNLOAD_URL, ready.getDownloadToken());
-
-        MockHttpServletResponse response = api
-            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .getAndReturnResponse(url, Map.of(), 200, MediaType.valueOf("application/zip"));
-
-        assertThat(response.getContentType()).isEqualTo("application/zip");
-        assertThat(response.getHeader("Content-Disposition")).isNotNull().contains("attachment");
-
-        DataExportRequest downloaded = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
-        assertThat(downloaded.getStatus()).isEqualTo(DataExportState.DOWNLOADED);
-    }
-
-    @Test
-    void downloadRejectsInvalidToken() {
-        User user = savedUser("invalid-token@tum.de");
-        String url = String.format(DOWNLOAD_URL, UUID.randomUUID());
-        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 404, MediaType.ALL);
-    }
-
-    @Test
-    void downloadRejectsExpiredToken() {
-        User user = savedUser("expired-token@tum.de");
-
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.EMAIL_SENT);
-        request.setDownloadToken(UUID.randomUUID().toString());
-        request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
-        request.setFilePath("/tmp/nonexistent.zip");
-        dataExportRequestRepository.saveAndFlush(request);
-
-        String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
-        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
-    }
-
-    @Test
-    void downloadRejectsNotReadyStatus() {
-        User user = savedUser("not-ready@tum.de");
-
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.REQUESTED);
-        request.setDownloadToken(UUID.randomUUID().toString());
-        request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
-        request.setFilePath("/tmp/nonexistent.zip");
-        dataExportRequestRepository.saveAndFlush(request);
-
-        String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
-        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
-    }
-
-    @Test
-    void downloadRejectsMissingFile() {
-        User user = savedUser("missing-file@tum.de");
-
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.EMAIL_SENT);
-        request.setDownloadToken(UUID.randomUUID().toString());
-        request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
-        request.setFilePath("/tmp/does-not-exist.zip");
-        dataExportRequestRepository.saveAndFlush(request);
-
-        String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
-        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 500, MediaType.ALL);
-    }
-
-    @Test
-    void exportIncludesUploadedDocumentsWithPdfExtension() throws Exception {
-        User user = savedUser("documents-user@tum.de");
-        ApplicantTestData.attachApplicantRole(user);
-        user = userRepository.saveAndFlush(user);
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, user);
-
-        ApplicantDocument document = DocumentTestData.savedApplicantDocument(
-            storageRootConfig,
-            documentRepository,
-            user,
-            applicant,
-            DocumentType.CV,
-            "/testdocs/test-doc1.pdf",
-            "export-test-doc1.pdf"
-        );
-
-        DataExportRequest request = new DataExportRequest();
-        request.setUser(user);
-        request.setStatus(DataExportState.REQUESTED);
-        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
-        request = dataExportRequestRepository.saveAndFlush(request);
-
-        userDataExportService.processPendingDataExports();
-
-        DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
-        Set<String> entries = readZipEntries(Path.of(updated.getFilePath()));
-
-        String expectedEntry = "documents/uploaded/" + document.getDocumentId() + ".pdf";
-        assertThat(entries).contains(expectedEntry);
-    }
-
-    @Test
-    @Transactional
-    void exportIncludesApplicantDataWhenApplicantRoleExists() throws Exception {
-        User user = savedUser("applicant-export@tum.de");
-        ApplicantTestData.attachApplicantRole(user);
-        user = userRepository.saveAndFlush(user);
-
-        Applicant applicant = new Applicant();
-        applicant.setUser(user);
-        applicant.setStreet("Teststr. 1");
-        applicant.setPostalCode("12345");
-        applicant.setCity("Munich");
-        applicant.setCountry("de");
-        applicantRepository.saveAndFlush(applicant);
-
-        Path zipPath = processExportAndGetZipPath(user);
-        String profileCsv = readZipEntryAsString(zipPath, "data/profile.csv");
-        String applicantProfileCsv = readZipEntryAsString(zipPath, "data/applicant_profile.csv");
-        Set<String> entries = readZipEntries(zipPath);
-
-        assertThat(profileCsv).contains("email").contains("applicant-export@tum.de");
-        assertThat(applicantProfileCsv).contains("city").contains("Munich");
-        assertThat(entries).doesNotContain("data/staff_supervised_jobs.csv");
-    }
-
-    @Test
-    void exportIncludesStaffDataWhenStaffRoleExists() throws Exception {
-        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
-        User user = UserTestData.savedProfessor(userRepository, researchGroup);
-        JobTestData.saved(jobRepository, user, researchGroup, "Staff Export Job", JobState.DRAFT, LocalDate.now());
-
-        Path zipPath = processExportAndGetZipPath(user);
-        String profileCsv = readZipEntryAsString(zipPath, "data/profile.csv");
-        String supervisedJobsCsv = readZipEntryAsString(zipPath, "data/staff_supervised_jobs.csv");
-        Set<String> entries = readZipEntries(zipPath);
-
-        assertThat(profileCsv).contains("email").contains(user.getEmail());
-        assertThat(supervisedJobsCsv).contains("job_title").contains("Staff Export Job");
-        assertThat(entries).doesNotContain("data/applicant_profile.csv");
-    }
-
-    @Test
-    void annotatedEntitiesMustHaveRuntimeCsvCoverage() throws Exception {
-        Set<String> settingsEntries = readZipEntries(processExportAndGetZipPath(savedUser("settings-coverage@tum.de")));
-
-        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
-        User applicantUser = applicant.getUser();
-        Set<String> applicantEntries = readZipEntries(processExportAndGetZipPath(applicantUser));
-
-        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
-        User staffUser = UserTestData.savedProfessor(userRepository, researchGroup);
-        staffUser = userRepository.findById(staffUser.getUserId()).orElseThrow();
-        JobTestData.saved(jobRepository, staffUser, researchGroup, "Coverage Job", JobState.DRAFT, LocalDate.now());
-        Set<String> staffEntries = readZipEntries(processExportAndGetZipPath(staffUser));
-
-        Map<UserDataExportProviderType, Set<String>> entriesByProviderType = new EnumMap<>(UserDataExportProviderType.class);
-        entriesByProviderType.put(UserDataExportProviderType.USER_SETTINGS, settingsEntries);
-        entriesByProviderType.put(UserDataExportProviderType.APPLICANT, applicantEntries);
-        entriesByProviderType.put(UserDataExportProviderType.STAFF, staffEntries);
-
-        Map<String, String> expectedCsvEntryByEntity = expectedCsvEntryByEntityClassName();
-        List<Class<?>> annotatedEntities = findExportAnnotatedEntities();
-
-        Set<String> discoveredClassNames = annotatedEntities.stream().map(Class::getName).collect(Collectors.toSet());
-        assertThat(expectedCsvEntryByEntity.keySet())
-            .as("Every @ExportedUserData entity must have an explicit runtime CSV coverage mapping")
-            .isEqualTo(discoveredClassNames);
-
-        for (Class<?> entityClass : annotatedEntities) {
-            ExportedUserData annotation = entityClass.getAnnotation(ExportedUserData.class);
-            assertThat(annotation).isNotNull();
-
-            String csvEntry = expectedCsvEntryByEntity.get(entityClass.getName());
-            Set<String> entries = entriesByProviderType.get(annotation.by());
-
-            assertThat(entries).as("Missing runtime export archive for provider type %s", annotation.by()).isNotNull();
-            assertThat(entries)
-                .as("Expected CSV entry '%s' for entity %s to exist in export archive", csvEntry, entityClass.getName())
-                .contains(csvEntry);
+                assertThat(entries).as("Missing runtime export archive for provider type %s", annotation.by()).isNotNull();
+                assertThat(entries)
+                    .as("Expected CSV entry '%s' for entity %s to exist in export archive", csvEntry, entityClass.getName())
+                    .contains(csvEntry);
+            }
         }
     }
 

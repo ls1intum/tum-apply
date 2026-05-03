@@ -45,6 +45,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -105,60 +106,70 @@ class ApplicantRetentionServiceIntegrationTest {
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository, DepartmentTestData.savedDefault(departmentRepository, school));
     }
 
-    @Test
-    void shouldDeleteApplicationAndAssociatedData() {
-        TestFixtures fixtures = createApplicationWithRelations(null);
+    // ===== PROCESS APPLICATIONS =====
+    @Nested
+    class ProcessApplicationsTests {
 
-        Page<UUID> page = new PageImpl<>(List.of(fixtures.application.getApplicationId()));
-        applicantRetentionService.processApplications(page, false, LocalDateTime.now());
+        @Test
+        void shouldDeleteApplicationAndAssociatedData() {
+            TestFixtures fixtures = createApplicationWithRelations(null);
 
-        assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isNotPresent();
-        assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isNotPresent();
-        assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isNotPresent();
-        assertThat(documentRepository.findById(fixtures.dictionary.getDocumentId())).isNotPresent();
-        assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isNotPresent();
+            Page<UUID> page = new PageImpl<>(List.of(fixtures.application.getApplicationId()));
+            applicantRetentionService.processApplications(page, false, LocalDateTime.now());
+
+            assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isNotPresent();
+            assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isNotPresent();
+            assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isNotPresent();
+            assertThat(documentRepository.findById(fixtures.dictionary.getDocumentId())).isNotPresent();
+            assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isNotPresent();
+        }
+
+        @Test
+        void shouldNotDeleteAnythingInDryRun() {
+            TestFixtures fixtures = createApplicationWithRelations(null);
+
+            Page<UUID> page = new PageImpl<>(List.of(fixtures.application.getApplicationId()));
+            applicantRetentionService.processApplications(page, true, LocalDateTime.now());
+
+            assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isPresent();
+            assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isPresent();
+            assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isPresent();
+            assertThat(documentRepository.findById(fixtures.dictionary.getDocumentId())).isPresent();
+            assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isPresent();
+        }
+
+        @Test
+        void shouldContinueWhenApplicationMissing() {
+            TestFixtures fixtures = createApplicationWithRelations(null);
+            UUID missingId = UUID.randomUUID();
+
+            Page<UUID> page = new PageImpl<>(List.of(missingId, fixtures.application.getApplicationId()));
+            applicantRetentionService.processApplications(page, false, LocalDateTime.now());
+
+            assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isNotPresent();
+        }
     }
 
-    @Test
-    void shouldNotDeleteAnythingInDryRun() {
-        TestFixtures fixtures = createApplicationWithRelations(null);
+    // ===== MULTI-APPLICATION ISOLATION =====
+    @Nested
+    class MultiApplicationIsolationTests {
 
-        Page<UUID> page = new PageImpl<>(List.of(fixtures.application.getApplicationId()));
-        applicantRetentionService.processApplications(page, true, LocalDateTime.now());
+        @Test
+        void shouldKeepDocumentsOfOtherApplicationsForSameApplicant() {
+            DualApplicationFixtures fixtures = createTwoApplicationsForApplicant();
 
-        assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isPresent();
-        assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isPresent();
-        assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isPresent();
-        assertThat(documentRepository.findById(fixtures.dictionary.getDocumentId())).isPresent();
-        assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isPresent();
-    }
+            Page<UUID> page = new PageImpl<>(List.of(fixtures.oldApplication.getApplicationId()));
+            applicantRetentionService.processApplications(page, false, LocalDateTime.now());
 
-    @Test
-    void shouldContinueWhenApplicationMissing() {
-        TestFixtures fixtures = createApplicationWithRelations(null);
-        UUID missingId = UUID.randomUUID();
+            // Old application and its artifacts are gone
+            assertThat(applicationRepository.findById(fixtures.oldApplication.getApplicationId())).isNotPresent();
+            assertThat(applicationReviewRepository.findById(fixtures.oldReview.getApplicationReviewId())).isNotPresent();
+            assertThat(documentRepository.findById(fixtures.oldDictionary.getDocumentId())).isNotPresent();
 
-        Page<UUID> page = new PageImpl<>(List.of(missingId, fixtures.application.getApplicationId()));
-        applicantRetentionService.processApplications(page, false, LocalDateTime.now());
-
-        assertThat(applicationRepository.findById(fixtures.application.getApplicationId())).isNotPresent();
-    }
-
-    @Test
-    void shouldKeepDocumentsOfOtherApplicationsForSameApplicant() {
-        DualApplicationFixtures fixtures = createTwoApplicationsForApplicant();
-
-        Page<UUID> page = new PageImpl<>(List.of(fixtures.oldApplication.getApplicationId()));
-        applicantRetentionService.processApplications(page, false, LocalDateTime.now());
-
-        // Old application and its artifacts are gone
-        assertThat(applicationRepository.findById(fixtures.oldApplication.getApplicationId())).isNotPresent();
-        assertThat(applicationReviewRepository.findById(fixtures.oldReview.getApplicationReviewId())).isNotPresent();
-        assertThat(documentRepository.findById(fixtures.oldDictionary.getDocumentId())).isNotPresent();
-
-        // Newer application and its documents remain untouched
-        assertThat(applicationRepository.findById(fixtures.recentApplication.getApplicationId())).isPresent();
-        assertThat(documentRepository.findById(fixtures.recentDictionary.getDocumentId())).isPresent();
+            // Newer application and its documents remain untouched
+            assertThat(applicationRepository.findById(fixtures.recentApplication.getApplicationId())).isPresent();
+            assertThat(documentRepository.findById(fixtures.recentDictionary.getDocumentId())).isPresent();
+        }
     }
 
     // -------------------------

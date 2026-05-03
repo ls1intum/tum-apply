@@ -23,6 +23,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import tools.jackson.core.type.TypeReference;
 
@@ -126,39 +128,19 @@ public class SchoolResourceTest extends AbstractResourceTest {
             api.postAndRead(API_BASE_PATH, createDTO, Void.class, 401);
         }
 
-        @Test
-        void cannotCreateSchoolWithDuplicateName() {
-            // Arrange - Use existing school name
-            SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Computation, Information and Technology", "CIT2");
+        @ParameterizedTest(name = "should reject creation when {0} duplicates an existing school")
+        @CsvSource({ "name, 'School of Computation, Information and Technology', CIT2", "abbreviation, 'School of Medicine', CIT" })
+        void shouldRejectCreationWithDuplicateField(String field, String name, String abbreviation) {
+            SchoolCreationDTO createDTO = new SchoolCreationDTO(name, abbreviation);
 
-            // Act & Assert
             api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 409);
         }
 
-        @Test
-        void cannotCreateSchoolWithDuplicateAbbreviation() {
-            // Arrange - Use existing school abbreviation
-            SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Medicine", "CIT");
+        @ParameterizedTest(name = "should reject creation when {0} is blank")
+        @CsvSource({ "name, '', MED", "abbreviation, 'School of Medicine', ''" })
+        void shouldRejectCreationWithBlankField(String field, String name, String abbreviation) {
+            SchoolCreationDTO createDTO = new SchoolCreationDTO(name, abbreviation);
 
-            // Act & Assert
-            api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 409);
-        }
-
-        @Test
-        void cannotCreateSchoolWithBlankName() {
-            // Arrange
-            SchoolCreationDTO createDTO = new SchoolCreationDTO("", "MED");
-
-            // Act & Assert
-            api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 400);
-        }
-
-        @Test
-        void cannotCreateSchoolWithBlankAbbreviation() {
-            // Arrange
-            SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Medicine", "");
-
-            // Act & Assert
             api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 400);
         }
     }
@@ -314,18 +296,12 @@ public class SchoolResourceTest extends AbstractResourceTest {
                 .putAndRead(API_BASE_PATH + "/update/" + testSchool.getSchoolId(), updateDTO, Void.class, 403);
         }
 
-        @Test
-        void cannotUpdateSchoolWithDuplicateName() {
-            SchoolCreationDTO updateDTO = new SchoolCreationDTO(secondSchool.getName(), "UPD");
-
-            api
-                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
-                .putAndRead(API_BASE_PATH + "/update/" + testSchool.getSchoolId(), updateDTO, Void.class, 409);
-        }
-
-        @Test
-        void cannotUpdateSchoolWithDuplicateAbbreviation() {
-            SchoolCreationDTO updateDTO = new SchoolCreationDTO("Updated School", secondSchool.getAbbreviation());
+        @ParameterizedTest(name = "should reject update when {0} duplicates another school")
+        @CsvSource({ "name", "abbreviation" })
+        void shouldRejectUpdateWithDuplicateField(String field) {
+            SchoolCreationDTO updateDTO = "name".equals(field)
+                ? new SchoolCreationDTO(secondSchool.getName(), "UPD")
+                : new SchoolCreationDTO("Updated School", secondSchool.getAbbreviation());
 
             api
                 .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
