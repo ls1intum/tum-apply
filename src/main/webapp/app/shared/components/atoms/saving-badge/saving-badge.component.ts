@@ -18,9 +18,6 @@ const STATE_COLOR_CLASS: Record<SavingState, string> = {
   standalone: true,
   imports: [FontAwesomeModule, TranslateDirective],
   templateUrl: './saving-badge.component.html',
-  // The host stretches to its parent's height (default flex behaviour) and centres the
-  // inner pill on the cross axis, so the badge sits on the same baseline as adjacent buttons.
-  host: { class: 'inline-flex items-center' },
 })
 export class SavingBadgeComponent {
   state = input.required<SavingState>();
