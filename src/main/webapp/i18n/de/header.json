@@ -2,6 +2,7 @@
   "header": {
     "login": "Anmelden",
     "professorTitle": "Professor:in",
+    "activeResearchGroup": "Aktive Forschungsgruppe",
     "professor": "Für Professoren",
     "applicant": "Für Bewerbende",
     "logout": "Abmelden",

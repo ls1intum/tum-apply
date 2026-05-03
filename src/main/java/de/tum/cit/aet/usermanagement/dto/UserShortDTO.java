@@ -20,7 +20,18 @@ public class UserShortDTO {
     private String firstName;
     private String lastName;
     private List<UserRole> roles;
+
+    /**
+     * The "primary" research group, kept for backwards-compatibility with single-group
+     * call sites. Set to the first PROFESSOR/EMPLOYEE membership when available.
+     */
     private ResearchGroupShortDTO researchGroup;
+
+    /**
+     * All PROFESSOR/EMPLOYEE memberships of the user. Used by the client header
+     * switcher to determine whether to render the active-group dropdown.
+     */
+    private List<ResearchGroupShortDTO> memberships;
 
     public UserShortDTO() {
         // default constructor
@@ -34,6 +45,15 @@ public class UserShortDTO {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.roles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).toList();
-        this.researchGroup = user.getResearchGroup() != null ? new ResearchGroupShortDTO(user.getResearchGroup()) : null;
+        this.memberships = user
+            .getResearchGroupRoles()
+            .stream()
+            .filter(r -> r.getRole() == UserRole.PROFESSOR || r.getRole() == UserRole.EMPLOYEE)
+            .map(UserResearchGroupRole::getResearchGroup)
+            .filter(rg -> rg != null)
+            .distinct()
+            .map(ResearchGroupShortDTO::new)
+            .toList();
+        this.researchGroup = this.memberships.isEmpty() ? null : this.memberships.get(0);
     }
 }

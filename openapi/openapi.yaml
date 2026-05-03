@@ -3888,6 +3888,9 @@ components:
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
+        memberships:
+          type: array
+          items: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
         researchGroup: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
         roles:
           type: array
