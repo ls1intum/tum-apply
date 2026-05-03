@@ -42,6 +42,9 @@ export abstract class BaseInputDirective<T> {
   displayLabel = computed(() => this.maybeTranslate(this.label()));
   displayPlaceholder = computed(() => this.maybeTranslate(this.placeholder()));
   displayTooltipText = computed(() => this.maybeTranslate(this.tooltipText()));
+  displayHelperTextLeft = computed(() => this.maybeTranslate(this.helperTextLeft()));
+  displayHelperTextRight = computed(() => this.maybeTranslate(this.helperTextRight()));
+  displayWarningText = computed(() => this.maybeTranslate(this.warningText()));
 
   inputState = computed(() => {
     this.formValidityVersion();

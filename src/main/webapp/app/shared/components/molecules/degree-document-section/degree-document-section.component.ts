@@ -1,6 +1,7 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, computed, input, model, output } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, computed, inject, input, model, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
@@ -17,15 +18,7 @@ import TranslateDirective from '../../../language/translate.directive';
 @Component({
   selector: 'jhi-degree-document-section',
   standalone: true,
-  imports: [
-    FontAwesomeModule,
-    StringInputComponent,
-    TooltipModule,
-    TranslateModule,
-    UploadButtonComponent,
-    AiExtractionBoxComponent,
-    TranslateDirective,
-  ],
+  imports: [FontAwesomeModule, StringInputComponent, TooltipModule, UploadButtonComponent, AiExtractionBoxComponent, TranslateDirective],
   templateUrl: './degree-document-section.component.html',
 })
 export class DegreeDocumentSectionComponent {
@@ -79,4 +72,12 @@ export class DegreeDocumentSectionComponent {
   readonly masterGradeTooltipKey = 'entity.applicationPage2.tooltip.masterGrade';
 
   protected readonly DocumentInformationHolderDTODocumentTypeEnum = DocumentInformationHolderDTODocumentTypeEnum;
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
+
+  readonly filenamePrivacyTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.applicationPage2.tooltip.filenamePrivacy');
+  });
 }

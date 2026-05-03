@@ -87,17 +87,14 @@ describe('RatingComponent', () => {
     expect(component.getSectionColor(0)).toBe('var(--p-background-surface-alt)');
   });
 
-  // ---------------- GET TOOLTIP ----------------
-  it('returns expected tooltip key', () => {
-    expect(component.getTooltip(0)).toBe('evaluation.ratings.very_bad');
-    expect(component.getTooltip(1)).toBe('evaluation.ratings.bad');
-    expect(component.getTooltip(2)).toBe('evaluation.ratings.neutral');
-    expect(component.getTooltip(3)).toBe('evaluation.ratings.good');
-    expect(component.getTooltip(4)).toBe('evaluation.ratings.very_good');
-  });
-
-  it('returns undefined tooltip key for invalid value', () => {
-    expect(component.getTooltip(10)).toBe('evaluation.ratings.undefined');
+  // ---------------- TOOLTIP TEXTS ----------------
+  it('exposes translated tooltip text for every likert value', () => {
+    const tooltips = component.tooltipTexts();
+    expect(tooltips[0]).toBe('evaluation.ratings.very_bad');
+    expect(tooltips[1]).toBe('evaluation.ratings.bad');
+    expect(tooltips[2]).toBe('evaluation.ratings.neutral');
+    expect(tooltips[3]).toBe('evaluation.ratings.good');
+    expect(tooltips[4]).toBe('evaluation.ratings.very_good');
   });
 
   // ---------------- GET CURSOR ----------------

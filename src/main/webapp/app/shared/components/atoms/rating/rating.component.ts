@@ -1,10 +1,11 @@
-import { Component, input, model } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, computed, inject, input, model } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-rating',
-  imports: [TooltipModule, TranslateModule],
+  imports: [TooltipModule],
   templateUrl: './rating.component.html',
   styleUrl: './rating.component.scss',
 })
@@ -16,7 +17,15 @@ export class RatingComponent {
   readonly likertValues = [-2, -1, 0, 1, 2];
   protected readonly Array = Array;
 
-  private readonly tooltips = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
+  private readonly tooltipKeys = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
+
+  readonly tooltipTexts = computed(() => {
+    this.langChange();
+    return this.tooltipKeys.map(suffix => this.translateService.instant(`evaluation.ratings.${suffix}`));
+  });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   onSectionClick(index: number): void {
     if (!this.selectable()) {
@@ -55,10 +64,6 @@ export class RatingComponent {
       }
     }
     return 'var(--p-background-surface-alt)';
-  }
-
-  getTooltip(index: number): string {
-    return `evaluation.ratings.${this.tooltips[index]}`;
   }
 
   getCursor(): string {

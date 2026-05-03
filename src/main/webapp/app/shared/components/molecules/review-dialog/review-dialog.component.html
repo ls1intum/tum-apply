@@ -29,11 +29,11 @@
 
   <ng-template pTemplate="footer">
     <div class="pt-3 flex justify-end gap-2">
-      <jhi-button [label]="'button.cancel' | translate" variant="outlined" (click)="this.visible.set(false)" />
+      <jhi-button label="button.cancel" variant="outlined" (click)="this.visible.set(false)" />
       @if (mode() === 'ACCEPT') {
-        <jhi-button [label]="'evaluation.accept' | translate" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
+        <jhi-button label="evaluation.accept" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
       } @else {
-        <jhi-button [label]="'evaluation.reject' | translate" severity="danger" [disabled]="!canReject()" (click)="onReject()" />
+        <jhi-button label="evaluation.reject" severity="danger" [disabled]="!canReject()" (click)="onReject()" />
       }
     </div>
   </ng-template>
@@ -70,10 +70,10 @@
   <div>
     <jhi-select
       [items]="rejectReasons"
-      [label]="'evaluation.reason' | translate"
+      label="evaluation.reason"
       [required]="true"
       [selected]="selectedRejectReason()"
-      [placeholder]="'evaluation.selectReason' | translate"
+      placeholder="evaluation.selectReason"
       [translateItems]="true"
       (selectedChange)="onSelectChange($event)"
     />

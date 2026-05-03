@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
@@ -47,7 +46,6 @@ interface SelectedAdminProfessor {
     StringInputComponent,
     ButtonComponent,
     SelectComponent,
-    TranslateModule,
     TranslateDirective,
     ConfirmDialog,
     EditorComponent,

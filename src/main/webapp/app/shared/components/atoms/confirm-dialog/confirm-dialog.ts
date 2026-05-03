@@ -1,4 +1,6 @@
-import { Component, ViewEncapsulation, effect, inject, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -18,6 +20,7 @@ export class ConfirmDialog {
   iconOnly = input<boolean>(false);
   header = input<string | undefined>(undefined);
   message = input<string | undefined>(undefined);
+  messageParams = input<Record<string, unknown>>({});
   confirmIcon = input<string | undefined>(undefined);
   severity = input<ButtonColor>('primary');
   variant = input<ButtonVariant>();
@@ -27,6 +30,7 @@ export class ConfirmDialog {
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
   disabled = input<boolean>(false);
   size = input<ButtonSize>('lg');
+  shouldTranslate = input<boolean>(true);
 
   data = input<string | undefined>(undefined);
 
@@ -36,7 +40,12 @@ export class ConfirmDialog {
   confirmed = output<unknown>();
   closed = output();
 
+  displayHeader = computed(() => this.translate(this.header()));
+  displayMessage = computed(() => this.translate(this.message(), this.messageParams()));
+
   private confirmationService = inject(ConfirmationService);
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   // Opens the dialog declaratively when visible becomes true
   private visibleEffect = effect(() => {
@@ -51,8 +60,8 @@ export class ConfirmDialog {
 
   private openDialog(): void {
     this.confirmationService.confirm({
-      message: this.message(),
-      header: this.header(),
+      message: this.displayMessage(),
+      header: this.displayHeader(),
       dismissableMask: true,
       closeOnEscape: true,
       accept: () => {
@@ -63,5 +72,13 @@ export class ConfirmDialog {
         this.closed.emit();
       },
     });
+  }
+
+  private translate(value: string | undefined, params: Record<string, unknown> = {}): string | undefined {
+    this.langChange();
+    if (value === undefined) {
+      return undefined;
+    }
+    return this.shouldTranslate() ? this.translateService.instant(value, params) : value;
   }
 }

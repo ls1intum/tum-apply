@@ -51,7 +51,7 @@
     </div>
     @if (helperTextLeft()) {
       <div class="flex justify-between items-center text-sm gap-2">
-        <span class="text-text-disabled flex-1">{{ helperTextLeft() }}</span>
+        <span class="text-text-disabled flex-1">{{ displayHelperTextLeft() }}</span>
 
         @if (helperTextRight()) {
           <span
@@ -60,14 +60,14 @@
             role="button"
             (click)="helperTextRightClick.emit()"
             (keydown.enter)="helperTextRightClick.emit()"
-            >{{ helperTextRight() }}</span
+            >{{ displayHelperTextRight() }}</span
           >
         }
       </div>
     }
     @if (warningText()) {
       <div class="text-warning-hover text-sm gap-2">
-        {{ warningText() }}
+        {{ displayWarningText() }}
       </div>
     }
     @if (errorEnabled()) {

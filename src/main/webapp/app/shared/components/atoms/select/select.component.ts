@@ -1,10 +1,11 @@
-import { Component, ViewEncapsulation, computed, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, inject, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { SelectModule } from 'primeng/select';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { TranslateDirective } from '../../../language';
 
@@ -20,7 +21,7 @@ export type size = 'small' | 'large' | undefined;
   standalone: true,
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
-  imports: [SelectModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective, TranslateModule],
+  imports: [SelectModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectComponent {
@@ -39,6 +40,7 @@ export class SelectComponent {
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
   translateItems = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
   filter = input<boolean>(false);
   showClear = input<boolean>(false);
   appendTo = input<string | undefined>(undefined);
@@ -51,7 +53,22 @@ export class SelectComponent {
   isOpen = false;
   readonly inputId = computed(() => this.id() ?? 'select-input');
 
+  readonly displayLabel = computed(() => this.translate(this.label()));
+  readonly displayPlaceholder = computed(() => this.translate(this.placeholder()));
+  readonly displayTooltipText = computed(() => this.translate(this.tooltipText()));
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
+
   onSelectionChange(value: SelectOption): void {
     this.selectedChange.emit(value);
+  }
+
+  private translate(value: string | undefined): string {
+    this.langChange();
+    if (value === undefined || value === '') {
+      return value ?? '';
+    }
+    return this.shouldTranslate() ? this.translateService.instant(value) : value;
   }
 }

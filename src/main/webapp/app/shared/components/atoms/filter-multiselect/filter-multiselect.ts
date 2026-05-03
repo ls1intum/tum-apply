@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -21,9 +22,15 @@ export interface FilterChange {
   selectedValues: string[];
 }
 
+interface RenderedOption {
+  value: string;
+  label: string;
+  selected: boolean;
+}
+
 @Component({
   selector: 'jhi-filter-multiselect',
-  imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
+  imports: [FormsModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,
@@ -52,6 +59,12 @@ export class FilterMultiselect {
   // gives the selected values back to the parent component
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
 
+  displayFilterLabel = computed(() => this.translate(this.filterLabel()));
+  displaySearchPlaceholder = computed(() => this.translate(this.filterSearchPlaceholder()));
+  displaySelectedHeader = computed(() => this.translate('entity.filters.selected'));
+  displayClearAllLabel = computed(() => this.translate('entity.filters.clearAll'));
+  displayNoResultsLabel = computed(() => this.translate('entity.filters.noResults'));
+
   filteredOptions = computed(() => {
     const search = this.searchTerm().toLowerCase().trim();
     const options = this.filterOptions();
@@ -70,14 +83,16 @@ export class FilterMultiselect {
     });
   });
 
-  sortedOptions = computed(() => {
+  sortedOptions = computed<RenderedOption[]>(() => {
+    this.langChange();
     const selected = this.selectedValues();
     const filtered = this.filteredOptions();
+    const translateLabels = this.shouldTranslateOptions();
 
-    const opts = filtered.map(job => ({
-      label: job,
-      value: job,
-      selected: selected.includes(job),
+    const opts = filtered.map(option => ({
+      value: option,
+      label: translateLabels ? this.translateService.instant(option) : option,
+      selected: selected.includes(option),
     }));
 
     return opts.sort((a, b) => {
@@ -101,6 +116,7 @@ export class FilterMultiselect {
 
   private readonly elementRef = inject(ElementRef);
   private readonly translateService = inject(TranslateService);
+  private readonly langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   // Sync selected values between inputs and mobile filter bar
   private readonly syncSelectedValuesEffect = effect(() => {
@@ -231,6 +247,11 @@ export class FilterMultiselect {
       filterId: this.filterId(),
       selectedValues: this.selectedValues(),
     });
+  }
+
+  private translate(value: string): string {
+    this.langChange();
+    return this.translateService.instant(value);
   }
 
   private calculateDropdownAlignment(): void {
