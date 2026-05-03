@@ -10,7 +10,7 @@
     do not yet have a corresponding join-table row, then drop the FK and column.
   -->
 
-  <changeSet id="038a_backfill_missing_user_research_group_roles" author="aniruddh">
+  <changeSet id="039a_backfill_missing_user_research_group_roles" author="aniruddh">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="users" columnName="research_group_id"/>
     </preConditions>
@@ -27,21 +27,21 @@
     </sql>
   </changeSet>
 
-  <changeSet id="038b_drop_users_research_group_fk" author="aniruddh">
+  <changeSet id="039b_drop_users_research_group_fk" author="aniruddh">
     <preConditions onFail="MARK_RAN">
       <foreignKeyConstraintExists foreignKeyTableName="users" foreignKeyName="fk_users_research_group"/>
     </preConditions>
     <dropForeignKeyConstraint baseTableName="users" constraintName="fk_users_research_group"/>
   </changeSet>
 
-  <changeSet id="038c_drop_users_research_group_column" author="aniruddh">
+  <changeSet id="039c_drop_users_research_group_column" author="aniruddh">
     <preConditions onFail="MARK_RAN">
       <columnExists tableName="users" columnName="research_group_id"/>
     </preConditions>
     <dropColumn tableName="users" columnName="research_group_id"/>
   </changeSet>
 
-  <changeSet id="038d_index_user_research_group_roles_user" author="aniruddh">
+  <changeSet id="039d_index_user_research_group_roles_user" author="aniruddh">
     <preConditions onFail="MARK_RAN">
       <not>
         <indexExists tableName="user_research_group_roles" indexName="idx_urgr_user_id"/>
@@ -52,7 +52,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="038e_index_user_research_group_roles_group" author="aniruddh">
+  <changeSet id="039e_index_user_research_group_roles_group" author="aniruddh">
     <preConditions onFail="MARK_RAN">
       <not>
         <indexExists tableName="user_research_group_roles" indexName="idx_urgr_research_group_id"/>
