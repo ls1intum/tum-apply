@@ -32,7 +32,9 @@ export class StickyFooterShellComponent {
       );
 
       observer.observe(sentinel);
-      this.destroyRef.onDestroy(() => observer.disconnect());
+      this.destroyRef.onDestroy(() => {
+        observer.disconnect();
+      });
     });
   }
 }

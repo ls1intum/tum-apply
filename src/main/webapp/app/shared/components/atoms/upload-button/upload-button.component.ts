@@ -464,14 +464,14 @@ export class UploadButtonComponent {
     this.queuedFilesChange.emit(this.queuedFiles());
   }
 
-  private async uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
+  private uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
     if (this.uploadTarget() === 'applicantProfile') {
       return firstValueFrom(this.applicantApi.uploadApplicantProfileDocuments(this.documentType(), file));
     }
 
     const appId = this.applicationId();
-    if (!appId) {
-      return [];
+    if (appId == null) {
+      return Promise.resolve([]);
     }
 
     return firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file));

@@ -24,8 +24,11 @@ export class AutosaveController {
   private metadataStateBeforePendingSave: SavingState | undefined;
   private operationTimer: number | undefined;
   private operationStartedAt = 0;
+  private readonly delayMs: number;
 
-  constructor(private readonly delayMs: number) {}
+  constructor(delayMs: number) {
+    this.delayMs = delayMs;
+  }
 
   shouldSkipInitialAutoSave(): boolean {
     if (!this.autoSaveInitialized) {
@@ -115,6 +118,8 @@ export class AutosaveController {
 
 export function createAutosaveController(destroyRef: DestroyRef, delayMs = 2000): AutosaveController {
   const controller = new AutosaveController(delayMs);
-  destroyRef.onDestroy(() => controller.dispose());
+  destroyRef.onDestroy(() => {
+    controller.dispose();
+  });
   return controller;
 }
