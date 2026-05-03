@@ -39,11 +39,12 @@
               <div class="mt-2">
                 @if (circuitBreakerOpen()) {
                   <jhi-tag
-                    [text]="'systemSettings.ai.circuitBreaker.open' | translate: { time: openedAt() | date: 'HH:mm' }"
+                    text="systemSettings.ai.circuitBreaker.open"
+                    [translationParams]="{ time: openedAt() | date: 'HH:mm' }"
                     color="danger"
                   />
                 } @else {
-                  <jhi-tag [text]="'systemSettings.ai.circuitBreaker.closed' | translate" color="success" />
+                  <jhi-tag text="systemSettings.ai.circuitBreaker.closed" color="success" />
                 }
               </div>
             </div>

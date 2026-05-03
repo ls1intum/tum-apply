@@ -42,7 +42,7 @@
       <jhi-button
         icon="pencil"
         ariaLabel="button.edit"
-        [tooltip]="'button.edit' | translate"
+        tooltip="button.edit"
         severity="primary"
         variant="text"
         [shouldTranslate]="true"
@@ -50,12 +50,12 @@
       />
       <jhi-confirm-dialog
         #deleteDialog
-        [header]="'researchGroup.departments.deleteDialog.header' | translate"
-        [message]="'researchGroup.departments.deleteDialog.message' | translate"
+        header="researchGroup.departments.deleteDialog.header"
+        message="researchGroup.departments.deleteDialog.message"
         confirmIcon="trash"
         (confirmed)="onDeleteDepartment(department.departmentId)"
         severity="danger"
-        [label]="'button.delete' | translate"
+        label="button.delete"
         [showOpenButton]="false"
       />
       <jhi-button

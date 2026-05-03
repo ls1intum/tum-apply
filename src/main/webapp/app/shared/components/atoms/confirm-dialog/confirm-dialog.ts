@@ -1,7 +1,8 @@
-import { Component, ViewEncapsulation, effect, inject, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, input, output } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 import { ButtonColor, ButtonComponent, ButtonSize, ButtonVariant } from '../button/button.component';
 
@@ -18,6 +19,7 @@ export class ConfirmDialog {
   iconOnly = input<boolean>(false);
   header = input<string | undefined>(undefined);
   message = input<string | undefined>(undefined);
+  messageParams = input<Record<string, unknown>>({});
   confirmIcon = input<string | undefined>(undefined);
   severity = input<ButtonColor>('primary');
   variant = input<ButtonVariant>();
@@ -27,6 +29,7 @@ export class ConfirmDialog {
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
   disabled = input<boolean>(false);
   size = input<ButtonSize>('lg');
+  shouldTranslate = input<boolean>(true);
 
   data = input<string | undefined>(undefined);
 
@@ -36,7 +39,11 @@ export class ConfirmDialog {
   confirmed = output<unknown>();
   closed = output();
 
+  displayHeader = computed(() => this.translator.translate(this.header(), this.shouldTranslate()));
+  displayMessage = computed(() => this.translator.translate(this.message(), this.shouldTranslate(), this.messageParams()));
+
   private confirmationService = inject(ConfirmationService);
+  private translator = injectTranslator();
 
   // Opens the dialog declaratively when visible becomes true
   private visibleEffect = effect(() => {
@@ -51,8 +58,8 @@ export class ConfirmDialog {
 
   private openDialog(): void {
     this.confirmationService.confirm({
-      message: this.message(),
-      header: this.header(),
+      message: this.displayMessage(),
+      header: this.displayHeader(),
       dismissableMask: true,
       closeOnEscape: true,
       accept: () => {

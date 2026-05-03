@@ -23,21 +23,21 @@
     <ng-template #actionsTemplate let-template>
       <div class="flex justify-end gap-1">
         @if (template.isCustom) {
-          <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
+          <jhi-button variant="text" icon="pen" tooltip="button.edit" (click)="navigateToEdit(template.emailTemplateId)" />
           @if (!isEmployee()) {
             <jhi-confirm-dialog
-              [label]="'button.delete' | translate"
-              [header]="'researchGroup.emailTemplates.deleteTemplateModal.title' | translate"
-              [message]="'researchGroup.emailTemplates.deleteTemplateModal.message' | translate"
+              label="button.delete"
+              header="researchGroup.emailTemplates.deleteTemplateModal.title"
+              message="researchGroup.emailTemplates.deleteTemplateModal.message"
               confirmIcon="trash"
               (confirmed)="delete(template.emailTemplateId)"
               severity="danger"
-              [tooltip]="'button.delete' | translate"
+              tooltip="button.delete"
               [iconOnly]="true"
             />
           }
         } @else {
-          <jhi-button variant="text" icon="eye" [tooltip]="'button.view' | translate" (click)="navigateToView(template.emailType)" />
+          <jhi-button variant="text" icon="eye" tooltip="button.view" (click)="navigateToView(template.emailType)" />
         }
       </div>
     </ng-template>

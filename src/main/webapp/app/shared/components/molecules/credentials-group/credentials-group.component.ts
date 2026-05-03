@@ -1,7 +1,6 @@
 import { Component, ViewEncapsulation, computed, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
@@ -26,7 +25,6 @@ type SubmitHandler = (email: string, password?: string) => Promise<boolean>;
     ReactiveFormsModule,
     StringInputComponent,
     TranslateDirective,
-    TranslateModule,
   ],
   templateUrl: './credentials-group.component.html',
   styleUrl: './credentials-group.component.scss',

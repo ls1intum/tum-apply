@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 import { TranslateDirective } from '../../../language';
 
@@ -20,7 +20,7 @@ export type size = 'small' | 'large' | undefined;
   standalone: true,
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
-  imports: [SelectModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective, TranslateModule],
+  imports: [SelectModule, FontAwesomeModule, FormsModule, CommonModule, TooltipModule, TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectComponent {
@@ -39,6 +39,7 @@ export class SelectComponent {
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
   translateItems = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
   filter = input<boolean>(false);
   showClear = input<boolean>(false);
   appendTo = input<string | undefined>(undefined);
@@ -50,6 +51,12 @@ export class SelectComponent {
 
   isOpen = false;
   readonly inputId = computed(() => this.id() ?? 'select-input');
+
+  readonly displayLabel = computed(() => this.translator.translate(this.label(), this.shouldTranslate()) ?? '');
+  readonly displayPlaceholder = computed(() => this.translator.translate(this.placeholder(), this.shouldTranslate()) ?? '');
+  readonly displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()) ?? '');
+
+  private translator = injectTranslator();
 
   onSelectionChange(value: SelectOption): void {
     this.selectedChange.emit(value);

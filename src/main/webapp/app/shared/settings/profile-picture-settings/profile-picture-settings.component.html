@@ -31,19 +31,19 @@
           <jhi-confirm-dialog
             #resetPictureDialog
             [showOpenButton]="false"
-            [label]="'button.delete' | translate"
-            [header]="'settings.profilePicture.resetConfirm.header' | translate"
-            [message]="'settings.profilePicture.resetConfirm.message' | translate"
+            label="button.delete"
+            header="settings.profilePicture.resetConfirm.header"
+            message="settings.profilePicture.resetConfirm.message"
             confirmIcon="trash"
             severity="danger"
             (confirmed)="onResetPicture()"
           />
-          <jhi-button icon="pen" variant="text" severity="primary" [tooltip]="'button.edit' | translate" (click)="onAddPictureClick()" />
+          <jhi-button icon="pen" variant="text" severity="primary" tooltip="button.edit" (click)="onAddPictureClick()" />
           <jhi-button
             icon="trash"
             variant="text"
             severity="danger"
-            [tooltip]="'button.remove' | translate"
+            tooltip="button.remove"
             [disabled]="!currentProfilePictureUrl()"
             (click)="resetPictureDialog.confirm()"
           />

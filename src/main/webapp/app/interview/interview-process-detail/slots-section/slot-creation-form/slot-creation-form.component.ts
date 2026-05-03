@@ -132,10 +132,10 @@ export class SlotCreationFormComponent {
 
   // Options
   readonly durationOptions = [
-    { label: '30min', value: 30 },
-    { label: '45min', value: 45 },
-    { label: '60min', value: 60 },
-    { label: '90min', value: 90 },
+    { label: 'interview.slots.create.durations.30min', value: 30 },
+    { label: 'interview.slots.create.durations.45min', value: 45 },
+    { label: 'interview.slots.create.durations.60min', value: 60 },
+    { label: 'interview.slots.create.durations.90min', value: 90 },
   ];
 
   readonly minDate = new Date();

@@ -2,7 +2,11 @@
   @for (item of items(); track item.labelKey) {
     <div class="flex justify-between gap-x-8">
       <dt class="text-sm text-muted-foreground">
-        {{ item.labelKey | translate }}
+        @if (shouldTranslate()) {
+          <span [jhiTranslate]="item.labelKey"></span>
+        } @else {
+          {{ item.labelKey }}
+        }
         @if (item.tooltipText) {
           <fa-icon
             class="text-[var(--p-primary-color)]"

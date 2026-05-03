@@ -24,7 +24,10 @@
         {{ process().jobTitle }}
       </h3>
       <div class="shrink-0">
-        <jhi-tag [text]="isClosed() ? 'Closed' : 'Active'" [color]="isClosed() ? 'secondary' : 'success'" />
+        <jhi-tag
+          [text]="isClosed() ? 'interview.overview.status.closed' : 'interview.overview.status.active'"
+          [color]="isClosed() ? 'secondary' : 'success'"
+        />
       </div>
     </div>
 

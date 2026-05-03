@@ -63,13 +63,13 @@
   <ng-template #deleteTemplate let-member>
     @if (member.canRemove) {
       <jhi-confirm-dialog
-        [label]="'button.remove' | translate"
-        [header]="'researchGroup.members.removeMemberModal.title' | translate"
-        [message]="'researchGroup.members.removeMemberModal.message' | translate"
+        label="button.remove"
+        header="researchGroup.members.removeMemberModal.title"
+        message="researchGroup.members.removeMemberModal.message"
         confirmIcon="trash"
         (confirmed)="removeMember(member)"
         severity="danger"
-        [tooltip]="'button.remove' | translate"
+        tooltip="button.remove"
         [iconOnly]="true"
       />
     }
