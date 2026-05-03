@@ -72,6 +72,36 @@ p-step[data-p-active='true'] .p-step-title {
   background: var(--p-background-surface) !important;
 }
 
+/* -------------------------------
+   FAQ Section Accordion (landing pages)
+---------------------------------- */
+.faq-container {
+  .p-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 50rem;
+  }
+
+  .p-accordionpanel {
+    border: 1px solid var(--p-border-default);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .p-accordionheader {
+    padding: 1rem 1.25rem !important;
+    border-radius: 0.75rem !important;
+    font-weight: 600;
+  }
+
+  .p-accordioncontent-content {
+    padding: 0.25rem 1.5rem 1.25rem !important;
+    line-height: 1.6;
+  }
+}
+
 /* Disable all transitions and animations while switching theme */
 .theme-switching *,
 .theme-switching *::before,
