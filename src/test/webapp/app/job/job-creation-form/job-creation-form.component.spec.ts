@@ -304,7 +304,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({ title: 'new title' });
       fixture.detectChanges();
 
-      expect(notifySpy).toHaveBeenCalled();
+      expect(notifySpy).toHaveBeenCalledOnce();
       // Badge stays SAVED during the debounce window — no flicker on every keystroke.
       expect(component.autoSave.state()).toBe('SAVED');
     });
@@ -364,7 +364,7 @@ describe('JobCreationFormComponent', () => {
 
       await component.publishJob();
 
-      expect(disposeSpy).toHaveBeenCalled();
+      expect(disposeSpy).toHaveBeenCalledOnce();
       expect(mockJobApi.updateJob).toHaveBeenCalledOnce();
       const [, sentDto] = mockJobApi.updateJob.mock.calls[0];
       expect(sentDto.state).toBe(JobFormDTOStateEnum.Published);

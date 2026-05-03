@@ -1232,7 +1232,7 @@ describe('ApplicationForm', () => {
         // Wait for async operation
         await new Promise(resolve => setTimeout(resolve, 10));
 
-        expect(flushSpy).toHaveBeenCalled();
+        expect(flushSpy).toHaveBeenCalledOnce();
         expect(location.back).toHaveBeenCalled();
       });
 
