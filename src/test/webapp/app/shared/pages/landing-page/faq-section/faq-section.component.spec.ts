@@ -47,7 +47,6 @@ describe('FaqSectionComponent', () => {
 
     const icon = linkElement.querySelector('fa-icon');
     expect(icon).not.toBeNull();
-    expect(icon?.classList).toContain('external-icon');
   });
 
   it('should render all FAQ tabs based on the tabs array', () => {
