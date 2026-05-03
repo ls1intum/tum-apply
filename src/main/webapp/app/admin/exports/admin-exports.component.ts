@@ -1,7 +1,6 @@
 import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateDirective } from 'app/shared/language';
@@ -89,7 +88,7 @@ interface DownloadProgress {
 @Component({
   selector: 'jhi-admin-exports',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent],
+  imports: [CommonModule, TranslateDirective, ButtonComponent],
   templateUrl: './admin-exports.component.html',
 })
 export class AdminExportsComponent {

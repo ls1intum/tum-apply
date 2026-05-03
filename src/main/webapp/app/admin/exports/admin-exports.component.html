@@ -7,7 +7,7 @@
 
   @for (section of multiButtonSections(); track section.titleKey) {
     <section class="mb-8">
-      <h2 class="text-lg font-semibold mb-3" jhiTranslate="{{ section.titleKey }}">{{ section.titleKey | translate }}</h2>
+      <h2 class="text-lg font-semibold mb-3" [jhiTranslate]="section.titleKey"></h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (btn of section.buttons; track btn.type) {
           <ng-container [ngTemplateOutlet]="exportCard" [ngTemplateOutletContext]="{ btn: btn }" />
@@ -20,7 +20,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (section of singleButtonSections(); track section.titleKey) {
         <section class="flex flex-col gap-3">
-          <h2 class="text-lg font-semibold m-0" jhiTranslate="{{ section.titleKey }}">{{ section.titleKey | translate }}</h2>
+          <h2 class="text-lg font-semibold m-0" [jhiTranslate]="section.titleKey"></h2>
           @for (btn of section.buttons; track btn.type) {
             <ng-container [ngTemplateOutlet]="exportCard" [ngTemplateOutletContext]="{ btn: btn }" />
           }
@@ -33,7 +33,7 @@
 <ng-template #exportCard let-btn="btn">
   <div class="bg-background-surface border border-border-default rounded-lg p-5 flex flex-col gap-3 h-full">
     <div class="flex items-start justify-between gap-3">
-      <h3 class="text-base font-semibold m-0" jhiTranslate="{{ btn.labelKey }}">{{ btn.labelKey | translate }}</h3>
+      <h3 class="text-base font-semibold m-0" [jhiTranslate]="btn.labelKey"></h3>
     </div>
     <p class="text-sm text-text-secondary m-0" jhiTranslate="{{ btn.descriptionKey }}"></p>
 
