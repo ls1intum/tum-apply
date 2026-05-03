@@ -53,7 +53,7 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import { ComplianceIssue } from 'app/generated/model/compliance-issue';
+import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
