@@ -32,9 +32,7 @@ export class TagComponent {
     if (colorValue === 'neutral') return 'secondary';
     return colorValue;
   });
-  readonly neutralOverrideClass = computed(() =>
-    this.color() === 'neutral' ? '!bg-background-disabled !text-text-secondary dark:!bg-background-surface-alt dark:!text-text-primary' : '',
-  );
+  readonly neutralOverrideClass = computed(() => (this.color() === 'neutral' ? 'p-tag-neutral' : ''));
 
   displayText = computed(() => this.translator.translate(this.text(), this.shouldTranslate(), this.translationParams()) ?? '');
   displayTooltipText = computed(
