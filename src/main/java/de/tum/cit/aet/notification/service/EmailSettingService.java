@@ -93,8 +93,7 @@ public class EmailSettingService {
     /**
      * Returns the subset of the given user IDs whose effective notification preference for the given email type
      * is enabled. Users without an explicit stored preference fall back to the default-enabled behaviour and
-     * are included; users with a stored preference set to {@code false} are excluded. Runs in a single read query
-     * regardless of how many users are passed, so callers like job-published fan-out do not pay a per-user round trip.
+     * are included; users with a stored preference set to {@code false} are excluded.
      *
      * @param emailType the email type to check
      * @param userIds   the candidate user IDs to filter

@@ -1,14 +1,7 @@
 <div class="flex flex-col gap-3">
   <div>
-    <!--
-      The wrapped jhi-filter-multiselect uses ViewEncapsulation.None,
-      so its class names are global and we can target them from here
-      with Tailwind's [&_.X]:Y arbitrary-descendant selectors. The
-      surface-level chip preview is hidden because this component
-      renders its own styled removable pills below the dropdown.
-      The dropdown is forced to `position: relative` so it pushes the
-      page footer down on short viewports instead of overlapping it.
-    -->
+    <!-- Tailwind overrides target jhi-filter-multiselect's global classes (ViewEncapsulation.None);
+         the inline dropdown pushes the footer instead of overlapping it on short viewports. -->
     <jhi-filter-multiselect
       class="[&_.filter-button]:justify-between [&_.filter-button]:hover:border-border-hover [&_.filter-trigger]:flex-1 [&_.filter-trigger]:min-w-0 [&_.trigger-summary]:hidden [&_.chip-row]:hidden [&_.filter-icon]:ml-auto [&_.filter-icon]:shrink-0 [&_.filter-dropdown]:!relative [&_.filter-dropdown]:!z-[1]"
       filterId="subject-areas"
