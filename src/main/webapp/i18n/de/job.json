@@ -114,7 +114,7 @@
         "label": "Startdatum der Stelle",
         "placeholder": "Wähle ein Startdatum...",
         "toolTipText": "Voraussichtliches Startdatum dieser Stelle.",
-        "byArrangement": "Nach Vereinbarung"
+        "uponAgreement": "Nach Vereinbarung"
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",

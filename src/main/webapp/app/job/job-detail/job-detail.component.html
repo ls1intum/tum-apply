@@ -183,12 +183,12 @@
                     {{ job.startDate | localizedDate }}
                     @if (job.startDateByArrangement) {
                       <span class="text-text-secondary"
-                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.startDate.byArrangement"></span
+                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.startDate.uponAgreement"></span
                       ></span>
                     }
                   </span>
                 } @else if (job.startDateByArrangement) {
-                  <span class="value" jhiTranslate="jobCreationForm.basicInformationSection.startDate.byArrangement"></span>
+                  <span class="value" jhiTranslate="jobCreationForm.basicInformationSection.startDate.uponAgreement"></span>
                 } @else {
                   <span class="value">-</span>
                 }
