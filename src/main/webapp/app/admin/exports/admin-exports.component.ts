@@ -179,6 +179,18 @@ export class AdminExportsComponent {
     },
   ];
 
+  /**
+   * Sections that render as a single full-width grid (currently only the
+   * Jobs section, which has multiple buttons).
+   */
+  readonly multiButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length > 1));
+
+  /**
+   * Sections that own a single button. They are rendered side-by-side as
+   * cards in one row instead of stacking on top of each other.
+   */
+  readonly singleButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length === 1));
+
   private readonly api = inject(AdminExportResourceApi);
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
@@ -228,18 +240,6 @@ export class AdminExportsComponent {
   isDownloading(type: AdminExportType): boolean {
     return this.downloadProgress().has(type);
   }
-
-  /**
-   * Sections that render as a single full-width grid (currently only the
-   * Jobs section, which has multiple buttons).
-   */
-  readonly multiButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length > 1));
-
-  /**
-   * Sections that own a single button. They are rendered side-by-side as
-   * cards in one row instead of stacking on top of each other.
-   */
-  readonly singleButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length === 1));
 
   /**
    * Aggregate build progress across every counter the server reports for
