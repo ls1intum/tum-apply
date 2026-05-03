@@ -83,17 +83,6 @@
     }
   }
 
-  .selected-chips-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin-top: 0.5rem;
-    .p-chip-label {
-      // magic number is width of drawer (20rem) minus padding (2rem)
-      max-width: 18rem;
-    }
-  }
-
   .filter-dropdown {
     position: absolute;
     min-width: max-content;
@@ -167,11 +156,6 @@
           padding: 0.5rem;
         }
       }
-    }
-
-    &.inline-mode {
-      position: relative;
-      z-index: 1;
     }
   }
 }

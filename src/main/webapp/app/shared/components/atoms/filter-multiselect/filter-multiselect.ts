@@ -43,9 +43,7 @@ export class FilterMultiselect {
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
-  showSelectedChipsInTrigger = input<boolean>(true);
   selectedValuesInput = input<string[] | undefined>(undefined);
-  inline = input<boolean>(false);
   focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);
@@ -105,7 +103,7 @@ export class FilterMultiselect {
   selectedOptions = computed(() => this.sortedOptions().filter(opt => opt.selected));
 
   unselectedOptions = computed(() => this.sortedOptions().filter(opt => !opt.selected));
-  showChipsCounterOnly = computed(() => this.showSelectedChipsInTrigger() && this.selectedOptions().length > this.maxVisibleChips);
+  showChipsCounterOnly = computed(() => this.selectedOptions().length > this.maxVisibleChips);
 
   hasSelectedItems = computed(() => this.selectedOptions().length > 0);
   hasUnselectedItems = computed(() => this.unselectedOptions().length > 0);
