@@ -22,14 +22,7 @@ public class UserShortDTO {
     private List<UserRole> roles;
 
     /**
-     * The "primary" research group, kept for backwards-compatibility with single-group
-     * call sites. Set to the first PROFESSOR/EMPLOYEE membership when available.
-     */
-    private ResearchGroupShortDTO researchGroup;
-
-    /**
-     * All PROFESSOR/EMPLOYEE memberships of the user. Used by the client header
-     * switcher to determine whether to render the active-group dropdown.
+     * Every PROFESSOR/EMPLOYEE research group the user is a member of.
      */
     private List<ResearchGroupShortDTO> memberships;
 
@@ -54,6 +47,5 @@ public class UserShortDTO {
             .distinct()
             .map(ResearchGroupShortDTO::new)
             .toList();
-        this.researchGroup = this.memberships.isEmpty() ? null : this.memberships.get(0);
     }
 }

@@ -57,7 +57,7 @@ export class ResearchGroupInfoComponent {
   schoolName = signal<string | null>(null);
 
   // Computed properties
-  researchGroupId = computed(() => this.currentUser()?.researchGroup?.researchGroupId);
+  researchGroupId = computed(() => this.accountService.activeResearchGroupId());
 
   // Reactive forms
   form = new FormGroup({

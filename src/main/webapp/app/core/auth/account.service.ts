@@ -11,7 +11,6 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
-  researchGroup?: ResearchGroupShortDTO;
   memberships?: ResearchGroupShortDTO[];
   authorities?: string[];
 }
@@ -84,13 +83,6 @@ export class AccountService {
   }
 
   /**
-   * Returns the research group of the signed-in user, or undefined if none is assigned or user is not loaded.
-   */
-  get userResearchGroup(): ResearchGroupShortDTO | undefined {
-    return this.loadedUser()?.researchGroup;
-  }
-
-  /**
    * Returns the roles/authorities of the signed-in user, or undefined if not available.
    */
   get userAuthorities(): string[] | undefined {
@@ -112,7 +104,6 @@ export class AccountService {
         email: userShortDTO.email ?? '',
         name: formatFullName(userShortDTO.firstName, userShortDTO.lastName) || 'User',
         avatar: userShortDTO.avatar,
-        researchGroup: userShortDTO.researchGroup ?? undefined,
         memberships,
         authorities: userShortDTO.roles ? Array.from(userShortDTO.roles) : undefined,
       };

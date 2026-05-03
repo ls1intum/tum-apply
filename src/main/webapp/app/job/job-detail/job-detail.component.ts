@@ -488,7 +488,7 @@ export class JobDetailComponent {
 
     if (isForm) {
       supervisingProfessor = user?.name ?? '';
-      researchGroup = user?.researchGroup?.name ?? '';
+      researchGroup = this.accountService.activeResearchGroup()?.name ?? '';
       createdAt = now;
       lastModifiedAt = now;
     } else {
@@ -537,7 +537,8 @@ export class JobDetailComponent {
       researchGroupCity,
 
       jobState: isForm ? JobDetailDTOStateEnum.Draft : jobDetailDTO.state,
-      belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
+      belongsToResearchGroup:
+        !isForm && jobDetailDTO.researchGroup.researchGroupId === this.accountService.activeResearchGroup()?.researchGroupId,
 
       applicationId: jobDetailDTO.applicationId ?? undefined,
       applicationState: jobDetailDTO.applicationState ?? undefined,
@@ -551,7 +552,7 @@ export class JobDetailComponent {
     let researchGroupDetails;
     try {
       researchGroupDetails = await firstValueFrom(
-        this.researchGroupApi.getResourceGroupDetails(user?.researchGroup?.researchGroupId ?? ''),
+        this.researchGroupApi.getResourceGroupDetails(this.accountService.activeResearchGroup()?.researchGroupId ?? ''),
       );
     } catch {
       this.toastService.showError({ detail: `Error loading research Group details.` });
