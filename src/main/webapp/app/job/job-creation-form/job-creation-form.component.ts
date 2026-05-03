@@ -732,7 +732,7 @@ export class JobCreationFormComponent {
    */
   handleMessageClick(event: Event): void {
     const target = event.target as HTMLElement;
-    if (target && target.classList.contains('stepper-link')) {
+    if (target.classList.contains('stepper-link')) {
       event.preventDefault();
       this.goToFirstStep();
     }
