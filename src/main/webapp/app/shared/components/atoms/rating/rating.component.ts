@@ -15,15 +15,15 @@ export class RatingComponent {
 
   // Likert scale values from -2 to +2
   readonly likertValues = [-2, -1, 0, 1, 2];
-  protected readonly Array = Array;
-
-  private readonly tooltipKeys = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
 
   readonly tooltipTexts = computed(() => {
     this.langChange();
     return this.tooltipKeys.map(suffix => this.translateService.instant(`evaluation.ratings.${suffix}`));
   });
 
+  protected readonly Array = Array;
+
+  private readonly tooltipKeys = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
   private translateService = inject(TranslateService);
   private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 

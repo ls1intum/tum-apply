@@ -71,13 +71,13 @@ export class DegreeDocumentSectionComponent {
   readonly bachelorGradeTooltipKey = 'entity.applicationPage2.tooltip.bachelorGrade';
   readonly masterGradeTooltipKey = 'entity.applicationPage2.tooltip.masterGrade';
 
-  protected readonly DocumentInformationHolderDTODocumentTypeEnum = DocumentInformationHolderDTODocumentTypeEnum;
-
-  private translateService = inject(TranslateService);
-  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
-
   readonly filenamePrivacyTooltip = computed(() => {
     this.langChange();
     return this.translateService.instant('entity.applicationPage2.tooltip.filenamePrivacy');
   });
+
+  protected readonly DocumentInformationHolderDTODocumentTypeEnum = DocumentInformationHolderDTODocumentTypeEnum;
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 }

@@ -171,14 +171,6 @@ export class DatePickerComponent {
    * Converts a Date object to ISO date string and emits it as `selectedDateChange`.
    * @param date - The Date object selected by the user
    */
-  private translate(value: string | undefined): string | undefined {
-    this.currentLanguage();
-    if (value === undefined) {
-      return undefined;
-    }
-    return this.shouldTranslate() ? this.translateService.instant(value) : value;
-  }
-
   onDateChange(date: Date | undefined): void {
     if (date) {
       const year = date.getFullYear().toString().padStart(4, '0');
@@ -194,5 +186,13 @@ export class DatePickerComponent {
       this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
+  }
+
+  private translate(value: string | undefined): string | undefined {
+    this.currentLanguage();
+    if (value === undefined) {
+      return undefined;
+    }
+    return this.shouldTranslate() ? this.translateService.instant(value) : value;
   }
 }

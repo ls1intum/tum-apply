@@ -36,9 +36,6 @@ export class Comment {
     return this.translateService.instant('entity.comment.placeholder');
   });
 
-  private translateService = inject(TranslateService);
-  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
-
   protected canSave = computed<boolean>(() => {
     if (this.isCreate()) return this.draft().length > 0;
     if (!this.isEdit()) return false;
@@ -58,6 +55,9 @@ export class Comment {
       this.draft.set(incoming);
     }
   });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   onInput(e: Event): void {
     const value = (e.target as HTMLTextAreaElement).value;
