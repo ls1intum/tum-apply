@@ -119,6 +119,14 @@ export class HeaderComponent {
   isGroupSwitcherOpen = signal(false);
   hasMultipleMemberships = this.accountService.hasMultipleMemberships;
   activeResearchGroup = this.accountService.activeResearchGroup;
+  activeResearchGroupLabel = computed(() => {
+    this.langChange();
+    return this.activeResearchGroup()?.name ?? this.translateService.instant('header.activeResearchGroup');
+  });
+  activeResearchGroupAriaLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.activeResearchGroup');
+  });
 
   groupSwitcherItems = computed<JhiMenuItem[]>(() => {
     const memberships = this.accountService.memberships();
