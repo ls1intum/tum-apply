@@ -90,8 +90,8 @@ public class ResearchGroupsExportStrategy {
             rg.getDepartment() == null ? null : rg.getDepartment().getName(),
             rg.getUniversityId(),
             memberRefs,
-            rg.getCreatedAt() != null ? rg.getCreatedAt().toInstant(ZoneOffset.UTC) : null,
-            rg.getLastModifiedAt() != null ? rg.getLastModifiedAt().toInstant(ZoneOffset.UTC) : null
+            rg.getCreatedAt().toInstant(ZoneOffset.UTC),
+            rg.getLastModifiedAt().toInstant(ZoneOffset.UTC)
         );
     }
 

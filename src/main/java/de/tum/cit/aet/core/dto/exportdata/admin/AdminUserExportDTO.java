@@ -45,8 +45,8 @@ public record AdminUserExportDTO(
             user.isAiFeaturesEnabled(),
             user.getAiConsentedAt() != null ? user.getAiConsentedAt().toInstant(ZoneOffset.UTC) : null,
             roles,
-            user.getCreatedAt() != null ? user.getCreatedAt().toInstant(ZoneOffset.UTC) : null,
-            user.getLastModifiedAt() != null ? user.getLastModifiedAt().toInstant(ZoneOffset.UTC) : null
+            user.getCreatedAt().toInstant(ZoneOffset.UTC),
+            user.getLastModifiedAt().toInstant(ZoneOffset.UTC)
         );
     }
 }

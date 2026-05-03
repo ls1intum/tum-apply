@@ -620,8 +620,8 @@ public class JobsExportStrategy {
         return new AdminJobExportDTO(
             JobFormDTO.getFromEntity(job),
             job.getResearchGroup() == null ? null : job.getResearchGroup().getResearchGroupId(),
-            job.getCreatedAt() != null ? job.getCreatedAt().toInstant(ZoneOffset.UTC) : null,
-            job.getLastModifiedAt() != null ? job.getLastModifiedAt().toInstant(ZoneOffset.UTC) : null
+            job.getCreatedAt().toInstant(ZoneOffset.UTC),
+            job.getLastModifiedAt().toInstant(ZoneOffset.UTC)
         );
     }
 

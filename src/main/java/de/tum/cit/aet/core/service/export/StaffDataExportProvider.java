@@ -134,7 +134,7 @@ public class StaffDataExportProvider implements UserDataSectionProvider {
                         " " +
                         review.getApplication().getApplicant().getUser().getLastName(),
                     review.getReason(),
-                    review.getReviewedAt() != null ? review.getReviewedAt().toInstant(ZoneOffset.UTC) : null
+                    review.getReviewedAt().toInstant(ZoneOffset.UTC)
                 )
             )
             .toList();
