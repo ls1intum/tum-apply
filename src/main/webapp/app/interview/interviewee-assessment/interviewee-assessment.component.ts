@@ -11,6 +11,7 @@ import { IntervieweeDetailDTO } from 'app/generated/model/interviewee-detail-dto
 import { UpdateAssessmentDTO } from 'app/generated/model/update-assessment-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { Section } from 'app/shared/components/atoms/section/section';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
@@ -36,6 +37,7 @@ import { formatFullName } from 'app/shared/util/name.util';
     FontAwesomeModule,
     DividerModule,
     BackButtonComponent,
+    ButtonComponent,
     Section,
     RatingComponent,
     EditorComponent,
