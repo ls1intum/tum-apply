@@ -8,7 +8,7 @@
     "imageHeader": "Bilder",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
-      "organizationInfo": "Um das Department und die School zu ändern, wende dich bitte an eine:n Administrator:in.",
+      "organizationInfo": "Bitte kontaktiere uns, um das Department und die School zu ändern.",
       "noDepartment": "Kein Department",
       "noSchool": "Keine School",
       "fields": {
@@ -42,9 +42,9 @@
       },
       "toasts": {
         "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",
-        "saveFailed": "Fehler beim Speichern. Bitte versuche es erneut oder kontaktiere einen Admin.",
-        "loadFailed": "Fehler beim Laden. Bitte lade die Seite neu oder kontaktiere einen Admin.",
-        "noId": "Keine Forschungsgruppe gefunden. Kontaktiere deinen Admin."
+        "saveFailed": "Fehler beim Speichern. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+        "loadFailed": "Fehler beim Laden. Bitte lade die Seite neu, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+        "noId": "Keine Forschungsgruppe gefunden. Bitte kontaktiere uns."
       }
     },
     "emailTemplates": {
@@ -135,7 +135,7 @@
       "toastMessages": {
         "loadFailed": {
           "summary": "Fehler beim Laden",
-          "detail": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Fehler beim Laden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "loadUsersFailed": {
           "summary": "Fehler beim Laden",
@@ -167,7 +167,7 @@
         },
         "removeFailed": {
           "summary": "Fehler beim Entfernen",
-          "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Fehler beim Entfernen. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       },
       "noRole": "Keine Rolle"
@@ -305,7 +305,7 @@
         },
         "save": {
           "summary": "Fehler",
-          "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "loadDepartments": {
           "summary": "Fehler",

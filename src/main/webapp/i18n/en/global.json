@@ -543,11 +543,11 @@
         },
         "fetchApplicationFailed": {
           "summary": "Application not loaded",
-          "detail": "The application could not be loaded. Please try again or contact an admin."
+          "detail": "The application could not be loaded. Please try again, or contact us if the problem persists."
         },
         "fetchDocumentIdsFailed": {
           "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application. Please try again or contact an admin."
+          "detail": "Failed to fetch document IDs for this application. Please try again, or contact us if the problem persists."
         },
         "notEditable": {
           "summary": "Error",
@@ -559,15 +559,15 @@
         },
         "saveFailed": {
           "summary": "Error",
-          "detail": "Failed to save application. Please try again or contact an admin."
+          "detail": "Failed to save application. Please try again, or contact us if the problem persists."
         },
         "loadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application. Please try again or contact an admin."
+          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
         },
         "initLoadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application. Please try again or contact an admin."
+          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Error",
@@ -579,7 +579,7 @@
         },
         "errorDeletingApplication": {
           "summary": "Delete failed",
-          "detail": "The application could not be deleted. Please try again or contact an admin."
+          "detail": "The application could not be deleted. Please try again, or contact us if the problem persists."
         },
         "applicationWithdrawn": {
           "summary": "Application withdrawn",
@@ -587,7 +587,7 @@
         },
         "errorWithdrawingApplication": {
           "summary": "Withdrawal failed",
-          "detail": "The application could not be withdrawn. Please try again or contact an admin."
+          "detail": "The application could not be withdrawn. Please try again, or contact us if the problem persists."
         },
         "jobIdNotAvailable": {
           "summary": "Error",
