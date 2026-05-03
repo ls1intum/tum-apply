@@ -310,7 +310,7 @@ public class JobsExportStrategy {
     ) {
         // 1. Job details PDF (reuses existing public job-export PDF)
         try {
-            Resource pdf = pdfExportService.exportJobToPDF(job.getJobId(), AdminPdfLabels.forJob(), null);
+            Resource pdf = pdfExportService.exportJobToPDF(job.getJobId(), AdminPdfLabels.forJob());
             zipExportService.addFileToZip(zos, folder + "job_details.pdf", pdf.getInputStream());
         } catch (StreamAbortedException sae) {
             throw sae;
@@ -378,7 +378,7 @@ public class JobsExportStrategy {
         // 1. Application details PDF (reuses existing per-applicant PDF)
         try {
             ApplicationDetailDTO dto = ApplicationDetailDTO.getFromEntity(app, job);
-            Resource pdf = pdfExportService.exportApplicationToPDF(dto, AdminPdfLabels.forApplication(), null);
+            Resource pdf = pdfExportService.exportApplicationToPDF(dto, AdminPdfLabels.forApplication());
             zipExportService.addFileToZip(zos, folder + "application_details.pdf", pdf.getInputStream());
             appPdfWritten = true;
         } catch (StreamAbortedException sae) {

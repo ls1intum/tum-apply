@@ -13,5 +13,4 @@ import type { ApplicationDetailDTO } from './application-detail-dto';
 export interface ApplicationPDFRequest {
     application?: ApplicationDetailDTO;
     labels?: { [key: string]: string; };
-    timezone?: string;
 }

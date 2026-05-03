@@ -38,7 +38,7 @@ public class PDFExportResource {
     @PostMapping(value = "/application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportApplicationToPDF(@RequestBody ApplicationPDFRequest request) {
         log.info("POST /api/export/application/pdf");
-        Resource pdf = pdfExportService.exportApplicationToPDF(request.application(), request.labels(), request.timezone());
+        Resource pdf = pdfExportService.exportApplicationToPDF(request.application(), request.labels());
         String filename = pdfExportService.generateApplicationFilename(
             request.application().jobTitle(),
             request.labels().get("application")
@@ -53,20 +53,15 @@ public class PDFExportResource {
     /**
      * POST /api/export/job/{id}/pdf : Export job details as PDF
      *
-     * @param id       the job ID
-     * @param labels   translation labels for PDF content
-     * @param timezone IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
+     * @param id     the job ID
+     * @param labels translation labels for PDF content
      * @return the PDF file as downloadable attachment
      */
     @Public
     @PostMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<Resource> exportJobToPDF(
-        @PathVariable UUID id,
-        @RequestBody Map<String, String> labels,
-        @RequestParam(name = "timezone", required = false) String timezone
-    ) {
+    public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         log.info("POST /api/export/job/{}/pdf", id);
-        Resource pdf = pdfExportService.exportJobToPDF(id, labels, timezone);
+        Resource pdf = pdfExportService.exportJobToPDF(id, labels);
         String filename = pdfExportService.generateJobFilename(id, labels.get("jobPdfEnding"));
 
         return ResponseEntity.ok()
@@ -86,7 +81,7 @@ public class PDFExportResource {
     @PostMapping(value = "/job/preview/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportJobPreviewToPDF(@RequestBody JobPreviewRequest request) {
         log.info("POST /api/export/job/preview/pdf");
-        Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels(), request.timezone());
+        Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels());
         String filename = pdfExportService.generateJobFilenameForPreview(request.job(), request.labels().get("jobPdfEnding"));
 
         return ResponseEntity.ok()

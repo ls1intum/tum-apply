@@ -16,10 +16,9 @@ import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +32,8 @@ import org.springframework.stereotype.Service;
 public class PDFExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-    private static final ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Berlin");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm 'UTC'");
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
 
     private final JobService jobService;
     private final CurrentUserService currentUserService;
@@ -45,14 +44,13 @@ public class PDFExportService {
     // ------------------- Main methods -------------------
 
     /**
-     * Exports application details to PDF
+     * Exports application details to PDF. All timestamps are rendered in UTC.
      *
-     * @param app      the ApplicationDetailDTO containing application data
-     * @param labels   translation labels for PDF content
-     * @param timezone IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
+     * @param app    the ApplicationDetailDTO containing application data
+     * @param labels translation labels for PDF content
      * @return the PDF file as Resource
      */
-    public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels, String timezone) {
+    public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         // currentUserFullNameOrEmpty() wraps the request-scoped proxy so it
@@ -148,7 +146,7 @@ public class PDFExportService {
         }
 
         // Metadata
-        String metadataText = buildMetadataText(labels, timezone);
+        String metadataText = buildMetadataText(labels);
         builder.setMetadata(metadataText);
         builder.setMetadataEnd(labels.get("metaEndText"));
 
@@ -158,14 +156,13 @@ public class PDFExportService {
     }
 
     /**
-     * Exports job details to PDF
+     * Exports job details to PDF. All timestamps are rendered in UTC.
      *
-     * @param jobId    the job ID
-     * @param labels   translation labels for PDF content
-     * @param timezone IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
+     * @param jobId  the job ID
+     * @param labels translation labels for PDF content
      * @return the PDF file as Resource
      */
-    public Resource exportJobToPDF(UUID jobId, Map<String, String> labels, String timezone) {
+    public Resource exportJobToPDF(UUID jobId, Map<String, String> labels) {
         JobDetailDTO job = jobService.getJobDetails(jobId);
 
         PDFBuilder builder = new PDFBuilder(job.title());
@@ -216,7 +213,7 @@ public class PDFExportService {
         addResearchGroupSection(builder, job.researchGroup(), labels);
 
         // Metadata
-        String metadataText = buildMetadataText(labels, timezone);
+        String metadataText = buildMetadataText(labels);
         builder.setMetadata(metadataText);
         builder.setMetadataEnd(labels.get("metaEndText"));
 
@@ -226,14 +223,13 @@ public class PDFExportService {
     }
 
     /**
-     * Exports job details to PDF
+     * Exports job details to PDF. All timestamps are rendered in UTC.
      *
      * @param jobFormDTO the job form data
      * @param labels     translation labels for PDF content
-     * @param timezone   IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
      * @return the PDF file as Resource
      */
-    public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels, String timezone) {
+    public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(jobFormDTO.title());
 
         // Add banner image if available
@@ -279,7 +275,7 @@ public class PDFExportService {
         addJobDetailsSection(builder, labels, descriptionForExport);
 
         // Metadata
-        builder.setMetadata(buildMetadataText(labels, timezone));
+        builder.setMetadata(buildMetadataText(labels));
         builder.setMetadataEnd(labels.get("metaEndText"));
         builder.setPageLabels(labels.get("page"), labels.get("of"));
 
@@ -349,7 +345,7 @@ public class PDFExportService {
         builder.startInfoSection(labels.get("interviewNotes")).addSectionContent(getValue(interviewee.getAssessmentNotes()));
 
         // Footer
-        builder.setMetadata(buildMetadataText(labels, null));
+        builder.setMetadata(buildMetadataText(labels));
         builder.setMetadataEnd(labels.get("metaEndText"));
         builder.setPageLabels(labels.get("page"), labels.get("of"));
 
@@ -373,17 +369,15 @@ public class PDFExportService {
     }
 
     private String formatInstantDate(Instant instant) {
-        return instant == null ? "-" : DATE_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : DATE_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private String formatInstantTime(Instant instant) {
-        return instant == null
-            ? "-"
-            : DateTimeFormatter.ofPattern("HH:mm").format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : TIME_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private String formatInstantDateTime(Instant instant) {
-        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
@@ -477,35 +471,16 @@ public class PDFExportService {
     }
 
     /**
-     * Resolves an IANA time-zone string to a {@link ZoneId}, falling back to
-     * {@link #DEFAULT_ZONE} when the input is null, blank, or not a valid zone id.
-     *
-     * @param timezone IANA zone id sent by the client (e.g. "Europe/Berlin")
-     * @return the resolved zone, never null
-     */
-    private ZoneId resolveZone(String timezone) {
-        if (timezone == null || timezone.isBlank()) {
-            return DEFAULT_ZONE;
-        }
-        try {
-            return ZoneId.of(timezone);
-        } catch (DateTimeException e) {
-            return DEFAULT_ZONE;
-        }
-    }
-
-    /**
      * Builds the metadata text using labels and current user data.
+     * The "generated on" timestamp is rendered in UTC.
      *
-     * @param labels   translation labels for metadata parts
-     * @param timezone IANA zone id used to render the "generated on" timestamp;
-     *                 falls back to Europe/Berlin when null/blank/invalid
+     * @param labels translation labels for metadata parts
      * @return formatted metadata string
      */
-    private String buildMetadataText(Map<String, String> labels, String timezone) {
+    private String buildMetadataText(Map<String, String> labels) {
         StringBuilder metadata = new StringBuilder();
 
-        String currentDateTime = LocalDateTime.now(resolveZone(timezone)).format(DATETIME_FORMATTER);
+        String currentDateTime = LocalDateTime.now(ZoneOffset.UTC).format(DATETIME_FORMATTER);
         metadata.append(labels.get("thisDocumentWasGeneratedOn"));
         metadata.append(currentDateTime);
 
