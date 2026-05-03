@@ -26,11 +26,7 @@
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
     }
     @if (label() !== undefined) {
-      @if (shouldTranslate()) {
-        <span jhiTranslate="{{ label() }}"></span>
-      } @else {
-        {{ label() }}
-      }
+      <span>{{ displayLabel() }}</span>
     }
     @if (isExternalLink()) {
       <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true" />

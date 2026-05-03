@@ -80,26 +80,10 @@
           }}
         </div>
         <div class="flex justify-center gap-1.5 flex-wrap mt-2">
-          <jhi-tag
-            [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severity.critical' | translate)"
-            color="danger"
-            [shouldTranslate]="false"
-          />
-          <jhi-tag
-            [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severity.high' | translate)"
-            color="warn"
-            [shouldTranslate]="false"
-          />
-          <jhi-tag
-            [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severity.medium' | translate)"
-            color="warn"
-            [shouldTranslate]="false"
-          />
-          <jhi-tag
-            [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severity.low' | translate)"
-            color="secondary"
-            [shouldTranslate]="false"
-          />
+          <jhi-tag text="dependencies.severity.criticalCount" [translationParams]="{ count: overview.criticalCount ?? 0 }" color="danger" />
+          <jhi-tag text="dependencies.severity.highCount" [translationParams]="{ count: overview.highCount ?? 0 }" color="warn" />
+          <jhi-tag text="dependencies.severity.mediumCount" [translationParams]="{ count: overview.mediumCount ?? 0 }" color="warn" />
+          <jhi-tag text="dependencies.severity.lowCount" [translationParams]="{ count: overview.lowCount ?? 0 }" color="secondary" />
         </div>
       </div>
     </div>
@@ -142,14 +126,10 @@
     @if (dep.vulnerabilities?.length) {
       <div class="flex flex-col items-start gap-1">
         <jhi-tag
-          [text]="
-            dep.vulnerabilities.length +
-            ' ' +
-            (dep.vulnerabilities.length === 1 ? ('dependencies.vulnerability' | translate) : ('dependencies.vulnerabilities' | translate))
-          "
+          text="dependencies.vulnerabilityCount"
+          [translationParams]="{ count: dep.vulnerabilities.length }"
           [color]="dep.severityTagColor"
           [icon]="faExclamationTriangle"
-          [shouldTranslate]="false"
         />
         <div class="flex flex-wrap items-center gap-1">
           @for (vuln of isVulnerabilityExpanded(dep) ? dep.vulnerabilities : dep.vulnerabilities.slice(0, 3); track vuln.id) {
@@ -164,12 +144,12 @@
           }
           @if (dep.vulnerabilities.length > 3) {
             <jhi-button
-              [label]="isVulnerabilityExpanded(dep) ? ('dependencies.showLess' | translate) : '+' + (dep.vulnerabilities.length - 3)"
+              [label]="isVulnerabilityExpanded(dep) ? 'dependencies.showLess' : 'dependencies.showMore'"
+              [translationParams]="{ count: dep.vulnerabilities.length - 3 }"
               variant="text"
               severity="primary"
               size="xs"
               (click)="$event.stopPropagation(); toggleVulnerabilityExpansion(dep)"
-              [shouldTranslate]="false"
             />
           }
         </div>

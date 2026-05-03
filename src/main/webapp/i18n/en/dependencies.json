@@ -45,6 +45,7 @@
     "downloadSbom": "Download",
     "vulnerabilities": "Vulnerabilities",
     "vulnerability": "Vulnerability",
+    "vulnerabilityCount": "{count} {count, plural, one {Vulnerability} other {Vulnerabilities}}",
 
     "loadingVulnerabilities": "Checking for vulnerabilities...",
     "vulnerabilitiesNotLoaded": "Vulnerability data not loaded",
@@ -56,10 +57,15 @@
       "critical": "Critical",
       "high": "High",
       "medium": "Medium",
-      "low": "Low"
+      "low": "Low",
+      "criticalCount": "{count} Critical",
+      "highCount": "{count} High",
+      "mediumCount": "{count} Medium",
+      "lowCount": "{count} Low"
     },
     "dependency": "dependency",
     "dependencies": "dependencies",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "showMore": "+{count}"
   }
 }

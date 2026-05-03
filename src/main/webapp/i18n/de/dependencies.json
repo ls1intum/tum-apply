@@ -45,6 +45,7 @@
     "downloadSbom": "Herunterladen",
     "vulnerabilities": "Schwachstellen",
     "vulnerability": "Schwachstelle",
+    "vulnerabilityCount": "{count} {count, plural, one {Schwachstelle} other {Schwachstellen}}",
 
     "loadingVulnerabilities": "Prüfe auf Schwachstellen...",
     "vulnerabilitiesNotLoaded": "Schwachstellendaten nicht geladen",
@@ -56,10 +57,15 @@
       "critical": "Kritisch",
       "high": "Hoch",
       "medium": "Mittel",
-      "low": "Niedrig"
+      "low": "Niedrig",
+      "criticalCount": "{count} Kritisch",
+      "highCount": "{count} Hoch",
+      "mediumCount": "{count} Mittel",
+      "lowCount": "{count} Niedrig"
     },
     "dependency": "Abhängigkeit",
     "dependencies": "Abhängigkeiten",
-    "showLess": "Weniger anzeigen"
+    "showLess": "Weniger anzeigen",
+    "showMore": "+{count}"
   }
 }

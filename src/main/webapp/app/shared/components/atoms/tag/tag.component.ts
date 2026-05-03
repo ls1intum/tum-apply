@@ -20,6 +20,7 @@ export class TagComponent {
   tooltipText = input<string | undefined>(undefined);
   width = input<string | undefined>(undefined);
   shouldTranslate = input<boolean>(true);
+  translationParams = input<Record<string, unknown>>({});
 
   readonly iconProp = computed(() => this.icon() as IconDefinition);
   readonly severity = computed(() => {
@@ -27,8 +28,10 @@ export class TagComponent {
     return colorValue === 'primary' ? 'info' : colorValue;
   });
 
-  displayText = computed(() => this.translator.translate(this.text(), this.shouldTranslate()) ?? '');
-  displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()) ?? '');
+  displayText = computed(() => this.translator.translate(this.text(), this.shouldTranslate(), this.translationParams()) ?? '');
+  displayTooltipText = computed(
+    () => this.translator.translate(this.tooltipText(), this.shouldTranslate(), this.translationParams()) ?? '',
+  );
 
   private translator = injectTranslator();
 }

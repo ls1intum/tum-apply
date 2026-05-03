@@ -2,7 +2,6 @@ import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { Component, ViewEncapsulation, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import { TranslateDirective } from 'app/shared/language';
 import { injectTranslator } from 'app/shared/util/translate-signal.util';
 import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -33,7 +32,7 @@ export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
   standalone: true,
-  imports: [CommonModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet, TooltipModule, TranslateDirective],
+  imports: [CommonModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet, TooltipModule],
   encapsulation: ViewEncapsulation.None,
 })
 export class ButtonComponent {
@@ -45,6 +44,7 @@ export class ButtonComponent {
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
   shouldTranslate = input<boolean>(true);
+  translationParams = input<Record<string, unknown>>({});
   fullWidth = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
   loading = input<boolean>(false);
@@ -57,7 +57,8 @@ export class ButtonComponent {
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   classStyling = input<string>('');
 
-  displayTooltip = computed(() => this.translator.translate(this.tooltip(), this.shouldTranslate()));
+  displayTooltip = computed(() => this.translator.translate(this.tooltip(), this.shouldTranslate(), this.translationParams()));
+  displayLabel = computed(() => this.translator.translate(this.label(), this.shouldTranslate(), this.translationParams()));
   ariaLabel = computed(() => (this.label() === undefined ? this.displayTooltip() : undefined));
 
   private translator = injectTranslator();
