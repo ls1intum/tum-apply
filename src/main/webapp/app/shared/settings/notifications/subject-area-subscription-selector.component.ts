@@ -16,6 +16,7 @@ export interface SubjectAreaOption {
   selector: 'jhi-subject-area-subscription-selector',
   imports: [FilterMultiselect, FontAwesomeModule, TranslateModule, TranslateDirective],
   templateUrl: './subject-area-subscription-selector.component.html',
+  styleUrl: './subject-area-subscription-selector.component.scss',
 })
 export class SubjectAreaSubscriptionSelectorComponent {
   private static readonly REMOVE_ANIMATION_MS = 150;

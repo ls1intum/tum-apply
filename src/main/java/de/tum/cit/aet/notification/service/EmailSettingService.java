@@ -91,6 +91,25 @@ public class EmailSettingService {
     }
 
     /**
+     * Returns the subset of the given user IDs whose effective notification preference for the given email type
+     * is enabled. Users without an explicit stored preference fall back to the default-enabled behaviour and
+     * are included; users with a stored preference set to {@code false} are excluded. Runs in a single read query
+     * regardless of how many users are passed, so callers like job-published fan-out do not pay a per-user round trip.
+     *
+     * @param emailType the email type to check
+     * @param userIds   the candidate user IDs to filter
+     * @return the IDs of users who can be notified
+     */
+    @Transactional(readOnly = true)
+    public Set<UUID> filterEnabledUserIds(EmailType emailType, Collection<UUID> userIds) {
+        if (userIds.isEmpty()) {
+            return Set.of();
+        }
+        Set<UUID> disabled = emailSettingRepository.findUserIdsWithDisabledSetting(userIds, emailType);
+        return userIds.stream().filter(id -> !disabled.contains(id)).collect(Collectors.toSet());
+    }
+
+    /**
      * Updates user email settings by creating missing settings for email types the user is eligible for.
      * Compares required email types based on user roles with existing settings and creates defaults for missing ones.
      *
