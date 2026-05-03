@@ -663,9 +663,10 @@ describe('JobDetailComponent', () => {
   });
 
   it('should call getResourceGroupDetails with empty string when user has no researchGroup', async () => {
-    const userWithoutGroup = { id: 'u2', name: 'NoGroupUser', researchGroup: {} };
+    const userWithoutGroup: User = { id: 'u2', name: 'NoGroupUser', email: 'nogroup@test.com', memberships: [] };
 
-    mockAccountService.user.set(userWithoutGroup as User);
+    mockAccountService.user.set(userWithoutGroup);
+    mockAccountService.activeResearchGroupId.set(undefined);
 
     const form: JobFormDTO = {
       title: 'Form Job',
