@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { UrlSegment } from '@angular/router';
 import { signal, TemplateRef } from '@angular/core';
 
@@ -90,6 +90,7 @@ type ComponentPrivate = {
   performAutoSave: () => Promise<void>;
   clearAutoSaveTimer: () => void;
   autoSaveTimer?: number;
+  autoSaveInFlight: Promise<void> | undefined;
   autoSaveInitialized: boolean;
   populateForm: (job?: JobDTO) => void;
   createJobDTO: (state?: JobFormDTOStateEnum) => JobFormDTO;
@@ -373,6 +374,56 @@ describe('JobCreationFormComponent', () => {
       setup(component);
       await component.publishJob();
       expectations();
+    });
+
+    it('should cancel a pending debounced autosave before publishing', async () => {
+      fillValidJobForm(component);
+      fixture.detectChanges();
+      component.jobId.set('id123');
+
+      const priv = getPrivate(component);
+      const triggered = vi.fn();
+      priv.autoSaveTimer = window.setTimeout(triggered, 10_000);
+
+      await component.publishJob();
+
+      expect(priv.autoSaveTimer).toBeUndefined();
+      expect(triggered).not.toHaveBeenCalled();
+      expect(mockJobApi.updateJob).toHaveBeenCalledOnce();
+      const [, sentDto] = mockJobApi.updateJob.mock.calls[0];
+      expect(sentDto.state).toBe(JobFormDTOStateEnum.Published);
+    });
+
+    it('should wait for an in-flight autosave before publishing so Published is the last write', async () => {
+      fillValidJobForm(component);
+      fixture.detectChanges();
+      component.jobId.set('id123');
+
+      const draftSave = new Subject<JobFormDTO>();
+      mockJobApi.updateJob = vi
+        .fn()
+        .mockReturnValueOnce(draftSave)
+        .mockReturnValueOnce(of({ jobId: 'id123', state: JobFormDTOStateEnum.Published }));
+
+      const autoSavePromise = getPrivate(component).performAutoSave();
+      const publishPromise = component.publishJob();
+      await Promise.resolve();
+
+      // While the autosave is still pending, the publish must NOT have fired.
+      expect(mockJobApi.updateJob).toHaveBeenCalledOnce();
+
+      // Resolve the in-flight Draft autosave; the publish should now run.
+      draftSave.next({ jobId: 'id123', state: JobFormDTOStateEnum.Draft } as JobFormDTO);
+      draftSave.complete();
+      await autoSavePromise;
+      await publishPromise;
+
+      expect(mockJobApi.updateJob).toHaveBeenCalledTimes(2);
+      const firstDto = mockJobApi.updateJob.mock.calls[0][1];
+      const secondDto = mockJobApi.updateJob.mock.calls[1][1];
+      expect(firstDto.state).toBe(JobFormDTOStateEnum.Draft);
+      expect(secondDto.state).toBe(JobFormDTOStateEnum.Published);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('toast.published');
     });
   });
 

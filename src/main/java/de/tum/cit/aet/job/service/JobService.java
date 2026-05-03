@@ -183,6 +183,7 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
             HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
@@ -239,6 +240,7 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
             HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getStartDate(),
@@ -384,6 +386,7 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
+        job.setTvlGrade(dto.tvlGrade());
         job.setJobDescriptionEN(HtmlSanitizer.sanitize(dto.jobDescriptionEN()));
         job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());

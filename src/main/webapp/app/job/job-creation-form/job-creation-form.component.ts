@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
 import { TranslateDirective } from 'app/shared/language';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -33,7 +34,7 @@ import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
-import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobFormDTO, JobFormDTOTvlGradeEnum } from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
@@ -58,6 +59,7 @@ import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-c
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
+import { tvlGrades } from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -108,6 +110,7 @@ type JobFormMode = 'create' | 'edit';
     CheckboxComponent,
     AiAssistantCardComponent,
     CompliancePopoverComponent,
+    TooltipModule,
   ],
   providers: [JobResourceApi],
 })
@@ -278,6 +281,17 @@ export class JobCreationFormComponent {
   /** List of detected compliance issues to update the UI and editor highlights */
   readonly complianceIssues = signal<ComplianceIssue[]>([]);
 
+  /** Total number of compliance issues */
+  readonly complianceCount = computed(() => this.complianceIssues().length);
+
+  /** Total number of critical compliance issues */
+  readonly complianceCriticalCount = computed(
+    () => this.complianceIssues().filter(i => i.category === ComplianceIssueCategoryEnum.CriticalAgg).length,
+  );
+
+  /** Whether any critical compliance issue exists */
+  readonly hasCriticalCompliance = computed(() => this.complianceCriticalCount() > 0);
+
   /** The compliance issue currently shown in the popover (undefined = none is hovered). */
   readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
 
@@ -333,6 +347,9 @@ export class JobCreationFormComponent {
 
   /** Template for the saving state indicator */
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
+
+  /** Reference to the progress stepper */
+  stepper = viewChild<ProgressStepperComponent>('stepper');
 
   /** Signal controlling publish confirmation dialog visibility */
   showPublishDialog = signal(false);
@@ -544,6 +561,9 @@ export class JobCreationFormComponent {
   /** Timer ID for the debounced auto-save (2-second delay) */
   private autoSaveTimer: number | undefined;
 
+  /** The currently in-flight auto-save promise, or undefined if none is running. */
+  private autoSaveInFlight: Promise<void> | undefined;
+
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
@@ -681,11 +701,21 @@ export class JobCreationFormComponent {
    * Publishes the job posting after validation.
    * Requires privacy consent and valid forms.
    * Navigates to /my-positions on success.
+   *
+   * Before sending the Published DTO, cancels any pending debounced autosave
+   * and waits for an in-flight autosave to settle. Otherwise a Draft autosave
+   * could land on the server *after* the publish call and silently revert the
+   * job to Draft.
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
 
     if (!jobData) return;
+
+    this.clearAutoSaveTimer();
+    if (this.autoSaveInFlight) {
+      await this.autoSaveInFlight;
+    }
 
     try {
       const saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), jobData));
@@ -703,6 +733,25 @@ export class JobCreationFormComponent {
    */
   onBack(): void {
     this.location.back();
+  }
+
+  /**
+   * Navigate the stepper back to the first step.
+   */
+  private goToFirstStep(): void {
+    this.stepper()?.goToStep(1);
+  }
+
+  /**
+   * Handles clicks on the message to navigate back to the first step.
+   * @param event - The DOM event triggered by the user
+   */
+  handleMessageClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('stepper-link')) {
+      event.preventDefault();
+      this.goToFirstStep();
+    }
   }
 
   /**
@@ -1151,6 +1200,7 @@ export class JobCreationFormComponent {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
       fundingType: [undefined],
+      tvlGrade: [undefined],
       startDate: [''],
       applicationDeadline: [''],
       workload: [undefined],
@@ -1214,6 +1264,7 @@ export class JobCreationFormComponent {
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
+      tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
@@ -1364,6 +1415,7 @@ export class JobCreationFormComponent {
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
+      tvlGrade: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
     });
 
@@ -1511,7 +1563,18 @@ export class JobCreationFormComponent {
    * Creates job on first save, updates on subsequent saves.
    * Triggers translation after successful save if content changed.
    */
-  private async performAutoSave(): Promise<void> {
+  private performAutoSave(): Promise<void> {
+    const work = this.runAutoSave();
+    this.autoSaveInFlight = work;
+    void work.finally(() => {
+      if (this.autoSaveInFlight === work) {
+        this.autoSaveInFlight = undefined;
+      }
+    });
+    return work;
+  }
+
+  private async runAutoSave(): Promise<void> {
     // 1) Capture current form state before any async work
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
@@ -1879,4 +1942,6 @@ export class JobCreationFormComponent {
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
   }
+
+  protected readonly tvlGrades = tvlGrades;
 }

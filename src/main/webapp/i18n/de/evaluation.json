@@ -75,7 +75,7 @@
       },
       "error": {
         "summary": "Fehler",
-        "detail": "Fehler beim Hinzufügen des Bewerbers. Bitte versuche es später erneut oder kontaktiere einen Administrator."
+        "detail": "Fehler beim Hinzufügen des Bewerbers. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     },
     "education": {

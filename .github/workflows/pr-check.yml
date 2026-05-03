@@ -339,12 +339,37 @@ jobs:
   # ============================================
 
   lighthouse-scan:
-    name: Server Startup (Lighthouse Performance & Accessibility temporarily disabled)
+    name: Lighthouse Scan (${{ matrix.role }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     env:
       TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - role: 'Professor'
+            username: 'professor1@tumapply.local'
+            password: 'professor'
+            paths: |
+              /my-positions
+              /job/create
+              /evaluation/application
+              /research-group/info
+              /interviews/overview
+
+          - role: 'Applicant'
+            username: 'applicant1@tumapply.local'
+            password: 'applicant'
+            paths: |
+              /
+              /job-overview
+              /application/form
+              /application/overview
+              /settings
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -367,6 +392,55 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      # --- Start Keycloak ---
+      - name: Start Keycloak
+        run: |
+          docker compose -f docker/local-setup/services.yml up -d keycloak mysql
+          echo "Waiting for Keycloak to be healthy..."
+          for i in {1..60}; do
+            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+              echo "✅ Keycloak is up"
+              break
+            fi
+            echo "Waiting ($i/60)..."
+            sleep 2
+          done
+
+          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+            echo "❌ Keycloak did not start in time."
+            docker compose -f docker/local-setup/services.yml logs keycloak || true
+            docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
+            exit 1
+          fi
+
+      # --- Install Client Dependencies for Local Angular Dev Server ---
+      - name: Install Client Dependencies
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: npm ci
+
+      - name: Start Angular Dev Server
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: |
+          echo "Starting Angular dev server..."
+          npm run webapp:dev -- --host 0.0.0.0 > client.log 2>&1 &
+          echo "CLIENT_PID=$!" >> $GITHUB_ENV
+
+          echo "Waiting for Angular dev server to start..."
+          for i in {1..60}; do
+            if curl -sSf http://localhost:4200 >/dev/null 2>&1; then
+              echo "✅ Angular dev server started successfully!"
+              break
+            fi
+            echo "Waiting ($i/60)..."
+            sleep 5
+          done
+
+          if ! curl -sSf http://localhost:4200 >/dev/null 2>&1; then
+            echo "❌ Angular dev server did not start in time."
+            cat client.log
+            exit 1
+          fi
+
       # --- Start Server ---
       - name: Start Spring Boot Server
         run: |
@@ -375,73 +449,91 @@ jobs:
           echo "SERVER_PID=$!" >> $GITHUB_ENV
 
           echo "Waiting for server to start..."
-          sleep 240
+          for i in {1..60}; do
+            if curl -sSf http://localhost:8080/actuator/health >/dev/null 2>&1; then
+              echo "✅ Server started successfully!"
+              break
+            fi
 
-          if grep -q "Application 'TUMApply' is running!" server.log; then
-            echo "✅ Server started successfully!"
-          else
+            if grep -q "Application 'TUMApply' is running!" server.log; then
+              echo "✅ Server started successfully!"
+              break
+            fi
+
+            echo "Waiting ($i/60)..."
+            sleep 3
+          done
+
+          if ! curl -sSf http://localhost:8080/actuator/health >/dev/null 2>&1 && ! grep -q "Application 'TUMApply' is running!" server.log; then
             echo "❌ Server failed to start!"
             cat server.log
             exit 1
           fi
 
-      # --- Build & Start Client (only if not using remote URL) ---
-      - name: Install Client Dependencies
-        if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm ci
-
-      - name: Build Client for Production
-        if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm run build
-
-      - name: Start Client Server
-        if: ${{ !vars.AET_CLIENT_URL }}
+      - name: Import Lighthouse Test Data
         run: |
-          npx serve build/resources/main/static -l 4200 --single > client.log 2>&1 &
-          echo "CLIENT_PID=$!" >> $GITHUB_ENV
-          sleep 5
+          echo "Importing application test data for Lighthouse users..."
+          MYSQL_CONTAINER=$(docker compose -f docker/local-setup/services.yml ps -q mysql)
 
-      - name: Wait for Client Ready
-        if: ${{ !vars.AET_CLIENT_URL }}
+          if [ -z "$MYSQL_CONTAINER" ]; then
+            echo "❌ MySQL container is not running."
+            exit 1
+          fi
+
+          while IFS= read -r file; do
+            echo "Running $file"
+            docker exec -i "$MYSQL_CONTAINER" mysql -h 127.0.0.1 -P 3306 -u root --password="" tumapply < "$file"
+          done < <(find src/main/resources/testdata -type f -name "*.sql" ! -name "00_drop_all_tables.sql" | sort)
+
+      - name: Build Lighthouse URL List
+        id: lighthouse-urls
+        shell: bash
         run: |
-          echo "Waiting for client on http://localhost:4200 ..."
-          for i in {1..30}; do
-            if curl -fs http://localhost:4200 > /dev/null; then
-              echo "✅ Client is UP!"
-              exit 0
-            fi
-            echo "Still waiting..."
-            sleep 2
-          done
-          echo "❌ Client did not start in time"
-          exit 1
+          {
+            echo 'urls<<EOF'
+            while IFS= read -r path; do
+              if [ -n "$path" ]; then
+                echo "${TARGET_URL}${path}"
+              fi
+            done <<< '${{ matrix.paths }}'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       # --- Run Lighthouse ---
-      # - name: Install Lighthouse CI
-      #   run: npm install -g @lhci/cli@0.11.x
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.11.x
 
-      # - name: ✅ Run Lighthouse Performance & Accessibility Scans
-      #   run: lhci autorun
+      - name: ✅ Run Lighthouse for ${{ matrix.role }}
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18
+        with:
+          urls: ${{ steps.lighthouse-urls.outputs.urls }}
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_USERNAME: ${{ matrix.username }}
+          TEST_PASSWORD: ${{ matrix.password }}
 
       # --- Cleanup ---
       - name: Cleanup Servers
         if: always()
         run: |
           echo "Stopping servers..."
-          kill $SERVER_PID || true
           kill $CLIENT_PID || true
+          kill $SERVER_PID || true
 
       # --- Upload Logs on Failure ---
+      - name: Upload Client Log
+        if: failure() && !vars.AET_CLIENT_URL
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-client-log-${{ matrix.role }}
+          path: client.log
+
       - name: Upload Server Log
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: lighthouse-server-log
+          name: lighthouse-server-log-${{ matrix.role }}
           path: server.log
-
-      - name: Upload Client Log
-        if: failure() && env.CLIENT_PID
-        uses: actions/upload-artifact@v7
-        with:
-          name: lighthouse-client-log
-          path: client.log
