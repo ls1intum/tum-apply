@@ -100,7 +100,6 @@ public class EmailSettingService {
      * @param userIds   the candidate user IDs to filter
      * @return the IDs of users who can be notified
      */
-    @Transactional(readOnly = true)
     public Set<UUID> filterEnabledUserIds(EmailType emailType, Collection<UUID> userIds) {
         if (userIds.isEmpty()) {
             return Set.of();
