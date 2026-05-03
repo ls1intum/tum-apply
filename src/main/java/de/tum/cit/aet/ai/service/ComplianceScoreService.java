@@ -1,10 +1,10 @@
 package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
+import de.tum.cit.aet.ai.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
-import de.tum.cit.aet.core.dto.BiasedWordDTO;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
-import java.util.Collections;
+import de.tum.cit.aet.ai.domain.BiasedIssues;
+
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -59,9 +59,9 @@ public class ComplianceScoreService {
      * @param translatedAnalysis The analysis results for the secondary/translated language.
      * @return the combined gender bias score (0-100)
      */
-    public int calculateCombinedScore(GenderBiasAnalysisResponse originalAnalysis, GenderBiasAnalysisResponse translatedAnalysis) {
-        int scoreDE = calculateScore(originalAnalysis);
-        int scoreEN = calculateScore(translatedAnalysis);
+    public int calculateCombinedScore(List<BiasedIssues> originalAnalysis, List<BiasedIssues> translatedAnalysis, String originalText) {
+        int scoreDE = calculateScore(originalAnalysis, originalText);
+        int scoreEN = calculateScore(translatedAnalysis, originalText);
         return (int) Math.round((scoreDE + scoreEN) / 2.0);
     }
 
@@ -74,17 +74,17 @@ public class ComplianceScoreService {
      * @param translatedAnalysis Analysis results for the secondary/translated language.
      * @return A compiled integer score (0-100) based on the most comprehensive data available.
      */
-    protected int calculateGenderScore(GenderBiasAnalysisResponse originalAnalysis, GenderBiasAnalysisResponse translatedAnalysis) {
+    protected int calculateGenderScore(List<BiasedIssues> originalAnalysis, List<BiasedIssues> translatedAnalysis, String originalText) {
         //If both language versions are available, the combined version is set.
         if (originalAnalysis != null && translatedAnalysis != null) {
-            return calculateCombinedScore(originalAnalysis, translatedAnalysis);
+            return calculateCombinedScore(originalAnalysis, translatedAnalysis, originalText);
         }
         //If only one lang is present, it falls back to the single-language score calculation.
         if (originalAnalysis != null) {
-            return calculateScore(originalAnalysis);
+            return calculateScore(originalAnalysis, originalText);
         }
         if (translatedAnalysis != null) {
-            return calculateScore(translatedAnalysis);
+            return calculateScore(translatedAnalysis, originalText);
         }
         return 0;
     }
@@ -103,25 +103,24 @@ public class ComplianceScoreService {
      * @param analysis - The result of the gender bias analysis (including identified words and overall coding).
      * @returns An integer between 0 and 100 representing the inclusivity score.
      */
-    protected int calculateScore(GenderBiasAnalysisResponse analysis) {
-        if (analysis == null) {
+    protected int calculateScore(List<BiasedIssues> analysis, String originalText) {
+        if (originalText == null || originalText.trim().isEmpty()) {
+            return 0;
+        }
+
+        if (analysis == null || analysis.isEmpty()) {
             return 100;
         }
 
-        if ("empty".equals(analysis.coding())) {
-            boolean hasWords = analysis.biasedWords() != null && !analysis.biasedWords().isEmpty();
-            return hasWords ? 0 : 100;
-        }
+        String coding = analysis.get(0).getCoding();
 
-        List<BiasedWordDTO> biasedWords = analysis.biasedWords() != null ? analysis.biasedWords() : Collections.emptyList();
-
-        long inclusiveCount = biasedWords
+        long inclusiveCount = analysis
             .stream()
-            .filter(word -> "inclusive".equals(word.type()))
+            .filter(issue -> GenderCategory.INCLUSIVE.equals(issue.getType()))
             .count();
-        long nonInclusiveCount = biasedWords
+        long nonInclusiveCount = analysis
             .stream()
-            .filter(word -> "non-inclusive".equals(word.type()))
+            .filter(issue -> GenderCategory.NON_INCLUSIVE.equals(issue.getType()))
             .count();
 
         if (nonInclusiveCount == 0) {
@@ -131,7 +130,7 @@ public class ComplianceScoreService {
         double totalCount = (double) inclusiveCount + (double) nonInclusiveCount;
         double inclusiveWeight = inclusiveCount / totalCount;
 
-        double factor = getCodingFactor(analysis.coding());
+        double factor = getCodingFactor(coding);
         double score = Math.sqrt(inclusiveWeight * factor) * 100.0;
 
         return (int) Math.max(0, Math.min(100, Math.round(score)));

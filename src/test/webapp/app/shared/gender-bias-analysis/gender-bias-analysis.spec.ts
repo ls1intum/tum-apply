@@ -6,7 +6,7 @@ import {
   GenderBiasAnalysisResourceApiMock,
 } from 'util/gender-bias-analysis-resource-api.service.mock';
 import { of, throwError } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 
 describe('GenderBiasAnalysisService', () => {
@@ -58,7 +58,7 @@ describe('GenderBiasAnalysisService', () => {
 
     it('should return undefined when text is empty', async () => {
       const fieldId = 'test-field';
-      let result: GenderBiasAnalysisResponse | undefined;
+      let result: BiasedIssues | undefined;
 
       const analysis = service.getAnalysisForField(fieldId);
       analysis.subscribe(value => {
@@ -74,7 +74,7 @@ describe('GenderBiasAnalysisService', () => {
 
     it('should return undefined when text is only whitespace', async () => {
       const fieldId = 'test-field';
-      let result: GenderBiasAnalysisResponse | undefined;
+      let result: BiasedIssues | undefined;
 
       const analysis = service.getAnalysisForField(fieldId);
       analysis.subscribe(value => {
@@ -91,14 +91,14 @@ describe('GenderBiasAnalysisService', () => {
     it('should call API and return result for valid text', async () => {
       vi.useFakeTimers();
       const fieldId = 'test-field';
-      const mockResponse: GenderBiasAnalysisResponse = {
+      const mockResponse: BiasedIssues = {
         coding: 'male',
         biasedWords: [{ word: 'he', type: 'male' }],
       };
 
       genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
 
-      let result: GenderBiasAnalysisResponse | undefined;
+      let result: BiasedIssues | undefined;
       const analysis = service.getAnalysisForField(fieldId);
       analysis.subscribe(value => {
         result = value;
@@ -123,7 +123,7 @@ describe('GenderBiasAnalysisService', () => {
 
       genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(throwError(() => new Error('API error')));
 
-      let result: GenderBiasAnalysisResponse | undefined;
+      let result: BiasedIssues | undefined;
       const analysis = service.getAnalysisForField(fieldId);
       analysis.subscribe(value => {
         result = value;
@@ -140,14 +140,14 @@ describe('GenderBiasAnalysisService', () => {
   describe('analyzeHtmlContent', () => {
     it('should call the API service with correct parameters', async () => {
       const request = { text: 'Test text', language: 'en' };
-      const mockResponse: GenderBiasAnalysisResponse = {
+      const mockResponse: BiasedIssues = {
         coding: 'neutral',
         biasedWords: [],
       };
 
       genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
 
-      let result: GenderBiasAnalysisResponse | undefined;
+      let result: BiasedIssues | undefined;
       service.analyzeHtmlContent(request).subscribe(value => {
         result = value;
       });
@@ -164,7 +164,7 @@ describe('GenderBiasAnalysisService', () => {
         vi.useFakeTimers();
         const fieldId = 'test-field';
 
-        const results: (GenderBiasAnalysisResponse | undefined)[] = [];
+        const results: (BiasedIssues | undefined)[] = [];
         const analysis$ = service.getAnalysisForField(fieldId);
         analysis$.subscribe(value => {
           results.push(value);

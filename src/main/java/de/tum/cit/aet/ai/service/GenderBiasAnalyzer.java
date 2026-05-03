@@ -1,6 +1,7 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.core.constants.GenderBiasWordLists;
+import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.ai.domain.GenderBiasWordLists;
 import de.tum.cit.aet.core.util.StringUtil;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,14 +13,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class GenderBiasAnalyzer {
-
-    private final Map<String, WordLists> wordListsByLanguage;
-
-    public GenderBiasAnalyzer() {
-        wordListsByLanguage = new HashMap<>();
-        wordListsByLanguage.put("de", new WordLists(GenderBiasWordLists.GERMAN_NON_INCLUSIVE, GenderBiasWordLists.GERMAN_INCLUSIVE));
-        wordListsByLanguage.put("en", new WordLists(GenderBiasWordLists.ENGLISH_NON_INCLUSIVE, GenderBiasWordLists.ENGLISH_INCLUSIVE));
-    }
 
     /**
      * Analyze text for gender bias in the specified language.
@@ -35,24 +28,26 @@ public class GenderBiasAnalyzer {
         }
 
         // Get word lists for language (fallback to English)
-        WordLists lists = wordListsByLanguage.getOrDefault(language, wordListsByLanguage.get("en"));
+        Set<String> nonInclusive = GenderBiasWordLists.getWords(language, GenderCategory.NON_INCLUSIVE);
+        Set<String> inclusive = GenderBiasWordLists.getWords(language, GenderCategory.INCLUSIVE);
+
 
         // Clean and tokenize
         List<String> wordList = cleanAndTokenize(text);
 
         // Explicitly handle hyphenated words
-        List<String> dehyphenWordList = deHyphenNonCodedWords(wordList);
+        List<String> dehyphenWordList = deHyphenNonCodedWords(language, wordList);
 
         // Find coded words
-        List<String> nonInclusiveWords = findCodedWords(dehyphenWordList, lists.nonInclusive);
-        List<String> inclusiveWords = findCodedWords(dehyphenWordList, lists.Inclusive);
+        List<String> nonInclusiveWords = findCodedWords(dehyphenWordList, nonInclusive);
+        List<String> inclusiveWords = findCodedWords(dehyphenWordList, inclusive);
 
         // Assess coding
-        int masculineCount = nonInclusiveWords.size();
-        int feminineCount = inclusiveWords.size();
-        String coding = assessCoding(masculineCount, feminineCount);
+        int nonInclusiveCount = nonInclusiveWords.size();
+        int inclusiveCount = inclusiveWords.size();
+        String coding = assessCoding(nonInclusiveCount, inclusiveCount);
 
-        return new AnalysisResult(text, nonInclusiveWords, inclusiveWords, masculineCount, feminineCount, coding, language);
+        return new AnalysisResult(text, nonInclusiveWords, inclusiveWords, nonInclusiveCount, inclusiveCount, coding, language);
     }
 
     /**
@@ -74,16 +69,12 @@ public class GenderBiasAnalyzer {
     /**
      * Split hyphenated words unless they're in the coded words list
      */
-    private List<String> deHyphenNonCodedWords(List<String> wordList) {
+    private List<String> deHyphenNonCodedWords(String lang, List<String> wordList) {
         List<String> result = new ArrayList<>();
 
         Set<String> allCodedWords = new HashSet<>();
-        wordListsByLanguage
-            .values()
-            .forEach(wl -> {
-                allCodedWords.addAll(wl.nonInclusive);
-                allCodedWords.addAll(wl.Inclusive);
-            });
+        allCodedWords.addAll(GenderBiasWordLists.getWords(lang,GenderCategory.INCLUSIVE));
+        allCodedWords.addAll(GenderBiasWordLists.getWords(lang, GenderCategory.NON_INCLUSIVE));
 
         for (String word : wordList) {
             if (word.contains("-") && allCodedWords.stream().noneMatch(word::contains)) {
@@ -122,19 +113,6 @@ public class GenderBiasAnalyzer {
             return "inclusive-coded";
         } else {
             return "non-inclusive-coded";
-        }
-    }
-
-    // ============= HELPER CLASSES =============
-
-    private static class WordLists {
-
-        final Set<String> nonInclusive;
-        final Set<String> Inclusive;
-
-        WordLists(Set<String> nonInclusive, Set<String> inclusive) {
-            this.nonInclusive = nonInclusive;
-            this.Inclusive = inclusive;
         }
     }
 

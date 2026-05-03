@@ -7,7 +7,7 @@ import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
-import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
@@ -120,7 +120,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
-  openAnalysisDialog = output<GenderBiasAnalysisResponse>();
+  openAnalysisDialog = output<BiasedIssues[]>();
   quillEditorComponent = viewChild(QuillEditorComponent);
   highlightHovered = output<{ text: string; x: number; y: number } | undefined>();
   highlights = input<{ text: string; category: ComplianceIssueCategoryEnum }[]>([]);
@@ -193,9 +193,9 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly codingDisplay = computed(() => {
     this.langChange();
     const result = this.analysisResult();
-    if (result?.coding === undefined) return null;
+    const coding = result?.[0]?.coding;
+    if (coding === undefined) return null;
 
-    const coding = result.coding;
     const key = this.getCodingTranslationKey(coding);
     return this.translateService.instant(key);
   });

@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.dto;
+package de.tum.cit.aet.ai.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

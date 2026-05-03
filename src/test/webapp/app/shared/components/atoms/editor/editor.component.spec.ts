@@ -12,7 +12,7 @@ import {
   provideGenderBiasAnalysisServiceMock,
 } from 'util/gender-bias-analysis.service.mock';
 import { BehaviorSubject } from 'rxjs';
-import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 import { ContentChange } from 'ngx-quill';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): ContentChange {
@@ -38,7 +38,7 @@ function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): Conten
 
 describe('EditorComponent', () => {
   let genderBiasService: GenderBiasAnalysisServiceMock;
-  let analysisSubject: BehaviorSubject<GenderBiasAnalysisResponse | undefined>;
+  let analysisSubject: BehaviorSubject<BiasedIssues | undefined>;
 
   function createFixture() {
     const fixture = TestBed.createComponent(EditorComponent);
@@ -51,7 +51,7 @@ describe('EditorComponent', () => {
   }
 
   beforeEach(async () => {
-    analysisSubject = new BehaviorSubject<GenderBiasAnalysisResponse | undefined>(undefined);
+    analysisSubject = new BehaviorSubject<BiasedIssues | undefined>(undefined);
     genderBiasService = createGenderBiasAnalysisServiceMock();
     vi.mocked(genderBiasService.getAnalysisForField).mockReturnValue(analysisSubject.asObservable());
 
@@ -330,7 +330,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'non-inclusive-coded',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(true);
@@ -378,7 +378,7 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      vi.spyOn(comp, 'analysisResult').mockReturnValue({} as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({} as BiasedIssues);
       fixture.detectChanges();
 
       expect(comp.codingDisplay()).toBeNull();
@@ -391,7 +391,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'non-inclusive-coded',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -406,7 +406,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'inclusive-coded',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -421,7 +421,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'neutral',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -436,7 +436,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'empty',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -451,7 +451,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'non-inclusive-coded',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -476,7 +476,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'neutral',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -502,7 +502,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'neutral',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       fixture.detectChanges();
 
@@ -518,7 +518,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
         coding: 'non-inclusive-coded',
         words: [],
-      } as GenderBiasAnalysisResponse);
+      } as BiasedIssues);
 
       comp.onGenderDecoderClick();
 

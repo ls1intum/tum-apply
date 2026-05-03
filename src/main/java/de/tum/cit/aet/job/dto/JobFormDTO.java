@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
@@ -31,7 +32,8 @@ public record JobFormDTO(
     UUID imageId, // Optional job banner image
     Boolean suitableForDisabled, // Position suitable for persons with severe disabilities
     Integer genderBiasScore,
-    List<ComplianceIssue> complianceIssues
+    List<ComplianceIssue> complianceIssues,
+    List<BiasedIssues> biasedIssues
 ) {
     /**
      * Converts a Job entity to a form DTO.
@@ -65,7 +67,8 @@ public record JobFormDTO(
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getSuitableForDisabled(),
             job.getGenderBiasScore(),
-            job.getComplianceIssues()
+            job.getComplianceIssues(),
+            job.getBiasedIssues()
         );
     }
 }

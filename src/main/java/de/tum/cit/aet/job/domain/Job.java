@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
@@ -106,4 +107,8 @@ public class Job extends AbstractAuditingEntity {
     @ElementCollection
     @CollectionTable(name = "job_compliance_issues", joinColumns = @JoinColumn(name = "job_id"))
     private List<ComplianceIssue> complianceIssues = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "job_biased_issues", joinColumns = @JoinColumn(name = "job_id"))
+    private List<BiasedIssues> biasedIssues = new ArrayList<>();
 }

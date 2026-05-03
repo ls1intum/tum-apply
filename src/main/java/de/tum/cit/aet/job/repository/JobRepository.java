@@ -318,4 +318,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     @EntityGraph(attributePaths = { "complianceIssues", "supervisingProfessor", "researchGroup", "image" })
     @Query("SELECT j FROM Job j WHERE j.jobId = :jobId")
     Optional<Job> findByIdWithCompliance(@Param("jobId") UUID jobId);
+
+    @EntityGraph(attributePaths = { "biasedIssues"})
+    @Query("SELECT j FROM Job j WHERE j.jobId = :jobId")
+    Optional<Job> findByIdWithBiased(@Param("jobId") UUID jobId);
 }

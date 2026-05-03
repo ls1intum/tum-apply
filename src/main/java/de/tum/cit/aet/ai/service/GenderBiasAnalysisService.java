@@ -1,7 +1,7 @@
-package de.tum.cit.aet.core.service;
+package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.core.dto.BiasedWordDTO;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
+import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class GenderBiasAnalysisService {
      * @param language the language code (e.g., "en" or "de")
      * @return a response containing the analysis result and identified biased words
      */
-    public GenderBiasAnalysisResponse analyzeText(String text, String language) {
+    public List<BiasedIssues> analyzeText(String text, String language) {
         // Default to English if no language specified
         String effectiveLanguage = (language == null || language.trim().isEmpty()) ? "en" : language;
 
@@ -31,27 +31,26 @@ public class GenderBiasAnalysisService {
         GenderBiasAnalyzer.AnalysisResult result = analyzer.analyze(text, effectiveLanguage);
 
         // Convert to DTO
-        List<BiasedWordDTO> biasedWords = convertToWordDTOs(result);
 
-        return new GenderBiasAnalysisResponse(result.originalText(), biasedWords, result.coding(), result.language());
+        return convertToBiasedIssues(result);
     }
 
     /**
      * Convert analysis result to DTOs with suggestions
      */
-    private List<BiasedWordDTO> convertToWordDTOs(GenderBiasAnalyzer.AnalysisResult result) {
-        List<BiasedWordDTO> dtos = new ArrayList<>();
+    private List<BiasedIssues> convertToBiasedIssues(GenderBiasAnalyzer.AnalysisResult result) {
+        List<BiasedIssues> issues = new ArrayList<>();
 
         // Add non inclusive words
         for (String word : result.nonInclusiveWords()) {
-            dtos.add(new BiasedWordDTO(word, "non-inclusive"));
+            issues.add(new BiasedIssues(result.originalText(),result.coding(),result.language(), word, GenderCategory.NON_INCLUSIVE));
         }
 
         // Add inclusive words
         for (String word : result.inclusiveWords()) {
-            dtos.add(new BiasedWordDTO(word, "inclusive"));
+            issues.add(new BiasedIssues(result.originalText(), result.coding(), result.language(), word, GenderCategory.INCLUSIVE));
         }
 
-        return dtos;
+        return issues;
     }
 }

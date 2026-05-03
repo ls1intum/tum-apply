@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
+import de.tum.cit.aet.core.dto.BiasedIssues;
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,13 +77,8 @@ class ComplianceScoreServiceTest {
 
     @Test
     void shouldCalculateCombinedGenderScoreWhenBothAnalysesArePresent() {
-        GenderBiasAnalysisResponse original = new GenderBiasAnalysisResponse(
-            "text",
-            List.of(new BiasedWordDTO("team", "inclusive")),
-            "inclusive-coded",
-            "en"
-        );
-        GenderBiasAnalysisResponse translated = new GenderBiasAnalysisResponse(
+        BiasedIssues original = new BiasedIssues("text", List.of(new BiasedWordDTO("team", "inclusive")), "inclusive-coded", "en");
+        BiasedIssues translated = new BiasedIssues(
             "text",
             List.of(new BiasedWordDTO("leader", "non-inclusive"), new BiasedWordDTO("supportive", "inclusive")),
             "neutral",
@@ -96,9 +92,9 @@ class ComplianceScoreServiceTest {
 
     @Test
     void shouldCalculateSingleLanguageGenderScoreWhenTranslatedAnalysisIsMissing() {
-        GenderBiasAnalysisResponse original = new GenderBiasAnalysisResponse(
+        BiasedIssues original = new BiasedIssues(
             "text",
-            List.of(new BiasedWordDTO("leader", "non-inclusive"), new BiasedWordDTO("supportive", "inclusive")),
+            List.of(new BiasedIssues("leader", "non-inclusive"), new BiasedIssues("supportive", "inclusive")),
             "neutral",
             "en"
         );

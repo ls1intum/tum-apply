@@ -2,19 +2,19 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, catchError, debounceTime, merge, of, shareReplay, switchMap } from 'rxjs';
 import { GenderBiasAnalysisRequest } from 'app/generated/model/gender-bias-analysis-request';
 import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
-import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 
 @Injectable({ providedIn: 'root' })
 export class GenderBiasAnalysisService {
   private readonly analyzeSubjects = new Map<string, Subject<{ text: string; language: string }>>();
   private readonly immediateAnalyzeSubjects = new Map<string, Subject<{ text: string; language: string }>>();
-  private readonly analyses = new Map<string, Observable<GenderBiasAnalysisResponse | undefined>>();
+  private readonly analyses = new Map<string, Observable<BiasedIssues[] | undefined>>();
   private readonly lastLanguages = new Map<string, string>();
   private readonly firstLoads = new Set<string>();
 
   private readonly genderBiasApi = inject(GenderBiasAnalysisResourceApi);
 
-  getAnalysisForField(fieldId: string): Observable<GenderBiasAnalysisResponse | undefined> {
+  getAnalysisForField(fieldId: string): Observable<BiasedIssues[] | undefined> {
     if (!this.analyses.has(fieldId)) {
       const analyzeSubject = new Subject<{ text: string; language: string }>();
       const immediateAnalyzeSubject = new Subject<{ text: string; language: string }>();
@@ -38,7 +38,7 @@ export class GenderBiasAnalysisService {
     return this.analyses.get(fieldId) ?? of(undefined);
   }
 
-  analyzeHtmlContent(request: GenderBiasAnalysisRequest): Observable<GenderBiasAnalysisResponse> {
+  analyzeHtmlContent(request: GenderBiasAnalysisRequest): Observable<BiasedIssues[]> {
     return this.genderBiasApi.analyzeHtmlContent(request);
   }
 

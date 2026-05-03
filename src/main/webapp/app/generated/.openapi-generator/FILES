@@ -66,7 +66,7 @@ model/application-pdf-request.ts
 model/assign-slot-request-dto.ts
 model/assigned-interviewee-dto.ts
 model/auth-session-info-dto.ts
-model/biased-word-dto.ts
+model/biased-issues.ts
 model/book-slot-request-dto.ts
 model/booking-dto.ts
 model/cancel-interview-dto.ts
@@ -91,7 +91,6 @@ model/existing-slot-dto.ts
 model/extracted-application-data-dto.ts
 model/extracted-certificate-data-dto.ts
 model/gender-bias-analysis-request.ts
-model/gender-bias-analysis-response.ts
 model/image-dto.ts
 model/internal-comment-dto.ts
 model/internal-comment-update-dto.ts

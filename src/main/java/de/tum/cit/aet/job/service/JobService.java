@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.service;
 
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
@@ -172,6 +173,7 @@ public class JobService {
      */
     public JobDTO getJobById(UUID jobId) {
         Job job = assertCanManageJob(jobId);
+        Job jobWithBiasedIssues = jobRepository.findByIdWithBiased(jobId).orElse(job);
         return new JobDTO(
             job.getJobId(),
             job.getTitle(),
@@ -192,7 +194,8 @@ public class JobService {
             job.getImage() != null ? job.getImage().getUrl() : null,
             job.getSuitableForDisabled(),
             job.getGenderBiasScore(),
-            job.getComplianceIssues()
+            job.getComplianceIssues(),
+            jobWithBiasedIssues.getBiasedIssues()
         );
     }
 
@@ -445,6 +448,7 @@ public class JobService {
      */
     private Job assertCanManageJob(UUID jobId) {
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        jobRepository.findByIdWithBiased(jobId);
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
@@ -476,14 +480,14 @@ public class JobService {
      * @param complianceAnalysis the compliance issues detected for the job description
      * @param lang the language for which existing issues should be replaced
      */
-    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, String lang) {
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, List<BiasedIssues> biasedAnalysis, String lang) {
         if (jobId == null) {
             return;
         }
 
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
-        // Keep issues from the other language, add new ones for target language
+        // Keep compliance issues from the other language, add new ones for target language
         List<ComplianceIssue> issuesToSave = new ArrayList<>();
         for (ComplianceIssue existingLang : job.getComplianceIssues()) {
             if (!Objects.equals(existingLang.getLanguage(), lang)) {
@@ -491,6 +495,17 @@ public class JobService {
             }
         }
         issuesToSave.addAll(complianceAnalysis);
+
+        // Keep biased issues from the other language, add new ones for target language
+        List<BiasedIssues> biasedToSave = new ArrayList<>();
+        for (BiasedIssues existingLang : job.getBiasedIssues()) {
+            if (!Objects.equals(existingLang.getLanguage(), lang)) {
+                biasedToSave.add(existingLang);
+            }
+        }
+        biasedToSave.addAll(biasedAnalysis);
+
+        job.setBiasedIssues(biasedToSave);
         job.setGenderBiasScore(score);
         job.setComplianceIssues(issuesToSave);
         jobRepository.save(job);

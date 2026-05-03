@@ -2,8 +2,7 @@ import { Component, ViewEncapsulation, computed, input, output } from '@angular/
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
-import { BiasedWordDTO } from 'app/generated/model/biased-word-dto';
-import { GenderBiasAnalysisResponse } from 'app/generated/model/gender-bias-analysis-response';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -17,13 +16,13 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 })
 export class GenderBiasAnalysisDialogComponent {
   visible = input.required<boolean>();
-  result = input<GenderBiasAnalysisResponse | undefined>(undefined);
+  result = input<BiasedIssues[]>([]);
 
   visibleChange = output<boolean>();
   closeDialog = output();
 
   readonly codingTranslationKey = computed(() => {
-    const coding = this.result()?.coding;
+    const coding = this.result()[0]?.coding;
     if (!coding) return 'genderDecoder.formulationTexts.neutral';
 
     switch (coding) {
@@ -40,7 +39,8 @@ export class GenderBiasAnalysisDialogComponent {
   });
 
   readonly explanationTranslationKey = computed(() => {
-    const coding = this.result()?.coding;
+    // coding of first record
+    const coding = this.result()[0]?.coding;
     if (!coding) return 'genderDecoder.explanations.neutral';
 
     switch (coding) {
@@ -58,13 +58,11 @@ export class GenderBiasAnalysisDialogComponent {
   });
 
   readonly nonInclusiveWords = computed(() => {
-    const words = this.result()?.biasedWords ?? [];
-    return words.filter(w => w.type === 'non-inclusive');
+    return this.result().filter(w => w.type === 'NON_INCLUSIVE')
   });
 
   readonly inclusiveWords = computed(() => {
-    const words = this.result()?.biasedWords ?? [];
-    return words.filter(w => w.type === 'inclusive');
+    return this.result().filter(w => w.type === 'INCLUSIVE');
   });
 
   readonly nonInclusiveWordCounts = computed(() => {
@@ -86,12 +84,12 @@ export class GenderBiasAnalysisDialogComponent {
     return type === 'non-inclusive' ? 'non-inclusive-badge' : 'inclusive-badge';
   }
 
-  private getWordCounts(words: BiasedWordDTO[]): Map<string, number> {
+  private getWordCounts(words: BiasedIssues[]): Map<string, number> {
     const counts = new Map<string, number>();
-    words.forEach(word => {
-      if (word.word) {
-        const current = counts.get(word.word) ?? 0;
-        counts.set(word.word, current + 1);
+    words.forEach(w => {
+      if (w.word) {
+        const current = counts.get(w.word) ?? 0;
+        counts.set(w.word, current + 1);
       }
     });
     return counts;

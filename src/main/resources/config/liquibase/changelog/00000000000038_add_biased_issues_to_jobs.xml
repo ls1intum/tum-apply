@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="035_add_biased_issues_to_jobs" author="melissa">
+    <createTable tableName="job_biased_issues">
+      <column name="job_id" type="CHAR(36)">
+        <constraints nullable="false" foreignKeyName="fk_biased_issues_job" references="jobs(job_id)" deleteCascade="true"/>
+      </column>
+      <column name="original_text" type="text"/>
+      <column name="coding" type="text"/>
+      <column name="language" type="varchar(10)"/>
+      <column name="word" type="varchar(255)"/>
+      <column name="type" type="varchar(50)"/>
+    </createTable>
+  </changeSet>
+
+</databaseChangeLog>
