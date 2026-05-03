@@ -129,10 +129,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         }
 
         @ParameterizedTest(name = "should reject creation when {0} duplicates an existing school")
-        @CsvSource({
-            "name, 'School of Computation, Information and Technology', CIT2",
-            "abbreviation, 'School of Medicine', CIT",
-        })
+        @CsvSource({ "name, 'School of Computation, Information and Technology', CIT2", "abbreviation, 'School of Medicine', CIT" })
         void shouldRejectCreationWithDuplicateField(String field, String name, String abbreviation) {
             SchoolCreationDTO createDTO = new SchoolCreationDTO(name, abbreviation);
 

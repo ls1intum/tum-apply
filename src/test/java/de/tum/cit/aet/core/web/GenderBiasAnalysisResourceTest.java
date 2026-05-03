@@ -160,7 +160,13 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("de.tum.cit.aet.core.web.GenderBiasAnalysisResourceTest#analyzeTextCases")
-        void shouldDetectExpectedCodingForText(String label, String text, String language, String expectedCoding, List<BiasedWordDTO> expected) {
+        void shouldDetectExpectedCodingForText(
+            String label,
+            String text,
+            String language,
+            String expectedCoding,
+            List<BiasedWordDTO> expected
+        ) {
             GenderBiasAnalysisResponse response = analyzeText(text, language);
 
             assertGenderBiasAnalysisResponse(response, text, language, expectedCoding, expected);
@@ -169,13 +175,7 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
     static Stream<Arguments> analyzeTextCases() {
         return Stream.of(
-            Arguments.of(
-                "non-inclusive English",
-                NON_INCLUSIVE_ENGLISH_TEXT,
-                "en",
-                "non-inclusive-coded",
-                NON_INCLUSIVE_ENGLISH_TEXT_LIST
-            ),
+            Arguments.of("non-inclusive English", NON_INCLUSIVE_ENGLISH_TEXT, "en", "non-inclusive-coded", NON_INCLUSIVE_ENGLISH_TEXT_LIST),
             Arguments.of("inclusive English", INCLUSIVE_ENGLISH_TEXT, "en", "inclusive-coded", INCLUSIVE_ENGLISH_TEXT_LIST),
             Arguments.of("neutral English", NEUTRAL_ENGLISH_TEXT, "en", "neutral", NEUTRAL_ENGLISH_TEXT_LIST),
             Arguments.of("empty (no biased words) English", EMPTY_ENGLISH_TEXT, "en", "empty", null),

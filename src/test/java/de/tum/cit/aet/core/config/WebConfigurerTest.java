@@ -84,7 +84,9 @@ class WebConfigurerTest {
             props.getCors().setMaxAge(1800L);
             props.getCors().setAllowCredentials(true);
 
-            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
             mockMvc
                 .perform(
@@ -113,7 +115,9 @@ class WebConfigurerTest {
             props.getCors().setMaxAge(1800L);
             props.getCors().setAllowCredentials(true);
 
-            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
             mockMvc
                 .perform(get("/test/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
@@ -125,7 +129,9 @@ class WebConfigurerTest {
         void shouldCorsFilterDeactivatedForNullAllowedOrigins() throws Exception {
             props.getCors().setAllowedOrigins(null);
 
-            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
             mockMvc
                 .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
@@ -137,7 +143,9 @@ class WebConfigurerTest {
         void shouldCorsFilterDeactivatedForEmptyAllowedOrigins() throws Exception {
             props.getCors().setAllowedOrigins(new ArrayList<>());
 
-            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
             mockMvc
                 .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))

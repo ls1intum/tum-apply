@@ -847,10 +847,7 @@ public class ImageResourceTest extends AbstractResourceTest {
      */
     static Stream<Arguments> invalidJobBannerFiles() {
         return Stream.of(
-            Arguments.of(
-                "non-image mime type",
-                new MockMultipartFile("file", "test.gif", "image/gif", "fake image content".getBytes())
-            ),
+            Arguments.of("non-image mime type", new MockMultipartFile("file", "test.gif", "image/gif", "fake image content".getBytes())),
             Arguments.of("empty file", new MockMultipartFile("file", "empty.jpg", "image/jpeg", new byte[0])),
             Arguments.of(
                 "corrupted content",
