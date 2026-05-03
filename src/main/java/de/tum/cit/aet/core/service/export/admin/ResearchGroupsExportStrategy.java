@@ -10,7 +10,6 @@ import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupMemberDTO;
 import java.io.IOException;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -90,8 +89,8 @@ public class ResearchGroupsExportStrategy {
             rg.getDepartment() == null ? null : rg.getDepartment().getName(),
             rg.getUniversityId(),
             memberRefs,
-            rg.getCreatedAt().toInstant(ZoneOffset.UTC),
-            rg.getLastModifiedAt().toInstant(ZoneOffset.UTC)
+            rg.getCreatedAt(),
+            rg.getLastModifiedAt()
         );
     }
 

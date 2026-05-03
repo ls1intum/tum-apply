@@ -1,8 +1,8 @@
 package de.tum.cit.aet.core.dto.exportdata;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record UserProfileExportDTO(
@@ -13,5 +13,5 @@ public record UserProfileExportDTO(
     String nationality,
     LocalDate birthday,
     boolean aiFeaturesEnabled,
-    Instant aiConsentedAt
+    LocalDateTime aiConsentedAt
 ) {}

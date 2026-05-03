@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -620,8 +619,8 @@ public class JobsExportStrategy {
         return new AdminJobExportDTO(
             JobFormDTO.getFromEntity(job),
             job.getResearchGroup() == null ? null : job.getResearchGroup().getResearchGroupId(),
-            job.getCreatedAt().toInstant(ZoneOffset.UTC),
-            job.getLastModifiedAt().toInstant(ZoneOffset.UTC)
+            job.getCreatedAt(),
+            job.getLastModifiedAt()
         );
     }
 

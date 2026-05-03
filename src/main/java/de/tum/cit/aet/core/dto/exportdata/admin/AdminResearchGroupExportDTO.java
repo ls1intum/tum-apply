@@ -3,7 +3,7 @@ package de.tum.cit.aet.core.dto.exportdata.admin;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupMemberDTO;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +22,6 @@ public record AdminResearchGroupExportDTO(
     String departmentName,
     String universityId,
     List<ResearchGroupMemberDTO> members,
-    Instant createdAt,
-    Instant lastModifiedAt
+    LocalDateTime createdAt,
+    LocalDateTime lastModifiedAt
 ) {}

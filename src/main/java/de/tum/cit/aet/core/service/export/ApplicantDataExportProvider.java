@@ -100,7 +100,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private ApplicantReviewExportDTO getReview(UUID applicationId) {
         return applicationReviewRepository
             .findByApplicationApplicationId(applicationId)
-            .map(review -> new ApplicantReviewExportDTO(review.getReason(), review.getReviewedAt().toInstant(ZoneOffset.UTC)))
+            .map(review -> new ApplicantReviewExportDTO(review.getReason(), review.getReviewedAt()))
             .orElse(null);
     }
 
