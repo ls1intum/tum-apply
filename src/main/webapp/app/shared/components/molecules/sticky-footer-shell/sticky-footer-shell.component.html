@@ -9,13 +9,13 @@
         <ng-container [ngTemplateOutlet]="currentStatusTemplate" />
       </div>
     }
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <div>
         @if (leftTemplate(); as currentLeftTemplate) {
           <ng-container [ngTemplateOutlet]="currentLeftTemplate" />
         }
       </div>
-      <div class="flex gap-6">
+      <div class="flex gap-6 items-center">
         @if (statusTemplate(); as currentStatusTemplate) {
           <div class="hidden sm:flex">
             <ng-container [ngTemplateOutlet]="currentStatusTemplate" />

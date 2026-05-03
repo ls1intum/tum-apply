@@ -24,7 +24,8 @@ import { SelectComponent, SelectOption } from '../../components/atoms/select/sel
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
-import { AutosaveStatusFooterComponent } from '../../components/molecules/autosave-status-footer/autosave-status-footer.component';
+import { SavingBadgeComponent } from '../../components/atoms/saving-badge/saving-badge.component';
+import { StickyFooterShellComponent } from '../../components/molecules/sticky-footer-shell/sticky-footer-shell.component';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -70,7 +71,8 @@ interface ApplicationInformationSnapshot {
     TranslateDirective,
     UploadButtonComponent,
     AiExtractionBoxComponent,
-    AutosaveStatusFooterComponent,
+    SavingBadgeComponent,
+    StickyFooterShellComponent,
   ],
   templateUrl: './application-information-settings.component.html',
   standalone: true,

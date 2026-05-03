@@ -51,5 +51,8 @@
     />
   </div>
 
-  <jhi-autosave-status-footer [savingState]="savingState()" />
+  <ng-template #savingBadgeTemplate>
+    <jhi-saving-badge [state]="savingState()" />
+  </ng-template>
+  <jhi-sticky-footer-shell [statusTemplate]="savingBadgeTemplate" />
 </form>

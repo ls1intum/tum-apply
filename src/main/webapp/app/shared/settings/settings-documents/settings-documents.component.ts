@@ -30,7 +30,8 @@ import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai
 import { createAutosaveController } from 'app/shared/util/autosave-controller';
 
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
-import { AutosaveStatusFooterComponent } from '../../components/molecules/autosave-status-footer/autosave-status-footer.component';
+import { SavingBadgeComponent } from '../../components/atoms/saving-badge/saving-badge.component';
+import { StickyFooterShellComponent } from '../../components/molecules/sticky-footer-shell/sticky-footer-shell.component';
 import TranslateDirective from '../../language/translate.directive';
 
 interface NormalizedSettingsDocumentsFormValue {
@@ -59,7 +60,8 @@ interface NormalizedSettingsDocumentsFormValue {
     FontAwesomeModule,
     UploadButtonComponent,
     TranslateDirective,
-    AutosaveStatusFooterComponent,
+    SavingBadgeComponent,
+    StickyFooterShellComponent,
   ],
   templateUrl: './settings-documents.component.html',
 })

@@ -116,10 +116,7 @@
 </ng-template>
 
 <ng-template #saving_state_panel>
-  <div [className]="savingBadgeCalculatedClass()">
-    <fa-icon icon="save" />
-    <span class="font-bold" [jhiTranslate]="'entity.applicationSteps.status.' + footerSavingState()"></span>
-  </div>
+  <jhi-saving-badge [state]="autoSave.state()" />
 </ng-template>
 
 <div class="page-container">

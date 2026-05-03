@@ -58,15 +58,11 @@ export class HeaderComponent {
     }
     return this.isDarkMode() ? 'moon' : 'custom-sun';
   });
-  themeTooltipKey = computed(() => {
+  themeTooltip = computed(() => {
     if (this.syncWithSystem()) {
       return 'header.systemMode';
     }
     return this.isDarkMode() ? 'header.darkMode' : 'header.lightMode';
-  });
-  themeTooltip = computed(() => {
-    this.langChange();
-    return this.translateService.instant(this.themeTooltipKey());
   });
   profileMenuAriaLabel = computed(() => {
     this.langChange();
