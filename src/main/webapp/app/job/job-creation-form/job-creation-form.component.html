@@ -258,15 +258,7 @@
           </div>
 
           <div class="flex flex-col lg:flex-row lg:gap-8">
-            <div class="flex-1 relative">
-              <div class="absolute top-0 right-0">
-                <jhi-checkbox
-                  label="jobCreationForm.basicInformationSection.startDate.uponAgreement"
-                  [model]="positionDetailsForm.get('startDateByArrangement')?.value"
-                  (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
-                  [shouldTranslate]="true"
-                />
-              </div>
+            <div class="flex-1">
               <jhi-datepicker
                 [selectedDate]="positionDetailsForm.get('startDate')?.value"
                 (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
@@ -278,16 +270,15 @@
                 [width]="'100%'"
                 [errorEnabled]="true"
               />
+              <jhi-checkbox
+                class="mt-2 inline-block"
+                label="jobCreationForm.basicInformationSection.startDate.uponAgreement"
+                [model]="positionDetailsForm.get('startDateByArrangement')?.value"
+                (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
+                [shouldTranslate]="true"
+              />
             </div>
-            <div class="flex-1 relative">
-              <div class="absolute top-0 right-0">
-                <jhi-checkbox
-                  label="jobCreationForm.basicInformationSection.contractDuration.extendable"
-                  [model]="positionDetailsForm.get('contractExtendable')?.value"
-                  (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
-                  [shouldTranslate]="true"
-                />
-              </div>
+            <div class="flex-1">
               <jhi-number-input
                 label="jobCreationForm.basicInformationSection.contractDuration.label"
                 placeholder="jobCreationForm.basicInformationSection.contractDuration.placeholder"
@@ -299,6 +290,13 @@
                 [maxFractionDigits]="2"
                 icon="circle-info"
                 tooltipText="jobCreationForm.basicInformationSection.contractDuration.toolTipText"
+              />
+              <jhi-checkbox
+                class="mt-2 inline-block"
+                label="jobCreationForm.basicInformationSection.contractDuration.extendable"
+                [model]="positionDetailsForm.get('contractExtendable')?.value"
+                (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
+                [shouldTranslate]="true"
               />
             </div>
           </div>
