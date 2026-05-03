@@ -281,6 +281,17 @@ export class JobCreationFormComponent {
   /** List of detected compliance issues to update the UI and editor highlights */
   readonly complianceIssues = signal<ComplianceIssue[]>([]);
 
+  /** Total number of compliance issues */
+  readonly complianceCount = computed(() => this.complianceIssues().length);
+
+  /** Total number of critical compliance issues */
+  readonly complianceCriticalCount = computed(
+    () => this.complianceIssues().filter(i => i.category === ComplianceIssueCategoryEnum.CriticalAgg).length,
+  );
+
+  /** Whether any critical compliance issue exists */
+  readonly hasCriticalCompliance = computed(() => this.complianceCriticalCount() > 0);
+
   /** The compliance issue currently shown in the popover (undefined = none is hovered). */
   readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
 
@@ -336,6 +347,9 @@ export class JobCreationFormComponent {
 
   /** Template for the saving state indicator */
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
+
+  /** Reference to the progress stepper */
+  stepper = viewChild<ProgressStepperComponent>('stepper');
 
   /** Signal controlling publish confirmation dialog visibility */
   showPublishDialog = signal(false);
@@ -547,6 +561,9 @@ export class JobCreationFormComponent {
   /** Timer ID for the debounced auto-save (2-second delay) */
   private autoSaveTimer: number | undefined;
 
+  /** The currently in-flight auto-save promise, or undefined if none is running. */
+  private autoSaveInFlight: Promise<void> | undefined;
+
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
@@ -684,11 +701,21 @@ export class JobCreationFormComponent {
    * Publishes the job posting after validation.
    * Requires privacy consent and valid forms.
    * Navigates to /my-positions on success.
+   *
+   * Before sending the Published DTO, cancels any pending debounced autosave
+   * and waits for an in-flight autosave to settle. Otherwise a Draft autosave
+   * could land on the server *after* the publish call and silently revert the
+   * job to Draft.
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
 
     if (!jobData) return;
+
+    this.clearAutoSaveTimer();
+    if (this.autoSaveInFlight) {
+      await this.autoSaveInFlight;
+    }
 
     try {
       const saved = await firstValueFrom(this.jobApi.updateJob(this.jobId(), jobData));
@@ -706,6 +733,25 @@ export class JobCreationFormComponent {
    */
   onBack(): void {
     this.location.back();
+  }
+
+  /**
+   * Navigate the stepper back to the first step.
+   */
+  private goToFirstStep(): void {
+    this.stepper()?.goToStep(1);
+  }
+
+  /**
+   * Handles clicks on the message to navigate back to the first step.
+   * @param event - The DOM event triggered by the user
+   */
+  handleMessageClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('stepper-link')) {
+      event.preventDefault();
+      this.goToFirstStep();
+    }
   }
 
   /**
@@ -1517,7 +1563,18 @@ export class JobCreationFormComponent {
    * Creates job on first save, updates on subsequent saves.
    * Triggers translation after successful save if content changed.
    */
-  private async performAutoSave(): Promise<void> {
+  private performAutoSave(): Promise<void> {
+    const work = this.runAutoSave();
+    this.autoSaveInFlight = work;
+    void work.finally(() => {
+      if (this.autoSaveInFlight === work) {
+        this.autoSaveInFlight = undefined;
+      }
+    });
+    return work;
+  }
+
+  private async runAutoSave(): Promise<void> {
     // 1) Capture current form state before any async work
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
