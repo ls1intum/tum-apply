@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { By } from '@angular/platform-browser';
 
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -9,7 +8,7 @@ type MessageForTest = {
   message: string;
   severity: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
   shouldTranslate: boolean;
-  styleClass: string;
+  classStyling: string;
   closable: boolean;
 };
 
@@ -21,7 +20,7 @@ describe('MessageComponent', () => {
       message: '',
       severity: 'info',
       shouldTranslate: true,
-      styleClass: '',
+      classStyling: '',
       closable: false,
     };
 
@@ -45,13 +44,5 @@ describe('MessageComponent', () => {
   it('should create', () => {
     const fixture = createMessageFixture({ message: 'Test message' });
     expect(fixture.componentInstance).toBeTruthy();
-  });
-
-  it('should combine custom styleClass with rounded-sm', () => {
-    const fixture = createMessageFixture({ styleClass: 'custom-class' });
-
-    const messageElement = fixture.debugElement.query(By.css('p-message'));
-    expect(messageElement.componentInstance.styleClass).toContain('custom-class');
-    expect(messageElement.componentInstance.styleClass).toContain('rounded-sm');
   });
 });

@@ -58,13 +58,7 @@
     </div>
   </div>
 
-  <p-drawer
-    [(visible)]="isMobileSidebarOpen"
-    position="right"
-    [dismissible]="true"
-    [showCloseIcon]="false"
-    styleClass="w-[90vw] max-w-[20rem]"
-  >
+  <p-drawer [(visible)]="isMobileSidebarOpen" position="right" [dismissible]="true" [showCloseIcon]="false" class="w-[90vw] max-w-[20rem]">
     <ng-template #header>
       <div class="flex h-full flex-1 items-center justify-between font-semibold">
         <span jhiTranslate="entity.filters.sortingAndFilter"></span>

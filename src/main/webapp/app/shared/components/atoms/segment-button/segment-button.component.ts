@@ -1,17 +1,17 @@
-import { Component, computed, input, output } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, computed, inject, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-segment-button',
   templateUrl: './segment-button.component.html',
   standalone: true,
-  imports: [TranslateModule],
 })
 export class SegmentButtonComponent {
   label = input.required<string>();
   active = input<boolean>(false);
   disabled = input<boolean>(false);
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
 
   readonly buttonClick = output();
 
@@ -27,6 +27,15 @@ export class SegmentButtonComponent {
     }
     return style;
   });
+
+  readonly displayLabel = computed(() => {
+    this.langChange();
+    const value = this.label();
+    return this.shouldTranslate() ? this.translateService.instant(value) : value;
+  });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   onClick(): void {
     if (!this.disabled()) {
