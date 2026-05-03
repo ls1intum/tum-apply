@@ -53,8 +53,9 @@ public class PDFExportResource {
     /**
      * POST /api/export/job/{id}/pdf : Export job details as PDF
      *
-     * @param id     the job ID
-     * @param labels translation labels for PDF content
+     * @param id       the job ID
+     * @param labels   translation labels for PDF content
+     * @param timezone IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
      * @return the PDF file as downloadable attachment
      */
     @Public

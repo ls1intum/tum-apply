@@ -47,8 +47,9 @@ public class PDFExportService {
     /**
      * Exports application details to PDF
      *
-     * @param app    the ApplicationDetailDTO containing application data
-     * @param labels translation labels for PDF content
+     * @param app      the ApplicationDetailDTO containing application data
+     * @param labels   translation labels for PDF content
+     * @param timezone IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
      * @return the PDF file as Resource
      */
     public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels, String timezone) {
@@ -159,8 +160,9 @@ public class PDFExportService {
     /**
      * Exports job details to PDF
      *
-     * @param jobId  the job ID
-     * @param labels translation labels for PDF content
+     * @param jobId    the job ID
+     * @param labels   translation labels for PDF content
+     * @param timezone IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
      * @return the PDF file as Resource
      */
     public Resource exportJobToPDF(UUID jobId, Map<String, String> labels, String timezone) {
@@ -228,6 +230,7 @@ public class PDFExportService {
      *
      * @param jobFormDTO the job form data
      * @param labels     translation labels for PDF content
+     * @param timezone   IANA zone id used to render the footer "generated on" timestamp; falls back to Europe/Berlin when null/blank/invalid
      * @return the PDF file as Resource
      */
     public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels, String timezone) {
