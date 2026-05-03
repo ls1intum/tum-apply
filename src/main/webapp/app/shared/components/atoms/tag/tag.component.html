@@ -1,5 +1,5 @@
 <p-tag
-  class="custom-tag"
+  [class]="'custom-tag ' + neutralOverrideClass()"
   [severity]="severity()"
   [rounded]="round()"
   [pTooltip]="displayTooltipText()"
