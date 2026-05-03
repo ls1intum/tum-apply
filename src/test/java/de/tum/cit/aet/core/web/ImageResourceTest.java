@@ -36,6 +36,8 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import tools.jackson.core.type.TypeReference;
@@ -412,26 +414,20 @@ public class ImageResourceTest extends AbstractResourceTest {
             assertThat(savedImage).isInstanceOf(ResearchGroupImage.class);
         }
 
-        @Test
-        void uploadJobBannerRejectsInvalidImageType() throws Exception {
-            // Arrange - Create a non-image file
-            MockMultipartFile invalidFile = new MockMultipartFile("file", "test.gif", "image/gif", "fake image content".getBytes());
-
-            // Act & Assert
+        @ParameterizedTest(name = "should reject invalid file: {0}")
+        @CsvSource(
+            {
+                "non-image mime type, test.gif,       image/gif,  fake image content",
+                "empty file,          empty.jpg,      image/jpeg, ''",
+                "corrupted content,   corrupted.jpg,  image/jpeg, This is not a valid image file content",
+                "missing filename,    '',             image/jpeg, fake content",
+            }
+        )
+        void shouldRejectInvalidJobBannerFile(String description, String filename, String mimeType, String content) {
+            MockMultipartFile invalidFile = new MockMultipartFile("file", filename, mimeType, content.getBytes());
             api
                 .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
                 .multipartPostAndRead(API_BASE_PATH + "/upload/job-banner", List.of(invalidFile), new TypeReference<ImageDTO>() {}, 400);
-        }
-
-        @Test
-        void uploadJobBannerRejectsEmptyFile() {
-            // Arrange
-            MockMultipartFile emptyFile = new MockMultipartFile("file", "empty.jpg", "image/jpeg", new byte[0]);
-
-            // Act & Assert
-            api
-                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
-                .multipartPostAndRead(API_BASE_PATH + "/upload/job-banner", List.of(emptyFile), new TypeReference<ImageDTO>() {}, 400);
         }
 
         @Test
@@ -471,18 +467,6 @@ public class ImageResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void uploadJobBannerRejectsCorruptedImageFile() {
-            // Arrange - Create a file with JPEG mime type but corrupted content
-            byte[] corruptedData = "This is not a valid image file content".getBytes();
-            MockMultipartFile corruptedFile = new MockMultipartFile("file", "corrupted.jpg", "image/jpeg", corruptedData);
-
-            // Act & Assert
-            api
-                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
-                .multipartPostAndRead(API_BASE_PATH + "/upload/job-banner", List.of(corruptedFile), new TypeReference<ImageDTO>() {}, 400);
-        }
-
-        @Test
         void uploadJobBannerSuccessfullyUploadsPngImage() throws Exception {
             // Arrange - Create a valid PNG image
             BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
@@ -499,22 +483,6 @@ public class ImageResourceTest extends AbstractResourceTest {
             assertThat(result).isNotNull();
             assertThat(result.imageId()).isNotNull();
             assertThat(result.imageType()).isEqualTo(ImageType.JOB_BANNER);
-        }
-
-        @Test
-        void uploadJobBannerRejectsFileWithoutFilename() {
-            // Arrange - Create a file without a filename
-            MockMultipartFile fileWithoutName = new MockMultipartFile("file", "", "image/jpeg", "fake content".getBytes());
-
-            // Act & Assert
-            api
-                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
-                .multipartPostAndRead(
-                    API_BASE_PATH + "/upload/job-banner",
-                    List.of(fileWithoutName),
-                    new TypeReference<ImageDTO>() {},
-                    400
-                );
         }
 
         @Test

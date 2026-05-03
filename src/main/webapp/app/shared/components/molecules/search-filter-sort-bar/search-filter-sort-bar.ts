@@ -1,11 +1,12 @@
-import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { DrawerModule } from 'primeng/drawer';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import TranslateDirective from '../../../language/translate.directive';
 import { Filter, FilterChange, FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
@@ -21,7 +22,6 @@ import { ButtonComponent } from '../../atoms/button/button.component';
     InputIconModule,
     DrawerModule,
     FontAwesomeModule,
-    TranslateModule,
     TranslateDirective,
     FilterMultiselect,
     Sorting,
@@ -63,6 +63,21 @@ export class SearchFilterSortBar {
   readonly searchFieldClass = computed(() => this.searchWidth() ?? 'max-w-[18rem]');
   readonly hasMobileActions = computed(() => this.filters().length || (this.sortableFields()?.length ?? 0));
   readonly hasActiveFilters = computed(() => Object.values(this.selectedFiltersById()).some(values => values.length));
+  readonly sortingAndFilterTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.filters.sortingAndFilter');
+  });
+  readonly resetFilterLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.filters.resetFilter');
+  });
+  readonly showLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.filters.show');
+  });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 

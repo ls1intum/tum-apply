@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 export interface LinkItem {
   labelKey: string;
@@ -12,9 +12,10 @@ export interface LinkItem {
 
 @Component({
   selector: 'jhi-link-list',
-  imports: [FontAwesomeModule, TranslateModule, TooltipModule],
+  imports: [FontAwesomeModule, TranslateDirective, TooltipModule],
   templateUrl: './link-list.html',
 })
 export class LinkList {
   links = input.required<readonly LinkItem[]>();
+  shouldTranslate = input<boolean>(true);
 }

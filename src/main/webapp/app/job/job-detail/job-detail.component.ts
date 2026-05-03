@@ -231,7 +231,7 @@ export class JobDetailComponent {
 
   readonly jobStateText = computed<string>(() => {
     const jobState = this.currentJobState();
-    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
+    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'jobState.unknown';
   });
 
   readonly jobStateColor = computed<'success' | 'info' | 'contrast' | 'secondary'>(() => {

@@ -28,7 +28,7 @@ export class ToggleSwitchComponent {
   /**
    * Optional style class passed to PrimeNG ToggleSwitch.
    */
-  styleClass = input<string>('');
+  classStyling = input<string>('');
 
   onChange(value: boolean): void {
     this.modelChange.emit(value);

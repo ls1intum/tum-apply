@@ -9,8 +9,8 @@
       },
       "circuitBreaker": {
         "label": "Circuit Breaker",
-        "description": "Deaktiviert KI automatisch nach aufeinanderfolgenden Fehlern. Wird nach einer Abklingzeit von {{cooldown}} min zurückgesetzt.",
-        "open": "Offen seit {{time}} Uhr (KI deaktiviert)",
+        "description": "Deaktiviert KI automatisch nach aufeinanderfolgenden Fehlern. Wird nach einer Abklingzeit von {cooldown} min zurückgesetzt.",
+        "open": "Offen seit {time} Uhr (KI deaktiviert)",
         "closed": "Geschlossen (KI betriebsbereit)",
         "reset": "Circuit Breaker zurücksetzen"
       },

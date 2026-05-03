@@ -1,8 +1,8 @@
 <div class="page-container">
   <jhi-confirm-dialog
-    [label]="'button.confirm' | translate"
-    [header]="'researchGroup.adminView.confirmDialog.header' | translate"
-    [message]="'researchGroup.adminView.confirmDialog.message' | translate"
+    label="button.confirm"
+    header="researchGroup.adminView.confirmDialog.header"
+    message="researchGroup.adminView.confirmDialog.message"
     severity="success"
     confirmIcon="check"
     [showOpenButton]="false"
@@ -12,9 +12,9 @@
   />
 
   <jhi-confirm-dialog
-    [label]="'button.deny' | translate"
-    [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
-    [message]="'researchGroup.adminView.denyConfirmDialog.message' | translate"
+    label="button.deny"
+    header="researchGroup.adminView.denyConfirmDialog.header"
+    message="researchGroup.adminView.denyConfirmDialog.message"
     severity="danger"
     confirmIcon="times"
     [showOpenButton]="false"
@@ -24,9 +24,9 @@
   />
 
   <jhi-confirm-dialog
-    [label]="'button.withdraw' | translate"
-    [header]="'researchGroup.adminView.withdrawConfirmDialog.header' | translate"
-    [message]="'researchGroup.adminView.withdrawConfirmDialog.message' | translate"
+    label="button.withdraw"
+    header="researchGroup.adminView.withdrawConfirmDialog.header"
+    message="researchGroup.adminView.withdrawConfirmDialog.message"
     severity="danger"
     confirmIcon="withdraw"
     [showOpenButton]="false"
@@ -74,15 +74,15 @@
       <div class="flex space-x-2">
         <jhi-button
           icon="eye"
-          [ariaLabel]="'button.view' | translate"
-          [tooltip]="'button.view' | translate"
+          ariaLabel="button.view"
+          tooltip="button.view"
           severity="primary"
           variant="text"
           (click)="onViewResearchGroup(researchGroup.id)"
         />
         <jhi-button
           icon="ellipsis-vertical"
-          [tooltip]="getMenuItems()(researchGroup).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+          [tooltip]="getMenuItems()(researchGroup).length > 0 ? 'button.actions' : 'button.noFurtherActions'"
           severity="primary"
           variant="text"
           (click)="menu.toggle($event)"
@@ -94,11 +94,7 @@
 
     <ng-template #stateTemplate let-researchGroup>
       <jhi-tag
-        [text]="
-          stateTextMap()[researchGroup.status]
-            ? (stateTextMap()[researchGroup.status] | translate)
-            : ('researchGroup.adminView.groupState.unknown' | translate)
-        "
+        [text]="stateTextMap()[researchGroup.status] || 'researchGroup.adminView.groupState.unknown'"
         [color]="stateSeverityMap()[researchGroup.status] || 'info'"
         width="8rem"
       />

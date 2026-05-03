@@ -2,7 +2,7 @@
   class="custom-tag"
   [severity]="severity()"
   [rounded]="round()"
-  [pTooltip]="tooltipText() ?? '' | translate"
+  [pTooltip]="displayTooltipText()"
   tooltipPosition="top"
   [style.width]="width()"
   [style.display]="'flex'"
@@ -14,7 +14,7 @@
     <fa-icon [icon]="iconProp()" class="icon left" />
   }
 
-  <span class="text">{{ text() }}</span>
+  <span class="text">{{ displayText() }}</span>
 
   @if (icon() && iconRight()) {
     <fa-icon [icon]="iconProp()" class="icon right" />
