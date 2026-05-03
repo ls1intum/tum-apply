@@ -690,9 +690,10 @@ describe('JobDetailComponent', () => {
     const user = {
       id: 'u1',
       name: 'Researcher',
-      researchGroup: { researchGroupId: 'rgX', name: 'RGX' },
+      memberships: [{ researchGroupId: 'rgX', name: 'RGX' }],
     };
     mockAccountService.user.set(user as User);
+    mockAccountService.activeResearchGroupId.set('rgX');
 
     const dto: JobDetailDTO = {
       title: 'RG Job',
