@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.http.HttpHeaders;
@@ -50,88 +51,106 @@ class WebConfigurerTest {
         webConfigurer = new WebConfigurer(env, props);
     }
 
-    @Test
-    void shouldCustomizeServletContainer() throws Exception {
-        env.setActiveProfiles(JHipsterConstants.SPRING_PROFILE_PRODUCTION);
-        TomcatServletWebServerFactory container = new TomcatServletWebServerFactory();
-        webConfigurer.customize(container);
-        //TODO: Check why this is necessary
-        //assertThat(container.getMimeMappings().get("abs")).isEqualTo("audio/x-mpeg");
-        assertThat(container.getSettings().getMimeMappings().get("html")).isEqualTo("text/html;charset=utf-8");
-        assertThat(container.getSettings().getMimeMappings().get("json")).isEqualTo("text/html;charset=utf-8");
-        if (container.getSettings().getDocumentRoot() != null) {
-            Path actual = container.getSettings().getDocumentRoot().toPath().toRealPath();
-            Path expected = Path.of("build", "resources", "main", "static").toAbsolutePath().toRealPath();
-            assertThat(Files.isSameFile(actual, expected)).isTrue();
+    // ===== SERVLET CONTAINER CUSTOMIZATION =====
+    @Nested
+    class ServletContainerCustomizationTests {
+
+        @Test
+        void shouldCustomizeServletContainer() throws Exception {
+            env.setActiveProfiles(JHipsterConstants.SPRING_PROFILE_PRODUCTION);
+            TomcatServletWebServerFactory container = new TomcatServletWebServerFactory();
+            webConfigurer.customize(container);
+            //TODO: Check why this is necessary
+            //assertThat(container.getMimeMappings().get("abs")).isEqualTo("audio/x-mpeg");
+            assertThat(container.getSettings().getMimeMappings().get("html")).isEqualTo("text/html;charset=utf-8");
+            assertThat(container.getSettings().getMimeMappings().get("json")).isEqualTo("text/html;charset=utf-8");
+            if (container.getSettings().getDocumentRoot() != null) {
+                Path actual = container.getSettings().getDocumentRoot().toPath().toRealPath();
+                Path expected = Path.of("build", "resources", "main", "static").toAbsolutePath().toRealPath();
+                assertThat(Files.isSameFile(actual, expected)).isTrue();
+            }
         }
     }
 
-    @Test
-    void shouldCorsFilterOnApiPath() throws Exception {
-        props.getCors().setAllowedOrigins(Collections.singletonList("other.domain.com"));
-        props.getCors().setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        props.getCors().setAllowedHeaders(Collections.singletonList("*"));
-        props.getCors().setMaxAge(1800L);
-        props.getCors().setAllowCredentials(true);
+    // ===== CORS FILTER BEHAVIOR =====
+    @Nested
+    class CorsFilterBehaviorTests {
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+        @Test
+        void shouldCorsFilterOnApiPath() throws Exception {
+            props.getCors().setAllowedOrigins(Collections.singletonList("other.domain.com"));
+            props.getCors().setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+            props.getCors().setAllowedHeaders(Collections.singletonList("*"));
+            props.getCors().setMaxAge(1800L);
+            props.getCors().setAllowCredentials(true);
 
-        mockMvc
-            .perform(
-                options("/api/test-cors")
-                    .header(HttpHeaders.ORIGIN, "other.domain.com")
-                    .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
-            )
-            .andExpect(status().isOk())
-            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "other.domain.com"))
-            .andExpect(header().string(HttpHeaders.VARY, "Origin"))
-            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,PUT,DELETE"))
-            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"))
-            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"));
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
-        mockMvc
-            .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
-            .andExpect(status().isOk())
-            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "other.domain.com"));
-    }
+            mockMvc
+                .perform(
+                    options("/api/test-cors")
+                        .header(HttpHeaders.ORIGIN, "other.domain.com")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "other.domain.com"))
+                .andExpect(header().string(HttpHeaders.VARY, "Origin"))
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,PUT,DELETE"))
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"))
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"));
 
-    @Test
-    void shouldCorsFilterOnOtherPath() throws Exception {
-        props.getCors().setAllowedOrigins(Collections.singletonList("*"));
-        props.getCors().setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        props.getCors().setAllowedHeaders(Collections.singletonList("*"));
-        props.getCors().setMaxAge(1800L);
-        props.getCors().setAllowCredentials(true);
+            mockMvc
+                .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "other.domain.com"));
+        }
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+        @Test
+        void shouldCorsFilterOnOtherPath() throws Exception {
+            props.getCors().setAllowedOrigins(Collections.singletonList("*"));
+            props.getCors().setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+            props.getCors().setAllowedHeaders(Collections.singletonList("*"));
+            props.getCors().setMaxAge(1800L);
+            props.getCors().setAllowCredentials(true);
 
-        mockMvc
-            .perform(get("/test/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
-            .andExpect(status().isOk())
-            .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
-    }
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
-    @Test
-    void shouldCorsFilterDeactivatedForNullAllowedOrigins() throws Exception {
-        props.getCors().setAllowedOrigins(null);
+            mockMvc
+                .perform(get("/test/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+        }
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+        @Test
+        void shouldCorsFilterDeactivatedForNullAllowedOrigins() throws Exception {
+            props.getCors().setAllowedOrigins(null);
 
-        mockMvc
-            .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
-            .andExpect(status().isOk())
-            .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
-    }
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
 
-    @Test
-    void shouldCorsFilterDeactivatedForEmptyAllowedOrigins() throws Exception {
-        props.getCors().setAllowedOrigins(new ArrayList<>());
+            mockMvc
+                .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+        }
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController()).addFilters(webConfigurer.corsFilter()).build();
+        @Test
+        void shouldCorsFilterDeactivatedForEmptyAllowedOrigins() throws Exception {
+            props.getCors().setAllowedOrigins(new ArrayList<>());
 
-        mockMvc
-            .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
-            .andExpect(status().isOk())
-            .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new WebConfigurerTestController())
+                .addFilters(webConfigurer.corsFilter())
+                .build();
+
+            mockMvc
+                .perform(get("/api/test-cors").header(HttpHeaders.ORIGIN, "other.domain.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+        }
     }
 }

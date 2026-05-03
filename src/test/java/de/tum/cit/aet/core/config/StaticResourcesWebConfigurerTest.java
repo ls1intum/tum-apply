@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import de.tum.cit.aet.core.config.StaticResourcesWebConfiguration;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.CacheControl;
 import org.springframework.mock.web.MockServletContext;
@@ -34,44 +35,54 @@ class StaticResourcesWebConfigurerTest {
         staticResourcesWebConfiguration = spy(new StaticResourcesWebConfiguration(props));
     }
 
-    @Test
-    void shouldAppendResourceHandlerAndInitializeIt() {
-        staticResourcesWebConfiguration.addResourceHandlers(resourceHandlerRegistry);
+    // ===== RESOURCE HANDLER REGISTRATION =====
+    @Nested
+    class ResourceHandlerRegistrationTests {
 
-        verify(resourceHandlerRegistry, times(1)).addResourceHandler(RESOURCE_PATHS);
-        verify(staticResourcesWebConfiguration, times(1)).initializeResourceHandler(any(ResourceHandlerRegistration.class));
-        for (String testingPath : RESOURCE_PATHS) {
-            assertThat(resourceHandlerRegistry.hasMappingForPattern(testingPath)).isTrue();
+        @Test
+        void shouldAppendResourceHandlerAndInitializeIt() {
+            staticResourcesWebConfiguration.addResourceHandlers(resourceHandlerRegistry);
+
+            verify(resourceHandlerRegistry, times(1)).addResourceHandler(RESOURCE_PATHS);
+            verify(staticResourcesWebConfiguration, times(1)).initializeResourceHandler(any(ResourceHandlerRegistration.class));
+            for (String testingPath : RESOURCE_PATHS) {
+                assertThat(resourceHandlerRegistry.hasMappingForPattern(testingPath)).isTrue();
+            }
+        }
+
+        @Test
+        void shouldInitializeResourceHandlerWithCacheControlAndLocations() {
+            CacheControl ccExpected = CacheControl.maxAge(5, TimeUnit.DAYS).cachePublic();
+            when(staticResourcesWebConfiguration.getCacheControl()).thenReturn(ccExpected);
+            ResourceHandlerRegistration resourceHandlerRegistration = spy(new ResourceHandlerRegistration(RESOURCE_PATHS));
+
+            staticResourcesWebConfiguration.initializeResourceHandler(resourceHandlerRegistration);
+
+            verify(staticResourcesWebConfiguration, times(1)).getCacheControl();
+            verify(resourceHandlerRegistration, times(1)).setCacheControl(ccExpected);
+            verify(resourceHandlerRegistration, times(1)).addResourceLocations(RESOURCE_LOCATIONS);
         }
     }
 
-    @Test
-    void shouldInitializeResourceHandlerWithCacheControlAndLocations() {
-        CacheControl ccExpected = CacheControl.maxAge(5, TimeUnit.DAYS).cachePublic();
-        when(staticResourcesWebConfiguration.getCacheControl()).thenReturn(ccExpected);
-        ResourceHandlerRegistration resourceHandlerRegistration = spy(new ResourceHandlerRegistration(RESOURCE_PATHS));
+    // ===== CACHE CONTROL CONFIGURATION =====
+    @Nested
+    class CacheControlConfigurationTests {
 
-        staticResourcesWebConfiguration.initializeResourceHandler(resourceHandlerRegistration);
+        @Test
+        void shouldCreateCacheControlBasedOnJhipsterDefaultProperties() {
+            CacheControl cacheExpected = CacheControl.maxAge(JHipsterDefaults.Http.Cache.timeToLiveInDays, TimeUnit.DAYS).cachePublic();
+            assertThat(staticResourcesWebConfiguration.getCacheControl())
+                .extracting(CacheControl::getHeaderValue)
+                .isEqualTo(cacheExpected.getHeaderValue());
+        }
 
-        verify(staticResourcesWebConfiguration, times(1)).getCacheControl();
-        verify(resourceHandlerRegistration, times(1)).setCacheControl(ccExpected);
-        verify(resourceHandlerRegistration, times(1)).addResourceLocations(RESOURCE_LOCATIONS);
-    }
-
-    @Test
-    void shouldCreateCacheControlBasedOnJhipsterDefaultProperties() {
-        CacheControl cacheExpected = CacheControl.maxAge(JHipsterDefaults.Http.Cache.timeToLiveInDays, TimeUnit.DAYS).cachePublic();
-        assertThat(staticResourcesWebConfiguration.getCacheControl())
-            .extracting(CacheControl::getHeaderValue)
-            .isEqualTo(cacheExpected.getHeaderValue());
-    }
-
-    @Test
-    void shouldCreateCacheControlWithSpecificConfigurationInProperties() {
-        props.getHttp().getCache().setTimeToLiveInDays(MAX_AGE_TEST);
-        CacheControl cacheExpected = CacheControl.maxAge(MAX_AGE_TEST, TimeUnit.DAYS).cachePublic();
-        assertThat(staticResourcesWebConfiguration.getCacheControl())
-            .extracting(CacheControl::getHeaderValue)
-            .isEqualTo(cacheExpected.getHeaderValue());
+        @Test
+        void shouldCreateCacheControlWithSpecificConfigurationInProperties() {
+            props.getHttp().getCache().setTimeToLiveInDays(MAX_AGE_TEST);
+            CacheControl cacheExpected = CacheControl.maxAge(MAX_AGE_TEST, TimeUnit.DAYS).cachePublic();
+            assertThat(staticResourcesWebConfiguration.getCacheControl())
+                .extracting(CacheControl::getHeaderValue)
+                .isEqualTo(cacheExpected.getHeaderValue());
+        }
     }
 }
