@@ -6,9 +6,11 @@
       with Tailwind's [&_.X]:Y arbitrary-descendant selectors. The
       surface-level chip preview is hidden because this component
       renders its own styled removable pills below the dropdown.
+      The dropdown is forced to `position: relative` so it pushes the
+      page footer down on short viewports instead of overlapping it.
     -->
     <jhi-filter-multiselect
-      class="[&_.filter-button]:justify-between [&_.filter-button]:hover:border-border-hover [&_.filter-trigger]:flex-1 [&_.filter-trigger]:min-w-0 [&_.trigger-summary]:hidden [&_.chip-row]:hidden [&_.filter-icon]:ml-auto [&_.filter-icon]:shrink-0"
+      class="[&_.filter-button]:justify-between [&_.filter-button]:hover:border-border-hover [&_.filter-trigger]:flex-1 [&_.filter-trigger]:min-w-0 [&_.trigger-summary]:hidden [&_.chip-row]:hidden [&_.filter-icon]:ml-auto [&_.filter-icon]:shrink-0 [&_.filter-dropdown]:!relative [&_.filter-dropdown]:!z-[1]"
       filterId="subject-areas"
       filterLabel="settings.notifications.applicant.subjectAreas.placeholder"
       filterSearchPlaceholder="settings.notifications.applicant.subjectAreas.filterPlaceholder"
