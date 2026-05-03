@@ -446,14 +446,14 @@ describe('ApplicationForm', () => {
     });
   });
 
-  it('should debounce the saving badge instead of flipping to SAVING immediately on value change', () => {
+  it('should flip the badge to SAVING and forward the change through the auto-save controller', () => {
     const notifySpy = vi.spyOn(comp.autoSave, 'notifyChanged');
 
     comp.onValueChanged();
 
     expect(notifySpy).toHaveBeenCalledOnce();
-    // Badge stays on its current state during the debounce window — no instant flicker.
-    expect(comp.autoSave.state()).toBe(SavingStates.SAVED);
+    // Badge flips immediately so the SAVING text is visible across the debounce + request.
+    expect(comp.autoSave.state()).toBe(SavingStates.SAVING);
   });
 
   describe('saveToLocalStorage', () => {

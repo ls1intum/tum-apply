@@ -305,8 +305,8 @@ describe('JobCreationFormComponent', () => {
       fixture.detectChanges();
 
       expect(notifySpy).toHaveBeenCalledOnce();
-      // Badge stays SAVED during the debounce window — no flicker on every keystroke.
-      expect(component.autoSave.state()).toBe('SAVED');
+      // Badge flips to SAVING immediately and stays visible across the debounce + request.
+      expect(component.autoSave.state()).toBe('SAVING');
     });
   });
 

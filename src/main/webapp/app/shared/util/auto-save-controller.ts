@@ -15,12 +15,12 @@ export interface AutoSaveControllerOptions {
 /**
  * Debounced auto-save state machine shared by the job, application, and email-template forms.
  *
- * 1. Consumers call {@link notifyChanged} on every user edit. The badge stays in its current
- *    state during the debounce window so the form does NOT flicker to "Saving changes..."
- *    on every keystroke.
- * 2. After {@link AUTO_SAVE_DELAY_MS} of inactivity the controller flips state to `SAVING`
- *    and invokes the `save` callback.
- * 3. The state then settles to `SAVED` or `FAILED` based on the result.
+ * 1. Consumers call {@link notifyChanged} on every user edit. The badge flips to `SAVING`
+ *    so the user can see that pending changes will be persisted, and the {@link AUTO_SAVE_DELAY_MS}
+ *    debounce timer is (re)started.
+ * 2. Once the timer fires the `save` callback runs while the badge stays on `SAVING`,
+ *    so the state remains visible across the wait window AND the network round-trip.
+ * 3. The state settles to `SAVED` or `FAILED` based on the callback result.
  */
 export class AutoSaveController {
   /** Read-only signal that components can bind to (e.g. `<jhi-saving-badge [state]="autoSave.state()" />`). */
@@ -36,11 +36,13 @@ export class AutoSaveController {
   }
 
   /**
-   * Restart the debounce timer. Should be called whenever the form's value changes.
-   * The badge stays in its current state until the timer fires.
+   * Flip the badge to `SAVING` and (re)start the debounce timer. Should be called whenever
+   * the form's value changes. The badge stays on `SAVING` until the actual save callback
+   * settles, so the user can see that pending edits will be persisted.
    */
   notifyChanged(): void {
     this.cancelTimer();
+    this._state.set(SavingStates.SAVING);
     this.timer = setTimeout(() => void this.runSave(), this.delayMs);
   }
 

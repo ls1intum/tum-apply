@@ -17,14 +17,15 @@ describe('AutoSaveController', () => {
     expect(controller.state()).toBe(SavingStates.SAVED);
   });
 
-  it('should not change state when notifyChanged is called and the timer has not yet fired', () => {
+  it('should flip to SAVING immediately when notifyChanged is called but defer the save callback', () => {
     const save = vi.fn().mockResolvedValue(true);
     const controller = new AutoSaveController({ save });
 
     controller.notifyChanged();
 
-    // Badge should stay SAVED until the debounce window elapses — no flicker on every keystroke.
-    expect(controller.state()).toBe(SavingStates.SAVED);
+    // Badge surfaces the pending save right away so the user can see edits will be persisted.
+    expect(controller.state()).toBe(SavingStates.SAVING);
+    // The save callback itself is still debounced and has not run yet.
     expect(save).not.toHaveBeenCalled();
   });
 
