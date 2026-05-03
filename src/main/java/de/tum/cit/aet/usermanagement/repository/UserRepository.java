@@ -26,7 +26,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         return getArbitraryValueElseThrow(findById(userId));
     }
 
-    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup" })
+    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup" })
     Optional<User> findWithResearchGroupRolesByUserId(UUID userId);
 
     /**
@@ -90,7 +90,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
             SELECT u FROM User u
             LEFT JOIN FETCH u.researchGroupRoles
-            LEFT JOIN FETCH u.researchGroup
             WHERE u.userId IN :userIds
             ORDER BY
             CASE WHEN :currentUserId IS NOT NULL AND u.userId = :currentUserId THEN 0 ELSE 1 END,
@@ -153,7 +152,13 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
             SELECT u.userId FROM User u
             LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
-            WHERE u.researchGroup IS NULL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup IS NOT NULL
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+            )
             AND rgr.id IS NULL
             AND u.email LIKE '%@%tum%'
             AND (:searchQuery IS NULL OR
@@ -197,9 +202,15 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
             SELECT LOWER(u.universityId)
             FROM User u
-            WHERE u.researchGroup IS NOT NULL
-              AND u.universityId IS NOT NULL
-              AND LOWER(u.universityId) IN :universityIds
+            WHERE EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup IS NOT NULL
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+            )
+            AND u.universityId IS NOT NULL
+            AND LOWER(u.universityId) IN :universityIds
         """
     )
     List<String> findAssignedUniversityIdsIn(@Param("universityIds") List<String> universityIds);
@@ -215,7 +226,13 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
             SELECT u FROM User u
             LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
-            WHERE u.researchGroup IS NULL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup IS NOT NULL
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+            )
             AND rgr.id IS NULL
             AND (:searchQuery IS NULL OR
                  LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
@@ -231,7 +248,19 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @param userIds user IDs to check
      * @return subset of IDs that belong to users with a non-null research group
      */
-    @Query("SELECT u.userId FROM User u WHERE u.researchGroup IS NOT NULL AND u.userId IN :userIds")
+    @Query(
+        """
+            SELECT u.userId FROM User u
+            WHERE EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup IS NOT NULL
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+            )
+            AND u.userId IN :userIds
+        """
+    )
     List<UUID> findAssignedUserIdsIn(@Param("userIds") List<UUID> userIds);
 
     @Query(

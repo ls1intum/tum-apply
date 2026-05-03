@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
+import de.tum.cit.aet.core.domain.ResearchGroupRole;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -15,6 +17,7 @@ import de.tum.cit.aet.core.exception.NoProfilePictureException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
@@ -126,17 +129,22 @@ class ImageServiceTest {
 
         // Initialize test user
         testUser = UserTestData.newUserAll(TEST_USER_ID, "test@example.com", "Test", "User");
-        testUser.setResearchGroup(testResearchGroup);
     }
 
     @Nested
     class UploadJobBanner {
 
+        private void stubResearchGroupResolution() {
+            when(currentUserService.getUser()).thenReturn(testUser);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
+        }
+
         @Test
         void shouldThrowExceptionWhenFileIsEmpty() {
             // Arrange
             MultipartFile emptyFile = new MockMultipartFile("file", "", "image/jpeg", new byte[0]);
-            when(currentUserService.getUser()).thenReturn(testUser);
+            stubResearchGroupResolution();
 
             // Act & Assert
             assertThatThrownBy(() -> imageService.uploadJobBanner(emptyFile))
@@ -149,7 +157,7 @@ class ImageServiceTest {
             // Arrange
             byte[] largeContent = new byte[(int) (MAX_FILE_SIZE + 1)];
             MultipartFile largeFile = new MockMultipartFile("file", "large.jpg", "image/jpeg", largeContent);
-            when(currentUserService.getUser()).thenReturn(testUser);
+            stubResearchGroupResolution();
 
             // Act & Assert
             assertThatThrownBy(() -> imageService.uploadJobBanner(largeFile))
@@ -162,7 +170,7 @@ class ImageServiceTest {
             // Arrange
             byte[] content = new byte[1024];
             MultipartFile invalidFile = new MockMultipartFile("file", "test.gif", "image/gif", content);
-            when(currentUserService.getUser()).thenReturn(testUser);
+            stubResearchGroupResolution();
 
             // Act & Assert
             assertThatThrownBy(() -> imageService.uploadJobBanner(invalidFile))
@@ -175,7 +183,7 @@ class ImageServiceTest {
             // Arrange
             byte[] notImageContent = "This is not an image".getBytes();
             MultipartFile notImageFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", notImageContent);
-            when(currentUserService.getUser()).thenReturn(testUser);
+            stubResearchGroupResolution();
 
             // Act & Assert
             assertThatThrownBy(() -> imageService.uploadJobBanner(notImageFile))
@@ -189,7 +197,7 @@ class ImageServiceTest {
             BufferedImage largeImage = new BufferedImage(MAX_WIDTH + 1, MAX_HEIGHT + 1, BufferedImage.TYPE_INT_RGB);
             byte[] imageBytes = createImageBytes(largeImage);
             MultipartFile largeImageFile = new MockMultipartFile("file", "large.jpg", "image/jpeg", imageBytes);
-            when(currentUserService.getUser()).thenReturn(testUser);
+            stubResearchGroupResolution();
 
             // Act & Assert
             assertThatThrownBy(() -> imageService.uploadJobBanner(largeImageFile))
@@ -597,6 +605,14 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
             when(currentUserService.isAdmin()).thenReturn(false);
             when(imageRepository.findById(TEST_IMAGE_ID)).thenReturn(Optional.of(jobBanner));
+            CurrentUser member = new CurrentUser(
+                TEST_USER_ID,
+                "test@example.com",
+                "Test",
+                "User",
+                List.of(new ResearchGroupRole(UserRole.PROFESSOR, TEST_RESEARCH_GROUP_ID))
+            );
+            when(currentUserService.getCurrentUser()).thenReturn(member);
 
             // Act
             imageService.delete(TEST_IMAGE_ID);
@@ -629,6 +645,14 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
             when(currentUserService.isAdmin()).thenReturn(false);
             when(imageRepository.findById(TEST_IMAGE_ID)).thenReturn(Optional.of(otherGroupBanner));
+            CurrentUser member = new CurrentUser(
+                TEST_USER_ID,
+                "test@example.com",
+                "Test",
+                "User",
+                List.of(new ResearchGroupRole(UserRole.PROFESSOR, TEST_RESEARCH_GROUP_ID))
+            );
+            when(currentUserService.getCurrentUser()).thenReturn(member);
 
             // Act & Assert
             assertThatThrownBy(() -> imageService.delete(TEST_IMAGE_ID))

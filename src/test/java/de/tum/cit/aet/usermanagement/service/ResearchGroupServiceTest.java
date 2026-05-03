@@ -135,7 +135,6 @@ class ResearchGroupServiceTest {
             when(userRepository.findUserIdsByResearchGroupId(eq(TEST_RESEARCH_GROUP_ID), any(Pageable.class))).thenReturn(userIdsPage);
 
             User otherUser = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);
-            otherUser.setResearchGroup(testResearchGroup);
             List<User> members = List.of(testUser, otherUser);
             when(userRepository.findUsersWithRolesByIdsForResearchGroup(anyList(), eq(TEST_USER_ID))).thenReturn(members);
 
@@ -201,7 +200,11 @@ class ResearchGroupServiceTest {
             );
             otherGroup.setResearchGroupId(UUID.randomUUID());
             User memberFromOtherGroup = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);
-            memberFromOtherGroup.setResearchGroup(otherGroup);
+            UserResearchGroupRole otherRole = new UserResearchGroupRole();
+            otherRole.setUser(memberFromOtherGroup);
+            otherRole.setResearchGroup(otherGroup);
+            otherRole.setRole(UserRole.PROFESSOR);
+            memberFromOtherGroup.getResearchGroupRoles().add(otherRole);
 
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberFromOtherGroup));
 
@@ -215,7 +218,11 @@ class ResearchGroupServiceTest {
         void shouldThrowExceptionWhenRemovingSelf() {
             // Arrange
             User currentUser = UserTestData.newUserAll(TEST_USER_ID, "current@test.com", null, null);
-            currentUser.setResearchGroup(testResearchGroup);
+            UserResearchGroupRole role = new UserResearchGroupRole();
+            role.setUser(currentUser);
+            role.setResearchGroup(testResearchGroup);
+            role.setRole(UserRole.PROFESSOR);
+            currentUser.getResearchGroupRoles().add(role);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(TEST_USER_ID)).thenReturn(Optional.of(currentUser));
 
@@ -467,7 +474,6 @@ class ResearchGroupServiceTest {
             // Arrange
             ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New Research Group", TEST_DEPARTMENT_ID);
 
-            testUser.setResearchGroup(null);
             when(currentUserService.getUser()).thenReturn(testUser);
             when(departmentRepository.findByIdElseThrow(TEST_DEPARTMENT_ID)).thenReturn(testDepartment);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
@@ -490,7 +496,11 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenUserAlreadyHasResearchGroup() {
             // Arrange
-            testUser.setResearchGroup(testResearchGroup);
+            UserResearchGroupRole existing = new UserResearchGroupRole();
+            existing.setUser(testUser);
+            existing.setResearchGroup(testResearchGroup);
+            existing.setRole(UserRole.PROFESSOR);
+            testUser.getResearchGroupRoles().add(existing);
             when(currentUserService.getUser()).thenReturn(testUser);
 
             ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New research group");
@@ -504,7 +514,6 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenResearchGroupNameAlreadyExists() {
             // Arrange
-            testUser.setResearchGroup(null);
             when(currentUserService.getUser()).thenReturn(testUser);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(true);
 
@@ -686,7 +695,6 @@ class ResearchGroupServiceTest {
             ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
             verify(userRepository).save(userCaptor.capture());
             User savedUser = userCaptor.getValue();
-            assertThat(savedUser.getResearchGroup()).isEqualTo(testResearchGroup);
             assertThat(savedUser.getUserId()).isEqualTo(newUserId);
             assertThat(savedUser.getEmail()).isEqualTo("new@example.com");
             assertThat(savedUser.getFirstName()).isEqualTo("New");
