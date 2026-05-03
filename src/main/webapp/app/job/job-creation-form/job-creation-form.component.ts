@@ -60,6 +60,7 @@ import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-c
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 import { tvlGrades } from '.././dropdown-options';
+import {BiasedIssues} from "app/generated/model/biased-issues";
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -283,6 +284,9 @@ export class JobCreationFormComponent {
 
   /** List of detected compliance issues to update the UI and editor highlights */
   readonly complianceIssues = signal<ComplianceIssue[]>([]);
+
+  /** List of detected biased issues to update the UI and editor highlights */
+  readonly biasedIssues = signal<BiasedIssues[]>([]);
 
   /** The compliance issue currently shown in the popover (undefined = none is hovered). */
   readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
@@ -1265,6 +1269,10 @@ export class JobCreationFormComponent {
       this.complianceIssues.set(saved.complianceIssues);
     }
 
+    if (saved.biasedIssues) {
+      this.biasedIssues.set(saved.biasedIssues);
+    }
+
     // keep editor in sync with selected language (without triggering autosave loop)
     const lang = this.currentDescriptionLanguage();
     const content = lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
@@ -1368,6 +1376,9 @@ export class JobCreationFormComponent {
     }
     if (job?.complianceIssues) {
       this.complianceIssues.set(job.complianceIssues);
+    }
+    if (job?.biasedIssues) {
+      this.biasedIssues.set(job.biasedIssues);
     }
 
     this.basicInfoForm.patchValue({
@@ -1563,11 +1574,11 @@ export class JobCreationFormComponent {
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         // highlighting before translation
-        void (async () => {
-          await this.analyzeAndUpdateScore(currentLang);
+        void Promise.all([
+          this.analyzeAndUpdateScore(currentLang),
           // fire and forget
-          await this.translateAndStoreOtherLanguage(currentLang, description);
-        })();
+          this.translateAndStoreOtherLanguage(currentLang, description),
+        ]);
       }
     } catch {
       this.savingState.set('FAILED');
@@ -1729,6 +1740,9 @@ export class JobCreationFormComponent {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
         if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
+          if(updatedJob.biasedIssues) {
+            this.biasedIssues.set(updatedJob.biasedIssues);
+          }
           break;
         }
         if (attempt === 0) {

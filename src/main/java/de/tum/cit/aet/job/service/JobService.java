@@ -41,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -480,12 +481,14 @@ public class JobService {
      * @param complianceAnalysis the compliance issues detected for the job description
      * @param lang the language for which existing issues should be replaced
      */
+    @Transactional
     public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, List<BiasedIssues> biasedAnalysis, String lang) {
         if (jobId == null) {
             return;
         }
 
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        jobRepository.findByIdWithBiased(jobId);
 
         // Keep compliance issues from the other language, add new ones for target language
         List<ComplianceIssue> issuesToSave = new ArrayList<>();
