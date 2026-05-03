@@ -54,7 +54,6 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   selector: 'jhi-application-creation-page2',
   standalone: true,
   templateUrl: './application-creation-page2.component.html',
-  styleUrl: './application-creation-page2.component.scss',
   imports: [DegreeDocumentSectionComponent, ReactiveFormsModule, TranslateDirective],
 })
 export default class ApplicationCreationPage2Component {
