@@ -18,6 +18,7 @@ public enum ApplicationState {
     REJECTED("REJECTED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
     WITHDRAWN("WITHDRAWN", EnumSet.of(UserRole.APPLICANT)),
     JOB_CLOSED("JOB_CLOSED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    JOB_CLOSED_DRAFT("JOB_CLOSED_DRAFT", EnumSet.of(UserRole.APPLICANT)),
     INTERVIEW("INTERVIEW", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE));
 
     private final String value;

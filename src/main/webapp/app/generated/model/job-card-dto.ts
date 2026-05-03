@@ -26,7 +26,7 @@ export interface JobCardDTO {
     readonly workload?: number;
 }
 
-export type JobCardDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
+export type JobCardDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
 
 export const JobCardDTOApplicationStateEnum = {
     Saved: 'SAVED' as const,
@@ -36,10 +36,11 @@ export const JobCardDTOApplicationStateEnum = {
     Rejected: 'REJECTED' as const,
     Withdrawn: 'WITHDRAWN' as const,
     JobClosed: 'JOB_CLOSED' as const,
+    JobClosedDraft: 'JOB_CLOSED_DRAFT' as const,
     Interview: 'INTERVIEW' as const,
 } as const;
 
-export const JobCardDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'INTERVIEW'] as const;
+export const JobCardDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
 
 export type JobCardDTOLocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
 

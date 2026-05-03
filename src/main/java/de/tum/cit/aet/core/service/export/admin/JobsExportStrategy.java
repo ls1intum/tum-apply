@@ -86,6 +86,7 @@ public class JobsExportStrategy {
      * act on:
      * <ul>
      *   <li>{@code SAVED} — draft, never submitted</li>
+     *   <li>{@code JOB_CLOSED_DRAFT} — draft on a job that was closed before submission</li>
      *   <li>{@code WITHDRAWN} — applicant pulled out of the process</li>
      * </ul>
      *
@@ -94,6 +95,7 @@ public class JobsExportStrategy {
      */
     private static final Set<ApplicationState> STATES_EXCLUDED_FROM_RESEARCH_GROUP_EXPORTS = EnumSet.of(
         ApplicationState.SAVED,
+        ApplicationState.JOB_CLOSED_DRAFT,
         ApplicationState.WITHDRAWN
     );
 
