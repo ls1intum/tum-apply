@@ -88,7 +88,7 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- TOOLTIP TEXTS ----------------
-  it('exposes translated tooltip text for every likert value', () => {
+  it('should expose translated tooltip text for every likert value', () => {
     const tooltips = component.tooltipTexts();
     expect(tooltips[0]).toBe('evaluation.ratings.very_bad');
     expect(tooltips[1]).toBe('evaluation.ratings.bad');
