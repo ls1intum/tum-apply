@@ -339,7 +339,7 @@ jobs:
   # ============================================
 
   lighthouse-scan:
-    name: Server Startup
+    name: Lighthouse Scan (${{ matrix.role }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
