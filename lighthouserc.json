@@ -1,0 +1,24 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 1,
+      "settings": {
+        "onlyCategories": ["accessibility"]
+      },
+      "puppeteerScript": "./lighthouse-auth.js",
+      "puppeteerLaunchOptions": {
+        "args": ["--no-sandbox", "--headless", "--disable-gpu"]
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 0.6
+          }
+        ]
+      }
+    }
+  }
+}
