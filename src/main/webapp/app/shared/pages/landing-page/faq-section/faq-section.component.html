@@ -7,12 +7,12 @@
       <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" />
     </a>
   </div>
-  <p-accordion [value]="0">
+  <p-accordion class="flex flex-col gap-3 w-full max-w-3xl" [value]="0">
     @for (tab of tabs; track tab.value) {
-      <p-accordion-panel [value]="tab.value">
-        <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
+      <p-accordion-panel class="border border-border-default rounded-xl overflow-hidden" [value]="tab.value">
+        <p-accordion-header class="font-semibold">{{ tab.title | translate }}</p-accordion-header>
         <p-accordion-content>
-          <div [innerHTML]="tab.content | translate"></div>
+          <div class="leading-relaxed" [innerHTML]="tab.content | translate"></div>
         </p-accordion-content>
       </p-accordion-panel>
     }
