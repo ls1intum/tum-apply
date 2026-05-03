@@ -198,6 +198,9 @@ export class ApplicationInformationSettingsComponent {
       };
       this.data.set(nextData);
       this.isValid.set(form.valid);
+      if (this.initialDataSnapshot() !== undefined && form.valid && this.hasChanges()) {
+        this.autoSave.notifyChanged();
+      }
     });
 
     const statusSubscription = form.statusChanges.subscribe(() => {
@@ -213,12 +216,10 @@ export class ApplicationInformationSettingsComponent {
   });
 
   private readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
-  private autoSaveInitialized = false;
 
   constructor() {
     // Load initial data from backend API
     void this.loadApplicationInformation();
-    this.setupAutoSave();
   }
 
   async loadApplicationInformation(): Promise<void> {
@@ -352,26 +353,4 @@ export class ApplicationInformationSettingsComponent {
     };
   }
 
-  private setupAutoSave(): void {
-    effect(() => {
-      this.data();
-      const isValid = this.isValid();
-      const hasChanges = this.hasChanges();
-
-      if (this.initialDataSnapshot() === undefined) {
-        return;
-      }
-
-      if (!this.autoSaveInitialized) {
-        this.autoSaveInitialized = true;
-        return;
-      }
-
-      if (!hasChanges || !isValid) {
-        return;
-      }
-
-      this.autoSave.notifyChanged();
-    });
-  }
 }

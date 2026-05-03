@@ -123,7 +123,6 @@ export class SettingsDocumentsComponent {
   });
 
   private readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
-  private autoSaveInitialized = false;
   private applicantApi = inject(ApplicantResourceApi);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
@@ -154,9 +153,14 @@ export class SettingsDocumentsComponent {
     this.updateMasterGradeLimits(grade);
   });
 
+  private autoSaveEffect = effect(() => {
+    if (!this.hasLoaded()) return;
+    if (!this.hasChanges()) return;
+    this.autoSave.notifyChanged();
+  });
+
   constructor() {
     void this.loadProfile();
-    this.setupAutoSave();
   }
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
@@ -372,23 +376,4 @@ export class SettingsDocumentsComponent {
     this.referenceDocuments.set(documentIds.referenceDocumentIds ?? []);
   }
 
-  private setupAutoSave(): void {
-    effect(() => {
-      const hasChanges = this.hasChanges();
-      if (!this.hasLoaded()) {
-        return;
-      }
-
-      if (!this.autoSaveInitialized) {
-        this.autoSaveInitialized = true;
-        return;
-      }
-
-      if (!hasChanges) {
-        return;
-      }
-
-      this.autoSave.notifyChanged();
-    });
-  }
 }
