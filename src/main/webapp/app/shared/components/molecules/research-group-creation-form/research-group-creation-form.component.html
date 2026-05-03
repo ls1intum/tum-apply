@@ -31,7 +31,7 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
   <!-- Information Notice -->
   @if (isProfessorMode()) {
-    <jhi-info-box severity="primary" message="onboarding.professorRequest.approvalNotice" [shouldTranslate]="true" />
+    <jhi-info-box severity="info" message="onboarding.professorRequest.approvalNotice" [shouldTranslate]="true" />
   }
 
   <!-- Personal Information -->
