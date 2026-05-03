@@ -485,7 +485,12 @@
           />
         </div>
       } @else {
-        <jhi-message severity="warn" message="jobCreationForm.reviewPageSection.complianceBanner.default" [shouldTranslate]="true" />
+        <jhi-message
+          severity="warn"
+          styleClass="py-1"
+          message="jobCreationForm.reviewPageSection.complianceBanner.default"
+          [shouldTranslate]="true"
+        />
       }
     </div>
     <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
