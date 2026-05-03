@@ -8,8 +8,6 @@
     uploadTarget="applicantProfile"
     [saveData]="false"
     (extracted)="onAiDataExtracted($event)"
-    (persistenceStarted)="onDocumentPersistenceStarted()"
-    (persistenceFinished)="onDocumentPersistenceFinished($event)"
     [(bachelorDocumentIds)]="bachelorDocuments"
     [bachelorDegreeNameControl]="form.controls.bachelorDegreeName"
     [bachelorDegreeUniversityControl]="form.controls.bachelorDegreeUniversity"
@@ -46,8 +44,6 @@
       uploadTarget="applicantProfile"
       [(documentIds)]="referenceDocuments"
       [compact]="true"
-      (persistenceStarted)="onDocumentPersistenceStarted()"
-      (persistenceFinished)="onDocumentPersistenceFinished($event)"
     />
   </div>
 

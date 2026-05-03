@@ -6,8 +6,6 @@
       [required]="true"
       [saveData]="true"
       (extracted)="onAiDataExtracted($event)"
-      (persistenceStarted)="documentPersistenceStarted.emit()"
-      (persistenceFinished)="documentPersistenceFinished.emit($event)"
       [bachelorDocumentIds]="documentIdsBachelorTranscript()"
       [bachelorDegreeNameControl]="page2Form.controls.bachelorDegreeName"
       [bachelorDegreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"

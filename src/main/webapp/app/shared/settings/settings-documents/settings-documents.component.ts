@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -27,7 +27,7 @@ import { GradingScaleEditDialogComponent } from 'app/application/application-cre
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { createAutosaveController } from 'app/shared/util/autosave-controller';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
 import { SavingBadgeComponent } from '../../components/atoms/saving-badge/saving-badge.component';
@@ -97,7 +97,7 @@ export class SettingsDocumentsComponent {
   lastMasterGrade = signal<string>(this.form.controls.masterGrade.value ?? '');
   initialFormValue = signal(this.form.getRawValue());
   hasFormChanges = computed(() => this.hasLoaded() && !deepEqual(this.normalizedFormValue(), this.initialFormValue()));
-  savingState = computed<SavingState>(() => this.autosave.savingState());
+  savingState = computed<SavingState>(() => this.autoSave.state());
   hasChanges = computed(() => this.hasFormChanges());
 
   helperTextBachelorGrade = computed(() => {
@@ -122,8 +122,8 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly autosave = createAutosaveController(this.destroyRef);
+  private readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
+  private autoSaveInitialized = false;
   private applicantApi = inject(ApplicantResourceApi);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
@@ -203,17 +203,16 @@ export class SettingsDocumentsComponent {
     });
   }
 
-  async performAutoSave(): Promise<void> {
+  async performAutoSave(): Promise<boolean> {
     if (!this.hasChanges()) {
-      return;
+      return true;
     }
 
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null || loadedUser.id === '') {
-        this.autosave.markMetadataSaveFailed();
         this.toastService.showErrorKey('settings.documents.saveFailed');
-        return;
+        return false;
       }
 
       const applicantDTO: ApplicantDTO = {
@@ -247,10 +246,10 @@ export class SettingsDocumentsComponent {
 
       await firstValueFrom(this.applicantApi.updateApplicantDocumentSettings(applicantDTO));
       this.initialFormValue.set(this.normalizedFormValue());
-      this.autosave.markMetadataSaveSucceeded();
+      return true;
     } catch {
-      this.autosave.markMetadataSaveFailed();
       this.toastService.showErrorKey('settings.documents.saveFailed');
+      return false;
     }
   }
 
@@ -269,14 +268,6 @@ export class SettingsDocumentsComponent {
     }
 
     form.patchValue(patch);
-  }
-
-  onDocumentPersistenceStarted(): void {
-    this.autosave.startOperation();
-  }
-
-  onDocumentPersistenceFinished(state: SavingState): void {
-    this.autosave.finishOperation(state);
   }
 
   // Loads the persisted profile + document state and resets the change-tracking baseline to that backend snapshot.
@@ -330,7 +321,6 @@ export class SettingsDocumentsComponent {
 
       this.hasInitialLimitsSet.set(true);
       this.initialFormValue.set(this.normalizedFormValue());
-      this.autosave.markMetadataSaveSucceeded();
       this.hasLoaded.set(true);
     } catch {
       this.toastService.showErrorKey('settings.documents.loadFailed');
@@ -389,18 +379,16 @@ export class SettingsDocumentsComponent {
         return;
       }
 
-      if (this.autosave.shouldSkipInitialAutoSave()) {
+      if (!this.autoSaveInitialized) {
+        this.autoSaveInitialized = true;
         return;
       }
 
       if (!hasChanges) {
-        this.autosave.clearScheduledMetadataSave();
         return;
       }
 
-      this.autosave.scheduleMetadataSave(() => {
-        void this.performAutoSave();
-      });
+      this.autoSave.notifyChanged();
     });
   }
 }

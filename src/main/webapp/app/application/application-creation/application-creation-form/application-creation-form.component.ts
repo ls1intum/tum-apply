@@ -18,7 +18,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { SavingStates } from 'app/shared/constants/saving-states';
 import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
@@ -527,14 +527,6 @@ export default class ApplicationCreationFormComponent {
 
   onValueChanged(): void {
     this.autoSave.notifyChanged();
-  }
-
-  onDocumentPersistenceStarted(): void {
-    this.autoSave.setState(SavingStates.SAVING);
-  }
-
-  onDocumentPersistenceFinished(state: SavingState): void {
-    this.autoSave.setState(state);
   }
 
   onPersonalInfoDataValidityChanged(isValid: boolean): void {

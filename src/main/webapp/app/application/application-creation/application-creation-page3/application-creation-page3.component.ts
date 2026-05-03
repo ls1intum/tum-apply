@@ -16,7 +16,6 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { TranslateDirective } from 'app/shared/language';
-import { SavingState } from 'app/shared/constants/saving-states';
 
 export type ApplicationCreationPage3Data = {
   desiredStartDate: string;
@@ -61,8 +60,6 @@ export default class ApplicationCreationPage3Component {
 
   valid = output<boolean>();
   changed = output<boolean>();
-  documentPersistenceStarted = output();
-  documentPersistenceFinished = output<SavingState>();
 
   hasInitialized = signal(false);
 

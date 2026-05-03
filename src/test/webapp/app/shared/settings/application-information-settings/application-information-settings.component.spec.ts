@@ -262,26 +262,6 @@ describe('ApplicationInformationSettingsComponent', () => {
   });
 
   describe('saving', () => {
-    it('should keep document persistence in saving state for the autosave feedback duration', async () => {
-      vi.useFakeTimers();
-      try {
-        const component = await createComponent();
-
-        component.onDocumentPersistenceStarted();
-        component.onDocumentPersistenceFinished(SavingStates.SAVED);
-
-        expect(component.savingState()).toBe(SavingStates.SAVING);
-
-        vi.advanceTimersByTime(1999);
-        expect(component.savingState()).toBe(SavingStates.SAVING);
-
-        vi.advanceTimersByTime(1);
-        expect(component.savingState()).toBe(SavingStates.SAVED);
-      } finally {
-        vi.useRealTimers();
-      }
-    });
-
     it('should save application information with the expected payload and reset change tracking', async () => {
       const updatedProfile = createProfile();
       if (updatedProfile.user) {

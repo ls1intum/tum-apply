@@ -456,23 +456,6 @@ describe('ApplicationForm', () => {
     expect(comp.autoSave.state()).toBe(SavingStates.SAVING);
   });
 
-  it('should flip the saving badge to SAVING when a document persistence operation starts', () => {
-    comp.onDocumentPersistenceStarted();
-    expect(comp.autoSave.state()).toBe(SavingStates.SAVING);
-  });
-
-  it('should reflect a successful document persistence operation in the saving badge', () => {
-    comp.onDocumentPersistenceStarted();
-    comp.onDocumentPersistenceFinished(SavingStates.SAVED);
-    expect(comp.autoSave.state()).toBe(SavingStates.SAVED);
-  });
-
-  it('should reflect a failed document persistence operation in the saving badge', () => {
-    comp.onDocumentPersistenceStarted();
-    comp.onDocumentPersistenceFinished(SavingStates.FAILED);
-    expect(comp.autoSave.state()).toBe(SavingStates.FAILED);
-  });
-
   describe('saveToLocalStorage', () => {
     it('should save application draft to localStorage and return true on success', () => {
       // Set up component state

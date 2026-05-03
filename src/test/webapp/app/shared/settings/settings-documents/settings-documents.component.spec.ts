@@ -419,11 +419,11 @@ describe('SettingsDocumentsComponent', () => {
         bachelorDegreeName: 'Updated Degree',
       });
 
-      await component.performAutoSave();
+      const saved = await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
-      expect(component.savingState()).toBe(SavingStates.FAILED);
+      expect(saved).toBe(false);
     });
 
     it('should show an error toast when saving document settings fails', async () => {
@@ -436,10 +436,10 @@ describe('SettingsDocumentsComponent', () => {
         bachelorDegreeName: 'Updated Degree',
       });
 
-      await component.performAutoSave();
+      const saved = await component.performAutoSave();
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
-      expect(component.savingState()).toBe(SavingStates.FAILED);
+      expect(saved).toBe(false);
     });
   });
 });

@@ -20,8 +20,6 @@
         [applicationId]="applicationIdForDocuments()"
         [documentIds]="computedDocumentIdsCvSet()"
         (documentIdsChange)="cvDocsSetValidity($event)"
-        (persistenceStarted)="documentPersistenceStarted.emit()"
-        (persistenceFinished)="documentPersistenceFinished.emit($event)"
         [allowMultiple]="false"
         [compact]="true"
         [requestAuth]="requestAuth()"

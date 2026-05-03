@@ -10,7 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import {
   DocumentInformationHolderDTO,
   DocumentInformationHolderDTODocumentTypeEnum,
@@ -53,8 +52,6 @@ export class UploadButtonComponent {
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
-  persistenceStarted = output();
-  persistenceFinished = output<SavingState>();
 
   /**
    * Optional callback that authenticates the visitor and yields a real
@@ -82,8 +79,6 @@ export class UploadButtonComponent {
 
   showDuplicateDialog = signal(false);
   showReplacementDialog = signal(false);
-  private activePersistenceOperations = 0;
-  private hasPersistenceFailure = false;
 
   toUploadTooltip = computed(() => {
     this.langChange();
@@ -145,35 +140,33 @@ export class UploadButtonComponent {
    * deleted first so the UI state and persisted state stay aligned.
    */
   async onConfirmDuplicate(): Promise<void> {
-    await this.trackPersistence(async () => {
-      const pendingFile = this.pendingDuplicateFile();
-      if (!pendingFile) {
-        return;
-      }
+    const pendingFile = this.pendingDuplicateFile();
+    if (!pendingFile) {
+      return;
+    }
 
-      // Find and delete the existing document with the same name
-      const existingDoc = this.documentIds()?.find(doc => doc.name === pendingFile.name);
-      if (existingDoc) {
-        if (this.deferUpload()) {
+    // Find and delete the existing document with the same name
+    const existingDoc = this.documentIds()?.find(doc => doc.name === pendingFile.name);
+    if (existingDoc) {
+      if (this.deferUpload()) {
+        const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
+        this.documentIds.set(updatedList);
+        this.removeQueuedFileFor(existingDoc.id);
+      } else {
+        try {
+          await this.deletePersistedDocument(existingDoc.id);
           const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
           this.documentIds.set(updatedList);
-          this.removeQueuedFileFor(existingDoc.id);
-        } else {
-          try {
-            await this.deletePersistedDocument(existingDoc.id);
-            const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
-            this.documentIds.set(updatedList);
-          } catch (error) {
-            this.toastService.showErrorKey('entity.upload.error.replace_failed');
-            this.pendingDuplicateFile.set(null);
-            throw error;
-          }
+        } catch {
+          this.toastService.showErrorKey('entity.upload.error.replace_failed');
+          this.pendingDuplicateFile.set(null);
+          return;
         }
       }
+    }
 
-      await this.processFiles([pendingFile]);
-      this.pendingDuplicateFile.set(null);
-    });
+    await this.processFiles([pendingFile]);
+    this.pendingDuplicateFile.set(null);
   }
 
   /**
@@ -183,81 +176,73 @@ export class UploadButtonComponent {
    * upload or deferred queue addition.
    */
   async onConfirmReplacement(): Promise<void> {
-    await this.trackPersistence(async () => {
-      const pendingFiles = this.pendingReplacementFiles();
-      if (pendingFiles.length === 0) {
-        return;
-      }
+    const pendingFiles = this.pendingReplacementFiles();
+    if (pendingFiles.length === 0) {
+      return;
+    }
 
-      // Delete all existing documents (for single-file mode replacement)
-      const existingDocs = this.documentIds() ?? [];
-      if (this.deferUpload()) {
-        this.documentIds.set([]);
-        this.queuedFilesById.set(new Map());
-        this.emitQueuedFilesChange();
-      } else {
-        for (const doc of existingDocs) {
-          try {
-            await this.deletePersistedDocument(doc.id);
-          } catch (error) {
-            this.toastService.showErrorKey('entity.upload.error.replace_failed');
-            throw error;
-          }
+    // Delete all existing documents (for single-file mode replacement)
+    const existingDocs = this.documentIds() ?? [];
+    if (this.deferUpload()) {
+      this.documentIds.set([]);
+      this.queuedFilesById.set(new Map());
+      this.emitQueuedFilesChange();
+    } else {
+      for (const doc of existingDocs) {
+        try {
+          await this.deletePersistedDocument(doc.id);
+        } catch {
+          this.toastService.showErrorKey('entity.upload.error.replace_failed');
+          return;
         }
-
-        // Clear the document list before uploading new file
-        this.documentIds.set([]);
       }
 
-      await this.processFiles(pendingFiles);
-      this.pendingReplacementFiles.set([]);
-    });
+      // Clear the document list before uploading new file
+      this.documentIds.set([]);
+    }
+
+    await this.processFiles(pendingFiles);
+    this.pendingReplacementFiles.set([]);
   }
 
   async onUpload(): Promise<void> {
-    await this.trackPersistence(async () => {
-      const files: File[] | undefined = this.selectedFiles();
-      if (!files || files.length === 0) return;
+    const files: File[] | undefined = this.selectedFiles();
+    if (!files || files.length === 0) return;
 
-      this.isUploading.set(true);
-      try {
-        const uploadedPromises = files.map(file => this.uploadDocument(file));
-        const uploadResults = await Promise.all(uploadedPromises);
-        const allUploadedIds = uploadResults.flat();
-        this.documentIds.set(allUploadedIds);
-        this.selectedFiles.set([]);
-      } catch (error) {
-        this.toastService.showErrorKey('entity.upload.error.upload_failed');
-        throw error;
-      } finally {
-        this.isUploading.set(false);
-        this.resetNativeFileInput();
-      }
-    });
+    this.isUploading.set(true);
+    try {
+      const uploadedPromises = files.map(file => this.uploadDocument(file));
+      const uploadResults = await Promise.all(uploadedPromises);
+      const allUploadedIds = uploadResults.flat();
+      this.documentIds.set(allUploadedIds);
+      this.selectedFiles.set([]);
+    } catch {
+      this.toastService.showErrorKey('entity.upload.error.upload_failed');
+    } finally {
+      this.isUploading.set(false);
+      this.resetNativeFileInput();
+    }
   }
 
   /**
    * Deletes a persisted server document or, in deferred mode, removes the corresponding local placeholder.
    */
   async deleteDictionary(documentInfo: DocumentInformationHolderDTO): Promise<void> {
-    await this.trackPersistence(async () => {
-      const documentId = documentInfo.id;
-      if (this.deferUpload()) {
-        const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
-        this.documentIds.set(updatedList);
-        this.removeQueuedFileFor(documentId);
-        return;
-      }
+    const documentId = documentInfo.id;
+    if (this.deferUpload()) {
+      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+      this.documentIds.set(updatedList);
+      this.removeQueuedFileFor(documentId);
+      return;
+    }
 
-      try {
-        await this.deletePersistedDocument(documentId);
-        const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
-        this.documentIds.set(updatedList);
-      } catch (error) {
-        this.toastService.showErrorKey('entity.upload.error.delete_failed');
-        throw error;
-      }
-    });
+    try {
+      await this.deletePersistedDocument(documentId);
+      const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
+      this.documentIds.set(updatedList);
+    } catch {
+      this.toastService.showErrorKey('entity.upload.error.delete_failed');
+    }
   }
 
   onClear(): void {
@@ -271,47 +256,44 @@ export class UploadButtonComponent {
    * Deferred mode only updates local placeholder data because there is nothing on the server yet.
    */
   async renameDocument(documentInfo: DocumentInformationHolderDTO): Promise<void> {
-    await this.trackPersistence(async () => {
-      const newName = documentInfo.name ?? '';
-      if (!newName) {
-        return;
-      }
+    const newName = documentInfo.name ?? '';
+    if (!newName) {
+      return;
+    }
 
-      const documentId = documentInfo.id;
-      if (this.deferUpload()) {
-        const updatedDocs =
-          this.documentIds()?.map(doc =>
-            doc.id === documentId
-              ? {
-                  id: doc.id,
-                  name: newName,
-                  size: doc.size,
-                }
-              : doc,
-          ) ?? [];
-        this.documentIds.set(updatedDocs);
-        this.renameQueuedFile(documentId, newName);
-        return;
-      }
+    const documentId = documentInfo.id;
+    if (this.deferUpload()) {
+      const updatedDocs =
+        this.documentIds()?.map(doc =>
+          doc.id === documentId
+            ? {
+                id: doc.id,
+                name: newName,
+                size: doc.size,
+              }
+            : doc,
+        ) ?? [];
+      this.documentIds.set(updatedDocs);
+      this.renameQueuedFile(documentId, newName);
+      return;
+    }
 
-      try {
-        await this.renamePersistedDocument(documentId, newName);
-        const updatedDocs =
-          this.documentIds()?.map(doc =>
-            doc.id === documentId
-              ? {
-                  id: doc.id,
-                  name: newName,
-                  size: doc.size,
-                }
-              : doc,
-          ) ?? [];
-        this.documentIds.set(updatedDocs);
-      } catch (error) {
-        this.toastService.showErrorKey('entity.upload.error.rename_failed');
-        throw error;
-      }
-    });
+    try {
+      await this.renamePersistedDocument(documentId, newName);
+      const updatedDocs =
+        this.documentIds()?.map(doc =>
+          doc.id === documentId
+            ? {
+                id: doc.id,
+                name: newName,
+                size: doc.size,
+              }
+            : doc,
+        ) ?? [];
+      this.documentIds.set(updatedDocs);
+    } catch {
+      this.toastService.showErrorKey('entity.upload.error.rename_failed');
+    }
   }
 
   formatSize(bytes: number): string {
@@ -505,39 +487,5 @@ export class UploadButtonComponent {
     }
 
     await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
-  }
-
-  private async trackPersistence(operation: () => Promise<void>): Promise<void> {
-    if (this.deferUpload()) {
-      await operation();
-      return;
-    }
-
-    this.beginPersistenceTracking();
-    try {
-      await operation();
-      this.finishPersistenceTracking(true);
-    } catch {
-      this.finishPersistenceTracking(false);
-    }
-  }
-
-  private beginPersistenceTracking(): void {
-    if (this.activePersistenceOperations === 0) {
-      this.hasPersistenceFailure = false;
-      this.persistenceStarted.emit();
-    }
-    this.activePersistenceOperations += 1;
-  }
-
-  private finishPersistenceTracking(success: boolean): void {
-    this.activePersistenceOperations = Math.max(0, this.activePersistenceOperations - 1);
-    if (!success) {
-      this.hasPersistenceFailure = true;
-    }
-
-    if (this.activePersistenceOperations === 0) {
-      this.persistenceFinished.emit(this.hasPersistenceFailure ? SavingStates.FAILED : SavingStates.SAVED);
-    }
   }
 }

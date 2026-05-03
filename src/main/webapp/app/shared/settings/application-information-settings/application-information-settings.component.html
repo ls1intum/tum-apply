@@ -17,8 +17,6 @@
         [(documentIds)]="cvDocuments"
         [allowMultiple]="false"
         [compact]="true"
-        (persistenceStarted)="onDocumentPersistenceStarted()"
-        (persistenceFinished)="onDocumentPersistenceFinished($event)"
       />
       <jhi-ai-extraction-box
         [applicationId]="uploadHostId"

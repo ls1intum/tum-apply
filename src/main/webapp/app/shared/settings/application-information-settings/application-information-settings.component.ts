@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
@@ -18,7 +18,7 @@ import { SavingState } from 'app/shared/constants/saving-states';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { createAutosaveController } from 'app/shared/util/autosave-controller';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
@@ -102,7 +102,7 @@ export class ApplicationInformationSettingsComponent {
   isValid = signal<boolean>(false);
   loadedProfile = signal<ApplicantDTO | undefined>(undefined);
   initialDataSnapshot = signal<ApplicationInformationSnapshot | undefined>(undefined);
-  savingState = computed<SavingState>(() => this.autosave.savingState());
+  savingState = computed<SavingState>(() => this.autoSave.state());
   hasChanges = computed(() => {
     const initial = this.initialDataSnapshot();
     if (initial === undefined) {
@@ -212,8 +212,8 @@ export class ApplicationInformationSettingsComponent {
     });
   });
 
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly autosave = createAutosaveController(this.destroyRef);
+  private readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
+  private autoSaveInitialized = false;
 
   constructor() {
     // Load initial data from backend API
@@ -251,7 +251,6 @@ export class ApplicationInformationSettingsComponent {
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
       this.cvDocuments.set(profileDocumentIds.cvDocumentId != null ? [profileDocumentIds.cvDocumentId] : []);
-      this.autosave.markMetadataSaveSucceeded();
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -269,13 +268,12 @@ export class ApplicationInformationSettingsComponent {
     this.data.set(updatedData);
   }
 
-  async performAutoSave(): Promise<void> {
+  async performAutoSave(): Promise<boolean> {
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
-        this.autosave.markMetadataSaveFailed();
         this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
-        return;
+        return false;
       }
 
       const data = this.data();
@@ -313,10 +311,10 @@ export class ApplicationInformationSettingsComponent {
       await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
       this.loadedProfile.update(current => (current != null ? { ...current, ...applicantDTO } : current));
       this.initialDataSnapshot.set(this.toSnapshot(this.data()));
-      this.autosave.markMetadataSaveSucceeded();
+      return true;
     } catch {
-      this.autosave.markMetadataSaveFailed();
       this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
+      return false;
     }
   }
 
@@ -334,14 +332,6 @@ export class ApplicationInformationSettingsComponent {
     setIfEmpty(form, patch, 'postcode', extractedData.postalCode);
 
     form.patchValue(patch);
-  }
-
-  onDocumentPersistenceStarted(): void {
-    this.autosave.startOperation();
-  }
-
-  onDocumentPersistenceFinished(state: SavingState): void {
-    this.autosave.finishOperation(state);
   }
 
   private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {
@@ -372,18 +362,16 @@ export class ApplicationInformationSettingsComponent {
         return;
       }
 
-      if (this.autosave.shouldSkipInitialAutoSave()) {
+      if (!this.autoSaveInitialized) {
+        this.autoSaveInitialized = true;
         return;
       }
 
       if (!hasChanges || !isValid) {
-        this.autosave.clearScheduledMetadataSave();
         return;
       }
 
-      this.autosave.scheduleMetadataSave(() => {
-        void this.performAutoSave();
-      });
+      this.autoSave.notifyChanged();
     });
   }
 }

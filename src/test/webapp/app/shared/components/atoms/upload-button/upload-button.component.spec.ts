@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { UploadButtonComponent, DocumentType } from 'app/shared/components/atoms/upload-button/upload-button.component';
-import { SavingStates } from 'app/shared/constants/saving-states';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -171,7 +170,6 @@ describe('UploadButtonComponent', () => {
     const component = fixture.componentInstance;
 
     const toastSpy = vi.spyOn(toastService, 'showErrorKey');
-    const persistenceFinishedSpy = vi.spyOn(component.persistenceFinished, 'emit');
 
     const error = new Error('Delete failed');
 
@@ -185,7 +183,6 @@ describe('UploadButtonComponent', () => {
     await component.deleteDictionary(document);
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.delete_failed');
-    expect(persistenceFinishedSpy).toHaveBeenCalledWith(SavingStates.FAILED);
   });
 
   it('should set isUploading to false on clear', () => {
