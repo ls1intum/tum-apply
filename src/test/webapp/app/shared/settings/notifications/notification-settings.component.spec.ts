@@ -193,17 +193,17 @@ describe('NotificationSettingsComponent', () => {
       await setRoleAndWaitForLoad(RolesEnum.Applicant);
 
       const renderedText = fixture.nativeElement.textContent ?? '';
-      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
       const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
+      const selectorWrapper = selector?.parentElement;
 
       expect(renderedText).toContain('settings.notifications.applicant.subjectAreas.title');
-      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('false');
       expect(selector).not.toBeNull();
+      expect(selectorWrapper?.classList.contains('pointer-events-none')).toBe(false);
       expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
       expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
     });
 
-    it('should keep the subject area selector collapsed when the notification toggle is disabled', async () => {
+    it('should keep rendering the subject area selector when the notification toggle is disabled', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
         of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
       );
@@ -211,11 +211,10 @@ describe('NotificationSettingsComponent', () => {
 
       await setRoleAndWaitForLoad(RolesEnum.Applicant);
 
-      const animatedContainer = fixture.nativeElement.querySelector('[aria-hidden]');
       const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
 
-      expect(animatedContainer?.getAttribute('aria-hidden')).toBe('true');
       expect(selector).not.toBeNull();
+      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
       expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
       expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
     });

@@ -3,6 +3,7 @@ package de.tum.cit.aet.evaluation.repository;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.evaluation.repository.custom.ApplicationEvaluationRepositoryCustom;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,22 @@ public interface ApplicationEvaluationRepository extends TumApplyJpaRepository<A
         """
     )
     void markApplicationAsInReview(@Param("applicationId") UUID applicationId);
+
+    /**
+     * Returns the distinct job titles of applications that belong to the given
+     * research group, ordered alphabetically.
+     *
+     * @param researchGroupId the UUID of the research group
+     * @return distinct job titles in ascending order
+     */
+    @Query(
+        """
+            SELECT DISTINCT j.title
+            FROM Application a
+            JOIN a.job j
+            WHERE j.researchGroup.researchGroupId = :researchGroupId
+            ORDER BY j.title ASC
+        """
+    )
+    List<String> findAllUniqueJobNames(@Param("researchGroupId") UUID researchGroupId);
 }

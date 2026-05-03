@@ -19,6 +19,7 @@ type TestComponentAccess = {
   currentExportStatus: WritableSignal<ExportStatus>;
   exportButtonDisabled: () => boolean;
   tooltip: () => string | undefined;
+  tooltipParams: () => Record<string, unknown>;
   cooldownSeconds: WritableSignal<number>;
   currentLang: WritableSignal<string>;
 };
@@ -60,6 +61,7 @@ describe('PrivacyPageComponent', () => {
       currentExportStatus: component.currentExportStatus,
       exportButtonDisabled: component.exportButtonDisabled,
       tooltip: component.tooltip,
+      tooltipParams: component.tooltipParams,
       cooldownSeconds: component.cooldownSeconds,
       currentLang: component.currentLang,
     };
@@ -160,11 +162,9 @@ describe('PrivacyPageComponent', () => {
 
     it('should show notLoggedIn tooltip when user not signed in', () => {
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(false);
-      const instantSpy = vi.spyOn(mockTranslate, 'instant').mockReturnValue('not logged in');
 
       expect(componentAccess.exportButtonDisabled()).toBe(true);
-      expect(componentAccess.tooltip()).toBe('not logged in');
-      expect(instantSpy).toHaveBeenCalledWith('privacy.export.tooltip.notLoggedIn');
+      expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.notLoggedIn');
     });
 
     it('should show cooldown tooltip when disabled due to cooldown', () => {
@@ -179,25 +179,15 @@ describe('PrivacyPageComponent', () => {
       expect(componentAccess.tooltip()).toBeUndefined();
     });
 
-    it('should update tooltip on language change', () => {
+    it('should return the inCreation tooltip key when an export is in creation', () => {
       componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
-      const instantSpy = vi.spyOn(mockTranslate, 'instant');
-      instantSpy.mockReturnValue('inCreation tooltip');
-      expect(componentAccess.tooltip()).toBe('inCreation tooltip');
-      expect(instantSpy).toHaveBeenCalledWith('privacy.export.tooltip.inCreation');
-      // Simulate language change by setting currentLang
-      componentAccess.currentLang.set('de');
-      // Call tooltip again to trigger re-computation
-      expect(componentAccess.tooltip()).toBe('inCreation tooltip');
-      // Should call instant again
-      expect(instantSpy).toHaveBeenCalledTimes(2);
+      expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.inCreation');
     });
 
-    it('should pass the days parameter to translate for the cooldown tooltip', () => {
-      const instantSpy = vi.spyOn(mockTranslate, 'instant').mockReturnValue('cooldown tooltip');
+    it('should expose the days parameter in tooltipParams for the cooldown tooltip', () => {
       componentAccess.cooldownSeconds.set(90000); // 25 hours in seconds
-      expect(componentAccess.tooltip()).toBe('cooldown tooltip');
-      expect(instantSpy).toHaveBeenCalledWith('privacy.export.tooltip.cooldown', { days: '2' });
+      expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.cooldown');
+      expect(componentAccess.tooltipParams()).toEqual({ days: '2' });
     });
 
     it('should update currentLang when TranslateService emits onLangChange', () => {

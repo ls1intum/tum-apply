@@ -22,6 +22,7 @@ import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,69 +62,79 @@ class AiResourceTest extends AbstractResourceTest {
         aiFeatureToggleService.resetCircuitBreaker();
     }
 
-    @Test
-    void shouldReturnStreamWhenProfessorTranslatesJobDescription() {
-        String toLang = "de";
-        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+    // ===== TRANSLATE JOB DESCRIPTION STREAM =====
+    @Nested
+    class TranslateJobDescriptionStreamTests {
 
-        given(aiService.translateTextStream(anyString(), anyString())).willReturn(Flux.just("Hallo", " Welt"));
+        @Test
+        void shouldReturnStreamWhenProfessorTranslatesJobDescription() {
+            String toLang = "de";
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
 
-        String url = TRANSLATE_STREAM_URL + "?toLang=" + toLang;
-        api
-            .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
-            .putAndRead(url, request, Void.class, 200, MediaType.TEXT_EVENT_STREAM);
+            given(aiService.translateTextStream(anyString(), anyString())).willReturn(Flux.just("Hallo", " Welt"));
+
+            String url = TRANSLATE_STREAM_URL + "?toLang=" + toLang;
+            api
+                .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
+                .putAndRead(url, request, Void.class, 200, MediaType.TEXT_EVENT_STREAM);
+        }
+
+        @Test
+        void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
+            String url = TRANSLATE_STREAM_URL + "?toLang=de";
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+            api
+                .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
+                .putAndRead(url, request, Void.class, 403, MediaType.TEXT_EVENT_STREAM);
+        }
+
+        @Test
+        void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
+            String url = TRANSLATE_STREAM_URL + "?toLang=de";
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+            api.withoutPostProcessors().putAndRead(url, request, Void.class, 401, MediaType.TEXT_EVENT_STREAM);
+        }
     }
 
-    @Test
-    void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
-        String url = TRANSLATE_STREAM_URL + "?toLang=de";
-        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api
-            .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
-            .putAndRead(url, request, Void.class, 403, MediaType.TEXT_EVENT_STREAM);
-    }
+    // ===== ANALYZE JOB DESCRIPTION =====
+    @Nested
+    class AnalyzeJobDescriptionTests {
 
-    @Test
-    void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
-        String url = TRANSLATE_STREAM_URL + "?toLang=de";
-        TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
-        api.withoutPostProcessors().putAndRead(url, request, Void.class, 401, MediaType.TEXT_EVENT_STREAM);
-    }
+        @Test
+        void shouldReturnComplianceIssuesWhenProfessorAnalyzesJobDescription() {
+            List<ComplianceIssue> expectedIssues = List.of(
+                new ComplianceIssue(
+                    "1",
+                    ComplianceCategory.CRITICAL_AGG,
+                    "I don't allow disabled applicants",
+                    "§ 1 AGG",
+                    "Discriminatory sentence",
+                    ComplianceAction.REPLACE,
+                    "en"
+                )
+            );
 
-    @Test
-    void shouldReturnComplianceIssuesWhenProfessorAnalyzesJobDescription() {
-        List<ComplianceIssue> expectedIssues = List.of(
-            new ComplianceIssue(
-                "1",
-                ComplianceCategory.CRITICAL_AGG,
-                "I don't allow disabled applicants",
-                "§ 1 AGG",
-                "Discriminatory sentence",
-                ComplianceAction.REPLACE,
-                "en"
-            )
-        );
+            given(aiService.analyzeCurrentJobDescription(any(JobFormDTO.class), anyString(), anyString())).willReturn(expectedIssues);
 
-        given(aiService.analyzeCurrentJobDescription(any(JobFormDTO.class), anyString(), anyString())).willReturn(expectedIssues);
+            List<ComplianceIssue> response = api
+                .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
+                .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), new TypeReference<List<ComplianceIssue>>() {}, 200);
 
-        List<ComplianceIssue> response = api
-            .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
-            .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), new TypeReference<List<ComplianceIssue>>() {}, 200);
+            assertThat(response).hasSize(1);
+            assertThat(response.getFirst().getCategory()).isEqualTo(ComplianceCategory.CRITICAL_AGG);
+        }
 
-        assertThat(response).hasSize(1);
-        assertThat(response.getFirst().getCategory()).isEqualTo(ComplianceCategory.CRITICAL_AGG);
-    }
+        @Test
+        void shouldReturnForbiddenWhenApplicantAnalyzesJobDescription() {
+            api
+                .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
+                .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 403);
+        }
 
-    @Test
-    void shouldReturnForbiddenWhenApplicantAnalyzesJobDescription() {
-        api
-            .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
-            .postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 403);
-    }
-
-    @Test
-    void shouldReturnUnauthorizedWhenAnalyzeJobDescriptionWithoutAuthentication() {
-        api.withoutPostProcessors().postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 401);
+        @Test
+        void shouldReturnUnauthorizedWhenAnalyzeJobDescriptionWithoutAuthentication() {
+            api.withoutPostProcessors().postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 401);
+        }
     }
 
     private JobFormDTO createValidJobForm() {

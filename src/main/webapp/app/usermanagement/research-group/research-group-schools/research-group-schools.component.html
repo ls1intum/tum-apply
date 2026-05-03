@@ -40,7 +40,7 @@
       <jhi-button
         icon="pencil"
         [ariaLabel]="'button.edit'"
-        [tooltip]="'button.edit' | translate"
+        tooltip="button.edit"
         severity="primary"
         variant="text"
         [shouldTranslate]="true"
@@ -48,13 +48,13 @@
       />
       <jhi-confirm-dialog
         [iconOnly]="true"
-        [header]="'researchGroup.schools.deleteDialog.header' | translate"
-        [message]="'researchGroup.schools.deleteDialog.message' | translate"
+        header="researchGroup.schools.deleteDialog.header"
+        message="researchGroup.schools.deleteDialog.message"
         confirmIcon="trash"
         (confirmed)="onDeleteSchool(school.schoolId)"
         severity="danger"
-        [label]="'button.delete' | translate"
-        [tooltip]="'button.delete' | translate"
+        label="button.delete"
+        tooltip="button.delete"
       />
     </div>
   </ng-template>

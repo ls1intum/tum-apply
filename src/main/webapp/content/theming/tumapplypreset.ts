@@ -121,6 +121,12 @@ export const TUMApplyPreset = definePreset(Aura, {
       900: '#72321c',
       950: '#3d170d',
     },
+    compliance: {
+      critical: '#f2415a',
+      transparency: '#f59e0b',
+      dsgvo: '#27be69',
+      publicSector: '#3070b3',
+    },
     colorScheme: {
       light: {
         ...sharedLightColorScheme,

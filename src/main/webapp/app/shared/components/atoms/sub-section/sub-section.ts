@@ -1,11 +1,12 @@
 import { Component, input } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-sub-section',
-  imports: [TranslateModule],
+  imports: [TranslateDirective],
   templateUrl: './sub-section.html',
 })
 export class SubSection {
   titleKey = input.required<string>();
+  shouldTranslate = input<boolean>(true);
 }

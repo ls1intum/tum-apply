@@ -33,6 +33,4 @@ public interface ApplicationEvaluationRepositoryCustom {
         Map<String, List<?>> dynamicFilters,
         String searchQuery
     );
-
-    List<String> findAllUniqueJobNames(UUID researchGroupId);
 }

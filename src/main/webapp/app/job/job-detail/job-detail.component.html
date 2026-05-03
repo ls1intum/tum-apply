@@ -1,8 +1,8 @@
 <jhi-confirm-dialog
   class="confirm-dialog"
-  [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
-  [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
-  [label]="closeButtonLabel | translate"
+  header="myPositionsPage.confirmDialog.closeHeader"
+  message="myPositionsPage.confirmDialog.closeMessage"
+  [label]="closeButtonLabel"
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
@@ -12,9 +12,9 @@
 />
 <jhi-confirm-dialog
   class="confirm-dialog"
-  [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
-  [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
-  [label]="deleteButtonLabel | translate"
+  header="myPositionsPage.confirmDialog.deleteHeader"
+  message="myPositionsPage.confirmDialog.deleteMessage"
+  [label]="deleteButtonLabel"
   [severity]="deleteButtonSeverity"
   [confirmIcon]="deleteButtonIcon"
   [showOpenButton]="false"
@@ -53,9 +53,9 @@
           </div>
           <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
           @if (previewData()) {
-            <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
+            <jhi-tag class="job-state-badge" text="jobState.preview" [color]="'info'" />
           } @else if (job.belongsToResearchGroup) {
-            <jhi-tag class="job-state-badge" [text]="jobStateText() | translate" [color]="jobStateColor()" />
+            <jhi-tag class="job-state-badge" [text]="jobStateText()" [color]="jobStateColor()" />
           }
         </div>
       </div>
@@ -114,7 +114,7 @@
         <section>
           <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
           @if (isProfessorOrEmployee()) {
-            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.infos.applicantLanguageInfo' | translate" />
+            <jhi-info-box class="mb-6 block" message="jobDetailPage.infos.applicantLanguageInfo" />
             <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
             <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
