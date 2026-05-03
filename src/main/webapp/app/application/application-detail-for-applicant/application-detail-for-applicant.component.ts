@@ -257,11 +257,13 @@ export default class ApplicationDetailForApplicantComponent {
     );
 
     const previewData = this.previewDetailData();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     if (previewData) {
       req = {
         application: previewData,
         labels,
+        timezone,
       };
     } else {
       const applicationId = this.applicationId();
@@ -269,6 +271,7 @@ export default class ApplicationDetailForApplicantComponent {
       req = {
         application,
         labels,
+        timezone,
       };
     }
 

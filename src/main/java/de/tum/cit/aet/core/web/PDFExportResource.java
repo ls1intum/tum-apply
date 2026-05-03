@@ -38,7 +38,7 @@ public class PDFExportResource {
     @PostMapping(value = "/application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportApplicationToPDF(@RequestBody ApplicationPDFRequest request) {
         log.info("POST /api/export/application/pdf");
-        Resource pdf = pdfExportService.exportApplicationToPDF(request.application(), request.labels());
+        Resource pdf = pdfExportService.exportApplicationToPDF(request.application(), request.labels(), request.timezone());
         String filename = pdfExportService.generateApplicationFilename(
             request.application().jobTitle(),
             request.labels().get("application")
@@ -59,9 +59,13 @@ public class PDFExportResource {
      */
     @Public
     @PostMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
+    public ResponseEntity<Resource> exportJobToPDF(
+        @PathVariable UUID id,
+        @RequestBody Map<String, String> labels,
+        @RequestParam(name = "timezone", required = false) String timezone
+    ) {
         log.info("POST /api/export/job/{}/pdf", id);
-        Resource pdf = pdfExportService.exportJobToPDF(id, labels);
+        Resource pdf = pdfExportService.exportJobToPDF(id, labels, timezone);
         String filename = pdfExportService.generateJobFilename(id, labels.get("jobPdfEnding"));
 
         return ResponseEntity.ok()
@@ -81,7 +85,7 @@ public class PDFExportResource {
     @PostMapping(value = "/job/preview/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportJobPreviewToPDF(@RequestBody JobPreviewRequest request) {
         log.info("POST /api/export/job/preview/pdf");
-        Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels());
+        Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels(), request.timezone());
         String filename = pdfExportService.generateJobFilenameForPreview(request.job(), request.labels().get("jobPdfEnding"));
 
         return ResponseEntity.ok()

@@ -1212,6 +1212,10 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
+      - name: timezone
+        in: query
+        required: false
+        schema: {type: string}
       requestBody:
         content:
           application/json:
@@ -2833,6 +2837,7 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+        timezone: {type: string}
     AssignSlotRequestDTO:
       type: object
       properties:
@@ -3394,6 +3399,7 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+        timezone: {type: string}
     KeycloakUserDTO:
       type: object
       properties:

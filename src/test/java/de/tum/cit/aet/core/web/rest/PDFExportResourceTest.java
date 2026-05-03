@@ -219,7 +219,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
     private ApplicationPDFRequest createApplicationPdfRequest(Application application, Job job) {
         Map<String, String> labels = createCompleteLabelsMap();
         ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(application, job);
-        return new ApplicationPDFRequest(appDto, labels);
+        return new ApplicationPDFRequest(appDto, labels, null);
     }
 
     // Helper to extract text from a PDF byte array using PDFBox
@@ -429,7 +429,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null
             );
             Map<String, String> labels = createCompleteLabelsMap();
-            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels);
+            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels, null);
 
             byte[] result = asProfessor(professor).postAndReturnBytes(
                 BASE_URL + "/job/preview/pdf",
@@ -445,7 +445,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         void exportJobPreviewToPDFReturns403ForApplicant() {
             JobFormDTO jobFormDTO = JobFormDTO.getFromEntity(job);
             Map<String, String> labels = createCompleteLabelsMap();
-            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels);
+            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels, null);
 
             Void result = asApplicant(applicant).postAndRead(
                 BASE_URL + "/job/preview/pdf",
@@ -461,7 +461,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         @Test
         void exportJobPreviewToPDFReturns401ForUnauthenticatedUser() {
             JobFormDTO jobFormDTO = JobFormDTO.getFromEntity(job);
-            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap());
+            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap(), null);
 
             Void result = api
                 .withoutPostProcessors()
@@ -495,7 +495,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null
             );
 
-            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap());
+            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap(), null);
 
             byte[] result = api
                 .with(JwtPostProcessors.jwtUser(userWithoutRG.getUserId(), "ROLE_PROFESSOR"))
@@ -526,7 +526,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         @Test
         void unauthenticatedReturns401ForJobPreviewExport() {
             JobFormDTO jobFormDTO = JobFormDTO.getFromEntity(job);
-            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, Map.of());
+            JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, Map.of(), null);
 
             Void result = api
                 .withoutPostProcessors()

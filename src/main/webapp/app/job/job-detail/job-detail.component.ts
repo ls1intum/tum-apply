@@ -371,6 +371,7 @@ export class JobDetailComponent {
 
   async onDownloadPDF(): Promise<void> {
     const labels = getJobPDFLabels(this.translate);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const previewSignal = this.previewData();
     if (previewSignal) {
@@ -383,6 +384,7 @@ export class JobDetailComponent {
       const req: JobPreviewRequest = {
         job: formData,
         labels,
+        timezone,
       };
 
       try {
@@ -407,7 +409,7 @@ export class JobDetailComponent {
     const jobId = this.jobId();
 
     try {
-      const response = await firstValueFrom(this.pdfExportApi.exportJobToPDF(jobId, labels));
+      const response = await firstValueFrom(this.pdfExportApi.exportJobToPDF(jobId, labels, timezone));
       const contentDisposition = response.headers.get('Content-Disposition');
       const filename = /filename="([^"]+)"/.exec(contentDisposition ?? '')?.[1] ?? 'job.pdf';
       const blob = response.body;

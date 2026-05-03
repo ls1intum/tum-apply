@@ -48,10 +48,16 @@ export class PdfExportResourceApi {
      * 
      * @param id 
      * @param requestBody 
+     * @param timezone 
      */
-    exportJobToPDF(id: string, requestBody: { [key: string]: string; }): Observable<HttpResponse<Blob>> {
+    exportJobToPDF(id: string, requestBody: { [key: string]: string; }, timezone?: string): Observable<HttpResponse<Blob>> {
         const idPath = encodeURIComponent(String(id));
-        const url = `${this.basePath}/api/export/job/${idPath}/pdf`;
+        const queryParams = new URLSearchParams();
+        if (timezone !== undefined && timezone !== null) {
+            queryParams.set('timezone', String(timezone));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/export/job/${idPath}/pdf${queryString ? `?${queryString}` : ''}`;
         return this.http.post(url, requestBody, { responseType: 'blob', observe: 'response' });
     }
 

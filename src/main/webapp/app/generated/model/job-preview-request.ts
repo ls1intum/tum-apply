@@ -13,4 +13,5 @@ import type { JobFormDTO } from './job-form-dto';
 export interface JobPreviewRequest {
     job?: JobFormDTO;
     labels?: { [key: string]: string; };
+    timezone?: string;
 }
