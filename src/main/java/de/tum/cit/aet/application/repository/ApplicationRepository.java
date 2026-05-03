@@ -2,12 +2,14 @@ package de.tum.cit.aet.application.repository;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Spring Data JPA repository for the {@link Application} entity.
  */
 @Repository
-public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID>, ApplicationEntityRepository {
+public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID> {
     @Query(
         """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
@@ -277,4 +279,30 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     Slice<UUID> findApplicationsToBeDeletedBeforeCutoff(LocalDateTime cutoff, Pageable pageable);
+
+    /**
+     * Finds all applications for a specific applicant as overview DTOs, with
+     * pagination and sorting.
+     *
+     * @param applicantId the user ID of the applicant
+     * @param pageable    pagination and sorting (sort by {@code createdAt} by default)
+     * @return a paginated list of application overview DTOs
+     */
+    @Query(
+        """
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO(
+                a.applicationId,
+                j.jobId,
+                j.title,
+                rg.name,
+                a.state,
+                a.createdAt
+            )
+            FROM Application a
+            JOIN a.job j
+            JOIN j.researchGroup rg
+            WHERE a.applicant.userId = :applicantId
+        """
+    )
+    Page<ApplicationOverviewDTO> findApplicationsByApplicant(@Param("applicantId") UUID applicantId, Pageable pageable);
 }

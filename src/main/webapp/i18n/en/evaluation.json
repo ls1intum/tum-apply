@@ -75,7 +75,7 @@
       },
       "error": {
         "summary": "Error",
-        "detail": "Failed to add applicant to interview process. Please try again later or contact an administrator."
+        "detail": "Failed to add applicant to interview process. Please try again, or contact us if the problem persists."
       }
     },
     "education": {
