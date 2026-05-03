@@ -152,9 +152,12 @@
     "aiSidebar": {
       "header": "KI-Assistent",
       "complianceHeader": "Compliance-Prüfer",
-      "critical": "Fixe kritische AGG-Verstöße",
+      "critical": "AGG-Verstöße korrigieren",
       "transparency": "Transparenz verbessern",
-      "filterByCategory": "Nach Kategorie filtern"
+      "dsgvo": "Datenschutz anpassen",
+      "publicSector": "Wissenschaftsrecht prüfen",
+      "filterByCategory": "Nach Kategorie filtern",
+      "complianceTooltipText": "Farben dienen nur der Kategorisierung, nicht der Priorisierung. Es gibt keine Unterschiede in der Wichtigkeit."
     },
     "positionDetailsSection": {
       "jobDescription": {
