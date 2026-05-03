@@ -6,10 +6,7 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -71,6 +68,10 @@ public class Job extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "funding_type")
     private FundingType fundingType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tvl_grade")
+    private TvlGrade tvlGrade;
 
     @Column(name = "title", nullable = false)
     private String title;

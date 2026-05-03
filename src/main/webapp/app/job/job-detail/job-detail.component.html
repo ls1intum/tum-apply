@@ -173,6 +173,10 @@
                 <span class="value">{{ (dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
+                <span jhiTranslate="jobDetailPage.labels.tvlGrade"></span>
+                <span class="value">{{ dropDownOptions.getTvlGradesTranslationKey(job.tvlGrade) || '-' }}</span>
+              </div>
+              <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
                 @if (job.startDate) {
                   <span class="value">

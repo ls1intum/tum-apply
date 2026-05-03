@@ -19,7 +19,7 @@ import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobFormDTO, JobFormDTOTvlGradeEnum } from 'app/generated/model/job-form-dto';
 import { JobDetailDTO } from 'app/generated/model/job-detail-dto';
 import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 import { JobPreviewRequest } from 'app/generated/model/job-preview-request';
@@ -34,6 +34,7 @@ import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import * as DropDownOptions from '../dropdown-options';
+
 type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
 export interface JobDetails {
   supervisingProfessor: string;
@@ -46,6 +47,7 @@ export interface JobDetails {
   contractDuration: string;
   contractExtendable: boolean;
   fundingType: JobFormDTOFundingTypeEnum | undefined;
+  tvlGrade: JobFormDTOTvlGradeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
@@ -521,6 +523,7 @@ export class JobDetailComponent {
       contractDuration: data.contractDuration?.toString() ?? '',
       contractExtendable: (data as { contractExtendable?: boolean }).contractExtendable === true,
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
+      tvlGrade: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,

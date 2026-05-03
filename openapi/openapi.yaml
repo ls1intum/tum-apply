@@ -3146,6 +3146,7 @@ components:
     InterviewRatingDTO:
       type: object
       properties:
+        assessmentNotes: {type: string}
         rating: {type: integer, format: int32}
     InterviewSlotDTO:
       type: object
@@ -3273,6 +3274,9 @@ components:
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
+        tvlGrade:
+          type: string
+          enum: [E10, E11, E12, E13, E14, E15]
         workload: {type: integer, format: int32}
       required: [jobId, state, supervisingProfessor, title]
     JobDetailDTO:
@@ -3323,6 +3327,9 @@ components:
         suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
+        tvlGrade:
+          type: string
+          enum: [E10, E11, E12, E13, E14, E15]
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, subjectArea, supervisingProfessorName,
         title]
@@ -3391,6 +3398,9 @@ components:
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
+        tvlGrade:
+          type: string
+          enum: [E10, E11, E12, E13, E14, E15]
         workload: {type: integer, format: int32}
       required: [location, state, subjectArea, supervisingProfessor, title]
     JobPreviewRequest:

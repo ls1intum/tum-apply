@@ -303,7 +303,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col lg:flex-row lg:gap-8">
+          <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-select
                 [selected]="positionDetailsForm.get('fundingType')?.value"
@@ -311,6 +311,32 @@
                 [items]="translatedFundingTypes()"
                 [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
                 [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+                [width]="'100%'"
+                [filter]="true"
+                [showClear]="true"
+                [dataKey]="'value'"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-1.5 mb-1">
+                <label for="tvlGradeSelect">
+                  {{ 'jobCreationForm.basicInformationSection.tvlGrade.label' | translate }}
+                </label>
+                <fa-icon
+                  class="icon text-primary"
+                  [icon]="['fas', 'circle-info']"
+                  [pTooltip]="'jobCreationForm.basicInformationSection.tvlGrade.toolTipText' | translate"
+                  [escape]="false"
+                  tooltipPosition="top"
+                  autoHide="false"
+                />
+              </div>
+              <jhi-select
+                id="tvlGradeSelect"
+                [selected]="positionDetailsForm.get('tvlGrade')?.value"
+                (selectedChange)="positionDetailsForm.get('tvlGrade')?.setValue($event)"
+                [items]="tvlGrades"
+                [placeholder]="'jobCreationForm.basicInformationSection.tvlGrade.placeholder' | translate"
                 [width]="'100%'"
                 [filter]="true"
                 [showClear]="true"

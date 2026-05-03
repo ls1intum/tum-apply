@@ -6,10 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.repository.ImageRepository;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -96,6 +93,7 @@ class JobResourceTest extends AbstractResourceTest {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
             job.getJobDescriptionEN(),
             job.getJobDescriptionDE(),
             JobState.DRAFT,
@@ -196,6 +194,7 @@ class JobResourceTest extends AbstractResourceTest {
             40,
             12,
             FundingType.FULLY_FUNDED,
+            TvlGrade.E13,
             "Build ML pipelines",
             "ML Pipeline erstellen",
             JobState.PUBLISHED,
@@ -227,6 +226,7 @@ class JobResourceTest extends AbstractResourceTest {
                 Job::getWorkload,
                 Job::getContractDuration,
                 Job::getFundingType,
+                Job::getTvlGrade,
                 Job::getJobDescriptionEN,
                 Job::getJobDescriptionDE,
                 Job::getState
@@ -242,6 +242,7 @@ class JobResourceTest extends AbstractResourceTest {
                 40,
                 12,
                 FundingType.FULLY_FUNDED,
+                TvlGrade.E13,
                 "Build ML pipelines",
                 "ML Pipeline erstellen",
                 JobState.PUBLISHED
@@ -263,6 +264,7 @@ class JobResourceTest extends AbstractResourceTest {
             entry("workload", "oops"),
             entry("contractDuration", 12),
             entry("fundingType", "FULLY_FUNDED"),
+            entry("tvlGrade", "E10"),
             entry("jobDescriptionEN", "desc"),
             entry("jobDescriptionDE", "desc"),
             entry("state", "PUBLISHED")
@@ -291,6 +293,7 @@ class JobResourceTest extends AbstractResourceTest {
             20,
             6,
             FundingType.FULLY_FUNDED,
+            null,
             "desc",
             "desc",
             JobState.DRAFT,
@@ -321,6 +324,7 @@ class JobResourceTest extends AbstractResourceTest {
             30,
             6,
             FundingType.PARTIALLY_FUNDED,
+            TvlGrade.E15,
             "Updated Description",
             "Neue Beschreibung",
             JobState.DRAFT,
@@ -349,6 +353,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(updatedJob.getWorkload()).isEqualTo(updatedPayload.workload());
         assertThat(updatedJob.getContractDuration()).isEqualTo(updatedPayload.contractDuration());
         assertThat(updatedJob.getFundingType()).isEqualTo(updatedPayload.fundingType());
+        assertThat(updatedJob.getTvlGrade()).isEqualTo(updatedPayload.tvlGrade());
         assertThat(updatedJob.getJobDescriptionEN()).isEqualTo(updatedPayload.jobDescriptionEN());
         assertThat(updatedJob.getJobDescriptionDE()).isEqualTo(updatedPayload.jobDescriptionDE());
         assertThat(updatedJob.getState()).isEqualTo(updatedPayload.state());
@@ -368,6 +373,7 @@ class JobResourceTest extends AbstractResourceTest {
             20,
             6,
             FundingType.FULLY_FUNDED,
+            TvlGrade.E12,
             "desc",
             "desc",
             JobState.DRAFT,
@@ -401,6 +407,7 @@ class JobResourceTest extends AbstractResourceTest {
             10,
             3,
             FundingType.FULLY_FUNDED,
+            null,
             "desc",
             "desc",
             JobState.DRAFT,
@@ -528,6 +535,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
+        assertThat(returnedJob.tvlGrade()).isEqualTo(job.getTvlGrade());
         assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
         assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.state()).isEqualTo(job.getState());
@@ -563,6 +571,7 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
+        assertThat(returnedJob.tvlGrade()).isEqualTo(job.getTvlGrade());
         assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
         assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
