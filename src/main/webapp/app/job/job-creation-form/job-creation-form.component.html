@@ -230,23 +230,6 @@
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-datepicker
-                inputId="startDate"
-                [selectedDate]="positionDetailsForm.get('startDate')?.value"
-                (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
-                [minDate]="startDateMinDate()"
-                [highlightedDate]="startDateMinDate()"
-                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedDeadline'"
-                [label]="'jobCreationForm.basicInformationSection.startDate.label'"
-                [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
-                icon="circle-info"
-                tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
-                [shouldTranslate]="true"
-                [width]="'100%'"
-                [errorEnabled]="true"
-              />
-            </div>
-            <div class="flex-1">
-              <jhi-datepicker
                 inputId="applicationDeadline"
                 [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
                 (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
@@ -257,6 +240,23 @@
                 [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
                 icon="circle-info"
                 tooltipText="jobCreationForm.basicInformationSection.applicationDeadline.toolTipText"
+                [shouldTranslate]="true"
+                [width]="'100%'"
+                [errorEnabled]="true"
+              />
+            </div>
+            <div class="flex-1">
+              <jhi-datepicker
+                inputId="startDate"
+                [selectedDate]="positionDetailsForm.get('startDate')?.value"
+                (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
+                [minDate]="startDateMinDate()"
+                [highlightedDate]="startDateMinDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedDeadline'"
+                [label]="'jobCreationForm.basicInformationSection.startDate.label'"
+                [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
                 [shouldTranslate]="true"
                 [width]="'100%'"
                 [errorEnabled]="true"

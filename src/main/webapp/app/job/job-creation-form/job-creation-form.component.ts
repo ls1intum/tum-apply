@@ -1524,12 +1524,6 @@ export class JobCreationFormComponent {
    * Triggers translation after successful save if content changed.
    */
   private async performAutoSave(): Promise<void> {
-    if (this.hasInvalidDateOrder()) {
-      this.savingState.set(SavingStates.VALIDATION_BLOCKED);
-      this.positionDetailsForm.markAllAsTouched();
-      return;
-    }
-
     // 1) Capture current form state before any async work
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';

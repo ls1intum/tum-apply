@@ -6,7 +6,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { DatePickerDateMeta } from 'primeng/types/datepicker';
 
 let nextInputId = 0;
 
@@ -128,6 +127,19 @@ export class DatePickerComponent {
 
   resolvedInputId = computed(() => this.inputId() ?? `jhi-datepicker-${nextInputId++}`);
 
+  readonly highlightedDateParts = computed(() => {
+    const highlightedDate = this.highlightedDate();
+    if (!highlightedDate) {
+      return undefined;
+    }
+
+    return {
+      year: highlightedDate.getFullYear(),
+      month: highlightedDate.getMonth(),
+      day: highlightedDate.getDate(),
+    };
+  });
+
   /**
    * Effective minimum date - defaults to today if no minDate provided
    */
@@ -239,16 +251,5 @@ export class DatePickerComponent {
       this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
-  }
-
-  isHighlightedDate(date: DatePickerDateMeta): boolean {
-    const highlightedDate = this.highlightedDate();
-    if (!highlightedDate) {
-      return false;
-    }
-
-    return (
-      date.year === highlightedDate.getFullYear() && date.month === highlightedDate.getMonth() && date.day === highlightedDate.getDate()
-    );
   }
 }

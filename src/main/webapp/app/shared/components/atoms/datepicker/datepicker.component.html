@@ -42,18 +42,16 @@
     [inputStyleClass]="inputStyleClass"
   >
     <ng-template pTemplate="date" let-date>
+      @let highlightedDate = highlightedDateParts();
+      @let isHighlighted =
+        highlightedDate?.year === date.year && highlightedDate?.month === date.month && highlightedDate?.day === date.day;
+      @let tooltipLabel = highlightedDateLabel();
       <span
         class="inline-flex size-full items-center justify-center"
-        [class.datepicker-reference-day]="isHighlightedDate(date)"
-        [pTooltip]="
-          isHighlightedDate(date) && highlightedDateLabel()
-            ? shouldTranslate()
-              ? (highlightedDateLabel() ?? '' | translate)
-              : (highlightedDateLabel() ?? '')
-            : undefined
-        "
+        [class.datepicker-reference-day]="isHighlighted"
+        [pTooltip]="tooltipLabel ? (shouldTranslate() ? (tooltipLabel | translate) : tooltipLabel) : undefined"
         tooltipPosition="top"
-        [tooltipDisabled]="!isHighlightedDate(date) || !highlightedDateLabel()"
+        [tooltipDisabled]="!isHighlighted || !tooltipLabel"
       >
         {{ date.day }}
       </span>
