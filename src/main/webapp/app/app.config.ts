@@ -23,6 +23,8 @@ import { MessageService } from 'primeng/api';
 import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
+import { TranslateCompiler } from '@ngx-translate/core';
+import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -37,8 +39,6 @@ import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interc
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
 import { PrimengTranslationService } from './shared/language/primeng-translation.service';
-import { TranslateCompiler } from '@ngx-translate/core';
-import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 
 /**
  * Application initializer that enforces strict order:
