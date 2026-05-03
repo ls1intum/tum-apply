@@ -722,7 +722,7 @@ export class JobCreationFormComponent {
   /**
    * Navigate the stepper back to the first step.
    */
-  goToFirstStep(): void {
+  private goToFirstStep(): void {
     this.stepper()?.goToStep(1);
   }
 
