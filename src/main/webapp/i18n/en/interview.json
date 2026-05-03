@@ -15,6 +15,7 @@
         "viewDetails": "View Details"
       },
       "status": {
+        "active": "Active",
         "closed": "Closed"
       },
       "stats": {

@@ -15,6 +15,7 @@
         "viewDetails": "Details anzeigen"
       },
       "status": {
+        "active": "Aktiv",
         "closed": "Geschlossen"
       },
       "stats": {
