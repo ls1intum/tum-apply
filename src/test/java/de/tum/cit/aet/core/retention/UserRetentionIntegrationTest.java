@@ -201,42 +201,47 @@ class UserRetentionIntegrationTest {
 
         @Test
         void shouldAnonymizeProfessorDataAndDeleteUser() {
-        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
-        UUID professorId = professor.getUserId();
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "applicant2@test.local", "App", "User");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
+            User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+            UUID professorId = professor.getUserId();
+            User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "applicant2@test.local", "App", "User");
+            ApplicantTestData.attachApplicantRole(applicantUser);
+            applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+            User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+            Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
 
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
-        Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
+            Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
+            Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
 
-        InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
-        EmailTemplate template = EmailTemplateTestData.saved(emailTemplateRepository, researchGroup, professor, EmailType.APPLICATION_SENT);
+            InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
+            EmailTemplate template = EmailTemplateTestData.saved(
+                emailTemplateRepository,
+                researchGroup,
+                professor,
+                EmailType.APPLICATION_SENT
+            );
 
-        ProfileImage profileImage = new ProfileImage();
-        profileImage.setUrl("/images/p.png");
-        profileImage.setMimeType("image/png");
-        profileImage.setSizeBytes(1L);
-        profileImage.setUploadedBy(professor);
-        imageRepository.save(profileImage);
+            ProfileImage profileImage = new ProfileImage();
+            profileImage.setUrl("/images/p.png");
+            profileImage.setMimeType("image/png");
+            profileImage.setSizeBytes(1L);
+            profileImage.setUploadedBy(professor);
+            imageRepository.save(profileImage);
 
-        userRetentionService.processUserIdsList(List.of(professorId), LocalDateTime.now(), false);
+            userRetentionService.processUserIdsList(List.of(professorId), LocalDateTime.now(), false);
 
-        Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
-        assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(DELETED_USER_ID);
-        assertThat(updatedJob.getState()).isEqualTo(JobState.CLOSED);
+            Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
+            assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(DELETED_USER_ID);
+            assertThat(updatedJob.getState()).isEqualTo(JobState.CLOSED);
 
-        Optional<InternalComment> updatedComment = internalCommentRepository.findById(comment.getInternalCommentId());
-        assertThat(updatedComment).isPresent();
-        assertThat(updatedComment.get().getCreatedBy().getUserId()).isEqualTo(DELETED_USER_ID);
+            Optional<InternalComment> updatedComment = internalCommentRepository.findById(comment.getInternalCommentId());
+            assertThat(updatedComment).isPresent();
+            assertThat(updatedComment.get().getCreatedBy().getUserId()).isEqualTo(DELETED_USER_ID);
 
-        Optional<EmailTemplate> updatedTemplate = emailTemplateRepository.findById(template.getEmailTemplateId());
-        assertThat(updatedTemplate).isPresent();
-        assertThat(updatedTemplate.get().getCreatedBy().getUserId()).isEqualTo(DELETED_USER_ID);
+            Optional<EmailTemplate> updatedTemplate = emailTemplateRepository.findById(template.getEmailTemplateId());
+            assertThat(updatedTemplate).isPresent();
+            assertThat(updatedTemplate.get().getCreatedBy().getUserId()).isEqualTo(DELETED_USER_ID);
 
-        assertThat(userRepository.existsById(professorId)).isFalse();
+            assertThat(userRepository.existsById(professorId)).isFalse();
         }
     }
 
@@ -246,21 +251,21 @@ class UserRetentionIntegrationTest {
 
         @Test
         void shouldNotChangeAnythingOnDryRun() {
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "dryrun@test.local", "Dry", "Run");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
-        UUID applicantId = savedApplicantUser.getUserId();
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
-        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
-        Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
+            User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "dryrun@test.local", "Dry", "Run");
+            ApplicantTestData.attachApplicantRole(applicantUser);
+            applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+            User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+            UUID applicantId = savedApplicantUser.getUserId();
+            Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
+            User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+            Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
+            Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
 
-        userRetentionService.processUserIdsList(List.of(applicantId), LocalDateTime.now(), true);
+            userRetentionService.processUserIdsList(List.of(applicantId), LocalDateTime.now(), true);
 
-        assertThat(userRepository.existsById(applicantId)).isTrue();
-        assertThat(applicationRepository.findById(application.getApplicationId())).isPresent();
-        assertThat(applicantRepository.findById(applicantId)).isPresent();
+            assertThat(userRepository.existsById(applicantId)).isTrue();
+            assertThat(applicationRepository.findById(application.getApplicationId())).isPresent();
+            assertThat(applicantRepository.findById(applicantId)).isPresent();
         }
     }
 
@@ -270,70 +275,70 @@ class UserRetentionIntegrationTest {
 
         @Test
         void shouldSkipUnknownUser() {
-        User unknown = UserTestData.savedUserAll(userRepository, UUID.randomUUID(), "unknown@test.local", "Unknown", "User");
-        UUID unknownId = unknown.getUserId();
+            User unknown = UserTestData.savedUserAll(userRepository, UUID.randomUUID(), "unknown@test.local", "Unknown", "User");
+            UUID unknownId = unknown.getUserId();
 
-        userRetentionService.processUserIdsList(List.of(unknownId), LocalDateTime.now(), false);
+            userRetentionService.processUserIdsList(List.of(unknownId), LocalDateTime.now(), false);
 
-        assertThat(userRepository.existsById(unknownId)).isTrue();
-    }
+            assertThat(userRepository.existsById(unknownId)).isTrue();
+        }
 
-    @Test
-    void shouldSkipAdminUserAndKeepData() {
-        User admin = UserTestData.saveAdmin(userRepository);
-        UUID adminId = admin.getUserId();
+        @Test
+        void shouldSkipAdminUserAndKeepData() {
+            User admin = UserTestData.saveAdmin(userRepository);
+            UUID adminId = admin.getUserId();
 
-        UserSetting setting = new UserSetting(admin, "theme", "dark");
-        userSettingRepository.save(setting);
+            UserSetting setting = new UserSetting(admin, "theme", "dark");
+            userSettingRepository.save(setting);
 
-        EmailSetting emailSetting = new EmailSetting();
-        emailSetting.setUser(admin);
-        emailSetting.setEmailType(EmailType.APPLICATION_SENT);
-        emailSetting.setEnabled(true);
-        emailSettingRepository.save(emailSetting);
+            EmailSetting emailSetting = new EmailSetting();
+            emailSetting.setUser(admin);
+            emailSetting.setEmailType(EmailType.APPLICATION_SENT);
+            emailSetting.setEnabled(true);
+            emailSettingRepository.save(emailSetting);
 
-        ProfileImage profileImage = new ProfileImage();
-        profileImage.setUrl("/images/admin.png");
-        profileImage.setMimeType("image/png");
-        profileImage.setSizeBytes(12L);
-        profileImage.setUploadedBy(admin);
-        profileImage = imageRepository.save(profileImage);
+            ProfileImage profileImage = new ProfileImage();
+            profileImage.setUrl("/images/admin.png");
+            profileImage.setMimeType("image/png");
+            profileImage.setSizeBytes(12L);
+            profileImage.setUploadedBy(admin);
+            profileImage = imageRepository.save(profileImage);
 
-        userRetentionService.processUserIdsList(List.of(adminId), LocalDateTime.now(), false);
+            userRetentionService.processUserIdsList(List.of(adminId), LocalDateTime.now(), false);
 
-        assertThat(userRepository.existsById(adminId)).isTrue();
-        assertThat(userSettingRepository.findAllByIdUserId(adminId)).isNotEmpty();
-        assertThat(emailSettingRepository.findAllByUser(admin)).isNotEmpty();
-        assertThat(imageRepository.findById(profileImage.getImageId())).isPresent();
-        assertThat(userResearchGroupRoleRepository.existsByUserUserId(adminId)).isTrue();
-    }
+            assertThat(userRepository.existsById(adminId)).isTrue();
+            assertThat(userSettingRepository.findAllByIdUserId(adminId)).isNotEmpty();
+            assertThat(emailSettingRepository.findAllByUser(admin)).isNotEmpty();
+            assertThat(imageRepository.findById(profileImage.getImageId())).isPresent();
+            assertThat(userResearchGroupRoleRepository.existsByUserUserId(adminId)).isTrue();
+        }
 
-    @Test
-    void shouldKeepUserWithoutRolesAndResearchGroup() {
-        User user = new User();
-        user.setUserId(UUID.randomUUID());
-        user.setEmail("norole@test.local");
-        user.setFirstName("No");
-        user.setLastName("Role");
-        user.setSelectedLanguage("en");
-        user.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        user = userRepository.saveAndFlush(user);
+        @Test
+        void shouldKeepUserWithoutRolesAndResearchGroup() {
+            User user = new User();
+            user.setUserId(UUID.randomUUID());
+            user.setEmail("norole@test.local");
+            user.setFirstName("No");
+            user.setLastName("Role");
+            user.setSelectedLanguage("en");
+            user.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+            user = userRepository.saveAndFlush(user);
 
-        UserSetting setting = new UserSetting(user, "lang", "en");
-        userSettingRepository.save(setting);
+            UserSetting setting = new UserSetting(user, "lang", "en");
+            userSettingRepository.save(setting);
 
-        EmailSetting emailSetting = new EmailSetting();
-        emailSetting.setUser(user);
-        emailSetting.setEmailType(EmailType.APPLICATION_SENT);
-        emailSetting.setEnabled(true);
-        emailSettingRepository.save(emailSetting);
+            EmailSetting emailSetting = new EmailSetting();
+            emailSetting.setUser(user);
+            emailSetting.setEmailType(EmailType.APPLICATION_SENT);
+            emailSetting.setEnabled(true);
+            emailSettingRepository.save(emailSetting);
 
-        UUID userId = user.getUserId();
-        userRetentionService.processUserIdsList(List.of(userId), LocalDateTime.now(), false);
+            UUID userId = user.getUserId();
+            userRetentionService.processUserIdsList(List.of(userId), LocalDateTime.now(), false);
 
-        assertThat(userRepository.existsById(userId)).isTrue();
-        assertThat(userSettingRepository.findAllByIdUserId(userId)).isNotEmpty();
-        assertThat(emailSettingRepository.findAllByUser(user)).isNotEmpty();
+            assertThat(userRepository.existsById(userId)).isTrue();
+            assertThat(userSettingRepository.findAllByIdUserId(userId)).isNotEmpty();
+            assertThat(emailSettingRepository.findAllByUser(user)).isNotEmpty();
         }
     }
 
@@ -343,53 +348,58 @@ class UserRetentionIntegrationTest {
 
         @Test
         void shouldProcessMixedBatchAndBeIdempotent() {
-        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
-        UUID professorId = professor.getUserId();
+            User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+            UUID professorId = professor.getUserId();
 
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "batch-applicant@test.local", "Batch", "Applicant");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
-        UUID applicantId = savedApplicantUser.getUserId();
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
+            User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "batch-applicant@test.local", "Batch", "Applicant");
+            ApplicantTestData.attachApplicantRole(applicantUser);
+            applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+            User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+            UUID applicantId = savedApplicantUser.getUserId();
+            Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
 
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Batch Job", JobState.PUBLISHED, null);
-        Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
-        DocumentTestData.savedMockDocument(documentRepository, savedApplicantUser, application, null, DocumentType.CV, "cv-batch.pdf");
+            Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Batch Job", JobState.PUBLISHED, null);
+            Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
+            DocumentTestData.savedMockDocument(documentRepository, savedApplicantUser, application, null, DocumentType.CV, "cv-batch.pdf");
 
-        EmailTemplate template = EmailTemplateTestData.saved(emailTemplateRepository, researchGroup, professor, EmailType.APPLICATION_SENT);
+            EmailTemplate template = EmailTemplateTestData.saved(
+                emailTemplateRepository,
+                researchGroup,
+                professor,
+                EmailType.APPLICATION_SENT
+            );
 
-        ProfileImage profileImage = new ProfileImage();
-        profileImage.setUrl("/images/prof-batch.png");
-        profileImage.setMimeType("image/png");
-        profileImage.setSizeBytes(8L);
-        profileImage.setUploadedBy(professor);
-        imageRepository.save(profileImage);
+            ProfileImage profileImage = new ProfileImage();
+            profileImage.setUrl("/images/prof-batch.png");
+            profileImage.setMimeType("image/png");
+            profileImage.setSizeBytes(8L);
+            profileImage.setUploadedBy(professor);
+            imageRepository.save(profileImage);
 
-        User unknown = UserTestData.savedUserAll(userRepository, UUID.randomUUID(), "batch-unknown@test.local", "Batch", "Unknown");
-        UUID unknownId = unknown.getUserId();
+            User unknown = UserTestData.savedUserAll(userRepository, UUID.randomUUID(), "batch-unknown@test.local", "Batch", "Unknown");
+            UUID unknownId = unknown.getUserId();
 
-        List<UUID> ids = List.of(applicantId, professorId, unknownId);
-        userRetentionService.processUserIdsList(ids, LocalDateTime.now(), false);
+            List<UUID> ids = List.of(applicantId, professorId, unknownId);
+            userRetentionService.processUserIdsList(ids, LocalDateTime.now(), false);
 
-        assertThat(userRepository.existsById(applicantId)).isFalse();
-        assertThat(applicantRepository.findById(applicantId)).isEmpty();
-        assertThat(applicationRepository.findById(application.getApplicationId())).isEmpty();
+            assertThat(userRepository.existsById(applicantId)).isFalse();
+            assertThat(applicantRepository.findById(applicantId)).isEmpty();
+            assertThat(applicationRepository.findById(application.getApplicationId())).isEmpty();
 
-        Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
-        assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(DELETED_USER_ID);
-        assertThat(updatedJob.getState()).isEqualTo(JobState.CLOSED);
+            Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
+            assertThat(updatedJob.getSupervisingProfessor().getUserId()).isEqualTo(DELETED_USER_ID);
+            assertThat(updatedJob.getState()).isEqualTo(JobState.CLOSED);
 
-        EmailTemplate updatedTemplate = emailTemplateRepository.findById(template.getEmailTemplateId()).orElseThrow();
-        assertThat(updatedTemplate.getCreatedBy().getUserId()).isEqualTo(DELETED_USER_ID);
+            EmailTemplate updatedTemplate = emailTemplateRepository.findById(template.getEmailTemplateId()).orElseThrow();
+            assertThat(updatedTemplate.getCreatedBy().getUserId()).isEqualTo(DELETED_USER_ID);
 
-        assertThat(userRepository.existsById(professorId)).isFalse();
-        assertThat(userRepository.existsById(unknownId)).isTrue();
+            assertThat(userRepository.existsById(professorId)).isFalse();
+            assertThat(userRepository.existsById(unknownId)).isTrue();
 
-        userRetentionService.processUserIdsList(ids, LocalDateTime.now(), false);
+            userRetentionService.processUserIdsList(ids, LocalDateTime.now(), false);
 
-        assertThat(userRepository.existsById(unknownId)).isTrue();
-        assertThat(jobRepository.findById(job.getJobId())).isPresent();
+            assertThat(userRepository.existsById(unknownId)).isTrue();
+            assertThat(jobRepository.findById(job.getJobId())).isPresent();
         }
     }
 
@@ -399,35 +409,45 @@ class UserRetentionIntegrationTest {
 
         @Test
         void shouldSendWarningEmailOnlyOnWarningDay() {
-        userRetentionProperties.setInactiveDaysBeforeDeletion(60);
+            userRetentionProperties.setInactiveDaysBeforeDeletion(60);
 
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        LocalDateTime warningDate = now.minusDays(userRetentionProperties.getInactiveDaysBeforeDeletion() - 28);
+            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime warningDate = now.minusDays(userRetentionProperties.getInactiveDaysBeforeDeletion() - 28);
 
-        // Matches warning date exactly
-        User userToWarn = ApplicantTestData.saveApplicantWithLastActivity(
-            "warning@test.local",
-            applicantRepository,
-            userRepository,
-            warningDate.withHour(1).withMinute(0).withSecond(0).withNano(0)
-        );
+            // Matches warning date exactly
+            User userToWarn = ApplicantTestData.saveApplicantWithLastActivity(
+                "warning@test.local",
+                applicantRepository,
+                userRepository,
+                warningDate.withHour(1).withMinute(0).withSecond(0).withNano(0)
+            );
 
-        // Too recent (day after warning date)
-        ApplicantTestData.saveApplicantWithLastActivity("recent@test.local", applicantRepository, userRepository, warningDate.plusDays(1));
+            // Too recent (day after warning date)
+            ApplicantTestData.saveApplicantWithLastActivity(
+                "recent@test.local",
+                applicantRepository,
+                userRepository,
+                warningDate.plusDays(1)
+            );
 
-        // Too old (day before warning date)
-        ApplicantTestData.saveApplicantWithLastActivity("old@test.local", applicantRepository, userRepository, warningDate.minusDays(1));
+            // Too old (day before warning date)
+            ApplicantTestData.saveApplicantWithLastActivity(
+                "old@test.local",
+                applicantRepository,
+                userRepository,
+                warningDate.minusDays(1)
+            );
 
-        userRetentionService.warnUserOfDataDeletion(warningDate);
+            userRetentionService.warnUserOfDataDeletion(warningDate);
 
-        ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
-        verify(mockSender, times(1)).sendAsync(emailCaptor.capture());
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(mockSender, times(1)).sendAsync(emailCaptor.capture());
 
-        Email sentEmail = emailCaptor.getValue();
-        assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.USER_DATA_DELETION_WARNING);
-        assertThat(sentEmail.getLanguage()).isEqualTo(Language.fromCode(userToWarn.getSelectedLanguage()));
-        assertThat(sentEmail.getTo()).extracting(User::getUserId).containsExactly(userToWarn.getUserId());
-        assertThat(sentEmail.getContent()).isEqualTo(userToWarn);
+            Email sentEmail = emailCaptor.getValue();
+            assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.USER_DATA_DELETION_WARNING);
+            assertThat(sentEmail.getLanguage()).isEqualTo(Language.fromCode(userToWarn.getSelectedLanguage()));
+            assertThat(sentEmail.getTo()).extracting(User::getUserId).containsExactly(userToWarn.getUserId());
+            assertThat(sentEmail.getContent()).isEqualTo(userToWarn);
         }
     }
 
