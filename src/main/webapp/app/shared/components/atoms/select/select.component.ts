@@ -1,11 +1,10 @@
-import { Component, ViewEncapsulation, computed, inject, input, output } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, ViewEncapsulation, computed, input, output } from '@angular/core';
 import { SelectModule } from 'primeng/select';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 import { TranslateDirective } from '../../../language';
 
@@ -53,22 +52,13 @@ export class SelectComponent {
   isOpen = false;
   readonly inputId = computed(() => this.id() ?? 'select-input');
 
-  readonly displayLabel = computed(() => this.translate(this.label()));
-  readonly displayPlaceholder = computed(() => this.translate(this.placeholder()));
-  readonly displayTooltipText = computed(() => this.translate(this.tooltipText()));
+  readonly displayLabel = computed(() => this.translator.translate(this.label(), this.shouldTranslate()) ?? '');
+  readonly displayPlaceholder = computed(() => this.translator.translate(this.placeholder(), this.shouldTranslate()) ?? '');
+  readonly displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()) ?? '');
 
-  private translateService = inject(TranslateService);
-  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
+  private translator = injectTranslator();
 
   onSelectionChange(value: SelectOption): void {
     this.selectedChange.emit(value);
-  }
-
-  private translate(value: string | undefined): string {
-    this.langChange();
-    if (value === undefined || value === '') {
-      return value ?? '';
-    }
-    return this.shouldTranslate() ? this.translateService.instant(value) : value;
   }
 }

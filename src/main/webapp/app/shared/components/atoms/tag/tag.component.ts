@@ -1,9 +1,8 @@
-import { Component, computed, inject, input } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, input } from '@angular/core';
 import { Tag } from 'primeng/tag';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 @Component({
   selector: 'jhi-tag',
@@ -28,17 +27,8 @@ export class TagComponent {
     return colorValue === 'primary' ? 'info' : colorValue;
   });
 
-  displayText = computed(() => this.translate(this.text()));
-  displayTooltipText = computed(() => this.translate(this.tooltipText()));
+  displayText = computed(() => this.translator.translate(this.text(), this.shouldTranslate()) ?? '');
+  displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()) ?? '');
 
-  private translateService = inject(TranslateService);
-  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
-
-  private translate(value: string | undefined): string {
-    this.langChange();
-    if (value === undefined || value === '') {
-      return value ?? '';
-    }
-    return this.shouldTranslate() ? this.translateService.instant(value) : value;
-  }
+  private translator = injectTranslator();
 }

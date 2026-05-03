@@ -1,12 +1,11 @@
 import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 // Interface for filter options which can be passed to the filter component
 export interface Filter {
@@ -59,11 +58,11 @@ export class FilterMultiselect {
   // gives the selected values back to the parent component
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
 
-  displayFilterLabel = computed(() => this.translate(this.filterLabel()));
-  displaySearchPlaceholder = computed(() => this.translate(this.filterSearchPlaceholder()));
-  displaySelectedHeader = computed(() => this.translate('entity.filters.selected'));
-  displayClearAllLabel = computed(() => this.translate('entity.filters.clearAll'));
-  displayNoResultsLabel = computed(() => this.translate('entity.filters.noResults'));
+  displayFilterLabel = computed(() => this.translator.translate(this.filterLabel()) ?? '');
+  displaySearchPlaceholder = computed(() => this.translator.translate(this.filterSearchPlaceholder()) ?? '');
+  displaySelectedHeader = computed(() => this.translator.translate('entity.filters.selected') ?? '');
+  displayClearAllLabel = computed(() => this.translator.translate('entity.filters.clearAll') ?? '');
+  displayNoResultsLabel = computed(() => this.translator.translate('entity.filters.noResults') ?? '');
 
   filteredOptions = computed(() => {
     const search = this.searchTerm().toLowerCase().trim();
@@ -84,7 +83,7 @@ export class FilterMultiselect {
   });
 
   sortedOptions = computed<RenderedOption[]>(() => {
-    this.langChange();
+    this.translator.langChange();
     const selected = this.selectedValues();
     const filtered = this.filteredOptions();
     const translateLabels = this.shouldTranslateOptions();
@@ -115,8 +114,8 @@ export class FilterMultiselect {
   totalCount = computed(() => this.filterOptions().length);
 
   private readonly elementRef = inject(ElementRef);
-  private readonly translateService = inject(TranslateService);
-  private readonly langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
+  private readonly translator = injectTranslator();
+  private readonly translateService = this.translator.translateService;
 
   // Sync selected values between inputs and mobile filter bar
   private readonly syncSelectedValuesEffect = effect(() => {
@@ -247,11 +246,6 @@ export class FilterMultiselect {
       filterId: this.filterId(),
       selectedValues: this.selectedValues(),
     });
-  }
-
-  private translate(value: string): string {
-    this.langChange();
-    return this.translateService.instant(value);
   }
 
   private calculateDropdownAlignment(): void {

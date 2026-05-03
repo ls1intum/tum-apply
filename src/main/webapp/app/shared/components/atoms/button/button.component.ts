@@ -1,10 +1,9 @@
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
-import { Component, ViewEncapsulation, computed, inject, input } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, ViewEncapsulation, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import { TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
@@ -58,11 +57,10 @@ export class ButtonComponent {
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   classStyling = input<string>('');
 
-  displayTooltip = computed(() => this.translate(this.tooltip()));
+  displayTooltip = computed(() => this.translator.translate(this.tooltip(), this.shouldTranslate()));
   ariaLabel = computed(() => (this.label() === undefined ? this.displayTooltip() : undefined));
 
-  private translateService = inject(TranslateService);
-  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
+  private translator = injectTranslator();
 
   iconPrefix(): 'fas' | 'fab' {
     if (this.icon() === 'microsoft' || this.icon() === 'google' || this.icon() === 'apple') {
@@ -82,13 +80,5 @@ export class ButtonComponent {
     }
 
     return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''} ${this.classStyling()}`;
-  }
-
-  private translate(value: string | undefined): string | undefined {
-    this.langChange();
-    if (value === undefined) {
-      return undefined;
-    }
-    return this.shouldTranslate() ? this.translateService.instant(value) : value;
   }
 }

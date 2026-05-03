@@ -1,9 +1,8 @@
 import { Component, ViewEncapsulation, computed, effect, inject, input, output } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 import { ButtonColor, ButtonComponent, ButtonSize, ButtonVariant } from '../button/button.component';
 
@@ -40,12 +39,11 @@ export class ConfirmDialog {
   confirmed = output<unknown>();
   closed = output();
 
-  displayHeader = computed(() => this.translate(this.header()));
-  displayMessage = computed(() => this.translate(this.message(), this.messageParams()));
+  displayHeader = computed(() => this.translator.translate(this.header(), this.shouldTranslate()));
+  displayMessage = computed(() => this.translator.translate(this.message(), this.shouldTranslate(), this.messageParams()));
 
   private confirmationService = inject(ConfirmationService);
-  private translateService = inject(TranslateService);
-  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
+  private translator = injectTranslator();
 
   // Opens the dialog declaratively when visible becomes true
   private visibleEffect = effect(() => {
@@ -72,13 +70,5 @@ export class ConfirmDialog {
         this.closed.emit();
       },
     });
-  }
-
-  private translate(value: string | undefined, params: Record<string, unknown> = {}): string | undefined {
-    this.langChange();
-    if (value === undefined) {
-      return undefined;
-    }
-    return this.shouldTranslate() ? this.translateService.instant(value, params) : value;
   }
 }

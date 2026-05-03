@@ -10,7 +10,6 @@ import {
   signal,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
@@ -22,7 +21,7 @@ const VISIBLE_DESKTOP = 3;
 
 @Component({
   selector: 'jhi-application-carousel',
-  imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateModule, TranslateDirective],
+  imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateDirective],
   templateUrl: './application-carousel.component.html',
   styleUrls: ['./application-carousel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

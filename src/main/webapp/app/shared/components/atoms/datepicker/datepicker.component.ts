@@ -3,8 +3,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 @Component({
   selector: 'jhi-datepicker',
@@ -88,12 +88,13 @@ export class DatePickerComponent {
     return currentLang === 'en' ? 'dd/mm/yy' : 'dd.mm.yy';
   });
 
-  displayPlaceholder = computed(() => this.translate(this.placeholder()));
-  displayTooltipText = computed(() => this.translate(this.tooltipText()));
+  displayPlaceholder = computed(() => this.translator.translate(this.placeholder(), this.shouldTranslate()));
+  displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()));
 
   private scrollListener?: (event: Event) => void;
   private elementRef = inject(ElementRef);
-  private translateService = inject(TranslateService);
+  private translator = injectTranslator();
+  private translateService = this.translator.translateService;
 
   /**
    * Effect to sync modelDate and handle language changes
@@ -186,13 +187,5 @@ export class DatePickerComponent {
       this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
-  }
-
-  private translate(value: string | undefined): string | undefined {
-    this.currentLanguage();
-    if (value === undefined) {
-      return undefined;
-    }
-    return this.shouldTranslate() ? this.translateService.instant(value) : value;
   }
 }
