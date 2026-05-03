@@ -18,7 +18,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { SavingStates } from 'app/shared/constants/saving-states';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
@@ -64,6 +66,7 @@ const applyflow = 'entity.toast.applyFlow';
     ApplicationDetailForApplicantComponent,
     TranslateDirective,
     MessageComponent,
+    SavingBadgeComponent,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -126,18 +129,9 @@ export default class ApplicationCreationFormComponent {
   applicantId = signal<string>('');
   applicationId = signal<string>('');
   applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
-  savingState = signal<SavingState>(SavingStates.SAVED);
 
-  savingBadgeCalculatedClass = computed<string>(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${
-        this.savingState() === SavingStates.SAVED
-          ? 'saved_color'
-          : this.savingState() === SavingStates.FAILED
-            ? 'failed_color'
-            : 'saving_color'
-      }`,
-  );
+  /** Debounced auto-save controller. Owns the 3 s timer and the badge state. */
+  readonly autoSave = new AutoSaveController({ save: () => this.executeAutoSave() });
 
   personalInfoDataValid = signal<boolean>(false);
   educationDataValid = signal<boolean>(false);
@@ -185,7 +179,7 @@ export default class ApplicationCreationFormComponent {
     const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
-    const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
+    const flushAutoSave: () => Promise<void> = () => this.autoSave.flush();
     const statusPanel = this.savedStatusPanel();
     const updateDocumentInformation = this.updateDocumentInformation.bind(this);
 
@@ -201,7 +195,7 @@ export default class ApplicationCreationFormComponent {
             icon: 'arrow-left',
             onClick(): void {
               void (async () => {
-                await performAutomaticSaveLocal();
+                await flushAutoSave();
                 location.back();
               })();
             },
@@ -361,13 +355,6 @@ export default class ApplicationCreationFormComponent {
     }
   });
 
-  private automaticSaveEffect = effect(() => {
-    const intervalId = setInterval(() => {
-      void this.performAutomaticSave();
-    }, 3000);
-    return () => clearInterval(intervalId);
-  });
-
   async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
 
@@ -466,20 +453,12 @@ export default class ApplicationCreationFormComponent {
     return application;
   }
 
-  async performAutomaticSave(): Promise<void> {
-    if (this.savingState() === SavingStates.SAVING) {
-      let savedSuccessFully;
-      if (this.useLocalStorage()) {
-        savedSuccessFully = this.saveToLocalStorage();
-      } else {
-        savedSuccessFully = await this.sendCreateApplicationData(this.applicationState(), false);
-      }
-      if (savedSuccessFully) {
-        this.savingState.set(SavingStates.SAVED);
-      } else {
-        this.savingState.set(SavingStates.FAILED);
-      }
+  /** Save callback invoked by the {@link AutoSaveController} when its debounce timer fires. */
+  async executeAutoSave(): Promise<boolean> {
+    if (this.useLocalStorage()) {
+      return this.saveToLocalStorage();
     }
+    return this.sendCreateApplicationData(this.applicationState(), false);
   }
 
   onConfirmSend(): void {
@@ -547,7 +526,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   onValueChanged(): void {
-    this.savingState.set(SavingStates.SAVING);
+    this.autoSave.notifyChanged();
   }
 
   onPersonalInfoDataValidityChanged(isValid: boolean): void {
@@ -690,8 +669,9 @@ export default class ApplicationCreationFormComponent {
       const application = await this.initPageCreateApplication(jobId);
       this.useLocalStorage.set(false);
       this.applicationId.set(application.applicationId ?? this.applicationId());
-      this.savingState.set(SavingStates.SAVING);
-      await this.sendCreateApplicationData(this.applicationState(), false);
+      this.autoSave.setState(SavingStates.SAVING);
+      const saved = await this.sendCreateApplicationData(this.applicationState(), false);
+      this.autoSave.setState(saved ? SavingStates.SAVED : SavingStates.FAILED);
       // TODO: remove application from local storage
     } catch {
       this.toastService.showErrorKey(`${applyflow}.migrationFailed`);

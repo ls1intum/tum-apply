@@ -87,10 +87,9 @@ function mockAllPanelTemplates(component: JobCreationFormComponent) {
 
 // Type helpers to avoid verbose casting
 type ComponentPrivate = {
-  performAutoSave: () => Promise<void>;
-  clearAutoSaveTimer: () => void;
-  autoSaveTimer?: number;
-  autoSaveInFlight: Promise<void> | undefined;
+  runAutoSave: () => Promise<boolean>;
+  executeAutoSave: () => Promise<boolean>;
+  autoSaveInFlight: Promise<boolean> | undefined;
   autoSaveInitialized: boolean;
   populateForm: (job?: JobDTO) => void;
   createJobDTO: (state?: JobFormDTOStateEnum) => JobFormDTO;
@@ -271,65 +270,43 @@ describe('JobCreationFormComponent', () => {
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
-    it('should set savingState to FAILED when autoSave fails', async () => {
+    it('should report a failed save when the server rejects updateJob', async () => {
       mockJobApi.updateJob = vi.fn().mockReturnValueOnce(throwError(() => new Error('fail')));
       component.jobId.set('id123');
-      await getPrivate(component).performAutoSave();
+      const saved = await getPrivate(component).runAutoSave();
 
-      expect(component.savingState()).toBe('FAILED');
+      expect(saved).toBe(false);
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.saveFailed');
-    });
-
-    it('should compute savingBadgeCalculatedClass correctly', () => {
-      component.savingState.set('SAVED');
-      expect(component.savingBadgeCalculatedClass()).toContain('saved_color');
-
-      component.savingState.set('FAILED');
-      expect(component.savingBadgeCalculatedClass()).toContain('failed_color');
-
-      component.savingState.set('SAVING');
-      expect(component.savingBadgeCalculatedClass()).toContain('saving_color');
     });
 
     it('should set jobId after creating a new job', async () => {
       mockJobApi.createJob = vi.fn().mockReturnValueOnce(of({ jobId: 'abc123' }));
       component.jobId.set('');
-      await getPrivate(component).performAutoSave();
+      await getPrivate(component).runAutoSave();
 
       expect(component.jobId()).toBe('abc123');
       expect(mockJobApi.createJob).toHaveBeenCalledOnce();
     });
 
-    it('should call updateJob when jobId is set in performAutoSave', async () => {
+    it('should call updateJob when jobId is set during runAutoSave', async () => {
       component.jobId.set('job123');
-      await getPrivate(component).performAutoSave();
+      await getPrivate(component).runAutoSave();
 
       expect(mockJobApi.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
-    it('should clear autoSaveTimer if set', () => {
-      const spy = vi.spyOn(global, 'clearTimeout');
-      const priv = getPrivate(component);
-      priv.autoSaveTimer = 123;
-      priv.clearAutoSaveTimer();
-
-      expect(spy).toHaveBeenCalledWith(123);
-      expect(priv.autoSaveTimer).toBeUndefined();
-    });
-
-    it('should trigger performAutoSave from setupAutoSave effect', () => {
+    it('should debounce form value changes through the auto-save controller', () => {
       // Ensure the auto-save initialization guard has been passed
       getPrivate(component).autoSaveInitialized = true;
 
-      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
-      const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
+      const notifySpy = vi.spyOn(component.autoSave, 'notifyChanged');
 
       component.basicInfoForm.patchValue({ title: 'new title' });
       fixture.detectChanges();
-      vi.advanceTimersByTime(5000);
 
-      expect(spy).toHaveBeenCalledOnce();
-      vi.useRealTimers();
+      expect(notifySpy).toHaveBeenCalled();
+      // Badge stays SAVED during the debounce window — no flicker on every keystroke.
+      expect(component.autoSave.state()).toBe('SAVED');
     });
   });
 
@@ -381,14 +358,13 @@ describe('JobCreationFormComponent', () => {
       fixture.detectChanges();
       component.jobId.set('id123');
 
-      const priv = getPrivate(component);
-      const triggered = vi.fn();
-      priv.autoSaveTimer = window.setTimeout(triggered, 10_000);
+      // Schedule a save that would fire long after publishJob() runs.
+      component.autoSave.notifyChanged();
+      const disposeSpy = vi.spyOn(component.autoSave, 'dispose');
 
       await component.publishJob();
 
-      expect(priv.autoSaveTimer).toBeUndefined();
-      expect(triggered).not.toHaveBeenCalled();
+      expect(disposeSpy).toHaveBeenCalled();
       expect(mockJobApi.updateJob).toHaveBeenCalledOnce();
       const [, sentDto] = mockJobApi.updateJob.mock.calls[0];
       expect(sentDto.state).toBe(JobFormDTOStateEnum.Published);
@@ -405,7 +381,7 @@ describe('JobCreationFormComponent', () => {
         .mockReturnValueOnce(draftSave)
         .mockReturnValueOnce(of({ jobId: 'id123', state: JobFormDTOStateEnum.Published }));
 
-      const autoSavePromise = getPrivate(component).performAutoSave();
+      const autoSavePromise = getPrivate(component).runAutoSave();
       const publishPromise = component.publishJob();
       await Promise.resolve();
 

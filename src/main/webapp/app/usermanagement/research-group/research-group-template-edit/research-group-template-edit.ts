@@ -14,6 +14,7 @@ import 'quill-mention/autoregister';
 import { EmailTemplateDTO, EmailTemplateDTOEmailTypeEnum } from 'app/generated/model/email-template-dto';
 import { EmailTemplateTranslationDTO } from 'app/generated/model/email-template-translation-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { AUTO_SAVE_DELAY_MS } from 'app/shared/constants/saving-states';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -22,7 +23,6 @@ import { EmailTemplateResourceApi } from '../../../generated/api/email-template-
 import { AccountService } from '../../../core/auth/account.service';
 
 const EMPTY_TRANSLATION: EmailTemplateTranslationDTO = { subject: '', body: '' };
-const AUTOSAVE_DELAY_MS = 3000;
 const ALL_TYPES_PAGE_SIZE = 100;
 
 @Component({
@@ -196,12 +196,14 @@ export class ResearchGroupTemplateEdit {
       return;
     }
 
-    this.savingState.set('SAVING');
     this.clearAutoSaveTimer();
 
+    // Wait the full debounce window before flipping to "Saving..." so the badge
+    // does not flicker on every keystroke.
     this.autoSaveTimer = window.setTimeout(() => {
+      this.savingState.set('SAVING');
       void this.performAutoSave();
-    }, AUTOSAVE_DELAY_MS);
+    }, AUTO_SAVE_DELAY_MS);
   });
 
   constructor() {
