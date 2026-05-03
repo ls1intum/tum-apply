@@ -44,7 +44,7 @@
         },
         "subjectAreas": {
           "title": "Stellenausschreibungen",
-          "description": "Erhalte E-Mails über neue Stellenausschreibungen. Nach der Aktivierung kannst du deine bevorzugten Fachbereiche auswählen.",
+          "description": "Erhalte E-Mails zu neuen Stellenausschreibungen in deinen ausgewählten Fachbereichen.",
           "placeholder": "Fachbereiche hinzufügen",
           "filterPlaceholder": "Fachbereich suchen...",
           "removeLabel": "{{subjectArea}} entfernen",

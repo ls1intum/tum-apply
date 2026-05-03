@@ -7,9 +7,9 @@
 >
   @if (message()) {
     @if (shouldTranslate()) {
-      <p>{{ message() | translate: translationParams() }}</p>
+      <p [innerHTML]="message() | translate: translationParams()"></p>
     } @else {
-      <p>{{ message() }}</p>
+      <p [innerHTML]="message()"></p>
     }
   } @else {
     <ng-content />

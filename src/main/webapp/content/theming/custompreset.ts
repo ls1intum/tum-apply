@@ -101,6 +101,12 @@ export const BlossomTheme = definePreset(Aura, {
       600: '#bf5a20',
       700: '#9f401e',
     },
+    compliance: {
+      critical: '#f2415a',
+      transparency: '#f59e0b',
+      dsgvo: '#27be69',
+      publicSector: '#3070b3',
+    },
     colorScheme: {
       light: {
         ...sharedLightColorScheme,
