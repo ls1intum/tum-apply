@@ -482,7 +482,8 @@
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
         "closed": "Geschlossen",
-        "inReview": "In Prüfung"
+        "inReview": "In Prüfung",
+        "interview": "Interview"
       },
       "columns": {
         "positionTitle": "Stelle",
