@@ -43,7 +43,6 @@ export type StepData = {
   selector: 'jhi-progress-stepper',
   imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateDirective, TooltipModule],
   templateUrl: './progress-stepper.component.html',
-  styleUrl: './progress-stepper.component.scss',
   standalone: true,
 })
 export class ProgressStepperComponent {

@@ -20,7 +20,6 @@ import { ProfessorFaqSectionComponent } from './professor-faq-section/professor-
     BannerSectionComponent,
   ],
   templateUrl: './professor-landing-page.component.html',
-  styleUrl: './professor-landing-page.component.scss',
 })
 export class ProfessorLandingPageComponent {
   accountService = inject(AccountService);

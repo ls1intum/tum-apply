@@ -22,7 +22,6 @@ export type SortDirection = 'ASC' | 'DESC';
   selector: 'jhi-sorting',
   imports: [SelectComponent, ButtonComponent, InputGroupModule],
   templateUrl: './sorting.html',
-  styleUrl: './sorting.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class Sorting {
