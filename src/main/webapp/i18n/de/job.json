@@ -152,9 +152,12 @@
     "aiSidebar": {
       "header": "KI-Assistent",
       "complianceHeader": "Compliance-Prüfer",
-      "critical": "Fixe kritische AGG-Verstöße",
+      "critical": "AGG-Verstöße korrigieren",
       "transparency": "Transparenz verbessern",
-      "filterByCategory": "Nach Kategorie filtern"
+      "dsgvo": "Datenschutz anpassen",
+      "publicSector": "Wissenschaftsrecht prüfen",
+      "filterByCategory": "Nach Kategorie filtern",
+      "complianceTooltipText": "Farben dienen nur der Kategorisierung, nicht der Priorisierung. Es gibt keine Unterschiede in der Wichtigkeit."
     },
     "positionDetailsSection": {
       "jobDescription": {
@@ -320,9 +323,9 @@
       "startDate": "Startdatum"
     },
     "ariaLabels": {
-      "viewJobDetails": "Details anzeigen für {{title}}"
+      "viewJobDetails": "Details anzeigen für {title}"
     },
-    "hoursPerWeek": "{{workload}} h/Woche",
+    "hoursPerWeek": "{workload} h/Woche",
     "notificationsCta": {
       "textPrefix": "Keine passende Stelle dabei? Erhalte",
       "link": "Benachrichtigungen"
@@ -423,7 +426,7 @@
     },
     "workload": {
       "fullTime": "Vollzeit",
-      "partTime": "Teilzeit ({{percentage}}%)"
+      "partTime": "Teilzeit ({percentage}%)"
     },
     "infos": {
       "applicantLanguageInfo": "Bewerber sehen die Stellenbeschreibung nur in der von ihnen gewählten Sprache."

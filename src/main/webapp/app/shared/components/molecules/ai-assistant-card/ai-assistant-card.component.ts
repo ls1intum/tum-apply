@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
@@ -19,7 +18,6 @@ import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-ic
   imports: [
     CommonModule,
     FontAwesomeModule,
-    TranslateModule,
     TranslateDirective,
     DialogComponent,
     TooltipModule,
@@ -124,6 +122,16 @@ export class AiAssistantCardComponent {
   /** Number of TRANSPARENCY issues for the current language. */
   readonly transparencyCount = computed(
     () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.Transparency).length,
+  );
+
+  /** Number of DSGVO_MINIMIZATION issues for the current language. */
+  readonly dsgvoCount = computed(
+    () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.DsgvoMinimization).length,
+  );
+
+  /** Number of PUBLIC_SECTOR issues for the current language. */
+  readonly publicSectorCount = computed(
+    () => this.issueCountForLang().filter(i => i.category === ComplianceIssueCategoryEnum.PublicSector).length,
   );
 
   protected readonly ComplianceIssueCategoryEnum = ComplianceIssueCategoryEnum;

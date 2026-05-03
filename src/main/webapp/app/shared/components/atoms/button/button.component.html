@@ -9,15 +9,16 @@
 </div>
 <ng-template #button>
   <p-button
-    [ariaLabel]="label() === undefined ? tooltip() : undefined"
+    [ariaLabel]="ariaLabel()"
     [disabled]="disabled()"
     [loading]="loading()"
     [severity]="severity()"
-    [styleClass]="buttonClass()"
+    [fluid]="fullWidth()"
+    [pt]="{ root: { class: buttonClass() } }"
     [type]="type()"
     [variant]="variant()"
     [buttonProps]="{ autofocus: autofocus() }"
-    [pTooltip]="tooltip()"
+    [pTooltip]="displayTooltip()"
     [tooltipPosition]="tooltipPosition()"
     [tooltipOptions]="tooltipOptions()"
   >
@@ -25,11 +26,7 @@
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
     }
     @if (label() !== undefined) {
-      @if (shouldTranslate()) {
-        <span jhiTranslate="{{ label() }}"></span>
-      } @else {
-        {{ label() }}
-      }
+      <span>{{ displayLabel() }}</span>
     }
     @if (isExternalLink()) {
       <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" aria-hidden="true" />

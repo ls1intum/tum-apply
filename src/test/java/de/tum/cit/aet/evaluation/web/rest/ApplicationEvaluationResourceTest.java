@@ -38,6 +38,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -304,9 +306,10 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     @Nested
     class RejectApplication {
 
-        @Test
-        void inReviewBecomesRejectedAndStoresReason() {
-            RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
+        @ParameterizedTest(name = "should reject in-review application with reason {0} and notify={1}")
+        @CsvSource({ "OTHER_REASON, true", "FAILED_REQUIREMENTS, false" })
+        void shouldRejectInReviewApplicationForVariousReasonAndNotifyCombinations(RejectReason reason, boolean notify) {
+            RejectDTO payload = new RejectDTO(reason, notify);
 
             Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -342,20 +345,6 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                 .postAndRead("/api/evaluation/applications/" + randomId + "/reject", payload, Void.class, 404);
 
             assertThat(result).isNull();
-        }
-
-        @Test
-        void withoutNotifyApplicantStillRejects() {
-            RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
-
-            Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
-
-            assertThat(result).isNull();
-
-            Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
-            assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
         }
     }
 

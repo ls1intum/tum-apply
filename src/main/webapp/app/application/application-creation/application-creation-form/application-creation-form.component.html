@@ -1,8 +1,8 @@
 <jhi-confirm-dialog
   class="confirm-dialog"
-  [header]="'entity.applicationSteps.confirmDialog.header' | translate"
-  [message]="'entity.applicationSteps.confirmDialog.message' | translate"
-  [label]="'button.send' | translate"
+  header="entity.applicationSteps.confirmDialog.header"
+  message="entity.applicationSteps.confirmDialog.message"
+  label="button.send"
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
@@ -56,7 +56,7 @@
 </ng-template>
 
 <ng-template #summaryPanel>
-  <jhi-message severity="warn" styleClass="mb-3" message="entity.applicationPage4.message" [shouldTranslate]="true" />
+  <jhi-message severity="warn" classStyling="mb-3" message="entity.applicationPage4.message" [shouldTranslate]="true" />
   <!-- Summary panel -->
   <jhi-application-detail-for-applicant
     [previewDetailData]="previewData()"

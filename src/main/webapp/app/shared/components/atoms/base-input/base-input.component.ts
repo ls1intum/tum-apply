@@ -18,7 +18,7 @@ export abstract class BaseInputDirective<T> {
   required = input<boolean>(false);
   width = input<string>('100%');
   id = input<string | undefined>(undefined);
-  shouldTranslate = input<boolean>(false); // Whether to translate the label and placeholder
+  shouldTranslate = input<boolean>(true); // Whether to translate the label and placeholder
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
@@ -38,6 +38,13 @@ export abstract class BaseInputDirective<T> {
   });
 
   inputId = computed(() => this.id() ?? `jhi-input-${nextId++}`);
+
+  displayLabel = computed(() => this.maybeTranslate(this.label()));
+  displayPlaceholder = computed(() => this.maybeTranslate(this.placeholder()));
+  displayTooltipText = computed(() => this.maybeTranslate(this.tooltipText()));
+  displayHelperTextLeft = computed(() => this.maybeTranslate(this.helperTextLeft()));
+  displayHelperTextRight = computed(() => this.maybeTranslate(this.helperTextRight()));
+  displayWarningText = computed(() => this.maybeTranslate(this.warningText()));
 
   inputState = computed(() => {
     this.formValidityVersion();
@@ -118,5 +125,11 @@ export abstract class BaseInputDirective<T> {
     this.isFocused.set(true);
   }
 
-  // TODO: Add optional tooltip handling
+  protected maybeTranslate(value: string | undefined): string {
+    this.langChange();
+    if (value === undefined || value === '') {
+      return value ?? '';
+    }
+    return this.shouldTranslate() ? this.translate.instant(value) : value;
+  }
 }

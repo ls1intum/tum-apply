@@ -15,7 +15,7 @@
         @for (button of category.buttons; track button.text) {
           <jhi-sidebar-button
             [icon]="button.icon"
-            [label]="button.text | translate"
+            [label]="button.text"
             [link]="button.link"
             [isActive]="isActive(button.link)"
             [isCollapsed]="isSidebarCollapsed()"
@@ -30,7 +30,7 @@
       <jhi-sidebar-button
         [isActive]="isActive('/settings')"
         [isCollapsed]="isSidebarCollapsed()"
-        [label]="'settings.header' | translate"
+        label="settings.header"
         class="settings-button"
         icon="gear"
         link="/settings"

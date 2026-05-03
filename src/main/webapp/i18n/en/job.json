@@ -154,7 +154,10 @@
       "complianceHeader": "Compliance Checker",
       "critical": "Fix critical AGG mistakes",
       "transparency": "Improve transparency and clarity",
-      "filterByCategory": "Filter by category"
+      "dsgvo": "Fix Data privacy",
+      "publicSector": "Check Academic Law",
+      "filterByCategory": "Filter by category",
+      "complianceTooltipText": "Colors indicate category, not severity. All items are equally important."
     },
     "positionDetailsSection": {
       "jobDescription": {
@@ -320,9 +323,9 @@
       "startDate": "Start Date"
     },
     "ariaLabels": {
-      "viewJobDetails": "View details for {{title}}"
+      "viewJobDetails": "View details for {title}"
     },
-    "hoursPerWeek": "{{workload}} h/week",
+    "hoursPerWeek": "{workload} h/week",
     "notificationsCta": {
       "textPrefix": "No suitable job? Receive",
       "link": "notifications"
@@ -423,7 +426,7 @@
     },
     "workload": {
       "fullTime": "Full-time",
-      "partTime": "Part-time ({{percentage}}%)"
+      "partTime": "Part-time ({percentage}%)"
     },
     "infos": {
       "applicantLanguageInfo": "Applicants only see the job description in the language they have selected."

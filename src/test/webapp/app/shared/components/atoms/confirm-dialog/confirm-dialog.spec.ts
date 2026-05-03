@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { By } from '@angular/platform-browser';
 import { ConfirmationService } from 'primeng/api';
@@ -36,7 +37,7 @@ describe('ConfirmDialog', () => {
 
     await TestBed.configureTestingModule({
       imports: [ConfirmDialog, ButtonComponent],
-      providers: [provideFontAwesomeTesting()],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock()],
     })
       .overrideComponent(ConfirmDialog, {
         set: {
