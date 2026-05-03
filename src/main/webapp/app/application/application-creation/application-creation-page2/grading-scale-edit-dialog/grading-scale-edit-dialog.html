@@ -4,11 +4,11 @@
       <!-- Upper Limit Input -->
       <div class="flex-1">
         <jhi-string-input
-          label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
+          label="entity.applicationPage2.label.gradeUpperLimit"
           [control]="limitsForm().controls.upperLimit"
           [(model)]="data().upperLimit"
           icon="circle-info"
-          [tooltipText]="'entity.applicationPage2.tooltip.gradeUpperLimit' | translate"
+          tooltipText="entity.applicationPage2.tooltip.gradeUpperLimit"
         />
       </div>
 
@@ -24,11 +24,11 @@
       <!-- Lower Limit Input -->
       <div class="flex-1">
         <jhi-string-input
-          label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
+          label="entity.applicationPage2.label.gradeLowerLimit"
           [control]="limitsForm().controls.lowerLimit"
           [(model)]="data().lowerLimit"
           icon="circle-info"
-          [tooltipText]="'entity.applicationPage2.tooltip.gradeLowerLimit' | translate"
+          tooltipText="entity.applicationPage2.tooltip.gradeLowerLimit"
         />
       </div>
     </div>

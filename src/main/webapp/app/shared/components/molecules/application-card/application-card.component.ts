@@ -1,7 +1,7 @@
 import { convertLikertToStandardRating } from 'app/shared/util/rating.util';
 import { Component, computed, inject, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 import { ApplicationDetailDTO } from 'app/generated/model/application-detail-dto';
 import { DividerModule } from 'primeng/divider';
@@ -14,7 +14,7 @@ import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, DividerModule, StarRatingComponent, UserAvatarComponent, TooltipModule],
+  imports: [FontAwesomeModule, TagComponent, DividerModule, StarRatingComponent, UserAvatarComponent, TooltipModule],
   templateUrl: './application-card.component.html',
   host: {
     class: 'flex flex-col h-full',
@@ -83,6 +83,19 @@ export class ApplicationCardComponent {
     if (jobTitle.length > 60) return 'text-xs';
     if (jobTitle.length > 40) return 'text-sm';
     return 'text-sm';
+  });
+
+  readonly statusBadgeText = computed(() => {
+    const state = this.applicationDetails()?.applicationState ?? '';
+    return state ? 'evaluation.statusBadge.' + state : '';
+  });
+  readonly masterDegreeLabel = computed(() => {
+    this.currentLang();
+    return this.translateService.instant('evaluation.masterDegree');
+  });
+  readonly gradeLabel = computed(() => {
+    this.currentLang();
+    return this.translateService.instant('evaluation.grade');
   });
 
   readonly masterSummary = computed(() => {

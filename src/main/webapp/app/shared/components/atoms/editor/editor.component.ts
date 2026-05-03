@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
@@ -104,7 +104,6 @@ const STANDARD_CHARACTER_BUFFER = 300;
     QuillEditorComponent,
     FontAwesomeModule,
     FormsModule,
-    TranslateModule,
     TooltipModule,
     GenderBiasAnalysisDialogComponent,
     InfoIconComponent,
@@ -136,6 +135,12 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   showAnalysisModal = signal(false);
+
+  displayHelperText = computed(() => {
+    this.langChange();
+    const value = this.helperText();
+    return value === undefined ? '' : this.translate.instant(value);
+  });
 
   readonly shouldShowButton = computed(() => {
     return this.showGenderDecoderButton() && this.analysisResult() !== undefined;

@@ -14,7 +14,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateDirective } from 'app/shared/language';
 
 import { Button } from '../../atoms/button/button.component';
@@ -40,7 +41,7 @@ export type StepData = {
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, TranslateDirective, TooltipModule],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateDirective, TooltipModule],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,
@@ -66,7 +67,14 @@ export class ProgressStepperComponent {
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext, 'next', this.currentStep()),
   );
 
+  stepTooltips: Signal<string[]> = computed(() => {
+    this.langChange();
+    return this.steps().map(step => ((step.shouldTranslate ?? false) ? this.translateService.instant(step.name) : step.name));
+  });
+
   private destroyRef = inject(DestroyRef);
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   constructor() {
     afterNextRender(() => {

@@ -1,10 +1,11 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { Message } from 'primeng/message';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-message',
-  imports: [Message, TranslateModule],
+  imports: [Message],
   templateUrl: './message.component.html',
 })
 export class MessageComponent {
@@ -41,7 +42,7 @@ export class MessageComponent {
   /**
    * Additional CSS classes to apply.
    */
-  styleClass = input<string>('');
+  classStyling = input<string>('');
 
   /**
    * Size of the message.
@@ -52,4 +53,15 @@ export class MessageComponent {
    * Whether the message can be closed.
    */
   closable = input<boolean>(false);
+
+  displayMessage = computed(() => {
+    this.langChange();
+    const value = this.message();
+    return this.shouldTranslate() ? this.translateService.instant(value, this.translationParams()) : value;
+  });
+
+  mergedClass = computed(() => `rounded-sm ${this.classStyling()}`);
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 }
