@@ -29,8 +29,8 @@ describe('FaqSectionComponent', () => {
   });
 
   it('should render the headline and subheadline translation keys', () => {
-    const headline = nativeElement.querySelector('h2.title');
-    const subheadline = nativeElement.querySelector('p.subtitle');
+    const headline = nativeElement.querySelector('h2');
+    const subheadline = nativeElement.querySelector('p');
     expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.faq.headline');
     expect(subheadline?.getAttribute('jhiTranslate')).toBe('landingPage.faq.subheadline');
   });
