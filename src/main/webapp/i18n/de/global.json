@@ -543,11 +543,11 @@
         },
         "fetchApplicationFailed": {
           "summary": "Bewerbung nicht geladen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "fetchDocumentIdsFailed": {
           "summary": "Dokumente nicht geladen",
-          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "notEditable": {
           "summary": "Nicht bearbeitbar",
@@ -563,11 +563,11 @@
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite oder kontaktiere einen Admin."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte lade die Seite neu, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "initLoadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
@@ -579,7 +579,7 @@
         },
         "errorDeletingApplication": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Bewerbung konnte nicht gelöscht werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "applicationWithdrawn": {
           "summary": "Bewerbung zurückgezogen",
@@ -587,7 +587,7 @@
         },
         "errorWithdrawingApplication": {
           "summary": "Zurückziehen fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "jobIdNotAvailable": {
           "summary": "Fehler",

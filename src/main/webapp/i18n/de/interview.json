@@ -70,7 +70,7 @@
       "error": {
         "loadFailed": {
           "summary": "Interview Termine konnten nicht geladen werden",
-          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       },
       "status": {
@@ -173,7 +173,7 @@
         },
         "error": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "errorBooked": {
           "summary": "Löschen fehlgeschlagen",
@@ -215,7 +215,7 @@
         },
         "error": {
           "summary": "Absage fehlgeschlagen",
-          "detail": "Das Interview konnte nicht abgesagt werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Das Interview konnte nicht abgesagt werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       }
     },
@@ -297,7 +297,7 @@
         },
         "error": {
           "summary": "Senden fehlgeschlagen",
-          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "noSlots": {
           "summary": "Keine Termine verfügbar",
