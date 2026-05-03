@@ -23,7 +23,8 @@ describe('VoiceCardComponent', () => {
     fixture.detectChanges();
 
     const imgEl = nativeElement.querySelector('img');
-    const [nameEl, fieldEl] = nativeElement.querySelectorAll('img + div > div');
+    const detailRows = Array.from(nativeElement.querySelectorAll('img + div > div'));
+    const [nameEl, fieldEl] = detailRows;
     const quoteEl = nativeElement.querySelector('p');
 
     expect(imgEl).not.toBeNull();
