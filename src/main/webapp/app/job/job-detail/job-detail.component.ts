@@ -521,13 +521,13 @@ export class JobDetailComponent {
       location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
-      contractExtendable: (data as { contractExtendable?: boolean }).contractExtendable === true,
+      contractExtendable: data.contractExtendable ?? false,
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
       tvlGrade: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,
-      startDateByArrangement: (data as { startDateByArrangement?: boolean }).startDateByArrangement === true,
+      startDateByArrangement: data.startDateByArrangement ?? false,
       endDate,
       createdAt,
       lastModifiedAt,
@@ -546,7 +546,7 @@ export class JobDetailComponent {
       applicationId: jobDetailDTO.applicationId ?? undefined,
       applicationState: jobDetailDTO.applicationState ?? undefined,
 
-      suitableForDisabled: isForm ? (data as JobFormDTO).suitableForDisabled : jobDetailDTO.suitableForDisabled,
+      suitableForDisabled: data.suitableForDisabled,
     };
   }
 
