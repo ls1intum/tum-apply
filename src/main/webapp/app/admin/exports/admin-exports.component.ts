@@ -31,11 +31,13 @@ interface ExportSection {
 
 /**
  * How often we poll the status endpoint while a task is in progress.
- * Large exports take minutes — a slow cadence keeps the server load low
- * while still surfacing progress updates often enough to reassure the
- * admin that something is happening.
+ * Large exports take many minutes; a slow cadence keeps the server load
+ * low while still refreshing the in-card counters often enough that the
+ * admin sees progress. The live download progress bar inside the card
+ * is driven by chunk-level updates, not by polling, so a longer poll
+ * interval does not make the UI feel frozen.
  */
-const POLL_INTERVAL_MS = 30000;
+const POLL_INTERVAL_MS = 45000;
 
 /**
  * Size of each byte-range chunk the browser requests when downloading a
@@ -226,6 +228,52 @@ export class AdminExportsComponent {
   /** True while the browser is actively downloading a ready ZIP for this type. */
   isDownloading(type: AdminExportType): boolean {
     return this.downloadProgress().has(type);
+  }
+
+  /**
+   * Sections that render as a single full-width grid (currently only the
+   * Jobs section, which has multiple buttons).
+   */
+  readonly multiButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length > 1));
+
+  /**
+   * Sections that own a single button. They are rendered side-by-side as
+   * cards in one row instead of stacking on top of each other.
+   */
+  readonly singleButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length === 1));
+
+  /**
+   * Aggregate build progress across every counter the server reports for
+   * the given task (schools / departments / research groups / jobs /
+   * applications / documents / users / role assignments / applicants /
+   * subscriptions). Returns a number between 0 and 100, or {@code null}
+   * when the server has not yet reported any expected counts (e.g. the
+   * task just started). Drives the in-card progress bar so the admin
+   * sees concrete movement during the multi-minute build.
+   */
+  buildProgressPercent(task: AdminExportTaskDTO | undefined): number | null {
+    if (task === undefined) return null;
+    let exported = 0;
+    let expected = 0;
+    for (const counter of [
+      task.schools,
+      task.departments,
+      task.researchGroups,
+      task.jobs,
+      task.applications,
+      task.documents,
+      task.users,
+      task.userResearchGroupRoles,
+      task.applicants,
+      task.applicantSubjectAreaSubscriptions,
+    ]) {
+      if (counter?.expected !== undefined && counter.expected > 0) {
+        expected += counter.expected;
+        exported += counter.exported ?? 0;
+      }
+    }
+    if (expected === 0) return null;
+    return Math.min(100, Math.floor((exported / expected) * 100));
   }
 
   /**
