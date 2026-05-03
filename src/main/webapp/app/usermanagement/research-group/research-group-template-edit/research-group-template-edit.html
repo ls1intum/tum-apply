@@ -23,8 +23,8 @@
   <div class="meta-info">
     <jhi-select
       class="template-type-select"
-      [label]="'researchGroup.emailTemplates.sendWhen' | translate"
-      [placeholder]="'researchGroup.emailTemplates.selectSendWhen' | translate"
+      label="researchGroup.emailTemplates.sendWhen"
+      placeholder="researchGroup.emailTemplates.selectSendWhen"
       [items]="selectOptions()"
       [translateItems]="true"
       [selected]="preselectedEmailType()"
@@ -46,7 +46,7 @@
           <span class="subject-prefix">TUMApply -</span>
           <jhi-string-input
             class="subject-input"
-            [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
+            placeholder="researchGroup.emailTemplates.addSubject"
             [model]="english().subject"
             [errorEnabled]="false"
             (modelChange)="updateEnglishSubject($event)"
@@ -74,7 +74,7 @@
           <span class="subject-prefix">TUMApply -</span>
           <jhi-string-input
             class="subject-input"
-            [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
+            placeholder="researchGroup.emailTemplates.addSubject"
             [model]="german().subject"
             [errorEnabled]="false"
             (modelChange)="updateGermanSubject($event)"

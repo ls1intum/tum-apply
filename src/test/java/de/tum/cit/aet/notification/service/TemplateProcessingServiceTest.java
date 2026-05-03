@@ -13,6 +13,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -28,37 +29,47 @@ class TemplateProcessingServiceTest {
         ReflectionTestUtils.setField(service, "url", "http://localhost:9000");
     }
 
-    @Test
-    void renderSubject_withRawString_substitutesVariables() {
-        Application application = sampleApplication("Alice", "Smith");
+    // ===== RENDER SUBJECT =====
+    @Nested
+    class RenderSubjectTests {
 
-        String rendered = service.renderSubject("Hello ${APPLICANT_FIRST_NAME}", application);
+        @Test
+        void renderSubject_withRawString_substitutesVariables() {
+            Application application = sampleApplication("Alice", "Smith");
 
-        assertThat(rendered).isEqualTo("TUMApply - Hello Alice");
+            String rendered = service.renderSubject("Hello ${APPLICANT_FIRST_NAME}", application);
+
+            assertThat(rendered).isEqualTo("TUMApply - Hello Alice");
+        }
+
+        @Test
+        void renderSubject_withNullContent_andNoVariables_works() {
+            String rendered = service.renderSubject("Static subject", null);
+
+            assertThat(rendered).isEqualTo("TUMApply - Static subject");
+        }
     }
 
-    @Test
-    void renderSubject_withNullContent_andNoVariables_works() {
-        String rendered = service.renderSubject("Static subject", null);
+    // ===== RENDER TEMPLATE =====
+    @Nested
+    class RenderTemplateTests {
 
-        assertThat(rendered).isEqualTo("TUMApply - Static subject");
-    }
+        @Test
+        void renderTemplate_buildsHtmlWithVariableSubstitution() {
+            Application application = sampleApplication("Bob", "Smith");
+            String body = "<p>Hi ${APPLICANT_FIRST_NAME}</p>";
 
-    @Test
-    void renderTemplate_buildsHtmlWithVariableSubstitution() {
-        Application application = sampleApplication("Bob", "Smith");
-        String body = "<p>Hi ${APPLICANT_FIRST_NAME}</p>";
+            String rendered = service.renderTemplate(Language.ENGLISH, body, application);
 
-        String rendered = service.renderTemplate(Language.ENGLISH, body, application);
+            assertThat(rendered).contains("Hi Bob");
+        }
 
-        assertThat(rendered).contains("Hi Bob");
-    }
-
-    @Test
-    void renderTemplate_throwsOnUnsupportedContentType() {
-        assertThatThrownBy(() -> service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", "unsupported")).isInstanceOf(
-            TemplateProcessingException.class
-        );
+        @Test
+        void renderTemplate_throwsOnUnsupportedContentType() {
+            assertThatThrownBy(() -> service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", "unsupported")).isInstanceOf(
+                TemplateProcessingException.class
+            );
+        }
     }
 
     private Application sampleApplication(String firstName, String lastName) {

@@ -2,7 +2,7 @@
   "time": {
     "today": "Today",
     "justNow": "Just now",
-    "ago": "{{count}} {{unit}} ago",
+    "ago": "{count} {unit} ago",
     "units": {
       "second": "second",
       "secondPlural": "seconds",

@@ -3,13 +3,13 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
-  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateModule, TranslateDirective, TooltipModule],
+  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateDirective, TooltipModule],
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -24,7 +24,7 @@ export class DatePickerComponent {
   placeholder = input<string | undefined>(undefined);
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
   errorEnabled = input<boolean>(false);
 
   /**
@@ -88,9 +88,13 @@ export class DatePickerComponent {
     return currentLang === 'en' ? 'dd/mm/yy' : 'dd.mm.yy';
   });
 
+  displayPlaceholder = computed(() => this.translator.translate(this.placeholder(), this.shouldTranslate()));
+  displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()));
+
   private scrollListener?: (event: Event) => void;
   private elementRef = inject(ElementRef);
-  private translateService = inject(TranslateService);
+  private translator = injectTranslator();
+  private translateService = this.translator.translateService;
 
   /**
    * Effect to sync modelDate and handle language changes

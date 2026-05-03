@@ -62,7 +62,7 @@
       "failedRequirements": "Anforderungen nicht erfüllt",
       "otherReason": "Anderer Grund"
     },
-    "defaultAcceptMessage": "<p>Sehr geehrte*r {{APPLICANT_FIRST_NAME}},</p><br /><p>ich freue mich, dir mitteilen zu können, dass du für die Stelle <b>{{JOB_NAME}}</b> in unserer Forschungsgruppe angenommen wurdest. Dein fachlicher Hintergrund, deine Motivation und dein Potenzial zur Mitgestaltung unserer akademischen und anwendungsorientierten Forschung haben uns überzeugt.</p><br /><p>In dieser Rolle übernimmst du die Verantwortung für dein Forschungsprojekt – einschließlich der inhaltlichen Ausrichtung, der Veröffentlichung deiner Ergebnisse und der aktiven Mitarbeit an laufenden Teamaktivitäten. Die Stelle erfordert ein hohes Maß an Engagement, Eigenständigkeit und Kommunikationsfähigkeit.</p><br /><p>Wir sind überzeugt von deinem Potenzial und freuen uns auf die Impulse, die du in unsere Gruppe und die wissenschaftliche Gemeinschaft einbringen wirst.</p><br /><p><b>Bitte bestätige die Annahme dieses Angebots so bald wie möglich und kontaktiere mich unter <a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a>, um die nächsten Schritte zu besprechen.</b></p><br /><br /><p>Mit freundlichen Grüßen<br /><br />{{PROFESSOR_FIRST_NAME}}<br /><br />{{PROFESSOR_FIRST_NAME}} {{PROFESSOR_LAST_NAME}}<br />{{RESEARCH_GROUP_NAME}}<br />Technische Universität München<br /><a href=\"mailto:{{ PROFESSOR_EMAIL }}\">{{ PROFESSOR_EMAIL }}</a><br /><a href=\"{{RESEARCH_GROUP_WEBSITE}}\" target=\"_blank\">{{RESEARCH_GROUP_WEBSITE}}</a></p><br />",
+    "defaultAcceptMessage": "<p>Sehr geehrte*r {APPLICANT_FIRST_NAME},</p><br /><p>ich freue mich, dir mitteilen zu können, dass du für die Stelle <b>{JOB_NAME}</b> in unserer Forschungsgruppe angenommen wurdest. Dein fachlicher Hintergrund, deine Motivation und dein Potenzial zur Mitgestaltung unserer akademischen und anwendungsorientierten Forschung haben uns überzeugt.</p><br /><p>In dieser Rolle übernimmst du die Verantwortung für dein Forschungsprojekt – einschließlich der inhaltlichen Ausrichtung, der Veröffentlichung deiner Ergebnisse und der aktiven Mitarbeit an laufenden Teamaktivitäten. Die Stelle erfordert ein hohes Maß an Engagement, Eigenständigkeit und Kommunikationsfähigkeit.</p><br /><p>Wir sind überzeugt von deinem Potenzial und freuen uns auf die Impulse, die du in unsere Gruppe und die wissenschaftliche Gemeinschaft einbringen wirst.</p><br /><p><b>Bitte bestätige die Annahme dieses Angebots so bald wie möglich und kontaktiere mich unter <a href=\"mailto:{PROFESSOR_EMAIL}\">{PROFESSOR_EMAIL}</a>, um die nächsten Schritte zu besprechen.</b></p><br /><br /><p>Mit freundlichen Grüßen<br /><br />{PROFESSOR_FIRST_NAME}<br /><br />{PROFESSOR_FIRST_NAME} {PROFESSOR_LAST_NAME}<br />{RESEARCH_GROUP_NAME}<br />Technische Universität München<br /><a href=\"mailto:{PROFESSOR_EMAIL}\">{PROFESSOR_EMAIL}</a><br /><a href=\"{RESEARCH_GROUP_WEBSITE}\" target=\"_blank\">{RESEARCH_GROUP_WEBSITE}</a></p><br />",
     "addToInterview": "Zum Interview einladen",
     "addToInterviewDialog": {
       "header": "Bewerber:in zum Interview einladen",
@@ -75,7 +75,7 @@
       },
       "error": {
         "summary": "Fehler",
-        "detail": "Fehler beim Hinzufügen des Bewerbers. Bitte versuche es später erneut oder kontaktiere einen Administrator."
+        "detail": "Fehler beim Hinzufügen des Bewerbers. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     },
     "education": {
@@ -86,7 +86,7 @@
     "details": {
       "grade": "Note",
       "converted": "konvertiert",
-      "converterTooltip": "Originalnote: {{originalGrade}}<br>Skala: {{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)<br>Nach <a href=\"https://www.kmk.org/fileadmin/Dateien/pdf/ZAB/Hochschulzugang_Beschluesse_der_KMK/GesNot05.pdf\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">KMK-Beschluss</a>",
+      "converterTooltip": "Originalnote: {originalGrade}<br>Skala: {upperLimit} (beste) bis {lowerLimit} (bestanden)<br>Nach <a href=\"https://www.kmk.org/fileadmin/Dateien/pdf/ZAB/Hochschulzugang_Beschluesse_der_KMK/GesNot05.pdf\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">KMK-Beschluss</a>",
       "conversionFailedTooltip": "Note wurde bereits konvertiert / konnte nicht konvertiert werden",
       "applicationTitle": "Bewerbung",
       "applicationMotivation": "Motivation",
@@ -103,7 +103,7 @@
       "documentView": "Anzeigen",
       "documentDownloadAll": "Alle herunterladen",
       "moreDocument": "+1 weiteres Dokument",
-      "moreDocuments": "+{{count}} weitere Dokumente",
+      "moreDocuments": "+{count} weitere Dokumente",
       "ratingTitle": "Bewertungen",
       "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben.",
       "ratingYourRating": "Deine Bewertung",

@@ -154,7 +154,10 @@
       "complianceHeader": "Compliance Checker",
       "critical": "Fix critical AGG mistakes",
       "transparency": "Improve transparency and clarity",
-      "filterByCategory": "Filter by category"
+      "dsgvo": "Fix Data privacy",
+      "publicSector": "Check Academic Law",
+      "filterByCategory": "Filter by category",
+      "complianceTooltipText": "Colors indicate category, not severity. All items are equally important."
     },
     "positionDetailsSection": {
       "jobDescription": {
@@ -260,7 +263,12 @@
     },
     "reviewPageSection": {
       "title": "Overview",
-      "message": "Please review your entries before publishing the doctorate position."
+      "complianceBanner": {
+        "complianceCheckOngoing": "<b>Compliance Check Ongoing:</b> Your job is being analyzed for compliance with legal and university standards. This may take a moment.",
+        "critical": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG {criticalCount, plural, =1 {violation} other {violations}}{othersCount, plural, =0 {} other { and {othersCount} further {othersCount, plural, =1 {issue} other {issues}}}} to ensure compliance.",
+        "warning": "<b>Improvement Needed:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {othersCount} identified compliance {othersCount, plural, =1 {issue} other {issues}}.",
+        "default": "Please review your entries before publishing the doctorate position."
+      }
     },
     "toastMessages": {
       "noDescription": {
@@ -315,9 +323,9 @@
       "startDate": "Start Date"
     },
     "ariaLabels": {
-      "viewJobDetails": "View details for {{title}}"
+      "viewJobDetails": "View details for {title}"
     },
-    "hoursPerWeek": "{{workload}} h/week",
+    "hoursPerWeek": "{workload} h/week",
     "notificationsCta": {
       "textPrefix": "No suitable job? Receive",
       "link": "notifications"
@@ -420,7 +428,7 @@
     },
     "workload": {
       "fullTime": "Full-time",
-      "partTime": "Part-time ({{percentage}}%)"
+      "partTime": "Part-time ({percentage}%)"
     },
     "infos": {
       "applicantLanguageInfo": "Applicants only see the job description in the language they have selected."

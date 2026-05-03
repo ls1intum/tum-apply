@@ -28,7 +28,7 @@ export class InfoBoxComponent {
   /**
    * Whether to translate the message using the translation key.
    */
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
 
   /**
    * Custom icon to display. If not provided, uses default based on severity.

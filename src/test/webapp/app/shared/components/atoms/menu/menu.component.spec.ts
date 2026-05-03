@@ -77,7 +77,7 @@ describe('MenuComponent', () => {
     });
 
     it('should combine custom styleClass with severity', () => {
-      const items: JhiMenuItem[] = [{ label: 'Combined item', severity: 'danger', styleClass: 'custom-class' }];
+      const items: JhiMenuItem[] = [{ label: 'Combined item', severity: 'danger', classStyling: 'custom-class' }];
 
       const fixture = createMenuFixture({ items });
 
@@ -96,7 +96,7 @@ describe('MenuComponent', () => {
     });
 
     it('should not include empty styleClass string', () => {
-      const items: JhiMenuItem[] = [{ label: 'Item', styleClass: '' }];
+      const items: JhiMenuItem[] = [{ label: 'Item', classStyling: '' }];
 
       const fixture = createMenuFixture({ items });
 

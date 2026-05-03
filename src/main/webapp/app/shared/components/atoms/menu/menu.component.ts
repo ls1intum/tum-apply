@@ -17,7 +17,7 @@ export interface JhiMenuItem {
   command?: () => void;
   severity?: MenuItemSeverity;
   disabled?: boolean;
-  styleClass?: string;
+  classStyling?: string;
 }
 
 @Component({
@@ -132,8 +132,8 @@ export class MenuComponent {
   private buildStyleClass(item: JhiMenuItem): string {
     const parts: string[] = [];
 
-    if (item.styleClass !== undefined && item.styleClass !== '') {
-      parts.push(item.styleClass);
+    if (item.classStyling !== undefined && item.classStyling !== '') {
+      parts.push(item.classStyling);
     }
 
     if (item.severity !== undefined) {

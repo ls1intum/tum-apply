@@ -1,8 +1,8 @@
 <!-- Confirm Dialogs -->
 <jhi-confirm-dialog
-  [label]="'button.edit' | translate"
-  [header]="'myPositionsPage.confirmDialog.editJobHeader' | translate"
-  [message]="'myPositionsPage.confirmDialog.editJobMessage' | translate"
+  label="button.edit"
+  header="myPositionsPage.confirmDialog.editJobHeader"
+  message="myPositionsPage.confirmDialog.editJobMessage"
   severity="primary"
   confirmIcon="pencil"
   [showOpenButton]="false"
@@ -12,9 +12,9 @@
 />
 
 <jhi-confirm-dialog
-  [label]="'button.delete' | translate"
-  [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
-  [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+  label="button.delete"
+  header="myPositionsPage.confirmDialog.deleteHeader"
+  message="myPositionsPage.confirmDialog.deleteMessage"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
@@ -24,9 +24,9 @@
 />
 
 <jhi-confirm-dialog
-  [label]="'button.close' | translate"
-  [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
-  [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+  label="button.close"
+  header="myPositionsPage.confirmDialog.closeHeader"
+  message="myPositionsPage.confirmDialog.closeMessage"
   severity="danger"
   confirmIcon="xmark"
   [showOpenButton]="false"
@@ -113,9 +113,9 @@
 
       <ng-template #actionTemplate let-job>
         <div class="flex justify-end gap-1">
-          <jhi-button [tooltip]="'button.view' | translate" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
+          <jhi-button tooltip="button.view" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button
-            [tooltip]="getMenuItems()(job).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+            [tooltip]="getMenuItems()(job).length > 0 ? 'button.actions' : 'button.noFurtherActions'"
             icon="ellipsis-vertical"
             variant="text"
             (click)="menu.toggle($event)"
@@ -126,11 +126,7 @@
       </ng-template>
 
       <ng-template #stateTemplate let-job>
-        <jhi-tag
-          [text]="stateTextMap()[job.state] ? (stateTextMap()[job.state] | translate) : ('jobState.unknown' | translate)"
-          [color]="stateSeverityMap()[job.state] || 'info'"
-          width="8rem"
-        />
+        <jhi-tag [text]="stateTextMap()[job.state] || 'jobState.unknown'" [color]="stateSeverityMap()[job.state] || 'info'" width="8rem" />
       </ng-template>
     </div>
   </div>

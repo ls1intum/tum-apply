@@ -8,6 +8,7 @@ import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfArray;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -488,6 +489,8 @@ public class PDFBuilder {
             // add TUMApply as clickable Link
             Link tumapplyLink = new Link("TUMApply", PdfAction.createURI(TUMAPPLY_URL));
             tumapplyLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(normalFont).setFontSize(FONT_SIZE_METADATA);
+            // iText link annotations default to a 1pt border; clear it.
+            tumapplyLink.getLinkAnnotation().setBorder(new PdfArray(new float[] { 0, 0, 0 }));
 
             metadataParagraph.add(tumapplyLink);
 
