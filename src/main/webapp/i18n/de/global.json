@@ -46,7 +46,7 @@
       "about-us": "TUMApply - Über uns",
       "interview": {
         "overview": "TUMApply - Interviewübersicht",
-        "detail": "Interview - {{jobTitle}}",
+        "detail": "Interview - {jobTitle}",
         "assessment": "TUMApply - Interview Bewertung"
       },
       "dataExport": {
@@ -118,17 +118,17 @@
       }
     },
     "stepper": {
-      "progress": "Schritt {{ current }} von {{ total }}"
+      "progress": "Schritt {current} von {total}"
     },
     "input": {
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
-        "minLength": "Dieses Feld muss mindestens {{min}} Zeichen lang sein.",
-        "maxLength": "Dieses Feld darf höchstens {{max}} Zeichen lang sein.",
+        "minLength": "Dieses Feld muss mindestens {min} Zeichen lang sein.",
+        "maxLength": "Dieses Feld darf höchstens {max} Zeichen lang sein.",
         "pattern": "Ungültiges Format.",
         "email": "Ungültige Email-Adresse.",
-        "min": "Dieses Feld muss mind. {{min}} sein.",
-        "max": "Dieses Feld darf max. {{max}} sein.",
+        "min": "Dieses Feld muss mind. {min} sein.",
+        "max": "Dieses Feld darf max. {max} sein.",
         "invalidLimitType": "Bitte verwende dasselbe Format wie die eingegebene Note.",
         "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
@@ -152,7 +152,7 @@
       "dev": "Entwicklung",
       "test": "Entwicklung"
     },
-    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente.",
+    "item-count": "Ergebnis {first} - {second} von {total} Elemente.",
     "dataExport": {
       "downloadSuccess": "Download erfolgreich!",
       "downloadSuccessMessage": "Dein Datenexport wurde erfolgreich heruntergeladen.",
@@ -190,7 +190,7 @@
       "open": "Öffnen",
       "save": "Speichern",
       "view": "Details",
-      "show": "Zeige {{otherEntity}}"
+      "show": "Zeige {otherEntity}"
     },
     "detail": {
       "field": "Feld",
@@ -217,13 +217,13 @@
     },
     "validation": {
       "required": "Dieses Feld wird benötigt.",
-      "minlength": "Dieses Feld muss mind. {{min}} Zeichen lang sein.",
-      "maxlength": "Dieses Feld darf max. {{max}} Zeichen lang sein.",
-      "min": "Dieses Feld muss mind. {{min}} sein.",
-      "max": "Dieses Feld darf max. {{max}} sein.",
-      "minbytes": "Dieses Feld sollte mehr als {{min}} bytes haben.",
-      "maxbytes": "Dieses Feld sollte nicht mehr als {{max}} bytes haben.",
-      "pattern": "Dieses Feld muss das Muster {{pattern}} erfüllen.",
+      "minlength": "Dieses Feld muss mind. {min} Zeichen lang sein.",
+      "maxlength": "Dieses Feld darf max. {max} Zeichen lang sein.",
+      "min": "Dieses Feld muss mind. {min} sein.",
+      "max": "Dieses Feld darf max. {max} sein.",
+      "minbytes": "Dieses Feld sollte mehr als {min} bytes haben.",
+      "maxbytes": "Dieses Feld sollte nicht mehr als {max} bytes haben.",
+      "pattern": "Dieses Feld muss das Muster {pattern} erfüllen.",
       "number": "Dieses Feld muss eine Zahl sein.",
       "datetimelocal": "Dieses Feld muss eine Datums- und Zeitangabe enthalten.",
       "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
@@ -234,9 +234,9 @@
       "selected": "Ausgewählt",
       "clearAll": "Alle entfernen",
       "noResults": "Keine Ergebnisse gefunden",
-      "numberSelected": "{{selected}} ausgewählt",
+      "numberSelected": "{selected} ausgewählt",
       "apply": "Anwenden",
-      "recordsFound": "{{count}} {{entity}} gefunden",
+      "recordsFound": "{count} {entity} gefunden",
       "show": "Stellen anzeigen",
       "resetFilter": "Filter zurücksetzen"
     },
@@ -280,7 +280,7 @@
       },
       "duplicate": {
         "title": "Dokument bereits vorhanden",
-        "message": "Ein Dokument mit dem Namen \"{{filename}}\" existiert bereits. Möchtest du es ersetzen?",
+        "message": "Ein Dokument mit dem Namen \"{filename}\" existiert bereits. Möchtest du es ersetzen?",
         "replace": "Ersetzen"
       },
       "replacement": {
@@ -292,11 +292,11 @@
         "replace_failed": "Dokument konnte nicht ersetzt werden",
         "too_large_detailed": {
           "summary": "Dateien zu groß",
-          "detail": "Maximale Upload-Größe ist {{maxSize}} MB pro Datei. Zu große Datei: {{totalSize}}"
+          "detail": "Maximale Upload-Größe ist {maxSize} MB pro Datei. Zu große Datei: {totalSize}"
         },
         "total_too_large": {
           "summary": "Gesamtgröße überschreitet Limit",
-          "detail": "Maximale Gesamtgröße ist {{maxTotal}} MB.\nDeine Dateien insgesamt: {{actualTotal}}"
+          "detail": "Maximale Gesamtgröße ist {maxTotal} MB.\nDeine Dateien insgesamt: {actualTotal}"
         },
         "upload_failed": {
           "summary": "Upload fehlgeschlagen",
@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Bewerbung für ",
       "applicant": {
-        "header": "Bewerbung für '{{jobTitle}}'",
+        "header": "Bewerbung für '{jobTitle}'",
         "title_prefix": "Bewerbung für"
       },
       "position_overview": "Stellenübersicht",
@@ -412,7 +412,7 @@
       },
       "helperText": {
         "scale": "Skala: ",
-        "gradingScale": "{{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)",
+        "gradingScale": "{upperLimit} (beste) bis {lowerLimit} (bestanden)",
         "changeScale": "Skala ändern"
       },
       "warnText": "Ungewöhnliches Format, bitte überprüfe die Eingabe",
@@ -539,7 +539,7 @@
         },
         "saveFailedWithStatus": {
           "summary": "Übermittlung fehlgeschlagen",
-          "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
+          "detail": "Bewerbung konnte nicht übermittelt werden: {status}"
         },
         "fetchApplicationFailed": {
           "summary": "Bewerbung nicht geladen",
@@ -642,17 +642,17 @@
     "internalServerError": "Interner Serverfehler",
     "server.not.reachable": "Server ist nicht erreichbar",
     "url.not.found": "Nicht gefunden",
-    "NotNull": "Feld {{fieldName}} kann nicht leer sein!",
-    "Size": "Feld {{fieldName}} erfüllt nicht die minimalen/maximalen Voraussetzungen!",
+    "NotNull": "Feld {fieldName} kann nicht leer sein!",
+    "Size": "Feld {fieldName} erfüllt nicht die minimalen/maximalen Voraussetzungen!",
     "userexists": "Benutzername bereits vergeben!",
     "emailexists": "Email wird bereits verwendet!",
-    "idexists": "Ein neuer {{entityName}} kann noch keine ID haben",
+    "idexists": "Ein neuer {entityName} kann noch keine ID haben",
     "idnull": "Ungültige ID",
     "idinvalid": "Ungültige ID",
     "idnotfound": "ID konnte nicht gefunden werden",
     "file": {
       "could.not.extract": "Datei konnte nicht extrahiert werden",
-      "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{{ fileType }}\""
+      "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{fileType}\""
     }
   },
   "imageUpload": {

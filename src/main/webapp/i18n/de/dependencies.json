@@ -16,7 +16,7 @@
     "filterSourcePlaceholder": "Quelle suchen...",
     "sourceServer": "Server",
     "sourceClient": "Client",
-    "showingComponents": "{{ count }} Abhängigkeiten angezeigt",
+    "showingComponents": "{count} Abhängigkeiten angezeigt",
     "column": {
       "name": "Name",
       "group": "Gruppe / Bereich",

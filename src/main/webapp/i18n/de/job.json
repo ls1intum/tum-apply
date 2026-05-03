@@ -320,9 +320,9 @@
       "startDate": "Startdatum"
     },
     "ariaLabels": {
-      "viewJobDetails": "Details anzeigen für {{title}}"
+      "viewJobDetails": "Details anzeigen für {title}"
     },
-    "hoursPerWeek": "{{workload}} h/Woche",
+    "hoursPerWeek": "{workload} h/Woche",
     "notificationsCta": {
       "textPrefix": "Keine passende Stelle dabei? Erhalte",
       "link": "Benachrichtigungen"
@@ -423,7 +423,7 @@
     },
     "workload": {
       "fullTime": "Vollzeit",
-      "partTime": "Teilzeit ({{percentage}}%)"
+      "partTime": "Teilzeit ({percentage}%)"
     },
     "infos": {
       "applicantLanguageInfo": "Bewerber sehen die Stellenbeschreibung nur in der von ihnen gewählten Sprache."

@@ -41,6 +41,7 @@
                   <jhi-tag
                     [text]="'systemSettings.ai.circuitBreaker.open' | translate: { time: openedAt() | date: 'HH:mm' }"
                     color="danger"
+                    [shouldTranslate]="false"
                   />
                 } @else {
                   <jhi-tag text="systemSettings.ai.circuitBreaker.closed" color="success" />

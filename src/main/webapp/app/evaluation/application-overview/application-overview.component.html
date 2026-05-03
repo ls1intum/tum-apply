@@ -67,6 +67,7 @@
       [color]="stateSeverityMap()[application.state] || 'info'"
       [tooltipText]="'evaluation.statusBadge.tooltips.' + (application.state || '')"
       width="7rem"
+      [shouldTranslate]="false"
     />
   </ng-template>
 </div>

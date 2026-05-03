@@ -80,10 +80,26 @@
           }}
         </div>
         <div class="flex justify-center gap-1.5 flex-wrap mt-2">
-          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severity.critical' | translate)" color="danger" />
-          <jhi-tag [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severity.high' | translate)" color="warn" />
-          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severity.medium' | translate)" color="warn" />
-          <jhi-tag [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severity.low' | translate)" color="secondary" />
+          <jhi-tag
+            [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severity.critical' | translate)"
+            color="danger"
+            [shouldTranslate]="false"
+          />
+          <jhi-tag
+            [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severity.high' | translate)"
+            color="warn"
+            [shouldTranslate]="false"
+          />
+          <jhi-tag
+            [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severity.medium' | translate)"
+            color="warn"
+            [shouldTranslate]="false"
+          />
+          <jhi-tag
+            [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severity.low' | translate)"
+            color="secondary"
+            [shouldTranslate]="false"
+          />
         </div>
       </div>
     </div>
@@ -133,6 +149,7 @@
           "
           [color]="dep.severityTagColor"
           [icon]="faExclamationTriangle"
+          [shouldTranslate]="false"
         />
         <div class="flex flex-wrap items-center gap-1">
           @for (vuln of isVulnerabilityExpanded(dep) ? dep.vulnerabilities : dep.vulnerabilities.slice(0, 3); track vuln.id) {
@@ -152,6 +169,7 @@
               severity="primary"
               size="xs"
               (click)="$event.stopPropagation(); toggleVulnerabilityExpansion(dep)"
+              [shouldTranslate]="false"
             />
           }
         </div>

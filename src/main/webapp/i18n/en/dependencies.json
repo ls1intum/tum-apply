@@ -16,7 +16,7 @@
     "filterSourcePlaceholder": "Search source...",
     "sourceServer": "Server",
     "sourceClient": "Client",
-    "showingComponents": "Showing {{ count }} dependencies",
+    "showingComponents": "Showing {count} dependencies",
     "column": {
       "name": "Name",
       "group": "Group / Scope",

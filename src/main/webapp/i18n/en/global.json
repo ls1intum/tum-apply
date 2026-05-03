@@ -46,7 +46,7 @@
       "about-us": "TUMApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
-        "detail": "Interview - {{jobTitle}}",
+        "detail": "Interview - {jobTitle}",
         "assessment": "TUMApply - Interview Assessment"
       },
       "dataExport": {
@@ -118,17 +118,17 @@
       }
     },
     "stepper": {
-      "progress": "Step {{ current }} of {{ total }}"
+      "progress": "Step {current} of {total}"
     },
     "input": {
       "error": {
         "required": "This field is required.",
-        "minLength": "This field is required to be at least {{ min }} characters.",
-        "maxLength": "This field cannot be longer than {{ max }} characters.",
+        "minLength": "This field is required to be at least {min} characters.",
+        "maxLength": "This field cannot be longer than {max} characters.",
         "pattern": "Invalid format.",
         "email": "Invalid email.",
-        "min": "This field should be at least {{ min }}.",
-        "max": "This field cannot be more than {{ max }}.",
+        "min": "This field should be at least {min}.",
+        "max": "This field cannot be more than {max}.",
         "invalidLimitType": "Please use the same format as the entered grade.",
         "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
@@ -152,7 +152,7 @@
       "dev": "Development",
       "test": "Development"
     },
-    "item-count": "Showing {{first}} - {{second}} of {{total}} items.",
+    "item-count": "Showing {first} - {second} of {total} items.",
     "dataExport": {
       "downloadSuccess": "Download successful!",
       "downloadSuccessMessage": "Your data export has been downloaded successfully.",
@@ -190,7 +190,7 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}"
+      "show": "Show {otherEntity}"
     },
     "detail": {
       "field": "Field",
@@ -217,13 +217,13 @@
     },
     "validation": {
       "required": "This field is required.",
-      "minlength": "This field is required to be at least {{ min }} characters.",
-      "maxlength": "This field cannot be longer than {{ max }} characters.",
-      "min": "This field should be at least {{ min }}.",
-      "max": "This field cannot be more than {{ max }}.",
-      "minbytes": "This field should be at least {{ min }} bytes.",
-      "maxbytes": "This field cannot be more than {{ max }} bytes.",
-      "pattern": "This field should follow pattern for {{ pattern }}.",
+      "minlength": "This field is required to be at least {min} characters.",
+      "maxlength": "This field cannot be longer than {max} characters.",
+      "min": "This field should be at least {min}.",
+      "max": "This field cannot be more than {max}.",
+      "minbytes": "This field should be at least {min} bytes.",
+      "maxbytes": "This field cannot be more than {max} bytes.",
+      "pattern": "This field should follow pattern for {pattern}.",
       "number": "This field should be a number.",
       "datetimelocal": "This field should be a date and time.",
       "patternLogin": "This field can only contain letters, digits and e-mail addresses."
@@ -234,9 +234,9 @@
       "selected": "Selected",
       "clearAll": "Clear All",
       "noResults": "No results found",
-      "numberSelected": "{{selected}} selected",
+      "numberSelected": "{selected} selected",
       "apply": "Apply",
-      "recordsFound": "{{count}} {{entity}} found",
+      "recordsFound": "{count} {entity} found",
       "show": "Show Positions",
       "resetFilter": "Reset Filter"
     },
@@ -280,7 +280,7 @@
       },
       "duplicate": {
         "title": "Document already exists",
-        "message": "A document with the name \"{{filename}}\" already exists. Do you want to replace it?",
+        "message": "A document with the name \"{filename}\" already exists. Do you want to replace it?",
         "replace": "Replace"
       },
       "replacement": {
@@ -292,11 +292,11 @@
         "replace_failed": "Failed to replace document",
         "too_large_detailed": {
           "summary": "Files Too Large",
-          "detail": "Maximum upload size is {{maxSize}} MB per file. Oversized file: {{totalSize}}"
+          "detail": "Maximum upload size is {maxSize} MB per file. Oversized file: {totalSize}"
         },
         "total_too_large": {
           "summary": "Total Size Exceeds Limit",
-          "detail": "Maximum total upload size is {{maxTotal}} MB.\nYour files total: {{actualTotal}}"
+          "detail": "Maximum total upload size is {maxTotal} MB.\nYour files total: {actualTotal}"
         },
         "upload_failed": {
           "summary": "Upload Failed",
@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Application for ",
       "applicant": {
-        "header": "Application for '{{jobTitle}}'",
+        "header": "Application for '{jobTitle}'",
         "title_prefix": "Application for"
       },
       "position_overview": "Position Overview",
@@ -412,7 +412,7 @@
       },
       "helperText": {
         "scale": "Scale: ",
-        "gradingScale": "{{upperLimit}} (best) to {{lowerLimit}} (pass)",
+        "gradingScale": "{upperLimit} (best) to {lowerLimit} (pass)",
         "changeScale": "Change Scale"
       },
       "warnText": "Unusual format, please check your entry",
@@ -539,7 +539,7 @@
         },
         "saveFailedWithStatus": {
           "summary": "Submission failed",
-          "detail": "Failed to submit application: {{status}}"
+          "detail": "Failed to submit application: {status}"
         },
         "fetchApplicationFailed": {
           "summary": "Application not loaded",
@@ -642,17 +642,17 @@
     "internalServerError": "Internal server error",
     "server.not.reachable": "Server not reachable",
     "url.not.found": "Not found",
-    "NotNull": "Field {{ fieldName }} cannot be empty!",
-    "Size": "Field {{ fieldName }} does not meet min/max size requirements!",
+    "NotNull": "Field {fieldName} cannot be empty!",
+    "Size": "Field {fieldName} does not meet min/max size requirements!",
     "userexists": "Login name already used!",
     "emailexists": "Email is already in use!",
-    "idexists": "A new {{ entityName }} cannot already have an ID",
+    "idexists": "A new {entityName} cannot already have an ID",
     "idnull": "Invalid ID",
     "idinvalid": "Invalid ID",
     "idnotfound": "ID cannot be found",
     "file": {
       "could.not.extract": "Could not extract file",
-      "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
+      "not.image": "File was expected to be an image but was found to be \"{fileType}\""
     }
   },
   "imageUpload": {
