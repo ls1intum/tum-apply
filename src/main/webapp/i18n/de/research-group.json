@@ -8,7 +8,7 @@
     "imageHeader": "Bilder",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
-      "organizationInfo": "Um das Department und die School zu ändern, kontaktiere uns bitte.",
+      "organizationInfo": "Bitte kontaktiere uns, um das Department und die School zu ändern.",
       "noDepartment": "Kein Department",
       "noSchool": "Keine School",
       "fields": {
