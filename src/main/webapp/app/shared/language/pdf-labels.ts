@@ -59,6 +59,7 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     year: translate.instant('jobDetailPage.units.year'),
     years: translate.instant('jobDetailPage.units.years'),
     fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
+    tvlGrade: `${translate.instant('jobDetailPage.labels.tvlGrade')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
     endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
     jobDetails: translate.instant('pdf.sections.jobDetails'),

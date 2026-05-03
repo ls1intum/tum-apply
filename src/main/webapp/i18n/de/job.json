@@ -142,6 +142,11 @@
         "Scholarship": "Stipendium",
         "SelfFunded": "Selbstfinanziert",
         "PartiallyFunded": "Teilweise finanziert"
+      },
+      "tvlGrade": {
+        "label": "TV-L Gruppe",
+        "placeholder": "Wähle eine Entgeltgruppe...",
+        "toolTipText": "Gib die <a href=\"https://portal.mytum.de/kompass/personalwirtschaft_public/tabellenentgelt_stufenzuordnung_tv_l\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">TUM TV-L Entgeltgruppe</a> an, um Transparenz bei der tariflichen Vergütung zu gewährleisten."
       }
     },
     "aiSidebar": {
@@ -402,6 +407,7 @@
       "workload": "Arbeitsaufwand",
       "contractDuration": "Vertragslaufzeit",
       "fundingType": "Finanzierungsart",
+      "tvlGrade": "TV-L Gruppe",
       "startDate": "Startdatum",
       "applicationEndDate": "Bewerbungsfrist"
     },

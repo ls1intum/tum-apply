@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
 import { TranslateDirective } from 'app/shared/language';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -33,7 +34,7 @@ import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
-import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobFormDTO, JobFormDTOTvlGradeEnum } from 'app/generated/model/job-form-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
@@ -58,6 +59,7 @@ import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-c
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
+import { tvlGrades } from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -108,6 +110,7 @@ type JobFormMode = 'create' | 'edit';
     CheckboxComponent,
     AiAssistantCardComponent,
     CompliancePopoverComponent,
+    TooltipModule,
   ],
   providers: [JobResourceApi],
 })
@@ -1160,6 +1163,7 @@ export class JobCreationFormComponent {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
       fundingType: [undefined],
+      tvlGrade: [undefined],
       startDate: [''],
       applicationDeadline: [''],
       workload: [undefined],
@@ -1223,6 +1227,7 @@ export class JobCreationFormComponent {
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
+      tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
@@ -1373,6 +1378,7 @@ export class JobCreationFormComponent {
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
+      tvlGrade: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
     });
 
@@ -1888,4 +1894,6 @@ export class JobCreationFormComponent {
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
   }
+
+  protected readonly tvlGrades = tvlGrades;
 }

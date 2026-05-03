@@ -92,6 +92,7 @@ public class PDFExportService {
                     labels.get("fundingType"),
                     job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
                 )
+                .addOverviewItem(labels.get("tvlGrade"), job.tvlGrade() != null ? job.tvlGrade().name() : "-")
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
                 .setOverviewDescriptionTitle(labels.get("jobDetails"))
@@ -202,6 +203,7 @@ public class PDFExportService {
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
                 formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
+                job.tvlGrade() != null ? job.tvlGrade().name() : "-",
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
             )
@@ -267,6 +269,7 @@ public class PDFExportService {
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
                 formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
+                jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )
@@ -394,6 +397,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("workload"), getValue(data.workload()))
             .addOverviewItem(labels.get("duration"), getValue(data.duration()))
             .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
+            .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrade()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
