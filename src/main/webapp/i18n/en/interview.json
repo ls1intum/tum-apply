@@ -70,7 +70,7 @@
       "error": {
         "loadFailed": {
           "summary": "Failed to load interview slots",
-          "detail": "The interview slots could not be loaded. Please refresh the page or contact an admin."
+          "detail": "The interview slots could not be loaded. Please refresh the page, or contact us if the problem persists."
         }
       },
       "status": {
@@ -173,7 +173,7 @@
         },
         "error": {
           "summary": "Delete failed",
-          "detail": "The slot could not be deleted. Please try again or contact an admin."
+          "detail": "The slot could not be deleted. Please try again, or contact us if the problem persists."
         },
         "errorBooked": {
           "summary": "Delete failed",
@@ -215,7 +215,7 @@
         },
         "error": {
           "summary": "Cancellation failed",
-          "detail": "The interview could not be cancelled. Please try again or contact an admin."
+          "detail": "The interview could not be cancelled. Please try again, or contact us if the problem persists."
         }
       }
     },
@@ -297,7 +297,7 @@
         },
         "error": {
           "summary": "Send Failed",
-          "detail": "Failed to send invitation. Please try again or contact an admin."
+          "detail": "Failed to send invitation. Please try again, or contact us if the problem persists."
         },
         "noSlots": {
           "summary": "No Slots Available",

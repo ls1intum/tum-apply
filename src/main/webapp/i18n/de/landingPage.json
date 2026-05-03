@@ -103,7 +103,7 @@
         },
         "otherJobs": {
           "title": "Sind das alle Stellenausschreibungen?",
-          "content": "Nein, auf TUMApply sind nur ausgewählte Ausschreibungen für die TUM School of Computation, Information and Technology zu finden. Weitere Stellenanzeigen findest du auf anderen Kanälen wie der <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Jobplattform</u></strong></a> oder auf den Websites einzelner Forschungsgruppen."
+          "content": "Auf TUMApply findest du vor allem Ausschreibungen der TUM School of Computation, Information and Technology, aber auch andere Schools und Lehrstühle können hier veröffentlichen. Weitere Stellen findest du auf der <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Jobplattform</u></strong></a> oder auf den Websites einzelner Forschungsgruppen."
         }
       }
     },
