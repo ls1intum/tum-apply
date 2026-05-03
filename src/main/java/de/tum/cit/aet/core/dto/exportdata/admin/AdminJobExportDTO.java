@@ -2,7 +2,7 @@ package de.tum.cit.aet.core.dto.exportdata.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.job.dto.JobFormDTO;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -13,4 +13,4 @@ import java.util.UUID;
  * needs on top: the research group id and the audit timestamps.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record AdminJobExportDTO(JobFormDTO job, UUID researchGroupId, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {}
+public record AdminJobExportDTO(JobFormDTO job, UUID researchGroupId, Instant createdAt, Instant lastModifiedAt) {}

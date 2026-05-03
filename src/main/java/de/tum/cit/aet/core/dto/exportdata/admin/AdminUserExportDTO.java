@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.UserDTO;
 import de.tum.cit.aet.usermanagement.dto.UserResearchGroupRoleDTO;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -18,12 +19,12 @@ import java.util.List;
 public record AdminUserExportDTO(
     UserDTO user,
     String universityId,
-    LocalDateTime lastActivityAt,
+    Instant lastActivityAt,
     boolean aiFeaturesEnabled,
-    LocalDateTime aiConsentedAt,
+    Instant aiConsentedAt,
     List<UserResearchGroupRoleDTO> roles,
-    LocalDateTime createdAt,
-    LocalDateTime lastModifiedAt
+    Instant createdAt,
+    Instant lastModifiedAt
 ) {
     /**
      * @param user the entity to convert; may be {@code null}
@@ -40,12 +41,12 @@ public record AdminUserExportDTO(
         return new AdminUserExportDTO(
             UserDTO.getFromEntity(user),
             user.getUniversityId(),
-            user.getLastActivityAt(),
+            user.getLastActivityAt() != null ? user.getLastActivityAt().toInstant(ZoneOffset.UTC) : null,
             user.isAiFeaturesEnabled(),
-            user.getAiConsentedAt(),
+            user.getAiConsentedAt() != null ? user.getAiConsentedAt().toInstant(ZoneOffset.UTC) : null,
             roles,
-            user.getCreatedAt(),
-            user.getLastModifiedAt()
+            user.getCreatedAt() != null ? user.getCreatedAt().toInstant(ZoneOffset.UTC) : null,
+            user.getLastModifiedAt() != null ? user.getLastModifiedAt().toInstant(ZoneOffset.UTC) : null
         );
     }
 }

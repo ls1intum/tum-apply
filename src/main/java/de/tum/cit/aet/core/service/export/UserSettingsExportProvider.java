@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.dto.exportdata.UserSettingDTO;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
+import java.time.ZoneOffset;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class UserSettingsExportProvider implements UserDataSectionProvider {
             context.user().getNationality(),
             context.user().getBirthday(),
             context.user().isAiFeaturesEnabled(),
-            context.user().getAiConsentedAt()
+            context.user().getAiConsentedAt() != null ? context.user().getAiConsentedAt().toInstant(ZoneOffset.UTC) : null
         );
     }
 
