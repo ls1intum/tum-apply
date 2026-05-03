@@ -9,31 +9,29 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div class="filter-trigger">
-      @if (!showSelectedChipsInTrigger() || !hasSelectedItems()) {
+      @if (!hasSelectedItems()) {
         <span class="trigger-placeholder">{{ displayFilterLabel() }}</span>
+      } @else if (showChipsCounterOnly()) {
+        <span class="trigger-summary">{{ getSummaryLabel() }}</span>
       } @else {
-        @if (showChipsCounterOnly()) {
-          <span class="trigger-summary">{{ getSummaryLabel() }}</span>
-        } @else {
-          <div class="chip-row">
-            @for (option of selectedOptions(); track option.value) {
-              <p-chip
-                [label]="option.label"
-                [removable]="true"
-                (onRemove)="removeOption(option.value); $event.stopPropagation()"
-                (click)="$event.stopPropagation()"
-                [pt]="{ root: { class: 'compact-chip' } }"
-              />
-            }
-          </div>
-        }
+        <div class="chip-row">
+          @for (option of selectedOptions(); track option.value) {
+            <p-chip
+              [label]="option.label"
+              [removable]="true"
+              (onRemove)="removeOption(option.value); $event.stopPropagation()"
+              (click)="$event.stopPropagation()"
+              [pt]="{ root: { class: 'compact-chip' } }"
+            />
+          }
+        </div>
       }
     </div>
     <fa-icon class="filter-icon" [icon]="['fas', 'chevron-down']" [class.rotated]="isOpen()" />
   </div>
 
   @if (isOpen()) {
-    <div class="filter-dropdown" [class.inline-mode]="inline()" [class.align-right]="dropdownAlignment() === 'right'">
+    <div class="filter-dropdown" [class.align-right]="dropdownAlignment() === 'right'">
       <div class="panel-header">
         <fa-icon class="filter-icon text-primary" [icon]="['fas', 'search']" />
         <input
@@ -107,19 +105,6 @@
           }
         </div>
       </div>
-    </div>
-  }
-
-  @if (!showSelectedChipsInTrigger() && hasSelectedItems()) {
-    <div class="selected-chips-list">
-      @for (option of selectedOptions(); track option.value) {
-        <p-chip
-          [label]="option.label"
-          [removable]="true"
-          (onRemove)="removeOption(option.value)"
-          [pt]="{ root: { class: 'compact-chip' } }"
-        />
-      }
     </div>
   }
 </div>

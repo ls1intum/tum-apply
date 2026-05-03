@@ -22,7 +22,7 @@ export interface ApplicationForApplicantDTO {
     readonly specialSkills?: string;
 }
 
-export type ApplicationForApplicantDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
+export type ApplicationForApplicantDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
 
 export const ApplicationForApplicantDTOApplicationStateEnum = {
     Saved: 'SAVED' as const,
@@ -32,8 +32,9 @@ export const ApplicationForApplicantDTOApplicationStateEnum = {
     Rejected: 'REJECTED' as const,
     Withdrawn: 'WITHDRAWN' as const,
     JobClosed: 'JOB_CLOSED' as const,
+    JobClosedDraft: 'JOB_CLOSED_DRAFT' as const,
     Interview: 'INTERVIEW' as const,
 } as const;
 
-export const ApplicationForApplicantDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'INTERVIEW'] as const;
+export const ApplicationForApplicantDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
 

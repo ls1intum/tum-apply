@@ -482,6 +482,7 @@
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
         "closed": "Closed",
+        "closedDraft": "Closed Draft",
         "inReview": "In Review",
         "interview": "Interview"
       },

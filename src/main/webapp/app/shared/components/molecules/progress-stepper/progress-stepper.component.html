@@ -64,9 +64,9 @@
         <ng-container [ngTemplateOutlet]="statusDiv" />
       </div>
     }
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
-      <div class="flex gap-6">
+      <div class="flex gap-6 items-center">
         @if (statusDiv(); as statusDiv) {
           <div class="hidden sm:flex">
             <ng-container [ngTemplateOutlet]="statusDiv" />
