@@ -93,9 +93,9 @@
       <div class="flex-1">
         <jhi-select
           width="100%"
-          [label]="'entity.applicationPage1.label.gender' | translate"
+          label="entity.applicationPage1.label.gender"
           [items]="selectGenderLocal"
-          [placeholder]="'entity.applicationPage1.placeholder.selectGender' | translate"
+          placeholder="entity.applicationPage1.placeholder.selectGender"
           id="gender"
           [(selected)]="data().gender"
           (selectedChange)="updateSelect('gender', $event)"
@@ -107,9 +107,9 @@
       <div class="flex-1">
         <jhi-select
           width="100%"
-          [label]="'entity.applicationPage1.label.nationality' | translate"
+          label="entity.applicationPage1.label.nationality"
           [items]="selectNationalityComputed()"
-          [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
+          placeholder="entity.applicationPage1.placeholder.selectNationality"
           id="nationality"
           [(selected)]="data().nationality"
           (selectedChange)="updateSelect('nationality', $event)"
@@ -190,8 +190,8 @@
     <div class="flex flex-col lg:flex-row lg:gap-8">
       <div class="flex-1">
         <jhi-select
-          [label]="'entity.applicationPage1.label.country' | translate"
-          [placeholder]="'entity.applicationPage1.placeholder.selectCountry' | translate"
+          label="entity.applicationPage1.label.country"
+          placeholder="entity.applicationPage1.placeholder.selectCountry"
           id="country"
           [required]="true"
           [(selected)]="data().country"

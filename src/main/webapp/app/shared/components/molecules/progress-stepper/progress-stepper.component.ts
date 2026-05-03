@@ -1,8 +1,9 @@
-import { Component, Signal, TemplateRef, computed, input, signal } from '@angular/core';
+import { Component, Signal, TemplateRef, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateDirective } from 'app/shared/language';
 import { StickyFooterShellComponent } from 'app/shared/components/molecules/sticky-footer-shell/sticky-footer-shell.component';
 
@@ -58,6 +59,13 @@ export class ProgressStepperComponent {
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext, 'next', this.currentStep()),
   );
 
+  stepTooltips: Signal<string[]> = computed(() => {
+    this.langChange();
+    return this.steps().map(step => ((step.shouldTranslate ?? false) ? this.translateService.instant(step.name) : step.name));
+  });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
       this.currentStep.set(index);

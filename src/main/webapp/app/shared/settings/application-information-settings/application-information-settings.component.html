@@ -82,9 +82,9 @@
     <div class="form-field">
       <jhi-select
         width="100%"
-        [label]="'entity.applicationPage1.label.gender' | translate"
+        label="entity.applicationPage1.label.gender"
         [items]="selectGenderLocal"
-        [placeholder]="'entity.applicationPage1.placeholder.selectGender' | translate"
+        placeholder="entity.applicationPage1.placeholder.selectGender"
         id="gender"
         [(selected)]="data().gender"
         (selectedChange)="updateSelect('gender', $event)"
@@ -95,9 +95,9 @@
     <div class="form-field">
       <jhi-select
         width="100%"
-        [label]="'entity.applicationPage1.label.nationality' | translate"
+        label="entity.applicationPage1.label.nationality"
         [items]="selectNationalityComputed()"
-        [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
+        placeholder="entity.applicationPage1.placeholder.selectNationality"
         id="nationality"
         [(selected)]="data().nationality"
         (selectedChange)="updateSelect('nationality', $event)"
@@ -178,8 +178,8 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-select
-        [label]="'entity.applicationPage1.label.country' | translate"
-        [placeholder]="'entity.applicationPage1.placeholder.selectCountry' | translate"
+        label="entity.applicationPage1.label.country"
+        placeholder="entity.applicationPage1.placeholder.selectCountry"
         id="country"
         [(selected)]="data().country"
         width="100%"

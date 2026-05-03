@@ -8,12 +8,7 @@
           @if (required()) {
             <span class="required"> *</span>
           }
-          <fa-icon
-            class="icon"
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-            tooltipPosition="top"
-          />
+          <fa-icon class="icon" [icon]="['fas', 'circle-info']" [pTooltip]="filenamePrivacyTooltip()" tooltipPosition="top" />
         </div>
         <jhi-upload-button
           [documentType]="DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript"
@@ -33,12 +28,7 @@
           @if (required()) {
             <span class="required"> *</span>
           }
-          <fa-icon
-            class="icon"
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-            tooltipPosition="top"
-          />
+          <fa-icon class="icon" [icon]="['fas', 'circle-info']" [pTooltip]="filenamePrivacyTooltip()" tooltipPosition="top" />
         </div>
         <jhi-upload-button
           [documentType]="DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript"
@@ -68,44 +58,36 @@
   <!-- Bottom row: string inputs for bachelor and master side-by-side -->
   <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
     <div class="flex flex-col">
-      <jhi-string-input [label]="bachelorDegreeNameLabelKey | translate" [required]="required()" [control]="bachelorDegreeNameControl()" />
+      <jhi-string-input [label]="bachelorDegreeNameLabelKey" [required]="required()" [control]="bachelorDegreeNameControl()" />
+
+      <jhi-string-input [label]="bachelorDegreeUniversityLabelKey" [required]="required()" [control]="bachelorDegreeUniversityControl()" />
 
       <jhi-string-input
-        [label]="bachelorDegreeUniversityLabelKey | translate"
-        [required]="required()"
-        [control]="bachelorDegreeUniversityControl()"
-      />
-
-      <jhi-string-input
-        [label]="bachelorGradeLabelKey | translate"
+        [label]="bachelorGradeLabelKey"
         [required]="required()"
         [control]="bachelorGradeControl()"
         icon="circle-info"
-        [tooltipText]="bachelorGradeTooltipKey | translate"
+        [tooltipText]="bachelorGradeTooltipKey"
         [helperTextLeft]="bachelorGradeHelperText()"
-        [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+        helperTextRight="entity.applicationPage2.helperText.changeScale"
         (helperTextRightClick)="bachelorChangeScale.emit()"
         [warningText]="bachelorGradeWarningText()"
       />
     </div>
 
     <div class="flex flex-col">
-      <jhi-string-input [label]="masterDegreeNameLabelKey | translate" [required]="required()" [control]="masterDegreeNameControl()" />
+      <jhi-string-input [label]="masterDegreeNameLabelKey" [required]="required()" [control]="masterDegreeNameControl()" />
+
+      <jhi-string-input [label]="masterDegreeUniversityLabelKey" [required]="required()" [control]="masterDegreeUniversityControl()" />
 
       <jhi-string-input
-        [label]="masterDegreeUniversityLabelKey | translate"
-        [required]="required()"
-        [control]="masterDegreeUniversityControl()"
-      />
-
-      <jhi-string-input
-        [label]="masterGradeLabelKey | translate"
+        [label]="masterGradeLabelKey"
         [required]="required()"
         [control]="masterGradeControl()"
         icon="circle-info"
-        [tooltipText]="masterGradeTooltipKey | translate"
+        [tooltipText]="masterGradeTooltipKey"
         [helperTextLeft]="masterGradeHelperText()"
-        [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
+        helperTextRight="entity.applicationPage2.helperText.changeScale"
         (helperTextRightClick)="masterChangeScale.emit()"
         [warningText]="masterGradeWarningText()"
       />

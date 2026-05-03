@@ -1,11 +1,12 @@
 import { Component, ElementRef, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
@@ -34,7 +35,7 @@ export type UploadTarget = 'application' | 'applicantProfile';
  */
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
+  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog],
   templateUrl: './upload-button.component.html',
   standalone: true,
 })
@@ -84,10 +85,21 @@ export class UploadButtonComponent {
   private activePersistenceOperations = 0;
   private hasPersistenceFailure = false;
 
+  toUploadTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.upload.tooltip.to_upload');
+  });
+  alreadyUploadedTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.upload.tooltip.already_uploaded');
+  });
+
   private applicationApi = inject(ApplicationResourceApi);
   private applicantApi = inject(ApplicantResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;

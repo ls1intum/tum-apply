@@ -609,7 +609,7 @@ describe('JobDetailComponent', () => {
 
   it('should return correct fallback for jobStateText when jobState missing or unknown', () => {
     component.jobDetails.set(null);
-    expect(component.jobStateText()).toBe('Unknown');
+    expect(component.jobStateText()).toBe('jobState.unknown');
 
     component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as unknown as JobDetails);
     expect(component.jobStateText()).toBe('jobState.unknown');
