@@ -79,6 +79,6 @@ export class ButtonComponent {
       sizeClass += ' !py-0 !px-2 !text-xs !h-8';
     }
 
-    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''} ${this.classStyling()}`;
+    return `${sizeClass} ${this.classStyling()}`;
   }
 }
