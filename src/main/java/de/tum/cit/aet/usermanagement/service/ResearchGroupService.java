@@ -16,7 +16,6 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
-import de.tum.cit.aet.notification.service.EmailTemplateService;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -60,7 +59,6 @@ public class ResearchGroupService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final KeycloakUserService keycloakUserService;
     private final AsyncEmailSender emailSender;
-    private final EmailTemplateService emailTemplateService;
 
     @Value("${aet.contact-email:tum-apply.aet@xcit.tum.de}")
     private String supportEmail;
@@ -318,8 +316,6 @@ public class ResearchGroupService {
         group.setState(ResearchGroupState.ACTIVE);
         ResearchGroup saved = researchGroupRepository.save(group);
 
-        ensureEmailTemplates(saved);
-
         Set<UserResearchGroupRole> roles = userResearchGroupRoleRepository.findAllByResearchGroup(group);
 
         if (roles.isEmpty()) {
@@ -444,7 +440,6 @@ public class ResearchGroupService {
         researchGroup.setState(ResearchGroupState.DRAFT);
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
-        ensureEmailTemplates(saved);
 
         currentUser.setUniversityId(request.universityId());
         currentUser.setResearchGroup(saved);
@@ -493,7 +488,6 @@ public class ResearchGroupService {
         } catch (DataIntegrityViolationException e) {
             throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
         }
-        ensureEmailTemplates(saved);
 
         // Assign the professor to the research group
         professor.setResearchGroup(saved);
@@ -773,13 +767,6 @@ public class ResearchGroupService {
             .build();
 
         emailSender.sendAsync(email);
-    }
-
-    /**
-     * Ensures default email templates exist for the given research group.
-     */
-    private void ensureEmailTemplates(ResearchGroup researchGroup) {
-        emailTemplateService.addMissingTemplates(researchGroup);
     }
 
     private String buildSubjectWithEnvironment(String subject) {

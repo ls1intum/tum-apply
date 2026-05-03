@@ -76,7 +76,13 @@ export class NotificationSettingsComponent {
           {
             groupKey: 'settings.notifications.applicant.outcome.title',
             descriptionKey: 'settings.notifications.applicant.outcome.description',
-            emailTypes: [EmailTypeEnum.ApplicationAccepted, EmailTypeEnum.ApplicationRejected],
+            emailTypes: [
+              EmailTypeEnum.ApplicationAccepted,
+              EmailTypeEnum.ApplicationRejectedJobFilled,
+              EmailTypeEnum.ApplicationRejectedJobOutdated,
+              EmailTypeEnum.ApplicationRejectedFailedRequirements,
+              EmailTypeEnum.ApplicationRejectedOtherReason,
+            ],
             enabled: false,
           },
         ],
