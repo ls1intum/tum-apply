@@ -44,7 +44,7 @@
         },
         "subjectAreas": {
           "title": "Job Postings",
-          "description": "Receive emails about new job postings. After enabling, you can choose your preferred subject areas.",
+          "description": "Receive emails about new job postings in your selected subject areas.",
           "placeholder": "Add Subject Area",
           "filterPlaceholder": "Search Subject Area...",
           "removeLabel": "Remove {{subjectArea}}",
