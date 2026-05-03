@@ -157,15 +157,15 @@
         </div>
       </div>
     } @else {
-      <jhi-tag [text]="'dependencies.secure' | translate" color="success" [icon]="faShieldAlt" />
+      <jhi-tag text="dependencies.secure" color="success" [icon]="faShieldAlt" />
     }
   </ng-template>
 
   <ng-template #sourceTemplate let-dep>
     @if (dep.source === 'server') {
-      <jhi-tag [text]="'dependencies.sourceServer' | translate" color="primary" />
+      <jhi-tag text="dependencies.sourceServer" color="primary" />
     } @else {
-      <jhi-tag [text]="'dependencies.sourceClient' | translate" color="info" />
+      <jhi-tag text="dependencies.sourceClient" color="info" />
     }
   </ng-template>
 </div>

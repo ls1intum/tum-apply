@@ -1,8 +1,8 @@
 <jhi-confirm-dialog
   class="confirm-dialog"
-  [header]="'jobCreationForm.confirmDialog.header' | translate"
-  [message]="'jobCreationForm.confirmDialog.message' | translate"
-  [label]="'button.publish' | translate"
+  header="jobCreationForm.confirmDialog.header"
+  message="jobCreationForm.confirmDialog.message"
+  label="button.publish"
   [severity]="publishButtonSeverity"
   [confirmIcon]="publishButtonIcon"
   [showOpenButton]="false"
@@ -52,8 +52,8 @@
                 <div class="flex flex-col lg:flex-row lg:gap-8">
                   <div class="flex-1">
                     <jhi-string-input
-                      [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
-                      [placeholder]="'jobCreationForm.basicInformationSection.jobTitle.placeholder' | translate"
+                      label="jobCreationForm.basicInformationSection.jobTitle.label"
+                      placeholder="jobCreationForm.basicInformationSection.jobTitle.placeholder"
                       [required]="true"
                       [model]="basicInfoForm.get('title')?.value"
                       [control]="basicInfoForm.get('title') ?? undefined"
@@ -65,13 +65,13 @@
                 <div class="flex flex-col lg:flex-row lg:gap-8">
                   <div class="flex-1">
                     <jhi-string-input
-                      [label]="'jobCreationForm.basicInformationSection.researchArea.label' | translate"
-                      [placeholder]="'jobCreationForm.basicInformationSection.researchArea.placeholder' | translate"
+                      label="jobCreationForm.basicInformationSection.researchArea.label"
+                      placeholder="jobCreationForm.basicInformationSection.researchArea.placeholder"
                       [required]="true"
                       icon="circle-info"
                       [model]="basicInfoForm.get('researchArea')?.value"
                       [control]="basicInfoForm.get('researchArea') ?? undefined"
-                      [tooltipText]="'jobCreationForm.basicInformationSection.researchArea.toolTipText' | translate"
+                      tooltipText="jobCreationForm.basicInformationSection.researchArea.toolTipText"
                     />
                   </div>
 
@@ -80,8 +80,8 @@
                       [selected]="basicInfoForm.get('subjectArea')?.value"
                       (selectedChange)="basicInfoForm.get('subjectArea')?.setValue($event)"
                       [items]="translatedSubjectAreas()"
-                      [label]="'jobCreationForm.basicInformationSection.subjectArea.label' | translate"
-                      [placeholder]="'jobCreationForm.basicInformationSection.subjectArea.placeholder' | translate"
+                      label="jobCreationForm.basicInformationSection.subjectArea.label"
+                      placeholder="jobCreationForm.basicInformationSection.subjectArea.placeholder"
                       [required]="true"
                       [width]="'100%'"
                       [filter]="true"
@@ -97,8 +97,8 @@
                       [selected]="basicInfoForm.get('supervisingProfessor')?.value"
                       (selectedChange)="basicInfoForm.get('supervisingProfessor')?.setValue($event)"
                       [items]="supervisingProfessorOptions()"
-                      [label]="'jobCreationForm.basicInformationSection.supervisingProfessor.label' | translate"
-                      [placeholder]="'jobCreationForm.basicInformationSection.supervisingProfessor.label' | translate"
+                      label="jobCreationForm.basicInformationSection.supervisingProfessor.label"
+                      placeholder="jobCreationForm.basicInformationSection.supervisingProfessor.label"
                       [required]="true"
                       [width]="'100%'"
                       [filter]="true"
@@ -112,8 +112,8 @@
                       [selected]="basicInfoForm.get('location')?.value"
                       (selectedChange)="basicInfoForm.get('location')?.setValue($event)"
                       [items]="translatedLocations()"
-                      [label]="'jobCreationForm.basicInformationSection.location.label' | translate"
-                      [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
+                      label="jobCreationForm.basicInformationSection.location.label"
+                      placeholder="jobCreationForm.basicInformationSection.location.placeholder"
                       [required]="true"
                       [width]="'100%'"
                       [filter]="true"
@@ -259,8 +259,8 @@
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-number-input
-                [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
-                [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+                label="jobCreationForm.basicInformationSection.workload.label"
+                placeholder="jobCreationForm.basicInformationSection.workload.placeholder"
                 [model]="positionDetailsForm.get('workload')?.value"
                 [control]="positionDetailsForm.get('workload') ?? undefined"
                 [min]="1"
@@ -268,13 +268,13 @@
                 [minFractionDigits]="0"
                 [maxFractionDigits]="0"
                 icon="circle-info"
-                [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
+                tooltipText="jobCreationForm.basicInformationSection.workload.toolTipText"
               />
             </div>
             <div class="flex-1">
               <jhi-number-input
-                [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
-                [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
+                label="jobCreationForm.basicInformationSection.contractDuration.label"
+                placeholder="jobCreationForm.basicInformationSection.contractDuration.placeholder"
                 [model]="positionDetailsForm.get('contractDuration')?.value"
                 [control]="positionDetailsForm.get('contractDuration') ?? undefined"
                 [min]="1"
@@ -282,7 +282,7 @@
                 [minFractionDigits]="0"
                 [maxFractionDigits]="2"
                 icon="circle-info"
-                [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
+                tooltipText="jobCreationForm.basicInformationSection.contractDuration.toolTipText"
               />
             </div>
           </div>
@@ -293,8 +293,8 @@
                 [selected]="positionDetailsForm.get('fundingType')?.value"
                 (selectedChange)="positionDetailsForm.get('fundingType')?.setValue($event)"
                 [items]="translatedFundingTypes()"
-                [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
-                [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+                label="jobCreationForm.basicInformationSection.fundingType.label"
+                placeholder="jobCreationForm.basicInformationSection.fundingType.placeholder"
                 [width]="'100%'"
                 [filter]="true"
                 [showClear]="true"
@@ -320,7 +320,7 @@
                 [selected]="positionDetailsForm.get('tvlGrade')?.value"
                 (selectedChange)="positionDetailsForm.get('tvlGrade')?.setValue($event)"
                 [items]="tvlGrades"
-                [placeholder]="'jobCreationForm.basicInformationSection.tvlGrade.placeholder' | translate"
+                placeholder="jobCreationForm.basicInformationSection.tvlGrade.placeholder"
                 [width]="'100%'"
                 [filter]="true"
                 [showClear]="true"
@@ -381,10 +381,10 @@
         >
           <jhi-confirm-dialog
             #deleteDialog
-            [label]="'button.delete' | translate"
+            label="button.delete"
             [confirmIcon]="'trash'"
-            [header]="'jobCreationForm.imageSection.deleteImageDialog.header' | translate"
-            [message]="'jobCreationForm.imageSection.deleteImageDialog.message' | translate"
+            header="jobCreationForm.imageSection.deleteImageDialog.header"
+            message="jobCreationForm.imageSection.deleteImageDialog.message"
             [data]="image.imageId"
             (confirmed)="deleteImage($any($event))"
             severity="danger"
@@ -407,7 +407,7 @@
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
           @if (defaultImages().length === 0) {
             <div class="mb-4">
-              <jhi-info-box [message]="'jobCreationForm.imageSection.noDefaultImages' | translate" />
+              <jhi-info-box message="jobCreationForm.imageSection.noDefaultImages" />
             </div>
           }
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">

@@ -135,7 +135,7 @@
                             [id]="'location-' + range.id"
                             [model]="range.location"
                             (modelChange)="onLocationInput(rangeIndex, $event)"
-                            [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
+                            placeholder="interview.slots.create.locationPlaceholder"
                             [errorEnabled]="false"
                           />
                           @if (showValidationErrors() && !range.location) {
@@ -219,7 +219,7 @@
                           [id]="'location-' + range.id"
                           [model]="range.location"
                           (modelChange)="onLocationInput(rangeIndex, $event)"
-                          [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
+                          placeholder="interview.slots.create.locationPlaceholder"
                           [errorEnabled]="false"
                         />
                         @if (showValidationErrors() && !range.location) {

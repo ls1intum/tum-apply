@@ -76,20 +76,16 @@
       <ng-template pTemplate="footer">
         <div class="flex justify-between w-full pt-3 gap-2">
           <div class="flex gap-2">
-            <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+            <jhi-button label="entity.action.cancel" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
           </div>
           <div class="flex gap-2">
             <jhi-button
-              [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
+              label="evaluation.addToInterviewDialog.confirmAndStay"
               variant="outlined"
               severity="primary"
               (click)="onAddToInterview(false)"
             />
-            <jhi-button
-              [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
-              severity="primary"
-              (click)="onAddToInterview(true)"
-            />
+            <jhi-button label="evaluation.addToInterviewDialog.confirmAndNavigate" severity="primary" (click)="onAddToInterview(true)" />
           </div>
         </div>
       </ng-template>
@@ -173,10 +169,11 @@
                 [icon]="sensitiveInfoVisible() ? 'eye-slash' : 'eye'"
                 variant="text"
                 size="sm"
-                [tooltip]="(sensitiveInfoVisible() ? 'button.hideSensitiveInfo' : 'button.showSensitiveInfo') | translate"
+                [tooltip]="sensitiveInfoVisible() ? 'button.hideSensitiveInfo' : 'button.showSensitiveInfo'"
                 tooltipPosition="top"
                 classStyling="hover:!bg-transparent"
                 (click)="toggleSensitiveInfo()"
+                [shouldTranslate]="false"
               />
             </div>
           </div>
