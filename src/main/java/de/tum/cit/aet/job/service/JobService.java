@@ -423,9 +423,9 @@ public class JobService {
             return;
         }
 
-        // 1. Collect candidate user IDs in one pass.
-        // 2. Resolve the enabled subset in a single query.
-        // 3. Fan out the async emails only to that subset.
+        // 1) Collect candidate user IDs in one pass.
+        // 2) Resolve the enabled subset in a single query.
+        // 3) Fan out the async emails only to that subset.
         Set<UUID> candidateIds = candidates.stream().map(User::getUserId).collect(Collectors.toSet());
         Set<UUID> enabledIds = emailSettingService.filterEnabledUserIds(EmailType.JOB_PUBLISHED_SUBJECT_AREA, candidateIds);
 
