@@ -101,14 +101,14 @@
 
   <!-- Book Button -->
   @if (alreadyBooked()) {
-    <jhi-button [fullWidth]="true" [disabled]="true" label="interview.booking.alreadyBooked" [shouldTranslate]="true" styleClass="h-10" />
+    <jhi-button [fullWidth]="true" [disabled]="true" label="interview.booking.alreadyBooked" [shouldTranslate]="true" classStyling="h-10" />
   } @else {
     <jhi-button
       [fullWidth]="true"
       [disabled]="!hasSelection()"
       label="interview.booking.book"
       [shouldTranslate]="true"
-      styleClass="h-10"
+      classStyling="h-10"
       (click)="onBook()"
     />
   }

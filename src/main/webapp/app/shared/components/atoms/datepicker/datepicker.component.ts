@@ -3,13 +3,13 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
-  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateModule, TranslateDirective, TooltipModule],
+  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateDirective, TooltipModule],
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -24,7 +24,7 @@ export class DatePickerComponent {
   placeholder = input<string | undefined>(undefined);
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
   errorEnabled = input<boolean>(false);
 
   /**
@@ -87,6 +87,9 @@ export class DatePickerComponent {
     const currentLang = this.currentLanguage();
     return currentLang === 'en' ? 'dd/mm/yy' : 'dd.mm.yy';
   });
+
+  displayPlaceholder = computed(() => this.translate(this.placeholder()));
+  displayTooltipText = computed(() => this.translate(this.tooltipText()));
 
   private scrollListener?: (event: Event) => void;
   private elementRef = inject(ElementRef);
@@ -168,6 +171,14 @@ export class DatePickerComponent {
    * Converts a Date object to ISO date string and emits it as `selectedDateChange`.
    * @param date - The Date object selected by the user
    */
+  private translate(value: string | undefined): string | undefined {
+    this.currentLanguage();
+    if (value === undefined) {
+      return undefined;
+    }
+    return this.shouldTranslate() ? this.translateService.instant(value) : value;
+  }
+
   onDateChange(date: Date | undefined): void {
     if (date) {
       const year = date.getFullYear().toString().padStart(4, '0');

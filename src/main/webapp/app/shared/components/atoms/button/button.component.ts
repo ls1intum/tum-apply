@@ -1,7 +1,9 @@
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
-import { Component, ViewEncapsulation, input } from '@angular/core';
+import { Component, ViewEncapsulation, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -43,7 +45,7 @@ export class ButtonComponent {
   label = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
   fullWidth = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
   loading = input<boolean>(false);
@@ -54,7 +56,13 @@ export class ButtonComponent {
   tooltipOptions = input<TooltipOptions>();
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
-  styleClass = input<string>('');
+  classStyling = input<string>('');
+
+  displayTooltip = computed(() => this.translate(this.tooltip()));
+  ariaLabel = computed(() => (this.label() === undefined ? this.displayTooltip() : undefined));
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   iconPrefix(): 'fas' | 'fab' {
     if (this.icon() === 'microsoft' || this.icon() === 'google' || this.icon() === 'apple') {
@@ -73,6 +81,14 @@ export class ButtonComponent {
       sizeClass += ' !py-0 !px-2 !text-xs !h-8';
     }
 
-    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''} ${this.styleClass()}`;
+    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''} ${this.classStyling()}`;
+  }
+
+  private translate(value: string | undefined): string | undefined {
+    this.langChange();
+    if (value === undefined) {
+      return undefined;
+    }
+    return this.shouldTranslate() ? this.translateService.instant(value) : value;
   }
 }

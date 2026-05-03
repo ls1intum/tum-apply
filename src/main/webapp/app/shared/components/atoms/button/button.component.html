@@ -9,15 +9,15 @@
 </div>
 <ng-template #button>
   <p-button
-    [ariaLabel]="label() === undefined ? tooltip() : undefined"
+    [ariaLabel]="ariaLabel()"
     [disabled]="disabled()"
     [loading]="loading()"
     [severity]="severity()"
-    [styleClass]="buttonClass()"
+    [class]="buttonClass()"
     [type]="type()"
     [variant]="variant()"
     [buttonProps]="{ autofocus: autofocus() }"
-    [pTooltip]="tooltip()"
+    [pTooltip]="displayTooltip()"
     [tooltipPosition]="tooltipPosition()"
     [tooltipOptions]="tooltipOptions()"
   >

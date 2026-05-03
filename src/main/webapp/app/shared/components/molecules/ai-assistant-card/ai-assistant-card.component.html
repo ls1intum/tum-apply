@@ -76,7 +76,7 @@
     <div>
       @if (isGenerating()) {
         <div class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-default px-3 h-10">
-          <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+          <jhi-progress-spinner classStyling="w-4 h-4" strokeWidth="4" />
           <span
             class="text-sm font-semibold text-text-primary whitespace-nowrap"
             jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
@@ -92,7 +92,7 @@
           [shouldTranslate]="true"
           severity="primary"
           [icon]="buttonIcon()"
-          styleClass="!w-full !justify-center !whitespace-nowrap"
+          classStyling="!w-full !justify-center !whitespace-nowrap"
           (click)="onGenerate()"
         />
       }
@@ -107,7 +107,7 @@
   [appendTo]="'body'"
   header="jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title"
   (visibleChange)="onScoreDialogVisibleChange($event)"
-  styleClass="!w-[90vw] md:!w-[42rem] rounded-xs bg-background-default"
+  classStyling="!w-[90vw] md:!w-[42rem] rounded-xs bg-background-default"
 >
   <div class="space-y-6">
     <div class="text-center">

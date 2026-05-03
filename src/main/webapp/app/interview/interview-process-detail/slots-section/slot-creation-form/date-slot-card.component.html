@@ -11,7 +11,7 @@
           variant="text"
           severity="secondary"
           size="xs"
-          styleClass="text-text-secondary"
+          classStyling="text-text-secondary"
           (click)="toggleCollapse()"
         />
       }
@@ -143,7 +143,7 @@
                               severity="error"
                               variant="simple"
                               message="interview.slots.create.validation.locationRequired.detail"
-                              styleClass="inline-message ml-5"
+                              classStyling="inline-message ml-5"
                             />
                           }
                         </div>
@@ -227,7 +227,7 @@
                             severity="error"
                             variant="simple"
                             message="interview.slots.create.validation.locationRequired.detail"
-                            styleClass="inline-message ml-5"
+                            classStyling="inline-message ml-5"
                           />
                         }
                       </div>
@@ -255,7 +255,7 @@
                             />
                           </div>
                           @if (allConflicts().has(range.id + '_' + slotIndex)) {
-                            <jhi-message severity="error" variant="simple" styleClass="inline-message">
+                            <jhi-message severity="error" variant="simple" classStyling="inline-message">
                               <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
                               @switch (allConflicts().get(range.id + '_' + slotIndex)?.type) {
                                 @case ('BATCH_INTERNAL') {
@@ -287,7 +287,7 @@
                       severity="error"
                       variant="simple"
                       message="interview.slots.create.validation.endBeforeStart"
-                      styleClass="inline-message"
+                      classStyling="inline-message"
                     />
                   } @else if (range.type === 'range' && range.startTime && range.endTime && range.slots.length === 0) {
                     <jhi-message
@@ -295,13 +295,13 @@
                       variant="simple"
                       message="interview.slots.create.validation.rangeTooShort"
                       [translationParams]="{ duration: range.duration }"
-                      styleClass="inline-message"
+                      classStyling="inline-message"
                     />
                   }
 
                   <!-- Conflict Error (Single Slot) -->
                   @if (range.type === 'single' && allConflicts().has(range.id + '_' + slotIndex)) {
-                    <jhi-message severity="error" variant="simple" styleClass="inline-message mt-1">
+                    <jhi-message severity="error" variant="simple" classStyling="inline-message mt-1">
                       <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
                       @switch (allConflicts().get(range.id + '_' + slotIndex)?.type) {
                         @case ('BATCH_INTERNAL') {

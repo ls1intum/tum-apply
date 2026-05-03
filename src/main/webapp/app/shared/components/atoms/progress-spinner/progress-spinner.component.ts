@@ -14,7 +14,7 @@ export class ProgressSpinnerComponent {
    * Optional style class passed to PrimeNG ProgressSpinner.
    * Use this to set width/height/tailwind utility classes.
    */
-  styleClass = input<string>('');
+  classStyling = input<string>('');
 
   /**
    * Thickness of the spinner stroke.

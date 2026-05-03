@@ -181,3 +181,4 @@ storage
 # OpenAPI generator subproject build artifacts
 openapi-generator-angular21/build/
 openapi-generator-angular21/.gradle/
+out-tsc/
