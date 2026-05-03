@@ -270,13 +270,6 @@
                 [width]="'100%'"
                 [errorEnabled]="true"
               />
-              <jhi-checkbox
-                class="mt-2 inline-block"
-                label="jobCreationForm.basicInformationSection.startDate.uponAgreement"
-                [model]="positionDetailsForm.get('startDateByArrangement')?.value"
-                (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
-                [shouldTranslate]="true"
-              />
             </div>
             <div class="flex-1">
               <jhi-number-input
@@ -290,13 +283,6 @@
                 [maxFractionDigits]="2"
                 icon="circle-info"
                 tooltipText="jobCreationForm.basicInformationSection.contractDuration.toolTipText"
-              />
-              <jhi-checkbox
-                class="mt-2 inline-block"
-                label="jobCreationForm.basicInformationSection.contractDuration.extendable"
-                [model]="positionDetailsForm.get('contractExtendable')?.value"
-                (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
-                [shouldTranslate]="true"
               />
             </div>
           </div>
@@ -343,15 +329,53 @@
             </div>
           </div>
 
-          <!-- Equal Opportunities Checkbox -->
-          <div class="flex flex-col mt-8">
-            <jhi-checkbox
-              label="jobCreationForm.additionalInformationSection.suitableForDisabled.label"
-              [model]="positionDetailsForm.get('suitableForDisabled')?.value"
-              (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
-              tooltipText="jobCreationForm.additionalInformationSection.suitableForDisabled.tooltip"
-              [shouldTranslate]="true"
-            />
+          <!-- Position Options card -->
+          <div class="mt-8 rounded-lg border border-border-default bg-background-surface px-4 py-3">
+            <div
+              class="text-xs font-semibold uppercase tracking-wide text-text-secondary mb-3"
+              jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.title"
+            ></div>
+            <div class="flex flex-col gap-3">
+              <div class="flex flex-col">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.label"
+                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.tooltip"
+                  [model]="positionDetailsForm.get('startDateByArrangement')?.value"
+                  (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
+                  [shouldTranslate]="true"
+                />
+                <p
+                  class="text-sm text-text-secondary ml-7"
+                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.subtitle"
+                ></p>
+              </div>
+              <div class="flex flex-col">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.positionOptions.extendable.label"
+                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.extendable.tooltip"
+                  [model]="positionDetailsForm.get('contractExtendable')?.value"
+                  (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
+                  [shouldTranslate]="true"
+                />
+                <p
+                  class="text-sm text-text-secondary ml-7"
+                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.subtitle"
+                ></p>
+              </div>
+              <div class="flex flex-col">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.label"
+                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.tooltip"
+                  [model]="positionDetailsForm.get('suitableForDisabled')?.value"
+                  (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
+                  [shouldTranslate]="true"
+                />
+                <p
+                  class="text-sm text-text-secondary ml-7"
+                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.subtitle"
+                ></p>
+              </div>
+            </div>
           </div>
         </div>
       </form>
