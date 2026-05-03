@@ -86,9 +86,8 @@ export class ApplicationCardComponent {
   });
 
   readonly statusBadgeText = computed(() => {
-    this.currentLang();
     const state = this.applicationDetails()?.applicationState ?? '';
-    return state ? this.translateService.instant('evaluation.statusBadge.' + state) : '';
+    return state ? 'evaluation.statusBadge.' + state : '';
   });
   readonly masterDegreeLabel = computed(() => {
     this.currentLang();

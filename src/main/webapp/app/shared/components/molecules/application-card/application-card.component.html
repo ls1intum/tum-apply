@@ -31,7 +31,6 @@
           <jhi-tag
             class="shrink-0 self-start"
             [text]="statusBadgeText()"
-            [shouldTranslate]="false"
             [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
             [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
           />

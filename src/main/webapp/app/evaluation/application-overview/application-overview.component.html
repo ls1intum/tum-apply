@@ -63,11 +63,10 @@
 
   <ng-template #stateTemplate let-application>
     <jhi-tag
-      [text]="'evaluation.statusBadge.' + (application.state || '') | translate"
+      [text]="'evaluation.statusBadge.' + (application.state || '')"
       [color]="stateSeverityMap()[application.state] || 'info'"
       [tooltipText]="'evaluation.statusBadge.tooltips.' + (application.state || '')"
       width="7rem"
-      [shouldTranslate]="false"
     />
   </ng-template>
 </div>

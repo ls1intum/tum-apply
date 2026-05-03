@@ -74,7 +74,7 @@
       <div class="flex space-x-2">
         <jhi-button
           icon="eye"
-          [ariaLabel]="'button.view' | translate"
+          ariaLabel="button.view"
           tooltip="button.view"
           severity="primary"
           variant="text"
@@ -82,7 +82,7 @@
         />
         <jhi-button
           icon="ellipsis-vertical"
-          [tooltip]="getMenuItems()(researchGroup).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+          [tooltip]="getMenuItems()(researchGroup).length > 0 ? 'button.actions' : 'button.noFurtherActions'"
           severity="primary"
           variant="text"
           (click)="menu.toggle($event)"
@@ -94,14 +94,9 @@
 
     <ng-template #stateTemplate let-researchGroup>
       <jhi-tag
-        [text]="
-          stateTextMap()[researchGroup.status]
-            ? (stateTextMap()[researchGroup.status] | translate)
-            : ('researchGroup.adminView.groupState.unknown' | translate)
-        "
+        [text]="stateTextMap()[researchGroup.status] || 'researchGroup.adminView.groupState.unknown'"
         [color]="stateSeverityMap()[researchGroup.status] || 'info'"
         width="8rem"
-        [shouldTranslate]="false"
       />
     </ng-template>
   </div>

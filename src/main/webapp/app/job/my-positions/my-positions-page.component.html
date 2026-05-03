@@ -109,7 +109,7 @@
         <div class="flex justify-end gap-1">
           <jhi-button tooltip="button.view" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button
-            [tooltip]="getMenuItems()(job).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+            [tooltip]="getMenuItems()(job).length > 0 ? 'button.actions' : 'button.noFurtherActions'"
             icon="ellipsis-vertical"
             variant="text"
             (click)="menu.toggle($event)"
@@ -120,12 +120,7 @@
       </ng-template>
 
       <ng-template #stateTemplate let-job>
-        <jhi-tag
-          [text]="stateTextMap()[job.state] ? (stateTextMap()[job.state] | translate) : ('jobState.unknown' | translate)"
-          [color]="stateSeverityMap()[job.state] || 'info'"
-          width="8rem"
-          [shouldTranslate]="false"
-        />
+        <jhi-tag [text]="stateTextMap()[job.state] || 'jobState.unknown'" [color]="stateSeverityMap()[job.state] || 'info'" width="8rem" />
       </ng-template>
     </div>
   </div>

@@ -9,7 +9,6 @@
   [visible]="showCloseDialog()"
   (confirmed)="onCloseJob()"
   (closed)="showCloseDialog.set(false)"
-  [shouldTranslate]="false"
 />
 <jhi-confirm-dialog
   class="confirm-dialog"
@@ -22,7 +21,6 @@
   [visible]="showDeleteDialog()"
   (confirmed)="onDeleteJob()"
   (closed)="showDeleteDialog.set(false)"
-  [shouldTranslate]="false"
 />
 
 @if (jobDetails(); as job) {
@@ -57,7 +55,7 @@
           @if (previewData()) {
             <jhi-tag class="job-state-badge" text="jobState.preview" [color]="'info'" />
           } @else if (job.belongsToResearchGroup) {
-            <jhi-tag class="job-state-badge" [text]="jobStateText()" [color]="jobStateColor()" [shouldTranslate]="false" />
+            <jhi-tag class="job-state-badge" [text]="jobStateText()" [color]="jobStateColor()" />
           }
         </div>
       </div>
