@@ -105,7 +105,10 @@ public class EmailSettingService {
             return Set.of();
         }
         Set<UUID> disabled = emailSettingRepository.findUserIdsWithDisabledSetting(userIds, emailType);
-        return userIds.stream().filter(id -> !disabled.contains(id)).collect(Collectors.toSet());
+        return userIds
+            .stream()
+            .filter(id -> !disabled.contains(id))
+            .collect(Collectors.toSet());
     }
 
     /**
