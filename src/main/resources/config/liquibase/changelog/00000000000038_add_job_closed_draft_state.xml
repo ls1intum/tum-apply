@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="038a_add_job_closed_draft_to_application_state" author="aniruddhzaveri">
+  <changeSet id="038a_add_job_closed_draft_to_application_state" author="aniruddh">
     <comment>Extend application_state ENUM with JOB_CLOSED_DRAFT.</comment>
     <sql>
       ALTER TABLE applications
@@ -12,7 +12,7 @@
     </sql>
   </changeSet>
 
-  <changeSet id="038b_backfill_job_closed_draft" author="aniruddhzaveri">
+  <changeSet id="038b_backfill_job_closed_draft" author="aniruddh">
     <comment>
       Reclassify never-submitted drafts whose job was closed: JOB_CLOSED rows with
       a NULL applied_at were SAVED before the close, so they belong to the new
