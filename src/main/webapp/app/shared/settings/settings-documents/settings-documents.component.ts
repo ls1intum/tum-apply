@@ -375,5 +375,4 @@ export class SettingsDocumentsComponent {
     this.masterDocuments.set(documentIds.masterDocumentIds ?? []);
     this.referenceDocuments.set(documentIds.referenceDocumentIds ?? []);
   }
-
 }

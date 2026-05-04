@@ -352,5 +352,4 @@ export class ApplicationInformationSettingsComponent {
       postcode: data.postcode,
     };
   }
-
 }
