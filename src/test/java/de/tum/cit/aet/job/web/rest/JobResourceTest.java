@@ -632,7 +632,7 @@ class JobResourceTest extends AbstractResourceTest {
     class UpdateJobImageHandlingTests {
 
         @Test
-        void updateJobReplacingImageCallsReplaceImage() {
+        void updateJobReplacingImageDeletesOldImage() {
             // Arrange - Create a job with a job banner
             Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
             Job job = jobRepository.findAll().getFirst();
@@ -649,14 +649,14 @@ class JobResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
 
-            // Assert - Job banners should NOT be deleted (they're reusable library images)
-            assertThat(imageRepository.findById(jobBanner1.getImageId())).isPresent();
+            // Assert - The old image should be deleted after replacement
+            assertThat(imageRepository.findById(jobBanner1.getImageId())).isEmpty();
             assertThat(imageRepository.findById(jobBanner2.getImageId())).isPresent();
             assertThat(result.imageId()).isEqualTo(jobBanner2.getImageId());
         }
 
         @Test
-        void updateJobRemovingImageDoesNotDeleteReusableLibraryImage() {
+        void updateJobRemovingImageDeletesOldImage() {
             // Arrange - Create a job with a job banner
             Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
             Job job = jobRepository.findAll().getFirst();
@@ -670,13 +670,13 @@ class JobResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
 
-            // Assert - Job banner should NOT be deleted (it's a reusable library image)
-            assertThat(imageRepository.findById(jobBanner.getImageId())).isPresent();
+            // Assert - The old image should be deleted after removal
+            assertThat(imageRepository.findById(jobBanner.getImageId())).isEmpty();
             assertThat(result.imageId()).isNull();
         }
 
         @Test
-        void updateJobWithDefaultJobBannerDoesNotDeleteOldImage() {
+        void updateJobWithDefaultJobBannerDeletesOldImage() {
             // Arrange - Create admin user for default image
             User adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
             adminUser = userRepository.save(adminUser);
@@ -696,13 +696,13 @@ class JobResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
 
-            // Assert - Default images should NOT be auto-deleted
-            assertThat(imageRepository.findById(defaultBanner.getImageId())).isPresent();
+            // Assert - The old image should be deleted after replacement
+            assertThat(imageRepository.findById(defaultBanner.getImageId())).isEmpty();
             assertThat(imageRepository.findById(newDefaultBanner.getImageId())).isPresent();
         }
 
         @Test
-        void updateJobWithJobBannerDoesNotDeleteOldImage() {
+        void updateJobWithJobBannerDeletesOldImage() {
             // Arrange - Create job banners (research group library images)
             Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
             Job job = jobRepository.findAll().getFirst();
@@ -718,8 +718,8 @@ class JobResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
 
-            // Assert - Job banners are reusable library images, so should NOT be deleted
-            assertThat(imageRepository.findById(jobBanner1.getImageId())).isPresent();
+            // Assert - The old image should be deleted after replacement
+            assertThat(imageRepository.findById(jobBanner1.getImageId())).isEmpty();
             assertThat(imageRepository.findById(jobBanner2.getImageId())).isPresent();
         }
 
