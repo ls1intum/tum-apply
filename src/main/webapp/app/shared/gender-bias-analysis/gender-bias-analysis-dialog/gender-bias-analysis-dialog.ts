@@ -58,7 +58,7 @@ export class GenderBiasAnalysisDialogComponent {
   });
 
   readonly nonInclusiveWords = computed(() => {
-    return this.result().filter(w => w.type === 'NON_INCLUSIVE')
+    return this.result().filter(w => w.type === 'NON_INCLUSIVE');
   });
 
   readonly inclusiveWords = computed(() => {

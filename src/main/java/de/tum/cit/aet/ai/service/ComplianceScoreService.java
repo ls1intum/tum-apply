@@ -2,9 +2,8 @@ package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.constants.GenderCategory;
-import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.domain.BiasedIssues;
-
+import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

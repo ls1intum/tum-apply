@@ -1,17 +1,16 @@
 package de.tum.cit.aet.ai.web;
 
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.ai.service.GenderBiasAnalysisService;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * REST controller for gender bias analysis

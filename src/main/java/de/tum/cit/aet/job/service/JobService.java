@@ -492,7 +492,13 @@ public class JobService {
      * @param lang the language for which existing issues should be replaced
      */
     @Transactional
-    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, List<BiasedIssues> biasedAnalysis, String lang) {
+    public void updateAiAnalysis(
+        UUID jobId,
+        int score,
+        List<ComplianceIssue> complianceAnalysis,
+        List<BiasedIssues> biasedAnalysis,
+        String lang
+    ) {
         if (jobId == null) {
             return;
         }

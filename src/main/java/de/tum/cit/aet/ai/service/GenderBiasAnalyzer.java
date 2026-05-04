@@ -31,7 +31,6 @@ public class GenderBiasAnalyzer {
         Set<String> nonInclusive = GenderBiasWordLists.getWords(language, GenderCategory.NON_INCLUSIVE);
         Set<String> inclusive = GenderBiasWordLists.getWords(language, GenderCategory.INCLUSIVE);
 
-
         // Clean and tokenize
         List<String> wordList = cleanAndTokenize(text);
 
@@ -73,7 +72,7 @@ public class GenderBiasAnalyzer {
         List<String> result = new ArrayList<>();
 
         Set<String> allCodedWords = new HashSet<>();
-        allCodedWords.addAll(GenderBiasWordLists.getWords(lang,GenderCategory.INCLUSIVE));
+        allCodedWords.addAll(GenderBiasWordLists.getWords(lang, GenderCategory.INCLUSIVE));
         allCodedWords.addAll(GenderBiasWordLists.getWords(lang, GenderCategory.NON_INCLUSIVE));
 
         for (String word : wordList) {

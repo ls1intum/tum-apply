@@ -1,13 +1,13 @@
 package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.domain.GenderBiasWordLists;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.documents.service.DocumentService;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;

@@ -57,13 +57,13 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
-import {ComplianceIssue, ComplianceIssueCategoryEnum} from 'app/generated/model/compliance-issue';
+import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 import { tvlGrades } from '.././dropdown-options';
-import {BiasedIssues} from "app/generated/model/biased-issues";
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
@@ -1592,7 +1592,9 @@ export class JobCreationFormComponent {
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         // highlighting before translation
-        await firstValueFrom(this.genderBiasApi.analyzeHtmlContent({ text: description, language: currentLang })).then(issues => this.biasedIssues.set(issues)).catch(() => undefined);
+        await firstValueFrom(this.genderBiasApi.analyzeHtmlContent({ text: description, language: currentLang }))
+          .then(issues => this.biasedIssues.set(issues))
+          .catch(() => undefined);
         void Promise.all([
           this.analyzeAndUpdateScore(currentLang),
           // fire and forget
@@ -1760,7 +1762,7 @@ export class JobCreationFormComponent {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
         if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
-          if(updatedJob.biasedIssues) {
+          if (updatedJob.biasedIssues) {
             this.biasedIssues.set(updatedJob.biasedIssues);
           }
           break;

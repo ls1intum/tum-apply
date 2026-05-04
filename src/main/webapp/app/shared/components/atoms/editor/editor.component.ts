@@ -6,9 +6,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
-import {BiasedIssues, BiasedIssuesTypeEnum} from 'app/generated/model/biased-issues';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { map} from 'rxjs';
+import { map } from 'rxjs';
 import Quill from 'quill';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-icon.component';
@@ -128,7 +128,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly cdRef = inject(ChangeDetectorRef);
 
   readonly fieldIdChanges$ = toObservable(this.fieldId);
-
 
   showAnalysisModal = signal(false);
 

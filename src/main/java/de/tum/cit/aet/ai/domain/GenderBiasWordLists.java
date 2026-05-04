@@ -1,7 +1,6 @@
 package de.tum.cit.aet.ai.domain;
 
 import de.tum.cit.aet.ai.constants.GenderCategory;
-
 import java.util.*;
 
 public final class GenderBiasWordLists {
@@ -258,8 +257,9 @@ public final class GenderBiasWordLists {
             )
         )
     );
+
     public static Set<String> getWords(String lang, GenderCategory type) {
-        if("de".equals(lang)) {
+        if ("de".equals(lang)) {
             return type == GenderCategory.INCLUSIVE ? GERMAN_INCLUSIVE : GERMAN_NON_INCLUSIVE;
         }
         return type == GenderCategory.INCLUSIVE ? ENGLISH_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
