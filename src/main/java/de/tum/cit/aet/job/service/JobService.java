@@ -488,6 +488,7 @@ public class JobService {
      * @param jobId the job identifier
      * @param score the combined AI score to persist
      * @param complianceAnalysis the compliance issues detected for the job description
+     * @param biasedAnalysis the biased issues detected for the job description
      * @param lang the language for which existing issues should be replaced
      */
     @Transactional

@@ -7,6 +7,11 @@ import { ComponentRef } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
+type GenderBiasAnalysisDialogTestResult = Omit<BiasedIssues, 'type'> & {
+  type?: BiasedIssues['type'] | 'non-inclusive' | 'nonInclusive' | 'inclusive' | 'male';
+  biasedWords?: GenderBiasAnalysisDialogTestResult[];
+};
+
 describe('GenderBiasAnalysisDialogComponent', () => {
   let translateService: TranslateServiceMock;
 
@@ -21,7 +26,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   function createComponentWithInputs(
     visible: boolean,
-    result: BiasedIssues | undefined = undefined,
+    result: GenderBiasAnalysisDialogTestResult | BiasedIssues[] | undefined = undefined,
   ): {
     fixture: ComponentFixture<GenderBiasAnalysisDialogComponent>;
     component: GenderBiasAnalysisDialogComponent;
@@ -30,10 +35,38 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     const componentRef = fixture.componentRef as ComponentRef<GenderBiasAnalysisDialogComponent>;
     componentRef.setInput('visible', visible);
     if (result !== undefined) {
-      componentRef.setInput('result', result);
+      componentRef.setInput('result', Array.isArray(result) ? result : normalizeResult(result));
     }
     fixture.detectChanges();
     return { fixture, component: fixture.componentInstance };
+  }
+
+  function normalizeResult(result: GenderBiasAnalysisDialogTestResult): BiasedIssues[] {
+    if (result.biasedWords && result.biasedWords.length > 0) {
+      return result.biasedWords.map(word => toBiasedIssue(word, result.coding));
+    }
+
+    return [toBiasedIssue(result)];
+  }
+
+  function toBiasedIssue(result: GenderBiasAnalysisDialogTestResult, coding = result.coding): BiasedIssues {
+    return {
+      coding,
+      word: result.word,
+      type: normalizeType(result.type),
+    };
+  }
+
+  function normalizeType(type: GenderBiasAnalysisDialogTestResult['type']): BiasedIssues['type'] | undefined {
+    switch (type) {
+      case 'non-inclusive':
+      case 'nonInclusive':
+        return 'NON_INCLUSIVE';
+      case 'inclusive':
+        return 'INCLUSIVE';
+      default:
+        return type as BiasedIssues['type'] | undefined;
+    }
   }
 
   it('should create', () => {
@@ -73,7 +106,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('codingTranslationKey computed', () => {
     it('should return correct key for non-inclusive-coded', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [],
       };
@@ -83,7 +116,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return correct key for inclusive-coded', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [],
       };
@@ -93,7 +126,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return correct key for neutral', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'neutral',
         biasedWords: [],
       };
@@ -103,7 +136,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return correct key for empty', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'empty',
         biasedWords: [],
       };
@@ -113,7 +146,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return neutral key for unknown coding', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'unknown-type' as any,
         biasedWords: [],
       };
@@ -129,7 +162,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return neutral key when coding is undefined', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: undefined,
         biasedWords: [],
       };
@@ -141,7 +174,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('explanationTranslationKey computed', () => {
     it('should return correct key for non-inclusive-coded', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [],
       };
@@ -151,7 +184,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return correct key for inclusive-coded', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [],
       };
@@ -161,7 +194,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return correct key for neutral', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'neutral',
         biasedWords: [],
       };
@@ -171,7 +204,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return correct key for empty', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'empty',
         biasedWords: [],
       };
@@ -181,7 +214,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return neutral explanation key for unknown coding', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'unknown-type' as any,
         biasedWords: [],
       };
@@ -225,7 +258,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('nonInclusiveWords computed', () => {
     it('should filter and return only non-inclusive words', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'non-inclusive' },
@@ -243,7 +276,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return empty array when no non-inclusive words exist', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [
           { word: 'supportive', type: 'inclusive' },
@@ -256,7 +289,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return empty array when biasedWords is undefined', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'neutral',
         biasedWords: undefined,
       };
@@ -274,7 +307,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('inclusiveWords computed', () => {
     it('should filter and return only inclusive words', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'nonInclusive' },
@@ -292,7 +325,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return empty array when no inclusive words exist', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'nonInclusive' },
@@ -305,7 +338,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return empty array when biasedWords is undefined', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'neutral',
         biasedWords: undefined,
       };
@@ -317,7 +350,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('nonInclusiveWordCounts computed', () => {
     it('should return word counts for non-inclusive words only', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'non-inclusive' },
@@ -336,7 +369,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return empty map when no nonInclusive words exist', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [
           { word: 'supportive', type: 'inclusive' },
@@ -349,7 +382,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle words with undefined word property', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'non-inclusive' },
@@ -368,7 +401,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('inclusiveWordCounts computed', () => {
     it('should return word counts for inclusive words only', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'nonInclusive' },
@@ -387,7 +420,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should return empty map when no inclusive words exist', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'nonInclusive' },
@@ -407,18 +440,19 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should accept result input', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
-        biasedWords: [{ word: 'leader', type: 'nonInclusive' }],
+        word: 'leader',
+        type: 'NON_INCLUSIVE',
       };
 
       const { component } = createComponentWithInputs(true, mockResult);
-      expect(component.result()).toEqual(mockResult);
+      expect(component.result()).toEqual([mockResult]);
     });
 
     it('should handle undefined result input', () => {
       const { component } = createComponentWithInputs(true, undefined);
-      expect(component.result()).toBeUndefined();
+      expect(component.result()).toEqual([]);
     });
 
     it('should change visible input value', () => {
@@ -435,7 +469,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('integration scenarios', () => {
     it('should handle complete non-inclusive-coded analysis result', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'non-inclusive' },
@@ -453,7 +487,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle complete inclusive-coded analysis result', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'inclusive-coded',
         biasedWords: [
           { word: 'supportive', type: 'inclusive' },
@@ -472,7 +506,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle mixed biased words result', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader', type: 'non-inclusive' },
@@ -489,7 +523,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle neutral result with no biased words', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'neutral',
         biasedWords: [],
       };
@@ -502,7 +536,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle empty result', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'empty',
         biasedWords: undefined,
       };
@@ -516,7 +550,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   describe('edge cases', () => {
     it('should handle words with special characters', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'leader-like', type: 'non-inclusive' },
@@ -532,7 +566,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle case-sensitive word counting', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: 'Leader', type: 'non-inclusive' },
@@ -550,7 +584,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle empty string as word', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: '', type: 'non-inclusive' },
@@ -566,7 +600,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     });
 
     it('should handle whitespace-only words', () => {
-      const mockResult: BiasedIssues = {
+      const mockResult: GenderBiasAnalysisDialogTestResult = {
         coding: 'non-inclusive-coded',
         biasedWords: [
           { word: '   ', type: 'non-inclusive' },

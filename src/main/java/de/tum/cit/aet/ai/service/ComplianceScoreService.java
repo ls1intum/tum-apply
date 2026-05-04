@@ -57,6 +57,7 @@ public class ComplianceScoreService {
      *
      * @param originalAnalysis The analysis results for the primary description language.
      * @param translatedAnalysis The analysis results for the secondary/translated language.
+     * @param originalText - The original text for score-calculation
      * @return the combined gender bias score (0-100)
      */
     public int calculateCombinedScore(List<BiasedIssues> originalAnalysis, List<BiasedIssues> translatedAnalysis, String originalText) {
@@ -72,6 +73,7 @@ public class ComplianceScoreService {
      *
      * @param originalAnalysis Analysis results for the primary description language.
      * @param translatedAnalysis Analysis results for the secondary/translated language.
+     * @param originalText - The original text for score-calculation
      * @return A compiled integer score (0-100) based on the most comprehensive data available.
      */
     protected int calculateGenderScore(List<BiasedIssues> originalAnalysis, List<BiasedIssues> translatedAnalysis, String originalText) {
@@ -101,6 +103,7 @@ public class ComplianceScoreService {
      * The square root is applied to soften the penalty curve and avoid overly harsh scores.
      *
      * @param analysis - The result of the gender bias analysis (including identified words and overall coding).
+     * @param originalText - The original text for score-calculation
      * @returns An integer between 0 and 100 representing the inclusivity score.
      */
     protected int calculateScore(List<BiasedIssues> analysis, String originalText) {
