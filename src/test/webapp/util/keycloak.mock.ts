@@ -5,6 +5,7 @@ import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentica
 export type KeycloakMock = {
   authenticated: boolean;
   token: string;
+  tokenParsed: Record<string, unknown>;
   init: ReturnType<typeof vi.fn>;
   login: ReturnType<typeof vi.fn>;
   logout: ReturnType<typeof vi.fn>;
@@ -15,6 +16,11 @@ export function createKeycloakMock(): KeycloakMock {
   return {
     authenticated: false,
     token: 'mock-token',
+    tokenParsed: {
+      sub: 'mock-subject',
+      preferred_username: 'mock-user',
+      name: 'Mock User',
+    },
     init: vi.fn().mockResolvedValue(true),
     login: vi.fn().mockResolvedValue(undefined),
     logout: vi.fn().mockResolvedValue(undefined),

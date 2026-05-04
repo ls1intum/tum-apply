@@ -16,7 +16,6 @@ export enum IdpProvider {
 
 interface PasskeyChallengeResponse {
   challenge?: string;
-  credentialId?: string;
   error?: string;
 }
 
@@ -78,27 +77,10 @@ export class KeycloakAuthenticationService {
    * @returns A promise that resolves to true if the user is authenticated, false otherwise.
    */
   async init(): Promise<boolean> {
-    this.keycloak ??= new Keycloak({
-      url: this.config.keycloak.url,
-      realm: this.config.keycloak.realm,
-      clientId: this.config.keycloak.clientId,
-    });
-    const options: KeycloakInitOptions = {
-      onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: true,
-      pkceMethod: 'S256',
-      enableLogging: environment.keycloak.enableLogging,
-    };
+    this.keycloak ??= this.createKeycloakClient();
 
     try {
-      const authenticated = await this.keycloak.init(options);
-      if (!authenticated) {
-        console.warn('Keycloak not authenticated.');
-        return authenticated;
-      }
-      this.startTokenRefreshScheduler();
-      return authenticated;
+      return await this.initializeKeycloak(this.keycloak);
     } catch (err) {
       this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.error.summary`),
@@ -179,16 +161,10 @@ export class KeycloakAuthenticationService {
     this.assertPasskeySupport();
 
     const challenge = await this.getPasskeyChallenge();
-    const allowCredentialId =
-      typeof challenge.credentialId === 'string' && challenge.credentialId.trim() !== '' ? challenge.credentialId : undefined;
     const publicKey: PublicKeyCredentialRequestOptions = {
       challenge: this.fromBase64Url(challenge.challenge),
-      userVerification: 'preferred',
+      userVerification: 'required',
     };
-
-    if (allowCredentialId !== undefined) {
-      publicKey.allowCredentials = [{ type: 'public-key', id: this.fromBase64Url(allowCredentialId) }];
-    }
 
     const assertion =
       (await navigator.credentials.get({
@@ -204,28 +180,34 @@ export class KeycloakAuthenticationService {
       throw new Error('Incomplete passkey authentication assertion');
     }
 
+    if (response.userHandle === null) {
+      throw new Error('Passkey did not return a user handle');
+    }
+
     const authenticateResponse = await fetch(this.getPasskeyEndpoint('authenticate'), {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
       body: JSON.stringify({
         credentialId: this.toBase64Url(assertion.rawId),
-        rawId: this.toBase64Url(assertion.rawId),
+        userHandle: this.toBase64Url(response.userHandle),
         clientDataJSON: this.toBase64Url(response.clientDataJSON),
         authenticatorData: this.toBase64Url(response.authenticatorData),
         signature: this.toBase64Url(response.signature),
         challenge: challenge.challenge,
       }),
     });
-    const authenticatePayload = (await authenticateResponse.json().catch(() => ({}))) as { error?: string };
 
-    if (!authenticateResponse.ok) {
+    if (authenticateResponse.status !== 204) {
+      const authenticatePayload = (await authenticateResponse.json().catch(() => ({}))) as { error?: string };
       throw new Error(this.getErrorMessage(authenticatePayload.error, `Passkey auth failed: ${authenticateResponse.status}`));
     }
 
-    window.location.replace(this.buildRedirectUri(redirectUri));
+    await this.refreshKeycloakSessionFromBrowser();
+    this.redirectAfterPasskeyLogin(redirectUri);
   }
 
   /**
@@ -237,24 +219,28 @@ export class KeycloakAuthenticationService {
 
     const token = await this.getAuthenticatedToken();
     const claims = (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>;
-    const accountId = this.getFirstNonEmptyString([claims.sub, claims.preferred_username]) ?? '';
-    const accountName = this.getFirstNonEmptyString([claims.preferred_username, claims.email]) ?? '';
-    const displayName = this.getFirstNonEmptyString([claims.name, accountName]) ?? 'Keycloak User';
+    const userId = this.getFirstNonEmptyString([claims.sub]) ?? '';
+    const username = this.getFirstNonEmptyString([claims.preferred_username, claims.email, userId]) ?? '';
+    const displayName = this.getFirstNonEmptyString([claims.name, username]) ?? username;
 
-    if (accountId === '' || accountName === '') {
+    if (userId === '' || username === '') {
       throw new Error('Missing user identity claims for passkey registration');
     }
 
+    const userIdBytes = new TextEncoder().encode(userId);
+    if (userIdBytes.length > 64) {
+      throw new Error('User id is too long for WebAuthn user.id');
+    }
+
     const challenge = await this.getPasskeyChallenge();
-    const userIdBytes = new Uint8Array(new TextEncoder().encode(accountId).slice(0, 64));
     const credential =
       (await navigator.credentials.create({
         publicKey: {
           challenge: this.fromBase64Url(challenge.challenge),
           rp: { name: 'TUM AET', id: this.getPasskeyRelyingPartyId() },
-          user: { id: userIdBytes.buffer, name: accountName, displayName },
+          user: { id: userIdBytes, name: username, displayName },
           pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
-          authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
+          authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
           attestation: 'none',
         },
       })) ?? undefined;
@@ -277,7 +263,6 @@ export class KeycloakAuthenticationService {
       },
       body: JSON.stringify({
         credentialId: this.toBase64Url(credential.rawId),
-        rawId: this.toBase64Url(credential.rawId),
         clientDataJSON: this.toBase64Url(response.clientDataJSON),
         attestationObject: this.toBase64Url(response.attestationObject),
         challenge: challenge.challenge,
@@ -483,9 +468,50 @@ export class KeycloakAuthenticationService {
 
     return {
       challenge: payload.challenge,
-      credentialId: payload.credentialId,
       error: payload.error,
     };
+  }
+
+  private createKeycloakClient(): Keycloak {
+    return new Keycloak({
+      url: this.config.keycloak.url,
+      realm: this.config.keycloak.realm,
+      clientId: this.config.keycloak.clientId,
+    });
+  }
+
+  private async initializeKeycloak(keycloak: Keycloak): Promise<boolean> {
+    const authenticated = await keycloak.init(this.getCheckSsoOptions());
+    if (!authenticated) {
+      console.warn('Keycloak not authenticated.');
+      return authenticated;
+    }
+    this.startTokenRefreshScheduler();
+    return authenticated;
+  }
+
+  private getCheckSsoOptions(): KeycloakInitOptions {
+    return {
+      onLoad: 'check-sso',
+      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+      silentCheckSsoFallback: false,
+      checkLoginIframe: true,
+      pkceMethod: 'S256',
+      enableLogging: environment.keycloak.enableLogging,
+    };
+  }
+
+  private async refreshKeycloakSessionFromBrowser(): Promise<void> {
+    this.stopTokenRefreshScheduler();
+    this.keycloak = this.createKeycloakClient();
+    const authenticated = await this.initializeKeycloak(this.keycloak);
+    if (!authenticated) {
+      throw new Error('No session after passkey auth');
+    }
+  }
+
+  private redirectAfterPasskeyLogin(redirectUri?: string): void {
+    window.location.replace(this.buildRedirectUri(redirectUri));
   }
 
   /** Endpoint builders */
