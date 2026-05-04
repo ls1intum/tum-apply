@@ -25,7 +25,9 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-icon.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { SavingStates } from 'app/shared/constants/saving-states';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
@@ -111,6 +113,7 @@ type JobFormMode = 'create' | 'edit';
     AiAssistantCardComponent,
     CompliancePopoverComponent,
     TooltipModule,
+    SavingBadgeComponent,
   ],
   providers: [JobResourceApi],
 })
@@ -144,8 +147,8 @@ export class JobCreationFormComponent {
   // SAVING STATE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Current auto-save state: 'SAVED', 'SAVING', or 'FAILED' */
-  savingState = signal<SavingState>(SavingStates.SAVED);
+  /** Debounced auto-save controller. Owns the 3 s timer and the badge state. */
+  readonly autoSave = new AutoSaveController({ save: () => this.runAutoSave() });
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
@@ -454,18 +457,6 @@ export class JobCreationFormComponent {
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
   );
 
-  /** Computed: CSS classes for the saving state badge based on current state */
-  readonly savingBadgeCalculatedClass = computed(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${
-        this.savingState() === SavingStates.SAVED
-          ? 'saved_color'
-          : this.savingState() === SavingStates.FAILED
-            ? 'failed_color'
-            : 'saving_color'
-      }`,
-  );
-
   // ═══════════════════════════════════════════════════════════════════════════
   // STEPPER CONFIGURATION
   // ═══════════════════════════════════════════════════════════════════════════
@@ -562,11 +553,8 @@ export class JobCreationFormComponent {
   // AUTO-SAVE INTERNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Timer ID for the debounced auto-save (2-second delay) */
-  private autoSaveTimer: number | undefined;
-
   /** The currently in-flight auto-save promise, or undefined if none is running. */
-  private autoSaveInFlight: Promise<void> | undefined;
+  private autoSaveInFlight: Promise<boolean> | undefined;
 
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
@@ -643,12 +631,7 @@ export class JobCreationFormComponent {
     // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
     // language signal, but the languageChangeEffect below sets the form
     // value with emitEvent:false — so the autosave effect won't re-trigger.
-    // We must call performAutoSave explicitly to persist the content.
-    if (this.autoSaveTimer !== undefined) {
-      this.clearAutoSaveTimer();
-      this.syncCurrentEditorIntoLanguageSignals();
-      void this.performAutoSave();
-    }
+    void this.autoSave.flush();
 
     this.currentDescriptionLanguage.set(newLang);
   }
@@ -717,7 +700,7 @@ export class JobCreationFormComponent {
 
     if (!jobData) return;
 
-    this.clearAutoSaveTimer();
+    this.autoSave.dispose();
     if (this.autoSaveInFlight) {
       await this.autoSaveInFlight;
     }
@@ -763,12 +746,7 @@ export class JobCreationFormComponent {
    * Performs a save after changing the step.
    */
   async onStepChange(): Promise<void> {
-    // Timer sofort abbrechen und speichern
-    if (this.autoSaveTimer !== undefined) {
-      this.clearAutoSaveTimer();
-      this.syncCurrentEditorIntoLanguageSignals();
-      await this.performAutoSave();
-    }
+    await this.autoSave.flush();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -948,7 +926,6 @@ export class JobCreationFormComponent {
     }
     const originalContent = this.basicInfoForm.get('jobDescription')?.value;
     const language = this.currentDescriptionLanguage();
-    this.clearAutoSaveTimer();
 
     // Abort any in-flight translation. Generation will re-trigger a fresh
     // translation in postGenerationSaveAndProcess once it completes, so an
@@ -1045,7 +1022,7 @@ export class JobCreationFormComponent {
    */
   private async postGenerationSaveAndProcess(sourceLang: Language, sourceText: string): Promise<void> {
     const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
-    this.savingState.set('SAVING');
+    this.autoSave.setState(SavingStates.SAVING);
 
     try {
       // 1) Persist the generated content to the server
@@ -1061,14 +1038,14 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      this.savingState.set('SAVED');
+      this.autoSave.setState(SavingStates.SAVED);
 
       // 3) Analyze source language first so the user sees highlights + score immediately.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         void Promise.all([this.analyzeAndUpdateScore(sourceLang), this.translateAndStoreOtherLanguage(sourceLang, sourceText)]);
       }
     } catch {
-      this.savingState.set('FAILED');
+      this.autoSave.setState(SavingStates.FAILED);
       this.isAnalyzing.set(false);
       this.toastService.showErrorKey('toast.saveFailed');
     }
@@ -1371,7 +1348,6 @@ export class JobCreationFormComponent {
       }
 
       // 4) Prevent autosave from firing immediately after initialization
-      this.clearAutoSaveTimer();
       this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
@@ -1523,8 +1499,8 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Sets up the auto-save effect with 2-second debounce.
-   * Triggers save when any form value changes.
+   * Wires up the auto-save controller to track every form-value signal.
+   * Each value change debounces a save through {@link AutoSaveController}.
    * Skips during initial population and AI generation.
    */
   private setupAutoSave(): void {
@@ -1551,37 +1527,20 @@ export class JobCreationFormComponent {
         return;
       }
 
-      // 4) Update the description signal and schedule the debounced save
+      // 4) Update the description signal and (re)start the debounce timer.
+      //    The badge stays on its current state until the timer fires, so the
+      //    user does not see "Saving changes..." flicker on every keystroke.
       this.jobDescriptionSignal.set(description);
-      this.clearAutoSaveTimer();
-      this.savingState.set('SAVING');
-
-      this.autoSaveTimer = window.setTimeout(() => {
-        this.autoSaveTimer = undefined;
-        // 5) Sync editor content to language signals and persist
-        this.syncCurrentEditorIntoLanguageSignals();
-        void this.performAutoSave();
-      }, 2000);
+      this.autoSave.notifyChanged();
     });
   }
 
   /**
-   * Clears any pending auto-save timer.
+   * Save callback invoked by the {@link AutoSaveController} when its timer fires.
+   * Returns `true` on success so the controller can flip the badge to `SAVED`.
    */
-  private clearAutoSaveTimer(): void {
-    if (this.autoSaveTimer !== undefined) {
-      clearTimeout(this.autoSaveTimer);
-      this.autoSaveTimer = undefined;
-    }
-  }
-
-  /**
-   * Performs the actual auto-save operation.
-   * Creates job on first save, updates on subsequent saves.
-   * Triggers translation after successful save if content changed.
-   */
-  private performAutoSave(): Promise<void> {
-    const work = this.runAutoSave();
+  private runAutoSave(): Promise<boolean> {
+    const work = this.executeAutoSave();
     this.autoSaveInFlight = work;
     void work.finally(() => {
       if (this.autoSaveInFlight === work) {
@@ -1591,8 +1550,9 @@ export class JobCreationFormComponent {
     return work;
   }
 
-  private async runAutoSave(): Promise<void> {
+  private async executeAutoSave(): Promise<boolean> {
     // 1) Capture current form state before any async work
+    this.syncCurrentEditorIntoLanguageSignals();
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
     const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
@@ -1611,7 +1571,6 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      this.savingState.set('SAVED');
 
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
@@ -1620,9 +1579,10 @@ export class JobCreationFormComponent {
         // highlighting before translation
         void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
       }
+      return true;
     } catch {
-      this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');
+      return false;
     }
   }
 

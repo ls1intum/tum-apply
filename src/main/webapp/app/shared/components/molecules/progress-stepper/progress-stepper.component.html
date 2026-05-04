@@ -21,7 +21,7 @@
         type="button"
         (click)="goToStep($index + 1)"
         [disabled]="step?.disabled ?? false"
-        [pTooltip]="step.shouldTranslate ? (step.name | translate) : step.name"
+        [pTooltip]="stepTooltips()[$index]"
         tooltipPosition="top"
         class="flex-1 h-2 rounded-full transition-all duration-300 ease-in-out"
         [class.bg-primary]="$index + 1 <= currentStep()"
@@ -64,9 +64,9 @@
         <ng-container [ngTemplateOutlet]="statusDiv" />
       </div>
     }
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
-      <div class="flex gap-6">
+      <div class="flex gap-6 items-center">
         @if (statusDiv(); as statusDiv) {
           <div class="hidden sm:flex">
             <ng-container [ngTemplateOutlet]="statusDiv" />

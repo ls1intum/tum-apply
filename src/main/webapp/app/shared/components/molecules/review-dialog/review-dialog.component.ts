@@ -4,7 +4,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { RejectDTOReasonEnum } from 'app/generated/model/reject-dto';
 
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
@@ -25,7 +25,6 @@ type ReasonEnum = RejectDTOReasonEnum;
     FormsModule,
     FontAwesomeModule,
     ReactiveFormsModule,
-    TranslateModule,
     SelectComponent,
     NgTemplateOutlet,
     ButtonComponent,

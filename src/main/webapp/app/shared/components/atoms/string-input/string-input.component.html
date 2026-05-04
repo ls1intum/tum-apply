@@ -2,18 +2,13 @@
   <div class="label-top label-input-wrapper">
     @if (label(); as label) {
       <label class="custom-label" [for]="inputId()">
-        {{ shouldTranslate() ? (label | translate) : label }}
+        {{ displayLabel() }}
         @if (required()) {
           <span class="required">*</span>
         }
         @if (icon(); as icon) {
           @if (icon === 'circle-info' && tooltipText()) {
-            <fa-icon
-              class="icon"
-              [icon]="['fas', icon]"
-              [pTooltip]="shouldTranslate() ? (tooltipText() ?? '' | translate) : (tooltipText() ?? '')"
-              tooltipPosition="top"
-            />
+            <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="displayTooltipText()" tooltipPosition="top" />
           } @else {
             <fa-icon class="icon" [icon]="['fas', icon ?? '']" />
           }
@@ -29,7 +24,7 @@
           [id]="inputId()"
           [formControl]="formControl()"
           [pAutoFocus]="autofocus()"
-          [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : (placeholder() ?? '')"
+          [placeholder]="displayPlaceholder()"
           [required]="required()"
           [style]="{ width: width() }"
           autocomplete="off"
@@ -44,7 +39,7 @@
           [id]="inputId()"
           [ngModel]="model()"
           [pAutoFocus]="autofocus()"
-          [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : (placeholder() ?? '')"
+          [placeholder]="displayPlaceholder()"
           [required]="required()"
           [disabled]="disabled()"
           [style]="{ width: width() }"
@@ -56,7 +51,7 @@
     </div>
     @if (helperTextLeft()) {
       <div class="flex justify-between items-center text-sm gap-2">
-        <span class="text-text-disabled flex-1">{{ helperTextLeft() }}</span>
+        <span class="text-text-disabled flex-1">{{ displayHelperTextLeft() }}</span>
 
         @if (helperTextRight()) {
           <span
@@ -65,14 +60,14 @@
             role="button"
             (click)="helperTextRightClick.emit()"
             (keydown.enter)="helperTextRightClick.emit()"
-            >{{ helperTextRight() }}</span
+            >{{ displayHelperTextRight() }}</span
           >
         }
       </div>
     }
     @if (warningText()) {
       <div class="text-warning-hover text-sm gap-2">
-        {{ warningText() }}
+        {{ displayWarningText() }}
       </div>
     }
     @if (errorEnabled()) {

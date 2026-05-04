@@ -26,18 +26,25 @@ export class PrivacyPageComponent {
     () => !this.signedIn() || this.currentExportStatus() === DataExportStatusDTOStatusEnum.InCreation || this.cooldownSeconds() > 0,
   );
 
-  readonly tooltip = computed(() => {
-    this.currentLang(); // re-run when language changes to update translation
+  readonly tooltip = computed<string | undefined>(() => {
     if (!this.exportButtonDisabled()) return undefined;
 
     if (!this.signedIn()) {
-      return this.translateService.instant('privacy.export.tooltip.notLoggedIn');
+      return 'privacy.export.tooltip.notLoggedIn';
     } else if (this.currentExportStatus() === DataExportStatusDTOStatusEnum.InCreation) {
-      return this.translateService.instant('privacy.export.tooltip.inCreation');
+      return 'privacy.export.tooltip.inCreation';
     } else if (this.cooldownSeconds() > 0) {
-      const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
-      return this.translateService.instant('privacy.export.tooltip.cooldown', { days: days.toString() });
+      return 'privacy.export.tooltip.cooldown';
     }
+    return undefined;
+  });
+
+  readonly tooltipParams = computed<Record<string, unknown>>(() => {
+    if (this.cooldownSeconds() > 0) {
+      const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
+      return { days: days.toString() };
+    }
+    return {};
   });
 
   readonly translateService = inject(TranslateService);

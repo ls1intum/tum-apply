@@ -14,6 +14,9 @@ import 'quill-mention/autoregister';
 import { EmailTemplateDTO, EmailTemplateDTOEmailTypeEnum } from 'app/generated/model/email-template-dto';
 import { EmailTemplateTranslationDTO } from 'app/generated/model/email-template-translation-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { SavingStates } from 'app/shared/constants/saving-states';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -22,7 +25,6 @@ import { EmailTemplateResourceApi } from '../../../generated/api/email-template-
 import { AccountService } from '../../../core/auth/account.service';
 
 const EMPTY_TRANSLATION: EmailTemplateTranslationDTO = { subject: '', body: '' };
-const AUTOSAVE_DELAY_MS = 3000;
 const ALL_TYPES_PAGE_SIZE = 100;
 
 @Component({
@@ -38,6 +40,7 @@ const ALL_TYPES_PAGE_SIZE = 100;
     SelectComponent,
     TranslateModule,
     TranslateDirective,
+    SavingBadgeComponent,
   ],
   templateUrl: './research-group-template-edit.html',
   styleUrl: './research-group-template-edit.scss',
@@ -51,9 +54,9 @@ export class ResearchGroupTemplateEdit {
   readonly toastService = inject(ToastService);
   readonly accountService = inject(AccountService);
 
-  autoSaveTimer: number | undefined;
+  /** Debounced auto-save controller. Owns the 3 s timer and the badge state. */
+  readonly autoSave = new AutoSaveController({ save: () => this.executeAutoSave() });
 
-  readonly savingState = signal<'SAVED' | 'SAVING' | 'UNSAVED'>('UNSAVED');
   readonly lastSavedSnapshot = signal<EmailTemplateDTO | undefined>(undefined);
   skipNextAutosave = false;
 
@@ -196,12 +199,9 @@ export class ResearchGroupTemplateEdit {
       return;
     }
 
-    this.savingState.set('SAVING');
-    this.clearAutoSaveTimer();
-
-    this.autoSaveTimer = window.setTimeout(() => {
-      void this.performAutoSave();
-    }, AUTOSAVE_DELAY_MS);
+    // Restart the debounce timer. The badge stays on its current state until
+    // the timer fires so it does not flicker on every keystroke.
+    this.autoSave.notifyChanged();
   });
 
   constructor() {
@@ -211,7 +211,7 @@ export class ResearchGroupTemplateEdit {
 
   readonly beforeUnloadHandler = (): void => {
     if (this.hasUnsavedChanges()) {
-      void this.performAutoSave();
+      void this.autoSave.flush();
     }
   };
 
@@ -342,23 +342,19 @@ export class ResearchGroupTemplateEdit {
     };
   }
 
-  private clearAutoSaveTimer(): void {
-    if (this.autoSaveTimer !== undefined) {
-      clearTimeout(this.autoSaveTimer);
-      this.autoSaveTimer = undefined;
-    }
-  }
-
   /**
-   * Persists the current form model. Updates an existing template when an id is present,
-   * otherwise creates a new one and back-fills the assigned id.
+   * Save callback invoked by the {@link AutoSaveController} when its debounce timer fires.
+   * Updates an existing template when an id is present, otherwise creates a new one
+   * and back-fills the assigned id.
+   *
+   * @returns `true` when the persist call succeeded, `false` otherwise so the controller
+   *          can flip the badge to `FAILED`.
    */
-  private async performAutoSave(): Promise<void> {
+  private async executeAutoSave(): Promise<boolean> {
     const form = this.formModel();
     // 1) Skip if no email type was picked yet — there is nothing meaningful to save.
     if (form.emailType === undefined) {
-      this.savingState.set('SAVED');
-      return;
+      return true;
     }
 
     try {
@@ -377,12 +373,12 @@ export class ResearchGroupTemplateEdit {
       }
       // 3) Snapshot the saved state so subsequent diffs detect "unsaved changes" correctly.
       this.lastSavedSnapshot.set(this.formModel());
-      this.savingState.set('SAVED');
+      return true;
     } catch {
-      // 4) Surface a generic toast and reset the saving state. The dropdown already prevents
-      //    duplicate-type collisions; reaching this point is a rare race or non-UI client.
+      // 4) Surface a generic toast. The dropdown already prevents duplicate-type collisions;
+      //    reaching this point is a rare race or non-UI client.
       this.toastService.showError({ detail: 'Autosave failed' });
-      this.savingState.set('UNSAVED');
+      return false;
     }
   }
 
@@ -404,7 +400,7 @@ export class ResearchGroupTemplateEdit {
       this.skipNextAutosave = true;
       this.formModel.set(translatedTemplate);
       this.lastSavedSnapshot.set(translatedTemplate);
-      this.savingState.set('SAVED');
+      this.autoSave.setState(SavingStates.SAVED);
     } catch {
       this.toastService.showError({ detail: 'Failed to load template' });
     }
@@ -434,7 +430,7 @@ export class ResearchGroupTemplateEdit {
       };
       this.skipNextAutosave = true;
       this.formModel.set(this.translateMentionsInTemplate(prefilled));
-      this.savingState.set('UNSAVED');
+      this.autoSave.setState(SavingStates.SAVED);
     } catch {
       this.toastService.showError({ detail: 'Failed to load default template' });
     }

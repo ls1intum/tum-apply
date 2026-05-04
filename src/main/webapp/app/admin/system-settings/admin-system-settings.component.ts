@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
-import { TranslatePipe } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -19,16 +18,7 @@ import { AiFeatureStatusDTO } from 'app/generated/model/ai-feature-status-dto';
 @Component({
   selector: 'jhi-admin-system-settings',
   standalone: true,
-  imports: [
-    TranslateDirective,
-    TranslatePipe,
-    ButtonComponent,
-    InfoBoxComponent,
-    TagComponent,
-    ToggleSwitchComponent,
-    ProgressSpinnerComponent,
-    DatePipe,
-  ],
+  imports: [TranslateDirective, ButtonComponent, InfoBoxComponent, TagComponent, ToggleSwitchComponent, ProgressSpinnerComponent, DatePipe],
   templateUrl: './admin-system-settings.component.html',
 })
 export class AdminSystemSettingsComponent {

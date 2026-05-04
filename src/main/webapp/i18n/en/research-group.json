@@ -72,9 +72,6 @@
       "addSubject": "Enter email subject...",
       "addVariable": "Press '$' to add a variable",
       "message": "Message",
-      "saved": "Saved",
-      "saving": "Saving changes",
-      "unsaved": "Changes not saved",
       "messageType": {
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_REJECTED_JOB_FILLED": "Application rejected - Job already filled",
@@ -112,7 +109,7 @@
     },
     "members": {
       "noUsers": "No available users found.",
-      "emptySearch": "Please enter at least {{minLength}} characters to search.",
+      "emptySearch": "Please enter at least {minLength} characters to search.",
       "you": "You",
       "notice": "Members will be notified via email when they are added to the research group.",
       "manageMembers": "Manage Members",
@@ -121,8 +118,8 @@
       "searchPlaceholder": "Search for a member using their name or email...",
       "singleEntity": "User",
       "multipleEntities": "Users",
-      "selectedCountSingle": "{{count}} member selected",
-      "selectedCountMultiple": "{{count}} members selected",
+      "selectedCountSingle": "{count} member selected",
+      "selectedCountMultiple": "{count} members selected",
       "tableColumns": {
         "name": "Name",
         "email": "Email",
@@ -163,7 +160,7 @@
         },
         "removeSuccess": {
           "summary": "Member Removed",
-          "detail": "{{memberName}} has been removed from the research group."
+          "detail": "{memberName} has been removed from the research group."
         },
         "removeFailed": {
           "summary": "Remove Failed",

@@ -72,9 +72,6 @@
       "addSubject": "Betreff der Email...",
       "addVariable": "Drücke '$', um eine Variable einzufügen",
       "message": "Nachricht",
-      "saved": "Gespeichert",
-      "saving": "Änderungen werden gespeichert",
-      "unsaved": "Änderungen nicht gespeichert",
       "messageType": {
         "APPLICATION_ACCEPTED": "Bewerbung angenommen",
         "APPLICATION_REJECTED_JOB_FILLED": "Bewerbung abgelehnt - Stelle bereits besetzt",
@@ -112,7 +109,7 @@
     },
     "members": {
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
-      "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
+      "emptySearch": "Bitte gib mindestens {minLength} Zeichen ein, um zu suchen.",
       "you": "Du",
       "notice": "Die Mitglieder werden per E-Mail benachrichtigt, wenn sie zur Forschungsgruppe hinzugefügt werden.",
       "manageMembers": "Mitglieder verwalten",
@@ -121,8 +118,8 @@
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
       "singleEntity": "Benutzer:in",
       "multipleEntities": "Benutzer:innen",
-      "selectedCountSingle": "{{count}} Mitglied ausgewählt",
-      "selectedCountMultiple": "{{count}} Mitglieder ausgewählt",
+      "selectedCountSingle": "{count} Mitglied ausgewählt",
+      "selectedCountMultiple": "{count} Mitglieder ausgewählt",
       "tableColumns": {
         "name": "Name",
         "email": "E-Mail",
@@ -163,7 +160,7 @@
         },
         "removeSuccess": {
           "summary": "Mitglied entfernt",
-          "detail": "{{memberName}} wurde aus der Forschungsgruppe entfernt."
+          "detail": "{memberName} wurde aus der Forschungsgruppe entfernt."
         },
         "removeFailed": {
           "summary": "Fehler beim Entfernen",

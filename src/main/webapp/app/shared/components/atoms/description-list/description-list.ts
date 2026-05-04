@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 export interface DescItem {
   labelKey: string;
@@ -11,9 +11,10 @@ export interface DescItem {
 
 @Component({
   selector: 'jhi-description-list',
-  imports: [TranslateModule, FontAwesomeModule, TooltipModule],
+  imports: [TranslateDirective, FontAwesomeModule, TooltipModule],
   templateUrl: './description-list.html',
 })
 export class DescriptionList {
   items = input.required<readonly DescItem[]>();
+  shouldTranslate = input<boolean>(true);
 }

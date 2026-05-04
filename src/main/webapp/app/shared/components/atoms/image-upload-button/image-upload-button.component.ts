@@ -1,7 +1,6 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
@@ -20,7 +19,7 @@ export interface ImageUploadError {
 
 @Component({
   selector: 'jhi-image-upload-button',
-  imports: [CommonModule, FontAwesomeModule, TranslateModule, ProgressSpinnerComponent],
+  imports: [CommonModule, FontAwesomeModule, ProgressSpinnerComponent],
   templateUrl: './image-upload-button.component.html',
 })
 export class ImageUploadButtonComponent {
