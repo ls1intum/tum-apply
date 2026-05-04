@@ -149,7 +149,14 @@ public enum EmailType {
      * Warning email sent to applicants before their application data is deleted as part of the applicant retention policy.
      * To: Applicants whose data is scheduled for deletion under the retention policy.
      */
-    APPLICANT_DATA_DELETION_WARNING("APPLICANT_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT), false);
+    APPLICANT_DATA_DELETION_WARNING("APPLICANT_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT), false),
+
+    /**
+     * Invitation to an external referee asking them to upload a recommendation
+     * letter for a specific application.
+     * To: External referee email (no TUMApply account required)
+     */
+    REFERENCE_LETTER_INVITATION("REFERENCE_LETTER_INVITATION", Set.of(UserRole.APPLICANT), false);
 
     private final String value;
 

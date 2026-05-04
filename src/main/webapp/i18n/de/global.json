@@ -337,6 +337,7 @@
       "personalInformation": "Persönliche Informationen",
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
+      "references": "Empfehlungsschreiben",
       "summary": "Zusammenfassung",
       "confirmDialog": {
         "header": "Bewerbung absenden",
@@ -457,6 +458,39 @@
       },
       "placeholder": {
         "selectStartDate": "Startdatum auswählen..."
+      }
+    },
+    "applicationReferences": {
+      "description": "Trage hier die Personen ein, die ein Empfehlungsschreiben für dich verfassen sollen. Sobald du deine Bewerbung absendest, erhalten sie automatisch einen sicheren Link per E-Mail – ein Konto ist nicht erforderlich.",
+      "requiredCount": "Benötigt: {{ count }} · Hinzugefügt: ",
+      "empty": "Noch keine Referenzgeber hinzugefügt.",
+      "section": {
+        "required": "Benötigte Referenzgeber",
+        "add": "Referenzgeber hinzufügen"
+      },
+      "label": {
+        "title": "Titel",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "Geschäftliche E-Mail"
+      },
+      "button": {
+        "add": "Hinzufügen",
+        "remove": "Entfernen"
+      },
+      "toast": {
+        "loadFailed": {
+          "summary": "Referenzgeber konnten nicht geladen werden",
+          "detail": "Die Liste der Referenzgeber konnte nicht geladen werden. Bitte lade die Seite neu."
+        },
+        "addFailed": {
+          "summary": "Referenzgeber konnte nicht hinzugefügt werden",
+          "detail": "Bitte prüfe die eingegebenen Daten und versuche es erneut."
+        },
+        "removeFailed": {
+          "summary": "Referenzgeber konnte nicht entfernt werden",
+          "detail": "Bitte versuche es erneut."
+        }
       }
     },
     "applicationPage4": {

@@ -47,6 +47,7 @@ import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
   getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
+import ApplicationCreationReferencesComponent from '../application-creation-references/application-creation-references.component';
 
 const applyflow = 'entity.toast.applyFlow';
 
@@ -60,6 +61,7 @@ const applyflow = 'entity.toast.applyFlow';
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
+    ApplicationCreationReferencesComponent,
     FontAwesomeModule,
     TranslateModule,
     ConfirmDialog,
@@ -119,6 +121,7 @@ export default class ApplicationCreationFormComponent {
   personalInfoPanel = viewChild<TemplateRef<ApplicationCreationPage1Component>>('personalInfoPanel');
   educationPanel = viewChild<TemplateRef<ApplicationCreationPage2Component>>('educationPanel');
   applicationDetailsPanel = viewChild<TemplateRef<ApplicationCreationPage3Component>>('applicationDetailsPanel');
+  referencesPanel = viewChild<TemplateRef<ApplicationCreationReferencesComponent>>('referencesPanel');
   summaryPanel = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('summaryPanel');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   showSendDialog = signal(false);
@@ -136,8 +139,17 @@ export default class ApplicationCreationFormComponent {
   personalInfoDataValid = signal<boolean>(false);
   educationDataValid = signal<boolean>(false);
   applicationDetailsDataValid = signal<boolean>(false);
+  referencesValid = signal<boolean>(true);
+  referenceLettersRequired = signal<number>(0);
+  referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
   savingTick = signal<number>(0);
-  allPagesValid = computed(() => this.personalInfoDataValid() && this.educationDataValid() && this.applicationDetailsDataValid());
+  allPagesValid = computed(
+    () =>
+      this.personalInfoDataValid() &&
+      this.educationDataValid() &&
+      this.applicationDetailsDataValid() &&
+      (!this.referenceLettersEnabled() || this.referencesValid()),
+  );
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   readonly formbuilder = inject(FormBuilder);
 
@@ -170,13 +182,17 @@ export default class ApplicationCreationFormComponent {
     const personalInfoPanel = this.personalInfoPanel();
     const educationPanel = this.educationPanel();
     const applicationDetailsPanel = this.applicationDetailsPanel();
+    const referencesPanel = this.referencesPanel();
     const summaryPanel = this.summaryPanel();
     const applicantId = this.applicantId();
     const personalInfoDataValid = this.personalInfoDataValid();
     const educationDataValid = this.educationDataValid();
     const applicationDetailsDataValid = this.applicationDetailsDataValid();
+    const referencesEnabled = this.referenceLettersEnabled();
+    const referencesValid = this.referencesValid();
     const personalInfoAndEducationDataValid = personalInfoDataValid && educationDataValid;
-    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid;
+    const referencesGate = !referencesEnabled || referencesValid;
+    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid && referencesGate;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const flushAutoSave: () => Promise<void> = () => this.autoSave.flush();
@@ -296,6 +312,43 @@ export default class ApplicationCreationFormComponent {
       });
     }
 
+    if (referencesEnabled && referencesPanel) {
+      steps.push({
+        name: 'entity.applicationSteps.references',
+        shouldTranslate: true,
+        panelTemplate: referencesPanel,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'chevron-left',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: false,
+            label: 'button.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'chevron-right',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: !referencesValid,
+            label: 'button.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        disabled: !applicationDetailsDataValid || !applicantId,
+        status: statusPanel,
+      });
+    }
+
     if (summaryPanel) {
       steps.push({
         name: 'entity.applicationSteps.summary',
@@ -380,6 +433,7 @@ export default class ApplicationCreationFormComponent {
         if (application.job.title && application.job.title.trim().length > 0) {
           this.title.set(application.job.title);
         }
+        await this.loadReferenceLetterConfig(application.job.jobId);
 
         this.applicationState.set(application.applicationState);
         this.useLocalStorage.set(false);
@@ -411,6 +465,7 @@ export default class ApplicationCreationFormComponent {
           if (jobDetails.title) {
             this.title.set(jobDetails.title);
           }
+          this.referenceLettersRequired.set(jobDetails.referenceLettersRequired ?? 0);
         })
         .catch(() => {
           // Silently ignore errors when fetching job title - this is non-critical for the application flow
@@ -451,6 +506,24 @@ export default class ApplicationCreationFormComponent {
     });
 
     return application;
+  }
+
+  /**
+   * Loads the job's reference-letter configuration so the form can decide whether to show the
+   * references step. Failures are non-fatal: the step simply stays hidden.
+   *
+   * @param jobId the job whose configuration should be fetched
+   */
+  private async loadReferenceLetterConfig(jobId: string): Promise<void> {
+    try {
+      const jobDetails = await firstValueFrom(this.jobApi.getJobDetails(jobId));
+      const required = jobDetails.referenceLettersRequired ?? 0;
+      this.referenceLettersRequired.set(required);
+      // Pre-mark valid when no referees are needed so the step never blocks the submit gate.
+      this.referencesValid.set(required === 0);
+    } catch {
+      // Non-fatal: leave the references step hidden if we cannot fetch job details
+    }
   }
 
   /** Save callback invoked by the {@link AutoSaveController} when its debounce timer fires. */
@@ -552,6 +625,10 @@ export default class ApplicationCreationFormComponent {
 
   onApplicationDetailsDataValidityChanged(isValid: boolean): void {
     this.applicationDetailsDataValid.set(isValid);
+  }
+
+  onReferencesValidityChanged(isValid: boolean): void {
+    this.referencesValid.set(isValid);
   }
 
   // Authenticates the current visitor (OTP) and ensures a server-side application exists.

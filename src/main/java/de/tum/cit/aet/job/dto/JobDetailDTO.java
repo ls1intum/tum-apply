@@ -32,5 +32,6 @@ public record JobDetailDTO(
     UUID applicationId,
     ApplicationState applicationState,
     Boolean suitableForDisabled,
-    UUID imageId // Job banner image ID for PDF export
+    UUID imageId, // Job banner image ID for PDF export
+    int referenceLettersRequired
 ) {}

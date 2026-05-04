@@ -252,7 +252,8 @@ public class JobService {
             applicationId,
             applicationState,
             job.getSuitableForDisabled(),
-            job.getImage() != null ? job.getImage().getImageId() : null
+            job.getImage() != null ? job.getImage().getImageId() : null,
+            job.getReferenceLettersRequired()
         );
     }
 
