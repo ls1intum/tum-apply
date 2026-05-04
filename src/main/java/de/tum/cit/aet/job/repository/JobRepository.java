@@ -315,7 +315,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param jobId the job id
      * @return the job with relations loaded, or empty if not found
      */
-    @EntityGraph(attributePaths = { "complianceIssues", "supervisingProfessor", "researchGroup", "image" })
+    @EntityGraph(attributePaths = { "complianceIssues", "researchGroup" })
     @Query("SELECT j FROM Job j WHERE j.jobId = :jobId")
     Optional<Job> findByIdWithCompliance(@Param("jobId") UUID jobId);
 }

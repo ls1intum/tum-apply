@@ -124,7 +124,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   openAnalysisDialog = output<GenderBiasAnalysisResponse>();
   quillEditorComponent = viewChild(QuillEditorComponent);
   highlightHovered = output<{ text: string; x: number; y: number } | undefined>();
-  highlights = input<{ text: string; category: ComplianceIssueCategoryEnum }[]>([]);
   pendingHighlights = signal<{ text: string; category: ComplianceIssueCategoryEnum }[]>([]);
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);

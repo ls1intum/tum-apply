@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -484,12 +485,12 @@ public class JobService {
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         // Keep issues from the other language, add new ones for target language
-        List<ComplianceIssue> issuesToSave = new ArrayList<>();
-        for (ComplianceIssue existingLang : job.getComplianceIssues()) {
-            if (!Objects.equals(existingLang.getLanguage(), lang)) {
-                issuesToSave.add(existingLang);
-            }
-        }
+        List issuesToSave = job
+            .getComplianceIssues()
+            .stream()
+            .filter(issue -> !Objects.equals(issue.getLanguage(), lang))
+            .collect(Collectors.toCollection(ArrayList::new));
+
         issuesToSave.addAll(complianceAnalysis);
         job.setGenderBiasScore(score);
         job.setComplianceIssues(issuesToSave);

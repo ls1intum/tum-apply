@@ -918,7 +918,7 @@ export class JobCreationFormComponent {
    * Handles highlights after reload, page switches, language switches or new analysis.
    * Skips while AI is actively generating new draft or translating.
    */
-  highlightsEffect = effect(() => {
+  private highlightsEffect = effect(() => {
     const editor = this.jobDescriptionEditor();
     const lang = this.currentDescriptionLanguage();
     const issues = this.complianceIssues();
@@ -1065,9 +1065,7 @@ export class JobCreationFormComponent {
 
       // 3) Analyze source language first so the user sees highlights + score immediately.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        await this.analyzeAndUpdateScore(sourceLang);
-        // Translation and target-language analysis run in the background (fire-and-forget).
-        void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
+        void Promise.all([this.analyzeAndUpdateScore(sourceLang), this.translateAndStoreOtherLanguage(sourceLang, sourceText)]);
       }
     } catch {
       this.savingState.set('FAILED');
@@ -1620,11 +1618,7 @@ export class JobCreationFormComponent {
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         // highlighting before translation
-        void (async () => {
-          await this.analyzeAndUpdateScore(currentLang);
-          // fire and forget
-          await this.translateAndStoreOtherLanguage(currentLang, description);
-        })();
+        void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
       }
     } catch {
       this.savingState.set('FAILED');
