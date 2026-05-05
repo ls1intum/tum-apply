@@ -507,7 +507,7 @@ public class JobService {
         applyJobChangeForAnalysis(jobId, job -> replaceComplianceIssuesForLanguage(job, complianceAnalysis, lang));
     }
 
-    /**.
+    /**
      * Loads the job, applies the given change, and persists in a single repository write.
      */
     private void applyJobChangeForAnalysis(UUID jobId, Consumer<Job> changes) {
@@ -515,6 +515,7 @@ public class JobService {
             return;
         }
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         changes.accept(job);
         jobRepository.save(job);
     }

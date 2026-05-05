@@ -1620,8 +1620,7 @@ export class JobCreationFormComponent {
             }
           }
         },
-        abortController.signal,
-        jobId,
+        abortController.signal
       );
 
       if (accumulatedContent) {

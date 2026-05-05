@@ -69,7 +69,7 @@ class AiResourceTest extends AbstractResourceTest {
         @Test
         void shouldReturnStreamWhenProfessorTranslatesJobDescription() {
             String toLang = "de";
-            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null, null);
 
             given(aiService.translateTextStream(anyString(), anyString())).willReturn(Flux.just("Hallo", " Welt"));
 
@@ -82,7 +82,7 @@ class AiResourceTest extends AbstractResourceTest {
         @Test
         void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
             String url = TRANSLATE_STREAM_URL + "?toLang=de";
-            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null, null);
             api
                 .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
                 .putAndRead(url, request, Void.class, 403, MediaType.TEXT_EVENT_STREAM);
@@ -91,7 +91,7 @@ class AiResourceTest extends AbstractResourceTest {
         @Test
         void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
             String url = TRANSLATE_STREAM_URL + "?toLang=de";
-            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null, null);
             api.withoutPostProcessors().putAndRead(url, request, Void.class, 401, MediaType.TEXT_EVENT_STREAM);
         }
     }

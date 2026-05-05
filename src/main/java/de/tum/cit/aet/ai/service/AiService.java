@@ -402,6 +402,17 @@ public class AiService {
         return complianceIssues;
     }
 
+    /**
+     * Maps the snippets of an existing source-language compliance analysis onto the
+     * translated job description, avoiding a second full LLM compliance analysis.
+     *
+     * @param jobId          the job whose compliance issues should be updated for the target language
+     * @param sourceIssues   the issues produced by the analysis of the source-language description
+     * @param originalText   plain-text source-language description
+     * @param translatedText plain-text translated description
+     * @param toLang         target language code, expected to be "de" or "en"
+     * @return the persisted list of mapped issues, in the same order as sourceIssues
+     */
     public List<ComplianceIssue> mapComplianceIssues(
         UUID jobId,
         List<ComplianceIssue> sourceIssues,
@@ -416,17 +427,11 @@ public class AiService {
             return List.of();
         }
 
+        String snippets = buildSnippetList(sourceIssues);
+
+        List<String> mappedTexts;
         try {
-            StringBuilder snippetsBuilder = new StringBuilder();
-            for (ComplianceIssue issue : sourceIssues) {
-                if (issue.getText() != null && !issue.getText().isBlank()) {
-                    snippetsBuilder.append(issue.getText().trim()).append("\n");
-                }
-            }
-
-            String snippets = snippetsBuilder.toString();
-
-            String response = chatClient
+            mappedTexts = chatClient
                 .prompt()
                 .user(u ->
                     u
@@ -436,35 +441,43 @@ public class AiService {
                         .param("translatedText", translatedText)
                 )
                 .call()
-                .content();
-
-            String[] mappedTexts = response.split("\\R");
-            List<ComplianceIssue> mappedIssues = new ArrayList<>();
-
-            for (int i = 0; i < sourceIssues.size() && i < mappedTexts.length; i++) {
-                String mappedText = mappedTexts[i].trim();
-                if (mappedText.isBlank()) {
-                    continue;
-                }
-
-                ComplianceIssue sourceIssue = sourceIssues.get(i);
-                mappedIssues.add(
-                    new ComplianceIssue(
-                        sourceIssue.getId(),
-                        sourceIssue.getCategory(),
-                        mappedText,
-                        sourceIssue.getArticle(),
-                        sourceIssue.getExplanation(),
-                        sourceIssue.getAction(),
-                        toLang
-                    )
-                );
-            }
-
-            jobService.updateComplianceIssues(jobId, mappedIssues, toLang);
-            return mappedIssues;
+                .entity(new ParameterizedTypeReference<List<String>>() {});
         } catch (Exception e) {
+            aiFeatureToggleService.recordFailure();
             throw new InternalServerException("Compliance issue mapping failed", e);
         }
+
+        if (mappedTexts == null || mappedTexts.size() != sourceIssues.size()) {
+            aiFeatureToggleService.recordFailure();
+            throw new InternalServerException("Mapping returned an invalid number of snippets");
+        }
+
+        List<ComplianceIssue> mappedIssues = new ArrayList<>();
+        for (int i = 0; i < sourceIssues.size(); i++) {
+            ComplianceIssue sourceIssue = sourceIssues.get(i);
+            mappedIssues.add(
+                new ComplianceIssue(
+                    sourceIssue.getId(),
+                    sourceIssue.getCategory(),
+                    mappedTexts.get(i).trim(),
+                    sourceIssue.getArticle(),
+                    sourceIssue.getExplanation(),
+                    sourceIssue.getAction(),
+                    toLang
+                )
+            );
+        }
+
+        jobService.updateComplianceIssues(jobId, mappedIssues, toLang);
+        aiFeatureToggleService.recordSuccess();
+        return mappedIssues;
+    }
+
+    private String buildSnippetList(List<ComplianceIssue> sourceIssues) {
+        StringBuilder snippetsBuilder = new StringBuilder();
+        for (ComplianceIssue issue : sourceIssues) {
+            snippetsBuilder.append(issue.getText().trim()).append("\n");
+        }
+        return snippetsBuilder.toString();
     }
 }
