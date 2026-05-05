@@ -1,9 +1,10 @@
 import {
   AccountCredentialResponse,
   AccountCredentialTypeResponse,
-  KeycloakRealmKind,
   getErrorMessage,
   getFirstNonEmptyString,
+  getRealmEndpoint,
+  KeycloakRealmKind,
   persistPendingRealm,
 } from './keycloak-authentication.utils';
 import { PasskeyCredentialSummary } from './models/auth.model';
@@ -17,20 +18,22 @@ interface PasskeyChallengeResponse {
 
 interface PasskeyManagerDependencies {
   pendingRealmStorageKey: string;
+  keycloakUrl: string;
+  getRealmName: (realmKind: KeycloakRealmKind) => string;
   clientId: string;
-  getRelyingPartyId: () => string;
+  relyingPartyId: string;
   ensureFreshToken: () => Promise<void>;
   getToken: () => string | undefined;
   getTokenParsed: () => Record<string, unknown>;
   canManagePasskeys: () => boolean;
   requireActiveRealmKind: () => KeycloakRealmKind;
-  getPasskeyEndpoint: (path: string, realmKind: KeycloakRealmKind) => string;
-  getAccountCredentialsEndpoint: (realmKind: KeycloakRealmKind) => string;
   refreshKeycloakSessionFromBrowser: () => Promise<void>;
 }
 
 export class KeycloakPasskeyManager {
-  constructor(private readonly deps: PasskeyManagerDependencies) {}
+  constructor(private readonly deps: PasskeyManagerDependencies) {
+    this.deps = deps;
+  }
 
   async loginWithPasskey(): Promise<void> {
     this.assertPasskeySupport();
@@ -59,7 +62,7 @@ export class KeycloakPasskeyManager {
       throw new Error('Passkey did not return a user handle');
     }
 
-    const authenticateResponse = await fetch(this.deps.getPasskeyEndpoint('authenticate', KeycloakRealmKind.Tum), {
+    const authenticateResponse = await fetch(this.getPasskeyEndpoint('authenticate', KeycloakRealmKind.Tum), {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -109,7 +112,7 @@ export class KeycloakPasskeyManager {
       (await navigator.credentials.create({
         publicKey: {
           challenge: this.fromBase64Url(challenge.challenge),
-          rp: { name: 'TUM AET', id: this.deps.getRelyingPartyId() },
+          rp: { name: 'TUM AET', id: this.getRelyingPartyId() },
           user: { id: userIdBytes, name: username, displayName },
           pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
           authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
@@ -126,7 +129,7 @@ export class KeycloakPasskeyManager {
       throw new Error('Incomplete passkey registration credential');
     }
 
-    const saveResponse = await fetch(this.deps.getPasskeyEndpoint('save', realmKind), {
+    const saveResponse = await fetch(this.getPasskeyEndpoint('save', realmKind), {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -151,7 +154,7 @@ export class KeycloakPasskeyManager {
     this.assertPasskeyManagementAvailable();
     const token = await this.getAuthenticatedToken();
     const realmKind = this.deps.requireActiveRealmKind();
-    const response = await fetch(this.deps.getAccountCredentialsEndpoint(realmKind), {
+    const response = await fetch(this.getAccountCredentialsEndpoint(realmKind), {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
@@ -189,7 +192,7 @@ export class KeycloakPasskeyManager {
     this.assertPasskeyManagementAvailable();
     const token = await this.getAuthenticatedToken();
     const realmKind = this.deps.requireActiveRealmKind();
-    const response = await fetch(`${this.deps.getAccountCredentialsEndpoint(realmKind)}/${encodeURIComponent(id)}`, {
+    const response = await fetch(`${this.getAccountCredentialsEndpoint(realmKind)}/${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
@@ -206,7 +209,7 @@ export class KeycloakPasskeyManager {
   private async getPasskeyChallenge(
     realmKind: KeycloakRealmKind,
   ): Promise<Required<Pick<PasskeyChallengeResponse, 'challenge'>> & PasskeyChallengeResponse> {
-    const response = await fetch(this.deps.getPasskeyEndpoint('challenge', realmKind), {
+    const response = await fetch(this.getPasskeyEndpoint('challenge', realmKind), {
       credentials: 'include',
     });
     const payload = (await response.json().catch(() => ({}))) as PasskeyChallengeResponse;
@@ -277,5 +280,22 @@ export class KeycloakPasskeyManager {
     const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
     const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
     return Uint8Array.from(atob(padded), character => character.charCodeAt(0)).buffer;
+  }
+
+  private getAccountCredentialsEndpoint(realmKind: KeycloakRealmKind): string {
+    return getRealmEndpoint(this.deps.keycloakUrl, this.deps.getRealmName(realmKind), 'account/credentials');
+  }
+
+  private getRelyingPartyId(): string {
+    const relyingPartyId = this.deps.relyingPartyId;
+    return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
+  }
+
+  private getPasskeyEndpoint(path: string, realmKind: KeycloakRealmKind): string {
+    return getRealmEndpoint(
+      this.deps.keycloakUrl,
+      this.deps.getRealmName(realmKind),
+      `passkey/${encodeURIComponent(this.deps.clientId)}/${path}`,
+    );
   }
 }

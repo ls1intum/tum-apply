@@ -45,7 +45,7 @@ export enum IdpProvider {
  */
 @Injectable({ providedIn: 'root' })
 export class KeycloakAuthenticationService {
-  private static readonly PENDING_REALM_STORAGE_KEY = 'auth.pendingKeycloakRealm';
+  private static readonly PENDING_REALM_STORAGE_KEY = 'authPendingKeycloakRealm';
 
   readonly config = inject(ApplicationConfigService);
   private readonly toastService = inject(ToastService);
@@ -59,15 +59,15 @@ export class KeycloakAuthenticationService {
   private windowListenersActive = false;
   private readonly passkeyManager = new KeycloakPasskeyManager({
     pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY,
+    keycloakUrl: this.config.keycloak.url,
+    getRealmName: (realmKind: KeycloakRealmKind) => this.getRealmName(realmKind),
     clientId: this.config.keycloak.clientId,
-    getRelyingPartyId: () => this.getPasskeyRelyingPartyId(),
+    relyingPartyId: this.config.keycloak.relyingPartyId,
     ensureFreshToken: () => this.ensureFreshToken(),
     getToken: () => this.keycloak?.token,
     getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
     canManagePasskeys: () => this.canManagePasskeys(),
     requireActiveRealmKind: () => this.requireActiveRealmKind(),
-    getPasskeyEndpoint: (path, realmKind) => this.getPasskeyEndpoint(path, realmKind),
-    getAccountCredentialsEndpoint: realmKind => this.getAccountCredentialsEndpoint(realmKind),
     refreshKeycloakSessionFromBrowser: () => this.refreshKeycloakSessionFromBrowser(),
   });
 
@@ -381,24 +381,6 @@ export class KeycloakAuthenticationService {
     window.location.replace(validRedicrectUri);
   }
 
-  /** Endpoint builders */
-  private getPasskeyEndpoint(path: string, realmKind: KeycloakRealmKind): string {
-    return this.getRealmEndpoint(`passkey/${encodeURIComponent(this.config.keycloak.clientId)}/${path}`, realmKind);
-  }
-
-  private getAccountCredentialsEndpoint(realmKind: KeycloakRealmKind): string {
-    return this.getRealmEndpoint('account/credentials', realmKind);
-  }
-
-  private getPasskeyRelyingPartyId(): string {
-    const relyingPartyId = this.config.keycloak.relyingPartyId;
-    return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
-  }
-
-  private getRealmEndpoint(path: string, realmKind: KeycloakRealmKind): string {
-    return getRealmEndpoint(this.config.keycloak.url, this.getRealmName(realmKind), path);
-  }
-
   private getRealmKindForProvider(provider: IdpProvider): KeycloakRealmKind {
     return provider === IdpProvider.TUM ? KeycloakRealmKind.Tum : KeycloakRealmKind.External;
   }
@@ -408,7 +390,7 @@ export class KeycloakAuthenticationService {
   }
 
   private getIssuerUrl(realmKind: KeycloakRealmKind): string {
-    return this.getRealmEndpoint('', realmKind).replace(/\/$/, '');
+    return getRealmEndpoint(this.config.keycloak.url, realmKind, '').replace(/\/$/, '');
   }
 
   private getInitRealmCandidates(): KeycloakRealmKind[] {

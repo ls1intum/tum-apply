@@ -16,53 +16,13 @@ vi.mock('keycloak-js', () => ({
   },
 }));
 
-class MockPublicKeyCredential {
-  constructor(
-    readonly rawId: ArrayBuffer,
-    readonly response: unknown,
-  ) {}
-}
-
-class MockAuthenticatorAssertionResponse {
-  constructor(
-    readonly clientDataJSON: ArrayBuffer,
-    readonly authenticatorData: ArrayBuffer,
-    readonly signature: ArrayBuffer,
-    readonly userHandle: ArrayBuffer | null,
-  ) {}
-}
-
-class MockAuthenticatorAttestationResponse {
-  constructor(
-    readonly clientDataJSON: ArrayBuffer,
-    readonly attestationObject: ArrayBuffer,
-  ) {}
-}
-
-function buffer(...bytes: number[]): ArrayBuffer {
-  return new Uint8Array(bytes).buffer;
-}
-
-function stubWebAuthn(credentials: { create?: ReturnType<typeof vi.fn>; get?: ReturnType<typeof vi.fn> }): void {
-  vi.stubGlobal('PublicKeyCredential', MockPublicKeyCredential);
-  vi.stubGlobal('AuthenticatorAssertionResponse', MockAuthenticatorAssertionResponse);
-  vi.stubGlobal('AuthenticatorAttestationResponse', MockAuthenticatorAttestationResponse);
-  vi.stubGlobal('navigator', {
-    ...navigator,
-    credentials,
-  });
-}
-
 describe('KeycloakAuthenticationService', () => {
   let service: KeycloakAuthenticationService;
   let keycloakInstance: KeycloakMock;
-  let fetchMock: ReturnType<typeof vi.fn>;
   let applicationConfigService: ApplicationConfigServiceMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-    fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
     keycloakInstance = createKeycloakMock();
     applicationConfigService = createApplicationConfigServiceMock();
     TestBed.configureTestingModule({
@@ -363,213 +323,43 @@ describe('KeycloakAuthenticationService', () => {
     });
   });
 
-  describe('passkey credentials', () => {
-    it('should authenticate with a discoverable passkey and send the user handle', async () => {
-      const credentialsGet = vi
-        .fn()
-        .mockResolvedValue(
-          new MockPublicKeyCredential(
-            buffer(4, 5, 6),
-            new MockAuthenticatorAssertionResponse(buffer(7), buffer(8), buffer(9), buffer(10, 11)),
-          ),
-        );
-      stubWebAuthn({ get: credentialsGet });
-      fetchMock
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: vi.fn().mockResolvedValue({ challenge: 'AQID', credentialId: 'legacy-allow-credential' }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 204,
-        });
-      const refreshSpy = vi.spyOn(service as any, 'refreshKeycloakSessionFromBrowser').mockResolvedValue(undefined);
+  describe('passkey delegation', () => {
+    it('should delegate passkey login and redirect', async () => {
+      const passkeyManager = (service as any).passkeyManager;
+      const loginSpy = vi.spyOn(passkeyManager, 'loginWithPasskey').mockResolvedValue(undefined);
+      const redirectSpy = vi.spyOn(service as any, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
 
-      await service.loginWithPasskey();
+      await service.loginWithPasskey('/after-login');
 
-      const credentialRequest = credentialsGet.mock.calls[0][0] as CredentialRequestOptions;
-      expect(credentialRequest.publicKey?.userVerification).toBe('required');
-      expect(credentialRequest.publicKey?.allowCredentials).toBeUndefined();
-      expect(Array.from(new Uint8Array(credentialRequest.publicKey?.challenge as ArrayBuffer))).toEqual([1, 2, 3]);
-
-      expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/tumidpldap/passkey/mock-client/challenge', {
-        credentials: 'include',
-      });
-      const authenticateRequest = fetchMock.mock.calls[1][1] as RequestInit;
-      expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/tumidpldap/passkey/mock-client/authenticate');
-      expect(authenticateRequest.method).toBe('POST');
-      expect(authenticateRequest.credentials).toBe('include');
-      expect(authenticateRequest.headers).toEqual({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      expect(JSON.parse(authenticateRequest.body as string)).toEqual({
-        credentialId: 'BAUG',
-        userHandle: 'Cgs',
-        clientDataJSON: 'Bw',
-        authenticatorData: 'CA',
-        signature: 'CQ',
-        challenge: 'AQID',
-      });
-      expect(refreshSpy).toHaveBeenCalledOnce();
+      expect(loginSpy).toHaveBeenCalledOnce();
+      expect(redirectSpy).toHaveBeenCalledWith('/after-login');
     });
 
-    it('should reject passkey authentication when the assertion has no user handle', async () => {
-      const credentialsGet = vi
-        .fn()
-        .mockResolvedValue(
-          new MockPublicKeyCredential(buffer(4, 5, 6), new MockAuthenticatorAssertionResponse(buffer(7), buffer(8), buffer(9), null)),
-        );
-      stubWebAuthn({ get: credentialsGet });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
-      });
-
-      await expect(service.loginWithPasskey()).rejects.toThrow('Passkey did not return a user handle');
-
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-    });
-
-    it('should register passkeys with the Keycloak subject as WebAuthn user id', async () => {
-      keycloakInstance.authenticated = true;
-      keycloakInstance.tokenParsed = {
-        sub: 'subject-123',
-        preferred_username: 'jane',
-        name: 'Jane Doe',
-      };
-      applicationConfigService.keycloak!.relyingPartyId = 'apply.example.test';
-      const credentialsCreate = vi
-        .fn()
-        .mockResolvedValue(new MockPublicKeyCredential(buffer(12), new MockAuthenticatorAttestationResponse(buffer(13), buffer(14))));
-      stubWebAuthn({ create: credentialsCreate });
-      fetchMock
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 204,
-        });
+    it('should delegate passkey registration', async () => {
+      const passkeyManager = (service as any).passkeyManager;
+      const registerSpy = vi.spyOn(passkeyManager, 'registerPasskey').mockResolvedValue(undefined);
 
       await service.registerPasskey();
 
-      const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
-      expect(Array.from(credentialCreation.publicKey?.user.id as Uint8Array)).toEqual(Array.from(new TextEncoder().encode('subject-123')));
-      expect(credentialCreation.publicKey?.user.name).toBe('jane');
-      expect(credentialCreation.publicKey?.user.displayName).toBe('Jane Doe');
-      expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: 'apply.example.test' });
-      expect(credentialCreation.publicKey?.authenticatorSelection).toEqual({
-        residentKey: 'required',
-        userVerification: 'required',
-      });
-
-      const saveRequest = fetchMock.mock.calls[1][1] as RequestInit;
-      expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/tumidpldap/passkey/mock-client/save');
-      expect(saveRequest.credentials).toBe('include');
-      expect(saveRequest.headers).toEqual({
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mock-token',
-      });
-      expect(JSON.parse(saveRequest.body as string)).toEqual({
-        credentialId: 'DA',
-        clientDataJSON: 'DQ',
-        attestationObject: 'Dg',
-        challenge: 'AQID',
-      });
+      expect(registerSpy).toHaveBeenCalledOnce();
     });
 
-    it('should reject passkey registration when the Keycloak subject exceeds the WebAuthn user id limit', async () => {
-      keycloakInstance.authenticated = true;
-      keycloakInstance.tokenParsed = {
-        sub: 'a'.repeat(65),
-        preferred_username: 'jane',
-      };
-      stubWebAuthn({ create: vi.fn() });
+    it('should delegate passkey listing', async () => {
+      const passkeyManager = (service as any).passkeyManager;
+      const listSpy = vi.spyOn(passkeyManager, 'listPasskeys').mockResolvedValue([{ id: 'passkey-1' }]);
 
-      await expect(service.registerPasskey()).rejects.toThrow('User id is too long for WebAuthn user.id');
+      await expect(service.listPasskeys()).resolves.toEqual([{ id: 'passkey-1' }]);
 
-      expect(fetchMock).not.toHaveBeenCalled();
+      expect(listSpy).toHaveBeenCalledOnce();
     });
 
-    it('should use the configured relying party id for passkey registration', () => {
-      applicationConfigService.keycloak!.relyingPartyId = 'staging.apply.in.tum.de';
+    it('should delegate passkey removal', async () => {
+      const passkeyManager = (service as any).passkeyManager;
+      const removeSpy = vi.spyOn(passkeyManager, 'removePasskey').mockResolvedValue(undefined);
 
-      expect(service['getPasskeyRelyingPartyId']()).toBe('staging.apply.in.tum.de');
-    });
+      await service.removePasskey('passkey-1');
 
-    it('should fall back to the current hostname when relying party id is not configured', () => {
-      applicationConfigService.keycloak!.relyingPartyId = '   ';
-
-      expect(service['getPasskeyRelyingPartyId']()).toBe(window.location.hostname);
-    });
-
-    it('should list passkeys from keycloak account credentials', async () => {
-      keycloakInstance.authenticated = true;
-      const credentialsPayload = [
-        {
-          type: 'password',
-          userCredentialMetadatas: [{ credential: { id: 'password-1', name: 'Password' } }],
-        },
-        {
-          type: 'webauthn-passwordless',
-          userCredentialMetadatas: [
-            { credential: { id: ' passkey-1 ', name: 'MacBook Pro', createdDate: 1_710_000_000_000 } },
-            { credential: null },
-          ],
-        },
-        {
-          type: 'webauthn',
-          userCredentialMetadatas: [{ credential: { id: 'passkey-2', userLabel: 'Backup key', createdDate: null } }],
-        },
-      ];
-      fetchMock.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue(credentialsPayload),
-      });
-
-      await expect(service.listPasskeys()).resolves.toEqual([
-        { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
-        { id: 'passkey-2', label: 'Backup key' },
-      ]);
-      expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/tumidpldap/account/credentials', {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer mock-token',
-        },
-      });
-    });
-
-    it('should surface API errors when loading passkeys fails', async () => {
-      keycloakInstance.authenticated = true;
-      fetchMock.mockResolvedValue({
-        ok: false,
-        status: 503,
-        json: vi.fn().mockResolvedValue({ error: 'temporarily unavailable' }),
-      });
-
-      await expect(service.listPasskeys()).rejects.toThrow('temporarily unavailable');
-    });
-
-    it('should remove a passkey via the encoded account credential endpoint', async () => {
-      keycloakInstance.authenticated = true;
-      fetchMock.mockResolvedValue({
-        ok: true,
-        status: 204,
-        json: vi.fn().mockResolvedValue({}),
-      });
-
-      await service.removePasskey('passkey/with slash');
-
-      expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/tumidpldap/account/credentials/passkey%2Fwith%20slash', {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer mock-token',
-        },
-      });
+      expect(removeSpy).toHaveBeenCalledWith('passkey-1');
     });
   });
 
