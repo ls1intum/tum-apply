@@ -76,28 +76,35 @@ describe('KeycloakAuthenticationService', () => {
     });
     service = TestBed.inject(KeycloakAuthenticationService);
     service['keycloak'] = keycloakInstance as unknown as (typeof service)['keycloak'];
+    service['activeRealmKind'] = 'tum' as unknown as (typeof service)['activeRealmKind'];
   });
 
   afterEach(() => {
+    sessionStorage.clear();
     vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
 
   describe('initialization', () => {
     it('should initialize successfully when authenticated', async () => {
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
       keycloakInstance.init.mockResolvedValue(true);
+
       const result = await service.init();
+
       expect(result).toBe(true);
       expect(keycloakInstance.init).toHaveBeenCalledTimes(1);
       expect(keycloakInstance.init).toHaveBeenCalledWith(expect.objectContaining({ silentCheckSsoFallback: false }));
     });
 
     it('should handle non-authenticated init', async () => {
-      keycloakInstance.authenticated = false;
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
       keycloakInstance.init.mockResolvedValue(false);
+
       const result = await runSilently(() => service.init());
+
       expect(result).toBe(false);
-      expect(keycloakInstance.init).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.init).toHaveBeenCalledTimes(2);
     });
 
     it('should return undefined/false when keycloak not initialized', () => {
@@ -107,17 +114,19 @@ describe('KeycloakAuthenticationService', () => {
     });
 
     it('should handle init error and return false', async () => {
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
       keycloakInstance.init.mockRejectedValue(new Error('Init failed'));
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       const result = await service.init();
 
       expect(result).toBe(false);
-      expect(consoleErrorSpy).toHaveBeenCalledWith('🔁 Keycloak init failed:', expect.any(Error));
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
       consoleErrorSpy.mockRestore();
     });
 
     it('should start token refresh scheduler after successful authenticated init and schedule refresh', async () => {
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
       keycloakInstance.authenticated = true;
       keycloakInstance.init.mockResolvedValue(true);
       const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
@@ -146,24 +155,39 @@ describe('KeycloakAuthenticationService', () => {
       [IdpProvider.Microsoft, 'microsoft'],
       [IdpProvider.Apple, 'apple'],
     ])('should login with %s provider using idpHint %s', async (provider, hint) => {
+      const createKeycloakClientSpy = vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(provider);
+
+      expect(createKeycloakClientSpy).toHaveBeenCalledWith('external');
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ idpHint: hint }));
       expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
     });
 
     it('should login with TUM provider without idpHint', async () => {
+      const createKeycloakClientSpy = vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(IdpProvider.TUM);
+
+      expect(createKeycloakClientSpy).toHaveBeenCalledWith('tum');
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.not.objectContaining({ idpHint: expect.anything() }));
       expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
     });
 
     it('should include redirectUri when provided', async () => {
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(IdpProvider.Google, '/redirect');
-      expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }));
+
+      expect(keycloakInstance.login).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }),
+      );
       expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
     });
 
     it('should reject external redirect URIs on login', async () => {
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(IdpProvider.Google, 'https://evil.com/phish');
       expect(keycloakInstance.login).toHaveBeenCalledWith(
         expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
@@ -175,12 +199,16 @@ describe('KeycloakAuthenticationService', () => {
 
     it('should allow same-origin absolute redirect URIs on login', async () => {
       const sameOriginUri = window.location.origin + '/jobs';
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(IdpProvider.Google, sameOriginUri);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
     });
 
     it('should reject domains that share the origin as a prefix', async () => {
       const maliciousUri = window.location.origin + '.evil.com/phish';
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(IdpProvider.Google, maliciousUri);
       expect(keycloakInstance.login).toHaveBeenCalledWith(
         expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
@@ -190,6 +218,8 @@ describe('KeycloakAuthenticationService', () => {
     it('should handle login errors gracefully', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       keycloakInstance.login.mockRejectedValue(new Error('Login failed'));
+      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
+
       await service.loginWithProvider(IdpProvider.Google);
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       consoleErrorSpy.mockRestore();
@@ -357,20 +387,19 @@ describe('KeycloakAuthenticationService', () => {
           status: 204,
         });
       const refreshSpy = vi.spyOn(service as any, 'refreshKeycloakSessionFromBrowser').mockResolvedValue(undefined);
-      const redirectSpy = vi.spyOn(service as any, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
 
-      await service.loginWithPasskey('/dashboard');
+      await service.loginWithPasskey();
 
       const credentialRequest = credentialsGet.mock.calls[0][0] as CredentialRequestOptions;
       expect(credentialRequest.publicKey?.userVerification).toBe('required');
       expect(credentialRequest.publicKey?.allowCredentials).toBeUndefined();
       expect(Array.from(new Uint8Array(credentialRequest.publicKey?.challenge as ArrayBuffer))).toEqual([1, 2, 3]);
 
-      expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/mock-realm/passkey/mock-client/challenge', {
+      expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/tumidpldap/passkey/mock-client/challenge', {
         credentials: 'include',
       });
       const authenticateRequest = fetchMock.mock.calls[1][1] as RequestInit;
-      expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/mock-realm/passkey/mock-client/authenticate');
+      expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/tumidpldap/passkey/mock-client/authenticate');
       expect(authenticateRequest.method).toBe('POST');
       expect(authenticateRequest.credentials).toBe('include');
       expect(authenticateRequest.headers).toEqual({ 'Content-Type': 'application/json', Accept: 'application/json' });
@@ -383,7 +412,6 @@ describe('KeycloakAuthenticationService', () => {
         challenge: 'AQID',
       });
       expect(refreshSpy).toHaveBeenCalledOnce();
-      expect(redirectSpy).toHaveBeenCalledWith('/dashboard');
     });
 
     it('should reject passkey authentication when the assertion has no user handle', async () => {
@@ -405,6 +433,7 @@ describe('KeycloakAuthenticationService', () => {
     });
 
     it('should register passkeys with the Keycloak subject as WebAuthn user id', async () => {
+      keycloakInstance.authenticated = true;
       keycloakInstance.tokenParsed = {
         sub: 'subject-123',
         preferred_username: 'jane',
@@ -439,7 +468,7 @@ describe('KeycloakAuthenticationService', () => {
       });
 
       const saveRequest = fetchMock.mock.calls[1][1] as RequestInit;
-      expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/mock-realm/passkey/mock-client/save');
+      expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/tumidpldap/passkey/mock-client/save');
       expect(saveRequest.credentials).toBe('include');
       expect(saveRequest.headers).toEqual({
         'Content-Type': 'application/json',
@@ -454,6 +483,7 @@ describe('KeycloakAuthenticationService', () => {
     });
 
     it('should reject passkey registration when the Keycloak subject exceeds the WebAuthn user id limit', async () => {
+      keycloakInstance.authenticated = true;
       keycloakInstance.tokenParsed = {
         sub: 'a'.repeat(65),
         preferred_username: 'jane',
@@ -506,7 +536,7 @@ describe('KeycloakAuthenticationService', () => {
         { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
         { id: 'passkey-2', label: 'Backup key' },
       ]);
-      expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/mock-realm/account/credentials', {
+      expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/tumidpldap/account/credentials', {
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer mock-token',
@@ -535,7 +565,7 @@ describe('KeycloakAuthenticationService', () => {
 
       await service.removePasskey('passkey/with slash');
 
-      expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/mock-realm/account/credentials/passkey%2Fwith%20slash', {
+      expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/tumidpldap/account/credentials/passkey%2Fwith%20slash', {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',

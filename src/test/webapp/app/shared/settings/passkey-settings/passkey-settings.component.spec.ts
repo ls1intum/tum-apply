@@ -69,8 +69,8 @@ describe('PasskeySettingsComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('MacBook Pro');
   });
 
-  it('should show the unavailable state and skip loading when the user is not logged in with keycloak', async () => {
-    keycloakAuthenticationServiceMock.isLoggedIn.mockReturnValue(false);
+  it('should show the unavailable state and skip loading when the current session cannot manage passkeys', async () => {
+    keycloakAuthenticationServiceMock.canManagePasskeys.mockReturnValue(false);
 
     await createComponent();
 

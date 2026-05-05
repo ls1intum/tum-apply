@@ -11,19 +11,18 @@ applications or services that use Keycloak for authentication and authorization 
 
 ## Realms
 
-There are three realms in total:
+There are three realms in total for local development:
 
 1. **`master`**
-2. **`tumapply`**
-3. **`external_login`**
+2. **`tumidpldap`**
+3. **`external`**
 
-The `tumapply` realm is used in
-the development environment, while the `external_login` realm is used in production. These two realms are functionally
-equivalent but have different names depending on the environment. The `master` realm exists in both development and
-production environments; however, it is only visible to and managed by AET Admins in production.
+The `tumidpldap` realm is used for TUM login and passkey flows. The `external` realm is used for external/social login
+flows. The `master` realm exists in both development and production environments; however, it is only visible to and
+managed by AET Admins in production.
 
 :::info
-In production, the `external_login` realm is persistent, and structural changes can only be performed by authorized AET
+In production, configured login realms are persistent, and structural changes can only be performed by authorized AET
 Admins.
 :::
 
@@ -45,5 +44,5 @@ The following clients are used across environments with specific purposes:
 
 ## Differences Between Development and Production
 
-- Development includes the `master` and `tumapply` realms, while production only includes the `external_login` realm.
+- Development includes the `master`, `tumidpldap`, and `external` realms.
 - Configuration and clients are nearly identical across environments to ensure consistency.

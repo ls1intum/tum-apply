@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { environment } from 'app/environments/environment';
@@ -12,6 +12,11 @@ export enum IdpProvider {
   Microsoft = 'microsoft',
   Apple = 'apple',
   TUM = 'tum',
+}
+
+enum KeycloakRealmKind {
+  Tum = 'tum',
+  External = 'external',
 }
 
 interface PasskeyChallengeResponse {
@@ -59,6 +64,7 @@ interface AccountCredentialResponse {
 @Injectable({ providedIn: 'root' })
 export class KeycloakAuthenticationService {
   private static readonly PASSKEY_CREDENTIAL_TYPES = new Set(['webauthn-passwordless', 'webauthn']);
+  private static readonly PENDING_REALM_STORAGE_KEY = 'auth.pendingKeycloakRealm';
 
   readonly config = inject(ApplicationConfigService);
   private readonly toastService = inject(ToastService);
@@ -66,6 +72,7 @@ export class KeycloakAuthenticationService {
   private readonly translationKey = 'auth.common.toast';
 
   private keycloak: Keycloak | undefined;
+  private activeRealmKind: KeycloakRealmKind | undefined;
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
   private refreshInFlight: Promise<void> | undefined;
   private windowListenersActive = false;
@@ -77,10 +84,8 @@ export class KeycloakAuthenticationService {
    * @returns A promise that resolves to true if the user is authenticated, false otherwise.
    */
   async init(): Promise<boolean> {
-    this.keycloak ??= this.createKeycloakClient();
-
     try {
-      return await this.initializeKeycloak(this.keycloak);
+      return await this.initializeAcrossRealms();
     } catch (err) {
       this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.error.summary`),
@@ -109,6 +114,13 @@ export class KeycloakAuthenticationService {
     return Boolean(this.keycloak?.authenticated);
   }
 
+  /**
+   * Returns whether the current authenticated Keycloak session supports passkey management.
+   */
+  canManagePasskeys(): boolean {
+    return this.isLoggedIn() && this.activeRealmKind === KeycloakRealmKind.Tum;
+  }
+
   // --------------------------- Login ----------------------------
 
   /**
@@ -120,13 +132,18 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional URI to redirect to after login. Defaults to the app root.
    */
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
+    const realmKind = this.getRealmKindForProvider(provider);
+    const keycloak = this.createKeycloakClient(realmKind);
+    this.persistPendingRealm(realmKind);
+
     try {
-      await this.keycloak?.login({
+      await this.initializeKeycloakForLogin(keycloak);
+      await keycloak.login({
         redirectUri: this.buildRedirectUri(redirectUri),
         idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
-      this.startTokenRefreshScheduler();
     } catch (err) {
+      this.clearPendingRealm();
       this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.providerLoginFailed.summary`),
         detail: this.translate.instant(`${this.translationKey}.providerLoginFailed.detail`),
@@ -144,9 +161,11 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional URI to redirect to after logout. Defaults to the app root.
    */
   async logout(redirectUri?: string): Promise<void> {
+    const keycloak = this.keycloak;
     this.stopTokenRefreshScheduler();
-    if (this.keycloak?.authenticated === true) {
-      await this.keycloak.logout({ redirectUri: this.buildRedirectUri(redirectUri) });
+    this.clearActiveRealm();
+    if (keycloak?.authenticated === true) {
+      await keycloak.logout({ redirectUri: this.buildRedirectUri(redirectUri) });
     }
   }
 
@@ -154,13 +173,12 @@ export class KeycloakAuthenticationService {
 
   /**
    * Performs a login flow using WebAuthn passkeys.
-   * Optionally redirects to the specified URI after successful login.
-   * @param redirectUri Optional URI to redirect to after login. Defaults to the app root.
+   * @param redirectUri Optional post-login redirect URI reserved for future use.
    */
   async loginWithPasskey(redirectUri?: string): Promise<void> {
     this.assertPasskeySupport();
-
-    const challenge = await this.getPasskeyChallenge();
+    this.persistPendingRealm(KeycloakRealmKind.Tum);
+    const challenge = await this.getPasskeyChallenge(KeycloakRealmKind.Tum);
     const publicKey: PublicKeyCredentialRequestOptions = {
       challenge: this.fromBase64Url(challenge.challenge),
       userVerification: 'required',
@@ -184,7 +202,7 @@ export class KeycloakAuthenticationService {
       throw new Error('Passkey did not return a user handle');
     }
 
-    const authenticateResponse = await fetch(this.getPasskeyEndpoint('authenticate'), {
+    const authenticateResponse = await fetch(this.getPasskeyEndpoint('authenticate', KeycloakRealmKind.Tum), {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -216,6 +234,7 @@ export class KeycloakAuthenticationService {
    */
   async registerPasskey(): Promise<void> {
     this.assertPasskeySupport();
+    this.assertPasskeyManagementAvailable();
 
     const token = await this.getAuthenticatedToken();
     const claims = (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>;
@@ -232,7 +251,7 @@ export class KeycloakAuthenticationService {
       throw new Error('User id is too long for WebAuthn user.id');
     }
 
-    const challenge = await this.getPasskeyChallenge();
+    const challenge = await this.getPasskeyChallenge(this.requireActiveRealmKind());
     const credential =
       (await navigator.credentials.create({
         publicKey: {
@@ -254,7 +273,7 @@ export class KeycloakAuthenticationService {
       throw new Error('Incomplete passkey registration credential');
     }
 
-    const saveResponse = await fetch(this.getPasskeyEndpoint('save'), {
+    const saveResponse = await fetch(this.getPasskeyEndpoint('save', this.requireActiveRealmKind()), {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -281,8 +300,9 @@ export class KeycloakAuthenticationService {
    * @returns An array of passkey credential summaries.
    */
   async listPasskeys(): Promise<PasskeyCredentialSummary[]> {
+    this.assertPasskeyManagementAvailable();
     const token = await this.getAuthenticatedToken();
-    const response = await fetch(this.getAccountCredentialsEndpoint(), {
+    const response = await fetch(this.getAccountCredentialsEndpoint(this.requireActiveRealmKind()), {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
@@ -321,8 +341,9 @@ export class KeycloakAuthenticationService {
    * @param id
    */
   async removePasskey(id: string): Promise<void> {
+    this.assertPasskeyManagementAvailable();
     const token = await this.getAuthenticatedToken();
-    const response = await fetch(`${this.getAccountCredentialsEndpoint()}/${encodeURIComponent(id)}`, {
+    const response = await fetch(`${this.getAccountCredentialsEndpoint(this.requireActiveRealmKind())}/${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
@@ -446,6 +467,13 @@ export class KeycloakAuthenticationService {
       throw new Error('Passkeys are not supported in this browser');
     }
   }
+
+  /** Throws an error if the current Keycloak session does not support passkey management. */
+  private assertPasskeyManagementAvailable(): void {
+    if (!this.canManagePasskeys()) {
+      throw new Error('Passkeys can only be managed for TUM Keycloak sessions');
+    }
+  }
   /** Gets the current token if authenticated, otherwise throws an error. */
   private async getAuthenticatedToken(): Promise<string> {
     await this.ensureFreshToken();
@@ -456,8 +484,10 @@ export class KeycloakAuthenticationService {
     return token;
   }
   /** Requests a passkey challenge from the server, throwing an error if the request fails or the response is invalid. */
-  private async getPasskeyChallenge(): Promise<Required<Pick<PasskeyChallengeResponse, 'challenge'>> & PasskeyChallengeResponse> {
-    const response = await fetch(this.getPasskeyEndpoint('challenge'), {
+  private async getPasskeyChallenge(
+    realmKind: KeycloakRealmKind,
+  ): Promise<Required<Pick<PasskeyChallengeResponse, 'challenge'>> & PasskeyChallengeResponse> {
+    const response = await fetch(this.getPasskeyEndpoint('challenge', realmKind), {
       credentials: 'include',
     });
     const payload = (await response.json().catch(() => ({}))) as PasskeyChallengeResponse;
@@ -472,12 +502,29 @@ export class KeycloakAuthenticationService {
     };
   }
 
-  private createKeycloakClient(): Keycloak {
+  private createKeycloakClient(realmKind: KeycloakRealmKind): Keycloak {
     return new Keycloak({
       url: this.config.keycloak.url,
-      realm: this.config.keycloak.realm,
+      realm: this.getRealmName(realmKind),
       clientId: this.config.keycloak.clientId,
     });
+  }
+
+  private async initializeAcrossRealms(): Promise<boolean> {
+    for (const realmKind of this.getInitRealmCandidates()) {
+      const keycloak = this.createKeycloakClient(realmKind);
+      const authenticated = await this.initializeKeycloak(keycloak).catch((error: unknown) => {
+        console.warn(`Keycloak init failed for realm ${realmKind}:`, error);
+        return false;
+      });
+      if (authenticated) {
+        this.activateKeycloakClient(keycloak, realmKind);
+        return true;
+      }
+    }
+
+    this.clearActiveRealm();
+    return false;
   }
 
   private async initializeKeycloak(keycloak: Keycloak): Promise<boolean> {
@@ -488,6 +535,10 @@ export class KeycloakAuthenticationService {
     }
     this.startTokenRefreshScheduler();
     return authenticated;
+  }
+
+  private async initializeKeycloakForLogin(keycloak: Keycloak): Promise<void> {
+    await keycloak.init(this.getLoginOptions());
   }
 
   private getCheckSsoOptions(): KeycloakInitOptions {
@@ -501,26 +552,41 @@ export class KeycloakAuthenticationService {
     };
   }
 
+  private getLoginOptions(): KeycloakInitOptions {
+    return {
+      checkLoginIframe: false,
+      pkceMethod: 'S256',
+      enableLogging: environment.keycloak.enableLogging,
+    };
+  }
+
   private async refreshKeycloakSessionFromBrowser(): Promise<void> {
     this.stopTokenRefreshScheduler();
-    this.keycloak = this.createKeycloakClient();
-    const authenticated = await this.initializeKeycloak(this.keycloak);
+    const realmKind = KeycloakRealmKind.Tum;
+    const keycloak = this.createKeycloakClient(realmKind);
+    const authenticated = await this.initializeKeycloak(keycloak);
     if (!authenticated) {
       throw new Error('No session after passkey auth');
     }
+    this.activateKeycloakClient(keycloak, realmKind);
   }
 
   private redirectAfterPasskeyLogin(redirectUri?: string): void {
-    window.location.replace(this.buildRedirectUri(redirectUri));
+    const validRedicrectUri = this.buildRedirectUri(redirectUri);
+    if (redirectUri === undefined || window.location.href === validRedicrectUri) {
+      return;
+    }
+
+    window.location.replace(validRedicrectUri);
   }
 
   /** Endpoint builders */
-  private getPasskeyEndpoint(path: string): string {
-    return this.getRealmEndpoint(`passkey/${encodeURIComponent(this.config.keycloak.clientId)}/${path}`);
+  private getPasskeyEndpoint(path: string, realmKind: KeycloakRealmKind): string {
+    return this.getRealmEndpoint(`passkey/${encodeURIComponent(this.config.keycloak.clientId)}/${path}`, realmKind);
   }
 
-  private getAccountCredentialsEndpoint(): string {
-    return this.getRealmEndpoint('account/credentials');
+  private getAccountCredentialsEndpoint(realmKind: KeycloakRealmKind): string {
+    return this.getRealmEndpoint('account/credentials', realmKind);
   }
 
   private getPasskeyRelyingPartyId(): string {
@@ -528,10 +594,10 @@ export class KeycloakAuthenticationService {
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
   }
 
-  private getRealmEndpoint(path: string): string {
+  private getRealmEndpoint(path: string, realmKind: KeycloakRealmKind): string {
     const authServerUrl = this.config.keycloak.url.endsWith('/') ? this.config.keycloak.url : `${this.config.keycloak.url}/`;
     const normalizedPath = path.replace(/^\/+/, '');
-    return new URL(`realms/${encodeURIComponent(this.config.keycloak.realm)}/${normalizedPath}`, authServerUrl).toString();
+    return new URL(`realms/${encodeURIComponent(this.getRealmName(realmKind))}/${normalizedPath}`, authServerUrl).toString();
   }
 
   private getErrorMessage(errorMessage: string | undefined, fallback: string): string {
@@ -605,5 +671,86 @@ export class KeycloakAuthenticationService {
       }
     }
     return origin + (redirectUri?.startsWith('/') === true ? redirectUri : '/');
+  }
+
+  private getRealmKindForProvider(provider: IdpProvider): KeycloakRealmKind {
+    return provider === IdpProvider.TUM ? KeycloakRealmKind.Tum : KeycloakRealmKind.External;
+  }
+
+  private getRealmName(realmKind: KeycloakRealmKind): string {
+    return realmKind === KeycloakRealmKind.Tum ? this.config.keycloak.tumLoginRealm : this.config.keycloak.externalLoginRealm;
+  }
+
+  private getIssuerUrl(realmKind: KeycloakRealmKind): string {
+    return this.getRealmEndpoint('', realmKind).replace(/\/$/, '');
+  }
+
+  private getInitRealmCandidates(): KeycloakRealmKind[] {
+    const candidates: KeycloakRealmKind[] = [];
+
+    this.addRealmCandidate(candidates, this.getPendingRealmKind());
+    this.addRealmCandidate(candidates, this.getRealmKindFromIssuerParam());
+    this.addRealmCandidate(candidates, KeycloakRealmKind.Tum);
+    this.addRealmCandidate(candidates, KeycloakRealmKind.External);
+
+    return candidates;
+  }
+
+  private addRealmCandidate(candidates: KeycloakRealmKind[], realmKind: KeycloakRealmKind | undefined): void {
+    if (realmKind !== undefined && !candidates.includes(realmKind)) {
+      candidates.push(realmKind);
+    }
+  }
+
+  private getRealmKindFromIssuerParam(): KeycloakRealmKind | undefined {
+    const issuer = new URLSearchParams(window.location.search).get('iss')?.trim();
+    if (issuer === undefined || issuer === '') {
+      return undefined;
+    }
+    if (issuer === this.getIssuerUrl(KeycloakRealmKind.Tum)) {
+      return KeycloakRealmKind.Tum;
+    }
+    if (issuer === this.getIssuerUrl(KeycloakRealmKind.External)) {
+      return KeycloakRealmKind.External;
+    }
+    return undefined;
+  }
+
+  private activateKeycloakClient(keycloak: Keycloak, realmKind: KeycloakRealmKind): void {
+    this.keycloak = keycloak;
+    this.activeRealmKind = realmKind;
+    this.clearPendingRealm();
+  }
+
+  private requireActiveRealmKind(): KeycloakRealmKind {
+    if (this.activeRealmKind === undefined) {
+      throw new Error('No active Keycloak realm');
+    }
+    return this.activeRealmKind;
+  }
+
+  private clearActiveRealm(): void {
+    this.keycloak = undefined;
+    this.activeRealmKind = undefined;
+    this.clearPendingRealm();
+  }
+
+  private parseRealmKind(value: string | null): KeycloakRealmKind | undefined {
+    if (value === KeycloakRealmKind.Tum || value === KeycloakRealmKind.External) {
+      return value;
+    }
+    return undefined;
+  }
+
+  private persistPendingRealm(realmKind: KeycloakRealmKind): void {
+    sessionStorage.setItem(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY, realmKind);
+  }
+
+  private clearPendingRealm(): void {
+    sessionStorage.removeItem(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY);
+  }
+
+  private getPendingRealmKind(): KeycloakRealmKind | undefined {
+    return this.parseRealmKind(sessionStorage.getItem(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY));
   }
 }

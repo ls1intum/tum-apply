@@ -51,7 +51,7 @@ export class PasskeySettingsComponent {
   });
 
   constructor() {
-    this.canManagePasskeys.set(this.keycloakAuthenticationService.isLoggedIn());
+    this.canManagePasskeys.set(this.keycloakAuthenticationService.canManagePasskeys());
     void this.loadPasskeys();
   }
 

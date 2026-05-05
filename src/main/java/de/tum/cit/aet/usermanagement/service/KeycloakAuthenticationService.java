@@ -50,7 +50,7 @@ public class KeycloakAuthenticationService {
 
     public KeycloakAuthenticationService(
         @Value("${keycloak.url}") String keycloakUrl,
-        @Value("${keycloak.realm}") String realm,
+        @Value("${keycloak.external-login-realm}") String realm,
         @Value("${keycloak.server.client-id}") String clientId,
         @Value("${keycloak.server.client-secret}") String clientSecret,
         @Value("${keycloak.admin.client-id}") String adminClientId,

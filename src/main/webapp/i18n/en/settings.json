@@ -127,7 +127,7 @@
       },
       "unavailable": {
         "title": "Passkey management unavailable",
-        "description": "Sign in with Keycloak SSO to create, view, or remove passkeys for this account."
+        "description": "Sign in with TUM SSO to create, view, or remove passkeys for this account."
       },
       "removeConfirm": {
         "header": "Remove passkey?",

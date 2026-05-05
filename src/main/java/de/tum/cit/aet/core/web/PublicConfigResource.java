@@ -28,7 +28,8 @@ public class PublicConfigResource {
 
         Map<String, Object> keycloak = new HashMap<>();
         keycloak.put("url", env.getProperty("keycloak.url"));
-        keycloak.put("realm", env.getProperty("keycloak.realm"));
+        keycloak.put("tumLoginRealm", env.getProperty("keycloak.tum-login-realm"));
+        keycloak.put("externalLoginRealm", env.getProperty("keycloak.external-login-realm"));
         keycloak.put("clientId", env.getProperty("keycloak.client-id"));
         keycloak.put("relyingPartyId", env.getProperty("keycloak.relying-party-id", ""));
         response.put("keycloak", keycloak);

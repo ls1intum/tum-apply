@@ -1,75 +1,9 @@
 {
-  "realm": "tumapply",
+  "realm": "external",
   "enabled": true,
-  "displayName": "TUMApply Realm",
+  "displayName": "TUMApply External Login Realm",
   "webAuthnPolicyPasswordlessPasskeysEnabled": true,
   "users": [
-    {
-      "id": "00000000-0000-0000-0000-000000000101",
-      "username": "admin1",
-      "enabled": true,
-      "email": "admin1@tumapply.local",
-      "emailVerified": true,
-      "firstName": "System",
-      "lastName": "Admin",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "admin",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000102",
-      "username": "professor1",
-      "enabled": true,
-      "email": "professor1@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Anna",
-      "lastName": "Professorin",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "professor",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000103",
-      "username": "applicant1",
-      "enabled": true,
-      "email": "applicant1@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Max",
-      "lastName": "Applicant",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
-          "temporary": false
-        }
-      ]
-    },
     {
       "id": "00000000-0000-0000-0000-000000000104",
       "username": "applicant2",
@@ -78,50 +12,6 @@
       "emailVerified": true,
       "firstName": "Sara",
       "lastName": "Extern",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000105",
-      "username": "professor2",
-      "enabled": true,
-      "email": "professor2@tum.de",
-      "emailVerified": true,
-      "firstName": "Professor2",
-      "lastName": "TUM",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "professor",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000106",
-      "username": "applicant3",
-      "enabled": true,
-      "email": "longnameperson@intl.edu",
-      "emailVerified": true,
-      "firstName": "Jean-Pierre-Étienne",
-      "lastName": "Van Der Straaten-Sánchez",
       "clientRoles": {
         "account": [
           "manage-account",

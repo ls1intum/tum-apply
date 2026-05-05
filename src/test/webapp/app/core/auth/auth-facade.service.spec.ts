@@ -184,24 +184,32 @@ describe('AuthFacadeService', () => {
 
   describe('loginWithPasskey', () => {
     it('stores an explicit redirect URI and delegates to keycloak', async () => {
-      const { facade, keycloak, orchestrator } = setup();
+      const { facade, keycloak, orchestrator, account } = setup();
       keycloak.loginWithPasskey.mockResolvedValue(undefined);
+      account.loadUser.mockResolvedValue(undefined);
+      const authSuccessSpy = vi.spyOn(orchestrator, 'authSuccess');
 
       await facade.loginWithPasskey('/jobs/123');
 
       expect(orchestrator.redirectUri()).toBe('/jobs/123');
       expect(keycloak.loginWithPasskey).toHaveBeenCalledWith('/jobs/123');
       expect(keycloak.loginWithPasskey).toHaveBeenCalledTimes(1);
+      expect(account.loadUser).toHaveBeenCalledTimes(1);
+      expect(authSuccessSpy).toHaveBeenCalledTimes(1);
     });
 
     it('reuses the existing redirect URI when none is provided', async () => {
-      const { facade, keycloak, orchestrator } = setup();
+      const { facade, keycloak, orchestrator, account } = setup();
       keycloak.loginWithPasskey.mockResolvedValue(undefined);
+      account.loadUser.mockResolvedValue(undefined);
+      const authSuccessSpy = vi.spyOn(orchestrator, 'authSuccess');
       orchestrator.redirectUri.set('/dashboard');
 
       await facade.loginWithPasskey();
 
       expect(keycloak.loginWithPasskey).toHaveBeenCalledWith('/dashboard');
+      expect(account.loadUser).toHaveBeenCalledTimes(1);
+      expect(authSuccessSpy).toHaveBeenCalledTimes(1);
     });
   });
 

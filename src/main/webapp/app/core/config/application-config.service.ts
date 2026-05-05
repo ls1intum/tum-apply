@@ -18,7 +18,8 @@ export class ApplicationConfigService {
     const keycloak = this.getAppConfig().keycloak;
     return {
       url: keycloak?.url ?? '',
-      realm: keycloak?.realm ?? '',
+      tumLoginRealm: keycloak?.tumLoginRealm ?? '',
+      externalLoginRealm: keycloak?.externalLoginRealm ?? '',
       clientId: keycloak?.clientId ?? '',
       relyingPartyId: keycloak?.relyingPartyId ?? '',
     };

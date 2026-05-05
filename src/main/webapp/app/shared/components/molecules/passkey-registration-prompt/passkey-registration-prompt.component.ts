@@ -67,7 +67,7 @@ export class PasskeyRegistrationPromptComponent {
   private canEvaluatePrompt(): boolean {
     return (
       this.loggedIn() &&
-      this.keycloakAuthenticationService.isLoggedIn() &&
+      this.keycloakAuthenticationService.canManagePasskeys() &&
       !this.shownThisSession() &&
       localStorage.getItem(PasskeyRegistrationPromptComponent.PROMPT_PREFERENCE_ID) !== 'true'
     );

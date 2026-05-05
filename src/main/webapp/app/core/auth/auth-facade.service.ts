@@ -189,6 +189,9 @@ export class AuthFacadeService {
     return this.runAuthAction(
       async () => {
         await this.keycloakAuthenticationService.loginWithPasskey(this.authOrchestrator.redirectUri() ?? undefined);
+        this.authMethod = 'keycloak';
+        await this.accountService.loadUser();
+        this.authOrchestrator.authSuccess();
       },
       {
         summary: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.summary`),

@@ -127,7 +127,7 @@
       },
       "unavailable": {
         "title": "Passkey-Verwaltung nicht verfügbar",
-        "description": "Melde dich mit Keycloak SSO an, um Passkeys für dieses Konto zu erstellen, anzusehen oder zu entfernen."
+        "description": "Melde dich mit TUM SSO an, um Passkeys für dieses Konto zu erstellen, anzusehen oder zu entfernen."
       },
       "removeConfirm": {
         "header": "Passkey entfernen?",

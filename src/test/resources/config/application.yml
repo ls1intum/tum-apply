@@ -34,12 +34,6 @@ spring:
     allow-bean-definition-overriding: true
   messages:
     basename: i18n/messages
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:9080/realms/tumapply
-          principal-claim-name: preferred_username
   task:
     execution:
       thread-name-prefix: tum-apply-task-
@@ -108,7 +102,8 @@ aet:
 
 keycloak:
   url: http://localhost:9080
-  realm: tumapply
+  tum-login-realm: tumidpldap
+  external-login-realm: external
   client-id: tumapply-client
   users:
     admin:

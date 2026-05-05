@@ -174,11 +174,6 @@ spring:
       enabled: true
       max-file-size: 25MB
       max-request-size: 25MB
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${keycloak.url}/realms/${keycloak.realm}
   task:
     execution:
       thread-name-prefix: tum-apply-task-
@@ -310,7 +305,10 @@ debug: ${DEBUG:false}
 
 keycloak:
   url: ${KEYCLOAK_URL:http://localhost:9080}
-  realm: ${KEYCLOAK_REALM:tumapply}
+  # Realm used for TUM login and passkey flows
+  tum-login-realm: ${KEYCLOAK_TUM_LOGIN_REALM:tumidpldap}
+  # Realm used for external/social login flows
+  external-login-realm: ${KEYCLOAK_EXTERNAL_LOGIN_REALM:external}
   # Client ID used by the browser/client application to authenticate with Keycloak
   client-id: ${KEYCLOAK_CLIENT_ID:tumapply-client}
   # WebAuthn relying party ID used for passkey registration; leave empty to fall back to the current hostname
