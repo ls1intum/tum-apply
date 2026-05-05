@@ -11,13 +11,13 @@ applications or services that use Keycloak for authentication and authorization 
 
 ## Realms
 
-There are three realms in total for local development:
+There are three realms in total:
 
 1. **`master`**
 2. **`tumidpldap`**
-3. **`external`**
+3. **`external-login`**
 
-The `tumidpldap` realm is used for TUM login and passkey flows. The `external` realm is used for external/social login
+The `tumidpldap` realm is used for TUM login and passkey flows. The `external-login` realm is used for external/social login
 flows. The `master` realm exists in both development and production environments; however, it is only visible to and
 managed by AET Admins in production.
 
@@ -41,8 +41,3 @@ The following clients are used across environments with specific purposes:
 - **System clients**: These include `account`, `account-console`, `admin-cli`, `broker`, `realm-management`,
   `security-admin-console`, and others. They serve infrastructure and internal Keycloak functions necessary for managing
   accounts, administration, and security.
-
-## Differences Between Development and Production
-
-- Development includes the `master`, `tumidpldap`, and `external` realms.
-- Configuration and clients are nearly identical across environments to ensure consistency.

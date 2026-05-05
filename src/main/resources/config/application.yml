@@ -308,7 +308,7 @@ keycloak:
   # Realm used for TUM login and passkey flows
   tum-login-realm: ${KEYCLOAK_TUM_LOGIN_REALM:tumidpldap}
   # Realm used for external/social login flows
-  external-login-realm: ${KEYCLOAK_EXTERNAL_LOGIN_REALM:external}
+  external-login-realm: ${KEYCLOAK_EXTERNAL_LOGIN_REALM:external-login}
   # Client ID used by the browser/client application to authenticate with Keycloak
   client-id: ${KEYCLOAK_CLIENT_ID:tumapply-client}
   # WebAuthn relying party ID used for passkey registration; leave empty to fall back to the current hostname

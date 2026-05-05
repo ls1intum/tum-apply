@@ -13,7 +13,7 @@ TUMApply uses **Keycloak** as an identity provider. The client authenticates via
 token is sent with each request and validated by the Spring Boot server.
 
 - A **TUM login realm** called `tumidpldap`
-- An **external login realm** called `external`
+- An **external login realm** called `external-login`
 - A **public client** called `tumapply-client`
 - **Test users** with password login:
 
@@ -24,7 +24,7 @@ token is sent with each request and validated by the Spring Boot server.
   | `tumidpldap` | `professor2` | `professor` | `PROFESSOR` |
   | `tumidpldap` | `applicant1` | `applicant` | `APPLICANT` |
   | `tumidpldap` | `applicant3` | `applicant` | `APPLICANT` |
-  | `external`   | `applicant2` | `applicant` | `APPLICANT` |
+  | `external-login` | `applicant2` | `applicant` | `APPLICANT` |
 
 These users can authenticate with a password and receive a valid access token (JWT).
 

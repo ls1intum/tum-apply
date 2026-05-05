@@ -35,10 +35,10 @@ After running the above command, two URLs will be available:
 | ------------- | --------------------------------------- | ----------------------- | -------- | -------- |
 | Admin Console | [http://localhost:9080/admin](http://localhost:9080/admin)             | Keycloak Management UI  | admin    | admin    |
 | TUM Realm     | [http://localhost:9080/realms/tumidpldap](http://localhost:9080/realms/tumidpldap) | TUM login and passkey realm endpoint |          |          |
-| External Realm | [http://localhost:9080/realms/external](http://localhost:9080/realms/external) | External login realm endpoint |          |          |
+| External Realm | [http://localhost:9080/realms/external-login](http://localhost:9080/realms/external-login) | External login realm endpoint |          |          |
 
 - Open the Admin Console at `http://localhost:9080/admin` and log in with username `admin` and password `admin`.
-- Navigate to the `tumidpldap` and `external` realms and verify that the test users listed below are present. (If you
+- Navigate to the `tumidpldap` and `external-login` realms and verify that the test users listed below are present. (If you
   do not see the realms, use "Manage realms" button in the top left of the Keycloak Admin Console to switch from the
   default `master` realm. Then, open the **Users** section in the left-hand menu to view all available test users and
   confirm that the configuration has been imported correctly.)
@@ -78,7 +78,7 @@ docker compose -f src/main/docker/keycloak.yml down && docker compose -f src/mai
 ## 📁 Realm Import
 
 Keycloak imports the realm configurations from `docker/local-setup/realm-config/tumidpldap-realm.json` and
-`docker/local-setup/realm-config/external-realm.json` during startup.
+`docker/local-setup/realm-config/external-login-realm.json` during startup.
 
 :::warning
 Any manual changes made in the Keycloak Admin UI are **not persisted** after container restarts unless

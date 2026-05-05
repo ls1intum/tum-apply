@@ -34,7 +34,7 @@ describe('ApplicationConfigService', () => {
         keycloak: {
           url: 'http://kc',
           tumLoginRealm: 'tumidpldap',
-          externalLoginRealm: 'external',
+          externalLoginRealm: 'external-login',
           clientId: 'client',
           relyingPartyId: 'localhost',
         },
@@ -95,7 +95,7 @@ describe('ApplicationConfigService', () => {
         keycloak: {
           url: 'http://kc',
           tumLoginRealm: 'tumidpldap',
-          externalLoginRealm: 'external',
+          externalLoginRealm: 'external-login',
           clientId: 'cli',
           relyingPartyId: 'apply.in.tum.de',
         },
@@ -105,7 +105,7 @@ describe('ApplicationConfigService', () => {
       expect(service.keycloak).toEqual({
         url: 'http://kc',
         tumLoginRealm: 'tumidpldap',
-        externalLoginRealm: 'external',
+        externalLoginRealm: 'external-login',
         clientId: 'cli',
         relyingPartyId: 'apply.in.tum.de',
       });

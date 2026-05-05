@@ -1,5 +1,5 @@
 {
-  "realm": "external",
+  "realm": "external-login",
   "enabled": true,
   "displayName": "TUMApply External Login Realm",
   "webAuthnPolicyPasswordlessPasskeysEnabled": true,

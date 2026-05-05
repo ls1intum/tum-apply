@@ -20,7 +20,7 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
     keycloak: {
       url: 'http://mock-keycloak',
       tumLoginRealm: 'tumidpldap',
-      externalLoginRealm: 'external',
+      externalLoginRealm: 'external-login',
       clientId: 'mock-client',
       relyingPartyId: '',
       ...overrides.keycloak,
