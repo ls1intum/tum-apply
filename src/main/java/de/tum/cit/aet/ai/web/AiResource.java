@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -77,6 +78,29 @@ public class AiResource {
         }
         log.info("PUT /api/ai/translateJobDescriptionStream - Streaming translation request received (toLang={})", toLang);
         return ResponseEntity.ok(aiService.translateTextStream(request.text(), toLang));
+    }
+
+    /**
+     * Maps compliance text snippets from original lang to target lang during stream-translate.
+     *
+     * @param toLang  the target language for translation ("de" or "en")
+     * @param request A DTO containing the text to translate
+     * @return a ResponseEntity of mapped snippets for target compliance analysis
+     */
+    @ProfessorOrEmployeeOrAdmin
+    @PostMapping(value = "map-compliance-issues", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ComplianceIssue>> mapComplianceIssues(
+        @RequestParam("toLang") String toLang,
+        @RequestParam("jobId") UUID jobId,
+        @RequestBody TranslateComplianceDTO request
+    ) {
+        if (!aiFeatureToggleService.isAiAvailable()) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+        log.info("POST /api/ai/map-compliance-issues - Request received (toLang={})", toLang);
+        return ResponseEntity.ok(
+            aiService.mapComplianceIssues(jobId, request.complianceIssues(), request.text(), request.translatedText(), toLang)
+        );
     }
 
     /**

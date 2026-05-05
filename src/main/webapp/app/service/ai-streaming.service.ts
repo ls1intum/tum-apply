@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { ComplianceIssue } from 'app/generated/model/compliance-issue';
 import { JobFormDTO } from 'app/generated/model/job-form-dto';
 
 import { AiFeatureStatusService } from './ai-feature-status.service';
@@ -65,9 +66,12 @@ export class AiStreamingService {
     text: string,
     onChunk: (accumulatedContent: string) => void,
     signal?: AbortSignal,
+    jobId?: string,
+    complianceIssues: ComplianceIssue[] = [],
   ): Promise<string> {
-    const url = `/api/ai/translateJobDescriptionStream?toLang=${encodeURIComponent(toLang)}`;
-    return this.streamSSE(url, JSON.stringify({ text }), onChunk, signal);
+    const jobIdQuery = jobId ? `&jobId=${encodeURIComponent(jobId)}` : '';
+    const url = `/api/ai/translateJobDescriptionStream?toLang=${encodeURIComponent(toLang)}${jobIdQuery}`;
+    return this.streamSSE(url, JSON.stringify({ text, complianceIssues }), onChunk, signal);
   }
 
   /**

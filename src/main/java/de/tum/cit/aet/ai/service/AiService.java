@@ -64,6 +64,9 @@ public class AiService {
     @Value("classpath:prompts/AnalyzeComplianceText.st")
     private Resource complianceResource;
 
+    @Value("classpath:prompts/SnippetMapping.st")
+    private Resource snippetMappingResource;
+
     private final ChatClient chatClient;
 
     private final JobService jobService;
@@ -394,8 +397,74 @@ public class AiService {
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
-        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues);
+        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues, lang);
 
         return complianceIssues;
+    }
+
+    public List<ComplianceIssue> mapComplianceIssues(
+        UUID jobId,
+        List<ComplianceIssue> sourceIssues,
+        String originalText,
+        String translatedText,
+        String toLang
+    ) {
+        if (jobId == null || sourceIssues == null || sourceIssues.isEmpty() || translatedText == null || translatedText.isBlank()) {
+            return List.of();
+        }
+        if (!aiFeatureToggleService.isAiAvailable()) {
+            return List.of();
+        }
+
+        try {
+            StringBuilder snippetsBuilder = new StringBuilder();
+            for (ComplianceIssue issue : sourceIssues) {
+                if (issue.getText() != null && !issue.getText().isBlank()) {
+                    snippetsBuilder.append(issue.getText().trim()).append("\n");
+                }
+            }
+
+            String snippets = snippetsBuilder.toString();
+
+            String response = chatClient
+                .prompt()
+                .user(u ->
+                    u
+                        .text(snippetMappingResource)
+                        .param("snippets", snippets)
+                        .param("jobDescription", originalText)
+                        .param("translatedText", translatedText)
+                )
+                .call()
+                .content();
+
+            String[] mappedTexts = response.split("\\R");
+            List<ComplianceIssue> mappedIssues = new ArrayList<>();
+
+            for (int i = 0; i < sourceIssues.size() && i < mappedTexts.length; i++) {
+                String mappedText = mappedTexts[i].trim();
+                if (mappedText.isBlank()) {
+                    continue;
+                }
+
+                ComplianceIssue sourceIssue = sourceIssues.get(i);
+                mappedIssues.add(
+                    new ComplianceIssue(
+                        sourceIssue.getId(),
+                        sourceIssue.getCategory(),
+                        mappedText,
+                        sourceIssue.getArticle(),
+                        sourceIssue.getExplanation(),
+                        sourceIssue.getAction(),
+                        toLang
+                    )
+                );
+            }
+
+            jobService.updateComplianceIssues(jobId, mappedIssues, toLang);
+            return mappedIssues;
+        } catch (Exception e) {
+            throw new InternalServerException("Compliance issue mapping failed", e);
+        }
     }
 }

@@ -1582,6 +1582,8 @@ export class JobCreationFormComponent {
   private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
     const text = currentText.trim();
     if (!text) return;
+    const jobId = this.jobId();
+    if (!jobId) return;
 
     // 1) Skip if the text hasn't changed since the last translation
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
@@ -1619,6 +1621,7 @@ export class JobCreationFormComponent {
           }
         },
         abortController.signal,
+        jobId,
       );
 
       if (accumulatedContent) {
@@ -1646,17 +1649,29 @@ export class JobCreationFormComponent {
           // 7) Persist the translated content and run compliance analysis.
           //    Set isAnalyzing BEFORE the finally block clears isTranslating,
           //    so isScoreLoading never drops to false between the two states.
-          const jobId = this.jobId();
-          if (jobId) {
-            try {
-              const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
-              const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
-              this.lastSavedData.set(saved);
-              this.isAnalyzing.set(true);
-              await Promise.all([this.analyzeAndUpdateScore(currentLang), this.analyzeAndUpdateScore(targetLang)]);
-            } catch {
-              // Silent save failure — will be caught by next autosave
+          try {
+            const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
+            const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
+            this.lastSavedData.set(saved);
+            this.isAnalyzing.set(true);
+
+            const sourceIssues = await this.analyzeAndUpdateScore(currentLang);
+            const mappedIssues = await firstValueFrom(
+              this.aiApi.mapComplianceIssues(targetLang, jobId, {
+                text: extractTextFromHtml(text),
+                translatedText: extractTextFromHtml(finalContent),
+                complianceIssues: sourceIssues,
+              }),
+            );
+
+            const otherIssues = this.complianceIssues().filter(issue => issue.language !== targetLang);
+            this.complianceIssues.set(otherIssues.concat(mappedIssues));
+
+            if (this.currentDescriptionLanguage() === targetLang) {
+              this.applyHighlights(mappedIssues, targetLang);
             }
+          } catch {
+            // Silent save failure — will be caught by next autosave
           }
         }
       }
@@ -1681,9 +1696,9 @@ export class JobCreationFormComponent {
    *
    * @param lang - The language to analyze ('en' or 'de')
    */
-  private async analyzeAndUpdateScore(lang: string): Promise<void> {
+  private async analyzeAndUpdateScore(lang: string): Promise<ComplianceIssue[]> {
     const jobId = this.jobId();
-    if (!jobId) return;
+    if (!jobId) return [];
 
     // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
@@ -1691,7 +1706,7 @@ export class JobCreationFormComponent {
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
     if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText[lang]) {
       this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
-      return;
+      return [];
     }
 
     this.isAnalyzing.set(true);
@@ -1722,8 +1737,10 @@ export class JobCreationFormComponent {
       if (currentLang === lang) {
         this.applyHighlights(compliance, lang);
       }
+      return compliance;
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
+      return [];
     } finally {
       this.isAnalyzing.set(false);
     }
