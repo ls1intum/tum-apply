@@ -179,9 +179,7 @@ describe('KeycloakAuthenticationService', () => {
 
       await service.loginWithProvider(IdpProvider.Google, '/redirect');
 
-      expect(keycloakInstance.login).toHaveBeenCalledWith(
-        expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }),
-      );
+      expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }));
       expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
     });
 

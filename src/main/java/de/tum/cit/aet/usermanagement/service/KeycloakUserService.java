@@ -336,7 +336,11 @@ public class KeycloakUserService {
     }
 
     private String realmIssuer(String realm) {
-        return String.format("%s/realms/%s", keycloakUrl.endsWith("/") ? keycloakUrl.substring(0, keycloakUrl.length() - 1) : keycloakUrl, realm);
+        return String.format(
+            "%s/realms/%s",
+            keycloakUrl.endsWith("/") ? keycloakUrl.substring(0, keycloakUrl.length() - 1) : keycloakUrl,
+            realm
+        );
     }
 
     private record RealmAdminContext(Keycloak keycloak, String realm) {}

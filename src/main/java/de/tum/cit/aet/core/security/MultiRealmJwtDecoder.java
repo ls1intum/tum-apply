@@ -29,12 +29,7 @@ public class MultiRealmJwtDecoder implements JwtDecoder {
         this(keycloakUrl, tumLoginRealm, externalLoginRealm, JwtDecoders::fromIssuerLocation);
     }
 
-    MultiRealmJwtDecoder(
-        String keycloakUrl,
-        String tumLoginRealm,
-        String externalLoginRealm,
-        Function<String, JwtDecoder> decoderFactory
-    ) {
+    MultiRealmJwtDecoder(String keycloakUrl, String tumLoginRealm, String externalLoginRealm, Function<String, JwtDecoder> decoderFactory) {
         this.trustedIssuers = trustedIssuers(keycloakUrl, tumLoginRealm, externalLoginRealm);
         this.decoderFactory = decoderFactory;
     }
@@ -72,11 +67,6 @@ public class MultiRealmJwtDecoder implements JwtDecoder {
         if (realm == null || realm.isBlank()) {
             return;
         }
-        issuers.add(
-            UriComponentsBuilder.fromUriString(keycloakUrl)
-                .pathSegment("realms", realm)
-                .build()
-                .toUriString()
-        );
+        issuers.add(UriComponentsBuilder.fromUriString(keycloakUrl).pathSegment("realms", realm).build().toUriString());
     }
 }
