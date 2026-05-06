@@ -76,6 +76,7 @@
     "@fortawesome/fontawesome-svg-core": "7.2.0",
     "@fortawesome/free-brands-svg-icons": "7.2.0",
     "@fortawesome/free-solid-svg-icons": "7.2.0",
+    "@messageformat/core": "3.4.0",
     "@ng-bootstrap/ng-bootstrap": "20.0.0",
     "@ngx-translate/core": "17.0.0",
     "@ngx-translate/http-loader": "17.0.0",
