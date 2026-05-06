@@ -29,10 +29,12 @@ export function getFirstNonEmptyString(values: unknown[]): string | undefined {
   return undefined;
 }
 
-export enum KeycloakRealmKind {
-  Tum = 'tum',
-  External = 'external',
-}
+export const KeycloakRealmKind = {
+  Tum: 'tum',
+  External: 'external',
+} as const;
+
+export type KeycloakRealmKind = (typeof KeycloakRealmKind)[keyof typeof KeycloakRealmKind];
 
 const REALM_VALUES: KeycloakRealmKind[] = [KeycloakRealmKind.Tum, KeycloakRealmKind.External];
 

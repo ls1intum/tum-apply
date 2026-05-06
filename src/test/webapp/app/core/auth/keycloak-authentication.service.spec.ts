@@ -325,41 +325,41 @@ describe('KeycloakAuthenticationService', () => {
 
   describe('passkey delegation', () => {
     it('should delegate passkey login and redirect', async () => {
-      const passkeyManager = (service as any).passkeyManager;
-      const loginSpy = vi.spyOn(passkeyManager, 'loginWithPasskey').mockResolvedValue(undefined);
+      const passkeyManager = { loginWithPasskey: vi.fn().mockResolvedValue(undefined) } as any;
+      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
       const redirectSpy = vi.spyOn(service as any, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
 
       await service.loginWithPasskey('/after-login');
 
-      expect(loginSpy).toHaveBeenCalledOnce();
+      expect(passkeyManager.loginWithPasskey).toHaveBeenCalledOnce();
       expect(redirectSpy).toHaveBeenCalledWith('/after-login');
     });
 
     it('should delegate passkey registration', async () => {
-      const passkeyManager = (service as any).passkeyManager;
-      const registerSpy = vi.spyOn(passkeyManager, 'registerPasskey').mockResolvedValue(undefined);
+      const passkeyManager = { registerPasskey: vi.fn().mockResolvedValue(undefined) } as any;
+      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
 
       await service.registerPasskey();
 
-      expect(registerSpy).toHaveBeenCalledOnce();
+      expect(passkeyManager.registerPasskey).toHaveBeenCalledOnce();
     });
 
     it('should delegate passkey listing', async () => {
-      const passkeyManager = (service as any).passkeyManager;
-      const listSpy = vi.spyOn(passkeyManager, 'listPasskeys').mockResolvedValue([{ id: 'passkey-1' }]);
+      const passkeyManager = { listPasskeys: vi.fn().mockResolvedValue([{ id: 'passkey-1' }]) } as any;
+      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
 
       await expect(service.listPasskeys()).resolves.toEqual([{ id: 'passkey-1' }]);
 
-      expect(listSpy).toHaveBeenCalledOnce();
+      expect(passkeyManager.listPasskeys).toHaveBeenCalledOnce();
     });
 
     it('should delegate passkey removal', async () => {
-      const passkeyManager = (service as any).passkeyManager;
-      const removeSpy = vi.spyOn(passkeyManager, 'removePasskey').mockResolvedValue(undefined);
+      const passkeyManager = { removePasskey: vi.fn().mockResolvedValue(undefined) } as any;
+      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
 
       await service.removePasskey('passkey-1');
 
-      expect(removeSpy).toHaveBeenCalledWith('passkey-1');
+      expect(passkeyManager.removePasskey).toHaveBeenCalledWith('passkey-1');
     });
   });
 

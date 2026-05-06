@@ -45,7 +45,7 @@ export enum IdpProvider {
  */
 @Injectable({ providedIn: 'root' })
 export class KeycloakAuthenticationService {
-  private static readonly PENDING_REALM_STORAGE_KEY = 'authPendingKeycloakRealm';
+  private static readonly PENDING_REALM_STORAGE_SLOT = 'authPendingKeycloakRealm';
 
   readonly config = inject(ApplicationConfigService);
   private readonly toastService = inject(ToastService);
@@ -57,19 +57,7 @@ export class KeycloakAuthenticationService {
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
   private refreshInFlight: Promise<void> | undefined;
   private windowListenersActive = false;
-  private readonly passkeyManager = new KeycloakPasskeyManager({
-    pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY,
-    keycloakUrl: this.config.keycloak.url,
-    getRealmName: (realmKind: KeycloakRealmKind) => this.getRealmName(realmKind),
-    clientId: this.config.keycloak.clientId,
-    relyingPartyId: this.config.keycloak.relyingPartyId,
-    ensureFreshToken: () => this.ensureFreshToken(),
-    getToken: () => this.keycloak?.token,
-    getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
-    canManagePasskeys: () => this.canManagePasskeys(),
-    requireActiveRealmKind: () => this.requireActiveRealmKind(),
-    refreshKeycloakSessionFromBrowser: () => this.refreshKeycloakSessionFromBrowser(),
-  });
+  private passkeyManager?: KeycloakPasskeyManager;
 
   /**
    * Initializes the Keycloak client and determines login status.
@@ -128,7 +116,7 @@ export class KeycloakAuthenticationService {
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
     const realmKind = this.getRealmKindForProvider(provider);
     const keycloak = this.createKeycloakClient(realmKind);
-    persistPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY, realmKind);
+    persistPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT, realmKind);
 
     try {
       await this.initializeKeycloakForLogin(keycloak);
@@ -137,7 +125,7 @@ export class KeycloakAuthenticationService {
         idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
     } catch (err) {
-      clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY);
+      clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
       this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.providerLoginFailed.summary`),
         detail: this.translate.instant(`${this.translationKey}.providerLoginFailed.detail`),
@@ -170,7 +158,7 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional post-login redirect URI reserved for future use.
    */
   async loginWithPasskey(redirectUri?: string): Promise<void> {
-    await this.passkeyManager.loginWithPasskey();
+    await this.getPasskeyManager().loginWithPasskey();
     this.redirectAfterPasskeyLogin(redirectUri);
   }
 
@@ -179,7 +167,7 @@ export class KeycloakAuthenticationService {
    * Requires the user to be authenticated with Keycloak beforehand, as it uses the current session for authorization.
    */
   async registerPasskey(): Promise<void> {
-    await this.passkeyManager.registerPasskey();
+    await this.getPasskeyManager().registerPasskey();
   }
 
   /**
@@ -188,7 +176,7 @@ export class KeycloakAuthenticationService {
    * @returns An array of passkey credential summaries.
    */
   async listPasskeys(): Promise<PasskeyCredentialSummary[]> {
-    return this.passkeyManager.listPasskeys();
+    return this.getPasskeyManager().listPasskeys();
   }
 
   /**
@@ -196,7 +184,7 @@ export class KeycloakAuthenticationService {
    * @param id
    */
   async removePasskey(id: string): Promise<void> {
-    await this.passkeyManager.removePasskey(id);
+    await this.getPasskeyManager().removePasskey(id);
   }
 
   // --------------------------- Refresh ----------------------------
@@ -311,6 +299,23 @@ export class KeycloakAuthenticationService {
     });
   }
 
+  private getPasskeyManager(): KeycloakPasskeyManager {
+    this.passkeyManager ??= new KeycloakPasskeyManager({
+        pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT,
+      keycloakUrl: this.config.keycloak.url,
+      getRealmName: (realmKind: KeycloakRealmKind) => this.getRealmName(realmKind),
+      clientId: this.config.keycloak.clientId,
+      relyingPartyId: this.config.keycloak.relyingPartyId,
+      ensureFreshToken: () => this.ensureFreshToken(),
+      getToken: () => this.keycloak?.token,
+      getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
+      canManagePasskeys: () => this.canManagePasskeys(),
+      requireActiveRealmKind: () => this.requireActiveRealmKind(),
+      refreshKeycloakSessionFromBrowser: () => this.refreshKeycloakSessionFromBrowser(),
+    });
+    return this.passkeyManager;
+  }
+
   private async initializeAcrossRealms(): Promise<boolean> {
     for (const realmKind of this.getInitRealmCandidates()) {
       const keycloak = this.createKeycloakClient(realmKind);
@@ -395,7 +400,7 @@ export class KeycloakAuthenticationService {
 
   private getInitRealmCandidates(): KeycloakRealmKind[] {
     return getInitRealmCandidates(
-      getPendingRealmKindFromStorage(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY),
+      getPendingRealmKindFromStorage(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT),
       this.getRealmKindFromIssuerParam(),
     );
   }
@@ -408,7 +413,7 @@ export class KeycloakAuthenticationService {
   private activateKeycloakClient(keycloak: Keycloak, realmKind: KeycloakRealmKind): void {
     this.keycloak = keycloak;
     this.activeRealmKind = realmKind;
-    clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY);
+    clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
   }
 
   private requireActiveRealmKind(): KeycloakRealmKind {
@@ -421,6 +426,6 @@ export class KeycloakAuthenticationService {
   private clearActiveRealm(): void {
     this.keycloak = undefined;
     this.activeRealmKind = undefined;
-    clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_KEY);
+    clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
   }
 }

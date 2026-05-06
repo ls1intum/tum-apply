@@ -1,10 +1,10 @@
 import {
   AccountCredentialResponse,
   AccountCredentialTypeResponse,
+  KeycloakRealmKind,
   getErrorMessage,
   getFirstNonEmptyString,
   getRealmEndpoint,
-  KeycloakRealmKind,
   persistPendingRealm,
 } from './keycloak-authentication.utils';
 import { PasskeyCredentialSummary } from './models/auth.model';
@@ -19,7 +19,7 @@ interface PasskeyChallengeResponse {
 interface PasskeyManagerDependencies {
   pendingRealmStorageKey: string;
   keycloakUrl: string;
-  getRealmName: (realmKind: KeycloakRealmKind) => string;
+  getRealmName: (_realmKind: KeycloakRealmKind) => string;
   clientId: string;
   relyingPartyId: string;
   ensureFreshToken: () => Promise<void>;
