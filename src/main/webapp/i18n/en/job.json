@@ -265,8 +265,18 @@
       "title": "Overview",
       "complianceBanner": {
         "complianceCheckOngoing": "<b>Compliance Check Ongoing:</b> Your job is being analyzed for compliance with legal and university standards. This may take a moment.",
-        "critical": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG {criticalCount, plural, =1 {violation} other {violations}}{othersCount, plural, =0 {} other { and {othersCount} further {othersCount, plural, =1 {issue} other {issues}}}} to ensure compliance.",
-        "warning": "<b>Improvement Needed:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {othersCount} identified compliance {othersCount, plural, =1 {issue} other {issues}}.",
+        "critical": {
+          "oneAlone": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG violation to ensure compliance.",
+          "otherAlone": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG violations to ensure compliance.",
+          "oneWithOneOther": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG violation and {othersCount} further issue to ensure compliance.",
+          "oneWithOtherOthers": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG violation and {othersCount} further issues to ensure compliance.",
+          "otherWithOneOther": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG violations and {othersCount} further issue to ensure compliance.",
+          "otherWithOtherOthers": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG violations and {othersCount} further issues to ensure compliance."
+        },
+        "warning": {
+          "one": "<b>Improvement Needed:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {othersCount} identified compliance issue.",
+          "other": "<b>Improvement Needed:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {othersCount} identified compliance issues."
+        },
         "default": "Please review your entries before publishing the doctorate position."
       }
     },

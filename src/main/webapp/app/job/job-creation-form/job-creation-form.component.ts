@@ -295,6 +295,25 @@ export class JobCreationFormComponent {
   /** Whether any critical compliance issue exists */
   readonly hasCriticalCompliance = computed(() => this.complianceCriticalCount() > 0);
 
+  /**
+   * Translation key for the compliance banner message, picked by cardinality of the
+   * critical and non-critical counts. Uses discrete keys instead of ICU plural syntax
+   * so the default ngx-translate compiler can render the strings.
+   * @returns the i18n key under jobCreationForm.reviewPageSection.complianceBanner
+   */
+  readonly complianceBannerKey = computed(() => {
+    const critical = this.complianceCriticalCount();
+    const others = this.complianceCount() - critical;
+    const base = 'jobCreationForm.reviewPageSection.complianceBanner';
+    if (critical > 0) {
+      const c = critical === 1 ? 'one' : 'other';
+      if (others === 0) return `${base}.critical.${c}Alone`;
+      const o = others === 1 ? 'OneOther' : 'OtherOthers';
+      return `${base}.critical.${c}With${o}`;
+    }
+    return `${base}.warning.${others === 1 ? 'one' : 'other'}`;
+  });
+
   /** The compliance issue currently shown in the popover (undefined = none is hovered). */
   readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
 
