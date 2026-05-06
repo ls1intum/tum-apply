@@ -59,7 +59,8 @@ describe('KeycloakPasskeyManager', () => {
     deps = {
       pendingRealmStorageKey: 'auth.pendingKeycloakRealm',
       keycloakUrl: 'http://mock-keycloak',
-      getRealmName: vi.fn(realmKind => (realmKind === KeycloakRealmKind.Tum ? 'tumidpldap' : 'external-login')),
+      tumRealmName: 'tumidpldap',
+      externalRealmName: 'external-login',
       clientId: 'mock-client',
       relyingPartyId: '',
       ensureFreshToken: vi.fn().mockResolvedValue(undefined),
@@ -323,4 +324,3 @@ describe('KeycloakPasskeyManager', () => {
     });
   });
 });
-

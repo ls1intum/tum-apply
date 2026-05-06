@@ -301,9 +301,10 @@ export class KeycloakAuthenticationService {
 
   private getPasskeyManager(): KeycloakPasskeyManager {
     this.passkeyManager ??= new KeycloakPasskeyManager({
-        pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT,
+      pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT,
       keycloakUrl: this.config.keycloak.url,
-      getRealmName: (realmKind: KeycloakRealmKind) => this.getRealmName(realmKind),
+      tumRealmName: this.config.keycloak.tumLoginRealm,
+      externalRealmName: this.config.keycloak.externalLoginRealm,
       clientId: this.config.keycloak.clientId,
       relyingPartyId: this.config.keycloak.relyingPartyId,
       ensureFreshToken: () => this.ensureFreshToken(),

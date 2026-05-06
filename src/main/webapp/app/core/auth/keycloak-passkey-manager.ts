@@ -19,7 +19,8 @@ interface PasskeyChallengeResponse {
 interface PasskeyManagerDependencies {
   pendingRealmStorageKey: string;
   keycloakUrl: string;
-  getRealmName: (_realmKind: KeycloakRealmKind) => string;
+  tumRealmName: string;
+  externalRealmName: string;
   clientId: string;
   relyingPartyId: string;
   ensureFreshToken: () => Promise<void>;
@@ -283,7 +284,7 @@ export class KeycloakPasskeyManager {
   }
 
   private getAccountCredentialsEndpoint(realmKind: KeycloakRealmKind): string {
-    return getRealmEndpoint(this.deps.keycloakUrl, this.deps.getRealmName(realmKind), 'account/credentials');
+    return getRealmEndpoint(this.deps.keycloakUrl, this.getRealmName(realmKind), 'account/credentials');
   }
 
   private getRelyingPartyId(): string {
@@ -294,8 +295,12 @@ export class KeycloakPasskeyManager {
   private getPasskeyEndpoint(path: string, realmKind: KeycloakRealmKind): string {
     return getRealmEndpoint(
       this.deps.keycloakUrl,
-      this.deps.getRealmName(realmKind),
+      this.getRealmName(realmKind),
       `passkey/${encodeURIComponent(this.deps.clientId)}/${path}`,
     );
+  }
+
+  private getRealmName(realmKind: KeycloakRealmKind): string {
+    return realmKind === KeycloakRealmKind.Tum ? this.deps.tumRealmName : this.deps.externalRealmName;
   }
 }
