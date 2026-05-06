@@ -472,11 +472,7 @@
           <jhi-message
             [severity]="hasCriticalCompliance() ? 'error' : 'warn'"
             classStyling="py-1"
-            [message]="
-              hasCriticalCompliance()
-                ? 'jobCreationForm.reviewPageSection.complianceBanner.critical'
-                : 'jobCreationForm.reviewPageSection.complianceBanner.warning'
-            "
+            [message]="complianceBannerKey()"
             [translationParams]="{
               criticalCount: complianceCriticalCount(),
               othersCount: complianceCount() - complianceCriticalCount(),
