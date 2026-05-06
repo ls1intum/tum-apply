@@ -278,6 +278,7 @@ public class KeycloakUserService {
      *
      * @param userId      the Keycloak user ID
      * @param newPassword the new password (must be non-blank)
+     * @param issuer      the issuer URL to determine the realm context; if {@code null} or unrecognized, defaults to external realm
      * @return {@code true} if the password was updated, {@code false} if input invalid or user not found
      */
     public boolean setPassword(String userId, String newPassword, URL issuer) {

@@ -16,6 +16,12 @@ interface PasskeyChallengeResponse {
   error?: string;
 }
 
+/**
+ * Runtime dependencies required by {@link KeycloakPasskeyManager}.
+ *
+ * The manager is intentionally framework-agnostic and receives all external
+ * interactions (token/session/user context) through this contract.
+ */
 interface PasskeyManagerDependencies {
   pendingRealmStorageKey: string;
   keycloakUrl: string;
@@ -36,6 +42,18 @@ export class KeycloakPasskeyManager {
     this.deps = deps;
   }
 
+  /**
+   * Performs passkey login against the TUM realm.
+   *
+   * Flow:
+   * 1) Request challenge from Keycloak custom passkey endpoint
+   * 2) Use WebAuthn `navigator.credentials.get`
+   * 3) Send assertion back to Keycloak
+   * 4) Refresh Keycloak browser session/tokens
+   *
+   * @throws Error if WebAuthn is unsupported, assertion is incomplete,
+   * or Keycloak challenge/authenticate endpoints fail.
+   */
   async loginWithPasskey(): Promise<void> {
     this.assertPasskeySupport();
     persistPendingRealm(this.deps.pendingRealmStorageKey, KeycloakRealmKind.Tum);
@@ -88,6 +106,15 @@ export class KeycloakPasskeyManager {
     await this.deps.refreshKeycloakSessionFromBrowser();
   }
 
+  /**
+   * Registers a new passkey for the currently authenticated Keycloak user.
+   *
+   * Requires an active TUM session and valid user claims (`sub`,
+   * `preferred_username`/`email`).
+   *
+   * @throws Error if identity claims are missing/invalid, WebAuthn fails,
+   * or Keycloak save endpoint rejects the registration.
+   */
   async registerPasskey(): Promise<void> {
     this.assertPasskeySupport();
     this.assertPasskeyManagementAvailable();
@@ -151,6 +178,13 @@ export class KeycloakPasskeyManager {
     }
   }
 
+  /**
+   * Lists passkey credentials from the Keycloak account credentials endpoint.
+   *
+   * Supports both response formats seen in Keycloak variants:
+   * - direct credential-type array
+   * - object with `credentials` array
+   */
   async listPasskeys(): Promise<PasskeyCredentialSummary[]> {
     this.assertPasskeyManagementAvailable();
     const token = await this.getAuthenticatedToken();
@@ -189,6 +223,12 @@ export class KeycloakPasskeyManager {
     return summaries;
   }
 
+  /**
+   * Removes a passkey credential by id from the active Keycloak account.
+   *
+   * @param id credential identifier as returned by {@link listPasskeys}
+   * @throws Error if deletion fails at Keycloak.
+   */
   async removePasskey(id: string): Promise<void> {
     this.assertPasskeyManagementAvailable();
     const token = await this.getAuthenticatedToken();
@@ -207,6 +247,10 @@ export class KeycloakPasskeyManager {
     }
   }
 
+  /**
+   * Fetches a WebAuthn challenge from Keycloak passkey endpoint for the
+   * specified realm and validates the returned payload shape.
+   */
   private async getPasskeyChallenge(
     realmKind: KeycloakRealmKind,
   ): Promise<Required<Pick<PasskeyChallengeResponse, 'challenge'>> & PasskeyChallengeResponse> {
@@ -225,6 +269,11 @@ export class KeycloakPasskeyManager {
     };
   }
 
+  /**
+   * Ensures there is a fresh bearer token and returns it.
+   *
+   * @throws Error when no usable token exists.
+   */
   private async getAuthenticatedToken(): Promise<string> {
     await this.deps.ensureFreshToken();
     const token = this.deps.getToken();
@@ -234,18 +283,23 @@ export class KeycloakPasskeyManager {
     return token;
   }
 
+  /** Ensures the runtime environment supports WebAuthn APIs. */
   private assertPasskeySupport(): void {
     if (typeof PublicKeyCredential === 'undefined') {
       throw new Error('Passkeys are not supported in this browser');
     }
   }
 
+  /** Ensures passkey management operations are allowed for the current session. */
   private assertPasskeyManagementAvailable(): void {
     if (!this.deps.canManagePasskeys()) {
       throw new Error('Passkeys can only be managed for TUM Keycloak sessions');
     }
   }
 
+  /**
+   * Normalizes Keycloak account credential payloads to passkey credentials only.
+   */
   private extractPasskeyCredentials(
     payload: AccountCredentialTypeResponse[] | { credentials?: AccountCredentialResponse[]; error?: string },
   ): AccountCredentialResponse[] {
@@ -268,6 +322,7 @@ export class KeycloakPasskeyManager {
     return credentials;
   }
 
+  /** Converts binary data to base64url encoding (RFC 4648 URL-safe alphabet). */
   private toBase64Url(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer);
     let binary = '';
@@ -277,21 +332,25 @@ export class KeycloakPasskeyManager {
     return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
 
+  /** Converts a base64url string into an ArrayBuffer. */
   private fromBase64Url(value: string): ArrayBuffer {
     const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
     const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
     return Uint8Array.from(atob(padded), character => character.charCodeAt(0)).buffer;
   }
 
+  /** Builds the account credentials endpoint URL for the given realm. */
   private getAccountCredentialsEndpoint(realmKind: KeycloakRealmKind): string {
     return getRealmEndpoint(this.deps.keycloakUrl, this.getRealmName(realmKind), 'account/credentials');
   }
 
+  /** Returns configured RP ID, falling back to current hostname. */
   private getRelyingPartyId(): string {
     const relyingPartyId = this.deps.relyingPartyId;
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
   }
 
+  /** Builds a passkey custom-endpoint URL for the given realm and operation path. */
   private getPasskeyEndpoint(path: string, realmKind: KeycloakRealmKind): string {
     return getRealmEndpoint(
       this.deps.keycloakUrl,
@@ -300,6 +359,7 @@ export class KeycloakPasskeyManager {
     );
   }
 
+  /** Resolves realm name from realm kind. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
     return realmKind === KeycloakRealmKind.Tum ? this.deps.tumRealmName : this.deps.externalRealmName;
   }

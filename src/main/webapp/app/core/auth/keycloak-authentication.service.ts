@@ -291,6 +291,7 @@ export class KeycloakAuthenticationService {
     this.windowListenersActive = false;
   }
 
+  /** Creates a Keycloak client instance bound to the selected realm kind. */
   private createKeycloakClient(realmKind: KeycloakRealmKind): Keycloak {
     return new Keycloak({
       url: this.config.keycloak.url,
@@ -299,6 +300,7 @@ export class KeycloakAuthenticationService {
     });
   }
 
+  /** Lazily creates and returns the passkey manager bound to current app config. */
   private getPasskeyManager(): KeycloakPasskeyManager {
     this.passkeyManager ??= new KeycloakPasskeyManager({
       pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT,
@@ -317,6 +319,10 @@ export class KeycloakAuthenticationService {
     return this.passkeyManager;
   }
 
+  /**
+   * Attempts Keycloak silent initialization across candidate realms until one succeeds.
+   * Activates the successful client/realm pair and returns authentication state.
+   */
   private async initializeAcrossRealms(): Promise<boolean> {
     for (const realmKind of this.getInitRealmCandidates()) {
       const keycloak = this.createKeycloakClient(realmKind);
@@ -334,6 +340,9 @@ export class KeycloakAuthenticationService {
     return false;
   }
 
+  /**
+   * Initializes a Keycloak client in silent SSO mode and starts token refresh if authenticated.
+   */
   private async initializeKeycloak(keycloak: Keycloak): Promise<boolean> {
     const authenticated = await keycloak.init(this.getCheckSsoOptions());
     if (!authenticated) {
@@ -344,10 +353,14 @@ export class KeycloakAuthenticationService {
     return authenticated;
   }
 
+  /**
+   * Performs lightweight Keycloak initialization prior to interactive login redirect.
+   */
   private async initializeKeycloakForLogin(keycloak: Keycloak): Promise<void> {
     await keycloak.init(this.getLoginOptions());
   }
 
+  /** Keycloak init options for silent SSO check during app bootstrap. */
   private getCheckSsoOptions(): KeycloakInitOptions {
     return {
       onLoad: 'check-sso',
@@ -359,6 +372,7 @@ export class KeycloakAuthenticationService {
     };
   }
 
+  /** Keycloak init options for explicit login flow bootstrap. */
   private getLoginOptions(): KeycloakInitOptions {
     return {
       checkLoginIframe: false,
@@ -367,6 +381,10 @@ export class KeycloakAuthenticationService {
     };
   }
 
+  /**
+   * Re-initializes the TUM realm client after passkey auth so browser session cookies
+   * are converted into usable Keycloak tokens in the SPA.
+   */
   private async refreshKeycloakSessionFromBrowser(): Promise<void> {
     this.stopTokenRefreshScheduler();
     const realmKind = KeycloakRealmKind.Tum;
@@ -378,6 +396,9 @@ export class KeycloakAuthenticationService {
     this.activateKeycloakClient(keycloak, realmKind);
   }
 
+  /**
+   * Applies a safe post-passkey redirect if a target differs from current URL.
+   */
   private redirectAfterPasskeyLogin(redirectUri?: string): void {
     const validRedicrectUri = buildRedirectUri(redirectUri);
     if (redirectUri === undefined || window.location.href === validRedicrectUri) {
@@ -387,18 +408,22 @@ export class KeycloakAuthenticationService {
     window.location.replace(validRedicrectUri);
   }
 
+  /** Maps IdP provider selection to the target Keycloak realm kind. */
   private getRealmKindForProvider(provider: IdpProvider): KeycloakRealmKind {
     return provider === IdpProvider.TUM ? KeycloakRealmKind.Tum : KeycloakRealmKind.External;
   }
 
+  /** Resolves configured realm name for a realm kind. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
     return realmKind === KeycloakRealmKind.Tum ? this.config.keycloak.tumLoginRealm : this.config.keycloak.externalLoginRealm;
   }
 
+  /** Builds normalized issuer URL for the given realm kind. */
   private getIssuerUrl(realmKind: KeycloakRealmKind): string {
     return getRealmEndpoint(this.config.keycloak.url, realmKind, '').replace(/\/$/, '');
   }
 
+  /** Computes realm init order from storage hint and issuer query parameter. */
   private getInitRealmCandidates(): KeycloakRealmKind[] {
     return getInitRealmCandidates(
       getPendingRealmKindFromStorage(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT),
@@ -406,17 +431,20 @@ export class KeycloakAuthenticationService {
     );
   }
 
+  /** Parses issuer query parameter (`iss`) and maps it to a known realm kind. */
   private getRealmKindFromIssuerParam(): KeycloakRealmKind | undefined {
     const issuer = new URLSearchParams(window.location.search).get('iss') ?? undefined;
     return getRealmFromIssuerParam(issuer, this.getIssuerUrl(KeycloakRealmKind.Tum), this.getIssuerUrl(KeycloakRealmKind.External));
   }
 
+  /** Marks the given Keycloak client/realm as active and clears pending realm marker. */
   private activateKeycloakClient(keycloak: Keycloak, realmKind: KeycloakRealmKind): void {
     this.keycloak = keycloak;
     this.activeRealmKind = realmKind;
     clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
   }
 
+  /** Returns the active realm kind or throws if no active Keycloak session exists. */
   private requireActiveRealmKind(): KeycloakRealmKind {
     if (this.activeRealmKind === undefined) {
       throw new Error('No active Keycloak realm');
@@ -424,6 +452,7 @@ export class KeycloakAuthenticationService {
     return this.activeRealmKind;
   }
 
+  /** Clears active client/realm state and removes pending realm marker. */
   private clearActiveRealm(): void {
     this.keycloak = undefined;
     this.activeRealmKind = undefined;

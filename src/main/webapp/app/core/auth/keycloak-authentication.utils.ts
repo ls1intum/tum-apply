@@ -1,3 +1,6 @@
+/**
+ * Keycloak account credential payload grouped by credential type.
+ */
 export interface AccountCredentialTypeResponse {
   type?: string;
   userCredentialMetadatas?: {
@@ -10,6 +13,9 @@ export interface AccountCredentialTypeResponse {
   }[];
 }
 
+/**
+ * Flattened Keycloak account credential metadata used by passkey UI/actions.
+ */
 export interface AccountCredentialResponse {
   id?: string;
   name?: string;
@@ -17,6 +23,9 @@ export interface AccountCredentialResponse {
   createdDate?: number;
 }
 
+/**
+ * Returns the first non-empty string value from an arbitrary candidate list.
+ */
 export function getFirstNonEmptyString(values: unknown[]): string | undefined {
   for (const value of values) {
     if (typeof value === 'string') {
@@ -29,6 +38,9 @@ export function getFirstNonEmptyString(values: unknown[]): string | undefined {
   return undefined;
 }
 
+/**
+ * Logical realm kinds used by the frontend auth flow.
+ */
 export const KeycloakRealmKind = {
   Tum: 'tum',
   External: 'external',
@@ -36,8 +48,10 @@ export const KeycloakRealmKind = {
 
 export type KeycloakRealmKind = (typeof KeycloakRealmKind)[keyof typeof KeycloakRealmKind];
 
+/** Ordered fallback realms used when no stronger realm hint exists. */
 const REALM_VALUES: KeycloakRealmKind[] = [KeycloakRealmKind.Tum, KeycloakRealmKind.External];
 
+/** Parses an unknown realm string into a supported realm kind. */
 export function parseRealmKind(value: string | undefined): KeycloakRealmKind | undefined {
   if (value === KeycloakRealmKind.Tum || value === KeycloakRealmKind.External) {
     return value;
@@ -70,6 +84,9 @@ export function getRealmEndpoint(baseUrl: string, realm: string, path: string): 
   return new URL(`realms/${encodeURIComponent(realm)}/${normalizedPath}`, authServerUrl).toString();
 }
 
+/**
+ * Derives realm kind from an issuer URL query parameter by matching known issuer URLs.
+ */
 export function getRealmFromIssuerParam(
   issuer: string | undefined,
   tumIssuerUrl: string,
@@ -88,6 +105,12 @@ export function getRealmFromIssuerParam(
   return undefined;
 }
 
+/**
+ * Builds realm initialization order using:
+ * 1) pending realm from storage
+ * 2) realm inferred from issuer parameter
+ * 3) deterministic fallback realms
+ */
 export function getInitRealmCandidates(
   pendingRealm: KeycloakRealmKind | undefined,
   issuerRealm: KeycloakRealmKind | undefined,
@@ -107,18 +130,22 @@ export function getInitRealmCandidates(
   return candidates;
 }
 
+/** Returns a normalized error message, falling back when missing/blank. */
 export function getErrorMessage(errorMessage: string | undefined, fallback: string): string {
   return errorMessage !== undefined && errorMessage.trim() !== '' ? errorMessage : fallback;
 }
 
+/** Stores the selected realm in sessionStorage for redirect round-trips. */
 export function persistPendingRealm(storageKey: string, realmKind: KeycloakRealmKind): void {
   sessionStorage.setItem(storageKey, realmKind);
 }
 
+/** Clears any pending realm marker from sessionStorage. */
 export function clearPendingRealm(storageKey: string): void {
   sessionStorage.removeItem(storageKey);
 }
 
+/** Reads and parses pending realm marker from sessionStorage. */
 export function getPendingRealmKind(storageKey: string): KeycloakRealmKind | undefined {
   return parseRealmKind(sessionStorage.getItem(storageKey) ?? undefined);
 }
