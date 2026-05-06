@@ -3,6 +3,17 @@
   "enabled": true,
   "displayName": "TUMApply External Login Realm",
   "webAuthnPolicyPasswordlessPasskeysEnabled": true,
+  "requiredActions": [
+    {
+      "alias": "VERIFY_PROFILE",
+      "name": "Verify Profile",
+      "providerId": "VERIFY_PROFILE",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 10,
+      "config": {}
+    }
+  ],
   "users": [
     {
       "id": "00000000-0000-0000-0000-000000000104",
@@ -27,10 +38,10 @@
       ]
     },
     {
-      "username": "service-account-tumapply-otp-admin",
+      "username": "service-account-tumapply-admin-api",
       "enabled": true,
       "emailVerified": true,
-      "serviceAccountClientId": "tumapply-otp-admin",
+      "serviceAccountClientId": "tumapply-admin-api",
       "clientRoles": {
         "realm-management": ["view-users", "query-users", "manage-users", "impersonation"]
       }
@@ -99,7 +110,7 @@
       ]
     },
     {
-      "clientId": "tumapply-otp-admin",
+      "clientId": "tumapply-admin-api",
       "name": "TUMApply OTP Admin",
       "enabled": true,
       "publicClient": false,
@@ -110,7 +121,7 @@
       "authorizationServicesEnabled": false,
       "redirectUris": [],
       "webOrigins": [],
-      "secret": "tumapply-otp-secret",
+      "secret": "tumapply-admin-api-secret",
       "protocolMappers": [
         {
           "name": "service-account-audience",
@@ -118,7 +129,7 @@
           "protocolMapper": "oidc-audience-mapper",
           "consentRequired": false,
           "config": {
-            "included.client.audience": "tumapply-otp-admin",
+            "included.client.audience": "tumapply-admin-api",
             "id.token.claim": "false",
             "access.token.claim": "true"
           }
@@ -192,7 +203,7 @@
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "clients": "[\"tumapply-otp-admin\"]"
+              "clients": "[\"tumapply-admin-api\"]"
             }
           },
           {

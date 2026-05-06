@@ -53,8 +53,8 @@ public class KeycloakAuthenticationService {
         @Value("${keycloak.external-login-realm}") String realm,
         @Value("${keycloak.server.client-id}") String clientId,
         @Value("${keycloak.server.client-secret}") String clientSecret,
-        @Value("${keycloak.admin.client-id}") String adminClientId,
-        @Value("${keycloak.admin.client-secret}") String adminClientSecret,
+        @Value("${keycloak.admin.external.client-id}") String adminClientId,
+        @Value("${keycloak.admin.external.client-secret}") String adminClientSecret,
         JwtService jwtService
     ) {
         this.authzClient = AuthzClient.create(new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null));

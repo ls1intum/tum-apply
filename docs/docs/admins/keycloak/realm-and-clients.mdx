@@ -36,8 +36,8 @@ The following clients are used across environments with specific purposes:
   Google and TUM login.
 - **`tumapply-server-client`**: Used by the server when users log in via email and password. The server exchanges user
   credentials for a token with Keycloak using this client.
-- **`tumapply-otp-admin`**: Used for OTP-based logins. The server sends the OTP to Keycloak and impersonates the user
-  using this client ID.
+- **`tumapply-admin-api`**: Admin/API service account used by the server for Keycloak Admin API operations and token
+  exchange-based impersonation.
 - **System clients**: These include `account`, `account-console`, `admin-cli`, `broker`, `realm-management`,
   `security-admin-console`, and others. They serve infrastructure and internal Keycloak functions necessary for managing
   accounts, administration, and security.

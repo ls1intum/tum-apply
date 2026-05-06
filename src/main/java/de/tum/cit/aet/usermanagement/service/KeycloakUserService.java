@@ -48,16 +48,18 @@ public class KeycloakUserService {
         @Value("${keycloak.url}") String url,
         @Value("${keycloak.tum-login-realm}") String tumRealm,
         @Value("${keycloak.external-login-realm}") String externalRealm,
-        @Value("${keycloak.admin.client-id}") String clientId,
-        @Value("${keycloak.admin.client-secret}") String clientSecret,
+        @Value("${keycloak.admin.tum.client-id}") String tumClientId,
+        @Value("${keycloak.admin.tum.client-secret}") String tumClientSecret,
+        @Value("${keycloak.admin.external.client-id}") String externalClientId,
+        @Value("${keycloak.admin.external.client-secret}") String externalClientSecret,
         CurrentUserService currentUserService
     ) {
         this.userRepository = userRepository;
         this.keycloakUrl = url;
         this.tumRealm = tumRealm;
         this.externalRealm = externalRealm;
-        this.tumKeycloak = buildAdminClient(url, tumRealm, clientId, clientSecret);
-        this.externalKeycloak = buildAdminClient(url, externalRealm, clientId, clientSecret);
+        this.tumKeycloak = buildAdminClient(url, tumRealm, tumClientId, tumClientSecret);
+        this.externalKeycloak = buildAdminClient(url, externalRealm, externalClientId, externalClientSecret);
         this.currentUserService = currentUserService;
     }
 
