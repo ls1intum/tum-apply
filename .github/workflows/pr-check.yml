@@ -279,7 +279,7 @@ jobs:
           docker compose -f docker/local-setup/services.yml up -d keycloak
           echo "Waiting for Keycloak to be healthy..."
           for i in {1..60}; do
-            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+            if curl -sSf http://localhost:9080/realms/tumidpldap/.well-known/openid-configuration >/dev/null 2>&1; then
               echo "✅ Keycloak is up"
               break
             fi
@@ -287,7 +287,7 @@ jobs:
             sleep 2
           done
 
-          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+          if ! curl -sSf http://localhost:9080/realms/tumidpldap/.well-known/openid-configuration >/dev/null 2>&1; then
             echo "❌ Keycloak did not start in time."
             docker compose -f docker/local-setup/services.yml logs keycloak || true
             docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
@@ -398,7 +398,7 @@ jobs:
           docker compose -f docker/local-setup/services.yml up -d keycloak mysql
           echo "Waiting for Keycloak to be healthy..."
           for i in {1..60}; do
-            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+            if curl -sSf http://localhost:9080/realms/tumidpldap/.well-known/openid-configuration >/dev/null 2>&1; then
               echo "✅ Keycloak is up"
               break
             fi
@@ -406,7 +406,7 @@ jobs:
             sleep 2
           done
 
-          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+          if ! curl -sSf http://localhost:9080/realms/tumidpldap/.well-known/openid-configuration >/dev/null 2>&1; then
             echo "❌ Keycloak did not start in time."
             docker compose -f docker/local-setup/services.yml logs keycloak || true
             docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
