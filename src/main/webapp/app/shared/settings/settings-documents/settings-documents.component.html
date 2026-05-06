@@ -1,15 +1,12 @@
 <form [formGroup]="form">
   <div class="flex gap-4 mb-6 items-center justify-between">
     <div [innerHTML]="('settings.documents.description' | translate).replace(/\n/g, '<br>')"></div>
-    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!hasChanges() || saving()" (click)="saveAll()" />
   </div>
 
   <jhi-degree-document-section
-    [applicationId]="applicationIdForDocuments()"
-    [deferUpload]="true"
+    [applicationId]="uploadHostId"
+    uploadTarget="applicantProfile"
     [saveData]="false"
-    [bachelorQueuedFiles]="queuedBachelorFiles()"
-    [masterQueuedFiles]="queuedMasterFiles()"
     (extracted)="onAiDataExtracted($event)"
     [(bachelorDocumentIds)]="bachelorDocuments"
     [bachelorDegreeNameControl]="form.controls.bachelorDegreeName"
@@ -17,7 +14,6 @@
     [bachelorGradeControl]="form.controls.bachelorGrade"
     [bachelorGradeHelperText]="helperTextBachelorGrade()"
     [bachelorGradeWarningText]="warningTextBachelorGrade()"
-    (bachelorQueuedFilesChange)="onBachelorQueuedFilesChange($event)"
     (bachelorChangeScale)="onChangeGradingScale('bachelor')"
     [(masterDocumentIds)]="masterDocuments"
     [masterDegreeNameControl]="form.controls.masterDegreeName"
@@ -25,7 +21,6 @@
     [masterGradeControl]="form.controls.masterGrade"
     [masterGradeHelperText]="helperTextMasterGrade()"
     [masterGradeWarningText]="warningTextMasterGrade()"
-    (masterQueuedFilesChange)="onMasterQueuedFilesChange($event)"
     (masterChangeScale)="onChangeGradingScale('master')"
   />
 
@@ -33,25 +28,27 @@
     ><span>{{ 'settings.documents.sections.additionalDocuments' | translate }}</span></p-divider
   >
 
-  @if (applicationIdForDocuments(); as applicationId) {
-    <div class="w-full">
-      <span class="custom-label">
-        <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
-        <fa-icon
-          class="icon"
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-          tooltipPosition="top"
-        />
-      </span>
-      <jhi-upload-button
-        documentType="REFERENCE"
-        [applicationId]="applicationId"
-        [(documentIds)]="referenceDocuments"
-        [compact]="true"
-        [deferUpload]="true"
-        (queuedFilesChange)="onReferenceQueuedFilesChange($event)"
+  <div class="w-full">
+    <span class="custom-label">
+      <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
+      <fa-icon
+        class="icon"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+        tooltipPosition="top"
       />
-    </div>
-  }
+    </span>
+    <jhi-upload-button
+      documentType="REFERENCE"
+      [applicationId]="uploadHostId"
+      uploadTarget="applicantProfile"
+      [(documentIds)]="referenceDocuments"
+      [compact]="true"
+    />
+  </div>
+
+  <ng-template #savingBadgeTemplate>
+    <jhi-saving-badge [state]="savingState()" />
+  </ng-template>
+  <jhi-sticky-footer-shell [statusTemplate]="savingBadgeTemplate" />
 </form>

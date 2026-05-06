@@ -12,7 +12,7 @@ import {
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
-import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
+import { UploadButtonComponent, UploadTarget } from '../../atoms/upload-button/upload-button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
@@ -24,6 +24,7 @@ import TranslateDirective from '../../../language/translate.directive';
 export class DegreeDocumentSectionComponent {
   applicationId = input<string | undefined>(undefined);
   deferUpload = input<boolean>(false);
+  uploadTarget = input<UploadTarget>('application');
   required = input<boolean>(false);
 
   // Bachelor-specific bindings

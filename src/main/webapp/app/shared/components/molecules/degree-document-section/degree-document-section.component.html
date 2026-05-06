@@ -13,6 +13,7 @@
         <jhi-upload-button
           [documentType]="DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript"
           [applicationId]="currentApplicationId"
+          [uploadTarget]="uploadTarget()"
           [(documentIds)]="bachelorDocumentIds"
           [deferUpload]="deferUpload()"
           (queuedFilesChange)="bachelorQueuedFilesChange.emit($event)"
@@ -30,6 +31,7 @@
         <jhi-upload-button
           [documentType]="DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript"
           [applicationId]="currentApplicationId"
+          [uploadTarget]="uploadTarget()"
           [(documentIds)]="masterDocumentIds"
           [deferUpload]="deferUpload()"
           (queuedFilesChange)="masterQueuedFilesChange.emit($event)"

@@ -1,38 +1,33 @@
 <form [formGroup]="applicationInfoForm()">
   <div class="flex justify-between items-center mb-6">
     <div [innerHTML]="('settings.applicationInformation.description' | translate).replace(/\n/g, '<br>')"></div>
-    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" (click)="onSave()" [disabled]="!hasChanges() || !isValid()" />
   </div>
-  @if (applicationIdForDocuments(); as applicationId) {
-    <p-divider layout="horizontal">
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
+  </p-divider>
+  <div class="w-full mb-6">
+    <span class="custom-label">
       <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
-    </p-divider>
-    <div class="w-full mb-6">
-      <span class="custom-label">
-        <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
-      </span>
-      <div class="flex flex-col gap-3">
-        <jhi-upload-button
-          documentType="CV"
-          [applicationId]="applicationId"
-          [(documentIds)]="cvDocuments"
-          [allowMultiple]="false"
-          [compact]="true"
-          [deferUpload]="true"
-          (queuedFilesChange)="onCvQueuedFilesChange($event)"
-        />
-        <jhi-ai-extraction-box
-          [applicationId]="applicationId"
-          [documentIds]="cvDocuments() ?? []"
-          [queuedFiles]="queuedCvFiles()"
-          [isCv]="true"
-          [saveData]="false"
-          [helperTextKey]="'entity.aiExtraction.helperCv'"
-          (extracted)="onAiDataExtracted($event)"
-        />
-      </div>
+    </span>
+    <div class="flex flex-col gap-3">
+      <jhi-upload-button
+        documentType="CV"
+        [applicationId]="uploadHostId"
+        uploadTarget="applicantProfile"
+        [(documentIds)]="cvDocuments"
+        [allowMultiple]="false"
+        [compact]="true"
+      />
+      <jhi-ai-extraction-box
+        [applicationId]="uploadHostId"
+        [documentIds]="cvDocuments() ?? []"
+        [isCv]="true"
+        [saveData]="false"
+        [helperTextKey]="'entity.aiExtraction.helperCv'"
+        (extracted)="onAiDataExtracted($event)"
+      />
     </div>
-  }
+  </div>
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="form-row">
     <div class="form-field">
@@ -202,4 +197,9 @@
       />
     </div>
   </div>
+
+  <ng-template #savingBadgeTemplate>
+    <jhi-saving-badge [state]="savingState()" />
+  </ng-template>
+  <jhi-sticky-footer-shell [statusTemplate]="savingBadgeTemplate" />
 </form>

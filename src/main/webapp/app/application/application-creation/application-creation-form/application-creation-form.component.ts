@@ -130,7 +130,7 @@ export default class ApplicationCreationFormComponent {
   applicationId = signal<string>('');
   applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
 
-  /** Debounced auto-save controller. Owns the 3 s timer and the badge state. */
+  /** Debounced auto-save controller. Owns the timer and the badge state. */
   readonly autoSave = new AutoSaveController({ save: () => this.executeAutoSave() });
 
   personalInfoDataValid = signal<boolean>(false);

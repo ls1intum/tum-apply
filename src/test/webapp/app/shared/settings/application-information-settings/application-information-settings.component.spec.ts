@@ -5,6 +5,7 @@ import { of, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationInformationData, ApplicationInformationSettingsComponent } from 'app/shared/settings/application-information-settings';
+import { SavingStates } from 'app/shared/constants/saving-states';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -282,8 +283,6 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
-      applicantApiMock.getApplicantProfile.mockReturnValue(of(updatedProfile));
-
       const updatedData: ApplicationInformationData = structuredClone(component.data());
       updatedData.firstName = 'Grace';
       updatedData.email = '';
@@ -298,7 +297,7 @@ describe('ApplicationInformationSettingsComponent', () => {
       updatedData.country = { value: 'DE', name: 'countries.DE' };
       component.data.set(updatedData);
 
-      await component.onSave();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
       expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
@@ -329,10 +328,7 @@ describe('ApplicationInformationSettingsComponent', () => {
         masterGrade: undefined,
         masterUniversity: undefined,
       });
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.applicationInformation.saved');
       expect(toastServiceMock.showErrorKey).not.toHaveBeenCalled();
-      expect(component.loadedProfile()).toEqual(updatedProfile);
       expect(component.initialDataSnapshot()).toEqual({
         firstName: 'Grace',
         lastName: 'Lovelace',
@@ -361,7 +357,7 @@ describe('ApplicationInformationSettingsComponent', () => {
       updatedData.city = '';
       component.data.set(updatedData);
 
-      await component.onSave();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
       expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
@@ -400,7 +396,7 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
-      await component.onSave();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
