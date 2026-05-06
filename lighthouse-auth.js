@@ -32,10 +32,22 @@ module.exports = async browser => {
     keycloakLoginUrl.searchParams.set('scope', 'openid');
 
     await page.goto(keycloakLoginUrl.toString(), { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('#username', { timeout: 30_000 });
-    await page.type('#username', username);
-    await page.type('#password', password);
-    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30_000 }), page.click('#kc-login')]);
+    const hasUsernameField = await page
+      .waitForSelector('#username, input[name="username"]', { timeout: 15_000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (hasUsernameField) {
+      await page.type('#username, input[name="username"]', username);
+      await page.type('#password, input[name="password"]', password);
+      await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30_000 }), page.click('#kc-login')]);
+    } else {
+      // In some runs the browser may already be authenticated and redirected without showing Keycloak form.
+      const currentPath = new URL(page.url()).pathname;
+      if (currentPath !== authPath) {
+        throw new Error(`Keycloak login form not found and not authenticated. Current URL: ${page.url()}`);
+      }
+    }
   } else {
     // 3. Use the existing server login endpoint to mint durable auth cookies for Lighthouse.
     const loginResult = await page.evaluate(
@@ -50,7 +62,9 @@ module.exports = async browser => {
         let body = '';
         try {
           body = await response.text();
-        } catch {}
+        } catch {
+          body = '<unavailable>';
+        }
 
         return {
           ok: response.ok,
