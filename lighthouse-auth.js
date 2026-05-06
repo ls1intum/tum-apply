@@ -3,6 +3,10 @@
  */
 module.exports = async browser => {
   const targetUrl = process.env.TARGET_URL || 'http://localhost:4200';
+  const keycloakUrl = process.env.KEYCLOAK_URL || 'http://localhost:9080';
+  const keycloakClientId = process.env.KEYCLOAK_CLIENT_ID || 'tumapply-client';
+  const authMethod = process.env.TEST_AUTH_METHOD || 'server';
+  const keycloakRealm = process.env.TEST_KEYCLOAK_REALM || 'tumidpldap';
   const authPath = '/settings';
   const authUrl = new URL(authPath, targetUrl).toString();
   const appUrl = new URL('/', targetUrl).toString();
@@ -20,26 +24,48 @@ module.exports = async browser => {
   // 2. Open the app origin so we can establish the authentication cookies on the correct site.
   await page.goto(appUrl, { waitUntil: 'domcontentloaded' });
 
-  // 3. Use the existing server login endpoint to mint durable auth cookies for Lighthouse.
-  const loginResult = await page.evaluate(
-    async credentials => {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(credentials),
-      });
+  if (authMethod === 'keycloak') {
+    const keycloakLoginUrl = new URL(`/realms/${encodeURIComponent(keycloakRealm)}/protocol/openid-connect/auth`, keycloakUrl);
+    keycloakLoginUrl.searchParams.set('client_id', keycloakClientId);
+    keycloakLoginUrl.searchParams.set('redirect_uri', authUrl);
+    keycloakLoginUrl.searchParams.set('response_type', 'code');
+    keycloakLoginUrl.searchParams.set('scope', 'openid');
 
-      return {
-        ok: response.ok,
-        status: response.status,
-      };
-    },
-    { email: username, password },
-  );
+    await page.goto(keycloakLoginUrl.toString(), { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#username', { timeout: 30_000 });
+    await page.type('#username', username);
+    await page.type('#password', password);
+    await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30_000 }), page.click('#kc-login')]);
+  } else {
+    // 3. Use the existing server login endpoint to mint durable auth cookies for Lighthouse.
+    const loginResult = await page.evaluate(
+      async credentials => {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(credentials),
+        });
 
-  if (!loginResult.ok) {
-    throw new Error(`Failed to authenticate Lighthouse user via /api/auth/login (status ${loginResult.status}).`);
+        let body = '';
+        try {
+          body = await response.text();
+        } catch {}
+
+        return {
+          ok: response.ok,
+          status: response.status,
+          body,
+        };
+      },
+      { email: username, password },
+    );
+
+    if (!loginResult.ok) {
+      throw new Error(
+        `Failed to authenticate Lighthouse user via /api/auth/login (status ${loginResult.status}). Body: ${loginResult.body}`,
+      );
+    }
   }
 
   // 4. Confirm that a protected page now loads inside the authenticated app.
