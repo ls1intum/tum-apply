@@ -91,6 +91,9 @@ export class AuthFacadeService {
       }
       if (keycloakInitialized) {
         await this.accountService.loadUser();
+        if (this.accountService.user() === undefined && this.keycloakAuthenticationService.isLoggedIn()) {
+          await this.accountService.loadUser();
+        }
         if (this.hasActiveAuthMethod()) {
           return true;
         }
