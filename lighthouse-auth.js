@@ -59,18 +59,7 @@ module.exports = async browser => {
           body: JSON.stringify(credentials),
         });
 
-        let body = '';
-        try {
-          body = await response.text();
-        } catch {
-          body = '<unavailable>';
-        }
-
-        return {
-          ok: response.ok,
-          status: response.status,
-          body,
-        };
+        return { ok: response.ok, status: response.status, body: await response.text().catch(() => '') };
       },
       { email: username, password },
     );
