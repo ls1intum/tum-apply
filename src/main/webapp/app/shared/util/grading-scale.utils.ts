@@ -319,23 +319,27 @@ export function getDetectedGradeLimitsPatch(grade: string): Pick<GradingScaleLim
   };
 }
 
+export interface GradeHelperText {
+  key: string;
+  params: { upperLimit: string; lowerLimit: string };
+}
+
 /**
- * Builds the localized helper text that displays the currently active grading scale.
+ * Builds the helper-text translation key plus interpolation params for the active grading scale.
  *
- * Returns an empty string when no grading scale could be resolved for the current input.
+ * Returns undefined when no grading scale could be resolved for the current input. The caller is
+ * expected to pass the key and params to a component that performs the translation, so the
+ * returned text is never re-translated as if it were a translation key itself.
  */
-export function getGradeHelperText(translateService: Pick<TranslateService, 'instant'>, limits: GradingScaleLimitsResult): string {
+export function getGradeHelperText(limits: GradingScaleLimitsResult): GradeHelperText | undefined {
   if (!limits) {
-    return '';
+    return undefined;
   }
 
-  const scale = translateService.instant('entity.applicationPage2.helperText.scale') as string;
-  const gradingScale = translateService.instant('entity.applicationPage2.helperText.gradingScale', {
-    upperLimit: limits.upperLimit,
-    lowerLimit: limits.lowerLimit,
-  }) as string;
-
-  return `${scale}${gradingScale}`;
+  return {
+    key: 'entity.applicationPage2.helperText.gradingScale',
+    params: { upperLimit: limits.upperLimit, lowerLimit: limits.lowerLimit },
+  };
 }
 
 /**

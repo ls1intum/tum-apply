@@ -411,8 +411,7 @@
         "masterGrade": "Final Master Grade"
       },
       "helperText": {
-        "scale": "Scale: ",
-        "gradingScale": "{upperLimit} (best) to {lowerLimit} (pass)",
+        "gradingScale": "Scale: {upperLimit} (best) to {lowerLimit} (pass)",
         "changeScale": "Change Scale"
       },
       "warnText": "Unusual format, please check your entry",

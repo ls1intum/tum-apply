@@ -123,15 +123,13 @@ export class SettingsDocumentsComponent {
   });
   hasChanges = computed(() => this.hasFormChanges() || this.hasDocumentChanges());
 
-  helperTextBachelorGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
-  });
+  helperTextBachelorGrade = computed(() => getGradeHelperText(this.bachelorGradeLimits()));
+  helperTextBachelorGradeKey = computed(() => this.helperTextBachelorGrade()?.key ?? '');
+  helperTextBachelorGradeParams = computed(() => this.helperTextBachelorGrade()?.params ?? {});
 
-  helperTextMasterGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.masterGradeLimits());
-  });
+  helperTextMasterGrade = computed(() => getGradeHelperText(this.masterGradeLimits()));
+  helperTextMasterGradeKey = computed(() => this.helperTextMasterGrade()?.key ?? '');
+  helperTextMasterGradeParams = computed(() => this.helperTextMasterGrade()?.params ?? {});
 
   warningTextBachelorGrade = computed(() => {
     this.currentLang();

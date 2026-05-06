@@ -32,6 +32,7 @@ export class DegreeDocumentSectionComponent {
   bachelorDegreeUniversityControl = input<AbstractControl | undefined>(undefined);
   bachelorGradeControl = input<AbstractControl | undefined>(undefined);
   bachelorGradeHelperText = input<string>('');
+  bachelorGradeHelperTextParams = input<Record<string, unknown>>({});
   bachelorGradeWarningText = input<string>('');
   bachelorQueuedFilesChange = output<File[]>();
   bachelorChangeScale = output();
@@ -42,6 +43,7 @@ export class DegreeDocumentSectionComponent {
   masterDegreeUniversityControl = input<AbstractControl | undefined>(undefined);
   masterGradeControl = input<AbstractControl | undefined>(undefined);
   masterGradeHelperText = input<string>('');
+  masterGradeHelperTextParams = input<Record<string, unknown>>({});
   masterGradeWarningText = input<string>('');
   masterQueuedFilesChange = output<File[]>();
   masterChangeScale = output();
