@@ -30,7 +30,7 @@
   @if (isLoading()) {
     <!-- Loading State -->
     <div class="flex flex-col items-center justify-center py-16">
-      <jhi-progress-spinner styleClass="w-16 h-16" strokeWidth="4" />
+      <jhi-progress-spinner classStyling="w-16 h-16" strokeWidth="4" />
       <p class="mt-4 text-base" jhiTranslate="researchGroup.imageLibrary.loading"></p>
     </div>
   } @else {
@@ -39,7 +39,7 @@
       <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.inUse"></h2>
       @if (inUseImages().length === 0) {
         <div class="mb-4">
-          <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noInUse' | translate" severity="primary" />
+          <jhi-info-box message="researchGroup.imageLibrary.empty.noInUse" severity="primary" />
         </div>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -55,11 +55,11 @@
       <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.notInUse"></h2>
       @if (notInUseImages().length === 0 && allImages().length === 0) {
         <div class="mb-4">
-          <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noImages' | translate" severity="primary" />
+          <jhi-info-box message="researchGroup.imageLibrary.empty.noImages" severity="primary" />
         </div>
       } @else if (notInUseImages().length === 0) {
         <div class="mb-4">
-          <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noNotInUse' | translate" severity="primary" />
+          <jhi-info-box message="researchGroup.imageLibrary.empty.noNotInUse" severity="primary" />
         </div>
       }
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -94,21 +94,19 @@
       <img [src]="image.url" [alt]="image.jobTitle || 'Job banner image'" class="w-full h-full object-cover" />
       <!-- Delete Button (only when showDelete is true) -->
       @if (showDelete) {
-        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
+        <div
+          class="absolute top-2 right-2"
+          tabindex="0"
+          role="button"
+          (click)="$event.stopPropagation()"
+          (keydown.enter)="$event.stopPropagation()"
+        >
           <jhi-confirm-dialog
             #deleteDialog
-            [label]="'button.delete' | translate"
+            label="button.delete"
             [confirmIcon]="'trash'"
-            [header]="
-              isInUse
-                ? ('researchGroup.imageLibrary.delete.titleInUse' | translate)
-                : ('researchGroup.imageLibrary.delete.title' | translate)
-            "
-            [message]="
-              isInUse
-                ? ('researchGroup.imageLibrary.delete.messageInUse' | translate)
-                : ('researchGroup.imageLibrary.delete.message' | translate)
-            "
+            [header]="isInUse ? 'researchGroup.imageLibrary.delete.titleInUse' : 'researchGroup.imageLibrary.delete.title'"
+            [message]="isInUse ? 'researchGroup.imageLibrary.delete.messageInUse' : 'researchGroup.imageLibrary.delete.message'"
             [data]="image.imageId"
             (confirmed)="deleteImage($any($event))"
             severity="danger"

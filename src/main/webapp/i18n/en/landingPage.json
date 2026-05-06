@@ -9,7 +9,7 @@
     },
     "doctoralJourney": {
       "headline": "Start your Doctoral Journey at TUM CIT",
-      "text": "TUMApply is one entry point to doctoral and postdoctoral opportunities at the Technical University of Munich (TUM). You can explore open positions across all departments of the TUM School of Computation, Information and Technology (CIT), discover opportunities that fit your interests, and submit your application directly online. Further positions may be advertised on other websites. <br> Wondering what makes TUM the right place for your doctorate? With our vibrant research environment, global networks, and strong support structures, TUM offers the ideal conditions to pursue your academic goals. The {{startLink}}TUM Graduate School{{endLink}} accompanies you throughout the process. From meeting prerequisites and navigating requirements to developing your research profile.",
+      "text": "TUMApply is one entry point to doctoral and postdoctoral opportunities at the Technical University of Munich (TUM). You can explore open positions across all departments of the TUM School of Computation, Information and Technology (CIT), discover opportunities that fit your interests, and submit your application directly online. Further positions may be advertised on other websites. <br> Wondering what makes TUM the right place for your doctorate? With our vibrant research environment, global networks, and strong support structures, TUM offers the ideal conditions to pursue your academic goals. The {startLink}TUM Graduate School{endLink} accompanies you throughout the process. From meeting prerequisites and navigating requirements to developing your research profile.",
       "button1": "Why TUM?",
       "button2": "Doctorate at TUM"
     },
@@ -18,7 +18,7 @@
       "steps": {
         "checkPrerequisites": {
           "title": "Check Prerequisites",
-          "description": "Ensure you meet the {{startLink}}eligibility criteria{{endLink}} to pursue a doctorate at TUM."
+          "description": "Ensure you meet the {startLink}eligibility criteria{endLink} to pursue a doctorate at TUM."
         },
         "browsePositions": {
           "title": "Browse Positions",
@@ -103,7 +103,7 @@
         },
         "otherJobs": {
           "title": "Are these all available job postings?",
-          "content": "No, TUMApply only lists a selection of available positions for the TUM School of Computation, Information and Technology. You can find more job postings on other channels such as the <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Job Platform</u></strong></a> or on individual research group websites."
+          "content": "TUMApply primarily features positions from the TUM School of Computation, Information and Technology, but other schools and departments may post here as well. For openings beyond this selection, check the <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Job Platform</u></strong></a> or individual research-group websites."
         }
       }
     },

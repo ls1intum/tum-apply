@@ -136,29 +136,29 @@ public class ApplicantResource {
     /**
      * Deletes a document from the current applicant profile.
      *
-     * @param documentDictionaryId id of the document dictionary entry to delete
+     * @param documentId id of the document dictionary entry to delete
      * @return 204 No Content when deletion is successful
      */
     @ApplicantOrAdmin
-    @DeleteMapping("/profile/documents/{documentDictionaryId}")
-    public ResponseEntity<Void> deleteApplicantProfileDocument(@PathVariable UUID documentDictionaryId) {
-        log.info("DELETE /api/applicants/profile/documents/{} - Deleting applicant profile document", documentDictionaryId);
-        applicantService.deleteApplicantProfileDocument(documentDictionaryId);
+    @DeleteMapping("/profile/documents/{documentId}")
+    public ResponseEntity<Void> deleteApplicantProfileDocument(@PathVariable UUID documentId) {
+        log.info("DELETE /api/applicants/profile/documents/{} - Deleting applicant profile document", documentId);
+        applicantService.deleteApplicantProfileDocument(documentId);
         return ResponseEntity.noContent().build();
     }
 
     /**
      * Renames a document associated with the current applicant profile.
      *
-     * @param documentDictionaryId the UUID of the document to rename
+     * @param documentId the UUID of the document to rename
      * @param newName              the new name to assign to the document
      * @return {@code 200 OK} if the rename operation was successful
      */
     @ApplicantOrAdmin
-    @PutMapping("/profile/documents/{documentDictionaryId}/name")
-    public ResponseEntity<Void> renameApplicantProfileDocument(@PathVariable UUID documentDictionaryId, @RequestParam String newName) {
-        log.info("PUT /api/applicants/profile/documents/{}/name - Renaming applicant profile document", documentDictionaryId);
-        applicantService.renameApplicantProfileDocument(documentDictionaryId, newName);
+    @PutMapping("/profile/documents/{documentId}/name")
+    public ResponseEntity<Void> renameApplicantProfileDocument(@PathVariable UUID documentId, @RequestParam String newName) {
+        log.info("PUT /api/applicants/profile/documents/{}/name - Renaming applicant profile document", documentId);
+        applicantService.renameApplicantProfileDocument(documentId, newName);
         return ResponseEntity.ok().build();
     }
 

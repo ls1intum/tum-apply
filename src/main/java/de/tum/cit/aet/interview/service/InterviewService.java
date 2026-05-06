@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
@@ -14,13 +15,13 @@ import de.tum.cit.aet.core.exception.InterviewProcessClosedException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.*;
 import de.tum.cit.aet.interview.dto.CancelInterviewDTO;
+import de.tum.cit.aet.interview.dto.InterviewRatingDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeState;
 import de.tum.cit.aet.interview.dto.IntervieweeStateCounts;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
@@ -67,7 +68,7 @@ public class InterviewService {
     private final JobRepository jobRepository;
     private final AsyncEmailSender asyncEmailSender;
     private final IcsCalendarService icsCalendarService;
-    private final DocumentDictionaryService documentDictionaryService;
+    private final ApplicationService applicationService;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
     /*--------------------------------------------------------------
@@ -1170,7 +1171,7 @@ public class InterviewService {
             interviewee.getRating() != null ? interviewee.getRating().getValue() : null,
             interviewee.getAssessmentNotes(),
             ApplicationDetailDTO.getFromEntity(application, job),
-            documentDictionaryService.getDocumentIdsDTO(application)
+            applicationService.getDocumentIdsOfApplication(application.getApplicationId())
         );
     }
 
@@ -1183,6 +1184,27 @@ public class InterviewService {
     public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
         List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
         return processes == null ? List.of() : processes;
+    }
+
+    /**
+     * Returns the interview rating recorded for the given application, if any.
+     *
+     * @param applicationId the ID of the application
+     * @return DTO with the Likert rating (-2..2) or {@code null} if not yet rated
+     * @throws EntityNotFoundException if the application does not exist
+     * @throws AccessDeniedException   if the user is not a member of the research
+     *                                 group of the application's job
+     */
+    public InterviewRatingDTO getInterviewRatingForApplication(UUID applicationId) {
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        verifyResearchGroupAccess(application.getJob());
+
+        return intervieweeRepository
+            .findByApplicationApplicationIdAndRatingIsNotNull(applicationId)
+            .map(interviewee -> InterviewRatingDTO.of(interviewee.getRating(), interviewee.getAssessmentNotes()))
+            .orElseGet(() -> new InterviewRatingDTO(null, null));
     }
 
     /**

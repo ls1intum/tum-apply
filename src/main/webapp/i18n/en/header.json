@@ -2,8 +2,8 @@
   "header": {
     "login": "Sign In",
     "professorTitle": "Professor",
-    "professor": "Are you a professor?",
-    "applicant": "Are you an applicant?",
+    "professor": "For Professors / Employees",
+    "applicant": "For Applicants",
     "logout": "Logout",
     "settings": "Settings",
     "profileMenu": "Open profile menu",

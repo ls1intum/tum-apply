@@ -1,9 +1,9 @@
 <!-- Confirmation Dialog for Professor -->
 @if (isProfessorMode()) {
   <jhi-confirm-dialog
-    [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
-    [message]="'onboarding.professorRequest.confirmDialog.message' | translate"
-    [label]="'onboarding.professorRequest.confirmDialog.confirm' | translate"
+    header="onboarding.professorRequest.confirmDialog.header"
+    message="onboarding.professorRequest.confirmDialog.message"
+    label="onboarding.professorRequest.confirmDialog.confirm"
     severity="primary"
     confirmIcon="paper-plane"
     [showOpenButton]="false"
@@ -16,9 +16,9 @@
 <!-- Confirmation Dialog for Admin -->
 @if (isAdminMode()) {
   <jhi-confirm-dialog
-    [header]="'researchGroup.adminView.createDialog.confirmHeader' | translate"
-    [message]="'researchGroup.adminView.createDialog.confirmMessage' | translate"
-    [label]="'researchGroup.adminView.createDialog.confirmButton' | translate"
+    header="researchGroup.adminView.createDialog.confirmHeader"
+    message="researchGroup.adminView.createDialog.confirmMessage"
+    label="researchGroup.adminView.createDialog.confirmButton"
     severity="primary"
     confirmIcon="check"
     [showOpenButton]="false"
@@ -102,12 +102,12 @@
     @if (isAdminMode()) {
       <div class="flex flex-col gap-3">
         <jhi-search-filter-sort-bar
-          [searchText]="'researchGroup.adminView.professorSelect.searchPlaceholder' | translate"
+          searchText="researchGroup.adminView.professorSelect.searchPlaceholder"
           searchWidth="max-w-[100%]"
           [showRecords]="isSearchQueryLongEnough()"
           [totalRecords]="adminProfessorTotalCount()"
-          [singleEntity]="'researchGroup.adminView.professorSelect.singleEntity' | translate"
-          [multipleEntities]="'researchGroup.adminView.professorSelect.multipleEntities' | translate"
+          singleEntity="researchGroup.adminView.professorSelect.singleEntity"
+          multipleEntities="researchGroup.adminView.professorSelect.multipleEntities"
           (searchOutput)="onAdminProfessorSearch($event)"
         />
 
@@ -134,19 +134,19 @@
           <div class="flex flex-col border border-border-default rounded-lg overflow-y-auto max-h-64">
             @if (isLoadingAdminUsers()) {
               <div class="flex items-center justify-center h-24 bg-background-default rounded-lg">
-                <jhi-progress-spinner styleClass="w-8 h-8 text-text-primary" />
+                <jhi-progress-spinner classStyling="w-8 h-8 text-text-primary" />
               </div>
             }
 
             @if (showSearchMinLengthHint()) {
               <div class="p-4 text-sm text-center text-text-secondary">
-                {{ 'researchGroup.members.emptySearch' | translate: { minLength: MIN_ADMIN_SEARCH_LENGTH } }}
+                <span jhiTranslate="researchGroup.members.emptySearch" [translateValues]="{ minLength: MIN_ADMIN_SEARCH_LENGTH }"></span>
               </div>
             }
 
             @if (showNoSearchResults()) {
               <div class="p-4 text-sm text-center text-text-secondary">
-                {{ 'researchGroup.adminView.professorSelect.noResults' | translate }}
+                <span jhiTranslate="researchGroup.adminView.professorSelect.noResults"></span>
               </div>
             }
 
@@ -222,8 +222,8 @@
     <!-- School and Department Selection -->
     <div class="mb-6">
       <jhi-select
-        [label]="'onboarding.professorRequest.school.label' | translate"
-        [placeholder]="'onboarding.professorRequest.school.placeholder' | translate"
+        label="onboarding.professorRequest.school.label"
+        placeholder="onboarding.professorRequest.school.placeholder"
         [items]="schoolOptions()"
         [required]="true"
         [selected]="selectedSchoolOption()"
@@ -233,8 +233,8 @@
 
     <div class="mb-6">
       <jhi-select
-        [label]="'onboarding.professorRequest.department.label' | translate"
-        [placeholder]="'onboarding.professorRequest.department.placeholder' | translate"
+        label="onboarding.professorRequest.department.label"
+        placeholder="onboarding.professorRequest.department.placeholder"
         [items]="filteredDepartmentOptions()"
         [required]="true"
         [selected]="selectedDepartmentOption()"

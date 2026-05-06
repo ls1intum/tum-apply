@@ -34,6 +34,7 @@ import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
+import { InterviewRatingSection } from '../../shared/components/molecules/interview-rating-section/interview-rating-section';
 import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
 type ApplicationStateEnum = ApplicationDetailDTOApplicationStateEnum;
@@ -59,6 +60,7 @@ const CAROUSEL_SIZE = 7;
     DocumentSection,
     CommentSection,
     RatingSection,
+    InterviewRatingSection,
     LocalizedDatePipe,
     TooltipModule,
   ],
@@ -66,6 +68,10 @@ const CAROUSEL_SIZE = 7;
   styleUrl: './application-detail.component.scss',
 })
 export class ApplicationDetailComponent {
+  readonly interviewRating = signal<number | undefined>(undefined);
+  readonly interviewAssessmentNotes = signal<string | undefined>(undefined);
+  readonly hasInterviewRating = computed(() => this.interviewRating() !== undefined);
+
   applications = signal<ApplicationEvaluationDetailDTO[]>([]);
   totalRecords = signal<number>(0);
   currentIndex = signal<number>(0);
@@ -170,6 +176,16 @@ export class ApplicationDetailComponent {
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   private currentLang = toSignal(this.translateService.onLangChange);
+
+  private loadInterviewRatingEffect = effect(() => {
+    const id = this.currentApplicationId();
+    if (id !== undefined) {
+      void this.loadInterviewRating(id);
+    } else {
+      this.interviewRating.set(undefined);
+      this.interviewAssessmentNotes.set(undefined);
+    }
+  });
 
   private _queryParamEffect = effect(() => {
     const qp = this.qpSignal();
@@ -412,6 +428,24 @@ export class ApplicationDetailComponent {
     });
   }
 
+  /**
+   * Loads the interview rating and assessment notes for the given application.
+   * Hides the interview row when no rating has been recorded yet.
+   *
+   * @param applicationId the id of the currently displayed application
+   */
+  async loadInterviewRating(applicationId: string): Promise<void> {
+    try {
+      const response = await firstValueFrom(this.interviewApi.getInterviewRatingForApplication(applicationId));
+      this.interviewRating.set(response.rating ?? undefined);
+      this.interviewAssessmentNotes.set(response.assessmentNotes ?? undefined);
+    } catch {
+      this.toastService.showErrorKey('evaluation.errors.loadInterviewRating');
+      this.interviewRating.set(undefined);
+      this.interviewAssessmentNotes.set(undefined);
+    }
+  }
+
   async onRatingUpdated(): Promise<void> {
     const current = this.currentApplication();
     if (!current) {
@@ -636,7 +670,7 @@ export class ApplicationDetailComponent {
   }
 
   private updateDocumentInformation(applicationId: string): void {
-    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(applicationId))
+    firstValueFrom(this.applicationApi.getDocumentIds(applicationId))
       .then(ids => {
         this.currentDocumentIds.set(ids);
       })

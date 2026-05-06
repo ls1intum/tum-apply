@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.dto.exportdata.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.dto.CustomFieldAnswerDetailDTO;
 import de.tum.cit.aet.core.dto.DocumentRefDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationReviewDTO;
 import de.tum.cit.aet.evaluation.dto.InternalCommentDetailDTO;
@@ -37,7 +36,6 @@ public record AdminApplicationExportDTO(
     ApplicationReviewDTO review,
     List<RatingDetailDTO> ratings,
     List<InternalCommentDetailDTO> internalComments,
-    List<CustomFieldAnswerDetailDTO> customFieldAnswers,
     List<DocumentRefDTO> documents,
     InterviewDTO interview,
     LocalDateTime createdAt,

@@ -142,6 +142,11 @@
         "Scholarship": "Scholarship",
         "SelfFunded": "Self Funded",
         "PartiallyFunded": "Partially Funded"
+      },
+      "tvlGrade": {
+        "label": "TV-L Grade",
+        "placeholder": "Select a Pay Grade...",
+        "toolTipText": "Specify the <a href=\"https://portal.mytum.de/kompass/personalwirtschaft_public/tabellenentgelt_stufenzuordnung_tv_l\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">TUM TV-L Pay Grade</a> to support pay transparency."
       }
     },
     "aiSidebar": {
@@ -149,7 +154,10 @@
       "complianceHeader": "Compliance Checker",
       "critical": "Fix critical AGG mistakes",
       "transparency": "Improve transparency and clarity",
-      "filterByCategory": "Filter by category"
+      "dsgvo": "Fix Data privacy",
+      "publicSector": "Check Academic Law",
+      "filterByCategory": "Filter by category",
+      "complianceTooltipText": "Colors indicate category, not severity. All items are equally important."
     },
     "positionDetailsSection": {
       "jobDescription": {
@@ -167,22 +175,19 @@
         "aiHelperText": "Specify the most important information and let TUMApply AI write it for you.",
         "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
-        "aiScoreTitle": "Inclusivity Score",
+        "aiScoreTitle": "Quality Score",
         "aiScoreDialog": {
-          "title": "How the Inclusivity Score is calculated",
+          "title": "How the Quality Score is calculated",
           "summary": "Calculation factors",
-          "explanation": "The score combines wording analysis, tone evaluation, and balanced weighting.",
+          "summaryText": "Your quality score is a weighted average of the factors underneath. It serves as a single metric to determine if your job description meets university recruitment standards.",
+          "explanation": "The score combines word choice, tone, legal compliance, and balanced weighting.",
           "section1": {
-            "title": "Word Choice",
-            "body": "The system analyzes your text for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
+            "title": "Inclusion and Word Choice",
+            "body": "The system analyzes your job description for inclusive and non-inclusive (e.g., highly gendered) terms to determine the proportion of inclusive language."
           },
           "section2": {
-            "title": "Overall Impression",
-            "body": "A neutral tone yields the best result, while biased language leads to deductions."
-          },
-          "section3": {
-            "title": "Balanced Rating",
-            "body": "The score is weighted to ensure that individual, poorly chosen words do not disproportionately affect your final result."
+            "title": "Legal Compliance",
+            "body": "The tool scans for legal risks and violations of EU directives. Critical errors are heavily weighted due to potential liability for you and the university."
           }
         },
         "aiToggleOff": "AI Disabled",
@@ -247,10 +252,6 @@
       }
     },
     "additionalInformationSection": {
-      "extras": {
-        "title": "Extras",
-        "description": "Add custom questions that applicants will see in the application form."
-      },
       "suitableForDisabled": {
         "label": "This position is suitable for persons with disabilities",
         "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with disabilities"
@@ -262,7 +263,12 @@
     },
     "reviewPageSection": {
       "title": "Overview",
-      "message": "Please review your entries before publishing the doctorate position."
+      "complianceBanner": {
+        "complianceCheckOngoing": "<b>Compliance Check Ongoing:</b> Your job is being analyzed for compliance with legal and university standards. This may take a moment.",
+        "critical": "<b>Action Required:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {criticalCount} detected critical AGG {criticalCount, plural, =1 {violation} other {violations}}{othersCount, plural, =0 {} other { and {othersCount} further {othersCount, plural, =1 {issue} other {issues}}}} to ensure compliance.",
+        "warning": "<b>Improvement Needed:</b> Please <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">review</a> {othersCount} identified compliance {othersCount, plural, =1 {issue} other {issues}}.",
+        "default": "Please review your entries before publishing the doctorate position."
+      }
     },
     "toastMessages": {
       "noDescription": {
@@ -290,6 +296,7 @@
   "jobOverviewPage": {
     "title": "Find Your Perfect Position",
     "noJobsFound": "No Jobs Found.",
+    "alreadyAppliedBadge": "Applied",
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {
@@ -316,9 +323,9 @@
       "startDate": "Start Date"
     },
     "ariaLabels": {
-      "viewJobDetails": "View details for {{title}}"
+      "viewJobDetails": "View details for {title}"
     },
-    "hoursPerWeek": "{{workload}} h/week",
+    "hoursPerWeek": "{workload} h/week",
     "notificationsCta": {
       "textPrefix": "No suitable job? Receive",
       "link": "notifications"
@@ -408,16 +415,18 @@
       "workload": "Workload",
       "contractDuration": "Contract Duration",
       "fundingType": "Funding Type",
+      "tvlGrade": "TV-L Grade",
       "startDate": "Start Date",
       "applicationEndDate": "Application End Date"
     },
     "units": {
       "hoursPerWeek": "hours/week",
+      "year": "year",
       "years": "years"
     },
     "workload": {
       "fullTime": "Full-time",
-      "partTime": "Part-time ({{percentage}}%)"
+      "partTime": "Part-time ({percentage}%)"
     },
     "infos": {
       "applicantLanguageInfo": "Applicants only see the job description in the language they have selected."

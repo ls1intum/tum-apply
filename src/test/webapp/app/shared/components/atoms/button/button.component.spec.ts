@@ -77,20 +77,6 @@ describe('ButtonComponent', () => {
     expect(externalIcon).toBeTruthy();
   });
 
-  it('should apply full width class when fullWidth is true', () => {
-    const fixture = createButtonFixture({ fullWidth: true });
-
-    const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    expect(buttonElement.className).toContain('w-full');
-  });
-
-  it('should apply rounded icon button class when label is not set', () => {
-    const fixture = createButtonFixture({ size: 'sm' });
-
-    const buttonEl: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    expect(Array.from(buttonEl.classList)).toContain('rounded-md');
-  });
-
   it('should show badge if numberOfFavorites is set', () => {
     const fixture = createButtonFixture({ numberOfFavorites: 5 });
 

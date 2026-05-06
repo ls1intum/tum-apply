@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -134,8 +135,7 @@ public class JobService {
             Email email = Email.builder()
                 .to(user)
                 .language(Language.fromCode(user.getSelectedLanguage()))
-                .emailType(EmailType.APPLICATION_REJECTED)
-                .templateName(reason.getValue())
+                .emailType(reason.toEmailType())
                 .content(application)
                 .build();
             sender.sendAsync(email);
@@ -184,6 +184,7 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
             HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
@@ -240,6 +241,7 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
             HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getStartDate(),
@@ -385,6 +387,7 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
+        job.setTvlGrade(dto.tvlGrade());
         job.setJobDescriptionEN(HtmlSanitizer.sanitize(dto.jobDescriptionEN()));
         job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());
@@ -415,23 +418,31 @@ public class JobService {
     }
 
     private void notifySubjectAreaSubscribers(Job job) {
-        List<User> recipients = applicantRepository
-            .findAllBySubjectAreaSubscription(job.getSubjectArea())
-            .stream()
-            .filter(user -> emailSettingService.canNotify(EmailType.JOB_PUBLISHED_SUBJECT_AREA, user))
-            .toList();
+        Set<User> candidates = applicantRepository.findAllBySubjectAreaSubscription(job.getSubjectArea());
+        if (candidates.isEmpty()) {
+            return;
+        }
 
-        recipients.forEach(user ->
-            sender.sendAsync(
-                Email.builder()
-                    .to(user)
-                    .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
-                    .content(JobPublicationEmailContextDTO.fromEntities(user, job))
-                    .language(Language.fromCode(user.getSelectedLanguage()))
-                    .sendAlways(true)
-                    .build()
-            )
-        );
+        // 1) Collect candidate user IDs in one pass.
+        // 2) Resolve the enabled subset in a single query.
+        // 3) Fan out the async emails only to that subset.
+        Set<UUID> candidateIds = candidates.stream().map(User::getUserId).collect(Collectors.toSet());
+        Set<UUID> enabledIds = emailSettingService.filterEnabledUserIds(EmailType.JOB_PUBLISHED_SUBJECT_AREA, candidateIds);
+
+        candidates
+            .stream()
+            .filter(user -> enabledIds.contains(user.getUserId()))
+            .forEach(user ->
+                sender.sendAsync(
+                    Email.builder()
+                        .to(user)
+                        .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
+                        .content(JobPublicationEmailContextDTO.fromEntities(user, job))
+                        .language(Language.fromCode(user.getSelectedLanguage()))
+                        .sendAlways(true)
+                        .build()
+                )
+            );
     }
 
     /**

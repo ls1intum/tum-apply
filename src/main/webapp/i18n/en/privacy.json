@@ -12,7 +12,7 @@
     },
     "dataProcessing": {
       "headline": "Legal basis, special categories, and retention",
-      "text": "The processing of applicant data is carried out primarily on the basis of Art. 6(1)(b) GDPR (pre-contractual measures) and Art. 6(1)(e) GDPR (performance of a task carried out in the public interest) in conjunction with BayHIG. Where special categories of personal data are included in application documents, processing may also be based on Art. 9(1)(b) GDPR, where applicable under statutory employment and public-service provisions. If processing is based on consent in individual cases, consent can be withdrawn at any time with effect for the future.<p>Applicant data in completed recruitment procedures (accepted or rejected) is deleted on a fixed cycle after 6 months from the decision date, unless longer storage is required by law.</p>"
+      "text": "The processing of applicant data is carried out primarily on the basis of Art. 6(1)(b) GDPR (pre-contractual measures) and Art. 6(1)(e) GDPR (performance of a task carried out in the public interest) in conjunction with BayHIG. Where special categories of personal data are included in application documents, processing may also be based on Art. 9(2)(b) GDPR, where applicable under statutory employment and public-service provisions. If processing is based on consent in individual cases, consent can be withdrawn at any time with effect for the future.<p>Applicant data in completed recruitment procedures (accepted or rejected) is deleted on a fixed cycle after 6 months from the decision date, unless longer storage is required by law.</p>"
     },
     "complaint": {
       "headline": "Right to file a complaint with the responsible supervisory authority",
@@ -66,7 +66,7 @@
       },
       "tooltip": {
         "inCreation": "An export is currently being prepared. You will receive an email once it's ready.",
-        "cooldown": "You can request another export in {{days}} days. An email was sent with your data.",
+        "cooldown": "You can request another export in {days} days. An email was sent with your data.",
         "notLoggedIn": "Please log in to export your data."
       }
     },

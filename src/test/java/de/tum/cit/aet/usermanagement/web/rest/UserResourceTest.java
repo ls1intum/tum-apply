@@ -36,6 +36,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -201,21 +204,11 @@ public class UserResourceTest extends AbstractResourceTest {
     @Nested
     class UpdateAvatar {
 
-        @Test
-        void returnsNoContentAndDeletesProfilePictureWhenAvatarUrlIsNull() {
-            UpdateAvatarDTO dto = new UpdateAvatarDTO(null);
-
-            api
-                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead(API_BASE_PATH + "/avatar", dto, Void.class, 204);
-
-            verify(imageService).deleteCurrentUserProfilePicture();
-            verify(userService, Mockito.never()).updateAvatar(anyString(), any());
-        }
-
-        @Test
-        void returnsNoContentAndDeletesProfilePictureWhenAvatarUrlIsBlank() {
-            UpdateAvatarDTO dto = new UpdateAvatarDTO("   ");
+        @ParameterizedTest(name = "should return no content and delete profile picture for blank avatar url [{0}]")
+        @NullSource
+        @ValueSource(strings = { "   " })
+        void shouldReturnNoContentAndDeleteProfilePictureForBlankAvatarUrl(String avatarUrl) {
+            UpdateAvatarDTO dto = new UpdateAvatarDTO(avatarUrl);
 
             api
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))

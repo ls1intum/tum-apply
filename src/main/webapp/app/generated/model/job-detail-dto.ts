@@ -31,10 +31,11 @@ export interface JobDetailDTO {
     readonly suitableForDisabled?: boolean;
     readonly supervisingProfessorName: string;
     readonly title: string;
+    readonly tvlGrade?: JobDetailDTOTvlGradeEnum;
     readonly workload?: number;
 }
 
-export type JobDetailDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
+export type JobDetailDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
 
 export const JobDetailDTOApplicationStateEnum = {
     Saved: 'SAVED' as const,
@@ -44,10 +45,11 @@ export const JobDetailDTOApplicationStateEnum = {
     Rejected: 'REJECTED' as const,
     Withdrawn: 'WITHDRAWN' as const,
     JobClosed: 'JOB_CLOSED' as const,
+    JobClosedDraft: 'JOB_CLOSED_DRAFT' as const,
     Interview: 'INTERVIEW' as const,
 } as const;
 
-export const JobDetailDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'INTERVIEW'] as const;
+export const JobDetailDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
 
 export type JobDetailDTOFundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
 
@@ -141,4 +143,17 @@ export const JobDetailDTOSubjectAreaEnum = {
 } as const;
 
 export const JobDetailDTOSubjectAreaEnumValues = ['AEROSPACE_ENGINEERING', 'AGRICULTURAL_ENGINEERING', 'AGRICULTURAL_SCIENCE', 'ARCHITECTURE', 'ART_HISTORY', 'AUTOMOTIVE_ENGINEERING', 'BIOENGINEERING', 'BIOCHEMISTRY', 'BIOLOGY', 'BIOMEDICAL_ENGINEERING', 'BIOTECHNOLOGY', 'CHEMISTRY', 'COMPUTER_ENGINEERING', 'COMPUTER_SCIENCE', 'COMPUTER_VISION', 'DATA_SCIENCE', 'ECONOMICS', 'EDUCATION_TECHNOLOGY', 'ELECTRICAL_ENGINEERING', 'ENERGY_SYSTEMS', 'ENVIRONMENTAL_BIOLOGY', 'ENVIRONMENTAL_CHEMISTRY', 'ENVIRONMENTAL_ENGINEERING', 'ENVIRONMENTAL_LAW', 'ENVIRONMENTAL_SCIENCE', 'FINANCIAL_ENGINEERING', 'FOOD_TECHNOLOGY', 'GEOLOGY', 'GEOSCIENCES', 'INDUSTRIAL_ENGINEERING', 'INFORMATION_SYSTEMS', 'LIFE_SCIENCES', 'LINGUISTICS', 'MARINE_BIOLOGY', 'MATERIALS_SCIENCE', 'MATHEMATICS', 'MECHANICAL_ENGINEERING', 'MEDICAL_INFORMATICS', 'NEUROSCIENCE', 'PHILOSOPHY', 'PHYSICS', 'PSYCHOLOGY', 'SOFTWARE_ENGINEERING', 'SPORTS_SCIENCE', 'STATISTICS', 'TELECOMMUNICATIONS', 'URBAN_PLANNING'] as const;
+
+export type JobDetailDTOTvlGradeEnum = 'E10' | 'E11' | 'E12' | 'E13' | 'E14' | 'E15';
+
+export const JobDetailDTOTvlGradeEnum = {
+    E10: 'E10' as const,
+    E11: 'E11' as const,
+    E12: 'E12' as const,
+    E13: 'E13' as const,
+    E14: 'E14' as const,
+    E15: 'E15' as const,
+} as const;
+
+export const JobDetailDTOTvlGradeEnumValues = ['E10', 'E11', 'E12', 'E13', 'E14', 'E15'] as const;
 

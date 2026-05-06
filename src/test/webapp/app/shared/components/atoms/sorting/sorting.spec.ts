@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Sorting, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { TranslateService } from '@ngx-translate/core';
+import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 
 describe('Sorting', () => {
   const mockSortOptions: SortOption[] = [
@@ -19,21 +19,21 @@ describe('Sorting', () => {
   }
 
   beforeEach(async () => {
-    const translateServiceMock = {
-      instant: vi.fn((key: string) => {
-        const translations: Record<string, string> = {
-          'entity.sorting.ascending.text': 'Ascending (A-Z)',
-          'entity.sorting.descending.text': 'Descending (Z-A)',
-          'entity.sorting.ascending.number': 'Ascending (1-9)',
-          'entity.sorting.descending.number': 'Descending (9-1)',
-        };
-        return translations[key] || key;
-      }),
-    };
+    const translateServiceMock = createTranslateServiceMock();
+    translateServiceMock.instant = vi.fn((key: string | string[]) => {
+      const translations: Record<string, string> = {
+        'entity.sorting.ascending.text': 'Ascending (A-Z)',
+        'entity.sorting.descending.text': 'Descending (Z-A)',
+        'entity.sorting.ascending.number': 'Ascending (1-9)',
+        'entity.sorting.descending.number': 'Descending (9-1)',
+      };
+      const single = Array.isArray(key) ? key[0] : key;
+      return translations[single] ?? single;
+    }) as never;
 
     await TestBed.configureTestingModule({
       imports: [Sorting],
-      providers: [provideFontAwesomeTesting(), { provide: TranslateService, useValue: translateServiceMock }],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock(translateServiceMock)],
     }).compileComponents();
   });
 

@@ -58,16 +58,16 @@ export class EmailTemplateResourceApi {
     /**
      * 
      * 
-     * @param pageSize 
-     * @param pageNumber 
+     * @param page 
+     * @param size 
      */
-    getTemplates(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOEmailTemplateOverviewDTO> {
+    getTemplates(page?: number, size?: number): Observable<PageResponseDTOEmailTemplateOverviewDTO> {
         const queryParams = new URLSearchParams();
-        if (pageSize !== undefined && pageSize !== null) {
-            queryParams.set('pageSize', String(pageSize));
+        if (page !== undefined && page !== null) {
+            queryParams.set('page', String(page));
         }
-        if (pageNumber !== undefined && pageNumber !== null) {
-            queryParams.set('pageNumber', String(pageNumber));
+        if (size !== undefined && size !== null) {
+            queryParams.set('size', String(size));
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/email-templates${queryString ? `?${queryString}` : ''}`;

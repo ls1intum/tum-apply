@@ -4,9 +4,12 @@
       class="section"
       [class.selectable]="selectable()"
       [style.background-color]="getSectionColor($index)"
-      pTooltip="{{ getTooltip($index) | translate }}"
+      [pTooltip]="tooltipTexts()[$index]"
       tooltipPosition="top"
+      tabindex="0"
+      role="button"
       (click)="onSectionClick($index)"
+      (keydown.enter)="onSectionClick($index)"
     ></div>
   }
 </div>

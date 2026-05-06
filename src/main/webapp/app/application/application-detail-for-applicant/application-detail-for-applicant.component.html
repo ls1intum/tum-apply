@@ -1,8 +1,8 @@
 <jhi-confirm-dialog
   class="confirm-dialog"
-  [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
-  [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-  [label]="'button.withdraw' | translate"
+  header="entity.applicationOverview.dialogs.withdrawHeader"
+  message="entity.applicationOverview.dialogs.withdrawMessage"
+  label="button.withdraw"
   severity="danger"
   confirmIcon="withdraw"
   [showOpenButton]="false"
@@ -12,9 +12,9 @@
 />
 <jhi-confirm-dialog
   class="confirm-dialog"
-  [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
-  [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-  [label]="'button.delete' | translate"
+  header="entity.applicationOverview.dialogs.deleteHeader"
+  message="entity.applicationOverview.dialogs.deleteMessage"
+  label="button.delete"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
@@ -270,10 +270,7 @@
     @if (documentIds(); as documentIds) {
       <section class="documents-section">
         @if (
-          documentIds.bachelorDocumentDictionaryIds ||
-          documentIds.masterDocumentDictionaryIds ||
-          documentIds.cvDocumentDictionaryId ||
-          documentIds.referenceDocumentDictionaryIds
+          documentIds.bachelorDocumentIds || documentIds.masterDocumentIds || documentIds.cvDocumentId || documentIds.referenceDocumentIds
         ) {
           @if (!previewDetailData()) {
             <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
@@ -281,7 +278,7 @@
         }
         <!-- Document grid for all document types -->
         <div class="document-container">
-          @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
+          @if (documentIds.cvDocumentId; as cvDoc) {
             <div class="section-detail-card">
               <div class="section-card-header">
                 <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
@@ -289,13 +286,13 @@
               </div>
               <div class="section-card-body">
                 <div class="document-viewer">
-                  <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+                  <jhi-document-viewer [documentId]="cvDoc" />
                 </div>
               </div>
             </div>
           }
 
-          @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
+          @if (documentIds.bachelorDocumentIds; as bachelorDocs) {
             @for (doc of bachelorDocs; track $index) {
               <div class="section-detail-card">
                 <div class="section-card-header">
@@ -304,14 +301,14 @@
                 </div>
                 <div class="section-card-body">
                   <div class="document-viewer">
-                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                    <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
               </div>
             }
           }
 
-          @if (documentIds.masterDocumentDictionaryIds; as masterDocs) {
+          @if (documentIds.masterDocumentIds; as masterDocs) {
             @for (doc of masterDocs; track $index) {
               <div class="section-detail-card">
                 <div class="section-card-header">
@@ -320,14 +317,14 @@
                 </div>
                 <div class="section-card-body">
                   <div class="document-viewer">
-                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                    <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
               </div>
             }
           }
 
-          @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
+          @if (documentIds.referenceDocumentIds; as referenceDocs) {
             @for (doc of referenceDocs; track $index) {
               <div class="section-detail-card">
                 <div class="section-card-header">
@@ -336,7 +333,7 @@
                 </div>
                 <div class="section-card-body">
                   <div class="document-viewer">
-                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                    <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
               </div>

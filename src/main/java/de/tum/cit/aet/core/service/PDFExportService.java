@@ -18,7 +18,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,8 @@ import org.springframework.stereotype.Service;
 public class PDFExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm 'UTC'");
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
 
     private final JobService jobService;
     private final CurrentUserService currentUserService;
@@ -43,7 +44,7 @@ public class PDFExportService {
     // ------------------- Main methods -------------------
 
     /**
-     * Exports application details to PDF
+     * Exports application details to PDF. All timestamps are rendered in UTC.
      *
      * @param app    the ApplicationDetailDTO containing application data
      * @param labels translation labels for PDF content
@@ -84,11 +85,15 @@ public class PDFExportService {
                 )
                 .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
                 .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
-                .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
+                .addOverviewItem(
+                    labels.get("duration"),
+                    formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years"))
+                )
                 .addOverviewItem(
                     labels.get("fundingType"),
                     job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
                 )
+                .addOverviewItem(labels.get("tvlGrade"), job.tvlGrade() != null ? job.tvlGrade().name() : "-")
                 .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
                 .setOverviewDescriptionTitle(labels.get("jobDetails"))
@@ -155,7 +160,7 @@ public class PDFExportService {
     }
 
     /**
-     * Exports job details to PDF
+     * Exports job details to PDF. All timestamps are rendered in UTC.
      *
      * @param jobId  the job ID
      * @param labels translation labels for PDF content
@@ -197,8 +202,9 @@ public class PDFExportService {
                 job.subjectArea() != null ? job.subjectArea().correctLanguageValue(lang) : "-",
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
-                formatContractDuration(job.contractDuration(), labels.get("years")),
+                formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
+                job.tvlGrade() != null ? job.tvlGrade().name() : "-",
                 formatDate(job.startDate()),
                 formatDate(job.endDate())
             )
@@ -222,7 +228,7 @@ public class PDFExportService {
     }
 
     /**
-     * Exports job details to PDF
+     * Exports job details to PDF. All timestamps are rendered in UTC.
      *
      * @param jobFormDTO the job form data
      * @param labels     translation labels for PDF content
@@ -262,8 +268,9 @@ public class PDFExportService {
                 jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(lang) : "-",
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
-                jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
+                formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
+                jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )
@@ -368,17 +375,15 @@ public class PDFExportService {
     }
 
     private String formatInstantDate(Instant instant) {
-        return instant == null ? "-" : DATE_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : DATE_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private String formatInstantTime(Instant instant) {
-        return instant == null
-            ? "-"
-            : DateTimeFormatter.ofPattern("HH:mm").format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : TIME_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private String formatInstantDateTime(Instant instant) {
-        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime());
+        return instant == null ? "-" : DATETIME_FORMATTER.format(instant.atOffset(ZoneOffset.UTC));
     }
 
     private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
@@ -391,6 +396,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("workload"), getValue(data.workload()))
             .addOverviewItem(labels.get("duration"), getValue(data.duration()))
             .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
+            .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrade()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
@@ -472,7 +478,8 @@ public class PDFExportService {
     }
 
     /**
-     * Builds the metadata text using labels and current user data
+     * Builds the metadata text using labels and current user data.
+     * The "generated on" timestamp is rendered in UTC.
      *
      * @param labels translation labels for metadata parts
      * @return formatted metadata string
@@ -480,7 +487,7 @@ public class PDFExportService {
     private String buildMetadataText(Map<String, String> labels) {
         StringBuilder metadata = new StringBuilder();
 
-        String currentDateTime = LocalDateTime.now().format(DATETIME_FORMATTER);
+        String currentDateTime = LocalDateTime.now(ZoneOffset.UTC).format(DATETIME_FORMATTER);
         metadata.append(labels.get("thisDocumentWasGeneratedOn"));
         metadata.append(currentDateTime);
 
@@ -565,8 +572,12 @@ public class PDFExportService {
         return workload != null ? workload + (" " + unit) : "-";
     }
 
-    private String formatContractDuration(Integer duration, String unit) {
-        return duration != null ? duration + (" " + unit) : "-";
+    private String formatContractDuration(Integer duration, String singularUnit, String pluralUnit) {
+        if (duration == null) {
+            return "-";
+        }
+        String unit = duration == 1 ? singularUnit : pluralUnit;
+        return duration + " " + unit;
     }
 
     private String sanitizeFilename(String filename) {

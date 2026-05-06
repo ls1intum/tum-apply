@@ -1,10 +1,18 @@
-<div (click)="navigate()" [class.active]="isActive()" [class.icon-only]="icon() !== undefined && isCollapsed()" class="sidebar-button">
+<div
+  (click)="navigate()"
+  (keydown.enter)="navigate()"
+  [class.active]="isActive()"
+  [class.icon-only]="icon() !== undefined && isCollapsed()"
+  class="sidebar-button"
+  tabindex="0"
+  role="button"
+>
   @if (icon() !== undefined) {
-    <fa-icon [icon]="['fas', icon() ?? '']" class="icon" [class.active]="isActive()" [pTooltip]="label()" showDelay="500" />
+    <fa-icon [icon]="['fas', icon() ?? '']" class="icon" [class.active]="isActive()" [pTooltip]="displayLabel()" showDelay="500" />
   }
   @if (!isCollapsed()) {
-    <div class="text" [pTooltip]="label()" showDelay="1000">
-      {{ label() }}
+    <div class="text" [pTooltip]="displayLabel()" showDelay="1000">
+      {{ displayLabel() }}
     </div>
   }
 </div>

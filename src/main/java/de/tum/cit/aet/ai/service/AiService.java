@@ -6,12 +6,12 @@ import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import de.tum.cit.aet.core.util.CountryCodeNormalizer;
 import de.tum.cit.aet.core.util.DateNormalizer;
@@ -70,7 +70,7 @@ public class AiService {
 
     private final ApplicationService applicationService;
 
-    private final DocumentDictionaryService documentDictionaryService;
+    private final DocumentService documentService;
 
     private final CurrentUserService currentUserService;
 
@@ -78,22 +78,26 @@ public class AiService {
 
     private final ComplianceScoreService complianceScoreService;
 
+    private final AiFeatureToggleService aiFeatureToggleService;
+
     public AiService(
         ChatClient.Builder chatClientBuilder,
         JobService jobService,
         ApplicationService applicationService,
-        DocumentDictionaryService documentDictionaryService,
+        DocumentService documentService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceScoreService complianceScoreService
+        ComplianceScoreService complianceScoreService,
+        AiFeatureToggleService aiFeatureToggleService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
         this.applicationService = applicationService;
-        this.documentDictionaryService = documentDictionaryService;
+        this.documentService = documentService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
         this.complianceScoreService = complianceScoreService;
+        this.aiFeatureToggleService = aiFeatureToggleService;
     }
 
     /**
@@ -131,6 +135,8 @@ public class AiService {
             )
             .stream()
             .content()
+            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
+            .doOnError(e -> aiFeatureToggleService.recordFailure())
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -158,6 +164,8 @@ public class AiService {
             )
             .stream()
             .content()
+            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
+            .doOnError(e -> aiFeatureToggleService.recordFailure())
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -195,16 +203,23 @@ public class AiService {
             }
 
             // 2) Send the images to the LLM with the extraction prompt
-            Object result = chatClient
-                .prompt()
-                .user(u -> {
-                    u.text(prompt);
-                    for (ByteArrayResource pageImage : pageImages) {
-                        u.media(MediaType.IMAGE_PNG, pageImage);
-                    }
-                })
-                .call()
-                .entity(targetClass);
+            Object result;
+            try {
+                result = chatClient
+                    .prompt()
+                    .user(u -> {
+                        u.text(prompt);
+                        for (ByteArrayResource pageImage : pageImages) {
+                            u.media(MediaType.IMAGE_PNG, pageImage);
+                        }
+                    })
+                    .call()
+                    .entity(targetClass);
+                aiFeatureToggleService.recordSuccess();
+            } catch (Exception e) {
+                aiFeatureToggleService.recordFailure();
+                throw e;
+            }
 
             if (isCv) {
                 return normalizeStructuredFields((ExtractedApplicationDataDTO) result);
@@ -268,7 +283,7 @@ public class AiService {
         // 1) Download documents from UUIDs if provided
         if (docIds != null) {
             for (String docId : docIds) {
-                docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
+                docs.add(documentService.downloadDocument(UUID.fromString(docId)));
             }
         }
 
@@ -348,22 +363,29 @@ public class AiService {
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
-        try {
-            complianceIssues = chatClient
-                .prompt()
-                .user(u ->
-                    u
-                        .text(complianceResource)
-                        .param("descriptionLanguage", lang)
-                        .param("userLang", userLang)
-                        .param("jobDescription", text)
-                        .param("title", title != null ? title : "")
-                )
-                .call()
-                .entity(new ParameterizedTypeReference<>() {});
-            complianceIssues.forEach(issue -> issue.setLanguage(lang));
-        } catch (Exception e) {
-            throw new InternalServerException("Compliance analysis parsing failed", e);
+        if (aiFeatureToggleService.isAiAvailable()) {
+            try {
+                complianceIssues = chatClient
+                    .prompt()
+                    .user(u ->
+                        u
+                            .text(complianceResource)
+                            .param("descriptionLanguage", lang)
+                            .param("userLang", userLang)
+                            .param("jobDescription", text)
+                            .param("title", title != null ? title : "")
+                    )
+                    .call()
+                    .entity(new ParameterizedTypeReference<>() {});
+                complianceIssues.forEach(issue -> issue.setLanguage(lang));
+                aiFeatureToggleService.recordSuccess();
+            } catch (Exception e) {
+                aiFeatureToggleService.recordFailure();
+                throw new InternalServerException("Compliance analysis parsing failed", e);
+            }
+        } else {
+            // AI is disabled: skip the LLM-based legal analysis but keep rule-based gender scoring.
+            complianceIssues = List.of();
         }
 
         int genderScore = complianceScoreService.calculateGenderScore(analysis, translatedAnalysis);

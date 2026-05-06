@@ -18,6 +18,7 @@ import { Signal } from '@angular/core';
 import { IntervieweeDTO } from '../model/interviewee-dto';
 import { ConflictDataDTO } from '../model/conflict-data-dto';
 import { InterviewOverviewDTO } from '../model/interview-overview-dto';
+import { InterviewRatingDTO } from '../model/interview-rating-dto';
 import { IntervieweeDetailDTO } from '../model/interviewee-detail-dto';
 import { PageResponseDTOInterviewSlotDTO } from '../model/page-response-dto-interview-slot-dto';
 import { UpcomingInterviewDTO } from '../model/upcoming-interview-dto';
@@ -73,6 +74,20 @@ export function getInterviewProcessDetailsResource(processId: Signal<string> | s
         const processIdValue = typeof processId === 'function' ? processId() : processId;
         const processIdPath = encodeURIComponent(String(processIdValue));
         return `${BASE_PATH}/api/interviews/processes/${processIdPath}`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ * @param applicationId 
+ */
+export function getInterviewRatingForApplicationResource(applicationId: Signal<string> | string): HttpResourceRef<InterviewRatingDTO | undefined> {
+    return httpResource<InterviewRatingDTO>(() => {
+        const applicationIdValue = typeof applicationId === 'function' ? applicationId() : applicationId;
+        const applicationIdPath = encodeURIComponent(String(applicationIdValue));
+        return `${BASE_PATH}/api/interviews/applications/${applicationIdPath}/rating`;
     });
 }
 

@@ -1,5 +1,5 @@
 <div [class.active]="isCalendarOpen()" class="label-top datepicker-container">
-  <label class="custom-label">
+  <label class="custom-label" for="startDate">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -12,11 +12,7 @@
     }
     @if (icon(); as icon) {
       @if (icon === 'circle-info' && tooltipText()) {
-        @if (shouldTranslate()) {
-          <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
-        } @else {
-          <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
-        }
+        <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="displayTooltipText() ?? ''" tooltipPosition="top" />
       } @else {
         <fa-icon class="icon" [icon]="['fas', icon]" />
       }
@@ -27,7 +23,7 @@
     (onHide)="isCalendarOpen.set(false)"
     (onShow)="isCalendarOpen.set(true)"
     [(ngModel)]="modelDate"
-    [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
+    [placeholder]="displayPlaceholder()"
     [disabled]="disabled()"
     [minDate]="effectiveMinDate()"
     [maxDate]="maxDate()"
@@ -40,6 +36,7 @@
     inputId="startDate"
     showIcon="true"
     [inputStyleClass]="'w-full'"
+    [appendTo]="'body'"
   >
     <ng-template pTemplate="triggericon">
       <fa-icon [icon]="['fas', 'calendar']" class="text-text-on-primary" />

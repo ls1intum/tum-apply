@@ -142,14 +142,22 @@
         "Scholarship": "Stipendium",
         "SelfFunded": "Selbstfinanziert",
         "PartiallyFunded": "Teilweise finanziert"
+      },
+      "tvlGrade": {
+        "label": "TV-L Gruppe",
+        "placeholder": "Wähle eine Entgeltgruppe...",
+        "toolTipText": "Gib die <a href=\"https://portal.mytum.de/kompass/personalwirtschaft_public/tabellenentgelt_stufenzuordnung_tv_l\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">TUM TV-L Entgeltgruppe</a> an, um Transparenz bei der tariflichen Vergütung zu gewährleisten."
       }
     },
     "aiSidebar": {
       "header": "KI-Assistent",
       "complianceHeader": "Compliance-Prüfer",
-      "critical": "Fixe kritische AGG-Verstöße",
+      "critical": "AGG-Verstöße korrigieren",
       "transparency": "Transparenz verbessern",
-      "filterByCategory": "Nach Kategorie filtern"
+      "dsgvo": "Datenschutz anpassen",
+      "publicSector": "Wissenschaftsrecht prüfen",
+      "filterByCategory": "Nach Kategorie filtern",
+      "complianceTooltipText": "Farben dienen nur der Kategorisierung, nicht der Priorisierung. Es gibt keine Unterschiede in der Wichtigkeit."
     },
     "positionDetailsSection": {
       "jobDescription": {
@@ -167,22 +175,19 @@
         "aiHelperText": "Gib die wichtigsten Informationen an und TUMApply KI schreibt es für dich.",
         "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
-        "aiScoreTitle": "Inklusivitäts-Score",
+        "aiScoreTitle": "Qualitäts-Score",
         "aiScoreDialog": {
-          "title": "Berechnung des Inklusivitäts-Scores",
+          "title": "Berechnung des Qualitäts-Scores",
           "summary": "Berechnungsfaktoren",
-          "explanation": "Der Score kombiniert Wortwahl, Tonalität und eine ausbalancierte Gewichtung.",
+          "summaryText": "Dein Qualitäts-Score ist ein gewichteter Durchschnitt der unten aufgeführten Faktoren. Er dient als zentraler Maßstab, um festzustellen, ob deine Stellenausschreibung den Rekrutierungsstandards der Universität entspricht.",
+          "explanation": "Der Score kombiniert Wortwahl, Tonalität, Rechtssicherheit und eine ausbalancierte Gewichtung.",
           "section1": {
-            "title": "Wortwahl",
-            "body": "Der Text wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
+            "title": "Inklusion und Wortwahl",
+            "body": "Die Stellenbeschreibung wird auf inklusive und nicht-inklusive (z. B. geschlechtsspezifische) Begriffe geprüft, um den Anteil inklusiver Sprache zu bestimmen."
           },
           "section2": {
-            "title": "Gesamteindruck",
-            "body": "Neutrale Formulierungen erzielen das beste Ergebnis, während einseitige Sprache zu Punktabzügen führt."
-          },
-          "section3": {
-            "title": "Faire Gewichtung",
-            "body": "Die Berechnung ist so ausbalanciert, dass vereinzelte ungünstige Begriffe das Endresultat nicht sofort unverhältnismäßig stark abwerten."
+            "title": "Rechtliche Compliance",
+            "body": "Das Tool scannt nach rechtlichen Risiken und EU-Verstößen. Kritische Fehler werden stark gewichtet, da sie ein Haftungsrisiko für dich und die Universität darstellen."
           }
         },
         "aiToggleOff": "KI Deaktiviert",
@@ -247,10 +252,6 @@
       }
     },
     "additionalInformationSection": {
-      "extras": {
-        "title": "Zusätzliches",
-        "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
-      },
       "suitableForDisabled": {
         "label": "Diese Stelle ist für schwerbehinderte Menschen geeignet",
         "tooltip": "Nur abwählen, wenn objektive stellenbezogene Gründe gegen die Eignung für schwerbehinderte Menschen sprechen"
@@ -262,7 +263,12 @@
     },
     "reviewPageSection": {
       "title": "Übersicht",
-      "message": "Bitte überprüfe deine Eingaben, bevor du die Doktorandenstelle veröffentlichst."
+      "complianceBanner": {
+        "complianceCheckOngoing": "<b>Laufende Compliance-Prüfung:</b> Deine Stelle wird auf die Einhaltung rechtlicher Standards und universitärer Vorgaben geprüft. Dies kann einen Moment dauern.",
+        "critical": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} {criticalCount, plural, =1 {erkannten kritischen AGG-Verstoß} other {erkannte kritische AGG-Verstöße}}{othersCount, plural, =0 {} other { und {othersCount} {othersCount, plural, =1 {weiteres Problem} other {weitere Probleme}}}}, um Compliance sicherzustellen.",
+        "warning": "<b>Verbesserungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {othersCount} {othersCount, plural, =1 {festgestelltes Compliance-Problem} other {festgestellte Compliance-Probleme}}.",
+        "default": "Bitte überprüfe deine Eingaben, bevor du die Doktorandenstelle veröffentlichst."
+      }
     },
     "toastMessages": {
       "noDescription": {
@@ -290,6 +296,7 @@
   "jobOverviewPage": {
     "title": "Finde deine passende Stelle",
     "noJobsFound": "Keine Stellen gefunden.",
+    "alreadyAppliedBadge": "Beworben",
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
@@ -316,9 +323,9 @@
       "startDate": "Startdatum"
     },
     "ariaLabels": {
-      "viewJobDetails": "Details anzeigen für {{title}}"
+      "viewJobDetails": "Details anzeigen für {title}"
     },
-    "hoursPerWeek": "{{workload}} h/Woche",
+    "hoursPerWeek": "{workload} h/Woche",
     "notificationsCta": {
       "textPrefix": "Keine passende Stelle dabei? Erhalte",
       "link": "Benachrichtigungen"
@@ -408,16 +415,18 @@
       "workload": "Arbeitsaufwand",
       "contractDuration": "Vertragslaufzeit",
       "fundingType": "Finanzierungsart",
+      "tvlGrade": "TV-L Gruppe",
       "startDate": "Startdatum",
       "applicationEndDate": "Bewerbungsfrist"
     },
     "units": {
       "hoursPerWeek": "Stunden/Woche",
+      "year": "Jahr",
       "years": "Jahre"
     },
     "workload": {
       "fullTime": "Vollzeit",
-      "partTime": "Teilzeit ({{percentage}}%)"
+      "partTime": "Teilzeit ({percentage}%)"
     },
     "infos": {
       "applicantLanguageInfo": "Bewerber sehen die Stellenbeschreibung nur in der von ihnen gewählten Sprache."

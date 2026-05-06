@@ -53,6 +53,11 @@
   </div>
   <p class="login-footer">
     <span jhiTranslate="auth.login.texts.accountMissing.prefix"></span>
-    <a (click)="authOrchestrator.switchToRegister()" jhiTranslate="auth.login.texts.accountMissing.link"></a>
+    <a
+      tabindex="0"
+      (click)="authOrchestrator.switchToRegister()"
+      (keydown.enter)="authOrchestrator.switchToRegister()"
+      jhiTranslate="auth.login.texts.accountMissing.link"
+    ></a>
   </p>
 </div>

@@ -9,37 +9,35 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div class="filter-trigger">
-      @if (!showSelectedChipsInTrigger() || !hasSelectedItems()) {
-        <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
+      @if (!hasSelectedItems()) {
+        <span class="trigger-placeholder">{{ displayFilterLabel() }}</span>
+      } @else if (showChipsCounterOnly()) {
+        <span class="trigger-summary">{{ getSummaryLabel() }}</span>
       } @else {
-        @if (showChipsCounterOnly()) {
-          <span class="trigger-summary">{{ getSummaryLabel() }}</span>
-        } @else {
-          <div class="chip-row">
-            @for (option of selectedOptions(); track option.value) {
-              <p-chip
-                [label]="shouldTranslateOptions() ? (option.label | translate) : option.label"
-                [removable]="true"
-                (onRemove)="removeOption(option.value); $event.stopPropagation()"
-                (click)="$event.stopPropagation()"
-                [pt]="{ root: { class: 'compact-chip' } }"
-              />
-            }
-          </div>
-        }
+        <div class="chip-row">
+          @for (option of selectedOptions(); track option.value) {
+            <p-chip
+              [label]="option.label"
+              [removable]="true"
+              (onRemove)="removeOption(option.value); $event.stopPropagation()"
+              (click)="$event.stopPropagation()"
+              [pt]="{ root: { class: 'compact-chip' } }"
+            />
+          }
+        </div>
       }
     </div>
-    <fa-icon class="filter-icon" [icon]="['fas', 'chevron-down']" [ngClass]="{ rotated: isOpen() }" />
+    <fa-icon class="filter-icon" [icon]="['fas', 'chevron-down']" [class.rotated]="isOpen()" />
   </div>
 
   @if (isOpen()) {
-    <div class="filter-dropdown" [class.inline-mode]="inline()" [class.align-right]="dropdownAlignment() === 'right'">
+    <div class="filter-dropdown" [class.align-right]="dropdownAlignment() === 'right'">
       <div class="panel-header">
         <fa-icon class="filter-icon text-primary" [icon]="['fas', 'search']" />
         <input
           type="text"
           class="search-input"
-          [placeholder]="filterSearchPlaceholder() | translate"
+          [placeholder]="displaySearchPlaceholder()"
           [value]="searchTerm()"
           (input)="onSearchChange($event)"
         />
@@ -54,25 +52,25 @@
           @if (hasSelectedItems()) {
             <div class="selected-header-row">
               <p-divider align="left">
-                <span class="divider-text"> {{ 'entity.filters.selected' | translate }} ({{ selectedOptions().length }}) </span>
+                <span class="divider-text"> {{ displaySelectedHeader() }} ({{ selectedOptions().length }}) </span>
               </p-divider>
 
               <p-divider align="right">
                 <button type="button" class="divider-text clear-button" (click)="clearAll(); $event.stopPropagation()">
-                  {{ 'entity.filters.clearAll' | translate }}
+                  {{ displayClearAllLabel() }}
                 </button>
               </p-divider>
             </div>
             @for (option of selectedOptions(); track option.value; let i = $index) {
-              <div class="option-item selected" (click)="toggleOption(option.value)">
+              <div
+                class="option-item selected"
+                tabindex="0"
+                role="button"
+                (click)="toggleOption(option.value)"
+                (keydown.enter)="toggleOption(option.value)"
+              >
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
-                <span class="option-label">
-                  @if (shouldTranslateOptions()) {
-                    {{ option.label | translate }}
-                  } @else {
-                    {{ option.label }}
-                  }
-                </span>
+                <span class="option-label">{{ option.label }}</span>
               </div>
             }
           }
@@ -85,15 +83,16 @@
           <!-- List all unselected options -->
           @if (hasUnselectedItems()) {
             @for (option of unselectedOptions(); track option.value; let i = $index) {
-              <div class="option-item" (click)="toggleOption(option.value)" [class.focused]="focusedIndexOptionList() === i">
+              <div
+                class="option-item"
+                tabindex="0"
+                role="button"
+                (click)="toggleOption(option.value)"
+                (keydown.enter)="toggleOption(option.value)"
+                [class.focused]="focusedIndexOptionList() === i"
+              >
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
-                <span class="option-label">
-                  @if (shouldTranslateOptions()) {
-                    {{ option.label | translate }}
-                  } @else {
-                    {{ option.label }}
-                  }
-                </span>
+                <span class="option-label">{{ option.label }}</span>
               </div>
             }
           }
@@ -101,24 +100,11 @@
           <!-- Display that no results were found-->
           @if (!filteredOptions().length) {
             <div class="no-results">
-              <span>{{ 'entity.filters.noResults' | translate }}</span>
+              <span>{{ displayNoResultsLabel() }}</span>
             </div>
           }
         </div>
       </div>
-    </div>
-  }
-
-  @if (!showSelectedChipsInTrigger() && hasSelectedItems()) {
-    <div class="selected-chips-list">
-      @for (option of selectedOptions(); track option.value) {
-        <p-chip
-          [label]="shouldTranslateOptions() ? (option.label | translate) : option.label"
-          [removable]="true"
-          (onRemove)="removeOption(option.value)"
-          [pt]="{ root: { class: 'compact-chip' } }"
-        />
-      }
     </div>
   }
 </div>

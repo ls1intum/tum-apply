@@ -23,6 +23,7 @@ import { CancelInterviewDTO } from '../model/cancel-interview-dto';
 import { CreateSlotsDTO } from '../model/create-slots-dto';
 import { ConflictDataDTO } from '../model/conflict-data-dto';
 import { InterviewOverviewDTO } from '../model/interview-overview-dto';
+import { InterviewRatingDTO } from '../model/interview-rating-dto';
 import { IntervieweeDetailDTO } from '../model/interviewee-detail-dto';
 import { PageResponseDTOInterviewSlotDTO } from '../model/page-response-dto-interview-slot-dto';
 import { UpcomingInterviewDTO } from '../model/upcoming-interview-dto';
@@ -132,6 +133,17 @@ export class InterviewResourceApi {
         const processIdPath = encodeURIComponent(String(processId));
         const url = `${this.basePath}/api/interviews/processes/${processIdPath}`;
         return this.http.get<InterviewOverviewDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     */
+    getInterviewRatingForApplication(applicationId: string): Observable<InterviewRatingDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const url = `${this.basePath}/api/interviews/applications/${applicationIdPath}/rating`;
+        return this.http.get<InterviewRatingDTO>(url);
     }
 
     /**

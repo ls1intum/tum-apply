@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -27,6 +24,7 @@ public record JobFormDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
+    TvlGrade tvlGrade,
     String jobDescriptionEN,
     String jobDescriptionDE,
     @NotNull JobState state,
@@ -60,6 +58,7 @@ public record JobFormDTO(
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
             HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),

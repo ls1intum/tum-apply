@@ -95,7 +95,7 @@
                           [icon]="group.expanded ? 'chevron-up' : 'chevron-down'"
                           [label]="group.showMoreLabel"
                           [shouldTranslate]="group.expanded"
-                          styleClass="py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium hover:bg-background-surface transition-all"
+                          classStyling="py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium hover:bg-background-surface transition-all"
                           (click)="toggleExpanded(group.date)"
                         />
                       }
@@ -179,11 +179,14 @@
 
       <!-- Location Input -->
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-text-primary" jhiTranslate="interview.slots.create.location">Location</label>
+        <label class="text-sm font-medium text-text-primary" for="editLocationInput" jhiTranslate="interview.slots.create.location"
+          >Location</label
+        >
         <jhi-string-input
+          [id]="'editLocationInput'"
           [model]="editLocation()"
           (modelChange)="editLocation.set($event)"
-          [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
+          placeholder="interview.slots.create.locationPlaceholder"
           [errorEnabled]="false"
         />
       </div>
@@ -211,7 +214,7 @@
           label="button.cancel"
           [shouldTranslate]="true"
           size="sm"
-          styleClass="w-28 h-10"
+          classStyling="w-28 h-10"
           (click)="closeEditDialog()"
         />
         <jhi-button
@@ -220,7 +223,7 @@
           [shouldTranslate]="true"
           [disabled]="!editLocation().trim()"
           size="sm"
-          styleClass="w-28 h-10"
+          classStyling="w-28 h-10"
           [loading]="editLoading()"
           (click)="saveSlotLocation()"
         />
