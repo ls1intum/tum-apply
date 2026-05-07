@@ -46,12 +46,12 @@
   </div>
 
   @if (isEdit()) {
-    <div class="mt-4 flex flex-row justify-end gap-4">
+    <div class="flex flex-row justify-end gap-4 mt-4">
       <jhi-button label="button.cancel" variant="text" severity="primary" (click)="onCancel()" />
       <jhi-button label="button.save" severity="primary" (click)="onSave()" [disabled]="!canSave()" />
     </div>
   } @else if (isCreate()) {
-    <div class="mt-4 flex flex-row justify-end gap-4">
+    <div class="flex flex-row justify-end gap-4 mt-4">
       <jhi-button label="button.send" icon="paper-plane" severity="primary" (click)="onSave()" [disabled]="!canSave()" />
     </div>
   }
